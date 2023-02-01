@@ -107,7 +107,6 @@ watch(isEpisodePlaying, (e) => {
       <v-persistent-player
         data-style-mode="dark"
         ref="playerRef"
-        class="player"
         v-if="showPlayer"
         :auto-play="true"
         :livestream="true"
