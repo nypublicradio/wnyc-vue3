@@ -1,9 +1,16 @@
 <script setup>
+import { updateLiveStream } from '~~/composables/data/liveStream'
+import { useCurrentSteamStation } from '~/composables/states'
+import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
 const route = useRoute()
+const currentSteamStation = useCurrentSteamStation()
+onBeforeMount(() => {
+  updateLiveStream(currentSteamStation.value)
+})
 </script>
 
 <template>
-  <div class="page" :class="[`${route.name}`]">
+  <div :class="[`${route.name}`]">
     <Html lang="en">
       <Head>
         <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
@@ -62,6 +69,7 @@ const route = useRoute()
       <slot />
     </main>
     <the-footer />
+    <audio-player />
   </div>
 </template>
 

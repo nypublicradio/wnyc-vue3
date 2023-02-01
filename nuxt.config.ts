@@ -46,6 +46,12 @@ export default {
         }
       },
     },
+    imports: {
+      dirs: [
+        'composables', // top-level modules
+        'composables/*/index.{ts,js,mjs,mts}' // one level directories's index.js,
+      ]
+    },
     build: {
       transpile: [
         'primevue'
@@ -54,11 +60,11 @@ export default {
     runtimeConfig: {
       public: {
         // SENTRY_DSN: process.env['SENTRY_DSN'],
-        ENV: process.env['ENV'],
+        ENV: process.env['ENV'] || 'demo',
         // HTL_CSS: process.env['HTL_CSS'] || 'https://htlbid.com/stage/v3/wnyc.com/htlbid.css',
         // HTL_JS: process.env['HTL_JS'] || 'https://htlbid.com/stage/v3/wnyc.com/htlbid.js',
         // HTL_IS_TESTING: process.env['HTL_IS_TESTING'] || 'yes',
-        API_URL: process.env['API_URL'] || "https://api.demo.nypr.digital/api/v4/whats_on/"
+        LIVESTREAM_URL: process.env['LIVESTREAM_URL'] || 'https://api.demo.nypr.digital/api/v4/whats_on/',
       }
     }
   }
