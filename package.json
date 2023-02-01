@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "howler": "^2.2.3",
+    "nuxt": "^3.1.0",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.23.0",
+    "sass": "^1.57.1"
+  },
+  "dependencies": {
+    "@nypublicradio/nypr-design-system-vue3": "1.0.5"
+  }
+}
