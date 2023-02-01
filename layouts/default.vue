@@ -1,10 +1,10 @@
 <script setup>
-import { updateLiveStream } from '~~/composables/data/liveStream'
+import { updateLiveStream } from '~/composables/data/liveStream'
 import { useCurrentSteamStation } from '~/composables/states'
-import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
 const route = useRoute()
 const currentSteamStation = useCurrentSteamStation()
 onBeforeMount(() => {
+  console.log('updating')
   updateLiveStream(currentSteamStation.value)
 })
 </script>
