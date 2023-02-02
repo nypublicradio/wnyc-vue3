@@ -1,3 +1,19 @@
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16ZM5.78504 10.6676L11 8L5.78504 5.33242L5.78504 10.6676Z" fill="white"/>
-</svg>
+<svg
+    role="img"
+    aria-label="play icon"
+    class="play-icon"
+    viewBox="4 4 16 16"
+    width="16"
+    height="16"
+    preserveAspectRatio="xMidYMid meet"
+    fill="white"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <title>Play Icon</title>
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M18 12.0001L6 19.6365V4.36377L18 12.0001Z"
+      fill="white"
+    />
+  </svg>

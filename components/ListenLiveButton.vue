@@ -5,6 +5,7 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from '~/composables/states'
+
 const props = defineProps({
   label: {
     type: String,
@@ -35,15 +36,11 @@ const togglePlay = () => {
 <template>
   <div class="listen-live-button">
     <Button
-      class="p-button-rounded p-button-danger w-full flex justify-content-center"
+      class="p-button-secondary"
       @click="currentEpisodeHolder ? togglePlay() : null"
     >
       <div class="flex align-items-center">
-        <i
-          v-if="!currentEpisodeHolder"
-          class="pi pi-spin pi-spinner mr-2"
-          style="font-size: 1rem"
-        ></i>
+        <i v-if="!currentEpisodeHolder" class="pi pi-spin pi-spinner mr-2"></i>
         <img
           v-else-if="!isEpisodePlaying"
           alt="play icon"
@@ -51,18 +48,8 @@ const togglePlay = () => {
           class="mr-2"
         />
         <img v-else alt="pause icon" src="/pause.svg" class="mr-2" />
-        <img
-          alt="WNYC"
-          :src="`/live-stream-logos-white/${props.slug}.svg`"
-          class="mr-2"
-        />
-        {{ props.label }}
+        <span class="p-button-label">{{ props.label }}</span>
       </div>
     </Button>
   </div>
 </template>
-
-<style lang="scss">
-.listen-live-button {
-}
-</style>
