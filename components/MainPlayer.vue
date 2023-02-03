@@ -1,0 +1,102 @@
+<script setup>
+import {
+  useCurrentEpisodeHolder
+} from '~/composables/states'
+
+import { formatTime } from '~/utilities/helpers'
+
+const currentEpisodeHolder = useCurrentEpisodeHolder()
+
+const currentEpisodeData = computed(
+  () => currentEpisodeHolder.value?.data[0].attributes
+)
+const currentEpisodeImage = computed(
+  () =>
+  currentEpisodeHolder.value?.included.find((include) => include.type === 'image')
+      .attributes
+)
+const currentEpisodeShow = computed(
+  () =>
+  currentEpisodeHolder.value?.included.find((include) => include.type === 'show')
+      .attributes
+)
+const currentEpisodeTimes = computed(
+  () =>
+  currentEpisodeHolder.value?.included.find((include) => include.type === 'show-schedule')
+      .attributes
+)
+</script>
+
+<template>
+  <div v-if="currentEpisodeHolder" class="card p-5">
+    <div class="grid">
+      <div class="col-12 lg:col-fixed lg:mr-6" style="width: 240px">
+        <img
+          :src="currentEpisodeImage?.url || currentEpisodeData?.['image-logo']"
+          class="main-player-image"
+        />
+      </div>
+      <div class="col">
+        <live-indicator
+          :label="`${formatTime(
+            currentEpisodeTimes['iso-start-time']
+          )} - ${formatTime(currentEpisodeTimes['iso-end-time'])}`"
+          class="mb-3"
+        />
+        <h2 class="mb-3">{{ currentEpisodeShow?.title }}</h2>
+        <p
+          v-html="currentEpisodeShow?.tease"
+          class="main-player-description mb-4"
+        />
+        <listen-live-button class="mt-" :slug="currentSteamStation" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss">
+.main-player-image {
+  width: 240px;
+  height: 240px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.main-player-description,
+.main-player-description p {
+  font-size: 1.125rem;
+}
+
+.track-info-livestream {
+  height: 16px;
+  line-height: 16px;
+  display: flex;
+  margin-bottom: 8px;
+  .track-info-livestream-indicator {
+    display: flex;
+    align-items: center;
+    background: var(--text-color);
+    color: var(--black);
+    border-radius: 3px;
+    padding: 4px;
+    margin-right: 8px;
+    .track-info-livestream-indicator-text {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .track-info-livestream-indicator-dot {
+      background-color: #e74f4f;
+      border-radius: 8px;
+      height: 8px;
+      width: 8px;
+    }
+  }
+  .track-info-livestream-station {
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+</style>

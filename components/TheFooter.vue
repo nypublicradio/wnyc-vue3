@@ -57,7 +57,7 @@ const year = new Date().getFullYear()
           <a href="https://www.WNYC.org" target="_blank" rel="noopener">
             <wnyc-logo />
           </a>
-          <p class="my-5">
+          <p class="text-lg my-5">
             Listener-supported WNYC is the home for independent journalism and
             courageous conversation on air and online. Broadcasting live from
             New York City on 93.9 FM and AM 820 and available online and on the

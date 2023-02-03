@@ -4,7 +4,6 @@ import { useCurrentSteamStation } from '~/composables/states'
 const route = useRoute()
 const currentSteamStation = useCurrentSteamStation()
 onBeforeMount(() => {
-  console.log('updating')
   updateLiveStream(currentSteamStation.value)
 })
 </script>
@@ -66,7 +65,9 @@ onBeforeMount(() => {
     <the-header />
     <main>
       <div class="dots" />
-      <slot />
+      <div class="content">
+        <slot />
+      </div>
     </main>
     <the-footer />
     <audio-player />
@@ -90,5 +91,9 @@ onBeforeMount(() => {
   margin: auto;
   right: 0;
   left: 0;
+}
+.content {
+  z-index: 10;
+  position: relative;
 }
 </style>

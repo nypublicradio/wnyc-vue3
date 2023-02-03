@@ -1,0 +1,403 @@
+{
+    "links": {
+        "first": "http://api.demo.nypr.digital/api/v4/whats_on/?filter%5Bslug%5D=wnyc-fm939&include=current-airing.image%2Ccurrent-show.show.image%2Ccurrent-episode.segments&page=1",
+        "last": "http://api.demo.nypr.digital/api/v4/whats_on/?filter%5Bslug%5D=wnyc-fm939&include=current-airing.image%2Ccurrent-show.show.image%2Ccurrent-episode.segments&page=1",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "whats-on-now",
+            "id": "1",
+            "attributes": {
+                "name": "WNYC 93.9 FM",
+                "slug": "wnyc-fm939",
+                "short-description": "News, Culture & Talk",
+                "has-playlists": false,
+                "image-logo": "https://media.demo.nypr.digital/i/500/500/c/80/1/wnyc_2_1.png",
+                "schedule-url": "http://wnyc.demo2.wnyc.net/schedule/?scheduleStation=wnyc-fm939",
+                "playlist-url": "http://wnyc.demo2.wnyc.net/playlist-daily/?scheduleStation=wnyc-fm939",
+                "whats-on": null,
+                "audio-bumper": "/streambumper/streambumper000001_wnycfm.mp3",
+                "aac": "http://fm939.wnyc.org/wnycfm.aac",
+                "mp3": "http://fm939.wnyc.org/wnycfm",
+                "mobile-aac": "https://fm939.wnyc.org/wnycfm-mobile.aac",
+                "mobile-mp3": "https://fm939.wnyc.org/wnycfm-web",
+                "hls": "https://hls-live.wnyc.org/wnycfm/playlist.m3u8",
+                "twitter-handle": "",
+                "site-id": 1,
+                "order": 1
+            },
+            "relationships": {
+                "current-show": {
+                    "data": {
+                        "type": "show-schedule",
+                        "id": "624"
+                    }
+                },
+                "current-airing": {
+                    "data": null
+                },
+                "current-episode": {
+                    "data": null
+                }
+            }
+        }
+    ],
+    "included": [
+        {
+            "type": "image",
+            "id": "175098",
+            "attributes": {
+                "caption": "",
+                "credits-url": "",
+                "credits-name": "WNYC Studios",
+                "crop": "l",
+                "h": 1400,
+                "is-display": true,
+                "name": "1/TheTakeway_Square_NoWNYCStudios.png",
+                "source": "",
+                "template": "https://media.demo.nypr.digital/i/%s/%s/%s/%s/1/TheTakeway_Square_NoWNYCStudios.png",
+                "url": "https://media.demo.nypr.digital/i/1400/1400/l/80/1/TheTakeway_Square_NoWNYCStudios.png",
+                "w": 1400
+            }
+        },
+        {
+            "type": "show",
+            "id": "361",
+            "attributes": {
+                "slug": "takeaway",
+                "title": "The Takeaway",
+                "url": "https://wnycstudios.demo2.wnyc.net/podcasts/takeaway",
+                "linkroll": [
+                    {
+                        "href": null,
+                        "nav-slug": "segments",
+                        "title": "Stories"
+                    },
+                    {
+                        "href": null,
+                        "nav-slug": "episodes",
+                        "title": "Episodes"
+                    },
+                    {
+                        "href": null,
+                        "nav-slug": "amy_walter",
+                        "title": "Politics with Amy Walter"
+                    },
+                    {
+                        "href": null,
+                        "nav-slug": "projects",
+                        "title": "Projects"
+                    },
+                    {
+                        "href": null,
+                        "nav-slug": "about",
+                        "title": "Contact Us "
+                    },
+                    {
+                        "href": null,
+                        "nav-slug": "the-team",
+                        "title": "Team"
+                    }
+                ],
+                "about": {
+                    "body": "<div data-pym-src=\"https://apps.nypr.org/call-to-action/?brand=wnyc-studios&amp;headline=Share%20Your%20Voice&amp;summary=Record%20an%20answer%20to%20The%20Takeaway's%20daily%20listener%20question%20and%20we%20may%20play%20your%20response%20on%20air.&amp;callToAction=Record&amp;url=https%3A%2F%2Fapps.nypr.org%2Fcrowdsourcing%2F11\">Loading...</div>\n<script type=\"text/javascript\" src=\"https://pym.nprapps.org/pym.v1.min.js\">\\x3C/script>\n<p> </p>\n<h2>About Us</h2>\n<p>The Takeaway is a daily national news program focused on you. What you know and what you share helps to shape our daily discussion. You can hear us weekdays across America (check out our station map below - all times Monday through Friday unless otherwise indicated).</p>\n<p>The Takeaway is driven by America's national conversation — if a conversation connects or you have a valuable perspective, we want you to share your experience. These contributions help us deliver fresh insights and analysis on the day’s news.</p>\n<p>Here's how you can take part:</p>\n<h2><strong>Facebook</strong></h2>\n<p>Find us on <a href=\"https://www.facebook.com/thetakeaway/\">Facebook</a> to see our latest conversations in your NewsFeed. Check out some of our <a href=\"https://www.facebook.com/thetakeaway/photos_stream?tab=photos_albums\">photo albums</a> and <a href=\"https://www.facebook.com/thetakeaway/videos\">videos</a>, or comment on a discussion thread. You can also send a message to our inbox if there is a story you want us to cover.</p>\n<h2><strong>Twitter</strong></h2>\n<p>Follow us on Twitter <a href=\"https://twitter.com/TheTakeaway\">@TheTakeaway</a> to get updates from the program and our guests. Have a question about something you heard? Disagree with something you heard? Keep the debate going on Twitter. You can also follow our own <a href=\"https://twitter.com/tanzinavega\">Tanzina Vega</a> and <a href=\"https://twitter.com/amyewalter\">Amy Walter</a>.</p>\n<h2><strong>Email</strong></h2>\n<p>Not into Twitter or Facebook? You can always reach The Takeaway by sending us an email at <a href=\"mailto:takeawaydigital@gmail.com\">takeawaydigital@gmail.com</a>. </p>\n<h2><strong>Text</strong></h2>\n<p>Sign up for The Takeaway's listener response network by texting the word \"START\" to 69866. You will receive a daily question that will be featured on the next day's show. We ask listeners in our response network to call in to our program and share their thoughts. </p>\n<p>Standard data and messaging rates may apply. You can always text the word \"STOP\" at any time to opt-out.</p>\n<h2><strong>Call Us</strong></h2>\n<p>You can always contact us by calling us at 1-877-8-MY-TAKE. Each day, The Takeaway features the voices of listeners from around the country. Share your thoughts and opinions by leaving us a voicemail.</p>\n<h2><strong>Our House Rules</strong></h2>\n<p>If you’re taking part on air and or online, here are a few things you should know:</p>\n<p>If you contact us in public—on Twitter or on our Facebook threads—we may read your comments out on the radio, along with the name and location you make public. We may also repost your comment online.</p>\n<p>If you contact us in private—in the Facebook private inbox or via email—then we may read out your comment on air. If you don’t want your name, location or comment made public, please tell us and we will respect your wishes.</p>\n<p>We monitor our public Facebook threads. If your comment has been deleted, we will be happy to explain to you why, if you message us to ask. Equally, if you feel a comment should be deleted but hasn’t been, please flag it to us by messaging us. We will either take action or explain to you why we feel the comment should remain.</p>\n<p>On Twitter, we may retweet or repost one of your tweets on The Takeaway feed. If you text us, we may read your message and location on the air.</p>\n<p>Thank you for taking part in The Takeaway. </p>\n<p>The Takeaway is a partnership of global news leaders. It is a co-production of <a href=\"http://www.pri.org/\">PRI</a> (Public Radio International) and <a href=\"http://www.wnyc.org/\">WNYC Radio</a> in collaboration with <a href=\"http://www.wgbh.org/\">WGBH-Boston Public Radio</a>.</p>\n<p>The Takeaway broadcasts on many stations; check our <a href=\"https://media.wnyc.org/media/resources/2018/Mar/02/The_Takeaway__2-21-18.xls_-_CC354BC1-750C-43BF-AAFA-A68445.pdf\">full carrier list</a> to find the station nearest to you.   </p>\n<p><iframe frameborder=\"no\" height=\"400\" scrolling=\"no\" src=\"https://www.google.com/fusiontables/embedviz?q=select+col0+from+1tw1U4nQa87wdfOS5gIV_NnEDEICpJwov2C1LZ3M&amp;viz=MAP&amp;h=false&amp;lat=38.44158381725317&amp;lng=-97.99857902695317&amp;t=1&amp;z=3&amp;l=col0&amp;y=2&amp;tmplt=2\" width=\"100%\"></iframe></p>\n<p>Please see our <a href=\"https://www.wnycstudios.org/shows/takeaway/musiccredits/\">music credits</a> for more information about the music used on the show.  </p>",
+                    "roles": {
+                        "contributor": [
+                            {
+                                "url": "/people/david-gebel/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1239/l/80/1/DavidGebel_1.jpg",
+                                "last-name": "Gebel",
+                                "first-name": "David "
+                            }
+                        ],
+                        "host": [
+                            {
+                                "url": "/people/tanzina-vega-1/",
+                                "image": "https://media.demo.nypr.digital/i/1326/1860/l/80/1/tv.png",
+                                "last-name": "Vega",
+                                "first-name": "Tanzina"
+                            },
+                            {
+                                "url": "/people/amy-walter-2/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1367/l/80/1/Amy_Walter_Horiz_PBS_edited_TnSuxR2.jpg",
+                                "last-name": "Walter",
+                                "first-name": "Amy"
+                            }
+                        ],
+                        "executive producer": [
+                            {
+                                "url": "/people/arwa-gunja/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1240/c/80/1/IMG_0146.JPG",
+                                "last-name": "Gunja",
+                                "first-name": "Arwa"
+                            }
+                        ],
+                        "producer": [
+                            {
+                                "url": "/people/ellen-frankman/",
+                                "image": "https://media.demo.nypr.digital/i/1500/999/l/80/1/1W1A3463.jpg",
+                                "last-name": "Frankman",
+                                "first-name": "Ellen"
+                            },
+                            {
+                                "url": "/people/amber-hall/",
+                                "image": "https://media.demo.nypr.digital/i/841/579/c/80/1/amberheadshot_1.jpg",
+                                "last-name": "Hall",
+                                "first-name": "Amber"
+                            },
+                            {
+                                "url": "/people/alexandra-botti/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1239/c/80/1/ab-final.jpg",
+                                "last-name": "Botti",
+                                "first-name": "Alexandra"
+                            },
+                            {
+                                "url": "/people/iangell/",
+                                "image": "https://media.demo.nypr.digital/i/1500/1000/h/80/1/isabel.jpg",
+                                "last-name": "Angell",
+                                "first-name": "Isabel"
+                            },
+                            {
+                                "url": "/people/jay-cowit/",
+                                "image": "https://media.demo.nypr.digital/i/960/686/l/80/1/541402_10151610448139808_95708710_n.jpg",
+                                "last-name": "Cowit",
+                                "first-name": "Jay"
+                            },
+                            {
+                                "url": "/people/vince-fairchild/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1206/l/80/1/Vince.jpg",
+                                "last-name": "Fairchild",
+                                "first-name": "Vince"
+                            },
+                            {
+                                "url": "/people/polly-irungu/",
+                                "image": "https://media.demo.nypr.digital/i/852/1118/l/80/1/headshot_x2YC07o.jpeg",
+                                "last-name": "Irungu",
+                                "first-name": "Polly"
+                            }
+                        ],
+                        "associate producer": [
+                            {
+                                "url": "/people/jose-olivares1/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1240/l/80/1/IMG_2540_bzrSskK.JPG",
+                                "last-name": "Olivares",
+                                "first-name": "José"
+                            },
+                            {
+                                "url": "/people/rob-gunther/",
+                                "image": "https://media.demo.nypr.digital/i/1860/1240/l/80/1/IMG_2469.JPG",
+                                "last-name": "Gunther",
+                                "first-name": "Rob"
+                            }
+                        ]
+                    },
+                    "social": {
+                        "twitter": "TheTakeaway",
+                        "instagram": "thetakeaway"
+                    }
+                },
+                "description": "<div data-pym-src=\"https://apps.nypr.org/call-to-action/?brand=wnyc-studios&amp;headline=Share%20Your%20Voice&amp;summary=Record%20an%20answer%20to%20The%20Takeaway's%20daily%20listener%20question%20and%20we%20may%20play%20your%20response%20on%20air.&amp;callToAction=Record&amp;url=https%3A%2F%2Fapps.nypr.org%2Fcrowdsourcing%2F11\">Loading...</div>\r\n<script type=\"text/javascript\" src=\"https://pym.nprapps.org/pym.v1.min.js\"></script>\r\n<p>&nbsp;</p>\r\n<h2>About Us</h2>\r\n<p>The Takeaway is a daily national news program focused on you. What you know and what you share helps to shape our daily discussion. You can hear us weekdays across America (check out our station map below - all times Monday through Friday unless otherwise indicated).</p>\r\n<p>The Takeaway is driven by America's national conversation &mdash; if a conversation connects or you have a valuable perspective, we want you to share your experience. These contributions help us deliver fresh insights and analysis on the day&rsquo;s news.</p>\r\n<p>Here's how you can&nbsp;take part:</p>\r\n<h2><strong>Facebook</strong></h2>\r\n<p>Find us on <a href=\"https://www.facebook.com/thetakeaway/\">Facebook</a>&nbsp;to see our latest conversations in your NewsFeed. Check out some of our <a href=\"https://www.facebook.com/thetakeaway/photos_stream?tab=photos_albums\">photo albums</a>&nbsp;and <a href=\"https://www.facebook.com/thetakeaway/videos\">videos</a>, or comment on a discussion thread. You can also send a message to our inbox if there is a story you want us to cover.</p>\r\n<h2><strong>Twitter</strong></h2>\r\n<p>Follow us on Twitter <a href=\"https://twitter.com/TheTakeaway\">@TheTakeaway</a>&nbsp;to get updates from the program and&nbsp;our guests. Have a question about something you heard? Disagree with something you heard? Keep the debate going on Twitter. You can also follow our own&nbsp;<a href=\"https://twitter.com/tanzinavega\">Tanzina Vega</a>&nbsp;and <a href=\"https://twitter.com/amyewalter\">Amy Walter</a>.</p>\r\n<h2><strong>Email</strong></h2>\r\n<p>Not into Twitter or Facebook? You can always reach The Takeaway by sending us an email at&nbsp;<a href=\"mailto:takeawaydigital@gmail.com\">takeawaydigital@gmail.com</a>.&nbsp;</p>\r\n<h2><strong>Text</strong></h2>\r\n<p>Sign up for The Takeaway's listener response network by texting the word \"START\" to 69866. You will receive a daily question that will be featured on the next day's show. We ask listeners in our response network to call in to our program and share their thoughts.&nbsp;</p>\r\n<p>Standard data and messaging rates may apply. You can always text the word \"STOP\" at any time to opt-out.</p>\r\n<h2><strong>Call Us</strong></h2>\r\n<p>You can always contact us by calling us at 1-877-8-MY-TAKE. Each day, The Takeaway features the voices of listeners from around the country. Share your thoughts and opinions by leaving us a voicemail.</p>\r\n<h2><strong>Our House Rules</strong></h2>\r\n<p>If you&rsquo;re taking part on air and or online, here are a few things you should know:</p>\r\n<p>If you contact us in public&mdash;on Twitter or on our Facebook threads&mdash;we may read your comments out on the radio, along with the name and location you make public. We may also repost your comment online.</p>\r\n<p>If you contact us in private&mdash;in the Facebook private inbox or via email&mdash;then we may read out your comment on air. If you don&rsquo;t want your name, location or comment made public, please tell us and we will respect your wishes.</p>\r\n<p>We monitor our public Facebook threads. If your comment has been deleted, we will be happy to explain to you why, if you message us to ask. Equally, if you feel a comment should be deleted but hasn&rsquo;t been, please flag it to us by messaging us. We will either take action or explain to you why we feel the comment should remain.</p>\r\n<p>On Twitter, we may retweet or repost one of your tweets on The Takeaway feed. If you text us, we may read your message and location on the air.</p>\r\n<p>Thank you for taking part in The Takeaway.&nbsp;</p>\r\n<p>The Takeaway is a partnership of global news leaders. It is a co-production of <a href=\"http://www.pri.org/\">PRI</a>&nbsp;(Public Radio International) and <a href=\"http://www.wnyc.org/\">WNYC Radio</a>&nbsp;in collaboration with&nbsp;<a href=\"http://www.wgbh.org/\">WGBH-Boston Public Radio</a>.</p>\r\n<p>The Takeaway broadcasts on many&nbsp;stations;&nbsp;check our&nbsp;<a href=\"https://media.wnyc.org/media/resources/2018/Mar/02/The_Takeaway__2-21-18.xls_-_CC354BC1-750C-43BF-AAFA-A68445.pdf\">full carrier list</a> to find the station nearest&nbsp;to you.&nbsp; &nbsp;</p>\r\n<p><iframe frameborder=\"no\" height=\"400\" scrolling=\"no\" src=\"https://www.google.com/fusiontables/embedviz?q=select+col0+from+1tw1U4nQa87wdfOS5gIV_NnEDEICpJwov2C1LZ3M&amp;viz=MAP&amp;h=false&amp;lat=38.44158381725317&amp;lng=-97.99857902695317&amp;t=1&amp;z=3&amp;l=col0&amp;y=2&amp;tmplt=2\" width=\"100%\"></iframe></p>\r\n<p>Please&nbsp;see our <a href=\"https://www.wnycstudios.org/shows/takeaway/musiccredits/\">music credits</a>&nbsp;for more information about the music used on the show.&nbsp;&nbsp;</p>",
+                "social-links": [
+                    {
+                        "href": "https://www.facebook.com/thetakeaway/",
+                        "title": "facebook"
+                    },
+                    {
+                        "href": "https://twitter.com/thetakeaway",
+                        "title": "twitter"
+                    },
+                    {
+                        "href": "https://www.instagram.com/thetakeaway/",
+                        "title": "instagram"
+                    }
+                ],
+                "bg-color": "rgba(135,140,144,1) ",
+                "featured": {
+                    "analytics-code": "ExperimentalStory:the-takeaway-2022-05-06 $A0$AD0$V0$Me$D16$HS1$HC0$B0$SS++$C$SThe Takeaway$T!!$APnone$",
+                    "audio-eventually": true,
+                    "cms-pk": 1129741,
+                    "date-line": "Friday, May 06, 2022",
+                    "site-id": 16,
+                    "image-main": null,
+                    "audio-show-options": true,
+                    "large-tease-layout": true,
+                    "slug": "the-takeaway-2022-05-06",
+                    "audio-may-embed": true,
+                    "date-line-datetime": "2022-05-06T12:00:00-04:00",
+                    "audio-duration-readable": null,
+                    "npr-analytics-dimensions": [
+                        "NYPR",
+                        "episode",
+                        "1129741",
+                        "0",
+                        "",
+                        "",
+                        "",
+                        "1",
+                        "WNYC Studios",
+                        "1",
+                        "The Takeaway",
+                        "2022-05-06 12:00:00-04:00",
+                        "0",
+                        "none"
+                    ],
+                    "title": "The Takeaway-2022-05-06",
+                    "url": "//wnycstudios.demo2.wnyc.net/story/the-takeaway-2022-05-06/",
+                    "is-latest": true,
+                    "tease": "",
+                    "id": 1129741,
+                    "headers": {
+                        "brand": {
+                            "url": "https://wnycstudios.demo2.wnyc.net/podcasts/takeaway",
+                            "title": "The Takeaway",
+                            "slug": "takeaway",
+                            "logo-image": {
+                                "alt-text": "",
+                                "name": "1/TheTakeway_Square_NoWNYCStudios.png",
+                                "source": null,
+                                "url": "https://media.demo.nypr.digital/i/1400/1400/l/80/1/TheTakeway_Square_NoWNYCStudios.png",
+                                "h": 1400,
+                                "is-display": true,
+                                "crop": "l",
+                                "caption": "",
+                                "credits-url": "",
+                                "template": "https://media.demo.nypr.digital/i/%s/%s/%s/%s/1/TheTakeway_Square_NoWNYCStudios.png",
+                                "w": 1400,
+                                "id": 175098,
+                                "credits-name": "WNYC Studios"
+                            }
+                        },
+                        "links": [
+                            {
+                                "url": "https://wnycstudios.demo2.wnyc.net/podcasts/takeaway",
+                                "title": "The Takeaway",
+                                "item-type": "show",
+                                "slug": "takeaway"
+                            }
+                        ]
+                    },
+                    "audio-may-download": "",
+                    "edit-link": "cms/episode/1129741",
+                    "audio": [
+                        "https://chrt.fm/track/53A61E/pdst.fm/e/www.podtrac.com/pts/redirect.mp3/demo-audio.wnyc.org/archive/takeaway/takeaway042222-black.mp3?awCollectionId=361&awEpisodeId=1129740"
+                    ],
+                    "audio-available": false
+                },
+                "sidebar-chunks": [
+                    {
+                        "content": "<div><a class=\"btn\" target=\"_blank\" href=\"/story/connect-takeaway\">Connect with The Takeaway</a>\n</div>\n<br>\n<div>\n<a class=\"btn\" target=\"_blank\" href=\"http://www.pri.org/donate/\">Donate to our show</a></div>\n<p> </p>",
+                        "position": "top"
+                    },
+                    {
+                        "content": "<p>The Takeaway is a co-production of WNYC Radio and Public Radio International, in collaboration with WGBH Boston.</p>\n<a class=\"nudge-mini\" href=\"http://www.pri.org/\"><img style=\"display: block; margin: 10px auto;\" src=\"https://media2.wnyc.org/i/raw/1/PRI_logo_square-99ca3d.png\" width=\"75\" title=\"PRI International\"></a>\n<a class=\"nudge-mini\" href=\"http://www.wgbh.org/\"><img style=\"display: block; margin: -10px auto;\" src=\"https://media2.wnyc.org/i/90/55/l/80/1/logo-wgbh.png\" title=\"WGBH\"></a>",
+                        "position": "bottom"
+                    }
+                ],
+                "donate-chunk": {
+                    "content": "",
+                    "slug": ""
+                },
+                "listing-object-type": "show",
+                "rss-feed": "http://wnycstudios.demo2.wnyc.net/feeds/shows/takeaway",
+                "edit-link": [
+                    "cms/show/361"
+                ],
+                "podcast-links": [
+                    {
+                        "href": "https://itunes.apple.com/us/podcast/the-takeaway/id363143310?mt=2",
+                        "title": "via Apple Podcasts"
+                    },
+                    {
+                        "href": "https://pca.st/yHcJ",
+                        "title": "via Pocket Casts"
+                    },
+                    {
+                        "href": "http://tunein.com/radio/The-Takeaway-p150731/",
+                        "title": "via TuneIn"
+                    },
+                    {
+                        "href": "http://www.stitcher.com/podcast/the-takeaway",
+                        "title": "via Stitcher"
+                    },
+                    {
+                        "href": "http://feeds.wnyc.org/takeawaypodcast",
+                        "title": "via RSS"
+                    }
+                ],
+                "itunes-podcast-id": "363143310",
+                "studios-marquee-mobile-offset": 60,
+                "cms-pk": 361,
+                "tease": "<p><span data-sheets-value=\"{&quot;1&quot;:2,&quot;2&quot;:&quot;The Takeaway is America's weekday conversation&quot;}\" data-sheets-userformat=\"{&quot;2&quot;:769,&quot;3&quot;:[null,0],&quot;11&quot;:4,&quot;12&quot;:0}\">The Takeaway is America's weekday conversation.</span></p>",
+                "schedule-summary": "with Tanzina Vega and Amy Walter",
+                "contact-email": ""
+            },
+            "relationships": {
+                "image": {
+                    "data": {
+                        "type": "image",
+                        "id": "175098"
+                    }
+                },
+                "marquee-image": {
+                    "data": {
+                        "type": "image",
+                        "id": "173477"
+                    }
+                },
+                "studios-marquee-image": {
+                    "data": {
+                        "type": "image",
+                        "id": "175140"
+                    }
+                },
+                "fb-image": {
+                    "data": null
+                },
+                "producing-organizations": {
+                    "meta": {
+                        "count": 3
+                    },
+                    "data": [
+                        {
+                            "type": "producing-organization",
+                            "id": "26"
+                        },
+                        {
+                            "type": "producing-organization",
+                            "id": "20"
+                        },
+                        {
+                            "type": "producing-organization",
+                            "id": "332"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "show-schedule",
+            "id": "624",
+            "attributes": {
+                "iso-start-time": "2023-02-02T20:00:00+00:00",
+                "iso-end-time": "2023-02-02T21:00:00+00:00"
+            },
+            "relationships": {
+                "show": {
+                    "data": {
+                        "type": "show",
+                        "id": "361"
+                    }
+                }
+            }
+        }
+    ],
+    "meta": {
+        "pagination": {
+            "page": 1,
+            "pages": 1,
+            "count": 1
+        }
+    }
+}
