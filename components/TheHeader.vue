@@ -1,22 +1,23 @@
 <script setup>
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 //TO DO - populate links from CMS
 const headerNav = [
-    {
-      url: 'https://www.wnyc.org/schedule/',
-      text: 'Schedule',
-      newWindow: true
-    },
-    {
-      url: 'https://www.wnyc.org/streams',
-      text: 'All Streams',
-      newWindow: true
-    },
-    {
-      url: 'https://www.wnyc.org/shows',
-      text: 'Shows',
-      newWindow: true
-    }
-  ]
+  {
+    url: 'https://www.wnyc.org/schedule/',
+    text: 'Schedule',
+    newWindow: true,
+  },
+  {
+    url: 'https://www.wnyc.org/streams',
+    text: 'All Streams',
+    newWindow: true,
+  },
+  {
+    url: 'https://www.wnyc.org/shows',
+    text: 'Shows',
+    newWindow: true,
+  },
+]
 const year = new Date().getFullYear()
 const visibleLeft = ref(false)
 </script>
@@ -28,35 +29,36 @@ const visibleLeft = ref(false)
         <div class="flex">
           <Button
             icon="pi pi-bars"
-            class="p-button-text mr-4"
+            class="p-button-text mr-2 sm:mr-4"
             @click="visibleLeft = true"
           />
-          <a
-            href="https://www.WNYC.org"
-            target="_blank"
-            rel="noopener"
-            class="c-main-header__branding plain mr-6"
+          <v-flexible-link
+            raw
+            to="https://www.WNYC.org"
+            class="c-main-header__branding plain mr-4"
           >
-            <wnyc-logo />
-          </a>
+            <wnyc-logo class="w-6rem sm:w-auto" />
+          </v-flexible-link>
           <div class="c-secondary-nav__list align-self-end hidden lg:block">
-            <a
+            <v-flexible-link
               v-for="(link, headerNavIndex) in headerNav"
+              raw
               :key="headerNavIndex"
-              :href="link.url"
-              :target="link.newWindow && '_blank'"
-              rel="noopener"
+              :to="link.url"
+              :target="link.newWindow ? '_blank' : undefined"
               class="c-secondary-nav__link"
             >
               {{ link.text }}
-            </a>
+            </v-flexible-link>
           </div>
         </div>
-        <Button
-          href="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
-          target="_blank"
-          label="Donate"
-        />
+        <v-flexible-link
+          raw
+          class="no-border"
+          to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
+        >
+          <Button label="Donate" class="px-3 sm:px-5" />
+        </v-flexible-link>
       </div>
     </section>
     <Sidebar
@@ -65,69 +67,58 @@ const visibleLeft = ref(false)
       position="left"
       class="text-center"
     >
-      <a
-        href="https://www.WNYC.org"
-        target="_blank"
-        rel="noopener"
-        class="mb-6"
-      >
+      <v-flexible-link raw to="https://www.WNYC.org" class="mb-6">
         <wnyc-logo />
-      </a>
-      <a
-        href="https://www.wnyc.org/schedule/"
-        target="_blank"
-        rel="noopener"
+      </v-flexible-link>
+      <v-flexible-link
+        raw
+        to="https://www.wnyc.org/schedule/"
         class="c-secondary-nav__link"
       >
         Schedule
-      </a>
-      <a
-        href="https://www.wnyc.org/streams"
-        target="_blank"
-        rel="noopener"
+      </v-flexible-link>
+      <v-flexible-link
+        raw
+        to="https://www.wnyc.org/streams"
         class="c-secondary-nav__link"
       >
         All Streams
-      </a>
-      <a
-        href="https://www.wnyc.org/shows"
-        target="_blank"
-        rel="noopener"
+      </v-flexible-link>
+      <v-flexible-link
+        raw
+        to="https://www.wnyc.org/shows"
         class="c-secondary-nav__link"
       >
         Shows
-      </a>
+      </v-flexible-link>
       <nypr-logo class="mt-8 mb-4" />
       <p class="mb-4">
         © {{ year }} New York Public Radio. All rights reserved.
       </p>
       <div class="flex justify-content-center">
-        <a
-          href="https://www.wnyc.org/terms"
-          target="_blank"
-          rel="noopener"
-          class="plain text-sm font-bold mx-4"
+        <v-flexible-link
+          raw
+          to="https://www.wnyc.org/terms"
+          class="no-border text-sm font-bold mx-4"
         >
           TERMS OF USE
-        </a>
-        <a
-          href="https://www.wnyc.org/privacy"
-          target="_blank"
-          rel="noopener"
-          class="plain text-sm font-bold mx-4"
+        </v-flexible-link>
+        <v-flexible-link
+          raw
+          to="https://www.wnyc.org/privacy"
+          class="no-border text-sm font-bold mx-4"
         >
           PRIVACY POLICY
-        </a>
+        </v-flexible-link>
       </div>
       <p class="flex justify-content-center">
-        <a
-          href="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
-          target="_blank"
-          rel="noopener"
-          class="plain text-sm font-bold mx-4 flex"
+        <v-flexible-link
+          raw
+          to="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
+          class="no-border text-sm font-bold mx-4 flex"
         >
           ACCESSIBILITY
-        </a>
+        </v-flexible-link>
       </p>
     </Sidebar>
   </header>

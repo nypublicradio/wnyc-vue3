@@ -12,7 +12,7 @@ import {
 import { Howl, Howler } from 'howler'
 const { $analytics } = useNuxtApp()
 const currentEpisode = useCurrentEpisode()
-console.log('currentEpisode', currentEpisode)
+//console.log('currentEpisode', currentEpisode)
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()

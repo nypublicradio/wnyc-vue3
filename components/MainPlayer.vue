@@ -1,10 +1,9 @@
 <script setup>
-import {
-  useCurrentEpisodeHolder
-} from '~/composables/states'
-
+import { useCurrentEpisodeHolder } from '~/composables/states'
+import { useCurrentSteamStation } from '~/composables/states'
 import { formatTime } from '~/utilities/helpers'
 
+const currentSteamStation = useCurrentSteamStation()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 const currentEpisodeData = computed(
@@ -12,28 +11,37 @@ const currentEpisodeData = computed(
 )
 const currentEpisodeImage = computed(
   () =>
-  currentEpisodeHolder.value?.included.find((include) => include.type === 'image')
-      .attributes
+    currentEpisodeHolder.value?.included.find(
+      (include) => include.type === 'image'
+    ).attributes
 )
 const currentEpisodeShow = computed(
   () =>
-  currentEpisodeHolder.value?.included.find((include) => include.type === 'show')
-      .attributes
+    currentEpisodeHolder.value?.included.find(
+      (include) => include.type === 'show'
+    ).attributes
 )
 const currentEpisodeTimes = computed(
   () =>
-  currentEpisodeHolder.value?.included.find((include) => include.type === 'show-schedule')
-      .attributes
+    currentEpisodeHolder.value?.included.find(
+      (include) => include.type === 'show-schedule'
+    ).attributes
 )
 </script>
 
 <template>
   <div v-if="currentEpisodeHolder" class="card p-5">
-    <div class="grid">
-      <div class="col-12 lg:col-fixed lg:mr-6" style="width: 240px">
+    <div class="grid gap-3">
+      <div class="w-full md:w-auto mx-auto flex flex-column align-items-center">
+        <live-indicator
+          :label="`${formatTime(
+            currentEpisodeTimes['iso-start-time']
+          )} - ${formatTime(currentEpisodeTimes['iso-end-time'])}`"
+          class="mb-3 flex md:hidden"
+        />
         <img
           :src="currentEpisodeImage?.url || currentEpisodeData?.['image-logo']"
-          class="main-player-image"
+          class="w-13rem md:w-14rem main-player-image"
         />
       </div>
       <div class="col">
@@ -41,7 +49,7 @@ const currentEpisodeTimes = computed(
           :label="`${formatTime(
             currentEpisodeTimes['iso-start-time']
           )} - ${formatTime(currentEpisodeTimes['iso-end-time'])}`"
-          class="mb-3"
+          class="mb-3 hidden md:flex"
         />
         <h2 class="mb-3">{{ currentEpisodeShow?.title }}</h2>
         <p
@@ -56,9 +64,10 @@ const currentEpisodeTimes = computed(
 
 <style lang="scss">
 .main-player-image {
-  width: 240px;
-  height: 240px;
+  width: 100%;
+  height: auto;
   border-radius: 3px;
+  border: 1px solid #ffffff20;
   object-fit: cover;
 }
 
