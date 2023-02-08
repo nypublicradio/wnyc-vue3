@@ -47,7 +47,9 @@ const footerSecondaryNav = [
     newWindow: true,
   },
 ]
-const year = new Date().getFullYear()
+const getYear = computed(() => {
+  return new Date().getFullYear()
+})
 </script>
 
 <template>
@@ -131,9 +133,11 @@ const year = new Date().getFullYear()
       <div
         class="flex flex-wrap row-gap-2 column-gap-4 justify-content-center lg:justify-content-start"
       >
-        <p class="text-center">
-          © {{ year }} New York Public Radio. All rights reserved.
-        </p>
+        <div>
+          <p class="text-center">
+            © {{ getYear }} New York Public Radio. All rights reserved.
+          </p>
+        </div>
         <div
           class="flex flex-wrap row-gap-3 column-gap-4 flex-column xs:flex-row"
         >

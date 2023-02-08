@@ -1,8 +1,9 @@
 <script setup>
 import { useCurrentEpisodeHolder } from '~/composables/states'
-
+import { useCurrentSteamStation } from '~/composables/states'
 import { formatTime } from '~/utilities/helpers'
 
+const currentSteamStation = useCurrentSteamStation()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 const currentEpisodeData = computed(
