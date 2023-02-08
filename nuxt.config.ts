@@ -17,10 +17,10 @@ export default {
   },
   css: [
     '@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc/fonts/fonts.css',
+    'primeflex/primeflex.css',
     '@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc/wnyc.min.css',
     'primevue/resources/primevue.min.css',
     'primeicons/primeicons.css',
-    'primeflex/primeflex.css',
   ],
   serverMiddleware: ['~/search/algolia-index'],
   vite: {

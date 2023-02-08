@@ -110,11 +110,14 @@ const year = new Date().getFullYear()
         </div>
       </div>
       <div class="grid align-items-center mb-6">
-        <div class="col-12 lg:col-6">
+        <div class="col-12 lg:col-6 text-center lg:text-left">
           <nypr-logo />
         </div>
         <div class="col-12 lg:col-6">
-          <v-share-tools label="Connect">
+          <v-share-tools
+            label="Connect"
+            class="justify-content-center lg:justify-content-start"
+          >
             <v-share-tools-item service="facebook" username="WNYC" />
             <v-share-tools-item service="twitter" username="WNYC" />
             <v-share-tools-item service="instagram" username="WNYC" />
@@ -125,16 +128,23 @@ const year = new Date().getFullYear()
           </v-share-tools>
         </div>
       </div>
-      <div class="flex flex-wrap row-gap-2 column-gap-4">
-        <p>© {{ year }} New York Public Radio. All rights reserved.</p>
-        <div class="flex flex-wrap row-gap-2 column-gap-4">
-          <v-flexible-link to="https://www.wnyc.org/terms">
+      <div
+        class="flex flex-wrap row-gap-2 column-gap-4 justify-content-center lg:justify-content-start"
+      >
+        <p class="text-center">
+          © {{ year }} New York Public Radio. All rights reserved.
+        </p>
+        <div
+          class="flex flex-wrap row-gap-3 column-gap-4 flex-column xs:flex-row"
+        >
+          <v-flexible-link raw to="https://www.wnyc.org/terms">
             Terms Of Use
           </v-flexible-link>
-          <v-flexible-link to="https://www.wnyc.org/privacy">
+          <v-flexible-link raw to="https://www.wnyc.org/privacy">
             Privacy Policy
           </v-flexible-link>
           <v-flexible-link
+            raw
             to="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
           >
             Accessibility
