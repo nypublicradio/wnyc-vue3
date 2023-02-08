@@ -1,4 +1,5 @@
 export default {
+  modules: ['@nuxtjs/ionic'],
   app: {
     head: {
       meta: [
@@ -22,7 +23,6 @@ export default {
     'primevue/resources/primevue.min.css',
     'primeicons/primeicons.css',
   ],
-  serverMiddleware: ['~/search/algolia-index'],
   vite: {
     css: {
       preprocessorOptions: {

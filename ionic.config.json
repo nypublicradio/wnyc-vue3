@@ -1,0 +1,7 @@
+{
+  "name": "WNYC",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
