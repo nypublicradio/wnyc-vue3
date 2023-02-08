@@ -84,7 +84,7 @@ onBeforeMount(() => {
     radial-gradient(RGB(255, 255, 255, 0.6) 2px, transparent 2px);
   background-position: 35px 0, 35px 35px;
   background-size: 35px 35px;
-  width: 1200px;
+  width: 1366px;
   max-width: 100%;
   height: 340px;
   position: absolute;

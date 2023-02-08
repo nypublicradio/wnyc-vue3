@@ -1,5 +1,5 @@
 $maxWidth: 1440px;
-$contentWidth: 1366px;
+$contentWidth: 1200px;
 $thinContentWidth: 768px;
 $headerHeight: 70px;
 $playerHeight: 100px;
@@ -13,7 +13,7 @@ $toolsBreakPoint: 472px;
 }
 
 body {
-  background-color: var(--darkblue)!important;
+  background-color: var(--darkblue) !important;
 }
 
 main {
@@ -55,4 +55,11 @@ a {
   font-weight: 700;
   letter-spacing: 0.02em;
   font-size: var(--font-size-7) !important;
+}
+
+.col-fixed {
+  &.ad300 {
+    max-width: 316px;
+    width: 100%;
+  }
 }
