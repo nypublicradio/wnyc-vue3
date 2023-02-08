@@ -49,6 +49,13 @@ a {
   }
 }
 
+.col-fixed {
+  &.ad300 {
+    max-width: 316px;
+    width: 100%;
+  }
+}
+
 // TO DO move to DS extensions file
 .p-button .p-button-label {
   text-transform: uppercase;
@@ -57,9 +64,8 @@ a {
   font-size: var(--font-size-7) !important;
 }
 
-.col-fixed {
-  &.ad300 {
-    max-width: 316px;
-    width: 100%;
+.flexible-link {
+  &.raw.no-border {
+    border-bottom: none !important;
   }
 }

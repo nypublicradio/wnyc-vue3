@@ -1,50 +1,51 @@
 <script setup>
 import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 //TO DO - populate links from CMS
 const footerPrimaryNav = [
   {
-    url: ['https://www.wnyc.org/resources/912769/fcc_eeo_public_file_report.pdf'],
+    url: 'https://www.wnyc.org/resources/912769/fcc_eeo_public_file_report.pdf',
     text: 'EEO Report',
-    newWindow: true
+    newWindow: true,
   },
   {
-    url: ['https://publicfiles.fcc.gov/fm-profile/wnyc-fm'],
+    url: 'https://publicfiles.fcc.gov/fm-profile/wnyc-fm',
     text: 'WNYC-FM FCC Public File',
-    newWindow: true
+    newWindow: true,
   },
   {
-    url: ['https://publicfiles.fcc.gov/am-profile/wnyc'],
+    url: 'https://publicfiles.fcc.gov/am-profile/wnyc',
     text: 'WNYC-AM FCC Public File',
-    newWindow: true
+    newWindow: true,
   },
   {
-    url: ['https://www.wnyc.org/support'],
+    url: 'https://www.wnyc.org/support',
     text: 'Support WNYC',
-    newWindow: true
+    newWindow: true,
   },
   {
-    url: ['https://www.wnyc.org/contact'],
+    url: 'https://www.wnyc.org/contact',
     text: 'Contact Us',
-    newWindow: true
-  }
+    newWindow: true,
+  },
 ]
 const footerSecondaryNav = [
   {
-    url: ['https://www.wnyc.org/corrections/'],
+    url: 'https://www.wnyc.org/corrections/',
     text: 'Corrections',
-    newWindow: true
+    newWindow: true,
   },
   {
-    url: ['https://www.wnyc.org/articles/wnyc-contest-rules'],
+    url: 'https://www.wnyc.org/articles/wnyc-contest-rules',
     text: 'Giveaway Rules',
-    newWindow: true
+    newWindow: true,
   },
   {
-    url: ['https://sponsorship.wnyc.org/'],
+    url: 'https://sponsorship.wnyc.org/',
     text: 'Sponsorship',
-    newWindow: true
-  }
+    newWindow: true,
+  },
 ]
 const year = new Date().getFullYear()
 </script>
@@ -54,62 +55,56 @@ const year = new Date().getFullYear()
     <section>
       <div class="grid mb-2">
         <div class="col-12 lg:col-5">
-          <a href="https://www.WNYC.org" target="_blank" rel="noopener">
+          <v-flexible-link to="https://www.WNYC.org">
             <wnyc-logo />
-          </a>
+          </v-flexible-link>
           <p class="text-lg my-5">
             Listener-supported WNYC is the home for independent journalism and
             courageous conversation on air and online. Broadcasting live from
             New York City on 93.9 FM and AM 820 and available online and on the
             go.
           </p>
-          <div class="flex mb-4">
+          <div class="flex flex-wrap row-gap-2 mb-4">
             <p class="mr-2">WNYC is supported by the JLGreene Foundation</p>
-            <a
-              href="https://jlgreene.org/"
-              rel="noopener"
-              target="_blank"
-              class="plain"
-            >
+            <v-flexible-link raw class="no-border" to="https://jlgreene.org/">
               <jlgreene-logo />
-            </a>
+            </v-flexible-link>
           </div>
         </div>
         <div class="hidden lg:flex lg:col-1" />
         <div class="col-12 lg:col-6">
-          <a
-            href="https://www.surveymonkey.com/r/LGP2Z96"
-            rel="noopener"
-            target="_blank"
-            class="plain"
+          <v-flexible-link
+            raw
+            class="no-border"
+            to="https://www.surveymonkey.com/r/LGP2Z96"
           >
-            <Button label="Send Us Your Feedback" />
-          </a>
+            <Button label="Send Us Your Feedback" class="px-4 sm:px-5" />
+          </v-flexible-link>
           <h3 class="mt-5 mb-4">About Us</h3>
           <div class="grid mb-6">
             <div class="col-12 lg:col-6">
-              <a
+              <v-flexible-link
                 v-for="(link, primaryIndex) in footerPrimaryNav"
+                raw
                 :key="primaryIndex"
-                :href="link.url"
-                :target="link.newWindow && '_blank'"
-                rel="noopener"
+                :to="link.url"
+                :target="link.newWindow ? '_blank' : undefined"
                 class="c-secondary-nav__link"
               >
                 {{ link.text }}
-              </a>
+              </v-flexible-link>
             </div>
             <div class="col-12 lg:col-6">
-              <a
+              <v-flexible-link
                 v-for="(link, secondaryIndex) in footerSecondaryNav"
+                raw
                 :key="secondaryIndex"
-                :href="link.url"
-                :target="link.newWindow && '_blank'"
-                rel="noopener"
+                :to="link.url"
+                :target="link.newWindow ? '_blank' : undefined"
                 class="c-secondary-nav__link"
               >
                 {{ link.text }}
-              </a>
+              </v-flexible-link>
             </div>
           </div>
         </div>
@@ -130,34 +125,21 @@ const year = new Date().getFullYear()
           </v-share-tools>
         </div>
       </div>
-      <div>
-        <p>
-          © {{ year }} New York Public Radio. All rights reserved.
-          <a
-            href="https://www.wnyc.org/terms"
-            target="_blank"
-            rel="noopener"
-            class="ml-4"
-          >
+      <div class="flex flex-wrap row-gap-2 column-gap-4">
+        <p>© {{ year }} New York Public Radio. All rights reserved.</p>
+        <div class="flex flex-wrap row-gap-2 column-gap-4">
+          <v-flexible-link to="https://www.wnyc.org/terms">
             Terms Of Use
-          </a>
-          <a
-            href="https://www.wnyc.org/privacy"
-            target="_blank"
-            rel="noopener"
-            class="ml-4"
-          >
+          </v-flexible-link>
+          <v-flexible-link to="https://www.wnyc.org/privacy">
             Privacy Policy
-          </a>
-          <a
-            href="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
-            target="_blank"
-            rel="noopener"
-            class="ml-4"
+          </v-flexible-link>
+          <v-flexible-link
+            to="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
           >
             Accessibility
-          </a>
-        </p>
+          </v-flexible-link>
+        </div>
       </div>
     </section>
   </footer>
@@ -180,6 +162,7 @@ footer .c-secondary-nav__link {
   display: block;
   width: fit-content;
   margin-bottom: 1rem;
+  cursor: pointer;
   &:last-child {
     margin-bottom: 0;
   }

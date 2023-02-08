@@ -1,22 +1,22 @@
 <script setup>
 //TO DO - populate links from CMS
 const headerNav = [
-    {
-      url: 'https://www.wnyc.org/schedule/',
-      text: 'Schedule',
-      newWindow: true
-    },
-    {
-      url: 'https://www.wnyc.org/streams',
-      text: 'All Streams',
-      newWindow: true
-    },
-    {
-      url: 'https://www.wnyc.org/shows',
-      text: 'Shows',
-      newWindow: true
-    }
-  ]
+  {
+    url: 'https://www.wnyc.org/schedule/',
+    text: 'Schedule',
+    newWindow: true,
+  },
+  {
+    url: 'https://www.wnyc.org/streams',
+    text: 'All Streams',
+    newWindow: true,
+  },
+  {
+    url: 'https://www.wnyc.org/shows',
+    text: 'Shows',
+    newWindow: true,
+  },
+]
 const year = new Date().getFullYear()
 const visibleLeft = ref(false)
 </script>
@@ -28,16 +28,16 @@ const visibleLeft = ref(false)
         <div class="flex">
           <Button
             icon="pi pi-bars"
-            class="p-button-text mr-4"
+            class="p-button-text mr-2 sm:mr-4"
             @click="visibleLeft = true"
           />
           <a
             href="https://www.WNYC.org"
             target="_blank"
             rel="noopener"
-            class="c-main-header__branding plain mr-6"
+            class="c-main-header__branding plain mr-4"
           >
-            <wnyc-logo />
+            <wnyc-logo class="w-6rem sm:w-auto" />
           </a>
           <div class="c-secondary-nav__list align-self-end hidden lg:block">
             <a
@@ -56,6 +56,7 @@ const visibleLeft = ref(false)
           href="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
           target="_blank"
           label="Donate"
+          class="px-3 sm:px-5"
         />
       </div>
     </section>

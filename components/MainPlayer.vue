@@ -31,7 +31,7 @@ const currentEpisodeTimes = computed(
 <template>
   <div v-if="currentEpisodeHolder" class="card p-5">
     <div class="grid gap-3">
-      <div class="w-full md:w-auto mx-auto">
+      <div class="w-full md:w-auto mx-auto flex flex-column align-items-center">
         <live-indicator
           :label="`${formatTime(
             currentEpisodeTimes['iso-start-time']
@@ -40,7 +40,7 @@ const currentEpisodeTimes = computed(
         />
         <img
           :src="currentEpisodeImage?.url || currentEpisodeData?.['image-logo']"
-          class="w-10rem md:w-14rem main-player-image mx-auto block"
+          class="w-13rem md:w-14rem main-player-image"
         />
       </div>
       <div class="col">
@@ -66,6 +66,7 @@ const currentEpisodeTimes = computed(
   width: 100%;
   height: auto;
   border-radius: 3px;
+  border: 1px solid #ffffff20;
   object-fit: cover;
 }
 
