@@ -1,0 +1,7 @@
+{
+  "name": "org.wnyc.android",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

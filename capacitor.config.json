@@ -1,0 +1,23 @@
+{
+  "appId": "org.wnyc.android",
+  "appName": "wnyc-app-android",
+  "webDir": ".output/public",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#d4d4d4",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "backgroundColor": "#e01e3f",
+      "splashBackgroundColor": "#e01e3f",
+      "iconBackgroundColor": "#e01e3f",
+      "splashFullScreen": true
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}
