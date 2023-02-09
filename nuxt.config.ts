@@ -1,5 +1,6 @@
 export default {
   modules: ['@nuxtjs/ionic'],
+  ssr: process.env.ISAPP === 'false' ? true : false,
   app: {
     head: {
       meta: [
