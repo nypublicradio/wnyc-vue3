@@ -1,0 +1,7 @@
+{
+  "name": "org.wnyc.developoment",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

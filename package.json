@@ -5,9 +5,11 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
   },
   "devDependencies": {
+    "@nuxtjs/ionic": "^0.8.1",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",
     "nuxt": "^3.1.0",
@@ -16,7 +18,11 @@
     "sass": "^1.57.1"
   },
   "dependencies": {
+    "@capacitor/android": "4.6.3",
+    "@capacitor/assets": "^2.0.4",
+    "@capacitor/ios": "4.6.3",
     "@nypublicradio/nypr-design-system-vue3": "1.0.5",
+    "ionicons": "^6.1.1",
     "primeflex": "^3.3.0"
   }
 }
