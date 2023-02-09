@@ -114,7 +114,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div :class="[`${route.name}`]">
+  <div class="page" :class="[`${route.name}`]">
     <Html lang="en">
       <Head>
         <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />

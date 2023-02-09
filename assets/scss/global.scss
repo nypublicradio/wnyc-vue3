@@ -14,10 +14,14 @@ $toolsBreakPoint: 472px;
 
 body {
   background-color: var(--darkblue) !important;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transform: none;
 }
 
 .ion-page {
-  overflow-y: scroll;
+  //overflow-y: scroll;
 }
 
 main {
