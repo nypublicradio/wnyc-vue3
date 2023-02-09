@@ -16,6 +16,10 @@ body {
   background-color: var(--darkblue) !important;
 }
 
+.ion-page {
+  overflow-y: scroll;
+}
+
 main {
   margin-top: 80px; // account for the sticky header height
 }
