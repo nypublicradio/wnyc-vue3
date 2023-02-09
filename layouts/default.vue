@@ -171,7 +171,7 @@ onBeforeMount(() => {
     <main>
       <div class="dots" />
       <div class="content">
-        <div v-if="isApp" class="px-4">
+        <div v-if="isApp" class="px-4 hidden">
           <p>fcm token ==</p>
           <input :value="fcmToken" />
           <pre></pre>
