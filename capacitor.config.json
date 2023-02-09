@@ -1,6 +1,6 @@
 {
-  "appId": "org.wnyc.developoment",
-  "appName": "WNYC",
+  "appId": "org.wnyc.android",
+  "appName": "wnyc-app-android",
   "webDir": ".output/public",
   "bundledWebRuntime": false,
   "backgroundColor": "#d4d4d4",

@@ -1,4 +1,4 @@
-package org.wnyc.developoment;
+package org.wnyc.android;
 
 import com.getcapacitor.BridgeActivity;
 
