@@ -2,10 +2,17 @@
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { PushNotifications } from '@capacitor/push-notifications'
-import { useCurrentSteamStation } from '~/composables/states'
-import { updateLiveStream } from '~/composables/data/liveStream'
+import {
+  useCurrentSteamStation,
+  useAllCurrentEpisodes,
+} from '~/composables/states'
+import {
+  updateAllLiveStreams,
+  updateLiveStream,
+} from '~/composables/data/liveStream'
 
 const currentSteamStation = useCurrentSteamStation()
+const allCurrentEpisodes = useAllCurrentEpisodes()
 const route = useRoute()
 const router = useRouter()
 
@@ -104,6 +111,7 @@ const checkAppLaunchUrl = async () => {
 
 onBeforeMount(() => {
   updateLiveStream(currentSteamStation.value)
+  updateAllLiveStreams()
   if (isApp.value) {
     registerNotifications()
     addListeners()
@@ -171,6 +179,7 @@ onBeforeMount(() => {
     <main>
       <div class="dots" />
       <div class="content">
+        <ListenAllLiveButton class="hidden md:block" />
         <div v-if="isApp" class="px-4 hidden">
           <p>fcm token ==</p>
           <input :value="fcmToken" />
