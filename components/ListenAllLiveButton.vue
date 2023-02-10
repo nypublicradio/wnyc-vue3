@@ -43,7 +43,7 @@ const toggleMenu = async (event) => {
 // lifecycle hooks
 onBeforeMount(async () => {
   updateAllLiveStreams().then(() => {
-    console.log('allCurrentEpisodes.value', allCurrentEpisodes.value)
+    //console.log('allCurrentEpisodes.value', allCurrentEpisodes.value)
     allCurrentEpisodes.value.data.forEach((stream) => {
       //console.log('stream', stream)
       // conditional to check what shows are currently running
@@ -54,7 +54,7 @@ onBeforeMount(async () => {
           slug: stream.attributes.slug,
           image: stream.attributes['image-logo'],
           command: async () => {
-            console.log('command - ', stream.attributes.slug)
+            //console.log('command - ', stream.attributes.slug)
             slug.value = stream.attributes.slug
             await updateLiveStream(stream.attributes.slug)
             currentEpisode.value = currentEpisodeHolder.value
