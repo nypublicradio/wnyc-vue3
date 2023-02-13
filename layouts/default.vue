@@ -187,7 +187,7 @@ navigationState.value = navigation.value
     <main>
       <div class="dots" />
       <div class="content">
-        <ListenAllLiveButton />
+        <!-- <ListenAllLiveButton /> -->
         <div v-if="isApp" class="px-4">
           <p>fcm token ==</p>
           <input :value="fcmToken" />
