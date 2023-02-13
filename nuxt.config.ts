@@ -68,6 +68,7 @@ export default {
       // HTL_JS: process.env['HTL_JS'] || 'https://htlbid.com/stage/v3/wnyc.com/htlbid.js',
       // HTL_IS_TESTING: process.env['HTL_IS_TESTING'] || 'yes',
       LIVESTREAM_URL: process.env['LIVESTREAM_URL'] || 'https://api.demo.nypr.digital/api/v4/whats_on/',
+      NAVIGATION_API: process.env['NAVIGATION_API'] || 'https://cms.demo.nypr.digital/api/v2/navigation/3/',
     }
   }
 }

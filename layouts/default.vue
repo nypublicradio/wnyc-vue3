@@ -10,11 +10,14 @@ import {
   updateAllLiveStreams,
   updateLiveStream,
 } from '~/composables/data/liveStream'
+import { useCurrentSteamStation, useNavigation } from '~/composables/states'
+import { updateLiveStream } from '~/composables/data/liveStream'
 
 const currentSteamStation = useCurrentSteamStation()
 const allCurrentEpisodes = useAllCurrentEpisodes()
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 
 const fcmToken = ref('')
 const nUrl = ref(null)
@@ -119,6 +122,12 @@ onBeforeMount(() => {
     checkAppLaunchUrl()
   }
 })
+
+// get the navigation data from Aviary
+const { data: navigation } = await useFetch(config.NAVIGATION_API)
+// update the state with the navigation data
+let navigationState = useNavigation()
+navigationState.value = navigation.value
 </script>
 
 <template>
