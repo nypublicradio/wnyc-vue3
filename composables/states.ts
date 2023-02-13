@@ -45,3 +45,9 @@ const currentSteamStation = 'wnyc-fm939'
  * Global state for the current streaming station. 
  */
 export const useCurrentSteamStation = () => useState('useCurrentSteamStation', () => currentSteamStation)
+
+/**
+ * Global state for the navigation
+ */
+const navigationObj = null
+export const useNavigation = () => useState('navigation', () => navigationObj)

@@ -2,12 +2,13 @@
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { PushNotifications } from '@capacitor/push-notifications'
-import { useCurrentSteamStation } from '~/composables/states'
+import { useCurrentSteamStation, useNavigation } from '~/composables/states'
 import { updateLiveStream } from '~/composables/data/liveStream'
 
 const currentSteamStation = useCurrentSteamStation()
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 
 const fcmToken = ref('')
 const nUrl = ref(null)
@@ -111,6 +112,12 @@ onBeforeMount(() => {
     checkAppLaunchUrl()
   }
 })
+
+// get the navigation data from Aviary
+const { data: navigation } = await useFetch(config.NAVIGATION_API)
+// update the state with the navigation data
+let navigationState = useNavigation()
+navigationState.value = navigation.value
 </script>
 
 <template>

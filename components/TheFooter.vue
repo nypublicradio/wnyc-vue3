@@ -2,54 +2,23 @@
 import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-//TO DO - populate links from CMS
-const footerPrimaryNav = [
-  {
-    url: 'https://www.wnyc.org/resources/912769/fcc_eeo_public_file_report.pdf',
-    text: 'EEO Report',
-    newWindow: true,
-  },
-  {
-    url: 'https://publicfiles.fcc.gov/fm-profile/wnyc-fm',
-    text: 'WNYC-FM FCC Public File',
-    newWindow: true,
-  },
-  {
-    url: 'https://publicfiles.fcc.gov/am-profile/wnyc',
-    text: 'WNYC-AM FCC Public File',
-    newWindow: true,
-  },
-  {
-    url: 'https://www.wnyc.org/support',
-    text: 'Support WNYC',
-    newWindow: true,
-  },
-  {
-    url: 'https://www.wnyc.org/contact',
-    text: 'Contact Us',
-    newWindow: true,
-  },
-]
-const footerSecondaryNav = [
-  {
-    url: 'https://www.wnyc.org/corrections/',
-    text: 'Corrections',
-    newWindow: true,
-  },
-  {
-    url: 'https://www.wnyc.org/articles/wnyc-contest-rules',
-    text: 'Giveaway Rules',
-    newWindow: true,
-  },
-  {
-    url: 'https://sponsorship.wnyc.org/',
-    text: 'Sponsorship',
-    newWindow: true,
-  },
-]
-const getYear = computed(() => {
-  return new Date().getFullYear()
-})
+import { useNavigation } from '~/composables/states'
+const navigation = useNavigation()
+const description = computed(
+  () => navigation.value.property_description
+)
+const footerPrimaryNav = computed(
+  () => navigation.value.primary_footer_links
+)
+const footerSecondaryNav = computed(
+  () => navigation.value.secondary_footer_links
+)
+const year = computed(
+  () => navigation.value.copyright_year
+)
+const legalNav = computed(
+  () => navigation.value.legal_links
+)
 </script>
 
 <template>
@@ -60,12 +29,7 @@ const getYear = computed(() => {
           <v-flexible-link to="https://www.WNYC.org">
             <wnyc-logo />
           </v-flexible-link>
-          <p class="text-lg my-5">
-            Listener-supported WNYC is the home for independent journalism and
-            courageous conversation on air and online. Broadcasting live from
-            New York City on 93.9 FM and AM 820 and available online and on the
-            go.
-          </p>
+          <p v-html="description" class="text-lg my-5" />
           <div class="flex flex-wrap row-gap-2 mb-4">
             <p class="mr-2">WNYC is supported by the JLGreene Foundation</p>
             <v-flexible-link raw class="no-border" to="https://jlgreene.org/">
@@ -89,11 +53,11 @@ const getYear = computed(() => {
                 v-for="(link, primaryIndex) in footerPrimaryNav"
                 raw
                 :key="primaryIndex"
-                :to="link.url"
-                :target="link.newWindow ? '_blank' : undefined"
+                :to="link.value.url"
+                :target="link.type ? 'external_link' : undefined"
                 class="c-secondary-nav__link"
               >
-                {{ link.text }}
+                {{ link.value.title }}
               </v-flexible-link>
             </div>
             <div class="col-12 lg:col-6">
@@ -101,11 +65,11 @@ const getYear = computed(() => {
                 v-for="(link, secondaryIndex) in footerSecondaryNav"
                 raw
                 :key="secondaryIndex"
-                :to="link.url"
-                :target="link.newWindow ? '_blank' : undefined"
+                :to="link.value.url"
+                :target="link.type ? 'external_link' : undefined"
                 class="c-secondary-nav__link"
               >
-                {{ link.text }}
+                {{ link.value.title }}
               </v-flexible-link>
             </div>
           </div>
@@ -135,23 +99,20 @@ const getYear = computed(() => {
       >
         <div>
           <p class="text-center">
-            © {{ getYear }} New York Public Radio. All rights reserved.
+            © {{ year }} New York Public Radio. All rights reserved.
           </p>
         </div>
         <div
           class="flex flex-wrap row-gap-3 column-gap-4 flex-column xs:flex-row"
         >
-          <v-flexible-link raw to="https://www.wnyc.org/terms">
-            Terms Of Use
-          </v-flexible-link>
-          <v-flexible-link raw to="https://www.wnyc.org/privacy">
-            Privacy Policy
-          </v-flexible-link>
           <v-flexible-link
+            v-for="(link, legalNavIndex) in legalNav"
             raw
-            to="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
+            :key="legalNavIndex"
+            :to="link.value.url"
+            :target="link.type ? 'external_link' : undefined"
           >
-            Accessibility
+            {{ link.value.title }}
           </v-flexible-link>
         </div>
       </div>

@@ -1,24 +1,16 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-//TO DO - populate links from CMS
-const headerNav = [
-  {
-    url: 'https://www.wnyc.org/schedule/',
-    text: 'Schedule',
-    newWindow: true,
-  },
-  {
-    url: 'https://www.wnyc.org/streams',
-    text: 'All Streams',
-    newWindow: true,
-  },
-  {
-    url: 'https://www.wnyc.org/shows',
-    text: 'Shows',
-    newWindow: true,
-  },
-]
-const year = new Date().getFullYear()
+import { useNavigation } from '~/composables/states'
+const navigation = useNavigation()
+const headerNav = computed(
+  () => navigation.value.primary_navigation
+)
+const year = computed(
+  () => navigation.value.copyright_year
+)
+const legalNav = computed(
+  () => navigation.value.legal_links
+)
 const visibleLeft = ref(false)
 </script>
 
@@ -44,11 +36,11 @@ const visibleLeft = ref(false)
               v-for="(link, headerNavIndex) in headerNav"
               raw
               :key="headerNavIndex"
-              :to="link.url"
-              :target="link.newWindow ? '_blank' : undefined"
+              :to="link.value.url"
+              :target="link.type ? 'external_link' : undefined"
               class="c-secondary-nav__link"
             >
-              {{ link.text }}
+              {{ link.value.title }}
             </v-flexible-link>
           </div>
         </div>
@@ -71,55 +63,31 @@ const visibleLeft = ref(false)
         <wnyc-logo />
       </v-flexible-link>
       <v-flexible-link
+        v-for="(link, sidebarNavIndex) in headerNav"
         raw
-        to="https://www.wnyc.org/schedule/"
+        :key="sidebarNavIndex"
+        :to="link.value.url"
+        :target="link.type ? 'external_link' : undefined"
         class="c-secondary-nav__link"
       >
-        Schedule
-      </v-flexible-link>
-      <v-flexible-link
-        raw
-        to="https://www.wnyc.org/streams"
-        class="c-secondary-nav__link"
-      >
-        All Streams
-      </v-flexible-link>
-      <v-flexible-link
-        raw
-        to="https://www.wnyc.org/shows"
-        class="c-secondary-nav__link"
-      >
-        Shows
+        {{ link.value.title }}
       </v-flexible-link>
       <nypr-logo class="mt-8 mb-4" />
       <p class="mb-4">
         © {{ year }} New York Public Radio. All rights reserved.
       </p>
-      <div class="flex justify-content-center">
+      <div>
         <v-flexible-link
+          v-for="(link, legalNavIndex) in legalNav"
           raw
-          to="https://www.wnyc.org/terms"
-          class="no-border text-sm font-bold mx-4"
+          :key="legalNavIndex"
+          :to="link.value.url"
+          :target="link.type ? 'external_link' : undefined"
+          class="no-border text-sm font-bold m-2 inline-block"
         >
-          TERMS OF USE
-        </v-flexible-link>
-        <v-flexible-link
-          raw
-          to="https://www.wnyc.org/privacy"
-          class="no-border text-sm font-bold mx-4"
-        >
-          PRIVACY POLICY
+          {{ link.value.title }}
         </v-flexible-link>
       </div>
-      <p class="flex justify-content-center">
-        <v-flexible-link
-          raw
-          to="https://media.wnyc.org/media/resources/2020/Oct/30/accessibility_policy_10.30.20.pdf"
-          class="no-border text-sm font-bold mx-4 flex"
-        >
-          ACCESSIBILITY
-        </v-flexible-link>
-      </p>
     </Sidebar>
   </header>
 </template>
