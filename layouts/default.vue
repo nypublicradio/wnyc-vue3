@@ -5,13 +5,12 @@ import { PushNotifications } from '@capacitor/push-notifications'
 import {
   useCurrentSteamStation,
   useAllCurrentEpisodes,
+  useNavigation,
 } from '~/composables/states'
 import {
   updateAllLiveStreams,
   updateLiveStream,
 } from '~/composables/data/liveStream'
-import { useCurrentSteamStation, useNavigation } from '~/composables/states'
-import { updateLiveStream } from '~/composables/data/liveStream'
 
 const currentSteamStation = useCurrentSteamStation()
 const allCurrentEpisodes = useAllCurrentEpisodes()
@@ -188,8 +187,8 @@ navigationState.value = navigation.value
     <main>
       <div class="dots" />
       <div class="content">
-        <ListenAllLiveButton class="hidden md:block" />
-        <div v-if="isApp" class="px-4 hidden">
+        <ListenAllLiveButton />
+        <div v-if="isApp" class="px-4">
           <p>fcm token ==</p>
           <input :value="fcmToken" />
           <pre></pre>
