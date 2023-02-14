@@ -129,8 +129,7 @@ footer {
 
 footer section {
   border-top: 2px solid RGB(255, 255, 255, 0.2);
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding: 50px 0;
 }
 
 footer .c-secondary-nav__link {

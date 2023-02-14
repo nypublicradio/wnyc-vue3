@@ -19,6 +19,12 @@ const currentSteamStation = useCurrentSteamStation()
         </div>
       </div>
     </section>
+    <section>
+      <p>episode data goes here</p>
+    </section>
+    <section>
+      <top-stories />
+    </section>
   </div>
 </template>
 
