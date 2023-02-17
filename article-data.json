@@ -1,0 +1,103 @@
+{
+    "id": 151078,
+    "meta": {
+        "first_published_at": "2022-03-19T12:15:39.598211-04:00",
+        "type": "news.ArticlePage",
+        "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/151078/",
+        "html_url": "http://cms.prod.nypr.digital/arts-entertainment/interview-photographer-journalist-haunting-start-of-pandemic-nyc/",
+        "slug": "interview-photographer-journalist-haunting-start-of-pandemic-nyc"
+    },
+    "title": "Interview: How a photographer & journalist captured the haunting start of the pandemic in NYC",
+    "listing_title": "Q&A: How a photographer captured the start of the pandemic",
+    "listing_summary": "",
+    "listing_image": null,
+    "uuid": "adb6635e-960f-4907-a030-2ed01bd92c42",
+    "url": "https://gothamist-vue3demo.gothamist.com/arts-entertainment/interview-photographer-journalist-haunting-start-of-pandemic-nyc",
+    "publication_date": "2022-03-19T12:15:00-04:00",
+    "updated_date": null,
+    "description": "\"Every time I went out to start shooting these images... it was like I had this conscious conversation with myself: Do I want to go out and risk getting COVID and die?\"",
+    "lead_asset": [
+        {
+            "type": "lead_gallery",
+            "value": {
+                "gallery": 151145,
+                "default_image": {
+                    "id": 329856,
+                    "title": "_MGL9235.jpg",
+                    "width": 2048,
+                    "height": 1365,
+                    "created_at": "2022-03-21T10:59:59.876113-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 1578720,
+                    "file_hash": "f0dcf38c545c27e1c827a1ccab54e73e2ad136f3",
+                    "alt": "A photo of Chinatown. Taken on April 14, 2020 at 9:33:14 AM",
+                    "caption": "Chinatown. Taken on April 14, 2020 at 9:33:14 AM",
+                    "credit": "Charlie Bennet",
+                    "credit_link": "",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/_MGL9235.jpg",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 30
+                }
+            },
+            "id": "2ad3b782-aeae-43fa-b5ed-e7320ac3e859"
+        }
+    ],
+    "sponsored_content": false,
+    "tags": [
+        {
+            "name": "COVID-19",
+            "slug": "covid-19"
+        },
+        {
+            "name": "pandemic",
+            "slug": "pandemic"
+        },
+        {
+            "name": "interview",
+            "slug": "interview"
+        },
+        {
+            "name": "coronavirus",
+            "slug": "coronavirus"
+        }
+    ],
+    "show_as_feature": true,
+    "legacy_id": null,
+    "ancestry": [
+        {
+            "id": 8,
+            "meta": {
+                "type": "standardpages.IndexPage",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/8/",
+                "html_url": "http://cms.prod.nypr.digital/arts-entertainment/"
+            },
+            "title": "Arts & Entertainment",
+            "slug": "arts-entertainment"
+        },
+        {
+            "id": 3,
+            "meta": {
+                "type": "home.HomePage",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/3/",
+                "html_url": "http://cms.prod.nypr.digital/"
+            },
+            "title": "Gothamist",
+            "slug": "home"
+        },
+        {
+            "id": 1,
+            "meta": {
+                "type": "wagtailcore.Page",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/1/",
+                "html_url": null
+            },
+            "title": "Root",
+            "slug": "root"
+        }
+    ]
+}
