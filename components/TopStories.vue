@@ -4,43 +4,44 @@ import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VB
 
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
-const { data: articles } = await useFetch( config.STORIES_API )
+const { data: articles } = await useFetch(config.STORIES_API)
 
-// returns an Aviary image template string 
+// returns an Aviary image template string
 const getImageUrl = (article) => {
-    const listingImage = article.lead_asset?.[0]?.value?.image ?? article.lead_asset?.[0]?.value?.default_image
-    if(!listingImage) return ''
-    const imageUrlTemplate = `${config.IMAGE_BASE_URL}${listingImage.id}/fill-%width%x%height%|format-webp|webpquality-%quality%`
-    return imageUrlTemplate
+  const listingImage =
+    article.lead_asset?.[0]?.value?.image ??
+    article.lead_asset?.[0]?.value?.default_image
+  if (!listingImage) return ''
+  const imageUrlTemplate = `${config.IMAGE_BASE_URL}${listingImage.id}/fill-%width%x%height%|format-webp|webpquality-%quality%`
+  return imageUrlTemplate
 }
 
 // returns the article link
 const getArticleLink = (article) => {
-    if (article.ancestry) {
-        return `https://gothamist.com/${article.ancestry[0].slug}/${article.meta.slug}`
-    }
-    else if (article.path) {
-        return article.path.replace('/home/', 'https://gothamist.com')
-    }
-    return 'https://gothamist.com'
+  if (article.ancestry) {
+    return `https://gothamist.com/${article.ancestry[0].slug}/${article.meta.slug}`
+  } else if (article.path) {
+    return article.path.replace('/home/', 'https://gothamist.com')
+  }
+  return 'https://gothamist.com'
 }
 
-const normalizeAuthor = ( author ) => {
-    return {
-        id: author.id,
-        firstName: author.first_name,
-        lastName: author.last_name,
-        organization: author.contributing_organization?.name,
-        organizationUrl: author.contributing_organization?.url,
-        name: `${author.first_name} ${author.last_name}`,
-        photoID: author.photo,
-        jobTitle: author.job_title,
-        biography: author.biography,
-        website: author.website,
-        email: author.email,
-        slug: author.slug,
-        url: author.slug && `https://gothamist.com/staff/${author.slug}`
-    }
+const normalizeAuthor = (author) => {
+  return {
+    id: author.id,
+    firstName: author.first_name,
+    lastName: author.last_name,
+    organization: author.contributing_organization?.name,
+    organizationUrl: author.contributing_organization?.url,
+    name: `${author.first_name} ${author.last_name}`,
+    photoID: author.photo,
+    jobTitle: author.job_title,
+    biography: author.biography,
+    website: author.website,
+    email: author.email,
+    slug: author.slug,
+    url: author.slug && `https://gothamist.com/staff/${author.slug}`,
+  }
 }
 </script>
 
@@ -48,18 +49,20 @@ const normalizeAuthor = ( author ) => {
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles.items" :key="index" class="mb-6">
       <v-card
-        class="mod-horizontal"
         :image="getImageUrl(article)"
         :title="article.title"
+        loading="eager"
         :titleLink="getArticleLink(article)"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
         :quality="80"
         :ratio="[3, 2]"
-        :sizes="[1]"
+        :sizes="[1, 2]"
         :width="318"
-        :height="214"
+        :height="212"
+        responsive
+        bp="md"
       >
         <p>
           {{ article.description }}
