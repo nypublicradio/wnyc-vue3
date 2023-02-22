@@ -11,11 +11,11 @@ const currentEpisodeHolderObj = null
  */
 export const useCurrentEpisodeHolder = () => useState('useCurrentEpisodeHolder', () => currentEpisodeHolderObj)
 
-const allCurrentEpisodesObj = null
+const allCurrentStationsObj = null
 /**
  * Global state for ALL the current episodes object. 
  */
-export const useAllCurrentEpisodes = () => useState('useAllCurrentEpisodes', () => allCurrentEpisodesObj)
+export const useAllCurrentStations = () => useState('useAllCurrentStations', () => allCurrentStationsObj)
 
 const isEpisodePlaying = false
 /**

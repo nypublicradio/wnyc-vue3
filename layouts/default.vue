@@ -4,7 +4,7 @@ import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { PushNotifications } from '@capacitor/push-notifications'
 import {
   useCurrentSteamStation,
-  useAllCurrentEpisodes,
+  useAllCurrentStations,
   useNavigation,
 } from '~/composables/states'
 import {
@@ -13,7 +13,7 @@ import {
 } from '~/composables/data/liveStream'
 
 const currentSteamStation = useCurrentSteamStation()
-const allCurrentEpisodes = useAllCurrentEpisodes()
+const allCurrentStations = useAllCurrentStations()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
