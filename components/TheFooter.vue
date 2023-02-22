@@ -4,21 +4,13 @@ import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/compo
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import { useNavigation } from '~/composables/states'
 const navigation = useNavigation()
-const description = computed(
-  () => navigation.value.property_description
-)
-const footerPrimaryNav = computed(
-  () => navigation.value.primary_footer_links
-)
+const description = computed(() => navigation.value.property_description)
+const footerPrimaryNav = computed(() => navigation.value.primary_footer_links)
 const footerSecondaryNav = computed(
   () => navigation.value.secondary_footer_links
 )
-const year = computed(
-  () => navigation.value.copyright_year
-)
-const legalNav = computed(
-  () => navigation.value.legal_links
-)
+const year = computed(() => navigation.value.copyright_year)
+const legalNav = computed(() => navigation.value.legal_links)
 </script>
 
 <template>
@@ -129,7 +121,8 @@ footer {
 
 footer section {
   border-top: 2px solid RGB(255, 255, 255, 0.2);
-  padding: 50px 0;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
 
 footer .c-secondary-nav__link {
