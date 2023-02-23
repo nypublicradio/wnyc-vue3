@@ -10,16 +10,17 @@ export async function updateLiveStream(slug: string) {
 export async function updateAllLiveStreams() {
     const config = useRuntimeConfig()
     const allCurrentStations = useAllCurrentStations()
-    const fetchData = await $fetch(`${config['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
-    let availableStreams = []
+    const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
+    //console.log('fetchData.data.value  = ', fetchData.data.value.data)
 
-    fetchData.data.forEach((stream) => {
-
+    const fetchingAll = await Promise.all(fetchData.data.value.data.map(async (stream) => {
+        //console.log('stream: ', stream)
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
-            availableStreams.push(stream)
+            const fetchedRunningShowData = await useFetch(`${config['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
+            return fetchedRunningShowData
         }
-    })
-
-    allCurrentStations.value = availableStreams
+    }))
+    //console.log('fetchingAll: ', fetchingAll.filter(Boolean))
+    allCurrentStations.value = fetchingAll.filter(Boolean)
 }

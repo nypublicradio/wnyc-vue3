@@ -9,31 +9,69 @@ import {
   updateLiveStream,
   updateAllLiveStreams,
 } from '~/composables/data/liveStream'
+import { formatTime } from '~/utilities/helpers'
 const currentSteamStation = useCurrentSteamStation()
-const allCurrentStations = useAllCurrentStations()
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const allCurrentStations = useAllCurrentStations()
 
 const selectedStation = ref(null)
 const stationsMenuData = ref([])
-onBeforeMount(async () => {
-  updateAllLiveStreams().then(() => {
-    allCurrentStations.value.forEach((station) => {
-      stationsMenuData.value.push({
-        label: station.attributes.name,
-        icon: 'icon',
-        slug: station.attributes.slug,
-        image: station.attributes['image-logo'],
-        command: async () => {
-          //slug.value = stream.attributes.slug
-          await updateLiveStream(station.attributes.slug)
-          currentEpisode.value = currentEpisodeHolder.value
-        },
-      })
+
+watch(allCurrentStations, (val) => {
+  const tempMenuData = []
+  val.forEach((station) => {
+    console.log('station: ', station)
+    const attributes = station.data.data[0].attributes
+    const showTitle = station.data.included.find(
+      (include) => include.type === 'show'
+    ).attributes.title
+    const showTimes = station.data.included.find(
+      (include) => include.type === 'show-schedule'
+    ).attributes
+    tempMenuData.push({
+      label: showTitle,
+      name: showTitle,
+      station: attributes.name,
+      code: attributes.name,
+      slug: attributes.slug,
+      image: attributes['image-logo'],
+      times: `${formatTime(showTimes['iso-start-time'])} - ${formatTime(
+        showTimes['iso-end-time']
+      )}`,
+      command: async () => {
+        //slug.value = attributes.slug
+        await updateLiveStream(attributes.slug)
+        currentEpisode.value = currentEpisodeHolder.value
+      },
     })
-    // set initial station
-    selectedStation.value = stationsMenuData.value[0].label
   })
+  stationsMenuData.value = tempMenuData
+  console.log('tempMenuData: ', tempMenuData)
+  //set initial station
+  selectedStation.value = tempMenuData[0].station
+})
+
+onBeforeMount(() => {
+  //updateAllLiveStreams().then(() => {
+  //allCurrentStations.value.forEach((station) => {
+  //console.log('station: ', station)
+  // stationsMenuData.value.push({
+  //   label: station.data[0].attributes.name,
+  //   show: station.data[0].attributes.name,
+  //   icon: 'icon',
+  //   slug: station.data[0].attributes.slug,
+  //   image: station.data[0].attributes['image-logo'],
+  //   command: async () => {
+  //     //slug.value = stream.attributes.slug
+  //     await updateLiveStream(station.attributes.slug)
+  //     currentEpisode.value = currentEpisodeHolder.value
+  //   },
+  // })
+  //})
+  // set initial station
+  //selectedStation.value = stationsMenuData.value[0].label
+  //})
 })
 </script>
 
@@ -47,22 +85,25 @@ onBeforeMount(async () => {
             <Button class="tab">{{ item.label }}</Button>
           </template>
         </TabMenu> -->
+        <!-- <pre>{{ stationsMenuData }}</pre> -->
         <Dropdown
           v-model="selectedStation"
           :options="stationsMenuData"
-          optionLabel="label"
-          optionValue="label"
           placeholder="Select a Station"
+          scrollHeight="400px"
+          panelClass="stream-switcher-dropdown"
         >
           <template #value="slotProps">
             <p>{{ slotProps.value }}</p>
           </template>
           <template #option="slotProps">
-            <div class="country-item">
-              <img
-                src="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png"
-              />
-              <div>{{ slotProps.option.label }}</div>
+            <div class="station-info flex">
+              <img :src="slotProps.option.image" />
+              <div>
+                <p>{{ slotProps.option.name }}</p>
+                <p>{{ slotProps.option.show }}</p>
+                <p>{{ slotProps.option.times }}</p>
+              </div>
             </div>
           </template>
         </Dropdown>

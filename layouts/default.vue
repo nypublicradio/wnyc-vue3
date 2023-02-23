@@ -4,7 +4,7 @@ import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { PushNotifications } from '@capacitor/push-notifications'
 import {
   useCurrentSteamStation,
-  useAllCurrentStations,
+  //useAllCurrentStations,
   useNavigation,
 } from '~/composables/states'
 import {
@@ -13,7 +13,7 @@ import {
 } from '~/composables/data/liveStream'
 
 const currentSteamStation = useCurrentSteamStation()
-const allCurrentStations = useAllCurrentStations()
+//const allCurrentStations = useAllCurrentStations()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -187,7 +187,7 @@ navigationState.value = navigation.value
     <main>
       <div class="dots" />
       <div class="content">
-        <ListenAllLiveButton />
+        <!-- <ListenAllLiveButton /> -->
         <div v-if="isApp" class="px-4">
           <p>fcm token ==</p>
           <input :value="fcmToken" />
