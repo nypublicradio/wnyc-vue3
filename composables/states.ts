@@ -42,7 +42,7 @@ export const audioPlayerHeight = 100
 
 const currentSteamStation = 'wnyc-fm939'
 /**
- * Global state for the current streaming station. 
+ * Global state for the current streaming station / initial selection in the stream switcher dropdown. 
  */
 export const useCurrentSteamStation = () => useState('useCurrentSteamStation', () => currentSteamStation)
 
