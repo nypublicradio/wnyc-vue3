@@ -27,7 +27,6 @@
     "@capacitor/keyboard": "^4.1.1",
     "@capacitor/push-notifications": "^4.1.2",
     "@capacitor/status-bar": "^4.1.1",
-    "@nuxt/devtools": "npm:@nuxt/devtools-edge@latest",
     "@nypublicradio/nypr-design-system-vue3": "^1.0.7",
     "firebase": "^9.17.1",
     "ionicons": "^6.1.1",

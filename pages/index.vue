@@ -4,16 +4,15 @@ import {
   useAllCurrentStations,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsEpisodePlaying,
 } from '~/composables/states'
-import {
-  updateLiveStream,
-  updateAllLiveStreams,
-} from '~/composables/data/liveStream'
+import { updateLiveStream } from '~/composables/data/liveStream'
 import { formatTime } from '~/utilities/helpers'
 const currentSteamStation = useCurrentSteamStation()
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const allCurrentStations = useAllCurrentStations()
+const isEpisodePlaying = useIsEpisodePlaying()
 
 const selectedStation = ref(null)
 const stationsMenuData = ref([])
@@ -21,7 +20,6 @@ const stationsMenuData = ref([])
 watch(allCurrentStations, (val) => {
   const tempMenuData = []
   val.forEach((station) => {
-    console.log('station: ', station)
     const attributes = station.data.data[0].attributes
     const showTitle = station.data.included.find(
       (include) => include.type === 'show'
@@ -39,46 +37,28 @@ watch(allCurrentStations, (val) => {
       times: `${formatTime(showTimes['iso-start-time'])} - ${formatTime(
         showTimes['iso-end-time']
       )}`,
-      command: async () => {
-        //slug.value = attributes.slug
-        await updateLiveStream(attributes.slug)
-        currentEpisode.value = currentEpisodeHolder.value
-      },
     })
   })
   stationsMenuData.value = tempMenuData
-  console.log('tempMenuData: ', tempMenuData)
   //set initial station
   selectedStation.value = tempMenuData[0].station
 })
 
-onBeforeMount(() => {
-  //updateAllLiveStreams().then(() => {
-  //allCurrentStations.value.forEach((station) => {
-  //console.log('station: ', station)
-  // stationsMenuData.value.push({
-  //   label: station.data[0].attributes.name,
-  //   show: station.data[0].attributes.name,
-  //   icon: 'icon',
-  //   slug: station.data[0].attributes.slug,
-  //   image: station.data[0].attributes['image-logo'],
-  //   command: async () => {
-  //     //slug.value = stream.attributes.slug
-  //     await updateLiveStream(station.attributes.slug)
-  //     currentEpisode.value = currentEpisodeHolder.value
-  //   },
-  // })
-  //})
-  // set initial station
-  //selectedStation.value = stationsMenuData.value[0].label
-  //})
-})
+let initialNoPlayToggleFlag = false
+const onDropdownChange = async (event) => {
+  await updateLiveStream(event.value.slug)
+  // update slug
+  currentSteamStation.value = currentEpisodeHolder.value.data[0].attributes.slug
+  if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
+    initialNoPlayToggleFlag = true
+    currentEpisode.value = currentEpisodeHolder.value
+  }
+}
 </script>
 
 <template>
   <div>
-    <section class="pb-8">
-      <h1 class="pb-6">now playing: {{ currentSteamStation }}</h1>
+    <section class="py-6">
       <div class="stream-switcher">
         <!-- <TabMenu class="mb-4" :model="stationsMenuData">
           <template #item="{ item }">
@@ -86,22 +66,34 @@ onBeforeMount(() => {
           </template>
         </TabMenu> -->
         <!-- <pre>{{ stationsMenuData }}</pre> -->
+        <!-- :onChange="() => onDropdownChange($event)" -->
         <Dropdown
+          @change="onDropdownChange($event)"
+          v-if="stationsMenuData.length > 0"
           v-model="selectedStation"
           :options="stationsMenuData"
-          placeholder="Select a Station"
           scrollHeight="400px"
           panelClass="stream-switcher-dropdown"
         >
           <template #value="slotProps">
-            <p>{{ slotProps.value }}</p>
+            <p>
+              {{
+                typeof slotProps.value === 'object'
+                  ? slotProps.value.station
+                  : slotProps.value
+              }}
+            </p>
           </template>
           <template #option="slotProps">
-            <div class="station-info flex">
+            <div class="station-info flex gap-3 align-items-center">
               <img :src="slotProps.option.image" />
-              <div>
-                <p>{{ slotProps.option.name }}</p>
-                <p>{{ slotProps.option.show }}</p>
+              <div class="flex flex-column">
+                <div class="flex flex-row flex-wrap">
+                  <p>{{ slotProps.option.station }}:&nbsp;</p>
+                  <p>
+                    {{ slotProps.option.name }}
+                  </p>
+                </div>
                 <p>{{ slotProps.option.times }}</p>
               </div>
             </div>
@@ -175,6 +167,33 @@ onBeforeMount(() => {
       transition: opacity 0.6s cubic-bezier(0, 0, 0.2, 1) 50ms;
       transition: opacity var(--animation-duration-slow)
         var(--animation-easing-incoming) 50ms;
+    }
+  }
+}
+.stream-switcher-dropdown {
+  top: 126px !important;
+  width: 100vw;
+  max-width: fit-content;
+  max-width: 440px;
+  .p-dropdown-item {
+    padding: 0.5rem 1.5rem 0.5rem 1rem !important;
+    &:hover {
+      background: #eef1f7 !important;
+    }
+    .station-info {
+      white-space: normal;
+      img {
+        width: 50px;
+        height: 50px;
+      }
+      p {
+        color: var(--darkblue);
+        line-height: normal;
+        font-feature-settings: 'lnum';
+        &:first-child {
+          font-weight: 700;
+        }
+      }
     }
   }
 }
