@@ -2,18 +2,9 @@
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { PushNotifications } from '@capacitor/push-notifications'
-import {
-  useCurrentSteamStation,
-  //useAllCurrentStations,
-  useNavigation,
-} from '~/composables/states'
-import {
-  updateAllLiveStreams,
-  updateLiveStream,
-} from '~/composables/data/liveStream'
+import { useNavigation } from '~/composables/states'
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
-const currentSteamStation = useCurrentSteamStation()
-//const allCurrentStations = useAllCurrentStations()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -112,7 +103,7 @@ const checkAppLaunchUrl = async () => {
 }
 
 onBeforeMount(() => {
-  updateLiveStream(currentSteamStation.value)
+  //initially load all the streams
   updateAllLiveStreams()
   if (isApp.value) {
     registerNotifications()

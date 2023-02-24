@@ -11,7 +11,9 @@ $toolsBreakPoint: 472px;
   --header-z-index: 900;
   --line-clamp: 3;
 }
-
+html {
+  background-color: var(--red);
+}
 body {
   background-color: var(--darkblue) !important;
   position: relative;
@@ -26,6 +28,9 @@ body {
 
 main {
   margin-top: 80px; // account for the sticky header height
+
+  // update the extensions in the theme with the following update on the background gradient
+  background: linear-gradient(180deg, var(--red) 10%, var(--blue) 40%);
 }
 
 section {

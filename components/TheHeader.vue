@@ -2,15 +2,9 @@
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import { useNavigation } from '~/composables/states'
 const navigation = useNavigation()
-const headerNav = computed(
-  () => navigation.value.primary_navigation
-)
-const year = computed(
-  () => navigation.value.copyright_year
-)
-const legalNav = computed(
-  () => navigation.value.legal_links
-)
+const headerNav = computed(() => navigation.value.primary_navigation)
+const year = computed(() => navigation.value.copyright_year)
+const legalNav = computed(() => navigation.value.legal_links)
 const visibleLeft = ref(false)
 </script>
 
@@ -94,7 +88,8 @@ const visibleLeft = ref(false)
 
 <style lang="scss">
 header {
-  background-color: var(--red);
+  background-color: rgba(var(--red), 0.9);
+  backdrop-filter: blur(5px);
   position: fixed;
   top: 0;
   left: 0;

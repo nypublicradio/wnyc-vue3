@@ -40,11 +40,11 @@ export const useTogglePlayTrigger = () => useState('useTogglePlayTrigger', () =>
  */
 export const audioPlayerHeight = 100
 
-const currentSteamStation = 'wnyc-fm939'
+const currentStreamStation = 'wnyc-fm939'
 /**
  * Global state for the current streaming station / initial selection in the stream switcher dropdown. 
  */
-export const useCurrentSteamStation = () => useState('useCurrentSteamStation', () => currentSteamStation)
+export const useCurrentStreamStation = () => useState('useCurrentStreamStation', () => currentStreamStation)
 
 /**
  * Global state for the navigation

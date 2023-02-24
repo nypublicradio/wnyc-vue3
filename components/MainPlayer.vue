@@ -1,9 +1,9 @@
 <script setup>
 import { useCurrentEpisodeHolder } from '~/composables/states'
-import { useCurrentSteamStation } from '~/composables/states'
+import { useCurrentStreamStation } from '~/composables/states'
 import { formatTime } from '~/utilities/helpers'
 
-const currentSteamStation = useCurrentSteamStation()
+const currentStreamStation = useCurrentStreamStation()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 const currentEpisodeData = computed(
@@ -30,8 +30,8 @@ const currentEpisodeTimes = computed(
 </script>
 
 <template>
-  <div v-if="currentEpisodeHolder" class="main-player card p-5">
-    <div class="grid gap-3">
+  <div class="main-player card p-5">
+    <div v-if="currentEpisodeHolder" class="grid gap-3">
       <div class="w-full md:w-auto mx-auto flex flex-column align-items-center">
         <live-indicator
           :label="`${formatTime(
@@ -56,14 +56,27 @@ const currentEpisodeTimes = computed(
           v-html="currentEpisodeShow?.tease"
           class="main-player-description mb-4"
         />
-        <listen-live-button class="mt-" :slug="currentSteamStation" />
+        <listen-live-button class="mt-" :slug="currentStreamStation" />
       </div>
+    </div>
+    <div v-else class="loading">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .main-player {
+  min-height: 280px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  .loading {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
   .title {
     font-weight: 600;
     font-size: var(--font-size-12);

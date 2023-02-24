@@ -1,6 +1,6 @@
 <script setup>
 import {
-  useCurrentSteamStation,
+  useCurrentStreamStation,
   useAllCurrentStations,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -8,7 +8,7 @@ import {
 } from '~/composables/states'
 import { updateLiveStream } from '~/composables/data/liveStream'
 import { formatTime } from '~/utilities/helpers'
-const currentSteamStation = useCurrentSteamStation()
+const currentStreamStation = useCurrentStreamStation()
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const allCurrentStations = useAllCurrentStations()
@@ -43,11 +43,11 @@ watch(allCurrentStations, (val) => {
 
   stationsMenuData.value = tempMenuData
 
-  // to set the initial station by updating "currentSteamStation" in states.ts to the slug you want to start with
+  // to set the initial station by updating "currentStreamStation" in states.ts to the slug you want to start with
   //console.log('allCurrentStations = ', val)
   const initialStation = val.find(
     (station) =>
-      station.data.data[0].attributes.slug === currentSteamStation.value
+      station.data.data[0].attributes.slug === currentStreamStation.value
   ).data.data[0].attributes.name
 
   selectedStation.value = initialStation
@@ -55,9 +55,11 @@ watch(allCurrentStations, (val) => {
 
 let initialNoPlayToggleFlag = false
 const onDropdownChange = async (event) => {
+  console.log('event happening = ', event)
   await updateLiveStream(event.value.slug)
   // update slug
-  currentSteamStation.value = currentEpisodeHolder.value.data[0].attributes.slug
+  currentStreamStation.value =
+    currentEpisodeHolder.value.data[0].attributes.slug
   if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
     initialNoPlayToggleFlag = true
     currentEpisode.value = currentEpisodeHolder.value
@@ -69,8 +71,7 @@ const onDropdownChange = async (event) => {
   <div>
     <div class="stream-switcher">
       <Dropdown
-        v-if="stationsMenuData.length > 0"
-        @change="($event) => onDropdownChange($event)"
+        :onChange="($event) => onDropdownChange($event)"
         :value="stationsMenuData[2]"
         v-model="selectedStation"
         :options="stationsMenuData"
@@ -78,13 +79,19 @@ const onDropdownChange = async (event) => {
         panelClass="stream-switcher-dropdown"
       >
         <template #value="slotProps">
-          <p>
+          <p v-if="stationsMenuData.length > 0">
             {{
               typeof slotProps.value === 'object'
                 ? slotProps.value.station
                 : slotProps.value
             }}
           </p>
+          <div v-else class="loading">
+            <i
+              class="pi pi-spin pi-spinner text-white text-lg"
+              style="font-size: 2rem"
+            ></i>
+          </div>
         </template>
         <template #option="slotProps">
           <div class="station-info flex gap-3 align-items-center">
