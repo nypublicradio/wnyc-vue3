@@ -1,12 +1,9 @@
-<script setup lang="ts">
-import { useCurrentSteamStation } from '~/composables/states'
-const currentSteamStation = useCurrentSteamStation()
-</script>
+<script setup></script>
 
 <template>
   <div>
-    <section class="pb-8">
-      <h1 class="pb-6">now playing: {{ currentSteamStation }}</h1>
+    <section class="py-6">
+      <StreamSwitcher />
       <div class="grid gap-3">
         <div class="col">
           <main-player />

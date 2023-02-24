@@ -1,4 +1,4 @@
-<script setup>  
+<script setup>
 const props = defineProps({
   label: {
     type: String,
@@ -6,7 +6,7 @@ const props = defineProps({
   },
 })
 </script>
-  
+
 <template>
   <div class="live-indicator">
     <div class="live-indicator-wrapper">
@@ -19,15 +19,15 @@ const props = defineProps({
     <span class="live-indicator-label">{{ label }}</span>
   </div>
 </template>
-  
+
 <style lang="scss">
 .live-indicator {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-4);
+  font-size: var(--font-size-5);
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 }
 
 .live-indicator .live-indicator-wrapper {
@@ -79,4 +79,3 @@ const props = defineProps({
   }
 }
 </style>
-  

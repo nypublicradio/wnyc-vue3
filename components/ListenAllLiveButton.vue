@@ -3,7 +3,7 @@ import { ref, onBeforeMount } from 'vue'
 import {
   useIsEpisodePlaying,
   useTogglePlayTrigger,
-  useAllCurrentEpisodes,
+  useAllCurrentStations,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from '~/composables/states'
@@ -26,7 +26,7 @@ const emit = defineEmits(['stream-button-click'])
 
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
-const allCurrentEpisodes = useAllCurrentEpisodes()
+const allCurrentStations = useAllCurrentStations()
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
@@ -43,24 +43,19 @@ const toggleMenu = async (event) => {
 // lifecycle hooks
 onBeforeMount(async () => {
   updateAllLiveStreams().then(() => {
-    //console.log('allCurrentEpisodes.value', allCurrentEpisodes.value)
-    allCurrentEpisodes.value.data.forEach((stream) => {
-      //console.log('stream', stream)
-      // conditional to check what shows are currently running
-      if (stream.relationships['current-show'].data !== null) {
-        streamItems.value.push({
-          label: stream.attributes.name,
-          icon: 'icon',
-          slug: stream.attributes.slug,
-          image: stream.attributes['image-logo'],
-          command: async () => {
-            //console.log('command - ', stream.attributes.slug)
-            slug.value = stream.attributes.slug
-            await updateLiveStream(stream.attributes.slug)
-            currentEpisode.value = currentEpisodeHolder.value
-          },
-        })
-      }
+    allCurrentStations.value.forEach((stream) => {
+      streamItems.value.push({
+        label: stream.attributes.name,
+        icon: 'icon',
+        slug: stream.attributes.slug,
+        image: stream.attributes['image-logo'],
+        command: async () => {
+          //console.log('command - ', stream.attributes.slug)
+          slug.value = stream.attributes.slug
+          await updateLiveStream(stream.attributes.slug)
+          currentEpisode.value = currentEpisodeHolder.value
+        },
+      })
     })
   })
 })

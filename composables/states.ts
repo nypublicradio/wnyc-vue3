@@ -11,11 +11,11 @@ const currentEpisodeHolderObj = null
  */
 export const useCurrentEpisodeHolder = () => useState('useCurrentEpisodeHolder', () => currentEpisodeHolderObj)
 
-const allCurrentEpisodesObj = null
+const allCurrentStationsObj = null
 /**
  * Global state for ALL the current episodes object. 
  */
-export const useAllCurrentEpisodes = () => useState('useAllCurrentEpisodes', () => allCurrentEpisodesObj)
+export const useAllCurrentStations = () => useState('useAllCurrentStations', () => allCurrentStationsObj)
 
 const isEpisodePlaying = false
 /**
@@ -42,7 +42,7 @@ export const audioPlayerHeight = 100
 
 const currentSteamStation = 'wnyc-fm939'
 /**
- * Global state for the current streaming station. 
+ * Global state for the current streaming station / initial selection in the stream switcher dropdown. 
  */
 export const useCurrentSteamStation = () => useState('useCurrentSteamStation', () => currentSteamStation)
 
