@@ -1,0 +1,159 @@
+version: 2.1
+
+filter_all: &filter_all
+  filters:
+    branches:
+      only: /.*/
+    tags:
+      only: /.*/
+
+filter_demo: &filter_demo
+  filters:
+    branches:
+      only: main
+    tags:
+      only: demo
+
+filter_prod: &filter_prod
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+
+workflows:
+  test-and-deploy:
+    jobs:
+      - build:
+          <<: *filter_all
+      - test_nginx:
+          <<: *filter_all  
+      - test:
+          <<: *filter_all
+          requires:
+            - build
+      - deploy:
+          name: Deploy (demo)
+          context: "AWS Deploy"
+          <<: *filter_demo
+          tag: demo
+          requires:
+            - test
+            - test_nginx
+      - deploy:
+          name: Deploy (prod)
+          context: "AWS Deploy"
+          env: prod
+          <<: *filter_prod
+          requires:
+            - test
+            - test_nginx
+
+jobs: 
+  # Note (allie): This is its own job because I don't 
+  # want to run the tests in an environment that has the
+  # built project. 
+  build:
+    executor: default
+    steps:
+      - checkout
+      - setup_npmrc
+      - run: 
+          name: Assert that it builds
+          command: |
+            npm ci
+            npm run build
+
+  test:
+    executor: default
+    steps:
+      - checkout
+      - setup_npmrc
+      - run:
+          name: Run unit tests
+          command: |
+            npm ci
+            npx nuxi prepare
+            npm run test      
+
+  test_nginx:
+    docker:
+      - image: nginx
+    parameters:
+      env:
+        type: enum
+        default: "demo"
+        enum: ["demo", "prod"]
+      tag:
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - run:
+          name: Test NGINX
+          environment:
+            ENV: <<parameters.env>>
+          command: |
+            apt-get update && \
+            apt-get install -y nginx-extras
+            mkdir -p /app/nginx 
+            cp ./nginx/*.conf /etc/nginx/
+            nginx -t
+
+  deploy:
+    docker: 
+      - image: circleci/python:3.8
+    parameters:
+      env:
+        type: enum
+        default: "demo"
+        enum: ["demo", "prod"]
+      tag:
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - setup_npmrc
+      - setup_remote_docker:
+          version: 20.10.12            
+      - run:
+          name: Deploy
+          environment:
+            ENV: <<parameters.env>>
+            TAG: <<parameters.tag>>
+            ROLE: wnyc-vue3-<<parameters.env>>
+          command: |
+            TAG=${TAG:-$CIRCLE_TAG}
+
+            python3 -m venv ~/.venv
+            source ~/.venv/bin/activate
+            pip3 install -U git+https://github.com/nypublicradio/nyprsetuptools.git
+            
+            nyprsetuptools DockerDeploy \
+              --fargate \
+              --cpu=1024 \
+              --memory-reservation=2048 \
+              --ecr-repository=wnyc-vue3 \
+              --ecs-cluster=wnyc-vue3 \
+              --ports=80 \
+              --execution-role=$ROLE \
+              --task-role=$ROLE \
+              --environment=$ENV \
+              --tag=$TAG \
+              --wait=300 
+
+commands:
+  setup_npmrc:
+    steps:
+      - run:
+          name: Setup .npmrc
+          command: |
+            echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
+            echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
+    
+executors:
+  default:
+    docker:
+      - image: cimg/node:16.14.2
+    environment: 
+      JOBS: 2
