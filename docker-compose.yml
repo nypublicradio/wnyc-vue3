@@ -19,17 +19,5 @@ services:
       - IMAGE_BASE_URL=$IMAGE_BASE_URL
     ports:
       - 8880:80
-    volumes:
-      - .:/app
-      - /app/node_modules
     command: ["./scripts/entrypoint.sh"]
     restart: "always"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
-
-volumes:
-  node_modules:
-    driver: local
