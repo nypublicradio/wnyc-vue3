@@ -1,7 +1,4 @@
 export default {
-  experimental: {
-    emitRouteChunkError: 'reload'
-  },
   modules: ['@nuxtjs/ionic'],
   ssr: process.env.ISAPP === 'false' ? true : false,
   app: {
