@@ -105,6 +105,13 @@ const checkAppLaunchUrl = async () => {
 onBeforeMount(() => {
   //initially load all the streams
   updateAllLiveStreams()
+  //refresh data every time the tab is in focus
+  // document.addEventListener('visibilitychange', () => {
+  //   if (!document.hidden) {
+  //     updateAllLiveStreams()
+  //   }
+  // })
+
   if (isApp.value) {
     registerNotifications()
     addListeners()
