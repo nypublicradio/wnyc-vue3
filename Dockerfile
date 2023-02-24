@@ -26,8 +26,8 @@ WORKDIR /app
 
 RUN groupadd www && \
     useradd -d /app -s /sbin/nologin -g www www
-    
-RUN setcap cap_net_bind_service=ep /usr/sbin/nginx
+
+RUN /sbin/setcap cap_net_bind_service=ep /usr/sbin/nginx
 
 RUN apt-get update \
     && apt-get install -y \
