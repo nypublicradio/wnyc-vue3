@@ -27,8 +27,6 @@ WORKDIR /app
 RUN groupadd www && \
     useradd -d /app -s /sbin/nologin -g www www
 
-RUN /sbin/setcap cap_net_bind_service=ep /usr/sbin/nginx
-
 RUN apt-get update \
     && apt-get install -y \
     curl \
@@ -69,5 +67,5 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 USER www
 
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["./scripts/entrypoint.sh" ]

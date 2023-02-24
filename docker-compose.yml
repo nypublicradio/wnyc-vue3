@@ -18,6 +18,6 @@ services:
       - STORIES_API=$STORIES_API
       - IMAGE_BASE_URL=$IMAGE_BASE_URL
     ports:
-      - 8880:80
+      - 8880:8080
     command: ["./scripts/entrypoint.sh"]
     restart: "always"
