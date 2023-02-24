@@ -24,6 +24,9 @@ FROM node:18.14.2-slim as app
 
 WORKDIR /app
 
+RUN groupadd www && \
+    useradd -d /app -s /sbin/nologin -g www www
+
 RUN apt-get update \
     && apt-get install -y \
     curl \
@@ -46,9 +49,7 @@ COPY --chown=www:www --from=build /code/.nuxt/ ./.nuxt/
 COPY --chown=www:www --from=build /code/node_modules/ ./node_modules/
 COPY --chown=www:www --from=build /code/package.json .
 
-RUN groupadd www && \
-    useradd -d /app -s /sbin/nologin -g www www && \
-    mkdir -p /var/run/nginx/ && \
+RUN mkdir -p /var/run/nginx/ && \
     mkdir -p /var/log/nginx/ && \
     mkdir -p /app/log/ && \
     touch /run/nginx.pid && \
