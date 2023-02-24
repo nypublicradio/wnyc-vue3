@@ -13,13 +13,14 @@ $toolsBreakPoint: 472px;
 }
 html {
   background-color: var(--red);
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 body {
-  background-color: var(--darkblue) !important;
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
   transform: none;
+  height: unset !important;
+  max-height: unset !important;
+  position: relative !important;
 }
 
 .ion-page {

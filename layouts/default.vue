@@ -4,7 +4,7 @@ import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { PushNotifications } from '@capacitor/push-notifications'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-
+const { isMobile, isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -106,11 +106,27 @@ onBeforeMount(() => {
   //initially load all the streams
   updateAllLiveStreams()
   //refresh data every time the tab is in focus
-  // document.addEventListener('visibilitychange', () => {
-  //   if (!document.hidden) {
-  //     updateAllLiveStreams()
-  //   }
-  // })
+  document.addEventListener('visibilitychange', (event) => {
+    if (!document.hidden) {
+      //console.log('focused tab =', event)
+      updateAllLiveStreams()
+      isRefreshing.value = true
+      setTimeout(() => {
+        isRefreshing.value = false
+      }, 1500)
+    }
+  })
+  //refresh data every time the cursor enters the window on desktop only
+  if (isDesktop) {
+    document.addEventListener('pointerenter', () => {
+      //console.log('pointerenter = ', event)
+      updateAllLiveStreams()
+      isRefreshing.value = true
+      setTimeout(() => {
+        isRefreshing.value = false
+      }, 1500)
+    })
+  }
 
   if (isApp.value) {
     registerNotifications()
@@ -125,6 +141,8 @@ const { data: navigation } = await useFetch(config.NAVIGATION_API)
 // update the state with the navigation data
 let navigationState = useNavigation()
 navigationState.value = navigation.value
+
+const isRefreshing = ref(false)
 </script>
 
 <template>
@@ -208,6 +226,19 @@ navigationState.value = navigation.value
             {{ Capacitor.isPluginAvailable('Camera') }}
           </h6>
         </div>
+
+        <Transition name="refresh">
+          <div
+            v-if="isRefreshing"
+            class="fixed flex align-items-center justify-content-center w-full mt-2"
+          >
+            <i
+              class="pi pi-spin pi-spinner text-white text-lg mr-2"
+              style="font-size: 2rem"
+            ></i>
+            <p>REFRESHING</p>
+          </div>
+        </Transition>
         <slot />
       </div>
     </main>
@@ -217,6 +248,17 @@ navigationState.value = navigation.value
 </template>
 
 <style lang="scss">
+.refresh-enter-active,
+.refresh-leave-active {
+  transition: opacity 1s ease;
+}
+
+.refresh-enter-from {
+  opacity: 0;
+}
+.refresh-leave-to {
+  opacity: 0;
+}
 .dots {
   opacity: 0.5;
   background-image: radial-gradient(

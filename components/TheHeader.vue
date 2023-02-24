@@ -88,7 +88,7 @@ const visibleLeft = ref(false)
 
 <style lang="scss">
 header {
-  background-color: rgba(var(--red), 0.9);
+  background-color: transparentize(#de1e3d, 0.1);
   backdrop-filter: blur(5px);
   position: fixed;
   top: 0;
