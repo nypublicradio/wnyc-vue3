@@ -250,7 +250,7 @@ const isRefreshing = ref(false)
 <style lang="scss">
 .refresh-enter-active,
 .refresh-leave-active {
-  transition: opacity 1s ease;
+  transition: opacity 0.5s ease;
 }
 
 .refresh-enter-from {
