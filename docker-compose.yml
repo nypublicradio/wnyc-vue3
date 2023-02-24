@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  wnyc-vue3:
+    image: wnyc-vue3
+    container_name: wnyc-vue3
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - SENTRY_DSN=$SENTRY_DSN
+      - SENTRY_ENV=$SENTRY_ENV
+      - ENV=$ENV
+      - LIVESTREAM_URL=$LIVESTREAM_URL
+      - NAVIGATION_API=$NAVIGATION_API
+      - STORIES_API=$STORIES_API
+      - IMAGE_BASE_URL=$IMAGE_BASE_URL
+    ports:
+      - 8880:80
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["./scripts/entrypoint.sh"]
+    restart: "always"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+volumes:
+  node_modules:
+    driver: local

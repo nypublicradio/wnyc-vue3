@@ -7,3 +7,6 @@ node_modules
 .env
 dist
 .npmrc
+.vscode
+*.pid
+.npm/*

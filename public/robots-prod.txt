@@ -1,0 +1,17 @@
+User-agent: *
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /atomfeeds/
+Disallow: /audio/xspf/
+Disallow: /email_change/
+Disallow: /feeds/
+Disallow: /grappelli/
+Disallow: /i/
+Disallow: /media/
+Disallow: /music/playlists/wqxr/
+Disallow: /player/
+Disallow: /shows/takeaway-pm/
+Disallow: /tags/
+
+Sitemap: https://www.wnyc.org/sitemap.xml
