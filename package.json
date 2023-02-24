@@ -1,41 +1,35 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "start": "node .output/server/index.mjs",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "postinstall": "nuxt prepare",
-    "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
-  },
-  "devDependencies": {
-    "@nuxtjs/ionic": "^0.8.1",
-    "date-fns": "^2.29.3",
-    "howler": "^2.2.3",
-    "nuxt": "^3.2.0",
-    "primeicons": "^6.0.1",
-    "primevue": "^3.23.0",
-    "sass": "^1.57.1"
-  },
-  "dependencies": {
-    "@capacitor/android": "4.6.3",
-    "@capacitor/app": "^4.1.1",
-    "@capacitor/assets": "^2.0.4",
-    "@capacitor/core": "^4.6.3",
-    "@capacitor/haptics": "^4.1.0",
-    "@capacitor/ios": "4.6.3",
-    "@capacitor/keyboard": "^4.1.1",
-    "@capacitor/push-notifications": "^4.1.2",
-    "@capacitor/status-bar": "^4.1.1",
-    "@nuxt/bridge": "^0.10.1",
-    "@nuxt/devtools": "npm:@nuxt/devtools-edge@latest",
-    "@nypublicradio/nypr-design-system-vue3": "^1.0.7",
-    "firebase": "^9.17.1",
-    "ionicons": "^6.1.1",
-    "primeflex": "^3.3.0",
-    "vitest": "^0.28.5"
+    "private": true,
+    "scripts": {
+      "build": "nuxt build",
+      "dev": "nuxt dev",
+      "generate": "nuxt generate",
+      "preview": "nuxt preview",
+      "postinstall": "nuxt prepare",
+      "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
+    },
+    "devDependencies": {
+      "@nuxtjs/ionic": "^0.8.1",
+      "date-fns": "^2.29.3",
+      "howler": "^2.2.3",
+      "nuxt": "npm:nuxt3@3.2.3-rc.0-27949872.7479d46",
+      "primeicons": "^6.0.1",
+      "primevue": "^3.23.0",
+      "sass": "^1.58.3"
+    },
+    "dependencies": {
+      "@capacitor/android": "4.6.3",
+      "@capacitor/app": "^4.1.1",
+      "@capacitor/assets": "^2.0.4",
+      "@capacitor/core": "^4.6.3",
+      "@capacitor/haptics": "^4.1.0",
+      "@capacitor/ios": "4.6.3",
+      "@capacitor/keyboard": "^4.1.1",
+      "@capacitor/push-notifications": "^4.1.2",
+      "@capacitor/status-bar": "^4.1.1",
+      "@nypublicradio/nypr-design-system-vue3": "^1.0.7",
+      "firebase": "^9.17.1",
+      "ionicons": "^6.1.1",
+      "primeflex": "^3.3.0"
+    }
   }
-}
