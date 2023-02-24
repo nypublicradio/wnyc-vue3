@@ -1,0 +1,8 @@
+# Allow Twitterbot so we can use the Twitter card validator
+User-agent: Twitterbot
+Disallow:
+
+User-agent: *
+Disallow: /
+
+Sitemap: https://demo.wnyc.org/sitemap.xml

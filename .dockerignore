@@ -1,0 +1,24 @@
+# node
+
+node_modules/
+
+# nuxt
+
+.nuxt/
+.output/
+
+# ci/cd
+
+.circleci/
+
+# git 
+
+.git/
+.gitignore
+
+# misc
+
+CODEOWNERS
+README.md
+
+.vscode/
