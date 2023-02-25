@@ -12,6 +12,7 @@
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
   },
   "devDependencies": {
+    "@nuxtjs/device": "^3.1.0",
     "@nuxtjs/ionic": "^0.8.1",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",

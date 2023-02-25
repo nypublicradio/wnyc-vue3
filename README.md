@@ -77,11 +77,15 @@ import { IonApp } from '@ionic/vue'
 if you added an `App.vue` file, add the following to your global css file:
 
 ```css
-body { 
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
-  transform: none;
+html {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+body {
+  transform: none !important;
+  height: unset !important;
+  max-height: unset !important;
+  position: relative !important;
 }
 ```
 

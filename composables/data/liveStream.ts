@@ -7,7 +7,7 @@ export async function updateLiveStream(slug: string) {
     currentEpisodeHolder.value = fetchData.data.value
 }
 
-export async function updateAllLiveStreams() {
+export async function updateAllLiveStreams(refresh: boolean = false) {
     const config = useRuntimeConfig()
     const allCurrentStations = useAllCurrentStations()
     const currentStreamStation = useCurrentStreamStation()
@@ -25,9 +25,11 @@ export async function updateAllLiveStreams() {
     allCurrentStations.value = fetchingAll.filter(Boolean)
 
     // set initial stream with the `currentStreamStation` value in the states.ts file
+    //if (refresh) {
     const initialStation = allCurrentStations.value.find(
         (station) =>
             station.data.data[0].attributes.slug === currentStreamStation.value
     ).data
     currentEpisodeHolder.value = initialStation
+    //}
 }

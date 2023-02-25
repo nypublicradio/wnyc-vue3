@@ -1,5 +1,5 @@
 export default {
-  modules: ['@nuxtjs/ionic'],
+  modules: ['@nuxtjs/ionic', '@nuxtjs/device'],
   ssr: process.env.ISAPP === 'false' ? true : false,
   app: {
     head: {

@@ -55,7 +55,6 @@ watch(allCurrentStations, (val) => {
 
 let initialNoPlayToggleFlag = false
 const onDropdownChange = async (event) => {
-  console.log('event happening = ', event)
   await updateLiveStream(event.value.slug)
   // update slug
   currentStreamStation.value =
@@ -133,7 +132,7 @@ const onDropdownChange = async (event) => {
       content: '';
       position: absolute;
       width: 0;
-      bottom: -30px;
+      bottom: -29px;
       height: 15px;
       left: 30px;
       z-index: 10;
