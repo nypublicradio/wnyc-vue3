@@ -16,7 +16,7 @@
     "@nuxtjs/ionic": "^0.8.1",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",
-    "nuxt": "npm:nuxt3@3.2.3-rc.0-27949872.7479d46",
+    "nuxt": "^3.2.3",
     "primeicons": "^6.0.1",
     "primevue": "^3.23.0",
     "sass": "^1.58.3"

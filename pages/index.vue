@@ -17,7 +17,7 @@
       </div>
     </section>
     <section>
-      <p>episode data goes here</p>
+      <OnTodaysShow />
     </section>
     <section>
       <top-stories />

@@ -80,7 +80,7 @@ const normalizeAuthor = (author) => {
 
 <style lang="scss">
 .top-stories {
-  border-top: 2px solid RGB(255, 255, 255, 0.2);
+  border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
   padding: 50px 0 0;
 }
 

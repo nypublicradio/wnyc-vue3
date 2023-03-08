@@ -70,6 +70,14 @@ a {
   }
 }
 
+.font-meta {
+  font-family: var(--font-family);
+}
+
+.font-tisa {
+  font-family: var(--font-family-header);
+}
+
 // TO DO move to DS extensions file
 .p-button .p-button-label {
   text-transform: uppercase;
