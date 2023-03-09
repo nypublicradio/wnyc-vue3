@@ -6,57 +6,42 @@ import { formatTime } from '~/utilities/helpers'
 const currentStreamStation = useCurrentStreamStation()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
-const currentEpisodeData = computed(
-  () => currentEpisodeHolder.value?.data[0].attributes
-)
-const currentEpisodeImage = computed(
-  () =>
-    currentEpisodeHolder.value?.included.find(
-      (include) => include.type === 'image'
-    ).attributes
-)
 const currentEpisodeShow = computed(
   () =>
     currentEpisodeHolder.value?.included.find(
       (include) => include.type === 'show'
     ).attributes
 )
-const currentEpisodeTimes = computed(
-  () =>
-    currentEpisodeHolder.value?.included.find(
-      (include) => include.type === 'show-schedule'
-    ).attributes
-)
 </script>
 
 <template>
+  <!--   <pre>
+        {{ currentEpisodeHolder }}
+        </pre
+  > -->
   <div class="main-player card p-5">
     <div v-if="currentEpisodeHolder" class="grid gap-3">
       <div class="w-full md:w-auto mx-auto flex flex-column align-items-center">
         <live-indicator
-          :label="`${formatTime(
-            currentEpisodeTimes['iso-start-time']
-          )} - ${formatTime(currentEpisodeTimes['iso-end-time'])}`"
+          :label="`${currentEpisodeHolder.timeStart} - ${currentEpisodeHolder.timeEnd}`"
           class="mb-3 flex md:hidden"
         />
         <img
-          :src="currentEpisodeImage?.url || currentEpisodeData?.['image-logo']"
+          :src="currentEpisodeHolder.image"
           class="w-13rem md:w-14rem main-player-image"
         />
       </div>
       <div class="col py-0">
         <live-indicator
-          :label="`${formatTime(
-            currentEpisodeTimes['iso-start-time']
-          )} - ${formatTime(currentEpisodeTimes['iso-end-time'])}`"
+          :label="`${currentEpisodeHolder.timeStart} - ${currentEpisodeHolder.timeEnd}`"
           class="mb-3 hidden md:flex"
         />
-        <h2 class="mb-3 title">{{ currentEpisodeShow?.title }}</h2>
+        <h2 class="mb-3 title">{{ currentEpisodeHolder.title }}</h2>
         <p
-          v-html="currentEpisodeShow?.tease"
+          v-html="currentEpisodeHolder.details"
           class="main-player-description mb-4"
         />
-        <listen-live-button class="mt-" :slug="currentStreamStation" />
+        <listen-live-button class="mt-" :slug="currentEpisodeHolder.slug" />
       </div>
     </div>
     <div v-else class="loading">
@@ -70,7 +55,6 @@ const currentEpisodeTimes = computed(
   min-height: 280px;
   align-items: center;
   display: flex;
-  justify-content: center;
   .loading {
     display: flex;
     align-items: center;

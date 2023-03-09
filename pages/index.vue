@@ -17,7 +17,7 @@
       </div>
     </section>
     <section>
-      <OnTodaysShow />
+      <!-- <OnTodaysShow /> -->
     </section>
     <section>
       <top-stories />

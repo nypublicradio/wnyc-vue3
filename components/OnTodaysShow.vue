@@ -15,67 +15,16 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const allCurrentStations = useAllCurrentStations()
 const isEpisodePlaying = useIsEpisodePlaying()
 
-const featuredData = ref({
-  title: null,
-  headline: null,
-  headlineLink: null,
-  episodeLink: null,
-  hosts: null,
-  image: null,
-  imageAltText: null,
-  imageCaption: null,
-  imageCredits: null,
-  imageCreditsUrl: null,
-  segments: null,
-  social: null,
-  startTime: null,
-  endTime: null,
-})
-
 //const emit = defineEmits(["change", "click"]);
-watch(currentEpisodeHolder, (val) => {
-  const episodeData = currentEpisodeHolder.value.included.find(
-    (include) => include.type === 'episode'
-  ).attributes
-
-  const showData = currentEpisodeHolder.value.included.find(
-    (include) => include.type === 'show'
-  ).attributes
-  const isEpisode = currentEpisodeHolder.value.included.find(
-    (include) => include.type === 'episode'
-  )
-    ? true
-    : false
-  console.log('showData = ', showData)
-  console.log('episodeData = ', episodeData)
-
-  const showSchedule = currentEpisodeHolder.value.included.find(
-    (include) => include.type === 'show-schedule'
-  ).attributes
-
-  // populate the featuredData object
-  featuredData.value.title = isEpisode
-    ? episodeData['show-title']
-    : showData.title
-  featuredData.value.headline = isEpisode
-    ? episodeData.title
-    : showData.featured.title
-  featuredData.value.headline = isEpisode
-    ? episodeData.title
-    : showData.featured.url
-  featuredData.value.startTime = formatTime(showSchedule['iso-start-time'])
-  featuredData.value.endTime = formatTime(showSchedule['iso-end-time'])
-
-  console.log('featuredData = ', featuredData.value)
-})
+watch(currentEpisodeHolder, (val) => {})
 </script>
 
 <template>
   <div class="on-todays-show">
-    <pre>
-        {{ featuredData }}
+    <!--  <pre>
+        {{ currentEpisodeHolder }}
         </pre
-    >
+    > -->
 
     <div class="grid grid-nogutter">
       <div class="col-12 md:col-6 overflow-hidden">

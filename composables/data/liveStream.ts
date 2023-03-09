@@ -1,10 +1,11 @@
 import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentStreamStation } from '~/composables/states'
+import { formatTime } from '~/utilities/helpers'
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
     const config = useRuntimeConfig()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-    console.log('updateLiveStream fetchData = ', fetchData)
+
     currentEpisodeHolder.value = fetchData.data.value
 }
 
@@ -14,35 +15,34 @@ export async function updateAllLiveStreams(refresh: boolean = false) {
     const currentStreamStation = useCurrentStreamStation()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
-    console.log('updateAllLiveStreams fetchData = ', fetchData)
+
     const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
             const fetchedRunningShowData = await useFetch(`${config['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-            return fetchedRunningShowData
+            console.log('fetchedRunningShowData = ', fetchedRunningShowData.data.value)
+            return formatShowData(fetchedRunningShowData.data.value)
         }
     }))
     // set all streams
     allCurrentStations.value = fetchingAll.filter(Boolean)
-
     // set initial stream with the `currentStreamStation` value in the states.ts file
     //if (refresh) {
     const initialStation = allCurrentStations.value.find(
-        (station) =>
-            station.data.data[0].attributes.slug === currentStreamStation.value
-    ).data
-    //console.log('initialStation = ', initialStation)
-    //console.log('formatShowData(initialStation) = ', formatShowData(initialStation))
+        (station) => {
+            console.log('station = ', station)
+            return station.slug === currentStreamStation.value
+        }
+    )
     currentEpisodeHolder.value = initialStation
-    //currentEpisodeHolder.value = formatShowData(initialStation)
     //}
 }
 
 const formatShowData = (apiResponse) => {
-
-    const showData = apiResponse.included.find((obj) => {
-        return obj.type === 'show'
-    })
+    console.log('apiResponse= ', apiResponse)
+    const showData = apiResponse.included.find((obj) =>
+        obj.type === 'show'
+    )
     const scheduleData = apiResponse.included.find((obj) => {
         return obj.type === 'show-schedule'
     })
@@ -82,12 +82,12 @@ const formatShowData = (apiResponse) => {
         detailsLink: showData ? showData.attributes.url : null,
         episodeTitle: episodeData ? episodeData.attributes.title : null,
         episodeLink: episodeData ? episodeData.attributes.url : null,
-        file: apiResponse.data[0].attributes['mobile-aac'],
-        image: imageData ? 'https://media.wnyc.org/i/480/480/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
+        file: apiResponse.data[0].attributes['mobile-mp3'],
+        image: imageData ? 'https://media.wnyc.org/i/448/448/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
         slug: apiResponse.data[0].attributes.slug,
         station: apiResponse.data[0].attributes.name,
-        timeStart: scheduleData ? scheduleData.attributes['iso-start-time'] : null,
-        timeEnd: scheduleData ? scheduleData.attributes['iso-end-time'] : null,
+        timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
+        timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
         title,
         titleLink,
         onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,

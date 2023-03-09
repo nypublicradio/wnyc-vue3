@@ -38,21 +38,6 @@ const updateUseIsPlayerMinimized = (e) => {
   isPlayerMinimized.value = e
 }
 
-// data vars to pass to VPersistentPlayer
-const currentEpisodeData = computed(
-  () => currentEpisode.value?.data[0].attributes
-)
-const currentEpisodeImage = computed(
-  () =>
-    currentEpisode.value?.included.find((include) => include.type === 'image')
-      .attributes
-)
-const currentEpisodeShow = computed(
-  () =>
-    currentEpisode.value?.included.find((include) => include.type === 'show')
-      .attributes
-)
-
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
@@ -72,27 +57,27 @@ watch(togglePlayTrigger, () => {
 })
 let timer = null
 let isInitialPing = true
-const pingEvent = () => {
-  const station = currentEpisodeData.value?.name
-    ? currentEpisodeShow.value.name
-    : null
-  const title = currentEpisodeShow.value?.title
-    ? currentEpisodeShow.value.title
-    : null
-  // $analytics.sendEvent('event_tracking', {
-  //   event_category: 'Ping',
-  //   component: 'Audio Player',
-  //   event_label: `${station} - ${title}`,
-  // })
-}
+// const pingEvent = () => {
+//   const station = currentEpisodeData.value?.name
+//     ? currentEpisodeShow.value.name
+//     : null
+//   const title = currentEpisodeShow.value?.title
+//     ? currentEpisodeShow.value.title
+//     : null
+//   // $analytics.sendEvent('event_tracking', {
+//   //   event_category: 'Ping',
+//   //   component: 'Audio Player',
+//   //   event_label: `${station} - ${title}`,
+//   // })
+// }
 watch(isEpisodePlaying, (e) => {
   if (isInitialPing) {
-    pingEvent()
+    //pingEvent()
     isInitialPing = false
   }
   if (e) {
     timer = setInterval(() => {
-      pingEvent()
+      //pingEvent()
     }, 60000)
   } else {
     clearInterval(timer)
@@ -110,12 +95,12 @@ watch(isEpisodePlaying, (e) => {
         v-if="showPlayer"
         :auto-play="true"
         :livestream="true"
-        :title="currentEpisodeShow?.title"
-        :title-link="currentEpisodeShow?.url"
-        :station="currentEpisodeData?.name"
-        :description="currentEpisodeShow?.featured?.title"
-        :image="currentEpisodeImage?.url || currentEpisodeData?.['image-logo']"
-        :file="currentEpisodeData?.['mobile-mp3']"
+        :title="currentEpisode.title"
+        :title-link="currentEpisode.url"
+        :station="currentEpisode.name"
+        :description="currentEpisode.details"
+        :image="currentEpisode.image"
+        :file="currentEpisode.file"
         :show-skip="false"
         :can-minimize="true"
         :showTrack="false"
@@ -139,5 +124,12 @@ watch(isEpisodePlaying, (e) => {
 .player-enter-from,
 .player-leave-to {
   transform: translateY(v-bind(playerHeight));
+}
+
+.persistent-player {
+  .track-info-description p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

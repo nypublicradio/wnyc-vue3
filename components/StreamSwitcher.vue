@@ -16,11 +16,12 @@ const isEpisodePlaying = useIsEpisodePlaying()
 
 const selectedStation = ref(null)
 const stationsMenuData = ref([])
-
+console.log('allCurrentStations = ', allCurrentStations)
 watch(allCurrentStations, (val) => {
   const tempMenuData = []
 
   val.forEach((station) => {
+    return
     const attributes = station.data.data[0].attributes
     const showTitle = station.data.included.find(
       (include) => include.type === 'show'
