@@ -17,9 +17,10 @@
       </div>
     </section>
     <section>
-      <!-- <OnTodaysShow /> -->
+      <OnTodaysShow />
     </section>
     <section>
+      <h2 class="font-bold font-meta mb-2">Top stories from The Gothamist</h2>
       <top-stories />
     </section>
   </div>

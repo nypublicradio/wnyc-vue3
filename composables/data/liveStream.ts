@@ -1,5 +1,5 @@
 import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentStreamStation } from '~/composables/states'
-import { formatTime } from '~/utilities/helpers'
+import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
     const config = useRuntimeConfig()
@@ -74,6 +74,7 @@ const formatShowData = (apiResponse) => {
         details = airingData.attributes.description
         titleLink = airingData.attributes.href
     }
+    //console.log('episodeData image tample', formatPublisherImageUrl(episodeData?.attributes['image-main'].template))
     const formattedData = {
         details,
         detailsLink: showData ? showData.attributes.url : null,
@@ -91,6 +92,9 @@ const formatShowData = (apiResponse) => {
         onTodaysShowHeadlineLink: episodeData ? episodeData.attributes.url : null,
         onTodaysShowHosts: showData ? showData.attributes.about.roles.host : null,
         onTodaysShowImage: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].url : null,
+        onTodaysShowImageMaxWidth: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].w : null,
+        onTodaysShowImageMaxHeight: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].h : null,
+        onTodaysShowImageTemplate: episodeData && episodeData.attributes['image-main'] ? formatPublisherImageUrl(episodeData.attributes['image-main'].template) : null,
         onTodaysShowImageAltText: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['alt-text'] : null,
         onTodaysShowImageCaption: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].caption : null,
         onTodaysShowImageCredits: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-name'] : null,

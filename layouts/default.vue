@@ -259,23 +259,6 @@ const isRefreshing = ref(false)
 .refresh-leave-to {
   opacity: 0;
 }
-.dots {
-  opacity: 0.5;
-  background-image: radial-gradient(
-      RGB(255, 255, 255, 0.6) 2px,
-      transparent 2px
-    ),
-    radial-gradient(RGB(255, 255, 255, 0.6) 2px, transparent 2px);
-  background-position: 35px 0, 35px 35px;
-  background-size: 35px 35px;
-  width: 1366px;
-  max-width: 100%;
-  height: 340px;
-  position: absolute;
-  margin: auto;
-  right: 0;
-  left: 0;
-}
 .content {
   z-index: 10;
   position: relative;
