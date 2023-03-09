@@ -6,10 +6,10 @@ export async function updateLiveStream(slug: string) {
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
 
-    currentEpisodeHolder.value = fetchData.data.value
+    currentEpisodeHolder.value = formatShowData(fetchData.data.value)
 }
 
-export async function updateAllLiveStreams(refresh: boolean = false) {
+export async function updateAllLiveStreams() {
     const config = useRuntimeConfig()
     const allCurrentStations = useAllCurrentStations()
     const currentStreamStation = useCurrentStreamStation()
@@ -20,26 +20,23 @@ export async function updateAllLiveStreams(refresh: boolean = false) {
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
             const fetchedRunningShowData = await useFetch(`${config['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-            console.log('fetchedRunningShowData = ', fetchedRunningShowData.data.value)
+
             return formatShowData(fetchedRunningShowData.data.value)
         }
     }))
     // set all streams
     allCurrentStations.value = fetchingAll.filter(Boolean)
+
     // set initial stream with the `currentStreamStation` value in the states.ts file
-    //if (refresh) {
     const initialStation = allCurrentStations.value.find(
         (station) => {
-            console.log('station = ', station)
             return station.slug === currentStreamStation.value
         }
     )
     currentEpisodeHolder.value = initialStation
-    //}
 }
 
 const formatShowData = (apiResponse) => {
-    console.log('apiResponse= ', apiResponse)
     const showData = apiResponse.included.find((obj) =>
         obj.type === 'show'
     )

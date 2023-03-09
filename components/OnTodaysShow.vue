@@ -29,15 +29,15 @@ watch(currentEpisodeHolder, (val) => {})
     <div class="grid grid-nogutter">
       <div class="col-12 md:col-6 overflow-hidden">
         <h2 class="font-bold font-meta inline">
-          Today on {{ featuredData.title }}
+          Today on {{ currentEpisodeHolder.title }}
         </h2>
         <span class="title-line relative w-full"></span>
         <!-- <div class="on-todays-show-time">
           {{ formatTime(showSchedule['iso-start-time']) }} -
           {{ formatTime(showSchedule['iso-end-time']) }}
         </div> -->
-        <v-flexible-link raw :to="featuredData.headlineLink">
-          <h2 v-html="featuredData.headline" />
+        <v-flexible-link raw :to="currentEpisodeHolder.headlineLink">
+          <h2 v-html="currentEpisodeHolder.headline" />
         </v-flexible-link>
       </div>
       <div class="col-12 md:col-6">
