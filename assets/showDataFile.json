@@ -1,0 +1,656 @@
+{
+  "links": {
+    "first": "http://api.prod.nypr.digital/api/v4/whats_on/?page=1",
+    "last": "http://api.prod.nypr.digital/api/v4/whats_on/?page=2",
+    "next": "http://api.prod.nypr.digital/api/v4/whats_on/?page=2",
+    "prev": null
+  },
+  "data": [
+    {
+      "type": "whats-on-now",
+      "id": "45",
+      "attributes": {
+        "name": "Indivisible",
+        "slug": "indivisible",
+        "short-description": "",
+        "has-playlists": false,
+        "image-logo": "https://media.wnyc.org/i/1400/1400/l/80/1/Indivisible_3.png",
+        "schedule-url": "http://account.wnyc.org/schedule/?scheduleStation=indivisible",
+        "playlist-url": "http://account.wnyc.org/playlist-daily/?scheduleStation=indivisible",
+        "whats-on": null,
+        "audio-bumper": "",
+        "aac": null,
+        "mp3": "https://indivisible.wnyc.org/wnycsp",
+        "mobile-aac": "",
+        "mobile-mp3": "https://indivisible.wnyc.org/wnycsp",
+        "hls": "",
+        "twitter-handle": "",
+        "site-id": 14,
+        "order": 4
+      },
+      "relationships": {
+        "current-show": {
+          "data": null
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "10",
+      "attributes": {
+        "name": "Fundraiser Free WQXR",
+        "slug": "wqxr-special2-same-as-holiday",
+        "short-description": "",
+        "has-playlists": true,
+        "image-logo": "https://media.wnyc.org/i/300/300/c/80/1/wqxr_2.png",
+        "schedule-url": "http://culture.wnyc.org/schedule/?scheduleStation=wqxr-special2-same-as-holiday",
+        "playlist-url": "http://culture.wnyc.org/playlist-daily/?scheduleStation=wqxr-special2-same-as-holiday",
+        "whats-on": null,
+        "audio-bumper": "",
+        "aac": "https://stream.wqxr.org/qxr-fundraiser-free.aac",
+        "mp3": "https://stream.wqxr.org/qxr-fundraiser-free",
+        "mobile-aac": "https://stream.wqxr.org/qxr-fundraiser-free-mobile.aac",
+        "mobile-mp3": "rtsp://wnyc-wowza.streamguys.com/qxr-fundraiser-free/qxr-fundraiser-free",
+        "hls": "http://wnyc-wowza.streamguys.com/qxr-fundraiser-free/qxr-fundraiser-free/playlist.m3u8",
+        "twitter-handle": "",
+        "site-id": 3,
+        "order": 4
+      },
+      "relationships": {
+        "current-show": {
+          "data": null
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "8",
+      "attributes": {
+        "name": "NJPR - DO NOT USE",
+        "slug": "njpr",
+        "short-description": "New Jersey News, Culture, Talk",
+        "has-playlists": false,
+        "image-logo": "https://media.wnyc.org/i/500/500/c/80/1/njpr_3.png",
+        "schedule-url": "http://culture.wnyc.org/schedule/?scheduleStation=njpr",
+        "playlist-url": "http://culture.wnyc.org/playlist-daily/?scheduleStation=njpr",
+        "whats-on": null,
+        "audio-bumper": "/streambumper/streambumper000007_njpr.mp3",
+        "aac": null,
+        "mp3": "http://njpr.wnyc.org/njprweb",
+        "mobile-aac": "",
+        "mobile-mp3": "https://njpr.wnyc.org/njprweb-web",
+        "hls": "https://hls-live.wnyc.org/njpr-hls/playlist.m3u8",
+        "twitter-handle": "",
+        "site-id": 3,
+        "order": 10
+      },
+      "relationships": {
+        "current-show": {
+          "data": null
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "1",
+      "attributes": {
+        "name": "WNYC 93.9 FM",
+        "slug": "wnyc-fm939",
+        "short-description": "News, Culture & Talk",
+        "has-playlists": false,
+        "image-logo": "https://media.wnyc.org/i/500/500/c/80/1/wnyc_2_1.png",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=wnyc-fm939",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=wnyc-fm939",
+        "whats-on": null,
+        "audio-bumper": "/streambumper/streambumper000001_wnycfm.mp3",
+        "aac": "https://fm939.wnyc.org/wnycfm.aac",
+        "mp3": "https://fm939.wnyc.org/wnycfm",
+        "mobile-aac": "https://fm939.wnyc.org/wnycfm-mobile.aac",
+        "mobile-mp3": "https://fm939.wnyc.org/wnycfm-web",
+        "hls": "https://hls-live.wnyc.org/wnycfm32/playlist.m3u8",
+        "twitter-handle": "",
+        "site-id": 1,
+        "order": 1
+      },
+      "relationships": {
+        "current-show": {
+          "data": {
+            "type": "show-schedule",
+            "id": "1398"
+          }
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": {
+            "type": "episode",
+            "id": "1187210"
+          }
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "2",
+      "attributes": {
+        "name": "WNYC AM 820",
+        "slug": "wnyc-am820",
+        "short-description": "News, Culture & Talk",
+        "has-playlists": false,
+        "image-logo": "https://media.wnyc.org/i/500/500/c/80/1/wnyc_2_1.png",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=wnyc-am820",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=wnyc-am820",
+        "whats-on": null,
+        "audio-bumper": "/streambumper/streambumper000002_wnycam.mp3",
+        "aac": "http://am820.wnyc.org/wnycam.aac",
+        "mp3": "http://am820.wnyc.org/wnycam",
+        "mobile-aac": "https://am820.wnyc.org/wnycam-mobile.aac",
+        "mobile-mp3": "https://am820.wnyc.org/wnycam-web",
+        "hls": "https://hls-live.wnyc.org/wnycam32/playlist.m3u8",
+        "twitter-handle": "",
+        "site-id": 1,
+        "order": 2
+      },
+      "relationships": {
+        "current-show": {
+          "data": {
+            "type": "show-schedule",
+            "id": "1398"
+          }
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": {
+            "type": "episode",
+            "id": "1187210"
+          }
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "4",
+      "attributes": {
+        "name": "New Sounds",
+        "slug": "q2",
+        "short-description": "Hand-picked music, genre free.",
+        "has-playlists": true,
+        "image-logo": "https://media.wnyc.org/i/600/600/l/80/1/ns_showcard-newsounds-radio-1.jpg",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=q2",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=q2",
+        "whats-on": null,
+        "audio-bumper": "/streambumper/streambumper000006_ns.mp3",
+        "aac": "https://q2stream.wqxr.org/q2.aac",
+        "mp3": "https://q2stream.wqxr.org/q2",
+        "mobile-aac": "https://q2stream.wqxr.org/q2-mobile.aac",
+        "mobile-mp3": "https://q2stream.wqxr.org/q2-web",
+        "hls": "https://hls-live.wnyc.org/q248/playlist.m3u8",
+        "twitter-handle": "q2music",
+        "site-id": 1,
+        "order": 4
+      },
+      "relationships": {
+        "current-show": {
+          "data": {
+            "type": "show-schedule",
+            "id": "1394"
+          }
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "46",
+      "attributes": {
+        "name": "WQXR Holiday Channel on WNYC",
+        "slug": "wqxr-holiday-channel-on-wnyc",
+        "short-description": "Classical holiday music stream",
+        "has-playlists": false,
+        "image-logo": "https://media.wnyc.org/i/1400/1400/l/80/1/WQXR_HolidayChannel.png",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=wqxr-holiday-channel-on-wnyc",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=wqxr-holiday-channel-on-wnyc",
+        "whats-on": null,
+        "audio-bumper": "",
+        "aac": "https://stream.wqxr.org/qxr-special.aac",
+        "mp3": "https://stream.wqxr.org/qxr-special",
+        "mobile-aac": "https://stream.wqxr.org/qxr-special.aac",
+        "mobile-mp3": "https://stream.wqxr.org/qxr-special",
+        "hls": "https://hls-live.wnyc.org/qxr-special.aac/playlist.m3u8",
+        "twitter-handle": "",
+        "site-id": 1,
+        "order": 5
+      },
+      "relationships": {
+        "current-show": {
+          "data": null
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "6",
+      "attributes": {
+        "name": "Special Programming",
+        "slug": "takeaway",
+        "short-description": "Special Programming from WNYC",
+        "has-playlists": false,
+        "image-logo": "https://media.wnyc.org/i/500/500/l/80/1/wnyc_2_1_ucwLL8o.png",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=takeaway",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=takeaway",
+        "whats-on": null,
+        "audio-bumper": "",
+        "aac": null,
+        "mp3": "https://takeaway.wnyc.org/wnycsp",
+        "mobile-aac": "",
+        "mobile-mp3": "https://specialstream.wnyc.org/wnycsp",
+        "hls": "https://takeaway.wnyc.org/wnycsp",
+        "twitter-handle": "",
+        "site-id": 1,
+        "order": 5
+      },
+      "relationships": {
+        "current-show": {
+          "data": null
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "11",
+      "attributes": {
+        "name": "New Standards",
+        "slug": "jonathan-channel",
+        "short-description": "Great American Songs from WNYC",
+        "has-playlists": true,
+        "image-logo": "https://media.wnyc.org/i/1400/1400/c/80/2019/08/new-standards.png",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=jonathan-channel",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=jonathan-channel",
+        "whats-on": null,
+        "audio-bumper": "/streambumper/streambumper000004_tjc.mp3",
+        "aac": "http://tjc.wnyc.org/js-stream.aac",
+        "mp3": "http://tjc.wnyc.org/js-stream",
+        "mobile-aac": "https://tjc.wnyc.org/js-stream-mobile.aac",
+        "mobile-mp3": "https://tjc.wnyc.org/js-stream.aac",
+        "hls": "https://hls-live.wnyc.org/tjc48/playlist.m3u8",
+        "twitter-handle": "jonathanwnyc",
+        "site-id": 1,
+        "order": 5
+      },
+      "relationships": {
+        "current-show": {
+          "data": {
+            "type": "show-schedule",
+            "id": "907"
+          }
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    },
+    {
+      "type": "whats-on-now",
+      "id": "5",
+      "attributes": {
+        "name": "Holiday Standards ",
+        "slug": "special-events-stream",
+        "short-description": "Swinging holiday soundtrack",
+        "has-playlists": true,
+        "image-logo": "https://media.wnyc.org/i/1860/1859/l/80/2020/11/WQXRNewStandardsHolidayChannelF_1x1.jpg",
+        "schedule-url": "http://www.wnyc.org/schedule/?scheduleStation=special-events-stream",
+        "playlist-url": "http://www.wnyc.org/playlist-daily/?scheduleStation=special-events-stream",
+        "whats-on": null,
+        "audio-bumper": "",
+        "aac": "https://specialstream.wnyc.org/wnyc-special",
+        "mp3": "https://specialstream.wnyc.org/wnyc-special",
+        "mobile-aac": "https://specialstream.wnyc.org/wnyc-special.aac",
+        "mobile-mp3": "https://specialstream.wnyc.org/wnyc-special",
+        "hls": "https://hls-live.wnyc.org/wnyc-special48/playlist.m3u8",
+        "twitter-handle": "",
+        "site-id": 1,
+        "order": 9
+      },
+      "relationships": {
+        "current-show": {
+          "data": {
+            "type": "show-schedule",
+            "id": "1254"
+          }
+        },
+        "current-airing": {
+          "data": null
+        },
+        "current-episode": {
+          "data": null
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "episode",
+      "id": "1187210",
+      "attributes": {
+        "analytics-code": "ExperimentalStory:all-of-it-2023-03-08 $A0$AD0$V0$Me$D1$HS1$HC0$B0$SS++$C$SAll Of It$T!arts!film!actor!books!story!cinema!movies!oscars!director!interview!storytelling!$APnone$",
+        "appearances": {
+          "producers": [],
+          "hosts": [],
+          "authors": []
+        },
+        "audio": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "audio-available": false,
+        "audio-eventually": true,
+        "audio-duration-readable": null,
+        "audio-may-download": true,
+        "audio-may-embed": true,
+        "audio-may-stream": true,
+        "body": "<p><span>Preeminent author <strong>Margaret Atwood</strong> joins us to discuss her latest short story collection, <em>Old Babes in the Woods,</em> containing fifteen works of short fiction.</span></p>\n<p><span>[REBROADCAST FROM December 7, 2022] </span>A new film from an adapted screenplay by<span> </span><strong>Kazuo Ishiguro</strong>, titled<span> </span><em>\"Living,\"</em><span> </span>finds<span> </span><strong>Bill Nighy</strong><span> </span>as a 1950s civil servant who, after a fatal cancer diagnosis, endeavors to give his tedious life meaning. Nighy and Ishiguro join us to discuss the movie.</p>\n<p><span><span><span><span>In continuing our Big Picture series celebrating the nominees who work behind the camera, we speak with<span> </span><strong>Shirley Kurata</strong>, the Oscar nominated costume designer behind the memorable looks from Best Picture nominee,<span> </span><em>\"Everything Everywhere All At Once.\"</em></span></span></span></span></p>\n<p><span>[REBROADCAST FROM December 1, 2022] The film \"Everything Everywhere All At Once\" has become one of the highest grossing indie films of all time, attracting a dedicated fan base due to its inventive storytelling, excellent action sequences, and a grounding lead performance from Michelle Yeoh. But it is </span><strong>Stephanie Hsu</strong><span><span> </span>who is the true scene stealer as Yeoh's daughter (and foe). Hsu joins us to discuss her breakout role and her career on screen and stage, and take calls from \"Everything Everywhere All At Once\" fans! The film has 11 Oscar nominations, including one for Best Picture.</span></p>\n<p>Pulitzer Prize finalist<em><span><span> </span><strong>Rebecca Makkai</strong><span> </span></span></em>is our March Get Lit with All Of It book club author. She joins us to give a preview of her new novel, <em><span>I Have Some Questions For You</span></em><span>, which follows a podcast host as she begins to look into the murder of her old boarding school roommate in the 1990s. </span><br><span></span></p>\n",
+        "canonical-url": null,
+        "channel": "",
+        "channel-title": "",
+        "chunks": {
+          "show-sidebar-top": null,
+          "story": null,
+          "site-sidebar-top": "",
+          "show-sidebar-bottom": null,
+          "site-sidebar-bottom": null
+        },
+        "cms-pk": 1187210,
+        "comments-count": 0,
+        "enable-comments": true,
+        "date-line-ts": 1678294087,
+        "edit-link": "cms/episode/1187210",
+        "embed-code": "<iframe frameborder=\"0\" scrolling=\"no\" height=\"130\" width=\"100%\" src=\"https://www.wnyc.org/widgets/ondemand_player/wnyc/#file=/audio/json/1187210/&share=1\"></iframe>",
+        "estimated-duration": 0,
+        "headers": {
+          "brand": {
+            "url": "https://www.wnyc.org/shows/all-of-it",
+            "title": "All Of It",
+            "slug": "all-of-it",
+            "logo-image": {
+              "alt-text": "All of It with Alison Stewart",
+              "name": "2020/06/AllOfIt.png",
+              "source": null,
+              "url": "https://media.wnyc.org/i/1400/1400/l/80/2020/06/AllOfIt.png",
+              "h": 1400,
+              "is-display": true,
+              "crop": "l",
+              "caption": "All of It with Alison Stewart",
+              "credits-url": "",
+              "template": "https://media.wnyc.org/i/%s/%s/%s/%s/2020/06/AllOfIt.png",
+              "w": 1400,
+              "id": 190372,
+              "credits-name": "WNYC"
+            }
+          },
+          "links": [
+            {
+              "url": "https://www.wnyc.org/shows/all-of-it",
+              "title": "All Of It",
+              "item-type": "show",
+              "slug": "all-of-it"
+            }
+          ]
+        },
+        "header-donate-chunk": null,
+        "image-caption": "",
+        "image-main": {
+          "alt-text": "a fierce malaysian woman, actress michelle yeoh, portrays a middle-aged chinese immigrant and laundromat owner. she adorns a goofy google-y eye on her forehead and stands in a martial arts position, r",
+          "name": "2023/03/everything-everywhere-yeoh.jpg",
+          "source": null,
+          "url": "https://media.wnyc.org/i/1600/1003/l/80/2023/03/everything-everywhere-yeoh.jpg",
+          "h": 1003,
+          "is-display": true,
+          "crop": "l",
+          "caption": "Michelle Yeoh in \"Everything Everywhere All At Once.\"",
+          "credits-url": "",
+          "template": "https://media.wnyc.org/i/%s/%s/%s/%s/2023/03/everything-everywhere-yeoh.jpg",
+          "w": 1600,
+          "id": 204219,
+          "credits-name": "Courtesy of A24"
+        },
+        "item-type": "episode",
+        "item-type-id": 23,
+        "newscast": "",
+        "newsdate": "2023-03-08T11:48:07.983325-05:00",
+        "npr-analytics-dimensions": [
+          "NYPR",
+          "episode",
+          "1187210",
+          "0",
+          "arts,books,story,storytelling",
+          "",
+          "actor,arts,books,cinema,director,film,interview,movies,oscars,story,storytelling",
+          "1",
+          "WNYC",
+          "0",
+          "All Of It",
+          "2023-03-08 11:48:07.983325-05:00",
+          "261",
+          "none"
+        ],
+        "playlist": [],
+        "podcast-links": [
+          {
+            "href": "https://itunes.apple.com/us/podcast/id74254710",
+            "title": "via Apple Podcasts "
+          },
+          {
+            "href": "https://pca.st/8aF6Ow",
+            "title": "via Pocketcast"
+          },
+          {
+            "href": "https://podcasts.google.com/feed/aHR0cDovL2ZlZWRzLmZlZWRidXJuZXIuY29tL2FsbG9maXRfcG9kY2FzdA",
+            "title": "via Google Podcasts"
+          },
+          {
+            "href": "https://open.spotify.com/show/4MSFp9H0FuYfiiypQ5e3CK?si=zwFDVZ0WTFOELEI7d_v1cQ",
+            "title": "via Spotify"
+          },
+          {
+            "href": "https://www.stitcher.com/podcast/wnyc/all-of-it?refid=stpr",
+            "title": "via Stitcher "
+          },
+          {
+            "href": "https://music.amazon.com/podcasts/cb0adb72-ac5c-45fe-8b68-4dff0550a934/All-Of-It",
+            "title": "via Amazon Music"
+          },
+          {
+            "href": "https://tunein.com/radio/All-Of-It-p1156272/",
+            "title": "via TuneIn"
+          },
+          {
+            "href": "https://www.iheart.com/podcast/all-of-it-29845052",
+            "title": "via iHeart"
+          },
+          {
+            "href": "https://radiopublic.com/all-of-it-WlPYb7",
+            "title": "via Radio Public "
+          },
+          {
+            "href": "http://feeds.wnyc.org/allofit_podcast",
+            "title": "via RSS "
+          }
+        ],
+        "producing-organizations": [],
+        "publish-at": "2023-03-08T11:00:00",
+        "publish-status": "published",
+        "show": "all-of-it",
+        "show-tease": "<p><span>All Of It with Alison Stewart is a live daily conversation about culture and the culture in and around New York City. Follow All Of It on <a href=\"https://www.instagram.com/allofitwnyc/?hl=en\" target=\"_blank\">Instagram</a>.</span></p>",
+        "show-title": "All Of It",
+        "show-producing-orgs": [],
+        "series": [],
+        "short-title": "",
+        "site-id": 1,
+        "slug": "all-of-it-2023-03-08",
+        "slideshow": [],
+        "tags": [
+          "actor",
+          "arts",
+          "books",
+          "cinema",
+          "director",
+          "film",
+          "interview",
+          "movies",
+          "oscars",
+          "story",
+          "storytelling"
+        ],
+        "tease": "Margaret Atwood's New Collection. 'Living.' Big Picture: 'Everything Everywhere All At Once' Costumes. Stephanie Hsu. Get Lit Preview with Rebecca Makkai.",
+        "template": "story_default",
+        "title": "Margaret Atwood's New Collection, 'Living,' Big Picture: 'Everything Everywhere All At Once' Costumes, Stephanie Hsu, Get Lit Preview with Rebecca Makkai",
+        "transcript": "",
+        "twitter-headline": "Margaret Atwood's New Collection, 'Living,' Big Picture: 'Everything Everywhere All At Once' Costumes, Stephanie Hsu, Get Lit Preview with Rebecca Makkai",
+        "twitter-handle": null,
+        "url": "http://www.wnyc.org/story/all-of-it-2023-03-08/",
+        "video": null
+      },
+      "relationships": {
+        "segments": {
+          "data": [
+            {
+              "type": "segment",
+              "id": "1306542"
+            },
+            {
+              "type": "segment",
+              "id": "1306537"
+            },
+            {
+              "type": "segment",
+              "id": "1306536"
+            },
+            {
+              "type": "segment",
+              "id": "1306533"
+            },
+            {
+              "type": "segment",
+              "id": "1306531"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "show-schedule",
+      "id": "1254",
+      "attributes": {
+        "iso-start-time": "2023-03-08T17:00:00+00:00",
+        "iso-end-time": "2023-03-08T23:00:00+00:00"
+      },
+      "relationships": {
+        "show": {
+          "data": {
+            "type": "show",
+            "id": "818984"
+          }
+        }
+      }
+    },
+    {
+      "type": "show-schedule",
+      "id": "1394",
+      "attributes": {
+        "iso-start-time": "2023-03-08T15:00:00+00:00",
+        "iso-end-time": "2023-03-08T21:00:00+00:00"
+      },
+      "relationships": {
+        "show": {
+          "data": {
+            "type": "show",
+            "id": "842041"
+          }
+        }
+      }
+    },
+    {
+      "type": "show-schedule",
+      "id": "1398",
+      "attributes": {
+        "iso-start-time": "2023-03-08T17:00:00+00:00",
+        "iso-end-time": "2023-03-08T19:00:00+00:00"
+      },
+      "relationships": {
+        "show": {
+          "data": {
+            "type": "show",
+            "id": "882225"
+          }
+        }
+      }
+    },
+    {
+      "type": "show-schedule",
+      "id": "907",
+      "attributes": {
+        "iso-start-time": "2023-03-08T17:00:00+00:00",
+        "iso-end-time": "2023-03-08T19:00:00+00:00"
+      },
+      "relationships": {
+        "show": {
+          "data": {
+            "type": "show",
+            "id": "436"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pages": 2,
+      "count": 13
+    }
+  }
+}
