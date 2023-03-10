@@ -18,10 +18,13 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const allCurrentStations = useAllCurrentStations()
 const isEpisodePlaying = useIsEpisodePlaying()
 
-const hosts = ref(currentEpisodeHolder?.hosts)
-const social = ref(currentEpisodeHolder?.social)
-const segments = ref(currentEpisodeHolder?.onTodaysShowSegments)
+const hosts = computed(() => currentEpisodeHolder?.value?.onTodaysShowHosts)
+const social = computed(() => currentEpisodeHolder?.value?.onTodaysShowSocial)
+const segments = computed(
+  () => currentEpisodeHolder?.value?.onTodaysShowSegments
+)
 
+console.log('currentEpisodeHolder = ', currentEpisodeHolder)
 const segmentsToShow = ref(3)
 
 const gaEvent = () => {
@@ -32,8 +35,8 @@ const gaEvent = () => {
 <template>
   <div class="on-todays-show" v-if="currentEpisodeHolder">
     <!--     <pre>
-        {{ currentEpisodeHolder }}
-        </pre
+        {{ social }}
+      </pre
     > -->
 
     <div
