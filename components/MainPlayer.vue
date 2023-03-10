@@ -1,7 +1,6 @@
 <script setup>
 import { useCurrentEpisodeHolder } from '~/composables/states'
 import { useCurrentStreamStation } from '~/composables/states'
-import { formatTime } from '~/utilities/helpers'
 
 const currentStreamStation = useCurrentStreamStation()
 const currentEpisodeHolder = useCurrentEpisodeHolder()

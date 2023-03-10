@@ -3,7 +3,8 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import VImageWithCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageWithCaption.vue'
 import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
-import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
+
+import { resizePublisherImage } from '~/utilities/helpers'
 import {
   useCurrentStreamStation,
   useAllCurrentStations,
@@ -25,7 +26,7 @@ const segments = computed(
 )
 
 console.log('currentEpisodeHolder = ', currentEpisodeHolder)
-const segmentsToShow = ref(3)
+const segmentsToShow = ref(4)
 
 const gaEvent = () => {
   // place holder for GA event
@@ -33,12 +34,7 @@ const gaEvent = () => {
 </script>
 
 <template>
-  <div class="on-todays-show" v-if="currentEpisodeHolder">
-    <!--     <pre>
-        {{ social }}
-      </pre
-    > -->
-
+  <div class="on-todays-show mt-7" v-if="currentEpisodeHolder">
     <div
       v-if="currentEpisodeHolder?.onTodaysShowHeadline"
       class="flex gap-5 flex-column md:flex-row"
@@ -56,10 +52,13 @@ const gaEvent = () => {
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
         >
-          <h2 v-html="currentEpisodeHolder?.onTodaysShowHeadline" />
+          <h2
+            class="text-2xl md:text-3xl lg:text-4xl"
+            v-html="currentEpisodeHolder?.onTodaysShowHeadline"
+          />
         </v-flexible-link>
         <template v-if="segments">
-          <segment-list>
+          <segment-list class="mt-6">
             <segment-list-item
               v-for="(segment, index) in segments.slice(0, segmentsToShow)"
               :key="index"
@@ -99,36 +98,39 @@ const gaEvent = () => {
         />
       </div>
     </div>
-    <div v-if="hosts || social">
-      <div class="on-todays-show-person-social-wrapper">
-        <ul v-if="hosts" class="on-todays-show-person-list">
-          <li
+    <template v-if="hosts || social">
+      <div class="on-todays-show-person-social-wrapper grid mt-5">
+        <div
+          v-if="hosts"
+          class="on-todays-show-person-list col-12 md:col-6 flex flex-wrap column-gap-7 row-gap-4"
+        >
+          <div
             v-for="(host, index) in hosts"
             :key="index"
             class="on-todays-show-person-item"
           >
-            <a
+            <v-flexible-link
               target="_blank"
-              rel="noopener"
               class="on-todays-show-person-link"
-              :href="'https://www.wnyc.org' + host.url"
+              :to="'https://www.wnyc.org' + host.url"
+              raw
             >
-              <v-person
+              <HostCard
                 class="on-todays-show-person"
                 role="host"
                 :name="host['first-name'] + ' ' + host['last-name']"
                 :image="
                   host.image
-                    ? host.image
+                    ? resizePublisherImage(host.image, 200, 200)
                     : 'https://media.wnyc.org/i/raw/2021/01/radio_avatar.png'
                 "
               />
-            </a>
-          </li>
-        </ul>
+            </v-flexible-link>
+          </div>
+        </div>
         <v-share-tools
           v-if="social.twitter || social.instagram || social.facebook"
-          class="on-todays-show-social"
+          class="on-todays-show-social col-12 md:col-6"
           label="Connect with the show!"
           layout="vertical"
         >
@@ -152,7 +154,7 @@ const gaEvent = () => {
           />
         </v-share-tools>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 

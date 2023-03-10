@@ -1,7 +1,6 @@
 import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentStreamStation } from '~/composables/states'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
-//import fetchData from '~/assets/showDataFile.json'
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
     const config = useRuntimeConfig()
@@ -17,8 +16,7 @@ export async function updateAllLiveStreams() {
     const currentStreamStation = useCurrentStreamStation()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
-    //const fetchData = await useFetch('/assets/showDataFile.json')
-    console.log('fetchData = ', fetchData)
+
     const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
         //const fetchingAll = await Promise.all(fetchData?.data.map(async (stream) => {
         // conditional to check what shows are currently running
