@@ -45,6 +45,7 @@ const gaEvent = () => {
     >
       <div class="-mt-3 flex-1 relative">
         <div class="dots info"></div>
+        <!-- the following is a duplicate headline and only shown on mobile <lg breakpoint -->
         <v-flexible-link
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
@@ -78,6 +79,7 @@ const gaEvent = () => {
       </div>
       <div class="flex-1 relative mt-0 lg:-mt-4">
         <div class="dots image"></div>
+        <!-- the following is a duplicate headline and only shown on Desktop >lg breakpoint -->
         <v-flexible-link
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
