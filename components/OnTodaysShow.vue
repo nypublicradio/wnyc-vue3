@@ -81,6 +81,7 @@ const gaEvent = () => {
       <div class="flex-1 relative">
         <div class="dots"></div>
         <v-image-with-caption
+          class="show-image"
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
           loading="eager"
           :image="currentEpisodeHolder?.onTodaysShowImageTemplate"
@@ -180,6 +181,19 @@ const gaEvent = () => {
     display: none;
     @include media('>medium') {
       display: block;
+    }
+  }
+}
+</style>
+<style lang="scss">
+.on-todays-show {
+  .show-image {
+    .image-with-caption-credit-link {
+      border-bottom: none !important;
+      text-decoration: none;
+      &:hover {
+        color: inherit;
+      }
     }
   }
 }

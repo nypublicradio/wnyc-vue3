@@ -1,6 +1,9 @@
 import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentStreamStation } from '~/composables/states'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
+import fetchDataImport from '~/data/fetchedData.json'
+import allCurrentStationsImport from '~/data/allCurrentStationsImport.json'
+
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
     const config = useRuntimeConfig()
@@ -15,9 +18,11 @@ export async function updateAllLiveStreams() {
     const allCurrentStations = useAllCurrentStations()
     const currentStreamStation = useCurrentStreamStation()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
-    const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
 
-    const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
+    //const fetchData = await useFetch(`${config['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
+
+    //const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
+    const fetchingAll = await Promise.all(fetchDataImport?.data.map(async (stream) => {
         //const fetchingAll = await Promise.all(fetchData?.data.map(async (stream) => {
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
@@ -27,8 +32,10 @@ export async function updateAllLiveStreams() {
         }
     }))
     // set all streams
-    allCurrentStations.value = fetchingAll.filter(Boolean)
+    //allCurrentStations.value = fetchingAll.filter(Boolean)
+    allCurrentStations.value = allCurrentStationsImport
 
+    console.log('allCurrentStations value', allCurrentStations.value)
     // set initial stream with the `currentStreamStation` value in the states.ts file
     const initialStation = allCurrentStations.value.find(
         (station) => {
