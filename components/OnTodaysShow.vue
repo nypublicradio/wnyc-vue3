@@ -141,7 +141,9 @@ const gaEvent = () => {
             </v-flexible-link>
           </div>
         </div>
-        <div class="connect relative col-12 md:col-6 pl-4 my-6 md:my-0">
+        <div
+          class="connect flex justify-content-center flex-column col-12 md:col-6 pl-4 my-6 md:my-0 align-conent-center"
+        >
           <p>Connect with the show!</p>
           <v-share-tools
             v-if="social.twitter || social.instagram || social.facebook"
@@ -217,15 +219,8 @@ const gaEvent = () => {
   }
   .on-todays-show-person-social-wrapper {
     .connect {
-      &:after {
-        content: '';
-        position: absolute;
-        height: 125px;
-        width: 2px;
-        top: -22px;
-        left: 0;
-        background: rgba(map-get($colors, 'coolwhite'), 0.2);
-      }
+      min-height: 125px;
+      border-left: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
     }
   }
 }
