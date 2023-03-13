@@ -106,3 +106,32 @@ a {
     border: none !important;
   }
 }
+
+.image-with-caption {
+  .image-with-caption-icons-info {
+    padding: 0 !important;
+    border-radius: var(--border-radius) !important;
+    .p-button-icon {
+      font-size: 1rem;
+      font-weight: 900;
+    }
+  }
+  .image-with-caption-icons-close {
+    background: var(--red) !important;
+    padding: 9px 0 !important;
+  }
+  .image-with-caption-caption {
+    background: rgba(map-get($colors, 'darkblue'), 0.9);
+  }
+  figcaption.mt-1 {
+    text-align: right;
+    .image-with-caption-credit-link {
+      border-bottom: none !important;
+      text-decoration: none !important;
+      &:hover {
+        color: var(--link-button-color) !important;
+        text-decoration: none !important;
+      }
+    }
+  }
+}

@@ -81,7 +81,6 @@ const normalizeAuthor = (author) => {
 <style lang="scss">
 .top-stories {
   border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
-  padding: 50px 0 0;
 }
 
 .top-stories .h2 {

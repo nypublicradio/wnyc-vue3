@@ -16,34 +16,43 @@ const props = defineProps({
   },
   width: {
     type: Number,
-    default: 200,
+    default: 90,
   },
   height: {
     type: Number,
-    default: 200,
+    default: 90,
   },
   quality: {
     type: Number,
     default: 80,
   },
+  borderRadius: {
+    type: Number,
+    default: '100%',
+  },
 })
+
+const maxWidthBind = ref(props.width + 'px')
+const borderRadiusBind = ref(props.borderRadius)
 </script>
 
 <template>
   <div>
-    <div class="host-card flex gap-3 align-items-center">
+    <div
+      class="host-card flex gap-3 align-items-center flex-column lg:flex-row"
+    >
       <v-image-with-caption
         class="image"
         :image="props.image"
         :alt-text="`Photo of ${props.name}`"
-        :ratio="[1, 1]"
+        :ratio="[props.width, props.height]"
         role="presentation"
         loading="lazy"
         decoding="async"
         :width="props.width"
         :height="props.height"
       />
-      <div class="info">
+      <div class="info text-center lg:text-left">
         <h2 class="host-name">{{ props.name }}</h2>
         <p class="host-role">{{ props.role }}</p>
       </div>
@@ -54,8 +63,8 @@ const props = defineProps({
 <style lang="scss" scoped>
 .host-card {
   .image {
-    max-width: 100px;
-    border-radius: 100%;
+    max-width: v-bind(maxWidthBind);
+    border-radius: v-bind(borderRadiusBind);
     overflow: hidden;
   }
   .host-role {

@@ -21,7 +21,7 @@
     </section>
     <section>
       <h2 class="font-bold font-meta mb-2">Top stories from The Gothamist</h2>
-      <top-stories />
+      <top-stories class="pt-6" />
     </section>
   </div>
 </template>

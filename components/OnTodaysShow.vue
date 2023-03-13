@@ -26,7 +26,12 @@ const segments = computed(
 )
 
 console.log('currentEpisodeHolder = ', currentEpisodeHolder)
-const segmentsToShow = ref(4)
+const segmentsToShow = ref(3)
+
+const showMoreSegments = () => {
+  segmentsToShow.value = segments.value.length
+  this.gaEvent('Non-Player', 'Segment List', 'Show More')
+}
 
 const gaEvent = () => {
   // place holder for GA event
@@ -71,8 +76,8 @@ const gaEvent = () => {
             />
             <Button
               v-if="segments.length > segmentsToShow"
+              class="show-more-btn mt-3 mx-auto"
               label="show more"
-              class="u-space--top"
               @click="showMoreSegments"
             />
           </segment-list>
@@ -100,10 +105,12 @@ const gaEvent = () => {
       </div>
     </div>
     <template v-if="hosts || social">
-      <div class="on-todays-show-person-social-wrapper grid mt-5">
+      <div
+        class="on-todays-show-person-social-wrapper grid mt-7 align-items-center"
+      >
         <div
           v-if="hosts"
-          class="on-todays-show-person-list col-12 md:col-6 flex flex-wrap column-gap-7 row-gap-4"
+          class="on-todays-show-person-list col-12 md:col-6 flex flex-wrap column-gap-6 xl:column-gap-7 row-gap-4"
         >
           <div
             v-for="(host, index) in hosts"
@@ -122,38 +129,39 @@ const gaEvent = () => {
                 :name="host['first-name'] + ' ' + host['last-name']"
                 :image="
                   host.image
-                    ? resizePublisherImage(host.image, 200, 200)
+                    ? resizePublisherImage(host.image, 170, 170)
                     : 'https://media.wnyc.org/i/raw/2021/01/radio_avatar.png'
                 "
               />
             </v-flexible-link>
           </div>
         </div>
-        <v-share-tools
-          v-if="social.twitter || social.instagram || social.facebook"
-          class="on-todays-show-social col-12 md:col-6"
-          label="Connect with the show!"
-          layout="vertical"
-        >
-          <v-share-tools-item
-            v-if="social.twitter"
-            :username="social.twitter"
-            service="twitter"
-            @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
-          />
-          <v-share-tools-item
-            v-if="social.instagram"
-            :username="social.instagram"
-            service="instagram"
-            @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
-          />
-          <v-share-tools-item
-            v-if="social.facebook"
-            :username="social.facebook"
-            service="facebook"
-            @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
-          />
-        </v-share-tools>
+        <div class="connect relative col-12 md:col-6 pl-4 my-6 md:my-0">
+          <p>Connect with the show!</p>
+          <v-share-tools
+            v-if="social.twitter || social.instagram || social.facebook"
+            class="on-todays-show-social"
+          >
+            <v-share-tools-item
+              v-if="social.twitter"
+              :username="social.twitter"
+              service="twitter"
+              @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
+            />
+            <v-share-tools-item
+              v-if="social.instagram"
+              :username="social.instagram"
+              service="instagram"
+              @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
+            />
+            <v-share-tools-item
+              v-if="social.facebook"
+              :username="social.facebook"
+              service="facebook"
+              @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
+            />
+          </v-share-tools>
+        </div>
       </div>
     </template>
   </div>
@@ -172,6 +180,9 @@ const gaEvent = () => {
       background: rgba(map-get($colors, 'coolwhite'), 0.2);
     }
   }
+  .show-more-btn {
+    max-width: 200px;
+  }
   .dots {
     position: absolute;
     width: 100%;
@@ -179,20 +190,21 @@ const gaEvent = () => {
     right: -28%;
     top: 17%;
     display: none;
+    pointer-events: none;
     @include media('>medium') {
       display: block;
     }
   }
-}
-</style>
-<style lang="scss">
-.on-todays-show {
-  .show-image {
-    .image-with-caption-credit-link {
-      border-bottom: none !important;
-      text-decoration: none;
-      &:hover {
-        color: inherit;
+  .on-todays-show-person-social-wrapper {
+    .connect {
+      &:after {
+        content: '';
+        position: absolute;
+        height: 125px;
+        width: 2px;
+        top: -22px;
+        left: 0;
+        background: rgba(map-get($colors, 'coolwhite'), 0.2);
       }
     }
   }
