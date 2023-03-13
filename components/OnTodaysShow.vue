@@ -5,19 +5,9 @@ import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/component
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
 
 import { resizePublisherImage } from '~/utilities/helpers'
-import {
-  useCurrentStreamStation,
-  useAllCurrentStations,
-  useCurrentEpisode,
-  useCurrentEpisodeHolder,
-  useIsEpisodePlaying,
-} from '~/composables/states'
+import { useCurrentEpisodeHolder } from '~/composables/states'
 
-const currentStreamStation = useCurrentStreamStation()
-const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
-const allCurrentStations = useAllCurrentStations()
-const isEpisodePlaying = useIsEpisodePlaying()
 
 const hosts = computed(() => currentEpisodeHolder?.value?.onTodaysShowHosts)
 const social = computed(() => currentEpisodeHolder?.value?.onTodaysShowSocial)
@@ -40,7 +30,7 @@ const gaEvent = () => {
 
 <template>
   <div class="on-todays-show mt-7" v-if="currentEpisodeHolder">
-    <div class="grid-nogutter mb-3">
+    <div class="grid-nogutter lg:mb-3">
       <div class="overflow-hidden relative col-12 lg:col-6">
         <h2 class="headline font-bold font-meta inline">
           Today on {{ currentEpisodeHolder?.title }}
@@ -58,6 +48,7 @@ const gaEvent = () => {
         <v-flexible-link
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
+          class="hidden lg:inline"
         >
           <h2
             class="text-2xl md:text-3xl lg:text-4xl"
@@ -87,6 +78,16 @@ const gaEvent = () => {
       </div>
       <div class="flex-1 relative mt-0 lg:-mt-4">
         <div class="dots image"></div>
+        <v-flexible-link
+          raw
+          :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
+          class="lg:hidden"
+        >
+          <h2
+            class="text-2xl md:text-3xl lg:text-4xl"
+            v-html="currentEpisodeHolder?.onTodaysShowHeadline"
+          />
+        </v-flexible-link>
         <v-image-with-caption
           class="show-image"
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
@@ -187,22 +188,29 @@ const gaEvent = () => {
   }
   .dots {
     position: absolute;
-    display: none;
+    /*     display: none;
     pointer-events: none;
-    @include media('>lg') {
+    @include media('>sm') {
       display: block;
-    }
+    } */
     &.info {
       width: 200px;
       height: 400px;
       left: -148%;
       top: 43%;
+      @include media('<lg') {
+        display: none;
+      }
     }
     &.image {
       width: 100%;
       height: 100%;
       right: -28%;
       top: 17%;
+      @include media('<lg') {
+        height: 60%;
+        top: 46%;
+      }
     }
   }
   .on-todays-show-person-social-wrapper {

@@ -2,7 +2,7 @@
 <template>
   <div class="segment-list">
     <p class="segment-list-title">Segments</p>
-    <div class="flex flex-column gap-2">
+    <div class="flex flex-column">
       <slot />
     </div>
   </div>

@@ -27,7 +27,7 @@ const props = defineProps({
     default: 80,
   },
   borderRadius: {
-    type: Number,
+    type: String,
     default: '100%',
   },
 })

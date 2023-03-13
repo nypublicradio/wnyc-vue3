@@ -1,23 +1,10 @@
 <script setup>
 import { useCurrentEpisodeHolder } from '~/composables/states'
-import { useCurrentStreamStation } from '~/composables/states'
 
-const currentStreamStation = useCurrentStreamStation()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
-
-const currentEpisodeShow = computed(
-  () =>
-    currentEpisodeHolder.value?.included.find(
-      (include) => include.type === 'show'
-    ).attributes
-)
 </script>
 
 <template>
-  <!--   <pre>
-        {{ currentEpisodeHolder }}
-        </pre
-  > -->
   <div class="main-player card p-5">
     <div v-if="currentEpisodeHolder" class="grid gap-3">
       <div class="w-full md:w-auto mx-auto flex flex-column align-items-center">

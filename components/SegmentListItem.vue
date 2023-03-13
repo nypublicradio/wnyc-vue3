@@ -44,12 +44,21 @@ const props = defineProps({
   align-items: center;
   border-bottom: 1px solid rgba(map-get($colors, 'coolwhite'), 0.2) !important;
   text-decoration: none;
-
+  padding-top: 8px;
+  padding-bottom: 8px;
   &:hover {
     text-decoration: none;
+    .segment-list-item-icon {
+      left: 10px;
+    }
+  }
+  .segment-list-item-icon {
+    position: relative;
+    left: 0;
+    transition: left 0.5s;
+    -webkit-transition: left 0.5s;
   }
 }
-
 .segment-list-item .segment-list-item-title {
   width: 100%;
   padding-right: 1rem;
