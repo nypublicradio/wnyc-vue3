@@ -40,19 +40,21 @@ const gaEvent = () => {
 
 <template>
   <div class="on-todays-show mt-7" v-if="currentEpisodeHolder">
-    <div
-      v-if="currentEpisodeHolder?.onTodaysShowHeadline"
-      class="flex gap-5 flex-column md:flex-row"
-    >
-      <div class="overflow-hidden -mt-3 flex-1">
-        <h2 class="font-bold font-meta inline">
+    <div class="grid-nogutter mb-3">
+      <div class="overflow-hidden relative col-12 lg:col-6">
+        <h2 class="headline font-bold font-meta inline">
           Today on {{ currentEpisodeHolder?.title }}
         </h2>
         <span class="title-line relative w-full"></span>
-        <!-- <div class="on-todays-show-time">
-          {{ formatTime(showSchedule['iso-start-time']) }} -
-          {{ formatTime(showSchedule['iso-end-time']) }}
-        </div> -->
+      </div>
+    </div>
+
+    <div
+      v-if="currentEpisodeHolder?.onTodaysShowHeadline"
+      class="flex column-gap-5 row-gap-2 flex-column-reverse flex-column lg:flex-row"
+    >
+      <div class="-mt-3 flex-1 relative">
+        <div class="dots info"></div>
         <v-flexible-link
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
@@ -83,8 +85,8 @@ const gaEvent = () => {
           </segment-list>
         </template>
       </div>
-      <div class="flex-1 relative">
-        <div class="dots"></div>
+      <div class="flex-1 relative mt-0 lg:-mt-4">
+        <div class="dots image"></div>
         <v-image-with-caption
           class="show-image"
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
@@ -185,14 +187,22 @@ const gaEvent = () => {
   }
   .dots {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    right: -28%;
-    top: 17%;
     display: none;
     pointer-events: none;
-    @include media('>medium') {
+    @include media('>lg') {
       display: block;
+    }
+    &.info {
+      width: 200px;
+      height: 400px;
+      left: -148%;
+      top: 43%;
+    }
+    &.image {
+      width: 100%;
+      height: 100%;
+      right: -28%;
+      top: 17%;
     }
   }
   .on-todays-show-person-social-wrapper {
