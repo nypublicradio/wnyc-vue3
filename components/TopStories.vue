@@ -70,7 +70,7 @@ const normalizeAuthor = (author) => {
         <div class="article-metadata">
           <v-byline
             :authors="article.related_authors?.map(normalizeAuthor)"
-            class="mt-3"
+            class="mt-3 no-border"
           />
         </div>
       </v-card>

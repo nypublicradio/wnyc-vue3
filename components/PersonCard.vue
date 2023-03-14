@@ -34,12 +34,15 @@ const props = defineProps({
 
 const maxWidthBind = ref(props.width + 'px')
 const borderRadiusBind = ref(props.borderRadius)
+
+const emit = defineEmits(['person-emit'])
 </script>
 
 <template>
   <div>
     <div
-      class="host-card flex gap-3 align-items-center flex-column lg:flex-row"
+      class="person-card flex gap-3 align-items-center flex-column lg:flex-row"
+      @click="emit('person-emit', { name: props.name, role: props.role })"
     >
       <v-image-with-caption
         class="image"
@@ -61,7 +64,7 @@ const borderRadiusBind = ref(props.borderRadius)
 </template>
 
 <style lang="scss" scoped>
-.host-card {
+.person-card {
   .image {
     max-width: v-bind(maxWidthBind);
     border-radius: v-bind(borderRadiusBind);

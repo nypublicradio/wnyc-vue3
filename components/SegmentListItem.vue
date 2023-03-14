@@ -23,7 +23,7 @@ const props = defineProps({
     :to="url"
     :target="newWindow && '_blank'"
     class="segment-list-item"
-    @click="$emit('componentEvent', url)"
+    @click="$emit('click-emit', { url, title })"
   >
     <div class="segment-list-item-title">
       {{ title }}

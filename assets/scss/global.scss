@@ -107,6 +107,14 @@ a {
   }
 }
 
+.v-card {
+  .v-byline.no-border {
+    a {
+      border: none !important;
+    }
+  }
+}
+
 .image-with-caption {
   .image-with-caption-icons-info {
     padding: 0 !important;

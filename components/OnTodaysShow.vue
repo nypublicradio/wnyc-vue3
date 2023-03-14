@@ -6,7 +6,7 @@ import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/compo
 
 import { resizePublisherImage } from '~/utilities/helpers'
 import { useCurrentEpisodeHolder } from '~/composables/states'
-
+const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 const hosts = computed(() => currentEpisodeHolder?.value?.onTodaysShowHosts)
@@ -20,11 +20,69 @@ const segmentsToShow = ref(3)
 
 const showMoreSegments = () => {
   segmentsToShow.value = segments.value.length
-  this.gaEvent('Non-Player', 'Segment List', 'Show More')
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Show More`,
+    component: 'Segment List Show More Button',
+    event_label: 'Show More',
+  })
 }
 
-const gaEvent = () => {
-  // place holder for GA event
+const socialFollow = (social) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Social Follow`,
+    component: 'Social Follow',
+    event_label: social,
+  })
+}
+const personEmit = (person) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Show Participants`,
+    component: 'Person Card',
+    event_label: `${person.name} - ${person.role}`,
+  })
+}
+const segmentEmit = (segment) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - segments`,
+    component: 'Segment List',
+    event_label: segment.url,
+  })
+}
+const headlineEvent = (headline) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show Headline`,
+    component: 'On Todays Show Headline',
+    event_label: headline,
+  })
+}
+
+const imageClickEmit = (url) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show image`,
+    component: 'On Todays Show image',
+    event_label: url,
+  })
+}
+const creditClickEmit = (url) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show image credit`,
+    component: 'On Todays Show image credit',
+    event_label: url,
+  })
+}
+const toggleCaptionExpandedEmit = () => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show caption`,
+    component: 'On Todays Show caption',
+    event_label: 'expanded',
+  })
+}
+const toggleCaptionCollapsedEmit = () => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show caption`,
+    component: 'On Todays Show caption',
+    event_label: 'collapsed',
+  })
 }
 </script>
 
@@ -50,6 +108,7 @@ const gaEvent = () => {
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           class="hidden lg:inline"
+          @click="headlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)"
         >
           <h2
             class="text-2xl md:text-3xl lg:text-4xl"
@@ -64,9 +123,7 @@ const gaEvent = () => {
               :title="segment.title"
               :url="segment.url"
               :new-window="segment.newWindow"
-              @componentEvent="
-                gaEvent('Non-Player', 'Segment List', ...arguments)
-              "
+              @click-emit="segmentEmit"
             />
             <Button
               v-if="segments.length > segmentsToShow"
@@ -84,6 +141,7 @@ const gaEvent = () => {
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           class="lg:hidden"
+          @click="headlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)"
         >
           <h2
             class="text-2xl md:text-3xl lg:text-4xl"
@@ -106,6 +164,10 @@ const gaEvent = () => {
           :caption="currentEpisodeHolder?.onTodaysShowImageCaption"
           :sizes="[1]"
           :ratio="[3, 2]"
+          @image-click="imageClickEmit"
+          @credit-click="creditClickEmit"
+          @toggle-caption-expanded="toggleCaptionExpandedEmit"
+          @toggle-caption-collapsed="toggleCaptionCollapsedEmit"
         />
       </div>
     </div>
@@ -128,7 +190,7 @@ const gaEvent = () => {
               :to="'https://www.wnyc.org' + host.url"
               raw
             >
-              <HostCard
+              <PersonCard
                 class="on-todays-show-person"
                 role="host"
                 :name="host['first-name'] + ' ' + host['last-name']"
@@ -137,6 +199,7 @@ const gaEvent = () => {
                     ? resizePublisherImage(host.image, 170, 170)
                     : 'https://media.wnyc.org/i/raw/2021/01/radio_avatar.png'
                 "
+                @person-emit="personEmit"
               />
             </v-flexible-link>
           </div>
@@ -153,19 +216,19 @@ const gaEvent = () => {
               v-if="social.twitter"
               :username="social.twitter"
               service="twitter"
-              @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
+              @follow="socialFollow"
             />
             <v-share-tools-item
               v-if="social.instagram"
               :username="social.instagram"
               service="instagram"
-              @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
+              @follow="socialFollow"
             />
             <v-share-tools-item
               v-if="social.facebook"
               :username="social.facebook"
               service="facebook"
-              @click="gaEvent('Non-Player', 'Social Follow', ...arguments)"
+              @follow="socialFollow"
             />
           </v-share-tools>
         </div>
@@ -192,8 +255,8 @@ const gaEvent = () => {
   }
   .dots {
     position: absolute;
-    /*     display: none;
     pointer-events: none;
+    /*     display: none;
     @include media('>sm') {
       display: block;
     } */
