@@ -31,7 +31,7 @@ main {
   margin-top: 80px; // account for the sticky header height
 
   // update the extensions in the theme with the following update on the background gradient
-  background: linear-gradient(180deg, var(--red) 10%, var(--blue) 40%);
+  background: linear-gradient(180deg, var(--red) 10%, var(--blue) 24%);
 }
 
 section {
@@ -70,6 +70,29 @@ a {
   }
 }
 
+.font-meta {
+  font-family: var(--font-family);
+}
+
+.font-tisa {
+  font-family: var(--font-family-header);
+}
+
+.dots {
+  opacity: 0.5;
+  background-image: radial-gradient(RGB(255, 255, 255, 0.6) 2px, transparent 2px),
+    radial-gradient(RGB(255, 255, 255, 0.6) 2px, transparent 2px);
+  background-position: 35px 0, 35px 35px;
+  background-size: 35px 35px;
+  width: 1366px;
+  max-width: 100%;
+  height: 340px;
+  position: absolute;
+  margin: auto;
+  right: 0;
+  left: 0;
+}
+
 // TO DO move to DS extensions file
 .p-button .p-button-label {
   text-transform: uppercase;
@@ -81,5 +104,42 @@ a {
 .flexible-link {
   &.raw.no-border {
     border: none !important;
+  }
+}
+
+.v-card {
+  .v-byline.no-border {
+    a {
+      border: none !important;
+    }
+  }
+}
+
+.image-with-caption {
+  .image-with-caption-icons-info {
+    padding: 0 !important;
+    border-radius: var(--border-radius) !important;
+    .p-button-icon {
+      font-size: 1rem;
+      font-weight: 900;
+    }
+  }
+  .image-with-caption-icons-close {
+    background: var(--red) !important;
+    padding: 9px 0 !important;
+  }
+  .image-with-caption-caption {
+    background: rgba(map-get($colors, 'darkblue'), 0.9);
+  }
+  figcaption.mt-1 {
+    text-align: right;
+    .image-with-caption-credit-link {
+      border-bottom: none !important;
+      text-decoration: none !important;
+      &:hover {
+        color: var(--link-button-color) !important;
+        text-decoration: none !important;
+      }
+    }
   }
 }

@@ -1,249 +1,290 @@
+<script setup>
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import VImageWithCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageWithCaption.vue'
+import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
+import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
+
+import { resizePublisherImage } from '~/utilities/helpers'
+import { useCurrentEpisodeHolder } from '~/composables/states'
+const { $analytics } = useNuxtApp()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
+
+const hosts = computed(() => currentEpisodeHolder?.value?.onTodaysShowHosts)
+const social = computed(() => currentEpisodeHolder?.value?.onTodaysShowSocial)
+const segments = computed(
+  () => currentEpisodeHolder?.value?.onTodaysShowSegments
+)
+
+console.log('currentEpisodeHolder = ', currentEpisodeHolder)
+const segmentsToShow = ref(3)
+
+const showMoreSegments = () => {
+  segmentsToShow.value = segments.value.length
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Show More`,
+    component: 'Segment List Show More Button',
+    event_label: 'Show More',
+  })
+}
+
+const socialFollow = (social) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Social Follow`,
+    component: 'Social Follow',
+    event_label: social,
+  })
+}
+const personEmit = (person) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Show Participants`,
+    component: 'Person Card',
+    event_label: `${person.name} - ${person.role}`,
+  })
+}
+const segmentEmit = (segment) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - segments`,
+    component: 'Segment List',
+    event_label: segment.url,
+  })
+}
+const headlineEvent = (headline) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show Headline`,
+    component: 'On Todays Show Headline',
+    event_label: headline,
+  })
+}
+
+const imageClickEmit = (url) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show image`,
+    component: 'On Todays Show image',
+    event_label: url,
+  })
+}
+const creditClickEmit = (url) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show image credit`,
+    component: 'On Todays Show image credit',
+    event_label: url,
+  })
+}
+const toggleCaptionExpandedEmit = () => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show caption`,
+    component: 'On Todays Show caption',
+    event_label: 'expanded',
+  })
+}
+const toggleCaptionCollapsedEmit = () => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - On Todays Show caption`,
+    component: 'On Todays Show caption',
+    event_label: 'collapsed',
+  })
+}
+</script>
+
 <template>
-  <div class="on-todays-show">
-    <v-spacer v-if="headline" size="triple" />
-    <div v-if="headline" class="l-grid l-grid--2up l-grid--1up--large l-grid--large-gutters">
-      <h2 class="on-todays-show-title">
-        Today on {{ title }}
-      </h2>
+  <div class="on-todays-show mt-7" v-if="currentEpisodeHolder">
+    <div class="grid-nogutter lg:mb-3">
+      <div class="overflow-hidden relative col-12 lg:col-6">
+        <h2 class="headline font-bold font-meta inline">
+          Today on {{ currentEpisodeHolder?.title }}
+        </h2>
+        <span class="title-line relative w-full"></span>
+      </div>
     </div>
-    <div class="l-grid l-grid--2up l-grid--1up--large l-grid--large-gutters">
-      <div v-if="headline" class="on-todays-show-left l-grid--order-1-large">
-        <p class="on-todays-show-headline">
-          <a
-            v-if="headlineLink"
-            :href="headlineLink"
-            target="_blank"
-            rel="noopener"
-            v-html="headline"
+
+    <div
+      v-if="currentEpisodeHolder?.onTodaysShowHeadline"
+      class="flex column-gap-5 row-gap-2 flex-column-reverse flex-column lg:flex-row"
+    >
+      <div class="-mt-3 flex-1 relative">
+        <div class="dots info"></div>
+        <!-- the following is a duplicate headline and only shown on mobile <lg breakpoint -->
+        <v-flexible-link
+          raw
+          :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
+          class="hidden lg:inline"
+          @click="headlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)"
+        >
+          <h2
+            class="text-2xl md:text-3xl lg:text-4xl"
+            v-html="currentEpisodeHolder?.onTodaysShowHeadline"
           />
-          <span v-if="!headlineLink" v-html="headline" />
-        </p>
+        </v-flexible-link>
         <template v-if="segments">
-          <v-spacer size="triple" />
-          <segment-list>
+          <segment-list class="mt-6">
             <segment-list-item
               v-for="(segment, index) in segments.slice(0, segmentsToShow)"
               :key="index"
               :title="segment.title"
               :url="segment.url"
               :new-window="segment.newWindow"
-              @componentEvent="gaEvent('Non-Player','Segment List', ...arguments)"
+              @click-emit="segmentEmit"
             />
-            <v-button
+            <Button
               v-if="segments.length > segmentsToShow"
+              class="show-more-btn mt-3 mx-auto"
               label="show more"
-              class="u-space--top"
               @click="showMoreSegments"
             />
           </segment-list>
         </template>
       </div>
-      <div v-if="image" class="on-todays-show-right l-grid--order-2-large">
-        <image-with-caption
-          :alt-text="imageAltText"
-          :image="image"
-          width="506"
-          height="327"
-          :caption="imageCaption"
-          :credit="imageCredits"
-          :credit-url="imageCreditsUrl"
-          @componentEvent="gaEvent('Non-Player','Photo Caption', ...arguments)"
+      <div class="flex-1 relative mt-0 lg:-mt-4">
+        <div class="dots image"></div>
+        <!-- the following is a duplicate headline and only shown on Desktop >lg breakpoint -->
+        <v-flexible-link
+          raw
+          :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
+          class="lg:hidden"
+          @click="headlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)"
+        >
+          <h2
+            class="text-2xl md:text-3xl lg:text-4xl"
+            v-html="currentEpisodeHolder?.onTodaysShowHeadline"
+          />
+        </v-flexible-link>
+        <v-image-with-caption
+          class="show-image"
+          v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
+          loading="eager"
+          :image="currentEpisodeHolder?.onTodaysShowImageTemplate"
+          :imageUrl="currentEpisodeHolder?.onTodaysShowImageCreditsUrl"
+          :width="584"
+          :height="360"
+          :alt-text="currentEpisodeHolder?.onTodaysShowImageAltText"
+          :maxWidth="currentEpisodeHolder?.onTodaysShowImageMaxWidth"
+          :maxHeight="currentEpisodeHolder?.onTodaysShowImageMaxHeight"
+          :credit="currentEpisodeHolder?.onTodaysShowImageCredits"
+          :credit-url="currentEpisodeHolder?.onTodaysShowImageCreditsUrl"
+          :caption="currentEpisodeHolder?.onTodaysShowImageCaption"
+          :sizes="[1]"
+          :ratio="[3, 2]"
+          @image-click="imageClickEmit"
+          @credit-click="creditClickEmit"
+          @toggle-caption-expanded="toggleCaptionExpandedEmit"
+          @toggle-caption-collapsed="toggleCaptionCollapsedEmit"
         />
-        <div class="dots" />
       </div>
     </div>
-    <div v-if="hosts || social">
-      <v-spacer size="triple" />
-      <div class="on-todays-show-person-social-wrapper">
-        <ul v-if="hosts" class="on-todays-show-person-list">
-          <li v-for="(host, index) in hosts" :key="index" class="on-todays-show-person-item">
-            <a
+    <template v-if="hosts || social">
+      <div
+        class="on-todays-show-person-social-wrapper grid mt-7 align-items-center"
+      >
+        <div
+          v-if="hosts"
+          class="on-todays-show-person-list col-12 md:col-6 flex flex-wrap column-gap-6 xl:column-gap-7 row-gap-4"
+        >
+          <div
+            v-for="(host, index) in hosts"
+            :key="index"
+            class="on-todays-show-person-item"
+          >
+            <v-flexible-link
               target="_blank"
-              rel="noopener"
               class="on-todays-show-person-link"
-              :href="'https://www.wnyc.org'+host.url"
+              :to="'https://www.wnyc.org' + host.url"
+              raw
             >
-              <v-person
+              <PersonCard
                 class="on-todays-show-person"
                 role="host"
                 :name="host['first-name'] + ' ' + host['last-name']"
-                :image="host.image ? host.image : 'https://media.wnyc.org/i/raw/2021/01/radio_avatar.png'"
+                :image="
+                  host.image
+                    ? resizePublisherImage(host.image, 170, 170)
+                    : 'https://media.wnyc.org/i/raw/2021/01/radio_avatar.png'
+                "
+                @person-emit="personEmit"
               />
-            </a>
-          </li>
-        </ul>
-        <share-tools v-if="social.twitter || social.instagram || social.facebook" class="on-todays-show-social" label="Connect with the show!" layout="vertical">
-          <share-tools-item
-            v-if="social.twitter"
-            :username="social.twitter"
-            service="twitter"
-            @componentEvent="gaEvent('Non-Player','Social Follow', ...arguments)"
-          />
-          <share-tools-item
-            v-if="social.instagram"
-            :username="social.instagram"
-            service="instagram"
-            @componentEvent="gaEvent('Non-Player','Social Follow', ...arguments)"
-          />
-          <share-tools-item
-            v-if="social.facebook"
-            :username="social.facebook"
-            service="facebook"
-            @componentEvent="gaEvent('Non-Player','Social Follow', ...arguments)"
-          />
-        </share-tools>
+            </v-flexible-link>
+          </div>
+        </div>
+        <div
+          class="connect flex justify-content-center flex-column col-12 md:col-6 pl-4 my-6 md:my-0 align-conent-center"
+        >
+          <p>Connect with the show!</p>
+          <v-share-tools
+            v-if="social.twitter || social.instagram || social.facebook"
+            class="on-todays-show-social"
+          >
+            <v-share-tools-item
+              v-if="social.twitter"
+              :username="social.twitter"
+              service="twitter"
+              @follow="socialFollow"
+            />
+            <v-share-tools-item
+              v-if="social.instagram"
+              :username="social.instagram"
+              service="instagram"
+              @follow="socialFollow"
+            />
+            <v-share-tools-item
+              v-if="social.facebook"
+              :username="social.facebook"
+              service="facebook"
+              @follow="socialFollow"
+            />
+          </v-share-tools>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex'
-import helpers from '@/mixins/helpers'
-import gtm from '@/mixins/gtm'
-import whatsOnNow from '@/mixins/whatsOnNow'
-
-export default {
-  name: 'WhatsOnNow',
-  components: {
-    ImageWithCaption: () => import('nypr-design-system-vue/src/components/ImageWithCaption'),
-    SegmentList: () => import('nypr-design-system-vue/src/components/SegmentList'),
-    SegmentListItem: () => import('nypr-design-system-vue/src/components/SegmentListItem'),
-    ShareTools: () => import('nypr-design-system-vue/src/components/ShareTools'),
-    ShareToolsItem: () => import('nypr-design-system-vue/src/components/ShareToolsItem'),
-    VButton: () => import('nypr-design-system-vue/src/components/VButton'),
-    VSpacer: () => import('nypr-design-system-vue/src/components/VSpacer'),
-    VPerson: () => import('nypr-design-system-vue/src/components/VPerson')
-  },
-  mixins: [whatsOnNow, helpers, gtm],
-  data () {
-    return {
-      segmentsToShow: 3
+<style lang="scss" scoped>
+.on-todays-show {
+  .title-line {
+    &:after {
+      content: '';
+      position: absolute;
+      margin-left: 20px;
+      height: 2px;
+      width: 100vw;
+      top: 50%;
+      background: rgba(map-get($colors, 'coolwhite'), 0.2);
     }
-  },
-  computed: {
-    ...mapState('whatsOnNow', {
-      headline: state => state.selectedStream.onTodaysShowHeadline,
-      headlineLink: state => state.selectedStream.onTodaysShowHeadlineLink,
-      episodeLink: state => state.selectedStream.episodeLink,
-      hosts: state => state.selectedStream.onTodaysShowHosts,
-      image: state => state.selectedStream.onTodaysShowImage,
-      imageAltText: state => state.selectedStream.onTodaysShowImageAltText,
-      imageCaption: state => state.selectedStream.onTodaysShowImageCaption,
-      imageCredits: state => state.selectedStream.onTodaysShowImageCredits,
-      imageCreditsUrl: state => state.selectedStream.onTodaysShowImageCreditsUrl,
-      segments: state => state.selectedStream.onTodaysShowSegments,
-      social: state => state.selectedStream.onTodaysShowSocial,
-      title: state => state.selectedStream.title
-    })
-  },
-  mounted () {
-    if (window.innerWidth > 850) {
-      this.segmentsToShow = 6
-    }
-  },
-  methods: {
-    collapseSegments () {
-      if (window.innerWidth > 850) {
-        this.segmentsToShow = 6
-      } else {
-        this.segmentsToShow = 3
+  }
+  .show-more-btn {
+    max-width: 200px;
+  }
+  .dots {
+    position: absolute;
+    pointer-events: none;
+    /*     display: none;
+    @include media('>sm') {
+      display: block;
+    } */
+    &.info {
+      width: 200px;
+      height: 400px;
+      left: -148%;
+      top: 43%;
+      @include media('<lg') {
+        display: none;
       }
-    },
-    showMoreSegments () {
-      this.segmentsToShow = this.segments.length
-      this.gaEvent('Non-Player', 'Segment List', 'Show More')
+    }
+    &.image {
+      width: 100%;
+      height: 100%;
+      right: -28%;
+      top: 17%;
+      @include media('<lg') {
+        height: 60%;
+        top: 46%;
+      }
     }
   }
-}
-</script>
-
-<style lang="scss">
-.o-icon {
-  border: none;
-  fill: RGB(var(--color-text));
-  z-index: 10;
-}
-
-.o-icon:hover {
-  fill: RGB(var(--color-text));
-  opacity: var(--opacity-hover);
-}
-
-.on-todays-show .dots {
-  display: none;
-  @include media(">medium") {
-    display: block;
+  .on-todays-show-person-social-wrapper {
+    .connect {
+      min-height: 125px;
+      border-left: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
+    }
   }
-}
-
-.on-todays-show-person-social-wrapper {
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  @include media(">medium") {
-    flex-direction: row;
-  }
-}
-
-.on-todays-show-person-list {
-  position: relative;
-  flex: 1 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  row-gap: 24px;
-  padding-bottom: 48px;
-  @include media(">medium") {
-    padding: 0;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    flex-basis: 280px;
-  }
-  @include media(">860px") {
-    align-self: center;
-  }
-}
-
-.on-todays-show-person-social-wrapper .on-todays-show-social {
-  overflow-x: hidden;
-  border-left: 1px solid rgba(234, 239, 240, 0.5);
-  padding-left: 24px;
-  width: 200px;
-  flex-direction: column;
-  justify-content: center;
-  align-self: flex-start;
-  @include media(">medium") {
-    height: 124px;
-    align-self: center;
-    flex: 1 0 200px;
-    padding-left: 48px;
-    margin-top: 0;
-  }
-
-  .c-share-tools__label {
-    flex-basis: auto;
-  }
-}
-
-.on-todays-show-person-item {
-  display: inline-block;
-  list-style: none;
-  width: 160px;
-  @include media(">medium") {
-    width: 280px;
-  }
-}
-
-.on-todays-show-person.card.person-card {
-  list-style: none;
-  width: 160px;
-  max-width: 160px;
-  @include media(">medium") {
-    width: 280px;
-    max-width: 280px;
-  }
-}
-
-.on-todays-show-person-link {
-  border: none;
 }
 </style>

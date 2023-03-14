@@ -17,10 +17,11 @@
       </div>
     </section>
     <section>
-      <p>episode data goes here</p>
+      <OnTodaysShow />
     </section>
     <section>
-      <top-stories />
+      <h2 class="font-bold font-meta mb-2">Top stories from The Gothamist</h2>
+      <top-stories class="pt-6" />
     </section>
   </div>
 </template>

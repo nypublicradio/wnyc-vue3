@@ -28,6 +28,7 @@ const props = defineProps({
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-feature-settings: 'lnum';
 }
 
 .live-indicator .live-indicator-wrapper {

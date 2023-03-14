@@ -70,7 +70,7 @@ const normalizeAuthor = (author) => {
         <div class="article-metadata">
           <v-byline
             :authors="article.related_authors?.map(normalizeAuthor)"
-            class="mt-3"
+            class="mt-3 no-border"
           />
         </div>
       </v-card>
@@ -80,8 +80,7 @@ const normalizeAuthor = (author) => {
 
 <style lang="scss">
 .top-stories {
-  border-top: 2px solid RGB(255, 255, 255, 0.2);
-  padding: 50px 0 0;
+  border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
 }
 
 .top-stories .h2 {

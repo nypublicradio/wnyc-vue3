@@ -7,7 +7,7 @@ import {
   useIsEpisodePlaying,
 } from '~/composables/states'
 import { updateLiveStream } from '~/composables/data/liveStream'
-import { formatTime } from '~/utilities/helpers'
+
 const currentStreamStation = useCurrentStreamStation()
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -21,44 +21,34 @@ watch(allCurrentStations, (val) => {
   const tempMenuData = []
 
   val.forEach((station) => {
-    const attributes = station.data.data[0].attributes
-    const showTitle = station.data.included.find(
-      (include) => include.type === 'show'
-    ).attributes.title
-    const showTimes = station.data.included.find(
-      (include) => include.type === 'show-schedule'
-    ).attributes
     tempMenuData.push({
-      label: showTitle,
-      name: showTitle,
-      station: attributes.name,
-      code: attributes.name,
-      slug: attributes.slug,
-      image: attributes['image-logo'],
-      times: `${formatTime(showTimes['iso-start-time'])} - ${formatTime(
-        showTimes['iso-end-time']
-      )}`,
+      label: station.title,
+      name: station.title,
+      station: station.station,
+      code: station.title,
+      slug: station.slug,
+      image: station.image,
+      times: `${station.timeStart} - ${station.timeEnd}`,
     })
   })
 
   stationsMenuData.value = tempMenuData
 
   // to set the initial station by updating "currentStreamStation" in states.ts to the slug you want to start with
-  //console.log('allCurrentStations = ', val)
   const initialStation = val.find(
-    (station) =>
-      station.data.data[0].attributes.slug === currentStreamStation.value
-  ).data.data[0].attributes.name
+    (station) => station.slug === currentStreamStation.value
+  ).station
 
   selectedStation.value = initialStation
 })
 
 let initialNoPlayToggleFlag = false
 const onDropdownChange = async (event) => {
+  console.log('event = ', event)
   await updateLiveStream(event.value.slug)
   // update slug
-  currentStreamStation.value =
-    currentEpisodeHolder.value.data[0].attributes.slug
+  console.log('currentEpisodeHolder = ', currentEpisodeHolder)
+  currentStreamStation.value = currentEpisodeHolder.value.slug
   if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
     initialNoPlayToggleFlag = true
     currentEpisode.value = currentEpisodeHolder.value
@@ -69,6 +59,7 @@ const onDropdownChange = async (event) => {
 <template>
   <div>
     <div class="stream-switcher">
+      <!--  <pre>{{ stationsMenuData }}</pre> -->
       <Dropdown
         :onChange="($event) => onDropdownChange($event)"
         :value="stationsMenuData[2]"
