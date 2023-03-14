@@ -1,8 +1,8 @@
 import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentStreamStation } from '~/composables/states'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
-import fetchDataImport from '~/data/fetchedData.json'
-import allCurrentStationsImport from '~/data/allCurrentStationsImport.json'
+import fetchDataImport from '~/assets/data/fetchedData.json'
+import allCurrentStationsImport from '~/assets/data/allCurrentStationsImport.json'
 
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
