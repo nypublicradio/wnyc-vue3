@@ -6,7 +6,6 @@ import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/compo
 
 import { resizePublisherImage, trackClickEvent } from '~/utilities/helpers'
 import { useCurrentEpisodeHolder } from '~/composables/states'
-const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 const hosts = computed(() => currentEpisodeHolder?.value?.onTodaysShowHosts)
@@ -88,11 +87,14 @@ const trackSocialFollow = (social) => {
               class="show-more-btn mt-3 mx-auto"
               label="show more"
               @click="
-                trackClickEvent(
-                  `Click Tracking - Show More`,
-                  'Segment List Show More Button',
-                  'Show More'
-                )
+                () => {
+                  segmentsToShow = segments.length
+                  trackClickEvent(
+                    `Click Tracking - Show More`,
+                    'Segment List Show More Button',
+                    'Show More'
+                  )
+                }
               "
             />
           </segment-list>
@@ -119,7 +121,7 @@ const trackSocialFollow = (social) => {
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
           loading="eager"
           :image="currentEpisodeHolder?.onTodaysShowImageTemplate"
-          :imageUrl="currentEpisodeHolder?.onTodaysShowImageCreditsUrl"
+          :imageUrl="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           :width="584"
           :height="360"
           :alt-text="currentEpisodeHolder?.onTodaysShowImageAltText"
@@ -131,28 +133,28 @@ const trackSocialFollow = (social) => {
           :sizes="[1]"
           :ratio="[3, 2]"
           @image-click="
-            trackClickTracking(
+            trackClickEvent(
               `Click Tracking - On Todays Show image`,
               'On Todays Show image',
-              $event.url
+              $event
             )
           "
           @credit-click="
-            trackClickTracking(
+            trackClickEvent(
               `Click Tracking - On Todays Show image credit`,
               'On Todays Show image credit',
-              $eventurl
+              $event
             )
           "
           @toggle-caption-expanded="
-            trackClickTracking(
+            trackClickEvent(
               `Click Tracking - On Todays Show caption`,
               'On Todays Show caption',
               'expanded'
             )
           "
           @toggle-caption-collapsed="
-            trackClickTracking(
+            trackClickEvent(
               `Click Tracking - On Todays Show caption`,
               'On Todays Show caption',
               'collapsed'
