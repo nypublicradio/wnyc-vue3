@@ -108,6 +108,8 @@ a {
 }
 
 .v-card {
+  box-shadow: none;
+  -webkit-box-shadow: none;
   .v-byline.no-border {
     a {
       border: none !important;

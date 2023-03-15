@@ -63,8 +63,27 @@ const normalizeAuthor = (author) => {
         :height="212"
         responsive
         bp="md"
-        @title-click="trackClickEvent('Top Stories', 'Title', article.title)"
-        @image-click="trackClickEvent('Top Stories', 'Title', article.title)"
+        @title-click="
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Headline',
+            $event
+          )
+        "
+        @image-click="
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Image',
+            $event
+          )
+        "
+        @credit-click="
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Credit',
+            $event
+          )
+        "
       >
         <p>
           {{ article.description }}
@@ -73,6 +92,20 @@ const normalizeAuthor = (author) => {
           <v-byline
             :authors="article.related_authors?.map(normalizeAuthor)"
             class="mt-3 no-border"
+            @name-click="
+              trackClickEvent(
+                'Click Tracking - Top Story',
+                'Article Card Author Name',
+                $event.url
+              )
+            "
+            @organization-click="
+              trackClickEvent(
+                'Click Tracking - Top Story',
+                'Article Card Organization',
+                $event.url
+              )
+            "
           />
         </div>
       </v-card>
