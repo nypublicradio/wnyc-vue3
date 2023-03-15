@@ -131,8 +131,8 @@ const wnycHomepage = 'https://www.WNYC.org'
           class="no-border text-sm font-bold m-2 inline-block"
           @emit-flexible-link="
             trackClickEvent(
-              `Click Tracking - sidebar footer navigation - ${link.value.title}`,
-              'sidebar footer navigation',
+              `Click Tracking - sidebar legal navigation - ${link.value.title}`,
+              'sidebar legal navigation',
               link.value.url
             )
           "

@@ -7,6 +7,7 @@ import {
   useIsEpisodePlaying,
 } from '~/composables/states'
 import { updateLiveStream } from '~/composables/data/liveStream'
+import { trackClickEvent } from '~/utilities/helpers'
 
 const currentStreamStation = useCurrentStreamStation()
 const currentEpisode = useCurrentEpisode()
@@ -44,15 +45,20 @@ watch(allCurrentStations, (val) => {
 
 let initialNoPlayToggleFlag = false
 const onDropdownChange = async (event) => {
-  console.log('event = ', event)
+  //console.log('event = ', event)
   await updateLiveStream(event.value.slug)
   // update slug
-  console.log('currentEpisodeHolder = ', currentEpisodeHolder)
+  //console.log('currentEpisodeHolder = ', currentEpisodeHolder)
   currentStreamStation.value = currentEpisodeHolder.value.slug
   if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
     initialNoPlayToggleFlag = true
     currentEpisode.value = currentEpisodeHolder.value
   }
+  trackClickEvent(
+    'Click Tracking - Stream Switcher',
+    'Stream Switcher',
+    `station = ${event.value.name}`
+  )
 }
 </script>
 
