@@ -28,8 +28,8 @@ const togglePlay = () => {
   if (!currentEpisode.value) {
     currentEpisode.value = currentEpisodeHolder.value
   }
-  emit('stream-button-click')
   togglePlayTrigger.value = !togglePlayTrigger.value
+  emit('stream-button-click', !isEpisodePlaying.value)
 }
 </script>
 

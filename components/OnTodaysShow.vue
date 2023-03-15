@@ -4,7 +4,7 @@ import VImageWithCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/com
 import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
 
-import { resizePublisherImage } from '~/utilities/helpers'
+import { resizePublisherImage, trackClickEvent } from '~/utilities/helpers'
 import { useCurrentEpisodeHolder } from '~/composables/states'
 const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -16,73 +16,19 @@ const segments = computed(
 )
 
 console.log('currentEpisodeHolder = ', currentEpisodeHolder)
+
 const segmentsToShow = ref(3)
 
-const showMoreSegments = () => {
-  segmentsToShow.value = segments.value.length
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - Show More`,
-    component: 'Segment List Show More Button',
-    event_label: 'Show More',
-  })
+const trackHeadlineEvent = (headline) => {
+  trackClickEvent(
+    `Click Tracking - On Todays Show Headline`,
+    'On Todays Show Headline',
+    headline
+  )
 }
 
-const socialFollow = (social) => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - Social Follow`,
-    component: 'Social Follow',
-    event_label: social,
-  })
-}
-const personEmit = (person) => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - Show Participants`,
-    component: 'Person Card',
-    event_label: `${person.name} - ${person.role}`,
-  })
-}
-const segmentEmit = (segment) => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - segments`,
-    component: 'Segment List',
-    event_label: segment.url,
-  })
-}
-const headlineEvent = (headline) => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - On Todays Show Headline`,
-    component: 'On Todays Show Headline',
-    event_label: headline,
-  })
-}
-
-const imageClickEmit = (url) => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - On Todays Show image`,
-    component: 'On Todays Show image',
-    event_label: url,
-  })
-}
-const creditClickEmit = (url) => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - On Todays Show image credit`,
-    component: 'On Todays Show image credit',
-    event_label: url,
-  })
-}
-const toggleCaptionExpandedEmit = () => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - On Todays Show caption`,
-    component: 'On Todays Show caption',
-    event_label: 'expanded',
-  })
-}
-const toggleCaptionCollapsedEmit = () => {
-  $analytics.sendEvent('click_tracking', {
-    event_category: `Click Tracking - On Todays Show caption`,
-    component: 'On Todays Show caption',
-    event_label: 'collapsed',
-  })
+const trackSocialFollow = (social) => {
+  trackClickEvent(`Click Tracking - Social Follow`, 'Social Follow', social)
 }
 </script>
 
@@ -108,7 +54,13 @@ const toggleCaptionCollapsedEmit = () => {
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           class="hidden lg:inline"
-          @click="headlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)"
+          @click="
+            trackClickEvent(
+              `Click Tracking - On Todays Show Headline`,
+              'On Todays Show Headline',
+              currentEpisodeHolder?.onTodaysShowHeadline
+            )
+          "
         >
           <h2
             class="text-2xl md:text-3xl lg:text-4xl"
@@ -123,13 +75,25 @@ const toggleCaptionCollapsedEmit = () => {
               :title="segment.title"
               :url="segment.url"
               :new-window="segment.newWindow"
-              @click-emit="segmentEmit"
+              @click-emit="
+                trackClickEvent(
+                  `Click Tracking - segments`,
+                  'Segment List',
+                  $event.url
+                )
+              "
             />
             <Button
               v-if="segments.length > segmentsToShow"
               class="show-more-btn mt-3 mx-auto"
               label="show more"
-              @click="showMoreSegments"
+              @click="
+                trackClickEvent(
+                  `Click Tracking - Show More`,
+                  'Segment List Show More Button',
+                  'Show More'
+                )
+              "
             />
           </segment-list>
         </template>
@@ -141,7 +105,9 @@ const toggleCaptionCollapsedEmit = () => {
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           class="lg:hidden"
-          @click="headlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)"
+          @click="
+            trackHeadlineEvent(currentEpisodeHolder?.onTodaysShowHeadline)
+          "
         >
           <h2
             class="text-2xl md:text-3xl lg:text-4xl"
@@ -164,10 +130,34 @@ const toggleCaptionCollapsedEmit = () => {
           :caption="currentEpisodeHolder?.onTodaysShowImageCaption"
           :sizes="[1]"
           :ratio="[3, 2]"
-          @image-click="imageClickEmit"
-          @credit-click="creditClickEmit"
-          @toggle-caption-expanded="toggleCaptionExpandedEmit"
-          @toggle-caption-collapsed="toggleCaptionCollapsedEmit"
+          @image-click="
+            trackClickTracking(
+              `Click Tracking - On Todays Show image`,
+              'On Todays Show image',
+              $event.url
+            )
+          "
+          @credit-click="
+            trackClickTracking(
+              `Click Tracking - On Todays Show image credit`,
+              'On Todays Show image credit',
+              $eventurl
+            )
+          "
+          @toggle-caption-expanded="
+            trackClickTracking(
+              `Click Tracking - On Todays Show caption`,
+              'On Todays Show caption',
+              'expanded'
+            )
+          "
+          @toggle-caption-collapsed="
+            trackClickTracking(
+              `Click Tracking - On Todays Show caption`,
+              'On Todays Show caption',
+              'collapsed'
+            )
+          "
         />
       </div>
     </div>
@@ -199,7 +189,13 @@ const toggleCaptionCollapsedEmit = () => {
                     ? resizePublisherImage(host.image, 170, 170)
                     : 'https://media.wnyc.org/i/raw/2021/01/radio_avatar.png'
                 "
-                @person-emit="personEmit"
+                @person-emit="
+                  trackClickEvent(
+                    `Click Tracking - Show Participants`,
+                    'Person Card',
+                    `${$event.name} - ${$event.role}`
+                  )
+                "
               />
             </v-flexible-link>
           </div>
@@ -216,19 +212,19 @@ const toggleCaptionCollapsedEmit = () => {
               v-if="social.twitter"
               :username="social.twitter"
               service="twitter"
-              @follow="socialFollow"
+              @follow="trackSocialFollow"
             />
             <v-share-tools-item
               v-if="social.instagram"
               :username="social.instagram"
               service="instagram"
-              @follow="socialFollow"
+              @follow="trackSocialFollow"
             />
             <v-share-tools-item
               v-if="social.facebook"
               :username="social.facebook"
               service="facebook"
-              @follow="socialFollow"
+              @follow="trackSocialFollow"
             />
           </v-share-tools>
         </div>
