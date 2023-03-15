@@ -21,6 +21,24 @@ const appLaunchUrl = ref(null)
 
 const isApp = ref(Capacitor.getPlatform() !== 'web')
 
+useHead({
+  htmlAttrs: {
+    lang: 'en',
+  },
+  script: [
+    {
+      src: `https://www.googletagmanager.com/gtag/js?id=${config.GA_MEASUREMENT_ID}`,
+      async: true,
+    },
+  ],
+  noscript: [
+    {
+      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
+    height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
+    },
+  ],
+})
+
 const addListeners = async () => {
   await PushNotifications.addListener('registration', (token: any) => {
     fcmToken.value = token.value
