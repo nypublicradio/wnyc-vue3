@@ -1,7 +1,15 @@
 <script setup>
 import { useCurrentEpisodeHolder } from '~/composables/states'
-
+const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+
+const toggleStreamEmit = (bool) => {
+  $analytics.sendEvent('click_tracking', {
+    event_category: `Click Tracking - Listen Live`,
+    component: 'Top LISTEN LIVE Button',
+    event_label: bool,
+  })
+}
 </script>
 
 <template>
@@ -27,7 +35,11 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
           v-html="currentEpisodeHolder.details"
           class="main-player-description mb-4"
         />
-        <listen-live-button class="mt-" :slug="currentEpisodeHolder.slug" />
+        <listen-live-button
+          class="mt-"
+          :slug="currentEpisodeHolder.slug"
+          @stream-button-click="toggleStreamEmit"
+        />
       </div>
     </div>
     <div v-else class="loading">

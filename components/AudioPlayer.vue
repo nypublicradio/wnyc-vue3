@@ -8,9 +8,11 @@ import {
   useIsPlayerMinimized,
   audioPlayerHeight,
 } from '~/composables/states'
+import { trackClickEvent } from '~/utilities/helpers'
+
 // had to install howler.js locally and add this import to stop it from breaking the build
 import { Howl, Howler } from 'howler'
-const { $analytics } = useNuxtApp()
+
 const currentEpisode = useCurrentEpisode()
 //console.log('currentEpisode', currentEpisode)
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -21,20 +23,20 @@ const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + 'px')
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
-  // $analytics.sendEvent('click_tracking', {
-  //   event_category: 'Click Tracking - Audio Player play toggle button',
-  //   component: 'Audio Player',
-  //   event_label: `playing = ${e}`,
-  // })
+  trackClickEvent(
+    'Click Tracking - Audio Player play toggle button',
+    'Audio Player',
+    `playing = ${e}`
+  )
   isEpisodePlaying.value = e
 }
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
-  // $analytics.sendEvent('click_tracking', {
-  //   event_category: 'Click Tracking - Audio Player minimized',
-  //   component: 'Audio Player',
-  //   event_label: `minimized = ${e}`,
-  // })
+  trackClickEvent(
+    'Click Tracking - Audio Player minimized',
+    'Audio Player',
+    `minimized = ${e}`
+  )
   isPlayerMinimized.value = e
 }
 

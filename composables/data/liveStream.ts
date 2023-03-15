@@ -36,7 +36,7 @@ export async function updateAllLiveStreams() {
     //allCurrentStations.value = fetchingAll.filter(Boolean)
     allCurrentStations.value = allCurrentStationsImport
 
-    console.log('allCurrentStations value', allCurrentStations.value)
+    //console.log('allCurrentStations value', allCurrentStations.value)
     // set initial stream with the `currentStreamStation` value in the states.ts file
     const initialStation = allCurrentStations.value.find(
         (station) => {

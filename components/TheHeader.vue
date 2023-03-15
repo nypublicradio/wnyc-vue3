@@ -1,11 +1,14 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import { useNavigation } from '~/composables/states'
+import { trackClickEvent } from '~/utilities/helpers'
 const navigation = useNavigation()
 const headerNav = computed(() => navigation.value.primary_navigation)
 const year = computed(() => navigation.value.copyright_year)
 const legalNav = computed(() => navigation.value.legal_links)
 const visibleLeft = ref(false)
+
+const wnycHomepage = 'https://www.WNYC.org'
 </script>
 
 <template>
@@ -16,12 +19,28 @@ const visibleLeft = ref(false)
           <Button
             icon="pi pi-bars"
             class="p-button-text mr-2 sm:mr-4"
-            @click="visibleLeft = true"
+            @click="
+              () => {
+                visibleLeft = true
+                trackClickEvent(
+                  'Click Tracking - Hamburger Menu',
+                  'Hamburger Menu',
+                  ``
+                )
+              }
+            "
           />
           <v-flexible-link
             raw
-            to="https://www.WNYC.org"
+            :to="wnycHomepage"
             class="c-main-header__branding plain mr-4"
+            @emit-flexible-link="
+              trackClickEvent(
+                'Click Tracking - WNYC Logo',
+                'WNYC Logo',
+                wnycHomepage
+              )
+            "
           >
             <wnyc-logo class="w-6rem sm:w-auto" />
           </v-flexible-link>
@@ -33,6 +52,13 @@ const visibleLeft = ref(false)
               :to="link.value.url"
               :target="link.type ? 'external_link' : undefined"
               class="c-secondary-nav__link"
+              @emit-flexible-link="
+                trackClickEvent(
+                  `Click Tracking - header navigation - ${link.value.title}`,
+                  'header navigation',
+                  link.value.url
+                )
+              "
             >
               {{ link.value.title }}
             </v-flexible-link>
@@ -42,6 +68,13 @@ const visibleLeft = ref(false)
           raw
           class="no-border"
           to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
+          @emit-flexible-link="
+            trackClickEvent(
+              `Click Tracking - Header Donate Button`,
+              'Header Donate Button',
+              ''
+            )
+          "
         >
           <Button label="Donate" class="px-3 sm:px-5" />
         </v-flexible-link>
@@ -53,7 +86,18 @@ const visibleLeft = ref(false)
       position="left"
       class="text-center"
     >
-      <v-flexible-link raw to="https://www.WNYC.org" class="mb-6">
+      <v-flexible-link
+        raw
+        :to="wnycHomepage"
+        class="mb-6"
+        @emit-flexible-link="
+          trackClickEvent(
+            'Click Tracking - sidebar WNYC Logo',
+            'sidebar WNYC Logo',
+            wnycHomepage
+          )
+        "
+      >
         <wnyc-logo />
       </v-flexible-link>
       <v-flexible-link
@@ -63,6 +107,13 @@ const visibleLeft = ref(false)
         :to="link.value.url"
         :target="link.type ? 'external_link' : undefined"
         class="c-secondary-nav__link"
+        @emit-flexible-link="
+          trackClickEvent(
+            `Click Tracking - sidebar navigation - ${link.value.title}`,
+            'sidebar navigation',
+            link.value.url
+          )
+        "
       >
         {{ link.value.title }}
       </v-flexible-link>
@@ -78,6 +129,13 @@ const visibleLeft = ref(false)
           :to="link.value.url"
           :target="link.type ? 'external_link' : undefined"
           class="no-border text-sm font-bold m-2 inline-block"
+          @emit-flexible-link="
+            trackClickEvent(
+              `Click Tracking - sidebar legal navigation - ${link.value.title}`,
+              'sidebar legal navigation',
+              link.value.url
+            )
+          "
         >
           {{ link.value.title }}
         </v-flexible-link>

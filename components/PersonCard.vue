@@ -42,7 +42,7 @@ const emit = defineEmits(['person-emit'])
   <div>
     <div
       class="person-card flex gap-3 align-items-center flex-column lg:flex-row"
-      @click="emit('person-emit', { name: props.name, role: props.role })"
+      @click="emit('person-emit', props)"
     >
       <v-image-with-caption
         class="image"

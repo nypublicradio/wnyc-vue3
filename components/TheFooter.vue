@@ -3,6 +3,7 @@ import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/component
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import { useNavigation } from '~/composables/states'
+import { trackClickEvent } from '~/utilities/helpers'
 const navigation = useNavigation()
 const description = computed(() => navigation.value.property_description)
 const footerPrimaryNav = computed(() => navigation.value.primary_footer_links)
@@ -11,6 +12,14 @@ const footerSecondaryNav = computed(
 )
 const year = computed(() => navigation.value.copyright_year)
 const legalNav = computed(() => navigation.value.legal_links)
+
+const trackSocialFollow = (social) => {
+  trackClickEvent(
+    `Click Tracking - Footer Social Follow`,
+    'Footer Social Follow',
+    social
+  )
+}
 </script>
 
 <template>
@@ -18,13 +27,33 @@ const legalNav = computed(() => navigation.value.legal_links)
     <section>
       <div class="grid mb-2">
         <div class="col-12 lg:col-5">
-          <v-flexible-link to="https://www.WNYC.org">
+          <v-flexible-link
+            to="https://www.WNYC.org"
+            @emit-flexible-link="
+              trackClickEvent(
+                'Click Tracking - footer WNYC Logo',
+                'footer WNYC Logo',
+                'https://www.WNYC.org'
+              )
+            "
+          >
             <wnyc-logo />
           </v-flexible-link>
           <p v-html="description" class="text-lg my-5" />
           <div class="flex flex-wrap row-gap-2 mb-4">
             <p class="mr-2">WNYC is supported by the JLGreene Foundation</p>
-            <v-flexible-link raw class="no-border" to="https://jlgreene.org/">
+            <v-flexible-link
+              raw
+              class="no-border"
+              to="https://jlgreene.org/"
+              @emit-flexible-link="
+                trackClickEvent(
+                  'Click Tracking - footer JLGreene Logo',
+                  'footer JLGreene Logo',
+                  'https://jlgreene.org/'
+                )
+              "
+            >
               <jlgreene-logo />
             </v-flexible-link>
           </div>
@@ -35,6 +64,13 @@ const legalNav = computed(() => navigation.value.legal_links)
             raw
             class="no-border"
             to="https://www.surveymonkey.com/r/LGP2Z96"
+            @emit-flexible-link="
+              trackClickEvent(
+                'Click Tracking - footer Send Us Your Feedback Button',
+                'footer Send Us Your Feedback Button',
+                'https://www.surveymonkey.com/r/LGP2Z96'
+              )
+            "
           >
             <Button label="Send Us Your Feedback" class="px-4 sm:px-5" />
           </v-flexible-link>
@@ -48,6 +84,13 @@ const legalNav = computed(() => navigation.value.legal_links)
                 :to="link.value.url"
                 :target="link.type ? 'external_link' : undefined"
                 class="c-secondary-nav__link"
+                @emit-flexible-link="
+                  trackClickEvent(
+                    `Click Tracking - footer primary navigation - ${link.value.title}`,
+                    'footer primary navigation',
+                    link.value.url
+                  )
+                "
               >
                 {{ link.value.title }}
               </v-flexible-link>
@@ -60,6 +103,13 @@ const legalNav = computed(() => navigation.value.legal_links)
                 :to="link.value.url"
                 :target="link.type ? 'external_link' : undefined"
                 class="c-secondary-nav__link"
+                @emit-flexible-link="
+                  trackClickEvent(
+                    `Click Tracking - footer secondary navigation - ${link.value.title}`,
+                    'footer secondary navigation',
+                    link.value.url
+                  )
+                "
               >
                 {{ link.value.title }}
               </v-flexible-link>
@@ -76,12 +126,25 @@ const legalNav = computed(() => navigation.value.legal_links)
             label="Connect"
             class="justify-content-center lg:justify-content-start"
           >
-            <v-share-tools-item service="facebook" username="WNYC" />
-            <v-share-tools-item service="twitter" username="WNYC" />
-            <v-share-tools-item service="instagram" username="WNYC" />
+            <v-share-tools-item
+              service="facebook"
+              username="WNYC"
+              @follow="trackSocialFollow"
+            />
+            <v-share-tools-item
+              service="twitter"
+              username="WNYC"
+              @follow="trackSocialFollow"
+            />
+            <v-share-tools-item
+              service="instagram"
+              username="WNYC"
+              @follow="trackSocialFollow"
+            />
             <v-share-tools-item
               service="youtube"
               username="UCbysmY4hyViQAAYEzOR-uCQ"
+              @follow="trackSocialFollow"
             />
           </v-share-tools>
         </div>
@@ -103,6 +166,13 @@ const legalNav = computed(() => navigation.value.legal_links)
             :key="legalNavIndex"
             :to="link.value.url"
             :target="link.type ? 'external_link' : undefined"
+            @emit-flexible-link="
+              trackClickEvent(
+                `Click Tracking - footer legal navigation - ${link.value.title}`,
+                'footer legal navigation',
+                link.value.url
+              )
+            "
           >
             {{ link.value.title }}
           </v-flexible-link>

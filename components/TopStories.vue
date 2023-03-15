@@ -1,7 +1,7 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-
+import { trackClickEvent } from '~/utilities/helpers'
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
 const { data: articles } = await useFetch(config.STORIES_API)
@@ -63,6 +63,27 @@ const normalizeAuthor = (author) => {
         :height="212"
         responsive
         bp="md"
+        @title-click="
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Headline',
+            $event
+          )
+        "
+        @image-click="
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Image',
+            $event
+          )
+        "
+        @credit-click="
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Credit',
+            $event
+          )
+        "
       >
         <p>
           {{ article.description }}
@@ -71,6 +92,20 @@ const normalizeAuthor = (author) => {
           <v-byline
             :authors="article.related_authors?.map(normalizeAuthor)"
             class="mt-3 no-border"
+            @name-click="
+              trackClickEvent(
+                'Click Tracking - Top Story',
+                'Article Card Author Name',
+                $event.url
+              )
+            "
+            @organization-click="
+              trackClickEvent(
+                'Click Tracking - Top Story',
+                'Article Card Organization',
+                $event.url
+              )
+            "
           />
         </div>
       </v-card>
