@@ -60,6 +60,12 @@ export default {
       'primevue'
     ]
   },
+  noscript: [
+    {
+      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
+    height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
+    },
+  ],
   runtimeConfig: {
     public: {
       // SENTRY_DSN: process.env['SENTRY_DSN'],
