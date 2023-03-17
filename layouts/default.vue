@@ -222,7 +222,8 @@ const isRefreshing = ref(false)
       <div class="dots" />
       <div class="content">
         <!-- <ListenAllLiveButton /> -->
-        <!-- <div v-if="isApp" class="px-4">
+        <!-- <div v-if="isApp" class="px-4"> -->
+        <div class="px-4">
           <p>fcm token ==</p>
           <input :value="fcmToken" />
           <pre></pre>
@@ -243,7 +244,7 @@ const isRefreshing = ref(false)
             isPluginAvailable('Camera') =
             {{ Capacitor.isPluginAvailable('Camera') }}
           </h6>
-        </div> -->
+        </div>
 
         <Transition name="refresh">
           <div
