@@ -191,7 +191,7 @@ If the `generate` script is not set up, add it to yout `package.json` file:
 
 ## Build for Android
 ```bash
-npm run gererate
+npm run generate
 npx cap sync
 npx cap open android 
 ```
@@ -215,7 +215,7 @@ brew install cocoapods
 
 ## Build for iOS
 ```bash
-npm run gererate
+npm run generate
 npx cap sync
 npx cap open ios 
 ```
