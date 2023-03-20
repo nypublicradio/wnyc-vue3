@@ -315,84 +315,76 @@ Be sure to check that all these packages are installed. They should be, but just
 ## Add script to your project (default.vue layout is prob best)
 ```js
 import { onMounted, ref } from 'vue'
-import { App, URLOpenListenerEvent } from '@capacitor/app'
-import { PushNotifications } from '@capacitor/push-notifications'
+import { App } from '@capacitor/app'
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications'
 import { Capacitor } from '@capacitor/core'
+const router = useRouter()
 
 const fcmToken = ref('')
 
 const addListeners = async () => {
-  await PushNotifications.addListener('registration', (token) => {
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  PushNotifications.requestPermissions().then((result) => {
+    if (result.receive === 'granted') {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+    } else {
+      alert('Error Reguistering push notifications')
+    }
+  })
+
+  // On success, we should be able to receive notifications
+  PushNotifications.addListener('registration', (token: Token) => {
     fcmToken.value = token.value
-    console.info('Registration token: ', token.value)
+    alert('Push registration success, token: ' + token.value)
   })
 
-  await PushNotifications.addListener('registrationError', (err) => {
-    console.error('Registration error: ', err.error)
+  // Some issue with our setup and push will not work
+  PushNotifications.addListener('registrationError', (error: any) => {
+    alert('Error on registration: ' + JSON.stringify(error))
   })
 
-  await PushNotifications.addListener(
+  // Show us the notification payload if the app is open on our device
+  PushNotifications.addListener(
     'pushNotificationReceived',
-    (notification) => {
-      console.log('Push notification received: ', notification)
+    (notification: PushNotificationSchema) => {
+      alert('Push received: ' + JSON.stringify(notification))
     }
   )
 
-  await PushNotifications.addListener(
+  // Method called when tapping on a notification
+  PushNotifications.addListener(
     'pushNotificationActionPerformed',
-    (notification) => {
-      console.log(
-        'Push notification action performed',
-        notification.actionId,
-        notification.inputValue
-      )
+    (notification: ActionPerformed) => {
+      alert('Push action performed: ' + JSON.stringify(notification))
+      const slug = notification.notification.data.slug
+      if (slug) {
+        router.push(`/${slug}`)
+      }
     }
   )
-  await App.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
-    // Example url: https://beerswift.app/tabs/tabs2
-    // slug = /tabs/tabs2
-    const slug = event.url.split('.app').pop()
-    // We only push to the route if there is a slug present
-    if (slug) {
-      router.push({ path: slug })
-    }
-  })
+  // fired when the abecomes active
   await App.addListener('appStateChange', ({ isActive }) => {
-    console.log('App state changed. Is active?', isActive)
+    //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
-
-  await App.addListener('appRestoredResult', (data) => {
-    console.log('Restored state:', data)
-  })
-}
-
-const registerNotifications = async () => {
-  let permStatus = await PushNotifications.checkPermissions()
-
-  if (permStatus.receive === 'prompt') {
-    permStatus = await PushNotifications.requestPermissions()
-  }
-
-  if (permStatus.receive !== 'granted') {
-    throw new Error('User denied permissions!')
-  }
-
-  await PushNotifications.register()
-}
-
-const getDeliveredNotifications = async () => {
-  const notificationList = await PushNotifications.getDeliveredNotifications()
-  console.log('delivered notifications', notificationList)
 }
 
 const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
-  console.log('App opened with URL: ' + url)
-}
+  appLaunchUrl.value = url
+  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+  alert('App opened with URL: ' + JSON.stringify(url))
+} 
 
 onMounted(() => {
   if (Capacitor.getPlatform() !== 'web') {
-    registerNotifications()
     addListeners()
     getDeliveredNotifications()
     checkAppLaunchUrl()
