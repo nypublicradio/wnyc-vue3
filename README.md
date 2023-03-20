@@ -220,6 +220,11 @@ npx cap sync
 npx cap open ios 
 ```
 `npx cap open ios ` will open Xcode. From there, you can build the app and run it on an emulator or device.
+if the `npx cap sync` command fails you'll need run a command similar to this:
+```bash
+sudo xattr -w com.apple.xcode.CreatedByBuildSystem true /Users/username/Library/Developer/Xcode/DerivedData/App-fetbnufjaqwaadatgkquwnaykmin/SourcePackages/checkouts/nanopb/build
+```
+
 
 
 ## Setup for push notifications
