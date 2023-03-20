@@ -83,19 +83,10 @@ const addListeners = async () => {
       }
     }
   )
-
+  // fired when the abecomes active
   await App.addListener('appStateChange', ({ isActive }) => {
-    alert('App state changed. Is active?', JSON.stringify(isActive))
+    //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
-
-  await App.addListener('appRestoredResult', (data) => {
-    alert('Restored state:', JSON.stringify(data))
-  })
-}
-
-const getDeliveredNotifications = async () => {
-  const notificationList = await PushNotifications.getDeliveredNotifications()
-  alert('delivered notifications', JSON.stringify(notificationList))
 }
 
 const checkAppLaunchUrl = async () => {
