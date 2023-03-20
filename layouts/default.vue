@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
-import { PushNotifications } from '@capacitor/push-notifications'
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const { isMobile, isDesktop } = useDevice()
@@ -10,13 +15,7 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 const fcmToken = ref('')
-const nUrl = ref(null)
-const nError = ref(null)
 const nNotification = ref(null)
-const nActionId = ref(null)
-const nInputValue = ref(null)
-const getNotificationList = ref(null)
-const routeSlugEvent = ref('')
 const appLaunchUrl = ref(null)
 
 const isApp = ref(Capacitor.getPlatform() !== 'web')
@@ -40,84 +39,72 @@ useHead({
 })
 
 const addListeners = async () => {
-  await PushNotifications.addListener('registration', (token: any) => {
+  console.log('Initializing HomePage')
+
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  PushNotifications.requestPermissions().then((result) => {
+    if (result.receive === 'granted') {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+    } else {
+      alert('Error Reguistering push notifications')
+    }
+  })
+
+  // On success, we should be able to receive notifications
+  PushNotifications.addListener('registration', (token: Token) => {
     fcmToken.value = token.value
-    console.info('Registration token: ', token.value)
+    alert('Push registration success, token: ' + token.value)
   })
 
-  await PushNotifications.addListener('registrationError', (err: any) => {
-    nError.value = err
-    console.error('Registration error: ', err.error)
+  // Some issue with our setup and push will not work
+  PushNotifications.addListener('registrationError', (error: any) => {
+    alert('Error on registration: ' + JSON.stringify(error))
   })
 
-  await PushNotifications.addListener(
+  // Show us the notification payload if the app is open on our device
+  PushNotifications.addListener(
     'pushNotificationReceived',
-    (notification: any) => {
-      nNotification.value = notification.data.slug
-      //router.push({ path: `/${notification.data.slug}` })
-      console.log('Push notification received: ', notification)
+    (notification: PushNotificationSchema) => {
+      nNotification.value = notification
+      alert('Push received: ' + JSON.stringify(notification))
     }
   )
 
-  await PushNotifications.addListener(
+  // Method called when tapping on a notification
+  PushNotifications.addListener(
     'pushNotificationActionPerformed',
-    (notification: any) => {
-      nActionId.value = notification.actionId
-      nInputValue.value = notification.inputValue
-      console.log(
-        'Push notification action performed',
-        notification.actionId,
-        notification.inputValue
-      )
-      if (notification.actionId === 'tap' && nNotification.value !== null) {
-        router.push(`/${nNotification.value}`)
-        //navigateTo(nNotification.value.slug)
+    (notification: ActionPerformed) => {
+      nNotification.value = notification
+      alert('Push action performed: ' + JSON.stringify(notification))
+      const slug = notification.notification.data.slug
+      if (slug) {
+        router.push(`/${slug}`)
       }
     }
   )
-  await App.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
-    // Example url: https://beerswift.app/tabs/tabs2
-    // slug = /tabs/tabs2
-    const slug = event.url.split('.app').pop()
-    routeSlugEvent.value = event.url
-    // We only push to the route if there is a slug present
-    if (slug) {
-      router.push({ path: slug })
-    }
-  })
+
   await App.addListener('appStateChange', ({ isActive }) => {
-    console.log('App state changed. Is active?', isActive)
+    alert('App state changed. Is active?', JSON.stringify(isActive))
   })
 
   await App.addListener('appRestoredResult', (data) => {
-    console.log('Restored state:', data)
+    alert('Restored state:', JSON.stringify(data))
   })
-}
-
-const registerNotifications = async () => {
-  let permStatus = await PushNotifications.checkPermissions()
-
-  if (permStatus.receive === 'prompt') {
-    permStatus = await PushNotifications.requestPermissions()
-  }
-
-  if (permStatus.receive !== 'granted') {
-    throw new Error('User denied permissions!')
-  }
-
-  await PushNotifications.register()
 }
 
 const getDeliveredNotifications = async () => {
   const notificationList = await PushNotifications.getDeliveredNotifications()
-  getNotificationList.value = notificationList
-  console.log('delivered notifications', notificationList)
+  alert('delivered notifications', JSON.stringify(notificationList))
 }
 
 const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
   appLaunchUrl.value = url
-  console.log('App opened with URL: ' + url)
+  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+  alert('App opened with URL: ' + JSON.stringify(url))
 }
 
 onBeforeMount(() => {
@@ -145,9 +132,10 @@ onBeforeMount(() => {
       }, 1500)
     })
   }
+})
 
+onMounted(() => {
   if (isApp.value) {
-    registerNotifications()
     addListeners()
     getDeliveredNotifications()
     checkAppLaunchUrl()
@@ -224,17 +212,11 @@ const isRefreshing = ref(false)
         <!-- <ListenAllLiveButton /> -->
         <!-- <div v-if="isApp" class="px-4"> -->
         <div class="px-4">
-          <p>fcm token ==</p>
+          <p>fcm token =</p>
           <input :value="fcmToken" />
           <pre></pre>
-          <p>url = {{ nUrl }}</p>
           <p>appLaunchUrl = {{ appLaunchUrl }}</p>
-          <p>routeSlugEvent = {{ routeSlugEvent }}</p>
           <p>Notification = {{ nNotification }}</p>
-          <p>nActionId = {{ nActionId }}</p>
-          <p>nInputValue = {{ nInputValue }}</p>
-          <p>nError = {{ nError }}</p>
-          <p>notificationList = {{ getNotificationList }}</p>
           <h4>Capacitor's JavaScript API</h4>
           <h6>
             Platform (web | ios | android) = {{ Capacitor.getPlatform() }}
