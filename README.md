@@ -212,6 +212,10 @@ then install cocoaPods:
 ```bash
 brew install cocoapods
 ```
+Make sure that xcode-select has the path for xcode on your system by running the following:
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+```
 
 ## Build for iOS
 ```bash
