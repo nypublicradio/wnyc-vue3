@@ -398,7 +398,6 @@ const checkAppLaunchUrl = async () => {
 onMounted(() => {
   if (Capacitor.getPlatform() !== 'web') {
     addListeners()
-    getDeliveredNotifications()
     checkAppLaunchUrl()
   }
 })

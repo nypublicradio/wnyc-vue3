@@ -33,7 +33,7 @@
     "@capacitor/push-notifications": "^4.1.2",
     "@capacitor/status-bar": "^4.1.1",
     "@nypublicradio/nypr-design-system-vue3": "^1.0.7",
-    "firebase": "^9.17.1",
+    "firebase": "^9.18.0",
     "ionicons": "^6.1.1",
     "jsdom": "^21.1.0",
     "primeflex": "^3.3.0"

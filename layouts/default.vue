@@ -42,7 +42,7 @@ const addListeners = async () => {
   // Request permission to use push notifications
   // iOS will prompt user and return if they granted permission or not
   // Android will just grant without prompting
-  PushNotifications.requestPermissions().then((result) => {
+  await PushNotifications.requestPermissions().then((result) => {
     if (result.receive === 'granted') {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register()
@@ -52,18 +52,18 @@ const addListeners = async () => {
   })
 
   // On success, we should be able to receive notifications
-  PushNotifications.addListener('registration', (token: Token) => {
+  await PushNotifications.addListener('registration', (token: Token) => {
     fcmToken.value = token.value
     alert('Push registration success, token: ' + token.value)
   })
 
   // Some issue with our setup and push will not work
-  PushNotifications.addListener('registrationError', (error: any) => {
+  await PushNotifications.addListener('registrationError', (error: any) => {
     alert('Error on registration: ' + JSON.stringify(error))
   })
 
   // Show us the notification payload if the app is open on our device
-  PushNotifications.addListener(
+  await PushNotifications.addListener(
     'pushNotificationReceived',
     (notification: PushNotificationSchema) => {
       nNotification.value = notification
@@ -72,7 +72,7 @@ const addListeners = async () => {
   )
 
   // Method called when tapping on a notification
-  PushNotifications.addListener(
+  await PushNotifications.addListener(
     'pushNotificationActionPerformed',
     (notification: ActionPerformed) => {
       nNotification.value = notification
@@ -138,7 +138,6 @@ onBeforeMount(() => {
 onMounted(() => {
   if (isApp.value) {
     addListeners()
-    getDeliveredNotifications()
     checkAppLaunchUrl()
   }
 })
