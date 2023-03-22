@@ -76,8 +76,8 @@ onMounted(() => {
 <template>
   <div>
     <div class="stream-switcher">
-      <pre>{{ stationsMenuData }}</pre>
-      <nuxt-link to="/test-route">to test page</nuxt-link>
+      <!-- <pre>{{ stationsMenuData }}</pre>
+      <nuxt-link to="/test-route">to test page</nuxt-link> -->
       <Dropdown
         :onChange="($event) => onDropdownChange($event)"
         :value="stationsMenuData[2]"
