@@ -87,6 +87,18 @@ const addListeners = async () => {
   await App.addListener('appStateChange', ({ isActive }) => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
+
+  // this is for deep links
+  await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+    // Example url: https://beerswift.app/tabs/tab2
+    // slug = /tabs/tab2
+    const slug = event.url.split('.app').pop()
+    if (slug) {
+      router.push(slug)
+    }
+    // If no match, do nothing - let regular routing
+    // logic take over
+  })
 }
 
 const checkAppLaunchUrl = async () => {
