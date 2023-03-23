@@ -47,14 +47,14 @@
 	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.getcapacitor.capacitor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>mycustomscheme</string>
-			</array>
-		</dict>
+	<dict>
+		<key>CFBundleURLName</key>
+		<string>com.getcapacitor.capacitor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>mycustomscheme</string>
+		</array>
+	</dict>
 	</array>
 </dict>
 </plist>
