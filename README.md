@@ -299,7 +299,7 @@ export default defineNuxtPlugin(nuxtApp => {
 })
 ```
 
-Be sure to check that all these packages are installed. They should be, but just double check at this point in the process:
+Be sure to check that all these packages (latest versions) are installed. They should be, but just double check at this point in the process:
 ```bash
   "@capacitor/android": "4.6.2",
   "@capacitor/app": "4.1.1",
