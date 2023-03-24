@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>431848840548-qu48s2ufvs6ghqsilhvfjs5jdke3b6lg.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.431848840548-qu48s2ufvs6ghqsilhvfjs5jdke3b6lg</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCfgS9x7Ay-8D-Z9K4XYszj6h6GoO2Nzi8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>431848840548</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.wnyc.android</string>
+	<key>PROJECT_ID</key>
+	<string>wnyc-app---android</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wnyc-app---android.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:431848840548:ios:7ab6ec1f430ee8c5cf6e71</string>
+</dict>
+</plist>
