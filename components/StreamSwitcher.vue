@@ -19,7 +19,7 @@ const selectedStation = ref(null)
 const stationsMenuData = ref([])
 
 const initializeSwitcher = (val) => {
-  alert('initializeSwitcher')
+  //alert('initializeSwitcher')
   const tempMenuData = []
 
   val.forEach((station) => {
@@ -77,7 +77,7 @@ onMounted(() => {
   <div>
     <div class="stream-switcher">
       <!-- <pre>{{ stationsMenuData }}</pre>
-      <nuxt-link to="/test-route">to test page</nuxt-link> -->
+      <NuxtLink to="/test-route">to test page</NuxtLink> -->
       <Dropdown
         :onChange="($event) => onDropdownChange($event)"
         :value="stationsMenuData[2]"

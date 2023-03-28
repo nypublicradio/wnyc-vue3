@@ -16,7 +16,7 @@ const toggleStreamEmit = (bool) => {
   <div class="main-player card p-5">
     <div v-if="currentEpisodeHolder" class="grid gap-3">
       <div class="w-full md:w-auto mx-auto flex flex-column align-items-center">
-        <live-indicator
+        <LiveIndicator
           :label="`${currentEpisodeHolder.timeStart} - ${currentEpisodeHolder.timeEnd}`"
           class="mb-3 flex md:hidden"
         />
@@ -26,7 +26,7 @@ const toggleStreamEmit = (bool) => {
         />
       </div>
       <div class="col py-0">
-        <live-indicator
+        <LiveIndicator
           :label="`${currentEpisodeHolder.timeStart} - ${currentEpisodeHolder.timeEnd}`"
           class="mb-3 hidden md:flex"
         />
@@ -35,7 +35,7 @@ const toggleStreamEmit = (bool) => {
           v-html="currentEpisodeHolder.details"
           class="main-player-description mb-4"
         />
-        <listen-live-button
+        <ListenLiveButton
           class="mt-"
           :slug="currentEpisodeHolder.slug"
           @stream-button-click="toggleStreamEmit"

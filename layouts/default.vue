@@ -205,7 +205,7 @@ const isRefreshing = ref(false)
         />
       </Head>
     </Html>
-    <the-header />
+    <TheHeader />
     <main>
       <div class="dots" />
       <div class="content">
@@ -243,8 +243,8 @@ const isRefreshing = ref(false)
         <slot />
       </div>
     </main>
-    <the-footer />
-    <audio-player />
+    <TheFooter />
+    <AudioPlayer />
   </div>
 </template>
 

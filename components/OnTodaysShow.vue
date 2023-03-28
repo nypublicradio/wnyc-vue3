@@ -8,8 +8,8 @@ import { resizePublisherImage, trackClickEvent } from '~/utilities/helpers'
 import { useCurrentEpisodeHolder } from '~/composables/states'
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
-const hosts = computed(() => currentEpisodeHolder?.value?.onTodaysShowHosts)
-const social = computed(() => currentEpisodeHolder?.value?.onTodaysShowSocial)
+const hosts = computed(() => currentEpisodeHolder?.value.onTodaysShowHosts)
+const social = computed(() => currentEpisodeHolder?.value.onTodaysShowSocial)
 const segments = computed(
   () => currentEpisodeHolder?.value?.onTodaysShowSegments
 )
@@ -49,7 +49,7 @@ const trackSocialFollow = (social) => {
       <div class="-mt-3 flex-1 relative">
         <div class="dots info"></div>
         <!-- the following is a duplicate headline and only shown on mobile <lg breakpoint -->
-        <v-flexible-link
+        <VFlexibleLink
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           class="hidden lg:inline"
@@ -65,10 +65,10 @@ const trackSocialFollow = (social) => {
             class="text-2xl md:text-3xl lg:text-4xl"
             v-html="currentEpisodeHolder?.onTodaysShowHeadline"
           />
-        </v-flexible-link>
+        </VFlexibleLink>
         <template v-if="segments">
-          <segment-list class="mt-6">
-            <segment-list-item
+          <SegmentList class="mt-6">
+            <SegmentListItem
               v-for="(segment, index) in segments.slice(0, segmentsToShow)"
               :key="index"
               :title="segment.title"
@@ -97,13 +97,13 @@ const trackSocialFollow = (social) => {
                 }
               "
             />
-          </segment-list>
+          </SegmentList>
         </template>
       </div>
       <div class="flex-1 relative mt-0 lg:-mt-4">
         <div class="dots image"></div>
         <!-- the following is a duplicate headline and only shown on Desktop >lg breakpoint -->
-        <v-flexible-link
+        <VFlexibleLink
           raw
           :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           class="lg:hidden"
@@ -115,8 +115,8 @@ const trackSocialFollow = (social) => {
             class="text-2xl md:text-3xl lg:text-4xl"
             v-html="currentEpisodeHolder?.onTodaysShowHeadline"
           />
-        </v-flexible-link>
-        <v-image-with-caption
+        </VFlexibleLink>
+        <VImageWithCaption
           class="show-image"
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
           loading="eager"
@@ -164,6 +164,9 @@ const trackSocialFollow = (social) => {
       </div>
     </div>
     <template v-if="hosts || social">
+      <!-- <pre>{{ hosts }}</pre>
+      <pre>{{ social }}</pre>
+      <pre>{{ currentEpisodeHolder }}</pre> -->
       <div
         class="on-todays-show-person-social-wrapper grid mt-7 align-items-center"
       >
@@ -176,7 +179,7 @@ const trackSocialFollow = (social) => {
             :key="index"
             class="on-todays-show-person-item"
           >
-            <v-flexible-link
+            <VFlexibleLink
               target="_blank"
               class="on-todays-show-person-link"
               :to="'https://www.wnyc.org' + host.url"
@@ -199,7 +202,7 @@ const trackSocialFollow = (social) => {
                   )
                 "
               />
-            </v-flexible-link>
+            </VFlexibleLink>
           </div>
         </div>
         <div

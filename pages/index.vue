@@ -6,7 +6,7 @@
       <StreamSwitcher />
       <div class="grid gap-3">
         <div class="col">
-          <main-player />
+          <MainPlayer />
         </div>
         <div class="col-fixed ad300 hidden lg:block">
           <div class="ad p-3">Ad Goes here</div>
@@ -21,7 +21,7 @@
     </section>
     <section>
       <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
-      <top-stories class="pt-6" />
+      <TopStories class="pt-6" />
     </section>
   </div>
 </template>

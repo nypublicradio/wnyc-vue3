@@ -6,7 +6,7 @@
       <div class="notification-route">
         YOU WERE TAKEN TO THIS PAGE FROM THE NOTIFICATION
       </div>
-      <nuxt-link to="/">GO back home</nuxt-link>
+      <NuxtLink to="/">GO back home</NuxtLink>
     </section>
   </div>
 </template>
