@@ -1,5 +1,6 @@
 import UIKit
 import Capacitor
+import Firebase
 import FirebaseCore
 
 @UIApplicationMain
