@@ -17,13 +17,11 @@
       </div>
     </section>
     <section>
-      <router-link to="test-route">Please work</router-link>
-      <!-- <NuxtLink noPrefetch to="test-route">Please work</NuxtLink> -->
-      <!-- <OnTodaysShow /> -->
+      <OnTodaysShow />
     </section>
     <section>
       <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
-      <!-- <TopStories class="pt-6" /> -->
+      <TopStories class="pt-6" />
     </section>
   </div>
 </template>
