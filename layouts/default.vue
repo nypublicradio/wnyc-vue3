@@ -205,6 +205,7 @@ const isRefreshing = ref(false)
         />
       </Head>
     </Html>
+    <div class="top-safe-cover" />
     <TheHeader />
     <main>
       <div class="dots" />

@@ -17,6 +17,8 @@
       </div>
     </section>
     <section>
+      <router-link to="test-route">Please work</router-link>
+      <!-- <NuxtLink noPrefetch to="test-route">Please work</NuxtLink> -->
       <!-- <OnTodaysShow /> -->
     </section>
     <section>

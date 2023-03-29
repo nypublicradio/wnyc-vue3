@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>wnyc-app-android</string>
+	<string>wnyc-app-android</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,16 +45,18 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>UIScene configuration dictionary</key>
+	<dict/>
 	<key>CFBundleURLTypes</key>
 	<array>
-	<dict>
-		<key>CFBundleURLName</key>
-		<string>com.getcapacitor.capacitor</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-		<string>mycustomscheme</string>
-		</array>
-	</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.getcapacitor.capacitor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mycustomscheme</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

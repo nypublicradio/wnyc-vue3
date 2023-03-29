@@ -149,7 +149,7 @@ header {
   background-color: transparentize(#de1e3d, 0.1);
   backdrop-filter: blur(5px);
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top);
   left: 0;
   right: 0;
   z-index: 100;
