@@ -45,8 +45,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>UIScene configuration dictionary</key>
-	<dict/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

@@ -443,8 +443,13 @@ onMounted(() => {
 ## register the scheme iOS
 Add the following to the bottom of the `info.plist` file in the `ios/App/App` folder:
 ```xml
-<key>UIScene configuration dictionary</key>
-<dict/>
+<key>UIApplicationSceneManifest</key>
+<dict>
+  <key>UIApplicationSupportsMultipleScenes</key>
+  <false/>
+  <key>UISceneConfigurations</key>
+  <dict/>
+</dict>
 <key>CFBundleURLTypes</key>
 <array>
   <dict>
