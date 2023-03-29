@@ -65,7 +65,6 @@ If your default.vue layout is not rendering, add a `App.vue` to the root and add
 
 ```html
 <script setup>
-import { IonApp } from '@ionic/vue'
 </script>
 <template>
   <NuxtLayout>
@@ -80,6 +79,8 @@ if you added an `App.vue` file, add the following to your global css file:
 html {
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  /* for iOS camera gap */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 body {
   transform: none !important;
@@ -87,7 +88,33 @@ body {
   max-height: unset !important;
   position: relative !important;
 }
+/* for iOS camera gap */
+.top-safe-cover {
+  height: env(safe-area-inset-top);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  /* the background should match your header background */
+  background-color: transparentize(#de1e3d, 0.1);
+}
+
+header {
+  /* this would likely live in the header component */
+  background-color: transparentize(#de1e3d, 0.1);
+  /* for iOS camera gap */
+  top: env(safe-area-inset-top);
+}
 ```
+
+add top-safe-cover element to the top of your default.vue layout above the header element/component:
+
+```html
+<div class="top-safe-cover" />
+```
+
+
 
 ## SSR setup
 We want SSR to run on the web, but not on the native app. To do this,
@@ -416,6 +443,8 @@ onMounted(() => {
 ## register the scheme iOS
 Add the following to the bottom of the `info.plist` file in the `ios/App/App` folder:
 ```xml
+<key>UIScene configuration dictionary</key>
+<dict/>
 <key>CFBundleURLTypes</key>
 <array>
   <dict>
