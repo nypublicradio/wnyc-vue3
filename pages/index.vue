@@ -9,10 +9,10 @@
           <main-player />
         </div>
         <div class="col-fixed ad300 hidden lg:block">
-          <div class="ad p-3">Ad Goes here</div>
+          <div class="htlad-wnyc_rectangle"></div>
         </div>
         <div class="col-12 ad300 lg:hidden">
-          <div class="ad p-3 mx-auto">Ad Goes here</div>
+          <div class="htlad-wnyc_rectangle"></div>
         </div>
       </div>
     </section>
