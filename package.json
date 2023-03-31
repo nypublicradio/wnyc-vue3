@@ -14,7 +14,7 @@
   "devDependencies": {
     "@capacitor/cli": "^4.7.1",
     "@nuxtjs/device": "^3.1.0",
-    "@nuxtjs/ionic": "^0.8.1",
+    "@nuxtjs/ionic": "^0.9.0",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",
     "nuxt": "^3.3.2",
