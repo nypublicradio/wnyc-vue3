@@ -144,7 +144,7 @@ Update the `ionic.config.json` file to include the following:
 ```
 
 ## Update capacitor.config.json
-Update the `capacitor.config.json` file to include the following:
+Update the `capacitor.config.json` file to include the following (update the colors according to your design):
 
 ```json
 {
@@ -154,7 +154,16 @@ Update the `capacitor.config.json` file to include the following:
   "bundledWebRuntime": false,
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 0
+      "splashBackgroundColor": "#e01e3f",
+      "iconBackgroundColor": "#e01e3f",
+      "launchShowDuration": 1000,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 500,
+      "backgroundColor": "#e01e3f",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "splashFullScreen": true,
+      "splashImmersive": true
       //additional splash screen options here
     }
   }
@@ -207,7 +216,11 @@ Then, to generate all the icons and splash screens for all platforms run the fol
 ```bash
 npm run generate-splash
 ```
-This will create grab the images in your public folder and generate and configure all the icons and splash images in a folder on the root called `icons`
+This will create grab the images in your public folder and generate and configure all the icons and splash images in a folder on the root called `icons` and everything else you need in `android/app/src/main/res/`, that sets up all that is needed for Android & iOS icons and Android splash screens only. For iOS splash screen, you will need to manually add the splash screen images in XCode. In XCode, navigate to `ios/App/App/Assets`. Then Select `Splash` on the right. Then on the very right, select the checkbox `iPhone`. Then, back on the middle panel, you will see 6 new empty slots. Fill these in with the images that were generated in the `android/app/src/main/res/drawable-port-xhdpi/splash.png` folder for 1x, `android/app/src/main/res/drawable-port-xxhdpi/splash.png` for 2x. `android/app/src/main/res/drawable-port-xxxhdpi/splash.png` for 3x.
+
+
+
+
 
 If the `generate` script is not set up, add it to yout `package.json` file:
 ```json
