@@ -31,6 +31,7 @@
     "@capacitor/ios": "^4.7.1",
     "@capacitor/keyboard": "^4.1.1",
     "@capacitor/push-notifications": "^4.1.2",
+    "@capacitor/splash-screen": "^4.2.0",
     "@capacitor/status-bar": "^4.1.1",
     "@nypublicradio/nypr-design-system-vue3": "^1.0.7",
     "firebase": "^9.17.1",
