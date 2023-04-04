@@ -56,10 +56,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.getcapacitor.capacitor</string>
+			<string>org.wnyc.mobile</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>mycustomscheme</string>
+				<string>wnyc</string>
 			</array>
 		</dict>
 	</array>
