@@ -142,6 +142,28 @@ onMounted(() => {
   }
 })
 
+onMounted(() => {
+  // Ads
+  window.htlbid = window.htlbid || {}
+  htlbid.cmd = htlbid.cmd || []
+  htlbid.cmd.push(function () {
+    htlbid.layout('universal') // Leave as 'universal' or add custom layout
+    htlbid.setTargeting('is_testing', config.HTL_IS_TESTING) // Set to "no" for production
+    htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
+    htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
+    htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
+  })
+})
+
+useHead({
+  script: [
+    {
+      src: config.HTL_JS,
+      async: true,
+    },
+  ],
+})
+
 // get the navigation data from Aviary
 const { data: navigation } = await useFetch(config.NAVIGATION_API)
 // update the state with the navigation data
@@ -156,6 +178,7 @@ const isRefreshing = ref(false)
     <Html lang="en">
       <Head>
         <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
+        <Link rel="stylesheet" :href="config.HTL_CSS" type="text/css" />
         <Title>
           WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
         </Title>
