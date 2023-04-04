@@ -29,6 +29,13 @@
             {
               "client_id": "431848840548-38v4p7lfm5e40j29psgtpj39i7o962ge.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "431848840548-e7f48udvebjbhge7lbm4kpfb55v2o4pc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "wnyc-app-android"
+              }
             }
           ]
         }

@@ -48,7 +48,7 @@ const normalizeAuthor = (author) => {
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles.items" :key="index" class="mb-6">
-      <v-card
+      <VCard
         :image="getImageUrl(article)"
         :title="article.title"
         loading="eager"
@@ -89,7 +89,7 @@ const normalizeAuthor = (author) => {
           {{ article.description }}
         </p>
         <div class="article-metadata">
-          <v-byline
+          <VByline
             :authors="article.related_authors?.map(normalizeAuthor)"
             class="mt-3 no-border"
             @name-click="
@@ -108,7 +108,7 @@ const normalizeAuthor = (author) => {
             "
           />
         </div>
-      </v-card>
+      </VCard>
     </div>
   </div>
 </template>

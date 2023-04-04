@@ -18,7 +18,8 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const selectedStation = ref(null)
 const stationsMenuData = ref([])
 
-watch(allCurrentStations, (val) => {
+const initializeSwitcher = (val) => {
+  //alert('initializeSwitcher')
   const tempMenuData = []
 
   val.forEach((station) => {
@@ -41,6 +42,9 @@ watch(allCurrentStations, (val) => {
   ).station
 
   selectedStation.value = initialStation
+}
+watch(allCurrentStations, (val) => {
+  initializeSwitcher(val)
 })
 
 let initialNoPlayToggleFlag = false
@@ -60,12 +64,20 @@ const onDropdownChange = async (event) => {
     `station = ${event.value.name}`
   )
 }
+
+onMounted(() => {
+  // for some reason, the APP is not holding on to the value of "allCurrentStations" when the page is routed back. So I had to add this onMounted to re-initialize the switcher
+  if (allCurrentStations.value) {
+    initializeSwitcher(allCurrentStations.value)
+  }
+})
 </script>
 
 <template>
   <div>
     <div class="stream-switcher">
-      <!--  <pre>{{ stationsMenuData }}</pre> -->
+      <!-- <pre>{{ stationsMenuData }}</pre>
+      <NuxtLink to="/test-route">to test page</NuxtLink> -->
       <Dropdown
         :onChange="($event) => onDropdownChange($event)"
         :value="stationsMenuData[2]"

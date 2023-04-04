@@ -17,7 +17,7 @@ const props = defineProps({
 })
 </script>
 <template>
-  <v-flexible-link
+  <VFlexibleLink
     raw
     v-if="url"
     :to="url"
@@ -31,7 +31,7 @@ const props = defineProps({
     <div class="segment-list-item-icon">
       <i class="pi pi-chevron-right"></i>
     </div>
-  </v-flexible-link>
+  </VFlexibleLink>
   <div v-else class="segment-list-item">
     {{ title }}
   </div>

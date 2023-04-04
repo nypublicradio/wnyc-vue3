@@ -6,11 +6,16 @@
   "backgroundColor": "#d4d4d4",
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 0,
-      "backgroundColor": "#e01e3f",
       "splashBackgroundColor": "#e01e3f",
       "iconBackgroundColor": "#e01e3f",
-      "splashFullScreen": true
+      "launchShowDuration": 1000,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 500,
+      "backgroundColor": "#e01e3f",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "splashFullScreen": true,
+      "splashImmersive": true
     },
     "PushNotifications": {
       "presentationOptions": [

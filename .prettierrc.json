@@ -5,5 +5,8 @@
     "parser": "vue",
     "useTabs": false,
     "tabWidth": 2,
-    "endOfLine": "lf"
+    "endOfLine": "lf",
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "bracketSameLine": false
 }

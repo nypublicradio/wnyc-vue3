@@ -15,12 +15,24 @@ html {
   background-color: var(--red);
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 body {
   transform: none;
   height: unset !important;
   max-height: unset !important;
   position: relative !important;
+}
+
+.top-safe-cover {
+  height: env(safe-area-inset-top);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: transparentize(#de1e3d, 0.1);
+  backdrop-filter: blur(5px);
 }
 
 .ion-page {

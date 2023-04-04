@@ -65,7 +65,6 @@ If your default.vue layout is not rendering, add a `App.vue` to the root and add
 
 ```html
 <script setup>
-import { IonApp } from '@ionic/vue'
 </script>
 <template>
   <NuxtLayout>
@@ -80,6 +79,8 @@ if you added an `App.vue` file, add the following to your global css file:
 html {
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  /* for iOS camera gap */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 body {
   transform: none !important;
@@ -87,7 +88,33 @@ body {
   max-height: unset !important;
   position: relative !important;
 }
+/* for iOS camera gap */
+.top-safe-cover {
+  height: env(safe-area-inset-top);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  /* the background should match your header background */
+  background-color: transparentize(#de1e3d, 0.1);
+}
+
+header {
+  /* this would likely live in the header component */
+  background-color: transparentize(#de1e3d, 0.1);
+  /* for iOS camera gap */
+  top: env(safe-area-inset-top);
+}
 ```
+
+add top-safe-cover element to the top of your default.vue layout above the header element/component:
+
+```html
+<div class="top-safe-cover" />
+```
+
+
 
 ## SSR setup
 We want SSR to run on the web, but not on the native app. To do this,
@@ -117,7 +144,7 @@ Update the `ionic.config.json` file to include the following:
 ```
 
 ## Update capacitor.config.json
-Update the `capacitor.config.json` file to include the following:
+Update the `capacitor.config.json` file to include the following (update the colors according to your design):
 
 ```json
 {
@@ -127,7 +154,16 @@ Update the `capacitor.config.json` file to include the following:
   "bundledWebRuntime": false,
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 0
+      "splashBackgroundColor": "#e01e3f",
+      "iconBackgroundColor": "#e01e3f",
+      "launchShowDuration": 1000,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 500,
+      "backgroundColor": "#e01e3f",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "splashFullScreen": true,
+      "splashImmersive": true
       //additional splash screen options here
     }
   }
@@ -180,7 +216,11 @@ Then, to generate all the icons and splash screens for all platforms run the fol
 ```bash
 npm run generate-splash
 ```
-This will create grab the images in your public folder and generate and configure all the icons and splash images in a folder on the root called `icons`
+This will create grab the images in your public folder and generate and configure all the icons and splash images in a folder on the root called `icons` and everything else you need in `android/app/src/main/res/`, that sets up all that is needed for Android & iOS icons and Android splash screens only. For iOS splash screen, you will need to manually add the splash screen images in XCode. In XCode, navigate to `ios/App/App/Assets`. Then Select `Splash` on the right. Then on the very right, select the checkbox `iPhone`. Then, back on the middle panel, you will see 6 new empty slots. Fill these in with the images that were generated in the `android/app/src/main/res/drawable-port-xhdpi/splash.png` folder for 1x, `android/app/src/main/res/drawable-port-xxhdpi/splash.png` for 2x. `android/app/src/main/res/drawable-port-xxxhdpi/splash.png` for 3x.
+
+
+
+
 
 If the `generate` script is not set up, add it to yout `package.json` file:
 ```json
@@ -191,7 +231,7 @@ If the `generate` script is not set up, add it to yout `package.json` file:
 
 ## Build for Android
 ```bash
-npm run gererate
+npm run generate
 npx cap sync
 npx cap open android 
 ```
@@ -219,7 +259,7 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 ## Build for iOS
 ```bash
-npm run gererate
+npm run generate
 npx cap sync
 npx cap open ios 
 ```
@@ -308,7 +348,7 @@ export default defineNuxtPlugin(nuxtApp => {
 })
 ```
 
-Be sure to check that all these packages are installed. They should be, but just double check at this point in the process:
+Be sure to check that all these packages (latest versions) are installed. They should be, but just double check at this point in the process:
 ```bash
   "@capacitor/android": "4.6.2",
   "@capacitor/app": "4.1.1",
@@ -325,85 +365,88 @@ Be sure to check that all these packages are installed. They should be, but just
 ```js
 import { onMounted, ref } from 'vue'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
-import { PushNotifications } from '@capacitor/push-notifications'
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications'
 import { Capacitor } from '@capacitor/core'
+const router = useRouter()
 
 const fcmToken = ref('')
 
 const addListeners = async () => {
-  await PushNotifications.addListener('registration', (token) => {
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  PushNotifications.requestPermissions().then((result) => {
+    if (result.receive === 'granted') {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+    } else {
+      alert('Error Reguistering push notifications')
+    }
+  })
+
+  // On success, we should be able to receive notifications
+  PushNotifications.addListener('registration', (token: Token) => {
     fcmToken.value = token.value
-    console.info('Registration token: ', token.value)
+    alert('Push registration success, token: ' + token.value)
   })
 
-  await PushNotifications.addListener('registrationError', (err) => {
-    console.error('Registration error: ', err.error)
+  // Some issue with our setup and push will not work
+  PushNotifications.addListener('registrationError', (error: any) => {
+    alert('Error on registration: ' + JSON.stringify(error))
   })
 
-  await PushNotifications.addListener(
+  // Show us the notification payload if the app is open on our device
+  PushNotifications.addListener(
     'pushNotificationReceived',
-    (notification) => {
-      console.log('Push notification received: ', notification)
+    (notification: PushNotificationSchema) => {
+      alert('Push received: ' + JSON.stringify(notification))
     }
   )
 
-  await PushNotifications.addListener(
+  // Method called when tapping on a notification
+  PushNotifications.addListener(
     'pushNotificationActionPerformed',
-    (notification) => {
-      console.log(
-        'Push notification action performed',
-        notification.actionId,
-        notification.inputValue
-      )
+    (notification: ActionPerformed) => {
+      alert('Push action performed: ' + JSON.stringify(notification))
+      const slug = notification.notification.data.slug
+      if (slug) {
+        router.push(`/${slug}`)
+      }
     }
   )
-  await App.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
-    // Example url: https://beerswift.app/tabs/tabs2
-    // slug = /tabs/tabs2
-    const slug = event.url.split('.app').pop()
-    // We only push to the route if there is a slug present
-    if (slug) {
-      router.push({ path: slug })
-    }
-  })
+  // fired when the app becomes active
   await App.addListener('appStateChange', ({ isActive }) => {
-    console.log('App state changed. Is active?', isActive)
+    //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
 
-  await App.addListener('appRestoredResult', (data) => {
-    console.log('Restored state:', data)
-  })
-}
-
-const registerNotifications = async () => {
-  let permStatus = await PushNotifications.checkPermissions()
-
-  if (permStatus.receive === 'prompt') {
-    permStatus = await PushNotifications.requestPermissions()
-  }
-
-  if (permStatus.receive !== 'granted') {
-    throw new Error('User denied permissions!')
-  }
-
-  await PushNotifications.register()
-}
-
-const getDeliveredNotifications = async () => {
-  const notificationList = await PushNotifications.getDeliveredNotifications()
-  console.log('delivered notifications', notificationList)
+  // this is for deep links (https://capacitorjs.com/docs/next/guides/deep-links)
+  await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {        
+      // Example url: https://beerswift.app/tabs/tab2
+      // slug = /tabs/tab2
+      const slug = event.url.split(".app").pop();
+      if (slug) {
+          router.push(slug)
+      }
+      // If no match, do nothing - let regular routing
+      // logic take over        
+  });
 }
 
 const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
-  console.log('App opened with URL: ' + url)
-}
+  appLaunchUrl.value = url
+  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+  alert('App opened with URL: ' + JSON.stringify(url))
+} 
 
 onMounted(() => {
   if (Capacitor.getPlatform() !== 'web') {
-    registerNotifications()
     addListeners()
-    getDeliveredNotifications()
     checkAppLaunchUrl()
   }
 })
@@ -422,6 +465,13 @@ onMounted(() => {
 ## register the scheme iOS
 Add the following to the bottom of the `info.plist` file in the `ios/App/App` folder:
 ```xml
+<key>UIApplicationSceneManifest</key>
+<dict>
+  <key>UIApplicationSupportsMultipleScenes</key>
+  <false/>
+  <key>UISceneConfigurations</key>
+  <dict/>
+</dict>
 <key>CFBundleURLTypes</key>
 <array>
   <dict>

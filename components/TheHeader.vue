@@ -30,7 +30,7 @@ const wnycHomepage = 'https://www.WNYC.org'
               }
             "
           />
-          <v-flexible-link
+          <VFlexibleLink
             raw
             :to="wnycHomepage"
             class="c-main-header__branding plain mr-4"
@@ -42,10 +42,10 @@ const wnycHomepage = 'https://www.WNYC.org'
               )
             "
           >
-            <wnyc-logo class="w-6rem sm:w-auto" />
-          </v-flexible-link>
+            <WnycLogo class="w-6rem sm:w-auto" />
+          </VFlexibleLink>
           <div class="c-secondary-nav__list align-self-end hidden lg:block">
-            <v-flexible-link
+            <VFlexibleLink
               v-for="(link, headerNavIndex) in headerNav"
               raw
               :key="headerNavIndex"
@@ -61,10 +61,10 @@ const wnycHomepage = 'https://www.WNYC.org'
               "
             >
               {{ link.value.title }}
-            </v-flexible-link>
+            </VFlexibleLink>
           </div>
         </div>
-        <v-flexible-link
+        <VFlexibleLink
           raw
           class="no-border"
           to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
@@ -77,7 +77,7 @@ const wnycHomepage = 'https://www.WNYC.org'
           "
         >
           <Button label="Donate" class="px-3 sm:px-5" />
-        </v-flexible-link>
+        </VFlexibleLink>
       </div>
     </section>
     <Sidebar
@@ -86,7 +86,7 @@ const wnycHomepage = 'https://www.WNYC.org'
       position="left"
       class="text-center"
     >
-      <v-flexible-link
+      <VFlexibleLink
         raw
         :to="wnycHomepage"
         class="mb-6"
@@ -98,9 +98,9 @@ const wnycHomepage = 'https://www.WNYC.org'
           )
         "
       >
-        <wnyc-logo />
-      </v-flexible-link>
-      <v-flexible-link
+        <WnycLogo />
+      </VFlexibleLink>
+      <VFlexibleLink
         v-for="(link, sidebarNavIndex) in headerNav"
         raw
         :key="sidebarNavIndex"
@@ -116,13 +116,13 @@ const wnycHomepage = 'https://www.WNYC.org'
         "
       >
         {{ link.value.title }}
-      </v-flexible-link>
+      </VFlexibleLink>
       <nypr-logo class="mt-8 mb-4" />
       <p class="mb-4">
         © {{ year }} New York Public Radio. All rights reserved.
       </p>
       <div>
-        <v-flexible-link
+        <VFlexibleLink
           v-for="(link, legalNavIndex) in legalNav"
           raw
           :key="legalNavIndex"
@@ -138,7 +138,7 @@ const wnycHomepage = 'https://www.WNYC.org'
           "
         >
           {{ link.value.title }}
-        </v-flexible-link>
+        </VFlexibleLink>
       </div>
     </Sidebar>
   </header>
@@ -149,7 +149,7 @@ header {
   background-color: transparentize(#de1e3d, 0.1);
   backdrop-filter: blur(5px);
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top);
   left: 0;
   right: 0;
   z-index: 100;

@@ -27,7 +27,7 @@ const trackSocialFollow = (social) => {
     <section>
       <div class="grid mb-2">
         <div class="col-12 lg:col-5">
-          <v-flexible-link
+          <VFlexibleLink
             to="https://www.WNYC.org"
             @emit-flexible-link="
               trackClickEvent(
@@ -37,12 +37,12 @@ const trackSocialFollow = (social) => {
               )
             "
           >
-            <wnyc-logo />
-          </v-flexible-link>
+            <WnycLogo />
+          </VFlexibleLink>
           <p v-html="description" class="text-lg my-5" />
           <div class="flex flex-wrap row-gap-2 mb-4">
             <p class="mr-2">WNYC is supported by the JLGreene Foundation</p>
-            <v-flexible-link
+            <VFlexibleLink
               raw
               class="no-border"
               to="https://jlgreene.org/"
@@ -54,13 +54,13 @@ const trackSocialFollow = (social) => {
                 )
               "
             >
-              <jlgreene-logo />
-            </v-flexible-link>
+              <JlgreeneLogo />
+            </VFlexibleLink>
           </div>
         </div>
         <div class="hidden lg:flex lg:col-1" />
         <div class="col-12 lg:col-6">
-          <v-flexible-link
+          <VFlexibleLink
             raw
             class="no-border"
             to="https://www.surveymonkey.com/r/LGP2Z96"
@@ -73,11 +73,11 @@ const trackSocialFollow = (social) => {
             "
           >
             <Button label="Send Us Your Feedback" class="px-4 sm:px-5" />
-          </v-flexible-link>
+          </VFlexibleLink>
           <h3 class="mt-5 mb-4">About Us</h3>
           <div class="grid mb-6">
             <div class="col-12 lg:col-6">
-              <v-flexible-link
+              <VFlexibleLink
                 v-for="(link, primaryIndex) in footerPrimaryNav"
                 raw
                 :key="primaryIndex"
@@ -93,10 +93,10 @@ const trackSocialFollow = (social) => {
                 "
               >
                 {{ link.value.title }}
-              </v-flexible-link>
+              </VFlexibleLink>
             </div>
             <div class="col-12 lg:col-6">
-              <v-flexible-link
+              <VFlexibleLink
                 v-for="(link, secondaryIndex) in footerSecondaryNav"
                 raw
                 :key="secondaryIndex"
@@ -112,41 +112,41 @@ const trackSocialFollow = (social) => {
                 "
               >
                 {{ link.value.title }}
-              </v-flexible-link>
+              </VFlexibleLink>
             </div>
           </div>
         </div>
       </div>
       <div class="grid align-items-center mb-6">
         <div class="col-12 lg:col-6 text-center lg:text-left">
-          <nypr-logo />
+          <NyprLogo />
         </div>
         <div class="col-12 lg:col-6">
-          <v-share-tools
+          <VShareTools
             label="Connect"
             class="justify-content-center lg:justify-content-start"
           >
-            <v-share-tools-item
+            <VShareToolsItem
               service="facebook"
               username="WNYC"
               @follow="trackSocialFollow"
             />
-            <v-share-tools-item
+            <VShareToolsItem
               service="twitter"
               username="WNYC"
               @follow="trackSocialFollow"
             />
-            <v-share-tools-item
+            <VShareToolsItem
               service="instagram"
               username="WNYC"
               @follow="trackSocialFollow"
             />
-            <v-share-tools-item
+            <VShareToolsItem
               service="youtube"
               username="UCbysmY4hyViQAAYEzOR-uCQ"
               @follow="trackSocialFollow"
             />
-          </v-share-tools>
+          </VShareTools>
         </div>
       </div>
       <div
@@ -160,7 +160,7 @@ const trackSocialFollow = (social) => {
         <div
           class="flex flex-wrap row-gap-3 column-gap-4 flex-column xs:flex-row"
         >
-          <v-flexible-link
+          <VFlexibleLink
             v-for="(link, legalNavIndex) in legalNav"
             raw
             :key="legalNavIndex"
@@ -175,7 +175,7 @@ const trackSocialFollow = (social) => {
             "
           >
             {{ link.value.title }}
-          </v-flexible-link>
+          </VFlexibleLink>
         </div>
       </div>
     </section>
