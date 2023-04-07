@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// import { Capacitor } from '@capacitor/core'
-// import { App, URLOpenListenerEvent } from '@capacitor/app'
-// import {
-//   ActionPerformed,
-//   PushNotificationSchema,
-//   PushNotifications,
-//   Token,
-// } from '@capacitor/push-notifications'
+import { Capacitor } from '@capacitor/core'
+import { App, URLOpenListenerEvent } from '@capacitor/app'
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const { isMobile, isDesktop } = useDevice()
@@ -16,29 +16,29 @@ const config = useRuntimeConfig()
 
 const isRefreshing = ref(false)
 
-// const fcmToken = ref('')
+const fcmToken = ref('')
 // const nNotification = ref(null)
 // const appLaunchUrl = ref(null)
 
-// const isApp = ref(Capacitor.getPlatform() !== 'web')
+const isApp = ref(Capacitor.getPlatform() !== 'web')
 
-// useHead({
-//   htmlAttrs: {
-//     lang: 'en',
-//   },
-//   script: [
-//     {
-//       src: `https://www.googletagmanager.com/gtag/js?id=${config.GA_MEASUREMENT_ID}`,
-//       async: true,
-//     },
-//   ],
-//   noscript: [
-//     {
-//       children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
-//     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
-//     },
-//   ],
-// })
+useHead({
+  htmlAttrs: {
+    lang: 'en',
+  },
+  script: [
+    {
+      src: `https://www.googletagmanager.com/gtag/js?id=${config.GA_MEASUREMENT_ID}`,
+      async: true,
+    },
+  ],
+  noscript: [
+    {
+      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
+    height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
+    },
+  ],
+})
 
 // const addListeners = async () => {
 //   // Request permission to use push notifications
@@ -137,12 +137,12 @@ onMounted(() => {
   }
 })
 
-// onMounted(() => {
-//   if (isApp.value) {
-//     addListeners()
-//     checkAppLaunchUrl()
-//   }
-// })
+onMounted(() => {
+  if (isApp.value) {
+    //addListeners()
+    //checkAppLaunchUrl()
+  }
+})
 
 onMounted(() => {
   // Ads
@@ -235,6 +235,7 @@ onMounted(async () => {
     <main>
       <div class="dots" />
       <div class="content">
+        <input :value="fcmToken" />
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
