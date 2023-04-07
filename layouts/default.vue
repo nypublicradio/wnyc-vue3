@@ -17,7 +17,7 @@ const config = useRuntimeConfig()
 const isRefreshing = ref(false)
 
 const fcmToken = ref('')
-// const nNotification = ref(null)
+//const nNotification = ref(null)
 // const appLaunchUrl = ref(null)
 
 const isApp = ref(Capacitor.getPlatform() !== 'web')
@@ -40,68 +40,68 @@ useHead({
   ],
 })
 
-// const addListeners = async () => {
-//   // Request permission to use push notifications
-//   // iOS will prompt user and return if they granted permission or not
-//   // Android will just grant without prompting
-//   await PushNotifications.requestPermissions().then((result) => {
-//     if (result.receive === 'granted') {
-//       // Register with Apple / Google to receive push via APNS/FCM
-//       PushNotifications.register()
-//     } else {
-//       alert('Error Reguistering push notifications')
-//     }
-//   })
+const addListeners = async () => {
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  await PushNotifications.requestPermissions().then((result) => {
+    if (result.receive === 'granted') {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+    } else {
+      alert('Error Reguistering push notifications')
+    }
+  })
 
-//   // On success, we should be able to receive notifications
-//   await PushNotifications.addListener('registration', (token: Token) => {
-//     fcmToken.value = token.value
-//     alert('Push registration success, token: ' + token.value)
-//   })
+  // On success, we should be able to receive notifications
+  await PushNotifications.addListener('registration', (token: Token) => {
+    fcmToken.value = token.value
+    alert('Push registration success, token: ' + token.value)
+  })
 
-//   // Some issue with our setup and push will not work
-//   await PushNotifications.addListener('registrationError', (error: any) => {
-//     alert('Error on registration: ' + JSON.stringify(error))
-//   })
+  // Some issue with our setup and push will not work
+  await PushNotifications.addListener('registrationError', (error: any) => {
+    alert('Error on registration: ' + JSON.stringify(error))
+  })
 
-//   // Show us the notification payload if the app is open on our device
-//   await PushNotifications.addListener(
-//     'pushNotificationReceived',
-//     (notification: PushNotificationSchema) => {
-//       nNotification.value = notification
-//       alert('Push received: ' + JSON.stringify(notification))
-//     }
-//   )
+  // Show us the notification payload if the app is open on our device
+  await PushNotifications.addListener(
+    'pushNotificationReceived',
+    (notification: PushNotificationSchema) => {
+      //nNotification.value = notification
+      alert('Push received: ' + JSON.stringify(notification))
+    }
+  )
 
-//   // Method called when tapping on a notification
-//   await PushNotifications.addListener(
-//     'pushNotificationActionPerformed',
-//     (notification: ActionPerformed) => {
-//       nNotification.value = notification
-//       alert('Push action performed: ' + JSON.stringify(notification))
-//       const slug = notification.notification.data.slug
-//       if (slug) {
-//         router.push(`/${slug}`)
-//       }
-//     }
-//   )
-//   // fired when the abecomes active
-//   await App.addListener('appStateChange', ({ isActive }) => {
-//     //alert('App state changed. Is active?', JSON.stringify(isActive))
-//   })
+  // Method called when tapping on a notification
+  await PushNotifications.addListener(
+    'pushNotificationActionPerformed',
+    (notification: ActionPerformed) => {
+      //nNotification.value = notification
+      alert('Push action performed: ' + JSON.stringify(notification))
+      const slug = notification.notification.data.slug
+      if (slug) {
+        router.push(`/${slug}`)
+      }
+    }
+  )
+  // fired when the abecomes active
+  await App.addListener('appStateChange', ({ isActive }) => {
+    //alert('App state changed. Is active?', JSON.stringify(isActive))
+  })
 
-//   // this is for deep links
-//   await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-//     // Example url: https://beerswift.app/tabs/tab2
-//     // slug = /tabs/tab2
-//     const slug = event.url.split('.app').pop()
-//     if (slug) {
-//       router.push(slug)
-//     }
-//     // If no match, do nothing - let regular routing
-//     // logic take over
-//   })
-// }
+  // this is for deep links
+  await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+    // Example url: https://beerswift.app/tabs/tab2
+    // slug = /tabs/tab2
+    const slug = event.url.split('.app').pop()
+    if (slug) {
+      router.push(slug)
+    }
+    // If no match, do nothing - let regular routing
+    // logic take over
+  })
+}
 
 // const checkAppLaunchUrl = async () => {
 //   const url = await App.getLaunchUrl()
@@ -139,7 +139,7 @@ onMounted(() => {
 
 onMounted(() => {
   if (isApp.value) {
-    //addListeners()
+    addListeners()
     //checkAppLaunchUrl()
   }
 })
