@@ -1,176 +1,178 @@
 <script setup lang="ts">
-import { Capacitor } from '@capacitor/core'
-import { App, URLOpenListenerEvent } from '@capacitor/app'
-import {
-  ActionPerformed,
-  PushNotificationSchema,
-  PushNotifications,
-  Token,
-} from '@capacitor/push-notifications'
+// import { Capacitor } from '@capacitor/core'
+// import { App, URLOpenListenerEvent } from '@capacitor/app'
+// import {
+//   ActionPerformed,
+//   PushNotificationSchema,
+//   PushNotifications,
+//   Token,
+// } from '@capacitor/push-notifications'
 import { useNavigation } from '~/composables/states'
-import { updateAllLiveStreams } from '~/composables/data/liveStream'
-const { isMobile, isDesktop } = useDevice()
+// import { updateAllLiveStreams } from '~/composables/data/liveStream'
+// const { isMobile, isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 
-const fcmToken = ref('')
-const nNotification = ref(null)
-const appLaunchUrl = ref(null)
+// const fcmToken = ref('')
+// const nNotification = ref(null)
+// const appLaunchUrl = ref(null)
 
-const isApp = ref(Capacitor.getPlatform() !== 'web')
+// const isApp = ref(Capacitor.getPlatform() !== 'web')
 
-useHead({
-  htmlAttrs: {
-    lang: 'en',
-  },
-  script: [
-    {
-      src: `https://www.googletagmanager.com/gtag/js?id=${config.GA_MEASUREMENT_ID}`,
-      async: true,
-    },
-  ],
-  noscript: [
-    {
-      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
-    height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
-    },
-  ],
-})
+// useHead({
+//   htmlAttrs: {
+//     lang: 'en',
+//   },
+//   script: [
+//     {
+//       src: `https://www.googletagmanager.com/gtag/js?id=${config.GA_MEASUREMENT_ID}`,
+//       async: true,
+//     },
+//   ],
+//   noscript: [
+//     {
+//       children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
+//     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
+//     },
+//   ],
+// })
 
-const addListeners = async () => {
-  // Request permission to use push notifications
-  // iOS will prompt user and return if they granted permission or not
-  // Android will just grant without prompting
-  await PushNotifications.requestPermissions().then((result) => {
-    if (result.receive === 'granted') {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-    } else {
-      alert('Error Reguistering push notifications')
-    }
-  })
+// const addListeners = async () => {
+//   // Request permission to use push notifications
+//   // iOS will prompt user and return if they granted permission or not
+//   // Android will just grant without prompting
+//   await PushNotifications.requestPermissions().then((result) => {
+//     if (result.receive === 'granted') {
+//       // Register with Apple / Google to receive push via APNS/FCM
+//       PushNotifications.register()
+//     } else {
+//       alert('Error Reguistering push notifications')
+//     }
+//   })
 
-  // On success, we should be able to receive notifications
-  await PushNotifications.addListener('registration', (token: Token) => {
-    fcmToken.value = token.value
-    alert('Push registration success, token: ' + token.value)
-  })
+//   // On success, we should be able to receive notifications
+//   await PushNotifications.addListener('registration', (token: Token) => {
+//     fcmToken.value = token.value
+//     alert('Push registration success, token: ' + token.value)
+//   })
 
-  // Some issue with our setup and push will not work
-  await PushNotifications.addListener('registrationError', (error: any) => {
-    alert('Error on registration: ' + JSON.stringify(error))
-  })
+//   // Some issue with our setup and push will not work
+//   await PushNotifications.addListener('registrationError', (error: any) => {
+//     alert('Error on registration: ' + JSON.stringify(error))
+//   })
 
-  // Show us the notification payload if the app is open on our device
-  await PushNotifications.addListener(
-    'pushNotificationReceived',
-    (notification: PushNotificationSchema) => {
-      nNotification.value = notification
-      alert('Push received: ' + JSON.stringify(notification))
-    }
-  )
+//   // Show us the notification payload if the app is open on our device
+//   await PushNotifications.addListener(
+//     'pushNotificationReceived',
+//     (notification: PushNotificationSchema) => {
+//       nNotification.value = notification
+//       alert('Push received: ' + JSON.stringify(notification))
+//     }
+//   )
 
-  // Method called when tapping on a notification
-  await PushNotifications.addListener(
-    'pushNotificationActionPerformed',
-    (notification: ActionPerformed) => {
-      nNotification.value = notification
-      alert('Push action performed: ' + JSON.stringify(notification))
-      const slug = notification.notification.data.slug
-      if (slug) {
-        router.push(`/${slug}`)
-      }
-    }
-  )
-  // fired when the abecomes active
-  await App.addListener('appStateChange', ({ isActive }) => {
-    //alert('App state changed. Is active?', JSON.stringify(isActive))
-  })
+//   // Method called when tapping on a notification
+//   await PushNotifications.addListener(
+//     'pushNotificationActionPerformed',
+//     (notification: ActionPerformed) => {
+//       nNotification.value = notification
+//       alert('Push action performed: ' + JSON.stringify(notification))
+//       const slug = notification.notification.data.slug
+//       if (slug) {
+//         router.push(`/${slug}`)
+//       }
+//     }
+//   )
+//   // fired when the abecomes active
+//   await App.addListener('appStateChange', ({ isActive }) => {
+//     //alert('App state changed. Is active?', JSON.stringify(isActive))
+//   })
 
-  // this is for deep links
-  await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-    // Example url: https://beerswift.app/tabs/tab2
-    // slug = /tabs/tab2
-    const slug = event.url.split('.app').pop()
-    if (slug) {
-      router.push(slug)
-    }
-    // If no match, do nothing - let regular routing
-    // logic take over
-  })
-}
+//   // this is for deep links
+//   await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+//     // Example url: https://beerswift.app/tabs/tab2
+//     // slug = /tabs/tab2
+//     const slug = event.url.split('.app').pop()
+//     if (slug) {
+//       router.push(slug)
+//     }
+//     // If no match, do nothing - let regular routing
+//     // logic take over
+//   })
+// }
 
-const checkAppLaunchUrl = async () => {
-  const url = await App.getLaunchUrl()
-  appLaunchUrl.value = url
-  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-  alert('App opened with URL: ' + JSON.stringify(url))
-}
+// const checkAppLaunchUrl = async () => {
+//   const url = await App.getLaunchUrl()
+//   appLaunchUrl.value = url
+//   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+//   alert('App opened with URL: ' + JSON.stringify(url))
+// }
 
-onBeforeMount(() => {
-  //initially load all the streams
-  updateAllLiveStreams()
-  //refresh data every time the tab is in focus
-  document.addEventListener('visibilitychange', (event) => {
-    if (!document.hidden) {
-      //console.log('focused tab =', event)
-      updateAllLiveStreams()
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
-    }
-  })
-  //refresh data every time the cursor enters the window on desktop only
-  if (isDesktop) {
-    document.addEventListener('pointerenter', () => {
-      //console.log('pointerenter = ', event)
-      updateAllLiveStreams()
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
-    })
-  }
-})
+// onBeforeMount(() => {
+//   //initially load all the streams
+//   updateAllLiveStreams()
+//   //refresh data every time the tab is in focus
+//   document.addEventListener('visibilitychange', (event) => {
+//     if (!document.hidden) {
+//       //console.log('focused tab =', event)
+//       updateAllLiveStreams()
+//       isRefreshing.value = true
+//       setTimeout(() => {
+//         isRefreshing.value = false
+//       }, 1500)
+//     }
+//   })
+//   //refresh data every time the cursor enters the window on desktop only
+//   if (isDesktop) {
+//     document.addEventListener('pointerenter', () => {
+//       //console.log('pointerenter = ', event)
+//       updateAllLiveStreams()
+//       isRefreshing.value = true
+//       setTimeout(() => {
+//         isRefreshing.value = false
+//       }, 1500)
+//     })
+//   }
+// })
 
-onMounted(() => {
-  if (isApp.value) {
-    addListeners()
-    checkAppLaunchUrl()
-  }
-})
+// onMounted(() => {
+//   if (isApp.value) {
+//     addListeners()
+//     checkAppLaunchUrl()
+//   }
+// })
 
-onMounted(() => {
-  // Ads
-  window.htlbid = window.htlbid || {}
-  htlbid.cmd = htlbid.cmd || []
-  htlbid.cmd.push(function () {
-    htlbid.layout('universal') // Leave as 'universal' or add custom layout
-    htlbid.setTargeting('is_testing', config.HTL_IS_TESTING) // Set to "no" for production
-    htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
-    htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
-    htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
-  })
-})
+// onMounted(() => {
+//   // Ads
+//   window.htlbid = window.htlbid || {}
+//   htlbid.cmd = htlbid.cmd || []
+//   htlbid.cmd.push(function () {
+//     htlbid.layout('universal') // Leave as 'universal' or add custom layout
+//     htlbid.setTargeting('is_testing', config.HTL_IS_TESTING) // Set to "no" for production
+//     htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
+//     htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
+//     htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
+//   })
+// })
 
-useHead({
-  script: [
-    {
-      src: config.HTL_JS,
-      async: true,
-    },
-  ],
-})
-
-// get the navigation data from Aviary
-const { data: navigation } = await useFetch(config.NAVIGATION_API)
-// update the state with the navigation data
+// useHead({
+//   script: [
+//     {
+//       src: config.HTL_JS,
+//       async: true,
+//     },
+//   ],
+// })
 let navigationState = useNavigation()
-navigationState.value = navigation.value
+onMounted(async () => {
+  // // get the navigation data from Aviary
+  const { data: navigation } = await useFetch(config.NAVIGATION_API)
+  // // update the state with the navigation data
 
-const isRefreshing = ref(false)
+  navigationState.value = navigation.value
+})
+
+// const isRefreshing = ref(false)
 </script>
 
 <template>
@@ -229,13 +231,11 @@ const isRefreshing = ref(false)
       </Head>
     </Html>
     <div class="top-safe-cover" />
-    <TheHeader />
+    <TheHeader v-if="navigationState" />
     <main>
       <div class="dots" />
       <div class="content">
-        <!-- <ListenAllLiveButton /> -->
-        <!-- <div v-if="isApp" class="px-4"> -->
-        <div class="px-4">
+        <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
           <pre></pre>
@@ -250,9 +250,9 @@ const isRefreshing = ref(false)
             isPluginAvailable('Camera') =
             {{ Capacitor.isPluginAvailable('Camera') }}
           </h6>
-        </div>
+        </div> -->
 
-        <Transition name="refresh">
+        <!-- <Transition name="refresh">
           <div
             v-if="isRefreshing"
             class="fixed flex align-items-center justify-content-center w-full mt-2"
@@ -263,11 +263,11 @@ const isRefreshing = ref(false)
             ></i>
             <p>REFRESHING</p>
           </div>
-        </Transition>
+        </Transition> -->
         <slot />
       </div>
     </main>
-    <TheFooter />
+    <TheFooter v-if="navigationState" />
     <AudioPlayer />
   </div>
 </template>
