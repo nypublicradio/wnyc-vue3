@@ -8,11 +8,13 @@
 //   Token,
 // } from '@capacitor/push-notifications'
 import { useNavigation } from '~/composables/states'
-// import { updateAllLiveStreams } from '~/composables/data/liveStream'
-// const { isMobile, isDesktop } = useDevice()
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
+const { isMobile, isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+
+const isRefreshing = ref(false)
 
 // const fcmToken = ref('')
 // const nNotification = ref(null)
@@ -108,32 +110,32 @@ const config = useRuntimeConfig()
 //   alert('App opened with URL: ' + JSON.stringify(url))
 // }
 
-// onBeforeMount(() => {
-//   //initially load all the streams
-//   updateAllLiveStreams()
-//   //refresh data every time the tab is in focus
-//   document.addEventListener('visibilitychange', (event) => {
-//     if (!document.hidden) {
-//       //console.log('focused tab =', event)
-//       updateAllLiveStreams()
-//       isRefreshing.value = true
-//       setTimeout(() => {
-//         isRefreshing.value = false
-//       }, 1500)
-//     }
-//   })
-//   //refresh data every time the cursor enters the window on desktop only
-//   if (isDesktop) {
-//     document.addEventListener('pointerenter', () => {
-//       //console.log('pointerenter = ', event)
-//       updateAllLiveStreams()
-//       isRefreshing.value = true
-//       setTimeout(() => {
-//         isRefreshing.value = false
-//       }, 1500)
-//     })
-//   }
-// })
+onMounted(() => {
+  //initially load all the streams
+  updateAllLiveStreams()
+  //refresh data every time the tab is in focus
+  document.addEventListener('visibilitychange', (event) => {
+    if (!document.hidden) {
+      //console.log('focused tab =', event)
+      updateAllLiveStreams()
+      isRefreshing.value = true
+      setTimeout(() => {
+        isRefreshing.value = false
+      }, 1500)
+    }
+  })
+  //refresh data every time the cursor enters the window on desktop only
+  if (isDesktop) {
+    document.addEventListener('pointerenter', () => {
+      //console.log('pointerenter = ', event)
+      updateAllLiveStreams()
+      isRefreshing.value = true
+      setTimeout(() => {
+        isRefreshing.value = false
+      }, 1500)
+    })
+  }
+})
 
 // onMounted(() => {
 //   if (isApp.value) {
@@ -142,27 +144,27 @@ const config = useRuntimeConfig()
 //   }
 // })
 
-// onMounted(() => {
-//   // Ads
-//   window.htlbid = window.htlbid || {}
-//   htlbid.cmd = htlbid.cmd || []
-//   htlbid.cmd.push(function () {
-//     htlbid.layout('universal') // Leave as 'universal' or add custom layout
-//     htlbid.setTargeting('is_testing', config.HTL_IS_TESTING) // Set to "no" for production
-//     htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
-//     htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
-//     htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
-//   })
-// })
+onMounted(() => {
+  // Ads
+  window.htlbid = window.htlbid || {}
+  htlbid.cmd = htlbid.cmd || []
+  htlbid.cmd.push(function () {
+    htlbid.layout('universal') // Leave as 'universal' or add custom layout
+    htlbid.setTargeting('is_testing', config.HTL_IS_TESTING) // Set to "no" for production
+    htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
+    htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
+    htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
+  })
+})
 
-// useHead({
-//   script: [
-//     {
-//       src: config.HTL_JS,
-//       async: true,
-//     },
-//   ],
-// })
+useHead({
+  script: [
+    {
+      src: config.HTL_JS,
+      async: true,
+    },
+  ],
+})
 let navigationState = useNavigation()
 onMounted(async () => {
   // // get the navigation data from Aviary
@@ -171,8 +173,6 @@ onMounted(async () => {
 
   navigationState.value = navigation.value
 })
-
-// const isRefreshing = ref(false)
 </script>
 
 <template>
