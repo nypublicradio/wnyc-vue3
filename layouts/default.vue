@@ -176,7 +176,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="page" :class="[`${route.name}`]">
+  <div class="page" :class="[`${String(route.name)}`]">
     <Html lang="en">
       <Head>
         <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
