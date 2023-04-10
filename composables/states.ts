@@ -49,5 +49,5 @@ export const useCurrentStreamStation = () => useState('useCurrentStreamStation',
 /**
  * Global state for the navigation
  */
-const navigationObj = null
+const navigationObj: object | any = null
 export const useNavigation = () => useState('navigation', () => navigationObj)

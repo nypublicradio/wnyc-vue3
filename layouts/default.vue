@@ -14,9 +14,11 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 
+const isRefreshing = ref(false)
+
 const fcmToken = ref('')
-const nNotification = ref(null)
-const appLaunchUrl = ref(null)
+//const nNotification = ref(null)
+// const appLaunchUrl = ref(null)
 
 const isApp = ref(Capacitor.getPlatform() !== 'web')
 
@@ -66,7 +68,7 @@ const addListeners = async () => {
   await PushNotifications.addListener(
     'pushNotificationReceived',
     (notification: PushNotificationSchema) => {
-      nNotification.value = notification
+      //nNotification.value = notification
       alert('Push received: ' + JSON.stringify(notification))
     }
   )
@@ -75,7 +77,7 @@ const addListeners = async () => {
   await PushNotifications.addListener(
     'pushNotificationActionPerformed',
     (notification: ActionPerformed) => {
-      nNotification.value = notification
+      //nNotification.value = notification
       alert('Push action performed: ' + JSON.stringify(notification))
       const slug = notification.notification.data.slug
       if (slug) {
@@ -101,14 +103,14 @@ const addListeners = async () => {
   })
 }
 
-const checkAppLaunchUrl = async () => {
-  const url = await App.getLaunchUrl()
-  appLaunchUrl.value = url
-  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-  alert('App opened with URL: ' + JSON.stringify(url))
-}
+// const checkAppLaunchUrl = async () => {
+//   const url = await App.getLaunchUrl()
+//   appLaunchUrl.value = url
+//   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+//   alert('App opened with URL: ' + JSON.stringify(url))
+// }
 
-onBeforeMount(() => {
+onMounted(() => {
   //initially load all the streams
   updateAllLiveStreams()
   //refresh data every time the tab is in focus
@@ -138,7 +140,7 @@ onBeforeMount(() => {
 onMounted(() => {
   if (isApp.value) {
     addListeners()
-    checkAppLaunchUrl()
+    //checkAppLaunchUrl()
   }
 })
 
@@ -163,18 +165,18 @@ useHead({
     },
   ],
 })
-
-// get the navigation data from Aviary
-const { data: navigation } = await useFetch(config.NAVIGATION_API)
-// update the state with the navigation data
 let navigationState = useNavigation()
-navigationState.value = navigation.value
+onMounted(async () => {
+  // // get the navigation data from Aviary
+  const { data: navigation } = await useFetch(config.NAVIGATION_API)
+  // // update the state with the navigation data
 
-const isRefreshing = ref(false)
+  navigationState.value = navigation.value
+})
 </script>
 
 <template>
-  <div class="page" :class="[`${route.name}`]">
+  <div class="page" :class="[`${String(route.name)}`]">
     <Html lang="en">
       <Head>
         <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
@@ -229,13 +231,12 @@ const isRefreshing = ref(false)
       </Head>
     </Html>
     <div class="top-safe-cover" />
-    <TheHeader />
+    <TheHeader v-if="navigationState" />
     <main>
       <div class="dots" />
       <div class="content">
-        <!-- <ListenAllLiveButton /> -->
-        <!-- <div v-if="isApp" class="px-4"> -->
-        <div class="px-4">
+        <input :value="fcmToken" />
+        <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
           <pre></pre>
@@ -250,9 +251,9 @@ const isRefreshing = ref(false)
             isPluginAvailable('Camera') =
             {{ Capacitor.isPluginAvailable('Camera') }}
           </h6>
-        </div>
+        </div> -->
 
-        <Transition name="refresh">
+        <!-- <Transition name="refresh">
           <div
             v-if="isRefreshing"
             class="fixed flex align-items-center justify-content-center w-full mt-2"
@@ -263,11 +264,11 @@ const isRefreshing = ref(false)
             ></i>
             <p>REFRESHING</p>
           </div>
-        </Transition>
+        </Transition> -->
         <slot />
       </div>
     </main>
-    <TheFooter />
+    <TheFooter v-if="navigationState" />
     <AudioPlayer />
   </div>
 </template>
