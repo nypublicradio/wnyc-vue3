@@ -15,6 +15,7 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 const isRefreshing = ref(false)
+const acceptNotifications = ref(false)
 
 const fcmToken = ref('')
 //const nNotification = ref(null)
@@ -46,10 +47,13 @@ const addListeners = async () => {
   // Android will just grant without prompting
   await PushNotifications.requestPermissions().then((result) => {
     if (result.receive === 'granted') {
+      alert(JSON.stringify(result))
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register()
+      acceptNotifications.value = true
     } else {
       alert('Error Reguistering push notifications')
+      acceptNotifications.value = false
     }
   })
 
@@ -85,7 +89,7 @@ const addListeners = async () => {
       }
     }
   )
-  // fired when the abecomes active
+  // fired when the app becomes active
   await App.addListener('appStateChange', ({ isActive }) => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
@@ -236,6 +240,7 @@ onMounted(async () => {
       <div class="dots" />
       <div class="content">
         <input :value="fcmToken" />
+        <p>acceptNotifications = {{ acceptNotifications }}</p>
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
