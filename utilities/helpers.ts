@@ -33,8 +33,8 @@ export const resizePublisherImage = (url, w, h, q = 80) => {
   return finalUrlArr.join('/')
 }
 
-const { $analytics } = useNuxtApp()
 export const trackClickEvent = (category, component, label) => {
+  const { $analytics } = useNuxtApp()
   console.log(category, component, label)
   $analytics.sendEvent('click_tracking', {
     event_category: category,

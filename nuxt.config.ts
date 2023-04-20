@@ -1,7 +1,9 @@
 export default {
   modules: ['@nuxtjs/ionic', '@nuxtjs/device'],
+
   /* ssr: process.env.ISAPP === 'false' ? true : false, */
   ssr: false,
+
   app: {
     head: {
       meta: [
@@ -18,6 +20,7 @@ export default {
       ]
     }
   },
+
   css: [
     '@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc/fonts/fonts.css',
     'primeflex/primeflex.css',
@@ -25,7 +28,9 @@ export default {
     'primevue/resources/primevue.min.css',
     'primeicons/primeicons.css',
   ],
+
   serverMiddleware: ['~/search/algolia-index'],
+
   vite: {
     css: {
       preprocessorOptions: {
@@ -50,17 +55,20 @@ export default {
       }
     },
   },
+
   imports: {
     dirs: [
       'composables', // top-level modules
       'composables/*/index.{ts,js,mjs,mts}' // one level directories's index.js,
     ]
   },
+
   build: {
     transpile: [
       'primevue'
     ]
   },
+
   runtimeConfig: {
     public: {
       // SENTRY_DSN: process.env['SENTRY_DSN'],
@@ -75,5 +83,7 @@ export default {
       GA_MEASUREMENT_ID: process.env['GA_MEASUREMENT_ID'] || 'G-ZV3N92G65W',
       GTM_ID: process.env['GTM_ID'] || 'GTM-TKFJ684',
     }
-  }
-}
+  },
+
+  devtools: true
+};
