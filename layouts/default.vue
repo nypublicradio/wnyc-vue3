@@ -28,13 +28,13 @@ useHead({
   },
   script: [
     {
-      src: `https://www.googletagmanager.com/gtag/js?id=${config.GA_MEASUREMENT_ID}`,
+      src: `https://www.googletagmanager.com/gtag/js?id=${config.public.GA_MEASUREMENT_ID}`,
       async: true,
     },
   ],
   noscript: [
     {
-      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.GTM_ID}&quot;
+      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.public.GTM_ID}&quot;
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
@@ -150,7 +150,7 @@ onMounted(() => {
   htlbid.cmd = htlbid.cmd || []
   htlbid.cmd.push(function () {
     htlbid.layout('universal') // Leave as 'universal' or add custom layout
-    htlbid.setTargeting('is_testing', config.HTL_IS_TESTING) // Set to "no" for production
+    htlbid.setTargeting('is_testing', config.public.HTL_IS_TESTING) // Set to "no" for production
     htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
     htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
     htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
@@ -160,7 +160,7 @@ onMounted(() => {
 useHead({
   script: [
     {
-      src: config.HTL_JS,
+      src: config.public.HTL_JS,
       async: true,
     },
   ],
@@ -168,7 +168,7 @@ useHead({
 let navigationState = useNavigation()
 onMounted(async () => {
   // // get the navigation data from Aviary
-  const { data: navigation } = await useFetch(config.NAVIGATION_API)
+  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
   // // update the state with the navigation data
 
   navigationState.value = navigation.value
@@ -180,7 +180,7 @@ onMounted(async () => {
     <Html lang="en">
       <Head>
         <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
-        <Link rel="stylesheet" :href="config.HTL_CSS" type="text/css" />
+        <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
         <Title>
           WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
         </Title>

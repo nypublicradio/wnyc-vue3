@@ -4,7 +4,7 @@ import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VB
 import { trackClickEvent } from '~/utilities/helpers'
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
-const { data: articles } = await useFetch(config.STORIES_API)
+const { data: articles } = await useFetch(config.public.STORIES_API)
 
 // returns an Aviary image template string
 const getImageUrl = (article) => {
@@ -12,7 +12,7 @@ const getImageUrl = (article) => {
     article.lead_asset?.[0]?.value?.image ??
     article.lead_asset?.[0]?.value?.default_image
   if (!listingImage) return ''
-  const imageUrlTemplate = `${config.IMAGE_BASE_URL}${listingImage.id}/fill-%width%x%height%|format-webp|webpquality-%quality%`
+  const imageUrlTemplate = `${config.public.IMAGE_BASE_URL}${listingImage.id}/fill-%width%x%height%|format-webp|webpquality-%quality%`
   return imageUrlTemplate
 }
 
