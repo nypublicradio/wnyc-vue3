@@ -253,7 +253,7 @@ onMounted(async () => {
           </h6>
         </div> -->
 
-        <!-- <Transition name="refresh">
+        <Transition name="refresh">
           <div
             v-if="isRefreshing"
             class="fixed flex align-items-center justify-content-center w-full mt-2"
@@ -264,7 +264,7 @@ onMounted(async () => {
             ></i>
             <p>REFRESHING</p>
           </div>
-        </Transition> -->
+        </Transition>
         <slot />
       </div>
     </main>
