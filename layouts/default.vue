@@ -7,6 +7,7 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
+import { LocalNotifications } from '@capacitor/local-notifications'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const { isMobile, isDesktop } = useDevice()
@@ -15,6 +16,7 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 const isRefreshing = ref(false)
+const acceptNotifications = ref(false)
 
 const fcmToken = ref('')
 //const nNotification = ref(null)
@@ -45,11 +47,14 @@ const addListeners = async () => {
   // iOS will prompt user and return if they granted permission or not
   // Android will just grant without prompting
   await PushNotifications.requestPermissions().then((result) => {
+    alert('push request' + JSON.stringify(result))
     if (result.receive === 'granted') {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register()
+      acceptNotifications.value = true
     } else {
-      alert('Error Reguistering push notifications')
+      //alert('Error Reguistering push notifications')
+      acceptNotifications.value = false
     }
   })
 
@@ -85,7 +90,7 @@ const addListeners = async () => {
       }
     }
   )
-  // fired when the abecomes active
+  // fired when the app becomes active
   await App.addListener('appStateChange', ({ isActive }) => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
@@ -101,6 +106,18 @@ const addListeners = async () => {
     // If no match, do nothing - let regular routing
     // logic take over
   })
+
+  // Check permission to use push notifications for ANDROID ONLY
+  if (Capacitor.getPlatform() === 'android') {
+    await LocalNotifications.requestPermissions().then((result) => {
+      alert('local request = ' + JSON.stringify(result))
+      if (result.display === 'granted') {
+        acceptNotifications.value = true
+      } else {
+        acceptNotifications.value = false
+      }
+    })
+  }
 }
 
 // const checkAppLaunchUrl = async () => {
@@ -236,6 +253,7 @@ onMounted(async () => {
       <div class="dots" />
       <div class="content">
         <input :value="fcmToken" />
+        <p>acceptNotifications = {{ acceptNotifications }}</p>
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
