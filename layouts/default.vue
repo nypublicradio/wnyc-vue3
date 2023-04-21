@@ -5,6 +5,7 @@ import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
+  PermissionStatus,
   Token,
 } from '@capacitor/push-notifications'
 import { LocalNotifications } from '@capacitor/local-notifications'
@@ -112,12 +113,24 @@ const addListeners = async () => {
     await LocalNotifications.requestPermissions().then((result) => {
       alert('local request = ' + JSON.stringify(result))
       if (result.display === 'granted') {
+        PushNotifications.register()
         acceptNotifications.value = true
       } else {
         acceptNotifications.value = false
       }
     })
   }
+}
+
+const requestNotificationPermission = async () => {
+  await PushNotifications.requestPermissions().then((result) => {
+    alert('local request = ' + JSON.stringify(result))
+    if (result.receive === 'granted') {
+      acceptNotifications.value = true
+    } else {
+      acceptNotifications.value = false
+    }
+  })
 }
 
 // const checkAppLaunchUrl = async () => {
@@ -254,6 +267,11 @@ onMounted(async () => {
       <div class="content">
         <input :value="fcmToken" />
         <p>acceptNotifications = {{ acceptNotifications }}</p>
+        <Button
+          v-if="!acceptNotifications"
+          label="request permission"
+          @click="requestNotificationPermission"
+        />
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
