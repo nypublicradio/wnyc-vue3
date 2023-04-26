@@ -8,9 +8,14 @@ import {
   Token,
 } from '@capacitor/push-notifications'
 import { LocalNotifications } from '@capacitor/local-notifications'
+import {
+  NativeSettings,
+  AndroidSettings,
+  IOSSettings,
+} from 'capacitor-native-settings'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-const { isMobile, isDesktop } = useDevice()
+const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -43,20 +48,7 @@ useHead({
 })
 
 const addListeners = async () => {
-  // Request permission to use push notifications
-  // iOS will prompt user and return if they granted permission or not
-  // Android will just grant without prompting
-  await PushNotifications.requestPermissions().then((result) => {
-    alert('push request' + JSON.stringify(result))
-    if (result.receive === 'granted') {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      acceptNotifications.value = true
-    } else {
-      //alert('Error Reguistering push notifications')
-      acceptNotifications.value = false
-    }
-  })
+  await checkNotificationPermisstions()
 
   // On success, we should be able to receive notifications
   await PushNotifications.addListener('registration', (token: Token) => {
@@ -106,18 +98,45 @@ const addListeners = async () => {
     // If no match, do nothing - let regular routing
     // logic take over
   })
+}
 
-  // Check permission to use push notifications for ANDROID ONLY
-  if (Capacitor.getPlatform() === 'android') {
-    await LocalNotifications.requestPermissions().then((result) => {
-      alert('local request = ' + JSON.stringify(result))
-      if (result.display === 'granted') {
+const checkNotificationPermisstions = async () => {
+  if (isApp.value) {
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    await PushNotifications.requestPermissions().then((result) => {
+      alert('push request' + JSON.stringify(result))
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register()
         acceptNotifications.value = true
       } else {
+        //alert('Error Reguistering push notifications')
         acceptNotifications.value = false
       }
     })
+
+    // Check permission to use push notifications for ANDROID ONLY
+    if (Capacitor.getPlatform() === 'android') {
+      await LocalNotifications.requestPermissions().then((result) => {
+        alert('local request = ' + JSON.stringify(result))
+        if (result.display === 'granted') {
+          PushNotifications.register()
+          acceptNotifications.value = true
+        } else {
+          acceptNotifications.value = false
+        }
+      })
+    }
   }
+}
+
+const toSystemSettings = async () => {
+  NativeSettings.open({
+    optionAndroid: AndroidSettings.ApplicationDetails,
+    optionIOS: IOSSettings.App,
+  })
 }
 
 // const checkAppLaunchUrl = async () => {
@@ -127,13 +146,21 @@ const addListeners = async () => {
 //   alert('App opened with URL: ' + JSON.stringify(url))
 // }
 
-onMounted(() => {
+onMounted(async () => {
   //initially load all the streams
   updateAllLiveStreams()
-  //refresh data every time the tab is in focus
+
+  // if APP then add listeners
+  if (isApp.value) {
+    addListeners()
+    //checkAppLaunchUrl()
+  }
+
+  //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       //console.log('focused tab =', event)
+      checkNotificationPermisstions()
       updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
@@ -152,16 +179,12 @@ onMounted(() => {
       }, 1500)
     })
   }
-})
 
-onMounted(() => {
-  if (isApp.value) {
-    addListeners()
-    //checkAppLaunchUrl()
-  }
-})
+  // // get the navigation data from Aviary
+  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
+  // // update the state with the navigation data
+  navigationState.value = navigation.value
 
-onMounted(() => {
   // Ads
   window.htlbid = window.htlbid || {}
   htlbid.cmd = htlbid.cmd || []
@@ -183,13 +206,6 @@ useHead({
   ],
 })
 let navigationState = useNavigation()
-onMounted(async () => {
-  // // get the navigation data from Aviary
-  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
-  // // update the state with the navigation data
-
-  navigationState.value = navigation.value
-})
 </script>
 
 <template>
@@ -254,6 +270,11 @@ onMounted(async () => {
       <div class="content">
         <input :value="fcmToken" />
         <p>acceptNotifications = {{ acceptNotifications }}</p>
+        <Button
+          v-if="!acceptNotifications"
+          label="go to system settings"
+          @click="toSystemSettings"
+        />
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
