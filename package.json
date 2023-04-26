@@ -24,7 +24,6 @@
     "sass": "^1.58.3"
   },
   "dependencies": {
-    "@capacitor-community/fcm": "^3.0.2",
     "@capacitor/android": "^4.7.1",
     "@capacitor/app": "^4.1.1",
     "@capacitor/assets": "^2.0.4",

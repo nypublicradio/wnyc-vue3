@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
-import { FCM } from '@capacitor-community/fcm'
 import {
   ActionPerformed,
   PushNotificationSchema,
@@ -16,7 +15,7 @@ import {
 } from 'capacitor-native-settings'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-const { isMobile, isDesktop } = useDevice()
+const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -49,7 +48,7 @@ useHead({
 })
 
 const addListeners = async () => {
-  await checkPermisstions()
+  await checkNotificationPermisstions()
 
   // On success, we should be able to receive notifications
   await PushNotifications.addListener('registration', (token: Token) => {
@@ -101,7 +100,7 @@ const addListeners = async () => {
   })
 }
 
-const checkPermisstions = async () => {
+const checkNotificationPermisstions = async () => {
   if (isApp.value) {
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
@@ -134,18 +133,6 @@ const checkPermisstions = async () => {
 }
 
 const toSystemSettings = async () => {
-  // await FCM.deleteInstance()
-  //   .then(() => alert(`Token deleted`))
-  //   .catch((err) => console.log(err))
-  // await PushNotifications.requestPermissions().then((result) => {
-  //   alert('local request = ' + JSON.stringify(result))
-  //   if (result.receive === 'granted') {
-  //     PushNotifications.register()
-  //     acceptNotifications.value = true
-  //   } else {
-  //     acceptNotifications.value = false
-  //   }
-  // })
   NativeSettings.open({
     optionAndroid: AndroidSettings.ApplicationDetails,
     optionIOS: IOSSettings.App,
@@ -159,14 +146,21 @@ const toSystemSettings = async () => {
 //   alert('App opened with URL: ' + JSON.stringify(url))
 // }
 
-onMounted(() => {
+onMounted(async () => {
   //initially load all the streams
   updateAllLiveStreams()
-  //refresh data every time the tab is in focus
+
+  // if APP then add listeners
+  if (isApp.value) {
+    addListeners()
+    //checkAppLaunchUrl()
+  }
+
+  //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       //console.log('focused tab =', event)
-      checkPermisstions()
+      checkNotificationPermisstions()
       updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
@@ -185,16 +179,12 @@ onMounted(() => {
       }, 1500)
     })
   }
-})
 
-onMounted(() => {
-  if (isApp.value) {
-    addListeners()
-    //checkAppLaunchUrl()
-  }
-})
+  // // get the navigation data from Aviary
+  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
+  // // update the state with the navigation data
+  navigationState.value = navigation.value
 
-onMounted(() => {
   // Ads
   window.htlbid = window.htlbid || {}
   htlbid.cmd = htlbid.cmd || []
@@ -216,13 +206,6 @@ useHead({
   ],
 })
 let navigationState = useNavigation()
-onMounted(async () => {
-  // // get the navigation data from Aviary
-  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
-  // // update the state with the navigation data
-
-  navigationState.value = navigation.value
-})
 </script>
 
 <template>
