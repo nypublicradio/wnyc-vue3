@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
+import { FCM } from '@capacitor-community/fcm'
 import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
-  PermissionStatus,
   Token,
 } from '@capacitor/push-notifications'
 import { LocalNotifications } from '@capacitor/local-notifications'
+import {
+  NativeSettings,
+  AndroidSettings,
+  IOSSettings,
+} from 'capacitor-native-settings'
 import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const { isMobile, isDesktop } = useDevice()
@@ -44,20 +49,7 @@ useHead({
 })
 
 const addListeners = async () => {
-  // Request permission to use push notifications
-  // iOS will prompt user and return if they granted permission or not
-  // Android will just grant without prompting
-  await PushNotifications.requestPermissions().then((result) => {
-    alert('push request' + JSON.stringify(result))
-    if (result.receive === 'granted') {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      acceptNotifications.value = true
-    } else {
-      //alert('Error Reguistering push notifications')
-      acceptNotifications.value = false
-    }
-  })
+  await checkPermisstions()
 
   // On success, we should be able to receive notifications
   await PushNotifications.addListener('registration', (token: Token) => {
@@ -107,29 +99,56 @@ const addListeners = async () => {
     // If no match, do nothing - let regular routing
     // logic take over
   })
+}
 
-  // Check permission to use push notifications for ANDROID ONLY
-  if (Capacitor.getPlatform() === 'android') {
-    await LocalNotifications.requestPermissions().then((result) => {
-      alert('local request = ' + JSON.stringify(result))
-      if (result.display === 'granted') {
+const checkPermisstions = async () => {
+  if (isApp.value) {
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    await PushNotifications.requestPermissions().then((result) => {
+      alert('push request' + JSON.stringify(result))
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register()
         acceptNotifications.value = true
       } else {
+        //alert('Error Reguistering push notifications')
         acceptNotifications.value = false
       }
     })
+
+    // Check permission to use push notifications for ANDROID ONLY
+    if (Capacitor.getPlatform() === 'android') {
+      await LocalNotifications.requestPermissions().then((result) => {
+        alert('local request = ' + JSON.stringify(result))
+        if (result.display === 'granted') {
+          PushNotifications.register()
+          acceptNotifications.value = true
+        } else {
+          acceptNotifications.value = false
+        }
+      })
+    }
   }
 }
 
-const requestNotificationPermission = async () => {
-  await PushNotifications.requestPermissions().then((result) => {
-    alert('local request = ' + JSON.stringify(result))
-    if (result.receive === 'granted') {
-      acceptNotifications.value = true
-    } else {
-      acceptNotifications.value = false
-    }
+const toSystemSettings = async () => {
+  // await FCM.deleteInstance()
+  //   .then(() => alert(`Token deleted`))
+  //   .catch((err) => console.log(err))
+  // await PushNotifications.requestPermissions().then((result) => {
+  //   alert('local request = ' + JSON.stringify(result))
+  //   if (result.receive === 'granted') {
+  //     PushNotifications.register()
+  //     acceptNotifications.value = true
+  //   } else {
+  //     acceptNotifications.value = false
+  //   }
+  // })
+  NativeSettings.open({
+    optionAndroid: AndroidSettings.ApplicationDetails,
+    optionIOS: IOSSettings.App,
   })
 }
 
@@ -147,6 +166,7 @@ onMounted(() => {
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       //console.log('focused tab =', event)
+      checkPermisstions()
       updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
@@ -269,8 +289,8 @@ onMounted(async () => {
         <p>acceptNotifications = {{ acceptNotifications }}</p>
         <Button
           v-if="!acceptNotifications"
-          label="request permission"
-          @click="requestNotificationPermission"
+          label="go to system settings"
+          @click="toSystemSettings"
         />
         <!-- <div class="px-4">
           <p>fcm token =</p>
