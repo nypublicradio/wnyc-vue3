@@ -51,3 +51,10 @@ export const useCurrentStreamStation = () => useState('useCurrentStreamStation',
  */
 const navigationObj: object | any = null
 export const useNavigation = () => useState('navigation', () => navigationObj)
+
+
+/**
+ * Global state for the fileSystem
+ */
+const fileSystem: any = []
+export const useFileSystem = () => useState('fileSystem', () => fileSystem)

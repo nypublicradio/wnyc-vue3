@@ -1,4 +1,6 @@
 import format from 'date-fns/format'
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
+import { useFileSystem } from '~/composables/states'
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -41,4 +43,48 @@ export const trackClickEvent = (category, component, label) => {
     component: component,
     event_label: label,
   })
+}
+const readDir = async () => {
+  const fileSystem = useFileSystem()
+  fileSystem.value = await Filesystem.readdir({
+    path: 'secrets',
+    directory: Directory.Documents,
+  })
+}
+export const fetchAndStoreMp3 = async (url: string) => {
+
+  // const ctx = new AudioContext();
+  // let audio;
+  // $fetch(url)
+  //   .then(data => data.arrayBuffer())
+  //   .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
+  //   .then(decodedAudio => {
+  //     console.log('audio  = ', decodedAudio)
+  //     audio = decodedAudio;
+  //   })
+
+  // Fetch the MP3 file as a Blob
+  const response = await fetch(url);
+  const mp3Blob = await response.blob();
+
+  // Read the Blob as a data URL using FileReader
+  const reader = new FileReader();
+  reader.onload = async function () {
+    const base64DataUrl: any = this.result;
+
+    //localStorage.setItem('mp3DataUrl', base64DataUrl);
+    await Filesystem.writeFile({
+      path: 'secrets/sample.mp3',
+      data: base64DataUrl,
+      directory: Directory.Documents,
+    })
+    readDir()
+  };
+  reader.readAsDataURL(mp3Blob);
+}
+
+export const playStoredMp3 = () => {
+  const base64DataUrl: any = localStorage.getItem('mp3DataUrl');
+  const audioElement = new Audio(base64DataUrl);
+  audioElement.play();
 }
