@@ -1,6 +1,6 @@
 import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { useFileSystem } from '~/composables/states'
+import { useFileSystem, useCurrentFile, useAppDirectory } from '~/composables/states'
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -44,24 +44,45 @@ export const trackClickEvent = (category, component, label) => {
     event_label: label,
   })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const readDir = async () => {
+  const appDirectory = useAppDirectory()
   const fileSystem = useFileSystem()
   fileSystem.value = await Filesystem.readdir({
-    path: 'secrets',
+    path: `${appDirectory.value}`,
     directory: Directory.Documents,
   })
 }
-export const fetchAndStoreMp3 = async (url: string) => {
 
-  // const ctx = new AudioContext();
-  // let audio;
-  // $fetch(url)
-  //   .then(data => data.arrayBuffer())
-  //   .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
-  //   .then(decodedAudio => {
-  //     console.log('audio  = ', decodedAudio)
-  //     audio = decodedAudio;
-  //   })
+export const fetchAndStoreMp3 = async (url: string, name: string) => {
+
+
+  const appDirectory = useAppDirectory()
+  // initial check to see if the appDirectory exists and if not, create it
+  // const appDirectories = await Filesystem.readdir({
+  //   path: '',
+  //   directory: Directory.Documents,
+  // })
+
+  // console.log('appDirectories = ', appDirectories)
+  // const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
+
+  // console.log('result = ', result.length > 0)
+
 
   // Fetch the MP3 file as a Blob
   const response = await fetch(url);
@@ -74,7 +95,7 @@ export const fetchAndStoreMp3 = async (url: string) => {
 
     //localStorage.setItem('mp3DataUrl', base64DataUrl);
     await Filesystem.writeFile({
-      path: 'secrets/sample.mp3',
+      path: `${appDirectory.value}${name}`,
       data: base64DataUrl,
       directory: Directory.Documents,
     })
@@ -83,8 +104,15 @@ export const fetchAndStoreMp3 = async (url: string) => {
   reader.readAsDataURL(mp3Blob);
 }
 
-export const playStoredMp3 = () => {
-  const base64DataUrl: any = localStorage.getItem('mp3DataUrl');
-  const audioElement = new Audio(base64DataUrl);
-  audioElement.play();
+export const playStoredMp3 = async (name: string) => {
+  const currentFile = useCurrentFile()
+  const appDirectory = useAppDirectory()
+  // const base64DataUrl: any = localStorage.getItem('mp3DataUrl');
+  // const audioElement = new Audio(base64DataUrl);
+  // audioElement.play();
+  currentFile.value = await Filesystem.readFile({
+    path: `${appDirectory.value}${name}`,
+    directory: Directory.Documents,
+  })
+
 }
