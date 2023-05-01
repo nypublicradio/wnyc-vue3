@@ -59,17 +59,22 @@ export const trackClickEvent = (category, component, label) => {
 
 
 
-const readDir = async () => {
+export const readStoreDir = async () => {
   const appDirectory = useAppDirectory()
   const fileSystem = useFileSystem()
-  fileSystem.value = await Filesystem.readdir({
-    path: `${appDirectory.value}`,
-    directory: Directory.Documents,
-  })
+
+  try {
+    fileSystem.value = await Filesystem.readdir({
+      path: `${appDirectory.value}`,
+      directory: Directory.Documents,
+    })
+  } catch (e) {
+    console.error('Unable to read dir', e);
+  }
+
 }
 
-export const fetchAndStoreMp3 = async (url: string, name: string) => {
-
+export const fetchAndStoreMp3 = async (file: { url: string; filename: string; name: string }) => {
 
   const appDirectory = useAppDirectory()
   // initial check to see if the appDirectory exists and if not, create it
@@ -79,13 +84,13 @@ export const fetchAndStoreMp3 = async (url: string, name: string) => {
   // })
 
   // console.log('appDirectories = ', appDirectories)
-  // const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
+  //const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
 
   // console.log('result = ', result.length > 0)
 
 
   // Fetch the MP3 file as a Blob
-  const response = await fetch(url);
+  const response = await fetch(file.url);
   const mp3Blob = await response.blob();
 
   // Read the Blob as a data URL using FileReader
@@ -93,26 +98,52 @@ export const fetchAndStoreMp3 = async (url: string, name: string) => {
   reader.onload = async function () {
     const base64DataUrl: any = this.result;
 
-    //localStorage.setItem('mp3DataUrl', base64DataUrl);
-    await Filesystem.writeFile({
-      path: `${appDirectory.value}${name}`,
-      data: base64DataUrl,
-      directory: Directory.Documents,
-    })
-    readDir()
+    try {
+      await Filesystem.writeFile({
+        path: `${appDirectory.value}${file.filename}`,
+        data: base64DataUrl,
+        directory: Directory.Documents,
+      })
+      readStoreDir()
+    } catch (e) {
+      console.error('Unable to write file', e);
+    }
   };
   reader.readAsDataURL(mp3Blob);
 }
 
-export const playStoredMp3 = async (name: string) => {
+export const playMp3 = async (file: { url: string; filename: string; name: string }) => {
+  const currentFile = useCurrentFile()
+  currentFile.value = file
+}
+export const playStoredMp3 = async (file: { url: string; filename: string; name: string }) => {
   const currentFile = useCurrentFile()
   const appDirectory = useAppDirectory()
-  // const base64DataUrl: any = localStorage.getItem('mp3DataUrl');
-  // const audioElement = new Audio(base64DataUrl);
-  // audioElement.play();
-  currentFile.value = await Filesystem.readFile({
-    path: `${appDirectory.value}${name}`,
-    directory: Directory.Documents,
-  })
+  console.log('file = ', file)
+  try {
+    currentFile.value = await Filesystem.readFile({
+      path: `${appDirectory.value}${file.name}`,
+      directory: Directory.Documents,
+    })
+  } catch (e) {
+    console.error('Unable to read file', e);
+  }
+
+}
+
+export const deleteStoredMp3 = async (file: { url: string; filename: string; name: string }) => {
+  const appDirectory = useAppDirectory()
+
+  try {
+    Filesystem.deleteFile({
+      path: `${appDirectory.value}${file.filename || file.name}`,
+      directory: Directory.Documents,
+    })
+    setTimeout(() => {
+      readStoreDir()
+    }, 100)
+  } catch (e) {
+    console.error(`Unable to delete ${file.name || file.filename}`, e);
+  }
 
 }
