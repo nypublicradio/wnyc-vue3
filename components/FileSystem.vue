@@ -6,6 +6,7 @@ import {
   deleteStoredMp3,
   readStoreDir,
   playMp3,
+  fileNameFromURL,
 } from '~/utilities/helpers'
 import { useFileSystem, useCurrentFile } from '~/composables/states'
 const fileSystem = useFileSystem()
@@ -20,29 +21,34 @@ watch(currentFile, (value) => {
 
 const files = ref([
   {
-    name: 'chop',
-    filename: 'chop.mp3',
-    url: '/episodes/chop.mp3',
+    title: 'chop',
+    file: '/episodes/chop.mp3',
+    details: '<p>This is a sample description for this audio file</p>',
+    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
   },
   {
-    name: 'high',
-    filename: 'high.mp3',
-    url: '/episodes/high.mp3',
+    title: 'high',
+    file: '/episodes/high.mp3',
+    details: '<p>This is a sample description for this audio file</p>',
+    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
   },
   {
-    name: 'snap',
-    filename: 'snap.mp3',
-    url: '/episodes/snap.mp3',
+    title: 'snap',
+    file: '/episodes/snap.mp3',
+    details: '<p>This is a sample description for this audio file</p>',
+    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
   },
   {
-    name: 'warm',
-    filename: 'warm.mp3',
-    url: '/episodes/warm.mp3',
+    title: 'warm',
+    file: '/episodes/warm.mp3',
+    details: '<p>This is a sample description for this audio file</p>',
+    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
   },
   {
-    name: 'sample',
-    filename: 'sample.mp3',
-    url: '/episodes/sample.mp3',
+    title: 'sample',
+    file: '/episodes/sample.mp3',
+    details: '<p>This is a sample description for this audio file</p>',
+    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
   },
 ])
 
@@ -62,11 +68,13 @@ onMounted(() => {
       <p>Files:</p>
 
       <ul>
-        <li v-for="file in files" :key="file.name">
-          <Button :label="file.name" @click="playMp3(file)" />
+        <li v-for="file in files" :key="file.title">
+          <Button :label="file.title" @click="playMp3(file)" />
           <Button
             v-if="
-              fileSystem.files?.find((fsFile) => fsFile.name === file.filename)
+              fileSystem.files?.find(
+                (fsFile) => fsFile.name === fileNameFromURL(file.file)
+              )
             "
             icon="pi pi-trash"
             @click="deleteStoredMp3(file)"
@@ -95,8 +103,8 @@ onMounted(() => {
         <source :src="currentFile" type="audio/mpeg" />
         The “audio” tag is not supported by your browser.
       </audio>
-      <audio v-if="currentFile?.url" controls autoplay>
-        <source :src="currentFile.url" type="audio/mpeg" />
+      <audio v-if="currentFile?.file" controls autoplay>
+        <source :src="currentFile.file" type="audio/mpeg" />
         The “audio” tag is not supported by your browser.
       </audio>
     </div>

@@ -51,6 +51,7 @@ const switchEpisode = () => {
 }
 
 watch(currentEpisode, () => {
+  console.log('currentEpisode = ', currentEpisode.value)
   switchEpisode()
 })
 
