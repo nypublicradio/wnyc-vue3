@@ -126,6 +126,7 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
     }
   };
   reader.readAsDataURL(mp3Blob);
+  return
 }
 
 export const playMp3 = async (file: { file: string; title: string; details: string; image: string }) => {

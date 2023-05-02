@@ -1,12 +1,9 @@
 <script setup>
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import {
-  fetchAndStoreMp3,
   playStoredMp3,
   deleteStoredMp3,
   readStoreDir,
   playMp3,
-  fileNameFromURL,
   formatFileSize,
 } from '~/utilities/helpers'
 import { useFileSystem } from '~/composables/states'
@@ -19,7 +16,7 @@ watch(fileSystem, (value) => {
 const files = ref([
   {
     title: 'chop',
-    file: '/episodes/chop.mp3',
+    file: 'https://waaa.wnyc.org/radiolab_podcast/radiolab_podcast052022_lamancha.mp3/radiolab_podcast052022_lamancha.mp3_ywr3ahjkcgo_d2d032db4d1737bae96500b2a72fa36e_58957006.mp3?hash_redirect=1&x-total-bytes=58957006&x-ais-classified=streaming&listeningSessionID=0CD_382_121__bf478affca16c2c2c324c8c675e6e794fc9fb2f8',
     details: '<p>This is a sample description for this audio file</p>',
     image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
   },
@@ -63,20 +60,8 @@ onMounted(() => {
       <ul>
         <li v-for="file in files" :key="file.title">
           <Button :label="file.title" @click="playMp3(file)" />
-          <Button
-            v-if="
-              fileSystem.files?.find(
-                (fsFile) => fsFile.name === fileNameFromURL(file.file)
-              )
-            "
-            icon="pi pi-trash"
-            @click="deleteStoredMp3(file)"
-          />
-          <Button
-            v-else
-            icon="pi pi-download"
-            @click="fetchAndStoreMp3(file)"
-          />
+
+          <DownloadDeleteButton :file="file" />
         </li>
       </ul>
       <p>Saved files:</p>
