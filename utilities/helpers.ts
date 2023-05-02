@@ -65,6 +65,9 @@ export const readStoreDir = async () => {
   const appDirectory = useAppDirectory()
   const fileSystem = useFileSystem()
 
+  //nitial check to see if the appDirectory exists and if not, create it
+  await createAppDirectory()
+
   try {
     fileSystem.value = await Filesystem.readdir({
       path: `${appDirectory.value}/`,
@@ -99,9 +102,6 @@ const createAppDirectory = async () => {
 }
 
 export const fetchAndStoreMp3 = async (file: { file: string; title: string; details: string; image: string }) => {
-
-  //nitial check to see if the appDirectory exists and if not, create it
-  createAppDirectory()
 
   const appDirectory = useAppDirectory()
 

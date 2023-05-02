@@ -50,12 +50,8 @@ const files = ref([
 ])
 
 onMounted(() => {
+  // initial read of the stored directory
   readStoreDir()
-
-  // fileSystem.value.files.filter((fsFile) => {
-  //   console.log('fsFile.name  = ', fsFile.name)
-  //   console.log('file.filename  = ', file.filename)
-  // })
 })
 </script>
 
