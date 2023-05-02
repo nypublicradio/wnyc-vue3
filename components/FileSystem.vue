@@ -15,10 +15,11 @@ watch(fileSystem, (value) => {
 
 const files = ref([
   {
-    title: 'chop',
-    file: 'https://waaa.wnyc.org/radiolab_podcast/radiolab_podcast052022_lamancha.mp3/radiolab_podcast052022_lamancha.mp3_ywr3ahjkcgo_d2d032db4d1737bae96500b2a72fa36e_58957006.mp3?hash_redirect=1&x-total-bytes=58957006&x-ais-classified=streaming&listeningSessionID=0CD_382_121__bf478affca16c2c2c324c8c675e6e794fc9fb2f8',
-    details: '<p>This is a sample description for this audio file</p>',
-    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
+    title: 'Radiolab: Colors',
+    file: 'https://waaa.wnyc.org/radiolab/radiolab052112.mp3',
+    details: '<p>This is a Radiolab sample description for this audio file</p>',
+    image:
+      'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',
   },
   {
     title: 'high',
