@@ -7,6 +7,7 @@ import {
   readStoreDir,
   playMp3,
   fileNameFromURL,
+  formatFileSize,
 } from '~/utilities/helpers'
 import { useFileSystem, useCurrentFile } from '~/composables/states'
 const fileSystem = useFileSystem()
@@ -89,7 +90,10 @@ onMounted(() => {
       <p>Saved files:</p>
       <ul>
         <li v-for="file in fileSystem.files" :key="file.name">
-          <Button :label="file.name" @click="playStoredMp3(file)" />
+          <Button
+            :label="`${file.name} - ${formatFileSize(file.size)}`"
+            @click="playStoredMp3(file)"
+          />
           <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
         </li>
       </ul>
