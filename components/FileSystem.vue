@@ -9,15 +9,11 @@ import {
   fileNameFromURL,
   formatFileSize,
 } from '~/utilities/helpers'
-import { useFileSystem, useCurrentFile } from '~/composables/states'
+import { useFileSystem } from '~/composables/states'
 const fileSystem = useFileSystem()
-const currentFile = useCurrentFile()
 
 watch(fileSystem, (value) => {
   console.log('fileSystem', value)
-})
-watch(currentFile, (value) => {
-  console.log('currentFile', value)
 })
 
 const files = ref([
@@ -98,19 +94,6 @@ onMounted(() => {
         </li>
       </ul>
       <!-- <pre>{{ fileSystem.files }}</pre> -->
-      <audio
-        v-if="currentFile?.data"
-        :src="`data:audio/mpeg;base64,${currentFile?.data}`"
-        controls
-        autoplay
-      >
-        <source :src="currentFile" type="audio/mpeg" />
-        The “audio” tag is not supported by your browser.
-      </audio>
-      <audio v-if="currentFile?.file" controls autoplay>
-        <source :src="currentFile.file" type="audio/mpeg" />
-        The “audio” tag is not supported by your browser.
-      </audio>
     </div>
   </div>
 </template>

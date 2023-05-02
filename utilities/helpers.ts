@@ -1,6 +1,6 @@
 import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { useFileSystem, useCurrentFile, useAppDirectory, useCurrentEpisode } from '~/composables/states'
+import { useFileSystem, useAppDirectory, useCurrentEpisode } from '~/composables/states'
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -67,8 +67,8 @@ export const readStoreDir = async () => {
 
   try {
     fileSystem.value = await Filesystem.readdir({
-      path: `${appDirectory.value}`,
-      directory: Directory.Documents,
+      path: `${appDirectory.value}/`,
+      directory: Directory.Data,
     })
   } catch (e) {
     console.error('Unable to read dir', e);
@@ -76,20 +76,34 @@ export const readStoreDir = async () => {
 
 }
 
+const createAppDirectory = async () => {
+  // initial check to see if the appDirectory exists and if not, create it
+  const appDirectory = useAppDirectory()
+  const appDirectories = await Filesystem.readdir({
+    path: '',
+    directory: Directory.Data,
+  })
+
+  const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
+
+  if (result.length === 0) {
+    try {
+      await Filesystem.mkdir({
+        path: `${appDirectory.value}`,
+        directory: Directory.Data
+      })
+    } catch (e) {
+      console.error('Unable to create directory', e);
+    }
+  }
+}
+
 export const fetchAndStoreMp3 = async (file: { file: string; title: string; details: string; image: string }) => {
 
+  //nitial check to see if the appDirectory exists and if not, create it
+  createAppDirectory()
+
   const appDirectory = useAppDirectory()
-  // initial check to see if the appDirectory exists and if not, create it
-  // const appDirectories = await Filesystem.readdir({
-  //   path: '',
-  //   directory: Directory.Documents,
-  // })
-
-  // console.log('appDirectories = ', appDirectories)
-  //const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
-
-  // console.log('result = ', result.length > 0)
-
 
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
@@ -102,9 +116,9 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
 
     try {
       await Filesystem.writeFile({
-        path: `${appDirectory.value}${fileNameFromURL(file.file)}`,
+        path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
         data: base64DataUrl,
-        directory: Directory.Documents,
+        directory: Directory.Data,
       })
       readStoreDir()
     } catch (e) {
@@ -124,8 +138,8 @@ export const playStoredMp3 = async (file: { name: string; uri: string }) => {
   const appDirectory = useAppDirectory()
   try {
     const b64Content = await Filesystem.readFile({
-      path: `${appDirectory.value}${file.name}`,
-      directory: Directory.Documents,
+      path: `${appDirectory.value}/${file.name}`,
+      directory: Directory.Data,
     })
 
     // details and image are hard coded right now
@@ -145,8 +159,8 @@ export const deleteStoredMp3 = async (file: { file: string; title: string; detai
   console.log('FILE =  ', file)
   try {
     Filesystem.deleteFile({
-      path: `${appDirectory.value}${file.name || fileNameFromURL(file.file)}`,
-      directory: Directory.Documents,
+      path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
+      directory: Directory.Data,
     })
     setTimeout(() => {
       readStoreDir()

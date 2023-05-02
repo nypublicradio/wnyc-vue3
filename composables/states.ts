@@ -62,11 +62,5 @@ export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 /**
  * Global state for the app directory location
  */
-const appDirectory: string = "wnyc-downloads/"
+const appDirectory: string = "wnyc-downloads"
 export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
-
-/**
- * Global state for the current fileS
- */
-const currentFile: any = null
-export const useCurrentFile = () => useState('currentFile', () => currentFile)
