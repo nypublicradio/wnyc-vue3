@@ -10,14 +10,28 @@ import { useFileSystem, useFileSystemLS } from '~/composables/states'
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
 
+const used = ref(0)
+const granted = ref(0)
+
 watch(fileSystem, (value) => {
   console.log('fileSystem', value)
+
+  navigator.webkitPersistentStorage.queryUsageAndQuota(
+    function (usedBytes, grantedBytes) {
+      console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
+      used.value = usedBytes
+      granted.value = grantedBytes
+    },
+    function (e) {
+      console.log('Error', e)
+    }
+  )
 })
 
 const files = ref([
   {
     title: 'Radiolab: Colors',
-    file: 'https://waaa.wnyc.org/radiolab/radiolab062718.mp3',
+    file: 'https://waaa.wnyc.org/radiolab/radiolab040210.mp3',
     details: '<p>This is a Radiolab sample description for this audio file</p>',
     image:
       'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',
@@ -51,6 +65,7 @@ const files = ref([
 onMounted(() => {
   // initial read of the stored directory
   readStoreDir()
+  window.localStorage.quota = 500 * 1024 * 1024
 })
 </script>
 
@@ -67,15 +82,7 @@ onMounted(() => {
         </li>
       </ul>
       <p>Saved files:</p>
-      <!-- <ul>
-        <li v-for="file in fileSystem.files" :key="file.name">
-          <Button
-            :label="`${file.name} - ${formatFileSize(file.size)}`"
-            @click="playStoredMp3(file)"
-          />
-          <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
-        </li>
-      </ul> -->
+      <p>!!Storage limit: {{ used }} of {{ granted }}</p>
       <ul>
         <li v-for="file in fileSystemLS" :key="file.name">
           <Button
