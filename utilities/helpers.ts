@@ -37,7 +37,7 @@ export const resizePublisherImage = (url, w, h, q = 80) => {
 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
-  console.log(category, component, label)
+  //console.log(category, component, label)
   $analytics.sendEvent('click_tracking', {
     event_category: category,
     component: component,
@@ -125,7 +125,7 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
       //create a parralel browser local storage for this data, and bes to add it to the delete function.
       setTimeout(async () => {
         const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
-        const filesArr = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
+        const filesArr = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `/DATA/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
         fileSystemLS.value = filesArr
         await localStorage.setItem(appDirectory.value, JSON.stringify(filesArr));
       }, 1000)
@@ -150,7 +150,7 @@ export const playStoredMp3 = async (file: { name: string; uri: string, file: str
       path: `${appDirectory.value}/${file.name}`,
       directory: Directory.Data,
     })
-
+    // eventually we will set a Type for the current episdode
     currentEpisode.value = {
       title: file.title,
       file: `data:audio/mpeg;base64,${b64Content.data}`,
@@ -164,12 +164,20 @@ export const playStoredMp3 = async (file: { name: string; uri: string, file: str
 
 export const deleteStoredMp3 = async (file: { file: string; title: string; details: string; image: string; name: string; uri: string }) => {
   const appDirectory = useAppDirectory()
-  console.log('FILE =  ', file)
+  const fileSystemLS = useFileSystemLS()
+
   try {
     Filesystem.deleteFile({
       path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
       directory: Directory.Data,
     })
+
+    // also delete from the fileSystemLS state and local storage
+    const updatedFileSystemLS = fileSystemLS.value.filter((entry: any) => entry.name !== (file.name || fileNameFromURL(file.file)))
+
+    fileSystemLS.value = updatedFileSystemLS
+    await localStorage.setItem(appDirectory.value, JSON.stringify(updatedFileSystemLS));
+
     setTimeout(() => {
       readStoreDir()
     }, 100)

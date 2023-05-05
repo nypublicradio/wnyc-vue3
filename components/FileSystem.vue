@@ -85,7 +85,10 @@ onMounted(() => {
           <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
         </li>
       </ul>
-      <pre>{{ fileSystem.files }}</pre>
+      <div class="grid">
+        <pre class="col-6">FileSystem = {{ fileSystem.files }}</pre>
+        <pre class="col-6">FileSystemLS = {{ fileSystemLS }}</pre>
+      </div>
     </div>
   </div>
 </template>
