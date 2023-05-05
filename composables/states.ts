@@ -59,6 +59,10 @@ export const useNavigation = () => useState('navigation', () => navigationObj)
 const fileSystem: any = []
 export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 
+// Local Storage version of the fileSystem
+const fileSystemLS: any = []
+export const useFileSystemLS = () => useState('fileSystemLS', () => fileSystemLS)
+
 /**
  * Global state for the app directory location
  */

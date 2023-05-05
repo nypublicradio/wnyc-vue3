@@ -65,7 +65,7 @@ export const readStoreDir = async () => {
   const appDirectory = useAppDirectory()
   const fileSystem = useFileSystem()
 
-  //nitial check to see if the appDirectory exists and if not, create it
+  //initial check to see if the appDirectory exists and if not, create it
   await createAppDirectory()
 
   try {
@@ -101,9 +101,11 @@ const createAppDirectory = async () => {
   }
 }
 
-export const fetchAndStoreMp3 = async (file: { file: string; title: string; details: string; image: string }) => {
+export const fetchAndStoreMp3 = async (file: { file: string; title: string; details: string; image: string; }) => {
 
   const appDirectory = useAppDirectory()
+  const fileSystem = useFileSystem()
+  const fileSystemLS = useFileSystemLS()
 
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
@@ -113,13 +115,20 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   const reader = new FileReader();
   reader.onload = async function () {
     const base64DataUrl: any = this.result;
-
+    const fs = null
     try {
       await Filesystem.writeFile({
         path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
         data: base64DataUrl,
         directory: Directory.Data,
       })
+      //create a parralel browser local storage for this data, and bes to add it to the delete function.
+      setTimeout(async () => {
+        const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
+        const filesArr = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
+        fileSystemLS.value = filesArr
+        await localStorage.setItem(appDirectory.value, JSON.stringify(filesArr));
+      }, 1000)
       readStoreDir()
     } catch (e) {
       console.error('Unable to write file', e);
@@ -132,8 +141,8 @@ export const playMp3 = async (file: { file: string; title: string; details: stri
   const currentEpisode = useCurrentEpisode()
   currentEpisode.value = file
 }
-export const playStoredMp3 = async (file: { name: string; uri: string }) => {
-  console.log('file = ', file)
+
+export const playStoredMp3 = async (file: { name: string; uri: string, file: string; title: string; details: string; image: string }) => {
   const currentEpisode = useCurrentEpisode()
   const appDirectory = useAppDirectory()
   try {
@@ -142,12 +151,11 @@ export const playStoredMp3 = async (file: { name: string; uri: string }) => {
       directory: Directory.Data,
     })
 
-    // details and image are hard coded right now
     currentEpisode.value = {
-      title: file.name,
+      title: file.title,
       file: `data:audio/mpeg;base64,${b64Content.data}`,
-      details: '<p>This is a sample description for this audio file</p>',
-      image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
+      details: file.details,
+      image: file.image,
     }
   } catch (e) {
     console.error('Unable to read file', e);

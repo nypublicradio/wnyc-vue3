@@ -6,8 +6,9 @@ import {
   playMp3,
   formatFileSize,
 } from '~/utilities/helpers'
-import { useFileSystem } from '~/composables/states'
+import { useFileSystem, useFileSystemLS } from '~/composables/states'
 const fileSystem = useFileSystem()
+const fileSystemLS = useFileSystemLS()
 
 watch(fileSystem, (value) => {
   console.log('fileSystem', value)
@@ -66,7 +67,7 @@ onMounted(() => {
         </li>
       </ul>
       <p>Saved files:</p>
-      <ul>
+      <!-- <ul>
         <li v-for="file in fileSystem.files" :key="file.name">
           <Button
             :label="`${file.name} - ${formatFileSize(file.size)}`"
@@ -74,8 +75,17 @@ onMounted(() => {
           />
           <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
         </li>
+      </ul> -->
+      <ul>
+        <li v-for="file in fileSystemLS" :key="file.name">
+          <Button
+            :label="`${file.title} - ${formatFileSize(file.size)}`"
+            @click="playStoredMp3(file)"
+          />
+          <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
+        </li>
       </ul>
-      <!-- <pre>{{ fileSystem.files }}</pre> -->
+      <pre>{{ fileSystem.files }}</pre>
     </div>
   </div>
 </template>

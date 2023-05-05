@@ -18,7 +18,14 @@ const fileSystem = useFileSystem()
 const pending = ref(false)
 
 watch(fileSystem, (value) => {
-  pending.value = false
+  // when the file system changes, check if THIS file is stored, then updatre the pending state
+  if (
+    value.files?.find(
+      (entry) => entry.name === fileNameFromURL(props.file.file)
+    )
+  ) {
+    pending.value = false
+  }
 })
 </script>
 
