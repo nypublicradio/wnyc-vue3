@@ -17,7 +17,7 @@ watch(fileSystem, (value) => {
 const files = ref([
   {
     title: 'Radiolab: Colors',
-    file: 'https://waaa.wnyc.org/radiolab/radiolab052112.mp3',
+    file: 'https://waaa.wnyc.org/radiolab/radiolab062718.mp3',
     details: '<p>This is a Radiolab sample description for this audio file</p>',
     image:
       'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',

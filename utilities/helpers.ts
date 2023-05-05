@@ -115,7 +115,6 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   const reader = new FileReader();
   reader.onload = async function () {
     const base64DataUrl: any = this.result;
-    const fs = null
     try {
       await Filesystem.writeFile({
         path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
