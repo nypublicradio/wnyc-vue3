@@ -2,6 +2,8 @@ import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { useFileSystem, useAppDirectory, useCurrentEpisode } from '~/composables/states'
 
+const directoryToSaveTo = Directory.External
+
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
   if (date) {
@@ -68,14 +70,15 @@ export const readStoreDir = async () => {
   //initial check to see if the appDirectory exists and if not, create it
   await createAppDirectory()
 
-  try {
-    fileSystem.value = await Filesystem.readdir({
-      path: `${appDirectory.value}/`,
-      directory: Directory.Data,
-    })
-  } catch (e) {
+  fileSystem.value = await Filesystem.readdir({
+    path: `${appDirectory.value}/`,
+    directory: directoryToSaveTo,
+  }).then((val) => {
+    return val
+  }).catch((e) => {
     console.error('Unable to read dir', e);
-  }
+  })
+
 
 }
 
@@ -84,20 +87,20 @@ const createAppDirectory = async () => {
   const appDirectory = useAppDirectory()
   const appDirectories = await Filesystem.readdir({
     path: '',
-    directory: Directory.Data,
+    directory: directoryToSaveTo,
   })
 
   const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
 
   if (result.length === 0) {
-    try {
-      await Filesystem.mkdir({
-        path: `${appDirectory.value}`,
-        directory: Directory.Data
-      })
-    } catch (e) {
+    await Filesystem.mkdir({
+      path: `${appDirectory.value}`,
+      directory: directoryToSaveTo
+    }).then(() => {
+
+    }).catch((e) => {
       console.error('Unable to create directory', e);
-    }
+    })
   }
 }
 
@@ -110,28 +113,30 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
   const mp3Blob = await response.blob();
-
+  console.log('directoryToSaveTo =  ', directoryToSaveTo)
   // Read the Blob as a data URL using FileReader
   const reader = new FileReader();
   reader.onload = async function () {
     const base64DataUrl: any = this.result;
-    try {
-      await Filesystem.writeFile({
-        path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
-        data: base64DataUrl,
-        directory: Directory.Data,
-      })
+
+    await Filesystem.writeFile({
+      path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
+      data: base64DataUrl,
+      directory: directoryToSaveTo,
+    }).then(() => {
       //create a parralel browser local storage for this data, and bes to add it to the delete function.
-      setTimeout(async () => {
+      setTimeout(() => {
+        // slight delay is needed for the fileSystem to update
         const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
-        const filesArr = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `/DATA/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
+        const filesArr = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
         fileSystemLS.value = filesArr
-        await localStorage.setItem(appDirectory.value, JSON.stringify(filesArr));
-      }, 1000)
+
+        localStorage.setItem(appDirectory.value, JSON.stringify(filesArr));
+      }, 500)
       readStoreDir()
-    } catch (e) {
+    }).catch((e) => {
       console.error('Unable to write file', e);
-    }
+    })
   };
   reader.readAsDataURL(mp3Blob);
 }
@@ -144,11 +149,11 @@ export const playMp3 = async (file: { file: string; title: string; details: stri
 export const playStoredMp3 = async (file: { name: string; uri: string, file: string; title: string; details: string; image: string }) => {
   const currentEpisode = useCurrentEpisode()
   const appDirectory = useAppDirectory()
-  try {
-    const b64Content = await Filesystem.readFile({
-      path: `${appDirectory.value}/${file.name}`,
-      directory: Directory.Data,
-    })
+
+  await Filesystem.readFile({
+    path: `${appDirectory.value}/${file.name}`,
+    directory: directoryToSaveTo,
+  }).then((b64Content) => {
     // eventually we will set a Type for the current episdode
     currentEpisode.value = {
       title: file.title,
@@ -156,21 +161,21 @@ export const playStoredMp3 = async (file: { name: string; uri: string, file: str
       details: file.details,
       image: file.image,
     }
-  } catch (e) {
+
+  }).catch((e) => {
     console.error('Unable to read file', e);
-  }
+  })
+
 }
 
 export const deleteStoredMp3 = async (file: { file: string; title: string; details: string; image: string; name: string; uri: string }) => {
   const appDirectory = useAppDirectory()
   const fileSystemLS = useFileSystemLS()
 
-  try {
-    Filesystem.deleteFile({
-      path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
-      directory: Directory.Data,
-    })
-
+  Filesystem.deleteFile({
+    path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
+    directory: directoryToSaveTo,
+  }).then(async () => {
     // also delete from the fileSystemLS state and local storage
     const updatedFileSystemLS = fileSystemLS.value.filter((entry: any) => entry.name !== (file.name || fileNameFromURL(file.file)))
 
@@ -180,10 +185,9 @@ export const deleteStoredMp3 = async (file: { file: string; title: string; detai
     setTimeout(() => {
       readStoreDir()
     }, 100)
-  } catch (e) {
+  }).catch((e) => {
     console.error(`Unable to delete file}`, e);
-  }
-
+  })
 }
 
 export const formatFileSize = (bytes: number, decimals: number = 2) => {
