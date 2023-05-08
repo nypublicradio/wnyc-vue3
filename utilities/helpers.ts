@@ -1,7 +1,7 @@
 import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { useFileSystem, useAppDirectory, useCurrentEpisode } from '~/composables/states'
-
+import { Preferences } from '@capacitor/preferences';
 const directoryToSaveTo = Directory.External
 
 // format ISO timestamp to return only the time
@@ -125,13 +125,15 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
       directory: directoryToSaveTo,
     }).then(() => {
       //create a parralel browser local storage for this data, and bes to add it to the delete function.
-      setTimeout(() => {
+      setTimeout(async () => {
+
+        await console.log('fileSystemLS = ', fileSystemLS.value)
         // slight delay is needed for the fileSystem to update
         const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
-        const filesArr = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
-        fileSystemLS.value = filesArr
+        const filesArr: any = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
 
-        localStorage.setItem(appDirectory.value, JSON.stringify(filesArr));
+        fileSystemLS.value = filesArr
+        await Preferences.set({ key: 'files', value: JSON.stringify(filesArr) });
       }, 500)
       readStoreDir()
     }).catch((e) => {
@@ -180,7 +182,7 @@ export const deleteStoredMp3 = async (file: { file: string; title: string; detai
     const updatedFileSystemLS = fileSystemLS.value.filter((entry: any) => entry.name !== (file.name || fileNameFromURL(file.file)))
 
     fileSystemLS.value = updatedFileSystemLS
-    await localStorage.setItem(appDirectory.value, JSON.stringify(updatedFileSystemLS));
+    await Preferences.set({ key: 'files', value: JSON.stringify(updatedFileSystemLS) });
 
     setTimeout(() => {
       readStoreDir()

@@ -59,7 +59,6 @@ const files = ref([
 onMounted(() => {
   // initial read of the stored directory
   readStoreDir()
-  window.localStorage.quota = 500 * 1024 * 1024
 })
 </script>
 
