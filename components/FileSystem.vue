@@ -5,10 +5,12 @@ import {
   readStoreDir,
   playMp3,
   formatFileSize,
+  initReadOfPreferences,
 } from '~/utilities/helpers'
 import { useFileSystem, useFileSystemLS } from '~/composables/states'
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
+fileSystemLS.value = await initReadOfPreferences()
 
 const used = ref(0)
 const granted = ref(0)

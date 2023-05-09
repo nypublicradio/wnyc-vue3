@@ -203,3 +203,16 @@ export const formatFileSize = (bytes: number, decimals: number = 2) => {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
+
+// initial pull of the preferencce plugin files data
+
+export const initReadOfPreferences = async () => {
+  let val = null
+  try {
+    val = await Preferences.get({ key: 'files' })
+  } catch (error) {
+
+  }
+  console.log('=======val======= ', JSON.parse(val.value))
+  return JSON.parse(val.value)
+}
