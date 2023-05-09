@@ -113,7 +113,7 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
   const mp3Blob = await response.blob();
-  console.log('directoryToSaveTo =  ', directoryToSaveTo)
+
   // Read the Blob as a data URL using FileReader
   const reader = new FileReader();
   reader.onload = async function () {
