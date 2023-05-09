@@ -52,6 +52,12 @@
 		<key>UISceneConfigurations</key>
 		<dict/>
 	</dict>
+	<key>UISupportDocumentBrowser</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
