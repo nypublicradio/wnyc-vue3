@@ -213,6 +213,5 @@ export const initReadOfPreferences = async () => {
   } catch (error) {
 
   }
-  console.log('=======val======= ', JSON.parse(val.value))
   return JSON.parse(val.value)
 }

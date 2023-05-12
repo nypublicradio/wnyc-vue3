@@ -10,7 +10,7 @@ import {
 import { useFileSystem, useFileSystemLS } from '~/composables/states'
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
-fileSystemLS.value = await initReadOfPreferences()
+//fileSystemLS.value = await initReadOfPreferences()
 
 const used = ref(0)
 const granted = ref(0)
@@ -32,8 +32,15 @@ watch(fileSystem, (value) => {
 
 const files = ref([
   {
-    title: 'Radiolab: Colors',
+    title: 'Large: Colors',
     file: 'https://waaa.wnyc.org/radiolab/radiolab040210.mp3',
+    details: '<p>This is a Radiolab sample description for this audio file</p>',
+    image:
+      'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',
+  },
+  {
+    title: 'Small: Colors',
+    file: 'https://waaa.wnyc.org/bl/bl122721dpod.mp3',
     details: '<p>This is a Radiolab sample description for this audio file</p>',
     image:
       'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',
