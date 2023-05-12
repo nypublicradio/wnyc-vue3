@@ -65,7 +65,7 @@ const fileSystem: any = []
 export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 
 // Local Storage version of the fileSystem
-import { Preferences } from '@capacitor/preferences';
-const fileSystemLS: any = await Preferences.get({ key: 'files' })
-export const useFileSystemLS = () => useState('fileSystemLS', () => JSON.parse(fileSystemLS.value) || [])
-//export const useFileSystemLS = () => useState('fileSystemLS', () => [])
+// import { Preferences } from '@capacitor/preferences';
+// const fileSystemLS: any = await Preferences.get({ key: 'files' })
+// export const useFileSystemLS = () => useState('fileSystemLS', () => JSON.parse(fileSystemLS.value) || [])
+export const useFileSystemLS = () => useState('fileSystemLS', () => [])

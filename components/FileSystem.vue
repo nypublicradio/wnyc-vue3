@@ -10,7 +10,7 @@ import {
 import { useFileSystem, useFileSystemLS } from '~/composables/states'
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
-//fileSystemLS.value = await initReadOfPreferences()
+fileSystemLS.value = await initReadOfPreferences()
 
 const used = ref(0)
 const granted = ref(0)
@@ -94,6 +94,15 @@ onMounted(() => {
           <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
         </li>
       </ul>
+      <!-- <ul>
+        <li v-for="file in fileSystem.files" :key="file.name">
+          <Button
+            :label="`${file.name} - ${formatFileSize(file.size)}`"
+            @click="playStoredMp3(file)"
+          />
+          <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
+        </li>
+      </ul> -->
       <div class="grid">
         <pre class="col-6">FileSystem = {{ fileSystem.files }}</pre>
         <pre class="col-6">FileSystemLS = {{ fileSystemLS }}</pre>

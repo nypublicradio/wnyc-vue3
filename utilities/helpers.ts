@@ -113,12 +113,12 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
   const mp3Blob = await response.blob();
+  console.log('mp3Blob = ', mp3Blob)
 
   // Read the Blob as a data URL using FileReader
   const reader = new FileReader();
   reader.onload = async function () {
     const base64DataUrl: any = this.result;
-
     await Filesystem.writeFile({
       path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
       data: base64DataUrl,
