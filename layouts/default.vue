@@ -100,6 +100,13 @@ const addListeners = async () => {
   })
 }
 
+// const checkAppLaunchUrl = async () => {
+//   const url = await App.getLaunchUrl()
+//   appLaunchUrl.value = url
+//   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+//   alert('App opened with URL: ' + JSON.stringify(url))
+// }
+
 const checkNotificationPermisstions = async () => {
   if (isApp.value) {
     // Request permission to use push notifications
@@ -138,13 +145,6 @@ const toSystemSettings = async () => {
     optionIOS: IOSSettings.App,
   })
 }
-
-// const checkAppLaunchUrl = async () => {
-//   const url = await App.getLaunchUrl()
-//   appLaunchUrl.value = url
-//   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-//   alert('App opened with URL: ' + JSON.stringify(url))
-// }
 
 onMounted(async () => {
   //initially load all the streams
@@ -275,6 +275,8 @@ let navigationState = useNavigation()
           label="go to system settings"
           @click="toSystemSettings"
         />
+
+        <FileSystem />
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />

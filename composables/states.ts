@@ -51,3 +51,21 @@ export const useCurrentStreamStation = () => useState('useCurrentStreamStation',
  */
 const navigationObj: object | any = null
 export const useNavigation = () => useState('navigation', () => navigationObj)
+
+/**
+ * Global state for the app directory location
+ */
+const appDirectory: string = "wnyc-downloads"
+export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
+
+/**
+ * Global state for the fileSystem
+ */
+const fileSystem: any = []
+export const useFileSystem = () => useState('fileSystem', () => fileSystem)
+
+// Local Storage version of the fileSystem
+// import { Preferences } from '@capacitor/preferences';
+// const fileSystemLS: any = await Preferences.get({ key: 'files' })
+// export const useFileSystemLS = () => useState('fileSystemLS', () => JSON.parse(fileSystemLS.value) || [])
+export const useFileSystemLS = () => useState('fileSystemLS', () => [])
