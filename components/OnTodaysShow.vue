@@ -1,6 +1,6 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import VImageWithCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageWithCaption.vue'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
 
@@ -116,21 +116,20 @@ const trackSocialFollow = (social) => {
             v-html="currentEpisodeHolder?.onTodaysShowHeadline"
           />
         </VFlexibleLink>
-        <VImageWithCaption
+        <VImage
           class="show-image"
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
           loading="eager"
-          :image="currentEpisodeHolder?.onTodaysShowImageTemplate"
-          :imageUrl="currentEpisodeHolder?.onTodaysShowHeadlineLink"
+          :src="currentEpisodeHolder?.onTodaysShowImageTemplate"
+          :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           :width="584"
           :height="360"
-          :alt-text="currentEpisodeHolder?.onTodaysShowImageAltText"
+          :alt="currentEpisodeHolder?.onTodaysShowImageAltText"
           :maxWidth="currentEpisodeHolder?.onTodaysShowImageMaxWidth"
           :maxHeight="currentEpisodeHolder?.onTodaysShowImageMaxHeight"
           :credit="currentEpisodeHolder?.onTodaysShowImageCredits"
           :credit-url="currentEpisodeHolder?.onTodaysShowImageCreditsUrl"
           :caption="currentEpisodeHolder?.onTodaysShowImageCaption"
-          :sizes="[1]"
           :ratio="[3, 2]"
           @image-click="
             trackClickEvent(

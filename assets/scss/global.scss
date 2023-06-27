@@ -11,6 +11,9 @@ $toolsBreakPoint: 472px;
   --header-z-index: 900;
   --line-clamp: 3;
 }
+:root, [data-style-mode="dark"], .style-mode-dark  {
+  --v-card-title-hover-color : red !important;
+  }
 html {
   background-color: var(--red);
   overflow-x: hidden !important;

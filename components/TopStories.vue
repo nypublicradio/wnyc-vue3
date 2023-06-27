@@ -8,12 +8,12 @@ const { data: articles } = await useFetch(config.public.STORIES_API)
 
 // returns an Aviary image template string
 const getImageUrl = (article) => {
+  console.log('article - ', article)
   const listingImage =
     article.lead_asset?.[0]?.value?.image ??
     article.lead_asset?.[0]?.value?.default_image
   if (!listingImage) return ''
-  const imageUrlTemplate = `${config.public.IMAGE_BASE_URL}${listingImage.id}/fill-%width%x%height%|format-webp|webpquality-%quality%`
-  return imageUrlTemplate
+  return String(listingImage.id)
 }
 
 // returns the article link
@@ -49,20 +49,15 @@ const normalizeAuthor = (author) => {
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles.items" :key="index" class="mb-6">
       <VCard
-        :image="getImageUrl(article)"
+        :src="getImageUrl(article)"
         :title="article.title"
         loading="eager"
-        :titleLink="getArticleLink(article)"
+        :link="getArticleLink(article)"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
-        :quality="80"
-        :ratio="[3, 2]"
-        :sizes="[1, 2]"
         :width="318"
         :height="212"
-        responsive
-        bp="md"
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',
@@ -114,19 +109,20 @@ const normalizeAuthor = (author) => {
 </template>
 
 <style lang="scss">
+
 .top-stories {
   border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
 }
 
-.top-stories .h2 {
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.2;
+.top-stories .card-title-title {
+  // font-size: 24px;
+  // font-weight: 500;
+  // line-height: 1.2;
 }
 
-.top-stories .flexible-link:not(.raw):not(.null):hover *,
-.top-stories .flexible-link:not(.raw):not(.null) {
-  color: white !important;
-  text-decoration: none;
-}
+// .top-stories .flexible-link:not(.raw):not(.null):hover *,
+// .top-stories .flexible-link:not(.raw):not(.null) {
+//   color: white !important;
+//   text-decoration: none;
+// }
 </style>

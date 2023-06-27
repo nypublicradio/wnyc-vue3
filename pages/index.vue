@@ -19,7 +19,7 @@
     <section>
       <OnTodaysShow />
     </section>
-    <section>
+    <section data-style-mode="dark">
       <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
       <TopStories class="pt-6" />
     </section>

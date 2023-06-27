@@ -1,6 +1,21 @@
 export default {
-  modules: ['@nuxtjs/ionic', '@nuxtjs/device'],
+  modules: ['@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image'],
 
+  image: {
+    dir: 'public',
+    wagtail: {
+      baseURL: "https://cms.demo.nypr.digital/images/",
+      screens: {
+        xs: 375,
+        sm: 576,
+        md: 768,
+        lg: 992,
+        xl: 1280,
+        xxl: 1366,
+        '2xl': 1920
+      },
+    },
+  },
   /* ssr: process.env.ISAPP === 'false' ? true : false, */
   ssr: false,
 
