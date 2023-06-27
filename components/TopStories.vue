@@ -59,6 +59,7 @@ const normalizeAuthor = (author) => {
         :sponsored="article.sponsoredContent"
         :width="318"
         :height="212"
+        verticalMobile
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',
@@ -73,51 +74,40 @@ const normalizeAuthor = (author) => {
             $event
           )
         "
-        @credit-click="
-          trackClickEvent(
-            'Click Tracking - Top Story',
-            'Article Card Credit',
-            $event
-          )
-        "
       >
         <template #belowBlurb>
-        <div class="article-metadata" data-style-mode="dark">
-          <VByline
-            :authors="article.related_authors?.map(normalizeAuthor)"
-            @name-click="
-              trackClickEvent(
-                'Click Tracking - Top Story',
-                'Article Card Author Name',
-                $event.url
-              )
-            "
-            @organization-click="
-              trackClickEvent(
-                'Click Tracking - Top Story',
-                'Article Card Organization',
-                $event.url
-              )
-            "
-          />
-        </div>
-      </template>
+          <div class="article-metadata" data-style-mode="dark">
+            <VByline
+              :authors="article.related_authors?.map(normalizeAuthor)"
+              @name-click="
+                trackClickEvent(
+                  'Click Tracking - Top Story',
+                  'Article Card Author Name',
+                  $event.url
+                )
+              "
+              @organization-click="
+                trackClickEvent(
+                  'Click Tracking - Top Story',
+                  'Article Card Author Organization',
+                  $event.url
+                )
+              "
+            />
+          </div>
+        </template>
       </VCard>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-
 .top-stories {
   border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
 }
-
 </style>
 <style lang="scss">
-
 .article-metadata .v-byline .flexible-link {
-  border-bottom: none ;
- 
+  border-bottom: none;
 }
 </style>
