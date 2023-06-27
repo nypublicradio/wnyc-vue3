@@ -38,11 +38,12 @@
     "@capacitor/splash-screen": "5.0.4",
     "@capacitor/status-bar": "5.0.4",
     "@nuxt/image": "^1.0.0-rc.1",
-    "@nypublicradio/nypr-design-system-vue3": "^2.0.23",
+    "@nypublicradio/nypr-design-system-vue3": "^2.0.27",
     "capacitor-native-settings": "5.0.0",
     "firebase": "^9.17.1",
     "ionicons": "^6.1.1",
     "jsdom": "^21.1.0",
-    "primeflex": "^3.3.0"
+    "primeflex": "^3.3.0",
+    "vitest": "^0.32.2"
   }
 }

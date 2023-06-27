@@ -169,8 +169,8 @@ const trackSocialFollow = (social) => {
       <div
         class="on-todays-show-person-social-wrapper grid mt-7 align-items-center"
       >
+        <!--  v-if="hosts" -->
         <div
-          v-if="hosts"
           class="on-todays-show-person-list col-12 md:col-6 flex flex-wrap column-gap-6 xl:column-gap-7 row-gap-4"
         >
           <div
@@ -205,13 +205,11 @@ const trackSocialFollow = (social) => {
           </div>
         </div>
         <div
+          v-if="social.twitter || social.instagram || social.facebook"
           class="connect flex justify-content-center flex-column col-12 md:col-6 pl-4 my-6 md:my-0 align-conent-center"
         >
           <p>Connect with the show!</p>
-          <v-share-tools
-            v-if="social.twitter || social.instagram || social.facebook"
-            class="on-todays-show-social"
-          >
+          <v-share-tools class="on-todays-show-social">
             <v-share-tools-item
               v-if="social.twitter"
               :username="social.twitter"

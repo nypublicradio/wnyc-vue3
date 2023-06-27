@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import VSmartHeader from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VSmartHeader.vue'
+
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import {
@@ -264,7 +266,13 @@ let navigationState = useNavigation()
       </Head>
     </Html>
     <div class="top-safe-cover" />
-    <TheHeader v-if="navigationState" />
+    <header>
+      <template v-if="navigationState">
+        <VSmartHeader :hero-buffer="800" :resume-delay="0">
+          <TheHeader />
+        </VSmartHeader>
+      </template>
+    </header>
     <main>
       <div class="dots" />
       <div class="content">

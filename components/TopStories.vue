@@ -51,6 +51,7 @@ const normalizeAuthor = (author) => {
       <VCard
         :src="getImageUrl(article)"
         :title="article.title"
+        :blurb="article.description"
         loading="eager"
         :link="getArticleLink(article)"
         :maxWidth="article.listingImage?.width"
@@ -80,13 +81,10 @@ const normalizeAuthor = (author) => {
           )
         "
       >
-        <p>
-          {{ article.description }}
-        </p>
-        <div class="article-metadata">
+        <template #belowBlurb>
+        <div class="article-metadata" data-style-mode="dark">
           <VByline
             :authors="article.related_authors?.map(normalizeAuthor)"
-            class="mt-3 no-border"
             @name-click="
               trackClickEvent(
                 'Click Tracking - Top Story',
@@ -103,26 +101,23 @@ const normalizeAuthor = (author) => {
             "
           />
         </div>
+      </template>
       </VCard>
     </div>
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .top-stories {
   border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
 }
 
-.top-stories .card-title-title {
-  // font-size: 24px;
-  // font-weight: 500;
-  // line-height: 1.2;
-}
+</style>
+<style lang="scss">
 
-// .top-stories .flexible-link:not(.raw):not(.null):hover *,
-// .top-stories .flexible-link:not(.raw):not(.null) {
-//   color: white !important;
-//   text-decoration: none;
-// }
+.article-metadata .v-byline .flexible-link {
+  border-bottom: none ;
+ 
+}
 </style>
