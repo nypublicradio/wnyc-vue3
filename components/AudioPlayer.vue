@@ -87,6 +87,7 @@ watch(isEpisodePlaying, (e) => {
     timer = null
   }
 })
+console.log('currentEpisode = ', currentEpisode.value)
 </script>
 
 <template>

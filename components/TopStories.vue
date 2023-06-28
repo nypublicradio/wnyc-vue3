@@ -8,7 +8,7 @@ const { data: articles } = await useFetch(config.public.STORIES_API)
 
 // returns an Aviary image template string
 const getImageUrl = (article) => {
-  console.log('article - ', article)
+  //console.log('article - ', article)
   const listingImage =
     article.lead_asset?.[0]?.value?.image ??
     article.lead_asset?.[0]?.value?.default_image

@@ -127,21 +127,11 @@ const trackSocialFollow = (social) => {
           :alt="currentEpisodeHolder?.onTodaysShowImageAltText"
           :maxWidth="currentEpisodeHolder?.onTodaysShowImageMaxWidth"
           :maxHeight="currentEpisodeHolder?.onTodaysShowImageMaxHeight"
-          :credit="currentEpisodeHolder?.onTodaysShowImageCredits"
-          :credit-url="currentEpisodeHolder?.onTodaysShowImageCreditsUrl"
           :caption="currentEpisodeHolder?.onTodaysShowImageCaption"
-          :ratio="[3, 2]"
           @image-click="
             trackClickEvent(
               `Click Tracking - On Todays Show image`,
               'On Todays Show image',
-              $event
-            )
-          "
-          @credit-click="
-            trackClickEvent(
-              `Click Tracking - On Todays Show image credit`,
-              'On Todays Show image credit',
               $event
             )
           "

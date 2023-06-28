@@ -1,10 +1,7 @@
-<script setup>
-import { IonApp } from '@ionic/vue'
-</script>
+<script setup></script>
 <template>
-  <!-- <ion-app> -->
   <NuxtLayout>
-    <NuxtPage />
+    <slot />
+    <NuxtPage><slot /></NuxtPage>
   </NuxtLayout>
-  <!-- </ion-app> -->
 </template>
