@@ -1,4 +1,5 @@
 <script setup>
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import { useCurrentEpisodeHolder } from '~/composables/states'
 const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -20,8 +21,10 @@ const toggleStreamEmit = (bool) => {
           :label="`${currentEpisodeHolder.timeStart} - ${currentEpisodeHolder.timeEnd}`"
           class="mb-3 flex md:hidden"
         />
-        <img
+        <VImage
           :src="currentEpisodeHolder.image"
+          :ratio="[1, 1]"
+          alt="show poster image"
           class="w-13rem md:w-14rem main-player-image"
         />
       </div>

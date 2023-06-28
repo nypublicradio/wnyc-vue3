@@ -12,7 +12,7 @@ const wnycHomepage = 'https://www.WNYC.org'
 </script>
 
 <template>
-  <header>
+  <div class="the-header">
     <section class="full-width">
       <div class="flex justify-content-between align-items-center">
         <div class="flex">
@@ -141,34 +141,29 @@ const wnycHomepage = 'https://www.WNYC.org'
         </VFlexibleLink>
       </div>
     </Sidebar>
-  </header>
+  </div>
 </template>
 
 <style lang="scss">
-header {
+.the-header {
   background-color: transparentize(#de1e3d, 0.1);
   backdrop-filter: blur(5px);
-  position: fixed;
-  top: env(safe-area-inset-top);
-  left: 0;
-  right: 0;
-  z-index: 100;
 }
 
-header .p-button .p-button-label {
+.the-header .p-button .p-button-label {
   color: var(--red);
 }
 
-header .pi-bars {
+.the-header .pi-bars {
   color: white;
   font-size: var(--font-size-9);
 }
 
-header .c-secondary-nav__list {
+.the-header .c-secondary-nav__list {
   margin-bottom: 0.75rem;
 }
 
-header .c-secondary-nav__link {
+.the-header .c-secondary-nav__link {
   font-size: var(--font-size-7);
   font-weight: 700;
   margin-right: 1.5rem;

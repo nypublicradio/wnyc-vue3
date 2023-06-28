@@ -1,5 +1,5 @@
 <script setup>
-import VImageWithCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageWithCaption.vue'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 
 const props = defineProps({
   role: {
@@ -44,10 +44,10 @@ const emit = defineEmits(['person-emit'])
       class="person-card flex gap-3 align-items-center flex-column lg:flex-row"
       @click="emit('person-emit', props)"
     >
-      <VImageWithCaption
+      <VImage
         class="image"
-        :image="props.image"
-        :alt-text="`Photo of ${props.name}`"
+        :src="props.image"
+        :alt="`Photo of ${props.name}`"
         :ratio="[props.width, props.height]"
         role="presentation"
         loading="lazy"

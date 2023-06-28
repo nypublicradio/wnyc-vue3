@@ -1,6 +1,6 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import VImageWithCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageWithCaption.vue'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
 import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
 
@@ -116,21 +116,20 @@ const trackSocialFollow = (social) => {
             v-html="currentEpisodeHolder?.onTodaysShowHeadline"
           />
         </VFlexibleLink>
-        <VImageWithCaption
+        <VImage
           class="show-image"
           v-if="currentEpisodeHolder?.onTodaysShowImageTemplate"
           loading="eager"
-          :image="currentEpisodeHolder?.onTodaysShowImageTemplate"
-          :imageUrl="currentEpisodeHolder?.onTodaysShowHeadlineLink"
+          :src="currentEpisodeHolder?.onTodaysShowImageTemplate"
+          :to="currentEpisodeHolder?.onTodaysShowHeadlineLink"
           :width="584"
           :height="360"
-          :alt-text="currentEpisodeHolder?.onTodaysShowImageAltText"
+          :alt="currentEpisodeHolder?.onTodaysShowImageAltText"
           :maxWidth="currentEpisodeHolder?.onTodaysShowImageMaxWidth"
           :maxHeight="currentEpisodeHolder?.onTodaysShowImageMaxHeight"
           :credit="currentEpisodeHolder?.onTodaysShowImageCredits"
           :credit-url="currentEpisodeHolder?.onTodaysShowImageCreditsUrl"
           :caption="currentEpisodeHolder?.onTodaysShowImageCaption"
-          :sizes="[1]"
           :ratio="[3, 2]"
           @image-click="
             trackClickEvent(
@@ -170,8 +169,8 @@ const trackSocialFollow = (social) => {
       <div
         class="on-todays-show-person-social-wrapper grid mt-7 align-items-center"
       >
+        <!--  v-if="hosts" -->
         <div
-          v-if="hosts"
           class="on-todays-show-person-list col-12 md:col-6 flex flex-wrap column-gap-6 xl:column-gap-7 row-gap-4"
         >
           <div
@@ -206,13 +205,11 @@ const trackSocialFollow = (social) => {
           </div>
         </div>
         <div
+          v-if="social.twitter || social.instagram || social.facebook"
           class="connect flex justify-content-center flex-column col-12 md:col-6 pl-4 my-6 md:my-0 align-conent-center"
         >
           <p>Connect with the show!</p>
-          <v-share-tools
-            v-if="social.twitter || social.instagram || social.facebook"
-            class="on-todays-show-social"
-          >
+          <v-share-tools class="on-todays-show-social">
             <v-share-tools-item
               v-if="social.twitter"
               :username="social.twitter"
