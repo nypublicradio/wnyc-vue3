@@ -18,6 +18,12 @@ export default {
   },
   /* ssr: process.env.ISAPP === 'false' ? true : false, */
   ssr: false,
+  ionic: {
+    integrations: {
+      router: false,
+    },
+  },
+
 
   app: {
     head: {
@@ -59,7 +65,7 @@ export default {
           {
             postcssPlugin: 'internal:charset-removal',
             AtRule: {
-              charset: (atRule) => {
+              charset: (atRule: { name: string; remove: () => void; }) => {
                 if (atRule.name === 'charset') {
                   atRule.remove();
                 }
