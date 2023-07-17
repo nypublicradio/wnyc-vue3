@@ -43,6 +43,7 @@ const normalizeAuthor = (author) => {
     url: author.slug && `https://gothamist.com/staff/${author.slug}`,
   }
 }
+//console.log(articles.value.items[0])
 </script>
 
 <template>
