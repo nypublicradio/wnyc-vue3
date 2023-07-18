@@ -77,7 +77,7 @@ const normalizeAuthor = (author) => {
         "
       >
         <template #belowBlurb>
-          <div class="article-metadata" data-style-mode="dark">
+          <div class="article-metadata">
             <VByline
               :authors="article.related_authors?.map(normalizeAuthor)"
               @name-click="

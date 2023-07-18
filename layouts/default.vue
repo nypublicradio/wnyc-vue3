@@ -274,17 +274,16 @@ let navigationState = useNavigation()
       </template>
     </header>
     <main>
-      <div class="dots" />
       <div class="content">
-        <input :value="fcmToken" />
+        <!-- <input :value="fcmToken" />
         <p>acceptNotifications = {{ acceptNotifications }}</p>
         <Button
           v-if="!acceptNotifications"
           label="go to system settings"
           @click="toSystemSettings"
-        />
+        /> -->
 
-        <FileSystem />
+        <!-- <FileSystem /> -->
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
@@ -302,7 +301,7 @@ let navigationState = useNavigation()
           </h6>
         </div> -->
 
-        <Transition name="refresh">
+        <!-- <Transition name="refresh">
           <div
             v-if="isRefreshing"
             class="fixed flex align-items-center justify-content-center w-full mt-2"
@@ -313,12 +312,13 @@ let navigationState = useNavigation()
             ></i>
             <p>REFRESHING</p>
           </div>
-        </Transition>
+        </Transition> -->
         <slot />
       </div>
     </main>
     <TheFooter v-if="navigationState" />
     <AudioPlayer />
+    <BottomMenu />
   </div>
 </template>
 

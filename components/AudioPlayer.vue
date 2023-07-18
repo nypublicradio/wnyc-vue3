@@ -91,7 +91,7 @@ watch(isEpisodePlaying, (e) => {
 </script>
 
 <template>
-  <div>
+  <div class="audio-player">
     <transition name="player">
       <v-persistent-player
         data-style-mode="dark"
@@ -116,24 +116,32 @@ watch(isEpisodePlaying, (e) => {
 </template>
 
 <style lang="scss">
-// slide in from bottom to top
-.player-enter-active {
-  transition: transform calc(var(--transition-duration) * 2) ease-out;
-}
+.audio-player {
+  bottom: var(--bottom-menu-height);
+  width: 100%;
+  position: fixed;
+  /* display: block; */
+  z-index: 9999;
+  // slide in from bottom to top
+  .player-enter-active {
+    transition: transform calc(var(--transition-duration) * 2) ease-out;
+  }
 
-.player-leave-active {
-  transition: transform calc(var(--transition-duration) * 2) ease-in;
-}
+  .player-leave-active {
+    transition: transform calc(var(--transition-duration) * 2) ease-in;
+  }
 
-.player-enter-from,
-.player-leave-to {
-  transform: translateY(v-bind(playerHeight));
-}
+  .player-enter-from,
+  .player-leave-to {
+    transform: translateY(v-bind(playerHeight));
+  }
 
-.persistent-player {
-  .track-info-description p {
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .persistent-player {
+    position: absolute;
+    .track-info-description p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 </style>

@@ -215,3 +215,27 @@ export const initReadOfPreferences = async () => {
   }
   return JSON.parse(val.value)
 }
+
+
+function getOrdinalSuffix(i) {
+  var j = i % 10,
+    k = i % 100;
+  if (j == 1 && k != 11) {
+    return i + "st";
+  }
+  if (j == 2 && k != 12) {
+    return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+    return i + "rd";
+  }
+  return i + "th";
+}
+
+export function getDate() {
+  var date = new Date();
+  var weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var monthname = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  return weekday[date.getDay()] + ', ' + monthname[date.getMonth()] + ' ' + getOrdinalSuffix(date.getDate());
+}

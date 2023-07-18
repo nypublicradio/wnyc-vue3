@@ -7,6 +7,7 @@ import Sidebar from 'primevue/sidebar/sidebar.esm.js'
 import Skeleton from 'primevue/skeleton/skeleton.esm.js'
 import TabMenu from 'primevue/tabmenu/tabmenu.esm.js'
 import TieredMenu from 'primevue/tieredmenu/tieredmenu.esm.js'
+import SelectButton from 'primevue/selectbutton'
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, { ripple: true })
@@ -17,4 +18,5 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Skeleton', Skeleton)
     nuxtApp.vueApp.component('TabMenu', TabMenu)
     nuxtApp.vueApp.component('TieredMenu', TieredMenu)
+    nuxtApp.vueApp.component('SelectButton', SelectButton)
 })

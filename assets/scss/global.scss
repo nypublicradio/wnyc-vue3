@@ -1,21 +1,7 @@
-$maxWidth: 1440px;
-$contentWidth: 1200px;
-$thinContentWidth: 768px;
-$headerHeight: 70px;
-$playerHeight: 100px;
-$toolsBreakPoint: 472px;
+@import 'cssvars.scss';
 
-:root {
-  --header-height: #{$headerHeight};
-  --player-height: #{$playerHeight};
-  --header-z-index: 900;
-  --line-clamp: 3;
-}
-// :root, [data-style-mode="dark"], .style-mode-dark  {
-//   --v-card-title-hover-color : red !important;
-//   }
 html {
-  background-color: var(--red);
+  background-color: var(--background3);
   overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -38,15 +24,8 @@ body {
   backdrop-filter: blur(5px);
 }
 
-.ion-page {
-  //overflow-y: scroll;
-}
-
 main {
   margin-top: 80px; // account for the sticky header height
-
-  // update the extensions in the theme with the following update on the background gradient
-  background: linear-gradient(180deg, var(--red) 10%, var(--blue) 24%);
 }
 
 section {
@@ -65,19 +44,6 @@ section {
   }
 }
 
-a {
-  text-decoration: none;
-  transition: var(--transition-duration);
-  opacity: 1;
-  &:hover {
-    opacity: 0.75;
-  }
-  &.plain {
-    border: none !important;
-    padding: 0 !important;
-  }
-}
-
 .col-fixed {
   &.ad300 {
     max-width: 316px;
@@ -86,77 +52,9 @@ a {
 }
 
 .font-meta {
-  font-family: var(--font-family);
-}
-
-.font-tisa {
   font-family: var(--font-family-header);
 }
 
-.dots {
-  opacity: 0.5;
-  background-image: radial-gradient(RGB(255, 255, 255, 0.6) 2px, transparent 2px),
-    radial-gradient(RGB(255, 255, 255, 0.6) 2px, transparent 2px);
-  background-position: 35px 0, 35px 35px;
-  background-size: 35px 35px;
-  width: 1366px;
-  max-width: 100%;
-  height: 340px;
-  position: absolute;
-  margin: auto;
-  right: 0;
-  left: 0;
-}
-
-// TO DO move to DS extensions file
-.p-button .p-button-label {
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  font-size: var(--font-size-7) !important;
-}
-
-.flexible-link {
-  &.raw.no-border {
-    border: none !important;
-  }
-}
-
-.v-card {
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  .v-byline.no-border {
-    a {
-      border: none !important;
-    }
-  }
-}
-
-.image-with-caption {
-  .image-with-caption-icons-info {
-    padding: 0 !important;
-    border-radius: var(--border-radius) !important;
-    .p-button-icon {
-      font-size: 1rem;
-      font-weight: 900;
-    }
-  }
-  .image-with-caption-icons-close {
-    background: var(--red) !important;
-    padding: 9px 0 !important;
-  }
-  .image-with-caption-caption {
-    background: rgba(map-get($colors, 'indigo'), 0.9);
-  }
-  figcaption.mt-1 {
-    text-align: right;
-    .image-with-caption-credit-link {
-      border-bottom: none !important;
-      text-decoration: none !important;
-      &:hover {
-        color: var(--link-button-color) !important;
-        text-decoration: none !important;
-      }
-    }
-  }
+.font-tisa {
+  font-family: var(--font-family-tisa);
 }

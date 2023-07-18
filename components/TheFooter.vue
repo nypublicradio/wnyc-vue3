@@ -24,7 +24,7 @@ const trackSocialFollow = (social) => {
 
 <template>
   <footer>
-    <section>
+    <section data-style-mode="dark">
       <div class="grid mb-2">
         <div class="col-12 lg:col-5">
           <VFlexibleLink
@@ -79,7 +79,6 @@ const trackSocialFollow = (social) => {
             <div class="col-12 lg:col-6">
               <VFlexibleLink
                 v-for="(link, primaryIndex) in footerPrimaryNav"
-                raw
                 :key="primaryIndex"
                 :to="link.value.url"
                 :target="link.type ? 'external_link' : undefined"
@@ -98,7 +97,6 @@ const trackSocialFollow = (social) => {
             <div class="col-12 lg:col-6">
               <VFlexibleLink
                 v-for="(link, secondaryIndex) in footerSecondaryNav"
-                raw
                 :key="secondaryIndex"
                 :to="link.value.url"
                 :target="link.type ? 'external_link' : undefined"
@@ -162,7 +160,6 @@ const trackSocialFollow = (social) => {
         >
           <VFlexibleLink
             v-for="(link, legalNavIndex) in legalNav"
-            raw
             :key="legalNavIndex"
             :to="link.value.url"
             :target="link.type ? 'external_link' : undefined"
