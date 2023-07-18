@@ -235,7 +235,7 @@ const trackSocialFollow = (social) => {
       height: 2px;
       width: 100vw;
       top: 50%;
-      background: rgba(map-get($colors, 'coolwhite'), 0.2);
+      background: rgba(map-get($colors, 'background'), 0.2);
     }
   }
   .show-more-btn {
@@ -271,7 +271,7 @@ const trackSocialFollow = (social) => {
   .on-todays-show-person-social-wrapper {
     .connect {
       min-height: 125px;
-      border-left: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
+      border-left: 2px solid rgba(map-get($colors, 'background'), 0.2);
     }
   }
 }

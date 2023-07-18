@@ -104,7 +104,7 @@ const normalizeAuthor = (author) => {
 
 <style lang="scss" scoped>
 .top-stories {
-  border-top: 2px solid rgba(map-get($colors, 'coolwhite'), 0.2);
+  border-top: 2px solid rgba(map-get($colors, 'background'), 0.2);
 }
 </style>
 <style lang="scss">

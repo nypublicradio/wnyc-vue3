@@ -42,7 +42,7 @@ const props = defineProps({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(map-get($colors, 'coolwhite'), 0.2) !important;
+  border-bottom: 1px solid rgba(map-get($colors, 'background'), 0.2) !important;
   text-decoration: none;
   padding-top: 8px;
   padding-bottom: 8px;
