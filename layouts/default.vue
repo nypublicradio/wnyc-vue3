@@ -15,7 +15,6 @@ import {
   AndroidSettings,
   IOSSettings,
 } from 'capacitor-native-settings'
-import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const { isDesktop } = useDevice()
 const route = useRoute()
@@ -148,56 +147,53 @@ const toSystemSettings = async () => {
   })
 }
 
-onMounted(async () => {
-  //initially load all the streams
-  updateAllLiveStreams()
+onMounted(
+  /* async */ () => {
+    //initially load all the streams
+    updateAllLiveStreams()
 
-  // if APP then add listeners
-  if (isApp.value) {
-    addListeners()
-    //checkAppLaunchUrl()
-  }
-
-  //refresh data and check notification permissions every time the tab is in focus or the App is in focus
-  document.addEventListener('visibilitychange', (event) => {
-    if (!document.hidden) {
-      //console.log('focused tab =', event)
-      checkNotificationPermisstions()
-      updateAllLiveStreams()
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
+    // if APP then add listeners
+    if (isApp.value) {
+      addListeners()
+      //checkAppLaunchUrl()
     }
-  })
-  //refresh data every time the cursor enters the window on desktop only
-  if (isDesktop) {
-    document.addEventListener('pointerenter', () => {
-      //console.log('pointerenter = ', event)
-      updateAllLiveStreams()
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
+
+    //refresh data and check notification permissions every time the tab is in focus or the App is in focus
+    document.addEventListener('visibilitychange', (event) => {
+      if (!document.hidden) {
+        //console.log('focused tab =', event)
+        checkNotificationPermisstions()
+        updateAllLiveStreams()
+        isRefreshing.value = true
+        setTimeout(() => {
+          isRefreshing.value = false
+        }, 1500)
+      }
+    })
+    //refresh data every time the cursor enters the window on desktop only
+    if (isDesktop) {
+      document.addEventListener('pointerenter', () => {
+        //console.log('pointerenter = ', event)
+        updateAllLiveStreams()
+        isRefreshing.value = true
+        setTimeout(() => {
+          isRefreshing.value = false
+        }, 1500)
+      })
+    }
+
+    // Ads
+    window.htlbid = window.htlbid || {}
+    htlbid.cmd = htlbid.cmd || []
+    htlbid.cmd.push(function () {
+      htlbid.layout('universal') // Leave as 'universal' or add custom layout
+      htlbid.setTargeting('is_testing', config.public.HTL_IS_TESTING) // Set to "no" for production
+      htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
+      htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
+      htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
     })
   }
-
-  // // get the navigation data from Aviary
-  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
-  // // update the state with the navigation data
-  navigationState.value = navigation.value
-
-  // Ads
-  window.htlbid = window.htlbid || {}
-  htlbid.cmd = htlbid.cmd || []
-  htlbid.cmd.push(function () {
-    htlbid.layout('universal') // Leave as 'universal' or add custom layout
-    htlbid.setTargeting('is_testing', config.public.HTL_IS_TESTING) // Set to "no" for production
-    htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
-    htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
-    htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
-  })
-})
+)
 
 useHead({
   script: [
@@ -207,7 +203,6 @@ useHead({
     },
   ],
 })
-let navigationState = useNavigation()
 </script>
 
 <template>
@@ -267,24 +262,21 @@ let navigationState = useNavigation()
     </Html>
     <div class="top-safe-cover" />
     <header>
-      <template v-if="navigationState">
-        <VSmartHeader :hero-buffer="800" :resume-delay="0">
-          <TheHeader />
-        </VSmartHeader>
-      </template>
+      <VSmartHeader :hero-buffer="800" :resume-delay="0">
+        <TheHeader />
+      </VSmartHeader>
     </header>
     <main>
-      <div class="dots" />
       <div class="content">
-        <input :value="fcmToken" />
+        <!-- <input :value="fcmToken" />
         <p>acceptNotifications = {{ acceptNotifications }}</p>
         <Button
           v-if="!acceptNotifications"
           label="go to system settings"
           @click="toSystemSettings"
-        />
+        /> -->
 
-        <FileSystem />
+        <!-- <FileSystem /> -->
         <!-- <div class="px-4">
           <p>fcm token =</p>
           <input :value="fcmToken" />
@@ -302,7 +294,7 @@ let navigationState = useNavigation()
           </h6>
         </div> -->
 
-        <Transition name="refresh">
+        <!-- <Transition name="refresh">
           <div
             v-if="isRefreshing"
             class="fixed flex align-items-center justify-content-center w-full mt-2"
@@ -313,12 +305,12 @@ let navigationState = useNavigation()
             ></i>
             <p>REFRESHING</p>
           </div>
-        </Transition>
+        </Transition> -->
         <slot />
       </div>
     </main>
-    <TheFooter v-if="navigationState" />
     <AudioPlayer />
+    <BottomMenu />
   </div>
 </template>
 

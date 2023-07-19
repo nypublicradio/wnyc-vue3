@@ -1,0 +1,28 @@
+$maxWidth: 1440px;
+$contentWidth: 1200px;
+$thinContentWidth: 768px;
+$headerHeight: 81px;
+$bottomMenuHeight: 60px;
+$playerHeight: 100px;
+$toolsBreakPoint: 472px;
+
+:root {
+    --header-height: #{$headerHeight};
+    --bottom-menu-height: #{$bottomMenuHeight};
+    --player-height: #{$playerHeight};
+    --header-z-index: 900;
+    --line-clamp: 3;
+}
+
+:root,
+[data-style-mode='light'],
+.style-mode-light {
+    --wnyc-logo-color: var(--red, #de1e3d) !important;
+    --bottom-menu-icon-color: var(--night, #101012) !important;
+    --v-card-title-hover-color: red !important;
+}
+[data-style-mode='dark'],
+.style-mode-dark {
+    --wnyc-logo-color: var(--white, #ffffff) !important;
+    --bottom-menu-icon-color: var(--white, #ffffff) !important;
+}

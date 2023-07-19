@@ -2,7 +2,7 @@
   <svg
     role="img"
     aria-label="wnyc logo"
-    class="wnyc-logo"
+    class="wnyc-logo o-icon"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="1 8 22 9"
   >
@@ -13,9 +13,9 @@
   </svg>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wnyc-logo {
-  fill: white;
+  fill: var(--wnyc-logo-color);
   height: 52px;
 }
 </style>

@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <div>
     <section class="py-6">

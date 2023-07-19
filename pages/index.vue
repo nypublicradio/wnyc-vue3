@@ -2,8 +2,9 @@
 
 <template>
   <div>
-    <section class="py-6">
-      <StreamSwitcher />
+    <section>
+      Home Page
+      <!-- <StreamSwitcher />
       <div class="grid gap-3">
         <div class="col">
           <MainPlayer />
@@ -19,19 +20,9 @@
     <section>
       <OnTodaysShow />
     </section>
-    <section data-style-mode="dark">
+    <section>
       <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
-      <TopStories class="pt-6" />
+      <TopStories class="pt-6" /> -->
     </section>
   </div>
 </template>
-
-<style lang="scss">
-.ad {
-  background-color: #ccc;
-  width: 100%;
-  max-width: 300px;
-  height: 250px;
-  color: black;
-}
-</style>
