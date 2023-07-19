@@ -48,7 +48,7 @@ const visibleRight = ref(false)
                 trackClickEvent(
                   'Click Tracking - Hamburger Menu',
                   'Hamburger Menu',
-                  ``
+                  `open sidebar`
                 )
               }
             "
@@ -60,10 +60,20 @@ const visibleRight = ref(false)
       v-model:visible="visibleRight"
       :baseZIndex="10000"
       position="right"
-      class="text-center w-full"
+      class="w-full"
       blockScroll
+      id="settings-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Settings Sidebar Close Button',
+            'Settings Sidebar',
+            `close sidebar`
+          )
+        }
+      "
     >
-      <template #header><h2>Settings</h2></template>
+      <template #header><h1 class="font-medium">Settings</h1></template>
       <Settings />
     </Sidebar>
   </div>
@@ -79,9 +89,20 @@ const visibleRight = ref(false)
     color: var(--text-color);
     font-size: var(--font-size-8);
   }
-  .p-sidebar {
-    background: var(--background);
-    opacity: 1;
+}
+#settings-sidebar {
+  background-color: var(--background2);
+  .p-sidebar-header {
+    padding: 0.75rem 1.25rem;
+    justify-content: space-between;
+  }
+  .p-sidebar-content {
+    padding: 0;
+  }
+  .p-sidebar-close,
+  .p-sidebar-close .p-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 </style>

@@ -4,12 +4,6 @@
   <div>
     <section>
       Home Page
-      <h1>Settings</h1>
-      <h2>Settings</h2>
-      <h3>Settings</h3>
-      <h4>Settings</h4>
-      <h5>Settings</h5>
-      <h6>Settings</h6>
       <!-- <StreamSwitcher />
       <div class="grid gap-3">
         <div class="col">
