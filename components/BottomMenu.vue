@@ -5,7 +5,7 @@ import HomeIcon from './icons/HomeIcon.vue'
 import LiveIcon from './icons/LiveIcon.vue'
 import BrowseIcon from './icons/BrowseIcon.vue'
 import StarIcon from './icons/StarIcon.vue'
-import { capitalizeFirstLetter } from '~/utilities/helpers'
+import { trackClickEvent, capitalizeFirstLetter } from '~/utilities/helpers'
 
 const route = useRoute()
 
@@ -19,6 +19,7 @@ const options = ref([
 
 // handle bottom menu click to navigate to the route
 const menuClick = (e) => {
+  trackClickEvent('Click Tracking - Bottom Menu', 'Bottom Menu', e.value.slug)
   navigateTo(e.value.slug)
 }
 

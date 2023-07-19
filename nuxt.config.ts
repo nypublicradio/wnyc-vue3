@@ -22,6 +22,10 @@ export default {
     integrations: {
       router: false,
     },
+    css: {
+      core: false,
+      basic: false,
+    }
   },
 
 
