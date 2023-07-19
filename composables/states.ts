@@ -50,7 +50,7 @@ export const useCurrentStreamStation = () => useState('useCurrentStreamStation',
  * Global state for the bottom navigation
  */
 const router = useRouter()
-console.log('router.currentRoute.value.name :>> ', router.currentRoute);
+//console.log('router.currentRoute.value.name :>> ', router.currentRoute);
 const bottomMenuState: object | any = { value: router.currentRoute.value.name === 'index' ? 'home' : router.currentRoute.value.name }
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
 

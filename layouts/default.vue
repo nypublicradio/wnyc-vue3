@@ -15,7 +15,6 @@ import {
   AndroidSettings,
   IOSSettings,
 } from 'capacitor-native-settings'
-import { useNavigation } from '~/composables/states'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const { isDesktop } = useDevice()
 const route = useRoute()
@@ -182,11 +181,6 @@ onMounted(async () => {
     })
   }
 
-  // // get the navigation data from Aviary
-  const { data: navigation } = await useFetch(config.public.NAVIGATION_API)
-  // // update the state with the navigation data
-  navigationState.value = navigation.value
-
   // Ads
   window.htlbid = window.htlbid || {}
   htlbid.cmd = htlbid.cmd || []
@@ -207,7 +201,6 @@ useHead({
     },
   ],
 })
-let navigationState = useNavigation()
 </script>
 
 <template>
@@ -267,11 +260,9 @@ let navigationState = useNavigation()
     </Html>
     <div class="top-safe-cover" />
     <header>
-      <template v-if="navigationState">
-        <VSmartHeader :hero-buffer="800" :resume-delay="0">
-          <TheHeader />
-        </VSmartHeader>
-      </template>
+      <VSmartHeader :hero-buffer="800" :resume-delay="0">
+        <TheHeader />
+      </VSmartHeader>
     </header>
     <main>
       <div class="content">
@@ -316,7 +307,6 @@ let navigationState = useNavigation()
         <slot />
       </div>
     </main>
-    <!-- <TheFooter v-if="navigationState" /> -->
     <AudioPlayer />
     <BottomMenu />
   </div>

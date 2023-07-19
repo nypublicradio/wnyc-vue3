@@ -1,7 +1,7 @@
 @import 'cssvars.scss';
 
 html {
-  background-color: var(--background3);
+  background-color: #ffffff;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -25,7 +25,7 @@ body {
 }
 
 main {
-  margin-top: 80px; // account for the sticky header height
+  margin-top: 81px; // account for the sticky header height
 }
 
 section {

@@ -4,8 +4,6 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import { trackClickEvent, getDate } from '~/utilities/helpers'
 
 const visibleRight = ref(false)
-
-const wnycHomepage = 'https://www.WNYC.org'
 </script>
 
 <template>
@@ -73,6 +71,7 @@ const wnycHomepage = 'https://www.WNYC.org'
 .the-header {
   background-color: transparentize(#ffffff, 0.1);
   backdrop-filter: blur(5px);
+  border: 1px solid var(--shade-400);
 
   .pi-bars {
     color: var(--text-color);

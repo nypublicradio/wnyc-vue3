@@ -23,7 +23,6 @@ const props = defineProps({
   <div class="settings">
     <section>
       <h1>Settings</h1>
-      Should this just be a page?
       <VFlexibleLink
         raw
         to="/"
