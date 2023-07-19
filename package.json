@@ -12,29 +12,29 @@
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
   },
   "devDependencies": {
-    "@capacitor/cli": "5.0.5",
-    "@nuxt/devtools": "^0.6.4",
+    "@capacitor/cli": "5.2.2",
+    "@nuxt/devtools": "0.6.7",
     "@nuxtjs/device": "^3.1.0",
     "@nuxtjs/ionic": "0.12.1",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",
-    "nuxt": "^3.6.1",
+    "nuxt": "3.6.4",
     "sass": "^1.63.6"
   },
   "dependencies": {
-    "@capacitor/android": "5.0.5",
-    "@capacitor/app": "5.0.3",
+    "@capacitor/android": "5.2.2",
+    "@capacitor/app": "5.0.6",
     "@capacitor/assets": "^2.0.4",
-    "@capacitor/core": "^5.0.5",
-    "@capacitor/filesystem": "5.0.4",
-    "@capacitor/haptics": "5.0.4",
-    "@capacitor/ios": "5.0.5",
-    "@capacitor/keyboard": "5.0.4",
-    "@capacitor/local-notifications": "5.0.4",
-    "@capacitor/preferences": "5.0.4",
-    "@capacitor/push-notifications": "5.0.4",
-    "@capacitor/splash-screen": "5.0.4",
-    "@capacitor/status-bar": "5.0.4",
+    "@capacitor/core": "5.2.2",
+    "@capacitor/filesystem": "5.1.1",
+    "@capacitor/haptics": "5.0.6",
+    "@capacitor/ios": "5.2.2",
+    "@capacitor/keyboard": "5.0.6",
+    "@capacitor/local-notifications": "5.0.6",
+    "@capacitor/preferences": "5.0.6",
+    "@capacitor/push-notifications": "5.0.6",
+    "@capacitor/splash-screen": "5.0.6",
+    "@capacitor/status-bar": "5.0.6",
     "@nuxt/image": "^1.0.0-rc.1",
     "@nypublicradio/nypr-design-system-vue3": "^2.0.34",
     "capacitor-native-settings": "5.0.0",
@@ -42,6 +42,6 @@
     "ionicons": "^6.1.1",
     "jsdom": "^21.1.0",
     "primeflex": "^3.3.0",
-    "vitest": "^0.32.2"
+    "vitest": "0.32.4"
   }
 }

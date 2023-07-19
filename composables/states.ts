@@ -46,9 +46,8 @@ const currentStreamStation = 'wnyc-fm939'
  */
 export const useCurrentStreamStation = () => useState('useCurrentStreamStation', () => currentStreamStation)
 
-const router = useRouter()
-//console.log('router.currentRoute.value.name :>> ', router.currentRoute);
-const bottomMenuState: object = { value: router.currentRoute.value.name === 'index' ? 'home' : router.currentRoute.value.name }
+
+const bottomMenuState: object = {}
 /**
  * Global state for the bottom navigation
  */

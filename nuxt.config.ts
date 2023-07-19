@@ -17,7 +17,7 @@ export default {
     },
   },
   /* ssr: process.env.ISAPP === 'false' ? true : false, */
-  ssr: false,
+  ssr: true,
   ionic: {
     integrations: {
       router: false,
@@ -50,7 +50,7 @@ export default {
     'primeicons/primeicons.css',
   ],
 
-  serverMiddleware: ['~/search/algolia-index'],
+  //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
     css: {

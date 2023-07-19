@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useBottomMenuState } from '~/composables/states'
 import HomeIcon from './icons/HomeIcon.vue'
 import LiveIcon from './icons/LiveIcon.vue'
@@ -23,12 +23,17 @@ const menuClick = (e) => {
 }
 
 // if another trigger changes the route, update the bottom menu state
-watch(route, (e) => {
-  options.value.forEach((item) => {
-    if (e.name === item.value) bottomMenuState.value = { value: item.value }
-    if (e.name === 'index') bottomMenuState.value = { value: 'home' }
-  })
-})
+watch(
+  () => route.name,
+  (e) => {
+    //console.log('NEW route changed =', e)
+    options.value.forEach((item) => {
+      if (e === item.value) bottomMenuState.value = { value: item.value }
+      if (e === 'index') bottomMenuState.value = { value: 'home' }
+    })
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

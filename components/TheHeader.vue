@@ -61,7 +61,9 @@ const visibleRight = ref(false)
       :baseZIndex="10000"
       position="right"
       class="text-center w-full"
+      blockScroll
     >
+      <template #header><h2>Settings</h2></template>
       <Settings />
     </Sidebar>
   </div>

@@ -2,10 +2,6 @@
 import { trackClickEvent, getYear } from '~/utilities/helpers'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
-definePageMeta({
-  layout: 'blank',
-})
-
 const props = defineProps({
   //   propVar: {
   //     type: Boolean,
@@ -48,5 +44,6 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .settings {
+  background-color: blue;
 }
 </style>
