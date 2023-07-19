@@ -17,13 +17,14 @@ const options = ref([
   { icon: markRaw(StarIcon), value: 'saved', slug: '/saved' },
 ])
 
+// handle bottom menu click to navigate to the route
 const menuClick = (e) => {
   navigateTo(e.value.slug)
 }
 
 // if another trigger changes the route, update the bottom menu state
 watch(route, (e) => {
-  options.value.map((item) => {
+  options.value.forEach((item) => {
     if (e.name === item.value) bottomMenuState.value = { value: item.value }
     if (e.name === 'index') bottomMenuState.value = { value: 'home' }
   })

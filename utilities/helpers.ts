@@ -216,34 +216,45 @@ export const initReadOfPreferences = async () => {
   return JSON.parse(val.value)
 }
 
-
+/**
+ * code to calculate the correct suffix to use in the date number
+ */
 function getOrdinalSuffix(i) {
-  var j = i % 10,
-    k = i % 100;
-  if (j == 1 && k != 11) {
-    return i + "st";
+  const j = i % 10;
+  const k = i % 100;
+  if (j === 1 && k !== 11) {
+    return `${i}st`;
   }
-  if (j == 2 && k != 12) {
-    return i + "nd";
+  if (j === 2 && k !== 12) {
+    return `${i}nd`;
   }
-  if (j == 3 && k != 13) {
-    return i + "rd";
+  if (j === 3 && k !== 13) {
+    return `${i}rd`;
   }
-  return i + "th";
+  return `${i}th`;
 }
 
+/**
+ * to get the desired date format for the header
+ */
 export function getDate() {
-  var date = new Date();
-  var weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  var monthname = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const date = new Date();
+  const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const monthname = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   return `${weekday[date.getDay()]}, ${monthname[date.getMonth()]} ${getOrdinalSuffix(date.getDate())}`;
 }
 
+/**
+ * to get the yaer for the footer in the settings 
+ */
 export function getYear() {
   return new Date().getFullYear();
 }
 
+/**
+ * helper function to capitalize the first letter of a string
+ */
 export function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }

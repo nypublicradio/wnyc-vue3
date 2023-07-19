@@ -1,26 +1,9 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-
-const props = defineProps({
-  //   propVar: {
-  //     type: Boolean,
-  //     default: false,
-  //   },
-})
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-onMounted(() => {})
-</script>
-
 <template>
   <div>
-    <section class="saved-page">Saved Page</section>
+    <section class="saved-page">
+      <NuxtLink to="/">GO back home</NuxtLink>
+      <br />
+      Saved Page
+    </section>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.saved-page {
-}
-</style>
