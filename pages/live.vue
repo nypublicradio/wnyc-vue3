@@ -16,7 +16,7 @@ onMounted(() => {})
 
 <template>
   <div>
-    <div class="live-page">Live Page</div>
+    <section class="live-page">Live Page</section>
   </div>
 </template>
 

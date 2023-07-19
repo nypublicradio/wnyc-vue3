@@ -16,7 +16,7 @@ onMounted(() => {})
 
 <template>
   <div>
-    <div class="saved-page">Saved Page</div>
+    <section class="saved-page">Saved Page</section>
   </div>
 </template>
 

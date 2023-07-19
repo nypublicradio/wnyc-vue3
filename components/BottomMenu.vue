@@ -5,16 +5,17 @@ import HomeIcon from './icons/HomeIcon.vue'
 import LiveIcon from './icons/LiveIcon.vue'
 import BrowseIcon from './icons/BrowseIcon.vue'
 import StarIcon from './icons/StarIcon.vue'
+import { capitalizeFirstLetter } from '~/utilities/helpers'
 
 const route = useRoute()
 
+const bottomMenuState = useBottomMenuState()
 const options = ref([
   { icon: markRaw(HomeIcon), value: 'home', slug: '/' },
   { icon: markRaw(LiveIcon), value: 'live', slug: '/live' },
   { icon: markRaw(BrowseIcon), value: 'browse', slug: '/browse' },
   { icon: markRaw(StarIcon), value: 'saved', slug: '/saved' },
 ])
-const bottomMenuState = useBottomMenuState()
 
 const menuClick = (e) => {
   navigateTo(e.value.slug)
@@ -46,7 +47,7 @@ watch(route, (e) => {
             :is="slotProps.option.icon"
             :active="bottomMenuState.value == slotProps.option.value"
           ></component>
-          <p>{{ slotProps.option.value }}</p>
+          <p>{{ capitalizeFirstLetter(slotProps.option.value) }}</p>
         </div>
       </template>
     </SelectButton>

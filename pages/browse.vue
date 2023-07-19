@@ -16,7 +16,7 @@ onMounted(() => {})
 
 <template>
   <div>
-    <div class="browse-page">Browse Page</div>
+    <section class="browse-page">Browse Page</section>
   </div>
 </template>
 

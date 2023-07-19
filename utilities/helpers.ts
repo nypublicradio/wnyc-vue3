@@ -237,5 +237,13 @@ export function getDate() {
   var weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var monthname = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  return weekday[date.getDay()] + ', ' + monthname[date.getMonth()] + ' ' + getOrdinalSuffix(date.getDate());
+  return `${weekday[date.getDay()]}, ${monthname[date.getMonth()]} ${getOrdinalSuffix(date.getDate())}`;
+}
+
+export function getYear() {
+  return new Date().getFullYear();
+}
+
+export function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

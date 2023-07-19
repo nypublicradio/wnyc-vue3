@@ -1,11 +1,8 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import { useNavigation } from '~/composables/states'
+
 import { trackClickEvent, getDate } from '~/utilities/helpers'
-const navigation = useNavigation()
-const headerNav = computed(() => navigation.value.primary_navigation)
-const year = computed(() => navigation.value.copyright_year)
-const legalNav = computed(() => navigation.value.legal_links)
+
 const visibleRight = ref(false)
 
 const wnycHomepage = 'https://www.WNYC.org'
@@ -73,21 +70,17 @@ const wnycHomepage = 'https://www.WNYC.org'
 </template>
 
 <style lang="scss">
-// .wnyc-logo path {
-//   fill: var(--red);
-// }
 .the-header {
   background-color: transparentize(#ffffff, 0.1);
   backdrop-filter: blur(5px);
-}
 
-.the-header .pi-bars {
-  color: var(--text-color);
-  font-size: var(--font-size-8);
-}
-
-.p-sidebar {
-  background: var(--background);
-  opacity: 1;
+  .pi-bars {
+    color: var(--text-color);
+    font-size: var(--font-size-8);
+  }
+  .p-sidebar {
+    background: var(--background);
+    opacity: 1;
+  }
 }
 </style>

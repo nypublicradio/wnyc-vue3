@@ -27,12 +27,4 @@
   </div>
 </template>
 
-<style lang="scss">
-.ad {
-  background-color: #ccc;
-  width: 100%;
-  max-width: 300px;
-  height: 250px;
-  color: black;
-}
-</style>
+<style lang="scss"></style>

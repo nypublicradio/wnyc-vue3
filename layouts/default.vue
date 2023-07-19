@@ -316,7 +316,7 @@ let navigationState = useNavigation()
         <slot />
       </div>
     </main>
-    <TheFooter v-if="navigationState" />
+    <!-- <TheFooter v-if="navigationState" /> -->
     <AudioPlayer />
     <BottomMenu />
   </div>
