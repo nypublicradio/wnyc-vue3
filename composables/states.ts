@@ -55,15 +55,15 @@ const bottomMenuState: object = {}
  */
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
 
-
+// TODO: ionitially populate from Supabase
 const settingsData: object = {
-    name: '',
-    email: '',
-    password: '',
+    name: 'Peter Gibbons',
+    email: 'peter.gibbons@initech.com',
+    password: '12345678',
     autodownload: false,
     defaultstream: 'WNYC 93.9 FM',
-    notificationgeneral: false,
-    textsize: 'normal',
+    notificationgeneral: true,
+    textsize: 'Normal',
     darktheme: false,
 }
 /**

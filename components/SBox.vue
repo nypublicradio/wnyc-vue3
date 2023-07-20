@@ -11,7 +11,7 @@ const props = defineProps({
 <template>
   <div class="s-box">
     <div class="content flex justify-content-between align-items-center">
-      <div class="label">{{ label }}</div>
+      <div class="label white-space-nowrap">{{ label }}</div>
       <slot />
     </div>
   </div>

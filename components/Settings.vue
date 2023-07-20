@@ -1,6 +1,6 @@
 <script setup>
 import { trackClickEvent, getYear } from '~/utilities/helpers'
-import { useSettingsData } from '~/composables/states.ts'
+import { useSettingsData, useAllCurrentStations } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
 
 const props = defineProps({
@@ -10,6 +10,49 @@ const props = defineProps({
   //   },
 })
 const settingsData = useSettingsData()
+const textSizeOptions = [
+  { label: 'Small', value: 'small' },
+  { label: 'Normal', value: 'normal' },
+  { label: 'Large', value: 'large' },
+]
+
+const allCurrentStations = useAllCurrentStations()
+const stationsMenuData = ref([])
+
+const initializeSwitcher = (val) => {
+  //alert('initializeSwitcher')
+  const tempMenuData = []
+
+  val.forEach((station) => {
+    tempMenuData.push({
+      label: station.title,
+      name: station.title,
+      station: station.station,
+      code: station.title,
+      slug: station.slug,
+      image: station.image,
+      times: `${station.timeStart} - ${station.timeEnd}`,
+    })
+  })
+
+  stationsMenuData.value = tempMenuData
+}
+
+watch(
+  allCurrentStations,
+  (val) => {
+    initializeSwitcher(val)
+  },
+  { immediate: true }
+)
+
+const emitClick = () => {
+  trackClickEvent(
+    'Click Tracking - Settings',
+    'Settings',
+    `toggle ${event.target.id}`
+  )
+}
 </script>
 
 <template>
@@ -18,37 +61,56 @@ const settingsData = useSettingsData()
     <section class="user-preferences p-0">
       <div class="s-title">Account</div>
       <SBox label="Name">
-        <Inplace>
-          <template #display>
-            {{ settingsData.name || 'Click to Edit' }}
-          </template>
-          <template #content>
-            <InputText v-model="settingsData.name" autofocus size="small" />
-          </template>
-        </Inplace>
+        <SField
+          label="Tap to add a name"
+          v-model:data.sync="settingsData.name"
+        />
       </SBox>
-      <SBox label="Email">peter.gibbons@initech.com</SBox>
-      <SBox label="Password">***********</SBox>
+      <SBox label="Email">
+        <SField
+          label="Tap to add an email"
+          email
+          v-model:data.sync="settingsData.email"
+        />
+      </SBox>
+      <SBox label="Password">
+        <SField
+          label="************"
+          password
+          v-model:data.sync="settingsData.password"
+        />
+      </SBox>
     </section>
     <section class="listening-preferences p-0">
       <div class="s-title">Listening Preferences</div>
-      <SBox label="Autodownload"
-        ><VInputSwitch static-width @change="emitClick"
-      /></SBox>
-      <SBox label="Default stream">WNYC 93.9 FM</SBox>
+      <SBox label="Autodownload">
+        <VInputSwitch static-width @change="emitClick" />
+      </SBox>
+      <SBox label="Default stream">
+        <SDropdown
+          v-model:data.sync="settingsData.defaultstream"
+          :options="stationsMenuData"
+          optionLabel="station"
+        />
+      </SBox>
     </section>
     <section class="notifications p-0">
       <div class="s-title">Notifications</div>
-      <SBox label="General"
-        ><VInputSwitch static-width @change="emitClick"
-      /></SBox>
+      <SBox label="General">
+        <VInputSwitch static-width @change="emitClick" />
+      </SBox>
     </section>
     <section class="display p-0">
       <div class="s-title">Display</div>
-      <SBox label="Text size">Normal</SBox>
-      <SBox label="Dark theme"
-        ><VInputSwitch static-width @change="emitClick"
-      /></SBox>
+      <SBox label="Text size">
+        <SDropdown
+          v-model:data.sync="settingsData.textsize"
+          :options="textSizeOptions"
+        />
+      </SBox>
+      <SBox label="Dark theme">
+        <VInputSwitch static-width @change="emitClick" />
+      </SBox>
     </section>
     <section class="wnyc p-0">
       <SBox label="About WNYC"></SBox>

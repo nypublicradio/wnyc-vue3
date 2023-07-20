@@ -15,7 +15,7 @@ const visibleRight = ref(false)
             raw
             to="/"
             class="mr-3"
-            @emit-flexible-link="
+            @flexible-link-click="
               trackClickEvent('Click Tracking - WNYC Logo', 'WNYC Logo', '/')
             "
           >
@@ -27,7 +27,7 @@ const visibleRight = ref(false)
           <!-- <VFlexibleLink
             raw
             to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
-            @emit-flexible-link="
+            @flexible-link-click="
               trackClickEvent(
                 `Click Tracking - Header Donate Button`,
                 'Header Donate Button',
