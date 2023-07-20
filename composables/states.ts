@@ -1,3 +1,5 @@
+import { flashOff } from "ionicons/icons"
+
 // audio player globals
 const currentEpisodeObj = null
 /**
@@ -52,6 +54,22 @@ const bottomMenuState: object = {}
  * Global state for the bottom navigation
  */
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
+
+
+const settingsData: object = {
+    name: '',
+    email: '',
+    password: '',
+    autodownload: false,
+    defaultstream: 'WNYC 93.9 FM',
+    notificationgeneral: false,
+    textsize: 'normal',
+    darktheme: false,
+}
+/**
+ * Global state for the settings data
+ */
+export const useSettingsData = () => useState('settingsData', () => settingsData)
 
 
 /**

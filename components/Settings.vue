@@ -1,5 +1,6 @@
 <script setup>
 import { trackClickEvent, getYear } from '~/utilities/helpers'
+import { useSettingsData } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
 
 const props = defineProps({
@@ -8,11 +9,7 @@ const props = defineProps({
   //     default: false,
   //   },
 })
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-//onMounted(() => {})
+const settingsData = useSettingsData()
 </script>
 
 <template>
@@ -20,7 +17,16 @@ const props = defineProps({
     <section class="user p-0"></section>
     <section class="user-preferences p-0">
       <div class="s-title">Account</div>
-      <SBox label="Name">Peter Gibbons</SBox>
+      <SBox label="Name">
+        <Inplace>
+          <template #display>
+            {{ settingsData.name || 'Click to Edit' }}
+          </template>
+          <template #content>
+            <InputText v-model="settingsData.name" autofocus size="small" />
+          </template>
+        </Inplace>
+      </SBox>
       <SBox label="Email">peter.gibbons@initech.com</SBox>
       <SBox label="Password">***********</SBox>
     </section>
@@ -82,6 +88,43 @@ const props = defineProps({
       margin-bottom: 10px;
       fill: var(--night-500);
     }
+  }
+  .p-inplace {
+    .p-inplace-display {
+      @include font-config($type-paragraph1);
+    }
+  }
+  .p-button.p-button-icon-only {
+    width: 2.357rem;
+    padding: 0.5rem 0;
+  }
+}
+</style>
+
+<style lang="scss">
+.settings {
+  .p-inplace {
+    margin-right: -1rem;
+    width: 80%;
+    .p-inplace-display {
+      width: 100%;
+      position: relative;
+      display: block;
+      text-align: right;
+      @include font-config($type-paragraph1);
+    }
+    .p-inplace-content {
+      display: flex;
+      justify-content: flex-end;
+      .p-inputtext {
+        text-align: right;
+        width: 90%;
+      }
+    }
+  }
+  .p-button.p-button-icon-only {
+    width: 2.357rem;
+    padding: 0.5rem 0;
   }
 }
 </style>
