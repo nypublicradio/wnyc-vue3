@@ -1,5 +1,3 @@
-import { flashOff } from "ionicons/icons"
-
 // audio player globals
 const currentEpisodeObj = null
 /**
@@ -93,7 +91,7 @@ export const useBottomMenuState = () => useState('bottomMenuState', () => bottom
 
 
 
-// TODO: ionitially populate from Supabase
+// populate from Supabase at some point
 const settingsData: object = {
     name: 'Peter Gibbons',
     // profileimage: 'https://media.licdn.com/dms/image/C5603AQHqyqn8BBa6Wg/profile-displayphoto-shrink_800_800/0/1517520876017?e=2147483647&v=beta&t=bbkZ9w4zWWPXI6FsKD3Ml41uIZnB_b49qHYzALH4SKo',

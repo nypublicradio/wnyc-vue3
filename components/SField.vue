@@ -14,6 +14,7 @@ const props = defineProps({
   },
   data: {
     type: String,
+    default: null,
   },
 })
 
@@ -21,12 +22,15 @@ const emit = defineEmits(['update:data', 'isValid'])
 
 const internalData = ref(props.data)
 const error = ref(false)
-let regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+const regexEmailFormat = new RegExp(
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+)
 
+// triggered for ever key when the user types in the input field
 const onUpdate = (val) => {
   emit('update:data', val)
   if (props.email) {
-    const isValid = regex.test(val)
+    const isValid = regexEmailFormat.test(val)
     isValid ? (error.value = false) : (error.value = true)
     emit('isValid', isValid)
   }

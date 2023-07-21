@@ -11,6 +11,7 @@ const props = defineProps({
   },
   data: {
     type: [String, Object],
+    default: null,
   },
 })
 

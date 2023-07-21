@@ -23,8 +23,8 @@ const stationsMenuData = ref([])
 
 const tempLoggedState = useLoggedState()
 
+// formats the station list for the dropdown
 const initializeStationList = (val) => {
-  console.log('initializeStationList')
   const tempMenuData = []
 
   val.forEach((station) => {
