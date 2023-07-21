@@ -46,14 +46,6 @@ const currentStreamStation = 'wnyc-fm939'
  */
 export const useCurrentStreamStation = () => useState('useCurrentStreamStation', () => currentStreamStation)
 
-const router = useRouter()
-//console.log('router.currentRoute.value.name :>> ', router.currentRoute);
-const bottomMenuState: object = { value: router.currentRoute.value.name === 'index' ? 'home' : router.currentRoute.value.name }
-/**
- * Global state for the bottom navigation
- */
-export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
-
 
 /**
  * Global state for the navigation
@@ -78,3 +70,57 @@ export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 // const fileSystemLS: any = await Preferences.get({ key: 'files' })
 // export const useFileSystemLS = () => useState('fileSystemLS', () => JSON.parse(fileSystemLS.value) || [])
 export const useFileSystemLS = () => useState('fileSystemLS', () => [])
+
+
+
+
+
+
+
+
+/**
+ * NEW STUFF
+ */
+
+
+const bottomMenuState: object = {}
+/**
+ * Global state for the bottom navigation
+ */
+export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
+
+
+
+// populate from Supabase at some point
+const settingsData: object = {
+    name: 'Peter Gibbons',
+    // profileimage: 'https://media.licdn.com/dms/image/C5603AQHqyqn8BBa6Wg/profile-displayphoto-shrink_800_800/0/1517520876017?e=2147483647&v=beta&t=bbkZ9w4zWWPXI6FsKD3Ml41uIZnB_b49qHYzALH4SKo',
+    profileimage: null,
+    email: 'peter.gibbons@initech.com',
+    password: '12345678',
+    autodownload: false,
+    defaultstream: 'WNYC 93.9 FM',
+    notificationgeneral: true,
+    textsize: 'Normal',
+    darktheme: false,
+}
+/**
+ * Global state for the settings data
+ */
+export const useSettingsData = () => useState('settingsData', () => settingsData)
+
+/**
+ * Global state for TEMP login state
+ */
+export const useLoggedState = () => useState('loggedState', () => false)
+
+
+const textSizeOptionsObj = [
+    { label: 'Normal', value: 'Normal', pixel: '16px' },
+    { label: 'Large', value: 'Large', pixel: '18px' },
+    { label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
+]
+/**
+ * Global state for TEMP login state
+ */
+export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsObj)

@@ -15,7 +15,7 @@ const visibleRight = ref(false)
             raw
             to="/"
             class="mr-3"
-            @emit-flexible-link="
+            @flexible-link-click="
               trackClickEvent('Click Tracking - WNYC Logo', 'WNYC Logo', '/')
             "
           >
@@ -27,7 +27,7 @@ const visibleRight = ref(false)
           <!-- <VFlexibleLink
             raw
             to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
-            @emit-flexible-link="
+            @flexible-link-click="
               trackClickEvent(
                 `Click Tracking - Header Donate Button`,
                 'Header Donate Button',
@@ -48,7 +48,7 @@ const visibleRight = ref(false)
                 trackClickEvent(
                   'Click Tracking - Hamburger Menu',
                   'Hamburger Menu',
-                  ``
+                  `open sidebar`
                 )
               }
             "
@@ -60,8 +60,20 @@ const visibleRight = ref(false)
       v-model:visible="visibleRight"
       :baseZIndex="10000"
       position="right"
-      class="text-center w-full"
+      class="w-full"
+      blockScroll
+      id="settings-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Settings Sidebar Close Button',
+            'Settings Sidebar',
+            `close sidebar`
+          )
+        }
+      "
     >
+      <template #header><h1 class="font-medium">Settings</h1></template>
       <Settings />
     </Sidebar>
   </div>
@@ -69,7 +81,7 @@ const visibleRight = ref(false)
 
 <style lang="scss">
 .the-header {
-  background-color: transparentize(#ffffff, 0.1);
+  background: var(--header-background);
   backdrop-filter: blur(5px);
   border: 1px solid var(--shade-400);
 
@@ -77,9 +89,27 @@ const visibleRight = ref(false)
     color: var(--text-color);
     font-size: var(--font-size-8);
   }
-  .p-sidebar {
-    background: var(--background);
-    opacity: 1;
+}
+#settings-sidebar {
+  background-color: var(--background2);
+  .p-sidebar-header {
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    justify-content: space-between;
+  }
+  .p-sidebar-content {
+    padding: 0;
+  }
+  .p-sidebar-close {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .p-sidebar-close,
+  .p-sidebar-close .p-icon {
+    width: 18px;
+    height: 18px;
+    path {
+      fill: var(--night);
+    }
   }
 }
 </style>

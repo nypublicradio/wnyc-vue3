@@ -14,15 +14,21 @@ $toolsBreakPoint: 472px;
     --line-clamp: 3;
 }
 
+// component cssvar theme control and base component overrides
 :root,
 [data-style-mode='light'],
 .style-mode-light {
     --wnyc-logo-color: var(--red, #de1e3d) !important;
     --bottom-menu-icon-color: var(--night, #101012) !important;
     --v-card-title-hover-color: red !important;
+    --s-box-background-color: var(--background) !important;
+    --s-box-stroke-color: var(--background) !important;
+    --header-background: var(--background) !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
     --wnyc-logo-color: var(--white, #ffffff) !important;
     --bottom-menu-icon-color: var(--white, #ffffff) !important;
+    --s-box-background-color: #ffffff1a !important;
+    --header-background: #{map-get($colors-dark-mode, 'background')} !important;
 }

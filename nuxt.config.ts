@@ -17,11 +17,15 @@ export default {
     },
   },
   /* ssr: process.env.ISAPP === 'false' ? true : false, */
-  ssr: false,
+  ssr: true,
   ionic: {
     integrations: {
       router: false,
     },
+    css: {
+      core: false,
+      basic: false,
+    }
   },
 
 
@@ -50,14 +54,14 @@ export default {
     'primeicons/primeicons.css',
   ],
 
-  serverMiddleware: ['~/search/algolia-index'],
+  //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
     css: {
       preprocessorOptions: {
         scss: {
           // be sure to mirror theses imports in the vitest.config.ts
-          additionalData: `@import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/variables.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/_mixins.scss"; @import "~/assets/scss/global.scss";`,
+          additionalData: '@import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/variables.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/_mixins.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss";',
         },
       },
       postcss: {

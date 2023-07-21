@@ -1,14 +1,21 @@
 @import 'cssvars.scss';
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 html {
-  background-color: #ffffff;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 body {
+  background: var(--background);
   transform: none;
-  height: unset !important;
+  height: 100% !important;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   max-height: unset !important;
   position: relative !important;
 }
@@ -31,7 +38,7 @@ main {
 section {
   width: 100%;
   max-width: $contentWidth;
-  padding: spacingXY(3, 4);
+  padding: 0.75rem 1.25rem;
   margin: auto;
   @include media('<lg') {
     width: 100%;

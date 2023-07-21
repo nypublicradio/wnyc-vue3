@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useBottomMenuState } from '~/composables/states'
 import HomeIcon from './icons/HomeIcon.vue'
 import LiveIcon from './icons/LiveIcon.vue'
 import BrowseIcon from './icons/BrowseIcon.vue'
 import StarIcon from './icons/StarIcon.vue'
-import { capitalizeFirstLetter } from '~/utilities/helpers'
+import { trackClickEvent, capitalizeFirstLetter } from '~/utilities/helpers'
 
 const route = useRoute()
 
@@ -19,16 +19,22 @@ const options = ref([
 
 // handle bottom menu click to navigate to the route
 const menuClick = (e) => {
+  trackClickEvent('Click Tracking - Bottom Menu', 'Bottom Menu', e.value.slug)
   navigateTo(e.value.slug)
 }
 
 // if another trigger changes the route, update the bottom menu state
-watch(route, (e) => {
-  options.value.forEach((item) => {
-    if (e.name === item.value) bottomMenuState.value = { value: item.value }
-    if (e.name === 'index') bottomMenuState.value = { value: 'home' }
-  })
-})
+watch(
+  () => route.name,
+  (e) => {
+    //console.log('NEW route changed =', e)
+    options.value.forEach((item) => {
+      if (e === item.value) bottomMenuState.value = { value: item.value }
+      if (e === 'index') bottomMenuState.value = { value: 'home' }
+    })
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
