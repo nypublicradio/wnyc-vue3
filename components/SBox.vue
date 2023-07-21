@@ -63,6 +63,7 @@ const emit = defineEmits(['link-click'])
   }
   .label {
     font-size: 1rem;
+    margin-right: 15px;
   }
 }
 </style>

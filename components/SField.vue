@@ -17,7 +17,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:data'])
+const emit = defineEmits(['update:data', 'isValid'])
 
 const internalData = ref(props.data)
 const error = ref(false)
@@ -25,11 +25,10 @@ let regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
 
 const onUpdate = (val) => {
   emit('update:data', val)
-  console.log('val = ', val)
   if (props.email) {
     const isValid = regex.test(val)
-    console.log('isValid = ', isValid)
     isValid ? (error.value = false) : (error.value = true)
+    emit('isValid', isValid)
   }
 }
 </script>
@@ -39,13 +38,20 @@ const onUpdate = (val) => {
       {{ password ? label : internalData ?? label }}
     </template>
     <template #content>
-      <InputText
-        v-model="internalData"
-        autofocus
-        size="small"
-        @update:modelValue="onUpdate"
-        :class="[{ 'p-invalid': error }]"
-      />
+      <div class="w-full">
+        <InputText
+          v-model="internalData"
+          autofocus
+          size="small"
+          @update:modelValue="onUpdate"
+          :class="[{ 'p-invalid': error }]"
+        />
+        <Transition name="zoom">
+          <InlineMessage v-if="props.email && error" severity="error"
+            >Invalid email</InlineMessage
+          >
+        </Transition>
+      </div>
     </template>
   </Inplace>
 </template>
@@ -56,6 +62,13 @@ const onUpdate = (val) => {
     &:hover {
       background: var(--background3);
     }
+  }
+  .p-inline-message {
+    pointer-events: none;
+    position: absolute;
+    width: 80%;
+    right: -1rem;
+    top: -47px;
   }
 }
 </style>

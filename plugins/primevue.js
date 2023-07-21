@@ -11,6 +11,7 @@ import SelectButton from 'primevue/selectbutton'
 import Inplace from 'primevue/inplace'
 import InputText from 'primevue/inputtext'
 import Avatar from 'primevue/avatar'
+import InlineMessage from 'primevue/inlinemessage'
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, { ripple: true })
@@ -25,4 +26,5 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Inplace', Inplace)
     nuxtApp.vueApp.component('InputText', InputText)
     nuxtApp.vueApp.component('Avatar', Avatar)
+    nuxtApp.vueApp.component('InlineMessage', InlineMessage)
 })

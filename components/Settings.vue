@@ -15,13 +15,6 @@ import {
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
-const props = defineProps({
-  //   propVar: {
-  //     type: Boolean,
-  //     default: false,
-  //   },
-})
-
 const settingsData = useSettingsData()
 const textSizeOptions = useTextSizeOption()
 
@@ -278,7 +271,8 @@ onMounted(async () => {
       justify-content: flex-end;
       .p-inputtext {
         text-align: right;
-        width: 90%;
+        width: 100%;
+        @include font-config($type-paragraph1);
       }
     }
   }
