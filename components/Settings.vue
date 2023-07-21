@@ -1,7 +1,9 @@
 <script setup>
+import { onMounted } from 'vue'
 import { trackClickEvent, getYear } from '~/utilities/helpers'
 import { useSettingsData, useAllCurrentStations } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
 const props = defineProps({
   //   propVar: {
@@ -9,6 +11,7 @@ const props = defineProps({
   //     default: false,
   //   },
 })
+
 const settingsData = useSettingsData()
 const textSizeOptions = [
   { label: 'Small', value: 'small' },
@@ -19,8 +22,10 @@ const textSizeOptions = [
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 
-const initializeSwitcher = (val) => {
-  //alert('initializeSwitcher')
+const tempLoggedState = ref(false)
+
+const initializeStationList = (val) => {
+  console.log('initializeStationList')
   const tempMenuData = []
 
   val.forEach((station) => {
@@ -38,27 +43,18 @@ const initializeSwitcher = (val) => {
   stationsMenuData.value = tempMenuData
 }
 
-watch(
-  allCurrentStations,
-  (val) => {
-    initializeSwitcher(val)
-  },
-  { immediate: true }
-)
-
-const emitClick = () => {
-  trackClickEvent(
-    'Click Tracking - Settings',
-    'Settings',
-    `toggle ${event.target.id}`
-  )
-}
+onMounted(async () => {
+  await updateAllLiveStreams()
+  await initializeStationList(allCurrentStations.value)
+})
 </script>
 
 <template>
   <div class="settings mt-5">
-    <section class="user p-0"></section>
-    <section class="user-preferences p-0">
+    <section class="user">
+      <SUser v-model:data.sync="tempLoggedState" />
+    </section>
+    <section v-if="tempLoggedState" class="user-preferences p-0">
       <div class="s-title">Account</div>
       <SBox label="Name">
         <SField
@@ -84,7 +80,10 @@ const emitClick = () => {
     <section class="listening-preferences p-0">
       <div class="s-title">Listening Preferences</div>
       <SBox label="Autodownload">
-        <VInputSwitch static-width @change="emitClick" />
+        <VInputSwitch
+          static-width
+          v-model:data.sync="settingsData.autodownload"
+        />
       </SBox>
       <SBox label="Default stream">
         <SDropdown
@@ -97,7 +96,10 @@ const emitClick = () => {
     <section class="notifications p-0">
       <div class="s-title">Notifications</div>
       <SBox label="General">
-        <VInputSwitch static-width @change="emitClick" />
+        <VInputSwitch
+          static-width
+          v-model:data.sync="settingsData.notificationgeneral"
+        />
       </SBox>
     </section>
     <section class="display p-0">
@@ -109,14 +111,17 @@ const emitClick = () => {
         />
       </SBox>
       <SBox label="Dark theme">
-        <VInputSwitch static-width @change="emitClick" />
+        <VInputSwitch static-width v-model:data.sync="settingsData.darktheme" />
       </SBox>
     </section>
     <section class="wnyc p-0">
-      <SBox label="About WNYC"></SBox>
-      <SBox label="Submit Feedback"></SBox>
-      <SBox label="Contact Us"></SBox>
-      <SBox label="Donate"></SBox>
+      <SBox label="About WNYC" link="https://www.wnyc.org/"></SBox>
+      <SBox label="Submit Feedback" link="https://www.wnyc.org/"></SBox>
+      <SBox label="Contact Us" link="https://www.wnyc.org/"></SBox>
+      <SBox
+        label="Donate"
+        link="https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button"
+      ></SBox>
     </section>
     <section class="footer mb-4">
       <WnycLogo />

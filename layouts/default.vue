@@ -150,7 +150,7 @@ const toSystemSettings = async () => {
 onMounted(
   /* async */ () => {
     //initially load all the streams
-    updateAllLiveStreams()
+    //updateAllLiveStreams()
 
     // if APP then add listeners
     if (isApp.value) {
