@@ -81,7 +81,7 @@ const visibleRight = ref(false)
 
 <style lang="scss">
 .the-header {
-  background-color: transparentize(#ffffff, 0.1);
+  background: var(--header-background);
   backdrop-filter: blur(5px);
   border: 1px solid var(--shade-400);
 
@@ -93,16 +93,23 @@ const visibleRight = ref(false)
 #settings-sidebar {
   background-color: var(--background2);
   .p-sidebar-header {
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
     justify-content: space-between;
   }
   .p-sidebar-content {
     padding: 0;
   }
+  .p-sidebar-close {
+    width: 32px !important;
+    height: 32px !important;
+  }
   .p-sidebar-close,
   .p-sidebar-close .p-icon {
     width: 18px;
     height: 18px;
+    path {
+      fill: var(--night);
+    }
   }
 }
 </style>

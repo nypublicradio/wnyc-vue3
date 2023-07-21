@@ -20,6 +20,18 @@ const props = defineProps({
 const emit = defineEmits(['update:data'])
 
 const internalData = ref(props.data)
+const error = ref(false)
+let regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+
+const onUpdate = (val) => {
+  emit('update:data', val)
+  console.log('val = ', val)
+  if (props.email) {
+    const isValid = regex.test(val)
+    console.log('isValid = ', isValid)
+    isValid ? (error.value = false) : (error.value = true)
+  }
+}
 </script>
 <template>
   <Inplace class="s-field">
@@ -31,7 +43,8 @@ const internalData = ref(props.data)
         v-model="internalData"
         autofocus
         size="small"
-        @update:modelValue="$emit('update:data', $event)"
+        @update:modelValue="onUpdate"
+        :class="[{ 'p-invalid': error }]"
       />
     </template>
   </Inplace>

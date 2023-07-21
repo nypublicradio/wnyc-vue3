@@ -258,3 +258,17 @@ export function getYear() {
 export function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+/**
+ * helper function to change the global font size
+ */
+export function setFontSize(size) {
+  document.documentElement.style.fontSize = size;
+}
+
+/**
+ * helper function to toggle darkmode
+ */
+export function setDarkMode(bool) {
+  bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
+}
