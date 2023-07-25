@@ -54,7 +54,7 @@ const toggleLogged = () => {
       <p>
         Don't have an account yet?
         <VFlexibleLink
-          to="/"
+          to="/home"
           @click="
             trackClickEvent(
               'Click Tracking - sign up link',

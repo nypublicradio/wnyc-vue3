@@ -16,6 +16,6 @@
 <style lang="scss" scoped>
 .wnyc-logo {
   fill: var(--wnyc-logo-color);
-  height: 52px;
+  height: auto;
 }
 </style>

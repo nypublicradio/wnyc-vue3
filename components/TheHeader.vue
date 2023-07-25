@@ -13,7 +13,7 @@ const visibleRight = ref(false)
         <div class="flex align-items-center">
           <VFlexibleLink
             raw
-            to="/"
+            to="/home"
             class="mr-3"
             @flexible-link-click="
               trackClickEvent('Click Tracking - WNYC Logo', 'WNYC Logo', '/')

@@ -1,9 +1,9 @@
 // global state for the current authorized user
-let currentUser = null
+const currentUser = null
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
 
 // global state for the current authorized user's profile
-let currentUserProfile = null
+const currentUserProfile = null
 export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () => currentUserProfile)
 
 

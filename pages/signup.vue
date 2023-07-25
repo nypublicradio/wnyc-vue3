@@ -1,7 +1,7 @@
 <script setup>
-import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
+import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VSignupWithEmail.vue'
+//import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
 const router = useRouter()
 
@@ -14,7 +14,7 @@ useHead({
 
 <template>
   <div>
-    <section class="login">
+    <section class="signup">
       <div class="flex mb-4">
         <Button
           class="back-btn empty -ml-3"
@@ -28,13 +28,13 @@ useHead({
             }
           "
         />
-        <h1>Log in</h1>
+        <h1>Sign up</h1>
       </div>
       <VLoginWithProvider
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
         provider="google"
-        label="Log in with Google"
+        label="Sign up with Google"
       />
       <Divider class="my-4" align="center">
         <b>Or</b>
@@ -43,45 +43,28 @@ useHead({
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
         provider="apple"
-        label="Log in with Apple"
+        label="Sign up with Apple"
       />
       <Divider class="my-4" align="center">
         <b>Or</b>
       </Divider>
-      <VLoginWithEmail
-        label="Log in"
+      <VSignupWithEmail
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
         slug="/"
       >
-        <template #belowSubmit>
-          <div class="mt-4">
-            <p class="text-center">
-              <VFlexibleLink to="/forgot-password"
-                >Forgot password?</VFlexibleLink
-              >
-            </p>
-          </div>
-          <div class="mt-6">
-            <p class="my-2 text-center">Don't have an account yet?</p>
-            <Button
-              class="w-full"
-              label="Sign up"
-              severity="secondary"
-              @click="
-                () => {
-                  navigateTo('/signup')
-                }
-              "
-            />
-          </div>
-        </template>
-      </VLoginWithEmail>
+        <!-- <template #success>
+          <VLoginWithEmail
+            :client="useSupabaseClient()"
+            :config="useRuntimeConfig()"
+          />
+        </template> -->
+      </VSignupWithEmail>
     </section>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.login {
+.signup {
 }
 </style>

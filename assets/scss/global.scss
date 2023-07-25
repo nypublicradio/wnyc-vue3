@@ -18,6 +18,29 @@ body {
   background-attachment: fixed;
   max-height: unset !important;
   position: relative !important;
+  &.hide-header {
+    header {
+      display: none;
+    }
+    main {
+      margin-top: 0;
+    }
+  }
+  &.hide-bottom-menu {
+    .bottom-menu {
+      display: none;
+    }
+  }
+  &.background2 {
+    background: var(--background2);
+    .p-divider .p-divider-content {
+      background: var(--background2);
+    }
+  }
+  &.background-gradient {
+    background: linear-gradient(to bottom, #1b223c, #244873);
+    //background: $backgroundGradient1;
+  }
 }
 
 .top-safe-cover {
@@ -64,4 +87,11 @@ section {
 
 .font-tisa {
   font-family: var(--font-family-tisa);
+}
+
+.p-button {
+  &.empty {
+    background: none;
+    border: none;
+  }
 }
