@@ -51,28 +51,25 @@ onMounted(async () => {
 <template>
   <div class="settings m-2">
     <section class="user">
-      <SUser v-model:data.sync="tempLoggedState" />
+      <SUser v-model:data="tempLoggedState" />
     </section>
     <section v-if="tempLoggedState" class="user-preferences p-0">
       <div class="s-title">Account</div>
       <SBox label="Name">
-        <SField
-          label="Tap to add a name"
-          v-model:data.sync="settingsData.name"
-        />
+        <SField label="Tap to add a name" v-model:data="settingsData.name" />
       </SBox>
       <SBox label="Email">
         <SField
           label="Tap to add an email"
           email
-          v-model:data.sync="settingsData.email"
+          v-model:data="settingsData.email"
         />
       </SBox>
       <SBox label="Password">
         <SField
           label="************"
           password
-          v-model:data.sync="settingsData.password"
+          v-model:data="settingsData.password"
         />
       </SBox>
     </section>
@@ -81,7 +78,7 @@ onMounted(async () => {
       <SBox label="Autodownload">
         <VInputSwitch
           static-width
-          v-model:data.sync="settingsData.autodownload"
+          v-model:data="settingsData.autodownload"
           @change="
             () => {
               trackClickEvent(
@@ -95,7 +92,7 @@ onMounted(async () => {
       </SBox>
       <SBox label="Default stream">
         <SDropdown
-          v-model:data.sync="settingsData.defaultstream"
+          v-model:data="settingsData.defaultstream"
           :options="stationsMenuData"
           optionLabel="station"
         />
@@ -106,7 +103,7 @@ onMounted(async () => {
       <SBox label="General">
         <VInputSwitch
           static-width
-          v-model:data.sync="settingsData.notificationgeneral"
+          v-model:data="settingsData.notificationgeneral"
           @change="
             () => {
               trackClickEvent(
@@ -123,7 +120,7 @@ onMounted(async () => {
       <div class="s-title">Display</div>
       <SBox label="Text size">
         <SDropdown
-          v-model:data.sync="settingsData.textsize"
+          v-model:data="settingsData.textsize"
           :options="textSizeOptions"
           @change="
             () => {
@@ -140,7 +137,7 @@ onMounted(async () => {
       <SBox label="Dark theme">
         <VInputSwitch
           static-width
-          v-model:data.sync="settingsData.darktheme"
+          v-model:data="settingsData.darktheme"
           @change="
             () => {
               setDarkMode(settingsData.darktheme)

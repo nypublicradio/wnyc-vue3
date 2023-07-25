@@ -18,6 +18,7 @@ const internalData = ref(props.data)
 
 // manages the logged in and logged out state
 const toggleLogged = () => {
+  navigateTo('/login')
   internalData.value = !internalData.value
   emit('update:data', internalData.value)
   trackClickEvent(

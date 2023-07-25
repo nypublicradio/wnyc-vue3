@@ -1,6 +1,10 @@
 export default {
-  modules: ['@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image'],
-
+  modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image'],
+  supabase: {
+    url: process.env.NUXT_ENV_SUPABASE_URL,
+    key: process.env.NUXT_ENV_SUPABASE_KEY,
+    redirect: true,
+  },
   image: {
     dir: 'public',
     wagtail: {
@@ -107,6 +111,11 @@ export default {
       IMAGE_BASE_URL: process.env['IMAGE_BASE_URL'] || 'https://cms.demo.nypr.digital/images/',
       GA_MEASUREMENT_ID: process.env['GA_MEASUREMENT_ID'] || 'G-ZV3N92G65W',
       GTM_ID: process.env['GTM_ID'] || 'GTM-TKFJ684',
+      environment: process.env.environment || 'demo',
+      supabaseUrl: process.env.NUXT_ENV_SUPABASE_URL,
+      supabaseKey: process.env.NUXT_ENV_SUPABASE_KEY,
+      supabaseAuthSignInRedirectTo: process.env.NUXT_ENV_SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
+      supabaseAuthTokenName: process.env.NUXT_ENV_SUPABASE_AUTH_TOKEN_NAME,
     }
   },
 
