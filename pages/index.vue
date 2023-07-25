@@ -22,20 +22,24 @@ useHead({
       </ul>
       <h1 class="headline mb-4">Get started!</h1>
       <div class="text-center flex flex-column gap-3">
-        <Button
-          class="w-13rem m-auto"
-          label="Create Free Account"
-          rounded
-          size="small"
-        />
+        <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
+          <Button
+            class="w-full"
+            label="Create Free Account"
+            rounded
+            size="small"
+          />
+        </VFlexibleLink>
         <p>or</p>
-        <Button
-          class="w-13rem m-auto"
-          label="Log in"
-          rounded
-          size="small"
-          severity="secondary"
-        />
+        <VFlexibleLink raw to="/login" class="w-13rem m-auto">
+          <Button
+            class="w-full"
+            label="Log in"
+            rounded
+            size="small"
+            severity="secondary"
+          />
+        </VFlexibleLink>
         <p>
           <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I’ll create an
           account later.
