@@ -11,7 +11,7 @@ const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
 const options = ref([
-  { icon: markRaw(HomeIcon), value: 'home', slug: '/' },
+  { icon: markRaw(HomeIcon), value: 'home', slug: '/home' },
   { icon: markRaw(LiveIcon), value: 'live', slug: '/live' },
   { icon: markRaw(BrowseIcon), value: 'browse', slug: '/browse' },
   { icon: markRaw(StarIcon), value: 'saved', slug: '/saved' },
