@@ -56,6 +56,7 @@ useHead({
       <VSignupWithEmail
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
+        label="Sign up"
         slug="/home"
       >
         <template #aboveSubmit>

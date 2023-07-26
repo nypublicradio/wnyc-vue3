@@ -2,6 +2,7 @@ import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { useFileSystem, useAppDirectory, useCurrentEpisode } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
+import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
 const directoryToSaveTo = Directory.External
 
 // format ISO timestamp to return only the time
@@ -271,4 +272,29 @@ export function setFontSize(size) {
  */
 export function setDarkMode(bool) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
+}
+
+
+// logges the current user out
+
+
+export const logUserOut = async () => {
+  const currentUser = useCurrentUser()
+  const currentUserProfile = useCurrentUserProfile()
+  const client = useSupabaseClient()
+
+  // sign out from supabase
+  const { error } = await client.auth.signOut()
+  // if (error) {
+  //     console.log('error')
+  // }
+
+  // set the currentUser composable to null
+  currentUser.value = null
+
+  // set the currentUserProfile composable to null
+  currentUserProfile.value = null
+
+  // clear localStorage
+  //localStorage.clear()
 }

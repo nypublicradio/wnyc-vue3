@@ -6,7 +6,7 @@ import {
   useCurrentUser,
   useCurrentUserProfile,
 } from '~/composables/states.ts'
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent, logUserOut } from '~/utilities/helpers'
 
 const settingsSideBar = useSettingSideBar()
 const emit = defineEmits(['update:data'])
@@ -25,6 +25,7 @@ const onLogIn = () => {
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = () => {
+  logUserOut()
   settingsSideBar.value = false
   trackClickEvent(
     'Click Tracking - logout button',
@@ -62,7 +63,7 @@ console.log('currentUserProfile = ', currentUserProfile)
         Hi, {{ currentUserProfile.first_name }}
         {{ currentUserProfile.last_name }}
       </h2>
-      <VFlexibleLink to="/logout" class="p1" @click="onLogOut"
+      <VFlexibleLink to="/home" class="p1" @click="onLogOut"
         >Log out</VFlexibleLink
       >
     </div>
