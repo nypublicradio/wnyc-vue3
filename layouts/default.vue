@@ -48,6 +48,8 @@ useHead({
   ],
 })
 
+// initial display settings
+
 const addListeners = async () => {
   await checkNotificationPermisstions()
 

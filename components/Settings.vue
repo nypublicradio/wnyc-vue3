@@ -7,21 +7,24 @@ import {
   setDarkMode,
 } from '~/utilities/helpers'
 import {
-  useSettingsData,
   useAllCurrentStations,
-  useLoggedState,
   useTextSizeOption,
+  useCurrentUser,
+  useCurrentUserProfile,
+  useLocalUserProfile,
 } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
-const settingsData = useSettingsData()
+const currentUser = useCurrentUser()
+const currentUserProfile = currentUser.value
+  ? useCurrentUserProfile()
+  : useLocalUserProfile()
+
 const textSizeOptions = useTextSizeOption()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
-
-const tempLoggedState = useLoggedState()
 
 // formats the station list for the dropdown
 const initializeStationList = (val) => {
@@ -42,6 +45,17 @@ const initializeStationList = (val) => {
   stationsMenuData.value = tempMenuData
 }
 
+const getTextSizePixel = computed(() => {
+  return textSizeOptions.value.find(
+    (item) => item.label == currentUserProfile.value.text_size.label
+  ).pixel
+})
+const getTextSizeLabel = computed(() => {
+  return textSizeOptions.value.find(
+    (item) => item.label == currentUserProfile.value.text_size.label
+  ).label
+})
+
 onMounted(async () => {
   await updateAllLiveStreams()
   await initializeStationList(allCurrentStations.value)
@@ -51,40 +65,46 @@ onMounted(async () => {
 <template>
   <div class="settings m-2">
     <section class="user">
-      <SUser v-model:data="tempLoggedState" />
+      <SUser />
     </section>
-    <section v-if="tempLoggedState" class="user-preferences p-0">
+    <section v-if="currentUser" class="user-preferences p-0">
       <div class="s-title">Account</div>
-      <SBox label="Name">
-        <SField label="Tap to add a name" v-model:data="settingsData.name" />
+      <SBox label="First name">
+        <SField
+          label="Tap to add a first name"
+          v-model:data="currentUserProfile.first_name"
+        />
+      </SBox>
+      <SBox label="Last name">
+        <SField
+          label="Tap to add a last name"
+          v-model:data="currentUserProfile.last_name"
+        />
       </SBox>
       <SBox label="Email">
         <SField
           label="Tap to add an email"
           email
-          v-model:data="settingsData.email"
+          v-model:data="currentUser.email"
         />
       </SBox>
       <SBox label="Password">
-        <SField
-          label="************"
-          password
-          v-model:data="settingsData.password"
-        />
+        <SField label="************" password />
       </SBox>
+      <!-- v-model:data="currentUser?.password" -->
     </section>
     <section class="listening-preferences p-0">
       <div class="s-title">Listening Preferences</div>
       <SBox label="Autodownload">
         <VInputSwitch
           static-width
-          v-model:data="settingsData.autodownload"
+          v-model:data="currentUserProfile.autodownload"
           @change="
             () => {
               trackClickEvent(
                 'Click Tracking - Autodownload switch',
                 'Settings Sidebar - Listening Preferences',
-                settingsData.autodownload
+                currentUserProfile.autodownload
               )
             }
           "
@@ -92,7 +112,7 @@ onMounted(async () => {
       </SBox>
       <SBox label="Default stream">
         <SDropdown
-          v-model:data="settingsData.defaultstream"
+          v-model:data="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
         />
@@ -103,13 +123,13 @@ onMounted(async () => {
       <SBox label="General">
         <VInputSwitch
           static-width
-          v-model:data="settingsData.notificationgeneral"
+          v-model:data="currentUserProfile.receive_general_notifications"
           @change="
             () => {
               trackClickEvent(
                 'Click Tracking - General switch',
                 'Settings Sidebar - Notifications',
-                settingsData.notificationgeneral
+                currentUserProfile.receive_general_notifications
               )
             }
           "
@@ -120,15 +140,16 @@ onMounted(async () => {
       <div class="s-title">Display</div>
       <SBox label="Text size">
         <SDropdown
-          v-model:data="settingsData.textsize"
+          v-model:data="currentUserProfile.text_size"
           :options="textSizeOptions"
           @change="
             () => {
-              setFontSize(settingsData.textsize.pixel)
+              setFontSize(getTextSizePixel)
+
               trackClickEvent(
                 'Click Tracking - Test size',
                 'Settings Sidebar - Display',
-                settingsData.textsize.label
+                getTextSizeLabel
               )
             }
           "
@@ -137,14 +158,14 @@ onMounted(async () => {
       <SBox label="Dark theme">
         <VInputSwitch
           static-width
-          v-model:data="settingsData.darktheme"
+          v-model:data="currentUserProfile.dark_mode"
           @change="
             () => {
-              setDarkMode(settingsData.darktheme)
+              setDarkMode(currentUserProfile.dark_mode)
               trackClickEvent(
                 'Click Tracking - Dark theme',
                 'Settings Sidebar - Display',
-                settingsData.darktheme
+                currentUserProfile.dark_mode
               )
             }
           "

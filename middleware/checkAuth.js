@@ -4,6 +4,7 @@ import {
 } from '~/composables/states'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
+    console.log('checking auth')
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
     const config = useRuntimeConfig()

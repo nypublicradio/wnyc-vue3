@@ -41,7 +41,7 @@ useHead({
           />
         </VFlexibleLink>
         <p>
-          <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I’ll create an
+          <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create an
           account later.
         </p>
       </div>

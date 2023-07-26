@@ -30,6 +30,9 @@ body {
     .bottom-menu {
       display: none;
     }
+    main {
+      padding-bottom: 0px; // account for the sticky bottom menu
+    }
   }
   &.background2 {
     background: var(--background2);
@@ -38,8 +41,19 @@ body {
     }
   }
   &.background-gradient {
-    background: linear-gradient(to bottom, #1b223c, #244873);
-    //background: $backgroundGradient1;
+    //background: linear-gradient(to bottom, #1b223c, #244873);
+    background: $backgroundGradient1;
+    transform: none;
+    height: 100% !important;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    max-height: unset !important;
+    position: relative !important;
+  }
+  main {
+    margin-top: $headerHeight; // account for the sticky header height
+    padding-bottom: calc($bottomMenuHeight + $playerHeight); // account for the sticky bottom menu
   }
 }
 
@@ -52,10 +66,6 @@ body {
   z-index: 9999;
   background-color: transparentize(#de1e3d, 0.1);
   backdrop-filter: blur(5px);
-}
-
-main {
-  margin-top: 81px; // account for the sticky header height
 }
 
 section {
@@ -90,8 +100,18 @@ section {
 }
 
 .p-button {
+  border-radius: 2rem;
   &.empty {
     background: none;
     border: none;
+  }
+  &.center {
+    justify-content: center;
+    i {
+      margin-right: 10px;
+    }
+    .p-button-label {
+      flex: none;
+    }
   }
 }

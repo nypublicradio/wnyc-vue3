@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+definePageMeta({
+  middleware: 'check-auth',
+})
+</script>
 
 <template>
   <div>

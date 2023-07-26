@@ -1,9 +1,9 @@
 <script setup>
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-
 import { trackClickEvent, getDate } from '~/utilities/helpers'
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import { useSettingSideBar } from '~/composables/states.ts'
 
-const visibleRight = ref(false)
+const settingsSideBar = useSettingSideBar()
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const visibleRight = ref(false)
               trackClickEvent('Click Tracking - WNYC Logo', 'WNYC Logo', '/')
             "
           >
-            <WnycLogo class="w-5rem sm:w-auto" />
+            <WnycLogo class="w-5rem" />
           </VFlexibleLink>
           <span class="font-meta">{{ getDate() }}</span>
         </div>
@@ -44,7 +44,7 @@ const visibleRight = ref(false)
             severity="secondary"
             @click="
               () => {
-                visibleRight = true
+                settingsSideBar = true
                 trackClickEvent(
                   'Click Tracking - Hamburger Menu',
                   'Hamburger Menu',
@@ -57,7 +57,7 @@ const visibleRight = ref(false)
       </div>
     </section>
     <Sidebar
-      v-model:visible="visibleRight"
+      v-model:visible="settingsSideBar"
       :baseZIndex="10000"
       position="right"
       class="w-full"

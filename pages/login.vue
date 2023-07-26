@@ -35,24 +35,26 @@ useHead({
         :config="useRuntimeConfig()"
         provider="google"
         label="Log in with Google"
+        severity="secondary"
+        class="center mb-3"
       />
-      <Divider class="my-4" align="center">
-        <b>Or</b>
-      </Divider>
+
       <VLoginWithProvider
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
         provider="apple"
         label="Log in with Apple"
+        severity="secondary"
+        class="center"
       />
       <Divider class="my-4" align="center">
-        <b>Or</b>
+        <b>or</b>
       </Divider>
       <VLoginWithEmail
         label="Log in"
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
-        slug="/"
+        slug="/home"
       >
         <template #belowSubmit>
           <div class="mt-4">
@@ -68,6 +70,7 @@ useHead({
               class="w-full"
               label="Sign up"
               severity="secondary"
+              rounded
               @click="
                 () => {
                   navigateTo('/signup')

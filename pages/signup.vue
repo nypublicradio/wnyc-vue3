@@ -2,7 +2,7 @@
 import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VSignupWithEmail.vue'
 //import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
-
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 const router = useRouter()
 
 useHead({
@@ -30,29 +30,42 @@ useHead({
         />
         <h1>Sign up</h1>
       </div>
+      <p>
+        Already have an account?
+        <VFlexibleLink to="/login">Log in</VFlexibleLink>
+      </p>
       <VLoginWithProvider
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
         provider="google"
         label="Sign up with Google"
+        severity="secondary"
+        class="center my-3"
       />
-      <Divider class="my-4" align="center">
-        <b>Or</b>
-      </Divider>
       <VLoginWithProvider
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
         provider="apple"
+        severity="secondary"
+        class="center"
         label="Sign up with Apple"
       />
       <Divider class="my-4" align="center">
-        <b>Or</b>
+        <b>or</b>
       </Divider>
       <VSignupWithEmail
         :client="useSupabaseClient()"
         :config="useRuntimeConfig()"
-        slug="/"
+        slug="/home"
       >
+        <template #aboveSubmit>
+          <p class="mb-3">
+            By proceeding to create your account, you are agreeing to New York
+            Public Radio's
+            <VFlexibleLink to="/terms">Terms of Service</VFlexibleLink> and
+            <VFlexibleLink to="/privacy">Privacy Policy</VFlexibleLink>
+          </p>
+        </template>
         <!-- <template #success>
           <VLoginWithEmail
             :client="useSupabaseClient()"

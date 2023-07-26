@@ -6,7 +6,8 @@ export const useCurrentUser = () => useState('useCurrentUser', () => currentUser
 const currentUserProfile = null
 export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () => currentUserProfile)
 
-
+// setting sidebar state
+export const useSettingSideBar = () => useState('useSettingSideBar', () => false)
 
 // audio player globals
 const currentEpisodeObj = null
@@ -101,28 +102,18 @@ export const useBottomMenuState = () => useState('bottomMenuState', () => bottom
 
 
 
-// populate from Supabase at some point
-const settingsData: object = {
-    name: 'Peter Gibbons',
-    // profileimage: 'https://media.licdn.com/dms/image/C5603AQHqyqn8BBa6Wg/profile-displayphoto-shrink_800_800/0/1517520876017?e=2147483647&v=beta&t=bbkZ9w4zWWPXI6FsKD3Ml41uIZnB_b49qHYzALH4SKo',
-    profileimage: null,
-    email: 'peter.gibbons@initech.com',
-    password: '12345678',
+// defualt seettings that are over writted by user data
+const localUserProfile: object = {
     autodownload: false,
-    defaultstream: 'WNYC 93.9 FM',
-    notificationgeneral: true,
-    textsize: 'Normal',
-    darktheme: false,
+    default_live_stream: 'WNYC 93.9 FM',
+    receive_general_notifications: true,
+    text_size: 'Normal',
+    dark_mode: false,
 }
 /**
  * Global state for the settings data
  */
-export const useSettingsData = () => useState('settingsData', () => settingsData)
-
-/**
- * Global state for TEMP login state
- */
-export const useLoggedState = () => useState('loggedState', () => false)
+export const useLocalUserProfile = () => useState('localUserProfile', () => localUserProfile)
 
 
 const textSizeOptionsObj = [
