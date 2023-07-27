@@ -17,15 +17,15 @@ import {
 } from 'capacitor-native-settings'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
-import { setFontSize, setDarkMode, getTextSizePixel } from '~/utilities/helpers'
-import {
-  useCurrentUserProfile,
-  useLocalUserProfileDefault,
-  useCurrentUser,
-} from '~/composables/states'
-const currentUserProfile = useCurrentUserProfile()
-const currentUser = useCurrentUser()
-const localUserProfileDefault = useLocalUserProfileDefault()
+//import { setFontSize, setDarkMode, getTextSizePixel } from '~/utilities/helpers'
+// import {
+//   useCurrentUserProfile,
+//   useLocalUserProfileDefault,
+//   useCurrentUser,
+// } from '~/composables/states'
+// const currentUserProfile = useCurrentUserProfile()
+// const currentUser = useCurrentUser()
+// const localUserProfileDefault = useLocalUserProfileDefault()
 
 const { isDesktop } = useDevice()
 const route = useRoute()
@@ -169,7 +169,7 @@ onMounted(
       //checkAppLaunchUrl()
     }
 
-    // TRIGGER INITIAL SETTINGS DATA //////////////////////////////////////////////////////////
+    /* // TRIGGER INITIAL SETTINGS DATA //////////////////////////////////////////////////////////
     // is a user logged in from supabase?
     console.log('currentUserProfile.value = ', currentUserProfile.value)
     console.log('currentUser.value = ', currentUser.value)
@@ -183,33 +183,26 @@ onMounted(
       // initially set the currentUserProfile to the localUserProfileDefault settings and set the local storage to the default settings
 
       // if local storage is NOT empty, then set the currentUserProfile to the localUserProfileDefault settings for the first time
-      if (!localStorage.getItem('default_live_stream')) {
+      if (!localStorage.getItem('localUserProfile')) {
+        localStorage.setItem(
+          'localUserProfile',
+          JSON.stringify(localUserProfileDefault.value)
+        )
         currentUserProfile.value = {}
-        for (let [key, value] of Object.entries(
-          localUserProfileDefault.value
-        )) {
-          // set local storage
-          localStorage.setItem(key, JSON.stringify(value))
-          // set currentUserProfile
-          currentUserProfile.value[key] = value
-        }
+        currentUserProfile.value = localUserProfileDefault.value
       } else {
         // local storage is set, so set currentUserProfile to the local storage settings
+
         currentUserProfile.value = {}
-        for (let [key, value] of Object.entries(
-          localUserProfileDefault.value
-        )) {
-          // set currentUserProfile to the saved local storage settings
-          currentUserProfile.value[key] = JSON.parse(localStorage.getItem(key))
-        }
+        currentUserProfile.value = JSON.parse(
+          localStorage.getItem('localUserProfile')
+        )
       }
       // apply display settings from local storage
-      setFontSize(
-        getTextSizePixel(JSON.parse(localStorage.getItem('text_size')))
-      )
-      setDarkMode(JSON.parse(localStorage.getItem('dark_mode')))
+      setFontSize(getTextSizePixel(currentUserProfile.value.text_size))
+      setDarkMode(currentUserProfile.value.dark_mode)
     }
-    // END - TRIGGER INITIAL SETTINGS DATA //////////////////////////////////////////////////////////
+    // END - TRIGGER INITIAL SETTINGS DATA ////////////////////////////////////////////////////////// */
 
     //refresh data and check notification permissions every time the tab is in focus or the App is in focus
     document.addEventListener('visibilitychange', (event) => {

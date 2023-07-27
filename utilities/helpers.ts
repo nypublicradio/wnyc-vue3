@@ -1,12 +1,8 @@
 import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { useFileSystem, useAppDirectory, useCurrentEpisode, useCurrentUser, useCurrentUserProfile, useTextSizeOption } from '~/composables/states'
+import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
 const directoryToSaveTo = Directory.External
-
-const currentUser = useCurrentUser()
-const currentUserProfile = useCurrentUserProfile()
-const textSizeOptions = useTextSizeOption()
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -278,37 +274,16 @@ export function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
 }
 
-
-// logges the current user out
-export const logUserOut = async () => {
-  const client = useSupabaseClient()
-
-  // sign out from supabase
-  const { error } = await client.auth.signOut()
-  // if (error) {
-  //     console.log('error')
-  // }
-
-  // set the currentUser composable to null
-  currentUser.value = null
-
-  // set the currentUserProfile composable to null
-  currentUserProfile.value = null
-
-  // clear localStorage
-  //localStorage.clear()
-}
-
-
 export const getTextSizePixel = (label) => {
-  //console.log('textSizeOptions.value = ', textSizeOptions.value)
+  const textSizeOptions = useTextSizeOption()
   return textSizeOptions.value.find(
     (item) => item.label === label
   ).pixel
 }
 
-export const getTextSizeLabel = () => {
-  return textSizeOptions.value.find(
-    (item) => item.label === currentUserProfile.value.text_size.label
-  ).label
-}
+// export const getTextSizeLabel = () => {
+//   const textSizeOptions = useTextSizeOption()
+//   return textSizeOptions.value.find(
+//     (item) => item.label === currentUserProfile.value.text_size.label
+//   ).label
+// }

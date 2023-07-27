@@ -6,7 +6,6 @@ import {
   setFontSize,
   setDarkMode,
   getTextSizePixel,
-  getTextSizeLabel,
 } from '~/utilities/helpers'
 import {
   useAllCurrentStations,
@@ -24,7 +23,10 @@ const textSizeOptions = useTextSizeOption()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
-const client = useSupabaseClient()
+//const client = useSupabaseClient()
+
+const successMessage = ref(false)
+const errorMessage = ref(false)
 
 // formats the station list for the dropdown
 const initializeStationList = (val) => {
@@ -47,29 +49,43 @@ const initializeStationList = (val) => {
 
 const updateProfile = async () => {
   // update supabase and local storage
-  successMessage.value = false
-  errorMessage.value = false
-  const { error } = await client
-    .from('profiles')
-    .upsert({
-      id: currentUser.value.id,
-      updated_at: new Date().toISOString(),
-      first_name: fullName.value,
-      last_name: fullName.value,
-      pronouns: pronouns.value,
-      continuous_play: continuousPlay.value,
-      default_live_stream: defaultLiveStream.value,
-      dark_mode: dark_mode.value,
-      receive_general_notifications: receive_general_notifications.value,
-      text_size: text_size.value,
-      autodownload: autodownload.value,
-    })
-    .match({ id: currentUser.value.id })
-  if (error) {
-    console.log(error)
-    errorMessage.value = true
+
+  if (currentUser.value) {
+    console.log('supabase update')
+    successMessage.value = false
+    errorMessage.value = false
+    // const { error } = await client
+    //   .from('profiles')
+    //   .upsert({
+    //     id: currentUser.value.id,
+    //     updated_at: new Date().toISOString(),
+    //     // first_name: fullName.value,
+    //     // last_name: fullName.value,
+    //     // pronouns: pronouns.value,
+    //     // continuous_play: continuousPlay.value,
+    //     // default_live_stream: defaultLiveStream.value,
+    //     // dark_mode: dark_mode.value,
+    //     // receive_general_notifications: receive_general_notifications.value,
+    //     // text_size: text_size.value,
+    //     autodownload: currentUserProfile.value.autodownload,
+    //   })
+    //   .match({ id: currentUser.value.id })
+    // if (error) {
+    //   console.log(error)
+    //   errorMessage.value = true
+    // } else {
+    //   successMessage.value = true
+    // }
   } else {
-    successMessage.value = true
+    console.log('local storage update')
+    localStorage.setItem(
+      'localUserProfile',
+      JSON.stringify(currentUserProfile.value)
+    )
+    successMessage.value = false
+    setTimeout(() => {
+      successMessage.value = true
+    }, 100)
   }
 }
 
@@ -77,6 +93,28 @@ onMounted(async () => {
   await updateAllLiveStreams()
   await initializeStationList(allCurrentStations.value)
 })
+
+watch(currentUserProfile.value, () => {
+  console.log('profile updated')
+  updateProfile()
+})
+
+const onUpdateTextSize = () => {
+  setFontSize(currentUserProfile.value.text_size.pixel)
+
+  trackClickEvent(
+    'Click Tracking - Test size',
+    'Settings Sidebar - Display',
+    currentUserProfile.value.text_size.label
+  )
+}
+const onUpdateStation = () => {
+  trackClickEvent(
+    'Click Tracking - Default stream',
+    'Settings Sidebar - Listening Preferences',
+    currentUserProfile.value.default_live_stream
+  )
+}
 </script>
 
 <template>
@@ -132,6 +170,7 @@ onMounted(async () => {
           v-model:data="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
+          @change="onUpdateStation"
         />
       </SBox>
     </section>
@@ -159,17 +198,7 @@ onMounted(async () => {
         <SDropdown
           v-model:data="currentUserProfile.text_size"
           :options="textSizeOptions"
-          @change="
-            () => {
-              setFontSize(getTextSizePixel(currentUserProfile.value.text_size))
-
-              trackClickEvent(
-                'Click Tracking - Test size',
-                'Settings Sidebar - Display',
-                getTextSizeLabel
-              )
-            }
-          "
+          @change="onUpdateTextSize"
         />
       </SBox>
       <SBox label="Dark theme">
@@ -248,6 +277,26 @@ onMounted(async () => {
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version X.X.XX (XXXXXX)</p>
     </section>
+    <Transition name="zoom">
+      <Message
+        v-if="successMessage"
+        class="settings-message"
+        severity="success"
+        :closable="false"
+        :sticky="false"
+        >Settings updated</Message
+      >
+    </Transition>
+    <Transition name="zoom">
+      <Message
+        v-if="errorMessage"
+        class="settings-message"
+        severity="error"
+        :closable="false"
+        :sticky="false"
+        >Settings update failed</Message
+      >
+    </Transition>
   </div>
 </template>
 
@@ -285,6 +334,12 @@ onMounted(async () => {
   .p-button.p-button-icon-only {
     width: 2.357rem;
     padding: 0.5rem 0;
+  }
+  .settings-message {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 }
 </style>

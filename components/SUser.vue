@@ -5,13 +5,15 @@ import {
   useSettingSideBar,
   useCurrentUser,
   useCurrentUserProfile,
+  useLocalUserProfileDefault,
 } from '~/composables/states.ts'
-import { trackClickEvent, logUserOut } from '~/utilities/helpers'
+import { trackClickEvent } from '~/utilities/helpers'
 
 const settingsSideBar = useSettingSideBar()
 const emit = defineEmits(['update:data'])
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
+const localUserProfileDefault = useLocalUserProfileDefault()
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
@@ -24,8 +26,27 @@ const onLogIn = () => {
   )
 }
 // actions to be taken with the log out button is clicked
-const onLogOut = () => {
-  logUserOut()
+const onLogOut = async () => {
+  const client = useSupabaseClient()
+
+  // sign out from supabase
+  const { error } = await client.auth.signOut()
+  // if (error) {
+  //     console.log('error')
+  // }
+
+  // set the currentUser composable to null
+  currentUser.value = null
+
+  // set the currentUserProfile composable to null
+  currentUserProfile.value = null
+
+  // reset the currentEpisode composable to the default
+  currentUserProfile.value = localUserProfileDefault.value
+
+  // clear localStorage
+  //localStorage.clear()
+
   settingsSideBar.value = false
   trackClickEvent(
     'Click Tracking - logout button',
