@@ -62,7 +62,8 @@ const updateProfile = async () => {
         last_name: currentUserProfile.value.last_name,
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
-        default_live_stream: currentUserProfile.value.defaultLiveStream,
+        default_live_stream:
+          currentUserProfile.value.default_live_stream.station,
         dark_mode: currentUserProfile.value.dark_mode,
         receive_general_notifications:
           currentUserProfile.value.receive_general_notifications,

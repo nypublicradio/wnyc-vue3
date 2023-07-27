@@ -65,7 +65,12 @@ const onUpdate = (val) => {
   .p-inplace-display:not(.p-disabled):hover {
     &:hover {
       background: var(--background3);
+      color: var(--text-color);
     }
+  }
+  .p-inputtext {
+    color: var(--text-color);
+    background: var(--background2);
   }
   .p-inline-message {
     pointer-events: none;
