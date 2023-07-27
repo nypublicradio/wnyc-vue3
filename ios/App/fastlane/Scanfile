@@ -1,0 +1,6 @@
+scheme("App")
+devices(["iPhone 13"])
+
+clean(true)
+
+output_types("html")

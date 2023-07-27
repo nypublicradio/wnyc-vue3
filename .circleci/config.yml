@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  ruby: circleci/ruby@1.8.0
+
 filter_all: &filter_all
   filters:
     branches:
@@ -48,6 +51,25 @@ workflows:
           requires:
             - test
             - test_nginx
+      # - iostest:
+      #     name: iOS (test)
+      #     context: 
+      #       - ios
+      #       - xcode
+      #     FASTLANE_LANE: test
+      #     <<: *filter_all
+      #     requires:
+      #       - test
+      - ios:
+          name: iOS (beta)
+          context: 
+            - ios
+            - xcode
+          FASTLANE_LANE: beta
+          <<: *filter_demo
+          requires:
+            - test
+
 
 jobs: 
   # Note (allie): This is its own job because I don't 
@@ -78,7 +100,7 @@ jobs:
 
   test_nginx:
     docker:
-      - image: node:16.14.2-slim
+      - image: node:18.14.2-slim
     parameters:
       env:
         type: enum
@@ -99,6 +121,68 @@ jobs:
             mkdir -p /app/nginx 
             cp ./nginx/*.conf /etc/nginx/
             nginx -t
+
+  iostest:
+    executor: macosg2
+    parameters:
+      FASTLANE_LANE:
+        type: string
+        default: "test"
+    working_directory: ~/project
+    environment:
+      FL_OUTPUT_DIR: output
+      FASTLANE_LANE: <<parameters.FASTLANE_LANE>>
+    shell: /bin/bash --login -o pipefail
+    steps:
+      - checkout
+      - ruby/install-deps:
+          app-dir: ios/App
+      - setup_npmrc
+      - run:
+          name: Capacitor Setup
+          command: |
+            npm ci
+            npm run generate
+            npx cap sync
+      - run:
+          name: fastlane
+          command: |
+            cd ios/App; bundle exec fastlane $FASTLANE_LANE
+      - store_artifacts:
+          path: ios/App/output
+      - store_test_results:
+          path: ios/App/output/scan
+
+  ios:
+    executor: macosg2
+    parameters:
+      FASTLANE_LANE:
+        type: string
+        default: "build"
+    working_directory: ~/project
+    environment:
+      FL_OUTPUT_DIR: output
+      FASTLANE_LANE: <<parameters.FASTLANE_LANE>>
+    shell: /bin/bash --login -o pipefail
+    steps:
+      - checkout
+      - ruby/install-deps:
+          app-dir: ios/App
+      - setup_npmrc
+      - run:
+          name: Capacitor Setup
+          command: |
+            npm ci
+            npm run generate
+            npx cap sync
+      - run:
+          name: fastlane
+          command: |
+            cd ios/App; bundle exec fastlane $FASTLANE_LANE
+      - store_artifacts:
+          path: ios/App/output
+      - store_test_results:
+          path: ios/App/output/scan
 
   deploy:
     docker: 
@@ -156,4 +240,10 @@ executors:
     docker:
       - image: cimg/node:16.14.2
     environment: 
+      JOBS: 2
+  macosg2:
+    macos:
+      xcode: "14.2.0"
+    resource_class: macos.x86.medium.gen2
+    environment:
       JOBS: 2
