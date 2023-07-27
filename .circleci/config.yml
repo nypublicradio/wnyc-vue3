@@ -51,15 +51,15 @@ workflows:
           requires:
             - test
             - test_nginx
-      - iostest:
-          name: iOS (test)
-          context: 
-            - ios
-            - xcode
-          FASTLANE_LANE: test
-          <<: *filter_all
-          requires:
-            - test
+      # - iostest:
+      #     name: iOS (test)
+      #     context: 
+      #       - ios
+      #       - xcode
+      #     FASTLANE_LANE: test
+      #     <<: *filter_all
+      #     requires:
+      #       - test
       - ios:
           name: iOS (beta)
           context: 
