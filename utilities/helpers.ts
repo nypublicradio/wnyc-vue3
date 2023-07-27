@@ -275,10 +275,14 @@ export function setDarkMode(bool: boolean) {
 }
 
 export const getTextSizePixel = (label) => {
-  const textSizeOptions = useTextSizeOption()
-  return textSizeOptions.value.find(
-    (item) => item.label === label
-  ).pixel
+  if (typeof label === 'string') {
+    const textSizeOptions = useTextSizeOption()
+    return textSizeOptions.value.find(
+      (item) => item.label === label
+    ).pixel
+  } else {
+    return label.pixel
+  }
 }
 
 // export const getTextSizeLabel = () => {
