@@ -24,6 +24,7 @@ const textSizeOptions = useTextSizeOption()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
+const client = useSupabaseClient()
 
 // formats the station list for the dropdown
 const initializeStationList = (val) => {
@@ -42,6 +43,34 @@ const initializeStationList = (val) => {
   })
 
   stationsMenuData.value = tempMenuData
+}
+
+const updateProfile = async () => {
+  // update supabase and local storage
+  successMessage.value = false
+  errorMessage.value = false
+  const { error } = await client
+    .from('profiles')
+    .upsert({
+      id: currentUser.value.id,
+      updated_at: new Date().toISOString(),
+      first_name: fullName.value,
+      last_name: fullName.value,
+      pronouns: pronouns.value,
+      continuous_play: continuousPlay.value,
+      default_live_stream: defaultLiveStream.value,
+      dark_mode: dark_mode.value,
+      receive_general_notifications: receive_general_notifications.value,
+      text_size: text_size.value,
+      autodownload: autodownload.value,
+    })
+    .match({ id: currentUser.value.id })
+  if (error) {
+    console.log(error)
+    errorMessage.value = true
+  } else {
+    successMessage.value = true
+  }
 }
 
 onMounted(async () => {
