@@ -78,10 +78,12 @@ const internalData = ref(props.data)
     display: none !important;
   }
   .p-dropdown-label {
-    font-size: 0.8125rem;
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
+  }
+  .ans {
+    @include font-config($type-paragraph1);
   }
 }
 .p-dropdown-panel {

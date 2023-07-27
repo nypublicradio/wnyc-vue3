@@ -3,7 +3,7 @@ import {
     useCurrentUserProfile,
     useLocalUserProfileDefault
 } from '~/composables/states'
-import { setFontSize, setDarkMode, getTextSizePixel } from '~/utilities/helpers'
+import { setDisplaySettings } from '~/utilities/helpers'
 export default defineNuxtRouteMiddleware(async (to, from) => {
     console.log('checking auth')
     const currentUser = useCurrentUser()
@@ -29,8 +29,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             console.log('data = ', data)
             currentUserProfile.value = data
             //set display settings
-            setFontSize(getTextSizePixel(data.text_size))
-            setDarkMode(data.dark_mode)
+            setDisplaySettings(data)
         }
     }
 
@@ -62,8 +61,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                 currentUserProfile.value = {}
                 currentUserProfile.value = localUserProfileDefault.value
                 //set display settings
-                setFontSize(getTextSizePixel(localUserProfileDefault.value.text_size))
-                setDarkMode(localUserProfileDefault.value.dark_mode)
+                setDisplaySettings(localUserProfileDefault.value)
             } else {
                 // local storage is set, so set currentUserProfile to the local storage settings
 
@@ -72,8 +70,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                     localStorage.getItem('localUserProfile')
                 )
                 //set display settings
-                setFontSize(getTextSizePixel(currentUserProfile.value.text_size))
-                setDarkMode(currentUserProfile.value.dark_mode)
+                setDisplaySettings(currentUserProfile.value)
             }
 
 

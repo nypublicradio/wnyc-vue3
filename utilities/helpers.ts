@@ -285,9 +285,8 @@ export const getTextSizePixel = (label) => {
   }
 }
 
-// export const getTextSizeLabel = () => {
-//   const textSizeOptions = useTextSizeOption()
-//   return textSizeOptions.value.find(
-//     (item) => item.label === currentUserProfile.value.text_size.label
-//   ).label
-// }
+
+export const setDisplaySettings = (data) => {
+  setFontSize(getTextSizePixel(data.text_size))
+  setDarkMode(data.dark_mode)
+}

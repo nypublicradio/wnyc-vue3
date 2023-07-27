@@ -5,7 +5,6 @@ import {
   getYear,
   setFontSize,
   setDarkMode,
-  getTextSizePixel,
 } from '~/utilities/helpers'
 import {
   useAllCurrentStations,
@@ -23,7 +22,7 @@ const textSizeOptions = useTextSizeOption()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
-//const client = useSupabaseClient()
+const client = useSupabaseClient()
 
 const successMessage = ref(false)
 const errorMessage = ref(false)
@@ -54,28 +53,29 @@ const updateProfile = async () => {
     console.log('supabase update')
     successMessage.value = false
     errorMessage.value = false
-    // const { error } = await client
-    //   .from('profiles')
-    //   .upsert({
-    //     id: currentUser.value.id,
-    //     updated_at: new Date().toISOString(),
-    //     // first_name: fullName.value,
-    //     // last_name: fullName.value,
-    //     // pronouns: pronouns.value,
-    //     // continuous_play: continuousPlay.value,
-    //     // default_live_stream: defaultLiveStream.value,
-    //     // dark_mode: dark_mode.value,
-    //     // receive_general_notifications: receive_general_notifications.value,
-    //     // text_size: text_size.value,
-    //     autodownload: currentUserProfile.value.autodownload,
-    //   })
-    //   .match({ id: currentUser.value.id })
-    // if (error) {
-    //   console.log(error)
-    //   errorMessage.value = true
-    // } else {
-    //   successMessage.value = true
-    // }
+    const { error } = await client
+      .from('profiles')
+      .upsert({
+        id: currentUser.value.id,
+        updated_at: new Date().toISOString(),
+        first_name: currentUserProfile.value.first_name,
+        last_name: currentUserProfile.value.last_name,
+        // pronouns: pronouns.value,
+        // continuous_play: continuousPlay.value,
+        default_live_stream: currentUserProfile.value.defaultLiveStream,
+        dark_mode: currentUserProfile.value.dark_mode,
+        receive_general_notifications:
+          currentUserProfile.value.receive_general_notifications,
+        text_size: currentUserProfile.value.text_size.label,
+        autodownload: currentUserProfile.value.autodownload,
+      })
+      .match({ id: currentUser.value.id })
+    if (error) {
+      console.log(error)
+      errorMessage.value = true
+    } else {
+      successMessage.value = true
+    }
   } else {
     console.log('local storage update')
     localStorage.setItem(
@@ -95,7 +95,6 @@ onMounted(async () => {
 })
 
 watch(currentUserProfile.value, () => {
-  console.log('profile updated')
   updateProfile()
 })
 

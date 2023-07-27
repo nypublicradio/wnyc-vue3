@@ -7,7 +7,7 @@ import {
   useCurrentUserProfile,
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
 
 const settingsSideBar = useSettingSideBar()
 const emit = defineEmits(['update:data'])
@@ -43,6 +43,8 @@ const onLogOut = async () => {
 
   // reset the currentEpisode composable to the default
   currentUserProfile.value = localUserProfileDefault.value
+  // set display settings
+  setDisplaySettings(localUserProfileDefault.value)
 
   // clear localStorage
   //localStorage.clear()
