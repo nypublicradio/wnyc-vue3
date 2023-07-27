@@ -5,21 +5,20 @@ import {
   getYear,
   setFontSize,
   setDarkMode,
+  getTextSizePixel,
+  getTextSizeLabel,
 } from '~/utilities/helpers'
 import {
   useAllCurrentStations,
   useTextSizeOption,
   useCurrentUser,
   useCurrentUserProfile,
-  useLocalUserProfile,
 } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
 const currentUser = useCurrentUser()
-const currentUserProfile = currentUser.value
-  ? useCurrentUserProfile()
-  : useLocalUserProfile()
+const currentUserProfile = useCurrentUserProfile()
 
 const textSizeOptions = useTextSizeOption()
 
@@ -44,17 +43,6 @@ const initializeStationList = (val) => {
 
   stationsMenuData.value = tempMenuData
 }
-
-const getTextSizePixel = computed(() => {
-  return textSizeOptions.value.find(
-    (item) => item.label == currentUserProfile.value.text_size.label
-  ).pixel
-})
-const getTextSizeLabel = computed(() => {
-  return textSizeOptions.value.find(
-    (item) => item.label == currentUserProfile.value.text_size.label
-  ).label
-})
 
 onMounted(async () => {
   await updateAllLiveStreams()
@@ -144,7 +132,7 @@ onMounted(async () => {
           :options="textSizeOptions"
           @change="
             () => {
-              setFontSize(getTextSizePixel)
+              setFontSize(getTextSizePixel(currentUserProfile.value.text_size))
 
               trackClickEvent(
                 'Click Tracking - Test size',

@@ -1,9 +1,12 @@
 import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { useFileSystem, useAppDirectory, useCurrentEpisode } from '~/composables/states'
+import { useFileSystem, useAppDirectory, useCurrentEpisode, useCurrentUser, useCurrentUserProfile, useTextSizeOption } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
-import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
 const directoryToSaveTo = Directory.External
+
+const currentUser = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
+const textSizeOptions = useTextSizeOption()
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -263,24 +266,21 @@ export function capitalizeFirstLetter(str) {
 /**
  * helper function to change the global font size
  */
-export function setFontSize(size) {
+export function setFontSize(size: string) {
+  //console.log('set size = ', size)
   document.documentElement.style.fontSize = size;
 }
 
 /**
  * helper function to toggle darkmode
  */
-export function setDarkMode(bool) {
+export function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
 }
 
 
 // logges the current user out
-
-
 export const logUserOut = async () => {
-  const currentUser = useCurrentUser()
-  const currentUserProfile = useCurrentUserProfile()
   const client = useSupabaseClient()
 
   // sign out from supabase
@@ -297,4 +297,18 @@ export const logUserOut = async () => {
 
   // clear localStorage
   //localStorage.clear()
+}
+
+
+export const getTextSizePixel = (label) => {
+  //console.log('textSizeOptions.value = ', textSizeOptions.value)
+  return textSizeOptions.value.find(
+    (item) => item.label === label
+  ).pixel
+}
+
+export const getTextSizeLabel = () => {
+  return textSizeOptions.value.find(
+    (item) => item.label === currentUserProfile.value.text_size.label
+  ).label
 }

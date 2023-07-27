@@ -1,3 +1,16 @@
+// defualt seettings that are over writted by user data
+const localUserProfileDefault: object = {
+    autodownload: false,
+    default_live_stream: 'WNYC 93.9 FM',
+    receive_general_notifications: true,
+    text_size: 'Normal',
+    dark_mode: false,
+}
+/**
+ * Global state for the settings data
+ */
+export const useLocalUserProfileDefault = () => useState('localUserProfileDefault', () => localUserProfileDefault)
+
 // global state for the current authorized user
 const currentUser = null
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
@@ -86,14 +99,6 @@ export const useFileSystemLS = () => useState('fileSystemLS', () => [])
 
 
 
-
-
-
-/**
- * NEW STUFF
- */
-
-
 const bottomMenuState: object = {}
 /**
  * Global state for the bottom navigation
@@ -102,21 +107,10 @@ export const useBottomMenuState = () => useState('bottomMenuState', () => bottom
 
 
 
-// defualt seettings that are over writted by user data
-const localUserProfile: object = {
-    autodownload: false,
-    default_live_stream: 'WNYC 93.9 FM',
-    receive_general_notifications: true,
-    text_size: 'Normal',
-    dark_mode: false,
-}
-/**
- * Global state for the settings data
- */
-export const useLocalUserProfile = () => useState('localUserProfile', () => localUserProfile)
 
 
-const textSizeOptionsObj = [
+
+const textSizeOptionsArr = [
     { label: 'Normal', value: 'Normal', pixel: '16px' },
     { label: 'Large', value: 'Large', pixel: '18px' },
     { label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
@@ -124,4 +118,4 @@ const textSizeOptionsObj = [
 /**
  * Global state for TEMP login state
  */
-export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsObj)
+export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsArr)
