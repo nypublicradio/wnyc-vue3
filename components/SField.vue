@@ -18,7 +18,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:data', 'isValid'])
+const emit = defineEmits(['update:data', 'isValid', 'submit'])
 
 const internalData = ref(props.data)
 const error = ref(false)
@@ -35,11 +35,23 @@ const onUpdate = (val) => {
     emit('isValid', isValid)
   }
 }
+
+const emailOrPass = computed(() => {
+  return props.email || props.password
+})
+
+const onSubmit = () => {
+  var closeBtn = document.querySelectorAll(
+    '.s-field .p-inplace-content .p-button-icon-only'
+  )
+  for (let i = 0; i < closeBtn.length; i++) closeBtn[i].click()
+  emit('submit', props.email ? 'email' : 'password')
+}
 </script>
 <template>
-  <Inplace class="s-field">
+  <Inplace class="s-field" :closable="emailOrPass">
     <template #display>
-      {{ password ? label : internalData ?? label }}
+      {{ props.password ? label : internalData ?? label }}
     </template>
     <template #content>
       <div class="w-full">
@@ -48,6 +60,7 @@ const onUpdate = (val) => {
           autofocus
           size="small"
           @update:modelValue="onUpdate"
+          :placeholder="props.password ? 'New password' : ''"
           :class="[{ 'p-invalid': error }]"
         />
         <Transition name="zoom">
@@ -56,6 +69,13 @@ const onUpdate = (val) => {
           >
         </Transition>
       </div>
+      <Button
+        v-if="emailOrPass"
+        class="submit-btn"
+        label="Submit"
+        size="small"
+        @click="onSubmit"
+      />
     </template>
   </Inplace>
 </template>
@@ -78,6 +98,14 @@ const onUpdate = (val) => {
     width: 80%;
     right: -1rem;
     top: -47px;
+  }
+  .submit-btn {
+    position: absolute;
+    width: 90px;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    left: 0;
   }
 }
 </style>

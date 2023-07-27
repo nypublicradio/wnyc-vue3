@@ -26,6 +26,7 @@ const client = useSupabaseClient()
 
 const successMessage = ref(false)
 const errorMessage = ref(false)
+const settingsMessage = ref('Settings updated')
 
 // formats the station list for the dropdown
 const initializeStationList = (val) => {
@@ -72,9 +73,9 @@ const updateProfile = async () => {
       })
       .match({ id: currentUser.value.id })
     if (error) {
-      console.log(error)
       errorMessage.value = true
     } else {
+      settingsMessage.value = 'Settings updated'
       successMessage.value = true
     }
   } else {
@@ -85,8 +86,52 @@ const updateProfile = async () => {
     )
     successMessage.value = false
     setTimeout(() => {
+      settingsMessage.value = 'Settings updated'
       successMessage.value = true
     }, 100)
+  }
+}
+
+const tempPassword = ref('')
+const tempEmail = ref(currentUser.value?.email)
+const updateUserEmail = async () => {
+  successMessage.value = false
+  errorMessage.value = false
+  console.log('update email: ', tempEmail.value)
+  const { error } = await client.auth.updateUser({
+    email: tempEmail.value,
+  })
+
+  if (error) {
+    errorMessage.value = true
+  } else {
+    settingsMessage.value = 'Email updated' + error
+    successMessage.value = true
+    trackClickEvent(
+      'Click Tracking - Email',
+      'Settings Sidebar - Account',
+      'Email updated'
+    )
+  }
+}
+const updateUserPassword = async () => {
+  successMessage.value = false
+  errorMessage.value = false
+
+  const { error } = await client.auth.updateUser({
+    password: tempPassword.value,
+  })
+
+  if (error) {
+    errorMessage.value = true
+  } else {
+    settingsMessage.value = 'Password updated'
+    successMessage.value = true
+    trackClickEvent(
+      'Click Tracking - Password',
+      'Settings Sidebar - Account',
+      'Password updated'
+    )
   }
 }
 
@@ -140,11 +185,17 @@ const onUpdateStation = () => {
         <SField
           label="Tap to add an email"
           email
-          v-model:data="currentUser.email"
+          v-model:data="tempEmail"
+          @submit="updateUserEmail"
         />
       </SBox>
       <SBox label="Password">
-        <SField label="************" password />
+        <SField
+          label="************"
+          password
+          v-model:data="tempPassword"
+          @submit="updateUserPassword"
+        />
       </SBox>
       <!-- v-model:data="currentUser?.password" -->
     </section>
@@ -284,7 +335,7 @@ const onUpdateStation = () => {
         severity="success"
         :closable="false"
         :sticky="false"
-        >Settings updated</Message
+        >{{ settingsMessage }}</Message
       >
     </Transition>
     <Transition name="zoom">
