@@ -1,0 +1,65 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  before_all do
+    setup_circle_ci
+  end
+
+  desc "certs"
+  lane :certificates do
+    match(app_identifier: ["org.wnyc.iphone", "org.wnyc.iphone.ImageNotification"])
+  end
+
+  desc "Test the ios app"
+  lane :test do
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    scan(scheme: "App")
+  end
+
+  desc "Build an ios app"
+  lane :build do
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    match(type: "appstore")
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      clean: true,
+      output_name: "WNYC.ipa",
+      export_method: "app-store"
+    )
+  end
+  
+  desc "Submits a new WNYC Beta Build to Apple TestFlight"
+  lane :beta do
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    match(type: "appstore")
+    app_store_connect_api_key
+    increment_build_number
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      clean: true,
+      output_name: "WNYC.ipa",
+      export_method: "app-store",
+    )
+    upload_to_testflight(
+      app_identifier: "org.wnyc.iphone"
+    )
+  end
+end
+

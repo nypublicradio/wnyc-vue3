@@ -13,21 +13,21 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.wnyc.android</string>
+	<string>org.wnyc.iphone</string>
 	<key>PROJECT_ID</key>
-	<string>wnyc-app---android</string>
+	<string>WNYC</string>
 	<key>STORAGE_BUCKET</key>
-	<string>wnyc-app---android.appspot.com</string>
+	<string>wnyc-app.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:431848840548:ios:7ab6ec1f430ee8c5cf6e71</string>
 </dict>
