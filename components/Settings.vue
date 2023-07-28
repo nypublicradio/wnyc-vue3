@@ -98,14 +98,16 @@ const updateUserEmail = async () => {
   successMessage.value = false
   errorMessage.value = false
   console.log('update email: ', tempEmail.value)
+
   const { error } = await client.auth.updateUser({
     email: tempEmail.value,
   })
 
   if (error) {
+    settingsMessage.value = `Email update FAILED: ${error}`
     errorMessage.value = true
   } else {
-    settingsMessage.value = 'Email updated' + error
+    settingsMessage.value = 'A confirmation email has been sent to your inbox.'
     successMessage.value = true
     trackClickEvent(
       'Click Tracking - Email',
@@ -123,6 +125,7 @@ const updateUserPassword = async () => {
   })
 
   if (error) {
+    settingsMessage.value = `Password update FAILED: ${error}`
     errorMessage.value = true
   } else {
     settingsMessage.value = 'Password updated'

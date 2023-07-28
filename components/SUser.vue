@@ -65,8 +65,8 @@ const onSignUp = () => {
     ''
   )
 }
-console.log('currentUser = ', currentUser.value)
-console.log('currentUserProfile = ', currentUserProfile.value)
+//console.log('currentUser = ', currentUser.value)
+//console.log('currentUserProfile = ', currentUserProfile.value)
 </script>
 
 <template>

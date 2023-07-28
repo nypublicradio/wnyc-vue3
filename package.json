@@ -37,7 +37,7 @@
     "@capacitor/splash-screen": "5.0.6",
     "@capacitor/status-bar": "5.0.6",
     "@nuxt/image": "^1.0.0-rc.1",
-    "@nypublicradio/nypr-design-system-vue3": "^2.0.49",
+    "@nypublicradio/nypr-design-system-vue3": "^2.0.50",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
     "capacitor-native-settings": "5.0.0",
