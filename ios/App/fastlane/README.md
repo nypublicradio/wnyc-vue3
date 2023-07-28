@@ -53,15 +53,7 @@ Submits a new WNYC Beta Build to Apple TestFlight
 [bundle exec] fastlane ios release
 ```
 
-Send to app store for review
-
-### ios slack
-
-```sh
-[bundle exec] fastlane ios slack
-```
-
-send a slack message
+Release a new version of the app to the App Store
 
 ----
 

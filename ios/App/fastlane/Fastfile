@@ -27,9 +27,15 @@ platform :ios do
 
   desc "Test the ios app"
   lane :test do
-    clear_derived_data # this step required to clear "exit status: 65" errors during testing
-    scan(scheme: "App")
+    #clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    #scan(scheme: "App")
+    begin
+      build_and_test_lane()
+    rescue => exception
+      on_error(exception)
+    end
   end
+
 
   desc "Build an ios app"
   lane :build do
@@ -42,63 +48,83 @@ platform :ios do
       output_name: "WNYC.ipa",
       export_method: "app-store"
     )
-    slack(
-      channel: "#releases",
-      message: "Testing fastlane slack messages.",
-      success: true
-    )
   end
   
-  desc "Submits a new WNYC Beta Build to Apple TestFlight"
-  lane :beta do
-    clear_derived_data # this step required to clear "exit status: 65" errors during testing
-    match(type: "appstore")
-    app_store_connect_api_key
-    increment_build_number(
-      build_number: app_store_build_number + 1,
-      xcodeproj: "App.xcodeproj"
-    )
-    build_app(
-      workspace: "App.xcworkspace",
-      scheme: "App",
-      clean: true,
-      output_name: "WNYC.ipa",
-      export_method: "app-store",
-    )
-    upload_to_testflight(
-      app_identifier: "org.wnyc.iphone"
-    )
+    desc "Submits a new WNYC Beta Build to Apple TestFlight"
+    lane :beta do
+      begin
+      clear_derived_data # this step required to clear "exit status: 65" errors during testing
+      match(type: "appstore")
+      app_store_connect_api_key
+      get_build_number
+      increment_build_number
+      build_app(
+        workspace: "App.xcworkspace",
+        scheme: "App",
+        clean: true,
+        output_name: "WNYC.ipa",
+        export_method: "app-store",
+      )
+      upload_to_testflight(
+        app_identifier: "org.wnyc.iphone"
+      )
+      commit_version_bump(
+        xcodeproj: "App.xcodeproj"
+      )
+      slack(
+        channel: "#releases",
+        message: "New WNYC Beta Build uploaded to TestFlight :tada:",
+        default_payloads: [:lane, :test_result],
+        success: true
+      )
+    rescue => exception
+      on_error(exception)
+    end
   end
 
-  desc "Send to app store for review"
+  desc "Release a new version of the app to the App Store"
   lane :release do
-    clear_derived_data # this step required to clear "exit status: 65" errors during testing
-    match(type: "appstore")
-    app_store_connect_api_key
-    increment_build_number(
-      build_number: app_store_build_number + 1,
-      xcodeproj: "App.xcodeproj"
-    )
-    build_app(
-      workspace: "App.xcworkspace",
-      scheme: "App",
-      clean: true,
-      output_name: "WNYC.ipa",
-      export_method: "app-store",
-    )
-    upload_to_app_store(
-      app_identifier: "org.wnyc.iphone"
-    )
+    begin
+      clear_derived_data # this step required to clear "exit status: 65" errors during testing
+      match(type: "appstore")
+      app_store_connect_api_key
+      get_build_number
+      increment_build_number
+      build_app(
+        workspace: "App.xcworkspace",
+        scheme: "App",
+        clean: true,
+        output_name: "WNYC.ipa",
+        export_method: "app-store",
+      )
+      upload_to_app_store(
+        app_identifier: "org.wnyc.iphone"
+      )
+      commit_version_bump(
+        xcodeproj: "App.xcodeproj"
+      )
+      slack(
+        channel: "#releases",
+        message: "New WNYC Build uploaded to App Store Connect :tada:",
+        default_payloads: [:lane, :test_result],
+        success: true
+      )
+    rescue => exception
+      on_error(exception)
+    end
   end
 
-  desc "send a slack message"
-  lane :slack do
+  def build_and_test_lane
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    scan(scheme: "App")
+  end
+
+  def on_error(exception)
     slack(
-      channel: "#digital-alerts",
-      slack_url: "https://hooks.slack.com/services/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",
-      message: "New build uploaded to TestFlight and App Store Connect for review.",
-      success: true,
+        message: "Lane failed with exception : #{exception}",
+        success: false
     )
   end
 
 end
+
