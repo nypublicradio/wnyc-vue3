@@ -68,9 +68,6 @@ platform :ios do
       upload_to_testflight(
         app_identifier: "org.wnyc.iphone"
       )
-      commit_version_bump(
-        xcodeproj: "App.xcodeproj"
-      )
       slack(
         channel: "#releases",
         message: "New WNYC Beta Build uploaded to TestFlight :tada:",
@@ -99,9 +96,6 @@ platform :ios do
       )
       upload_to_app_store(
         app_identifier: "org.wnyc.iphone"
-      )
-      commit_version_bump(
-        xcodeproj: "App.xcodeproj"
       )
       slack(
         channel: "#releases",
