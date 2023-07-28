@@ -47,6 +47,22 @@ Build an ios app
 
 Submits a new WNYC Beta Build to Apple TestFlight
 
+### ios release
+
+```sh
+[bundle exec] fastlane ios release
+```
+
+Send to app store for review
+
+### ios slack
+
+```sh
+[bundle exec] fastlane ios slack
+```
+
+send a slack message
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

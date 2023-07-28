@@ -42,6 +42,11 @@ platform :ios do
       output_name: "WNYC.ipa",
       export_method: "app-store"
     )
+    slack(
+      channel: "#releases",
+      message: "Testing fastlane slack messages.",
+      success: true
+    )
   end
   
   desc "Submits a new WNYC Beta Build to Apple TestFlight"
@@ -49,7 +54,10 @@ platform :ios do
     clear_derived_data # this step required to clear "exit status: 65" errors during testing
     match(type: "appstore")
     app_store_connect_api_key
-    increment_build_number
+    increment_build_number(
+      build_number: app_store_build_number + 1,
+      xcodeproj: "App.xcodeproj"
+    )
     build_app(
       workspace: "App.xcworkspace",
       scheme: "App",
@@ -61,5 +69,36 @@ platform :ios do
       app_identifier: "org.wnyc.iphone"
     )
   end
-end
 
+  desc "Send to app store for review"
+  lane :release do
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    match(type: "appstore")
+    app_store_connect_api_key
+    increment_build_number(
+      build_number: app_store_build_number + 1,
+      xcodeproj: "App.xcodeproj"
+    )
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      clean: true,
+      output_name: "WNYC.ipa",
+      export_method: "app-store",
+    )
+    upload_to_app_store(
+      app_identifier: "org.wnyc.iphone"
+    )
+  end
+
+  desc "send a slack message"
+  lane :slack do
+    slack(
+      channel: "#digital-alerts",
+      slack_url: "https://hooks.slack.com/services/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",
+      message: "New build uploaded to TestFlight and App Store Connect for review.",
+      success: true,
+    )
+  end
+
+end
