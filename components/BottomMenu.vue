@@ -27,7 +27,7 @@ const menuClick = (e) => {
 watch(
   () => route.name,
   (e) => {
-    console.log('NEW route changed =', e)
+    //console.log('NEW route changed =', e)
     bottomMenuState.value = { value: null }
     options.value.forEach((item) => {
       if (e === item.value) bottomMenuState.value = { value: item.value }

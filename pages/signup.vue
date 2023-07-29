@@ -4,7 +4,8 @@ import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/comp
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 const router = useRouter()
-
+const client = useSupabaseClient()
+const config = useRuntimeConfig()
 useHead({
   bodyAttrs: {
     class: 'background2',
@@ -35,16 +36,16 @@ useHead({
         <VFlexibleLink to="/login">Log in</VFlexibleLink>
       </p>
       <VLoginWithProvider
-        :client="useSupabaseClient()"
-        :config="useRuntimeConfig()"
+        :client="client"
+        :config="config"
         provider="google"
         label="Sign up with Google"
         severity="secondary"
         class="center my-3"
       />
       <VLoginWithProvider
-        :client="useSupabaseClient()"
-        :config="useRuntimeConfig()"
+        :client="client"
+        :config="config"
         provider="apple"
         severity="secondary"
         class="center"
@@ -54,8 +55,8 @@ useHead({
         <b>or</b>
       </Divider>
       <VSignupWithEmail
-        :client="useSupabaseClient()"
-        :config="useRuntimeConfig()"
+        :client="client"
+        :config="config"
         label="Sign up"
         slug="/home"
       >
@@ -69,8 +70,8 @@ useHead({
         </template>
         <!-- <template #success>
           <VLoginWithEmail
-            :client="useSupabaseClient()"
-            :config="useRuntimeConfig()"
+            :client="client"
+            :config="config"
           />
         </template> -->
       </VSignupWithEmail>

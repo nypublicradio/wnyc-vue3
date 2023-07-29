@@ -1,5 +1,7 @@
 <script setup>
 import VLoginWithMagicLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithMagicLink.vue'
+const client = useSupabaseClient()
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -10,9 +12,6 @@ import VLoginWithMagicLink from '@nypublicradio/nypr-design-system-vue3/v2/src/c
       you. Once you click on the magic link and are logged in, you may reset
       your password on your account settings page.
     </p>
-    <VLoginWithMagicLink
-      :client="useSupabaseClient()"
-      :config="useRuntimeConfig()"
-    />
+    <VLoginWithMagicLink :client="client" :config="config" />
   </section>
 </template>

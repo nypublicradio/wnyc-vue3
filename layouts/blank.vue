@@ -1,14 +1,19 @@
-@import 'cssvars.scss';
+<script setup>
+const route = useRoute()
+</script>
+<template>
+  <div class="page" :class="[`${String(route.name)}`]">
+    <div class="top-safe-cover" />
+    <header></header>
+    <main>
+      <div class="content">
+        <slot />
+      </div>
+    </main>
+  </div>
+</template>
 
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
+<style lang="scss">
 body {
   background: var(--background);
   transform: none;
@@ -53,7 +58,9 @@ body {
   }
   main {
     margin-top: $headerHeight; // account for the sticky header height
-    padding-bottom: calc($bottomMenuHeight + $playerHeight); // account for the sticky bottom menu
+    padding-bottom: calc(
+      $bottomMenuHeight + $playerHeight
+    ); // account for the sticky bottom menu
   }
 }
 
@@ -67,51 +74,4 @@ body {
   background-color: transparentize(#de1e3d, 0.1);
   backdrop-filter: blur(5px);
 }
-
-section {
-  width: 100%;
-  max-width: $contentWidth;
-  padding: 0.75rem 1.25rem;
-  margin: auto;
-  @include media('<lg') {
-    width: 100%;
-  }
-  &.max-width {
-    max-width: $maxWidth;
-  }
-  &.full-width {
-    max-width: 100%;
-  }
-}
-
-.col-fixed {
-  &.ad300 {
-    max-width: 316px;
-    width: 100%;
-  }
-}
-
-.font-meta {
-  font-family: var(--font-family-header);
-}
-
-.font-tisa {
-  font-family: var(--font-family-tisa);
-}
-
-.p-button {
-  border-radius: 2rem;
-  &.empty {
-    background: none;
-    border: none;
-  }
-  &.center {
-    justify-content: center;
-    i {
-      margin-right: 10px;
-    }
-    .p-button-label {
-      flex: none;
-    }
-  }
-}
+</style>

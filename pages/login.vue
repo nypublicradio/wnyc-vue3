@@ -1,10 +1,11 @@
-<script setup>
+<script async setup>
 import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
 const router = useRouter()
-
+const client = useSupabaseClient()
+const config = useRuntimeConfig()
 useHead({
   bodyAttrs: {
     class: 'background2',
@@ -31,8 +32,8 @@ useHead({
         <h1>Log in</h1>
       </div>
       <VLoginWithProvider
-        :client="useSupabaseClient()"
-        :config="useRuntimeConfig()"
+        :client="client"
+        :config="config"
         provider="google"
         label="Log in with Google"
         severity="secondary"
@@ -40,8 +41,8 @@ useHead({
       />
 
       <VLoginWithProvider
-        :client="useSupabaseClient()"
-        :config="useRuntimeConfig()"
+        :client="client"
+        :config="config"
         provider="apple"
         label="Log in with Apple"
         severity="secondary"
@@ -52,8 +53,8 @@ useHead({
       </Divider>
       <VLoginWithEmail
         label="Log in"
-        :client="useSupabaseClient()"
-        :config="useRuntimeConfig()"
+        :client="client"
+        :config="config"
         slug="/home"
       >
         <template #belowSubmit>

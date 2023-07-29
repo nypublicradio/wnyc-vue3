@@ -30,6 +30,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             currentUserProfile.value = data
             //set display settings
             setDisplaySettings(data)
+            navigateTo('/home')
         }
     }
 
@@ -72,7 +73,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                 //set display settings
                 setDisplaySettings(currentUserProfile.value)
             }
-
+            navigateTo('/home')
 
         } else {
             // if they are a user, get their profile data

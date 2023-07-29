@@ -1,4 +1,8 @@
 <script setup>
+import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
+
+const currentUser = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
 definePageMeta({
   middleware: 'check-auth',
 })
@@ -9,6 +13,12 @@ definePageMeta({
     <section>
       Home Page
       <br />
+      <div class="mt-4 container">
+        <h3 class="mb-4">Current User:</h3>
+        <p class="mb-4">{{ currentUser }}</p>
+        <h3 class="mb-4">User Profile Data:</h3>
+        <p class="mb-4">{{ currentUserProfile }}</p>
+      </div>
       Home Page
       <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
       Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
