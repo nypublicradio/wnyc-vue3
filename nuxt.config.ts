@@ -3,7 +3,7 @@ export default {
   supabase: {
     url: process.env.NUXT_ENV_SUPABASE_URL,
     key: process.env.NUXT_ENV_SUPABASE_KEY,
-    redirect: true,
+    redirect: false,
   },
   image: {
     dir: 'public',

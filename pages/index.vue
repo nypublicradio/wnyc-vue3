@@ -7,8 +7,6 @@ useHead({
   },
 })
 
-const client = useSupabaseClient()
-
 definePageMeta({
   layout: 'blank',
 })
@@ -19,29 +17,13 @@ definePageMeta({
 
 const route = useRoute()
 
-// const currentUser = useCurrentUser()
-// const client = useSupabaseClient()
+const client = useSupabaseClient()
+const config = useRuntimeConfig()
+const currentUser = useCurrentUser()
 
-onMounted(async () => {
-  //   const url = new URL(window.location.href)
-  //   const params = new URLSearchParams(url.hash.substring(1)) // Remove the leading '#' symbol
-  //   const access_token = params.get('access_token')
-  //   const refresh_token = params.get('refresh_token')
-  //   console.log('access_token = ', access_token)
-  //   console.log('refresh_token = ', refresh_token)
-  //   client.auth.setSession({
-  //     access_token: access_token,
-  //     refresh_token: refresh_token,
-  //   })
-  //   window.location.href = '/home'
+const user = await client.auth.getSession()
 
-  const config = useRuntimeConfig()
-  const currentUser = useCurrentUser()
-  const client = useSupabaseClient()
-
-  const user = await client.auth.getSession()
-  console.log('user = ', user)
-
+onMounted(() => {
   // check local storage for the auth token
   const supabaseAuthToken = JSON.parse(
     window.localStorage.getItem(config.supabaseAuthTokenName)
