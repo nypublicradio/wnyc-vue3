@@ -31,6 +31,14 @@ certs
 
 Test the ios app
 
+### ios test_build_bump
+
+```sh
+[bundle exec] fastlane ios test_build_bump
+```
+
+Test build bump
+
 ### ios build
 
 ```sh
@@ -46,6 +54,14 @@ Build an ios app
 ```
 
 Submits a new WNYC Beta Build to Apple TestFlight
+
+### ios release
+
+```sh
+[bundle exec] fastlane ios release
+```
+
+Release a new version of the app to the App Store
 
 ----
 
