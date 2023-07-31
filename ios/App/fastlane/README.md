@@ -31,6 +31,14 @@ certs
 
 Test the ios app
 
+### ios test_build_bump
+
+```sh
+[bundle exec] fastlane ios test_build_bump
+```
+
+Test build bump
+
 ### ios build
 
 ```sh

@@ -36,7 +36,12 @@ platform :ios do
     end
   end
 
-
+  desc "Test build bump"
+  lane :test_build_bump do
+    get_build_number
+    increment_build_number
+    commit_version_bump
+  end
   desc "Build an ios app"
   lane :build do
     clear_derived_data # this step required to clear "exit status: 65" errors during testing
