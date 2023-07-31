@@ -36,6 +36,18 @@ platform :ios do
     end
   end
 
+  desc "Test version bump"
+  lane :test_version_bump do
+    version = get_version_number(xcodeproj: "App.xcodeproj", target: "App")
+    UI.message("Current version is #{version}")
+    increment_version_number(
+      xcodeproj: "App.xcodeproj",
+      version_number: version
+    )
+    update = increment_version_number()
+    UI.message("New version is #{update}")
+  end
+
   desc "Test build bump"
   lane :test_build_bump do
     get_build_number
