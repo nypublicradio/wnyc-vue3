@@ -1,5 +1,6 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+//import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
 import UserIcon from '~/components/icons/UserIcon.vue'
 import {
   useSettingSideBar,
@@ -9,11 +10,20 @@ import {
 } from '~/composables/states.ts'
 import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
 
+const props = defineProps({
+  disbaled: {
+    type: Boolean,
+    default: false,
+  },
+})
+
 const settingsSideBar = useSettingSideBar()
 const emit = defineEmits(['update:data'])
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
+
+const imageUploadModal = ref(false)
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
@@ -67,6 +77,17 @@ const onSignUp = () => {
 }
 //console.log('currentUser = ', currentUser.value)
 //console.log('currentUserProfile = ', currentUserProfile.value)
+
+const handleModal = () => {
+  if (!props.disbaled) {
+    imageUploadModal.value = true
+  }
+  trackClickEvent(
+    'Click Tracking - Avatar Image link',
+    'Settings Sidebar - user section',
+    'request to upload image'
+  )
+}
 </script>
 
 <template>
@@ -74,18 +95,48 @@ const onSignUp = () => {
     <Avatar
       :image="currentUserProfile?.avatar_image_url"
       size="large"
-      style="background-color: #ffffff; color: var(--night--500)"
+      :style="`
+        cursor: ${currentUser && !props.disbaled ? 'pointer' : 'default'};
+      `"
       shape="circle"
+      @click="handleModal"
     >
       <template #icon v-if="!currentUserProfile?.avatar_image_url">
         <UserIcon />
+
+        <Button
+          v-if="currentUser"
+          icon="pi pi-plus"
+          severity="secondary"
+          rounded
+          aria-label="upload image"
+        />
       </template>
     </Avatar>
+    <Dialog
+      v-model:visible="imageUploadModal"
+      modal
+      header="Upload Profile Image"
+      :style="{ width: '80vw' }"
+    >
+      <VUploadImage
+        style="padding: 40px"
+        :image="currentUserProfile?.avatar_image_url"
+        :currentUser="currentUser"
+        :currentUserProfile="currentUserProfile"
+        @imageUploaded="
+          () => {
+            trackClickEvent(
+              'Event Tracking - VUloadImage',
+              'Settings Sidebar - user section',
+              'image uploaded and saved'
+            )
+          }
+        "
+      />
+    </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
-      <h2>
-        Hi, {{ currentUserProfile.first_name }}
-        {{ currentUserProfile.last_name }}
-      </h2>
+      <h2>Hi, {{ currentUserProfile.name }}</h2>
       <VFlexibleLink to="/home" class="p1" @click="onLogOut"
         >Log out</VFlexibleLink
       >
@@ -107,6 +158,19 @@ const onSignUp = () => {
   .p-avatar {
     width: 40px;
     height: 40px;
+    position: relative;
+    flex: none;
+    background-color: #ffffff;
+    color: var(--night--500);
+    .p-button {
+      position: absolute;
+      transform: scale(0.5);
+      left: -15px;
+      bottom: -10px;
+      &:before {
+        font-weight: 900;
+      }
+    }
   }
 }
 </style>

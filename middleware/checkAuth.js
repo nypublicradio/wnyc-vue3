@@ -5,7 +5,7 @@ import {
 } from '~/composables/states'
 import { setDisplaySettings } from '~/utilities/helpers'
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    console.log('checking auth')
+    //console.log('checking auth')
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
     const localUserProfileDefault = useLocalUserProfileDefault()
@@ -26,7 +26,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         if (error) {
             console.error(error)
         } else if (data) {
-            console.log('data = ', data)
+            //console.log('data = ', data)
             currentUserProfile.value = data
             //set display settings
             setDisplaySettings(data)

@@ -24,6 +24,10 @@ const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
+const canUpdateAccount = computed(() => {
+  return currentUser.value?.app_metadata?.provider === 'email'
+})
+
 const successMessage = ref(false)
 const errorMessage = ref(false)
 const settingsMessage = ref('Settings updated')
@@ -51,7 +55,7 @@ const updateProfile = async () => {
   // update supabase and local storage
 
   if (currentUser.value) {
-    console.log('supabase update')
+    //console.log('supabase update')
     successMessage.value = false
     errorMessage.value = false
     const { error } = await client
@@ -59,8 +63,7 @@ const updateProfile = async () => {
       .upsert({
         id: currentUser.value.id,
         updated_at: new Date().toISOString(),
-        first_name: currentUserProfile.value.first_name,
-        last_name: currentUserProfile.value.last_name,
+        name: currentUserProfile.value.name,
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
         default_live_stream:
@@ -79,7 +82,7 @@ const updateProfile = async () => {
       successMessage.value = true
     }
   } else {
-    console.log('local storage update')
+    //console.log('local storage update')
     localStorage.setItem(
       'localUserProfile',
       JSON.stringify(currentUserProfile.value)
@@ -97,7 +100,7 @@ const tempEmail = ref(currentUser.value?.email)
 const updateUserEmail = async () => {
   successMessage.value = false
   errorMessage.value = false
-  console.log('update email: ', tempEmail.value)
+  //console.log('update email: ', tempEmail.value)
 
   const { error } = await client.auth.updateUser({
     email: tempEmail.value,
@@ -112,7 +115,7 @@ const updateUserEmail = async () => {
     trackClickEvent(
       'Click Tracking - Email',
       'Settings Sidebar - Account',
-      'Email updated'
+      'Email confirmation sent'
     )
   }
 }
@@ -168,26 +171,22 @@ const onUpdateStation = () => {
 <template>
   <div class="settings m-2">
     <section class="user">
-      <SUser />
+      <SUser :disabled="!canUpdateAccount" />
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="s-title">Account</div>
-      <SBox label="First name">
+      <SBox label="Name">
         <SField
-          label="Tap to add a first name"
-          v-model:data="currentUserProfile.first_name"
-        />
-      </SBox>
-      <SBox label="Last name">
-        <SField
-          label="Tap to add a last name"
-          v-model:data="currentUserProfile.last_name"
+          label="Tap to add a name"
+          v-model:data="currentUserProfile.name"
+          :disabled="!canUpdateAccount"
         />
       </SBox>
       <SBox label="Email">
         <SField
           label="Tap to add an email"
           email
+          :disabled="!canUpdateAccount"
           v-model:data="tempEmail"
           @submit="updateUserEmail"
         />
@@ -196,6 +195,7 @@ const onUpdateStation = () => {
         <SField
           label="************"
           password
+          :disabled="!canUpdateAccount"
           v-model:data="tempPassword"
           @submit="updateUserPassword"
         />

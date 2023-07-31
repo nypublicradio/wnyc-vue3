@@ -16,6 +16,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  disbaled: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:data', 'isValid', 'submit'])
@@ -28,7 +32,7 @@ const regexEmailFormat = new RegExp(
 
 // triggered for ever key when the user types in the input field
 const onUpdate = (val) => {
-  emit('update:data', val)
+  //emit('update:data', val)
   if (props.email) {
     const isValid = regexEmailFormat.test(val)
     isValid ? (error.value = false) : (error.value = true)
@@ -36,20 +40,17 @@ const onUpdate = (val) => {
   }
 }
 
-const emailOrPass = computed(() => {
-  return props.email || props.password
-})
-
 const onSubmit = () => {
   var closeBtn = document.querySelectorAll(
     '.s-field .p-inplace-content .p-button-icon-only'
   )
   for (let i = 0; i < closeBtn.length; i++) closeBtn[i].click()
-  emit('submit', props.email ? 'email' : 'password')
+  emit('update:data', internalData.value)
+  emit('submit', internalData.value)
 }
 </script>
 <template>
-  <Inplace class="s-field" :closable="emailOrPass">
+  <Inplace class="s-field" :closable="true" :disbaled="disbaled">
     <template #display>
       {{ props.password ? label : internalData ?? label }}
     </template>
@@ -70,7 +71,6 @@ const onSubmit = () => {
         </Transition>
       </div>
       <Button
-        v-if="emailOrPass"
         class="submit-btn"
         label="Submit"
         size="small"

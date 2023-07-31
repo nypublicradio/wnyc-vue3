@@ -1,5 +1,6 @@
 import { defineNuxtPlugin } from '#app'
 import Button from 'primevue/button/button.esm.js'
+import Dialog from 'primevue/dialog'
 import Dropdown from 'primevue/dropdown/dropdown.esm.js'
 import Menubar from 'primevue/menubar/menubar.esm.js'
 import PrimeVue from 'primevue/config/config.esm.js'
@@ -33,4 +34,5 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Divider', Divider)
     nuxtApp.vueApp.component('Message', Message)
     nuxtApp.vueApp.component('ProgressSpinner', ProgressSpinner)
+    nuxtApp.vueApp.component('Dialog', Dialog)
 })
