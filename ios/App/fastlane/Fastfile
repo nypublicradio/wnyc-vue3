@@ -40,7 +40,9 @@ platform :ios do
   lane :test_build_bump do
     get_build_number
     increment_build_number
-    commit_version_bump
+    commit_version_bump(
+      xcodeproj: "App.xcodeproj",
+    )
   end
   desc "Build an ios app"
   lane :build do
