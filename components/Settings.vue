@@ -24,8 +24,15 @@ const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
+const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 const isDisabled = computed(() => {
-  return currentUser.value?.app_metadata?.provider !== 'email'
+  if (isApple) {
+    return false
+  } else if (currentUser.value?.app_metadata?.provider !== 'email') {
+    return true
+  } else {
+    return false
+  }
 })
 
 const successMessage = ref(false)
@@ -185,7 +192,7 @@ const onUpdateStation = () => {
         <SField
           label="Tap to add an email"
           email
-          :disabled="isDisabled"
+          :disabled="isDisabled || isApple"
           v-model:data="tempEmail"
           @submit="updateUserEmail"
         />
@@ -194,7 +201,7 @@ const onUpdateStation = () => {
         <SField
           label="************"
           password
-          :disabled="isDisabled"
+          :disabled="isDisabled || isApple"
           v-model:data="tempPassword"
           @submit="updateUserPassword"
         />

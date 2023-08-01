@@ -12,14 +12,16 @@ export default defineNuxtRouteMiddleware(async () => {
   const user = await client.auth.getSession()
 
   const updateUser = async (currentUser) => {
-    await client
-      .from('profiles')
-      .update({
-        updated_at: new Date().toISOString(),
-        name: currentUser.user_metadata.full_name,
-        avatar_image_url: currentUser.user_metadata.avatar_url,
-      })
-      .match({ id: currentUser.id })
+    if (currentUser.user_metadata.provider === 'google') {
+      await client
+        .from('profiles')
+        .update({
+          updated_at: new Date().toISOString(),
+          name: currentUser.user_metadata.full_name,
+          avatar_image_url: currentUser.user_metadata.avatar_url,
+        })
+        .match({ id: currentUser.id })
+    }
   }
 
   if (process.client) {

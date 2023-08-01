@@ -15,6 +15,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isApple: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const settingsSideBar = useSettingSideBar()
@@ -22,9 +26,16 @@ const emit = defineEmits(['update:data'])
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
-const isDisabled = ref(props.disabled)
-
 const imageUploadModal = ref(false)
+const isDisabled = computed(() => {
+  if (props.isApple) {
+    return false
+  } else if (props.disabled) {
+    return true
+  } else {
+    return false
+  }
+})
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
