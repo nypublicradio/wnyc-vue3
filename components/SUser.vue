@@ -11,7 +11,7 @@ import {
 import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
 
 const props = defineProps({
-  disbaled: {
+  disabled: {
     type: Boolean,
     default: false,
   },
@@ -22,6 +22,7 @@ const emit = defineEmits(['update:data'])
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
+const isDisabled = ref(props.disabled)
 
 const imageUploadModal = ref(false)
 
@@ -79,7 +80,7 @@ const onSignUp = () => {
 //console.log('currentUserProfile = ', currentUserProfile.value)
 
 const handleModal = () => {
-  if (!props.disbaled) {
+  if (!isDisabled.value) {
     imageUploadModal.value = true
   }
   trackClickEvent(
@@ -96,7 +97,7 @@ const handleModal = () => {
       :image="currentUserProfile?.avatar_image_url"
       size="large"
       :style="`
-        cursor: ${currentUser && !props.disbaled ? 'pointer' : 'default'};
+        cursor: ${isDisabled ? 'default' : 'pointer'};
       `"
       shape="circle"
       @click="handleModal"

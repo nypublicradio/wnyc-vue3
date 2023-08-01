@@ -24,8 +24,8 @@ const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
-const canUpdateAccount = computed(() => {
-  return currentUser.value?.app_metadata?.provider === 'email'
+const isDisabled = computed(() => {
+  return currentUser.value?.app_metadata?.provider !== 'email'
 })
 
 const successMessage = ref(false)
@@ -100,7 +100,6 @@ const tempEmail = ref(currentUser.value?.email)
 const updateUserEmail = async () => {
   successMessage.value = false
   errorMessage.value = false
-  //console.log('update email: ', tempEmail.value)
 
   const { error } = await client.auth.updateUser({
     email: tempEmail.value,
@@ -171,7 +170,7 @@ const onUpdateStation = () => {
 <template>
   <div class="settings m-2">
     <section class="user">
-      <SUser :disabled="!canUpdateAccount" />
+      <SUser :disabled="isDisabled" />
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="s-title">Account</div>
@@ -179,14 +178,14 @@ const onUpdateStation = () => {
         <SField
           label="Tap to add a name"
           v-model:data="currentUserProfile.name"
-          :disabled="!canUpdateAccount"
+          :disabled="isDisabled"
         />
       </SBox>
       <SBox label="Email">
         <SField
           label="Tap to add an email"
           email
-          :disabled="!canUpdateAccount"
+          :disabled="isDisabled"
           v-model:data="tempEmail"
           @submit="updateUserEmail"
         />
@@ -195,7 +194,7 @@ const onUpdateStation = () => {
         <SField
           label="************"
           password
-          :disabled="!canUpdateAccount"
+          :disabled="isDisabled"
           v-model:data="tempPassword"
           @submit="updateUserPassword"
         />

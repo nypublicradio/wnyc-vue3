@@ -27,12 +27,13 @@ onMounted(() => {
   <div class="page" :class="[`${String(route.name)}`]">
     <Transition name="fade">
       <section v-if="isLoading" style="position: absolute; height: 100vh">
-        <ProgressSpinner
+        <!-- <ProgressSpinner
           class="loading-spinner"
           strokeWidth="8"
           animationDuration=".5s"
           aria-label="Custom ProgressSpinner"
-        />
+        /> -->
+        <WnycLoader class="loader-anim" />
       </section>
       <section v-else class="index-page flex flex-column pb-8">
         <WnycLogo class="w-12rem m-auto my-7" />
@@ -75,15 +76,15 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.loading-spinner {
+.loader-anim {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
   margin: auto;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 50px;
 }
 .index-page {
   .headline {

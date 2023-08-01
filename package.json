@@ -36,6 +36,7 @@
     "@capacitor/push-notifications": "5.0.6",
     "@capacitor/splash-screen": "5.0.6",
     "@capacitor/status-bar": "5.0.6",
+    "@hypernym/nuxt-gsap": "^2.2.2",
     "@nuxt/image": "^1.0.0-rc.1",
     "@nypublicradio/nypr-design-system-vue3": "^2.0.51",
     "@vuelidate/core": "^2.0.3",

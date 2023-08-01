@@ -1,5 +1,5 @@
 export default {
-  modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image'],
+  modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image', '@hypernym/nuxt-gsap'],
   supabase: {
     url: process.env.NUXT_ENV_SUPABASE_URL,
     key: process.env.NUXT_ENV_SUPABASE_KEY,
