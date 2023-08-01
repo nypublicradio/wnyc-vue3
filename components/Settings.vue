@@ -35,9 +35,20 @@ const isDisabled = computed(() => {
   }
 })
 
-const successMessage = ref(false)
-const errorMessage = ref(false)
-const settingsMessage = ref('Settings updated')
+const isMessage = ref(false)
+const severity = ref('success')
+const theMessage = ref('Settings updated')
+
+const showMessage = async (
+  mySverity = 'success',
+  myMessage = 'Settings updated.'
+) => {
+  isMessage.value = false
+  await nextTick()
+  isMessage.value = true
+  severity.value = mySverity
+  theMessage.value = myMessage
+}
 
 // formats the station list for the dropdown
 const initializeStationList = (val) => {
@@ -63,8 +74,6 @@ const updateProfile = async () => {
 
   if (currentUser.value) {
     //console.log('supabase update')
-    successMessage.value = false
-    errorMessage.value = false
     const { error } = await client
       .from('profiles')
       .upsert({
@@ -83,10 +92,9 @@ const updateProfile = async () => {
       })
       .match({ id: currentUser.value.id })
     if (error) {
-      errorMessage.value = true
+      showMessage('error', 'Settings update failed.')
     } else {
-      settingsMessage.value = 'Settings updated'
-      successMessage.value = true
+      showMessage()
     }
   } else {
     //console.log('local storage update')
@@ -94,30 +102,23 @@ const updateProfile = async () => {
       'localUserProfile',
       JSON.stringify(currentUserProfile.value)
     )
-    successMessage.value = false
     setTimeout(() => {
-      settingsMessage.value = 'Settings updated'
-      successMessage.value = true
-    }, 100)
+      showMessage()
+    }, 1000)
   }
 }
 
 const tempPassword = ref('')
 const tempEmail = ref(currentUser.value?.email)
 const updateUserEmail = async () => {
-  successMessage.value = false
-  errorMessage.value = false
-
   const { error } = await client.auth.updateUser({
     email: tempEmail.value,
   })
 
   if (error) {
-    settingsMessage.value = `Email update FAILED: ${error}`
-    errorMessage.value = true
+    showMessage('error', `Email update failed: ${error}`)
   } else {
-    settingsMessage.value = 'A confirmation email has been sent to your inbox.'
-    successMessage.value = true
+    showMessage('success', 'A confirmation email has been sent to your inbox.')
     trackClickEvent(
       'Click Tracking - Email',
       'Settings Sidebar - Account',
@@ -126,19 +127,14 @@ const updateUserEmail = async () => {
   }
 }
 const updateUserPassword = async () => {
-  successMessage.value = false
-  errorMessage.value = false
-
   const { error } = await client.auth.updateUser({
     password: tempPassword.value,
   })
 
   if (error) {
-    settingsMessage.value = `Password update FAILED: ${error}`
-    errorMessage.value = true
+    showMessage('error', `Password update failed: ${error}`)
   } else {
-    settingsMessage.value = 'Password updated'
-    successMessage.value = true
+    showMessage('success', 'Password updated.')
     trackClickEvent(
       'Click Tracking - Password',
       'Settings Sidebar - Account',
@@ -172,6 +168,9 @@ const onUpdateStation = () => {
     currentUserProfile.value.default_live_stream
   )
 }
+const onClickDisabled = () => {
+  showMessage('warn', 'Your authentication provider controls this field.')
+}
 </script>
 
 <template>
@@ -184,8 +183,9 @@ const onUpdateStation = () => {
       <SBox label="Name">
         <SField
           label="Tap to add a name"
-          v-model:data="currentUserProfile.name"
           :disabled="isDisabled"
+          v-model:data="currentUserProfile.name"
+          @onDisabled="onClickDisabled"
         />
       </SBox>
       <SBox label="Email">
@@ -195,6 +195,7 @@ const onUpdateStation = () => {
           :disabled="isDisabled || isApple"
           v-model:data="tempEmail"
           @submit="updateUserEmail"
+          @onDisabled="onClickDisabled"
         />
       </SBox>
       <SBox label="Password">
@@ -204,6 +205,7 @@ const onUpdateStation = () => {
           :disabled="isDisabled || isApple"
           v-model:data="tempPassword"
           @submit="updateUserPassword"
+          @onDisabled="onClickDisabled"
         />
       </SBox>
       <!-- v-model:data="currentUser?.password" -->
@@ -339,22 +341,12 @@ const onUpdateStation = () => {
     </section>
     <Transition name="zoom">
       <Message
-        v-if="successMessage"
+        v-if="isMessage"
         class="settings-message"
-        severity="success"
+        :severity="severity"
         :closable="false"
         :sticky="false"
-        >{{ settingsMessage }}</Message
-      >
-    </Transition>
-    <Transition name="zoom">
-      <Message
-        v-if="errorMessage"
-        class="settings-message"
-        severity="error"
-        :closable="false"
-        :sticky="false"
-        >Settings update failed</Message
+        >{{ theMessage }}</Message
       >
     </Transition>
   </div>

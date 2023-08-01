@@ -16,13 +16,13 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  disbaled: {
+  disabled: {
     type: Boolean,
     default: false,
   },
 })
 
-const emit = defineEmits(['update:data', 'isValid', 'submit'])
+const emit = defineEmits(['update:data', 'isValid', 'submit', 'onDisabled'])
 
 const internalData = ref(props.data)
 const error = ref(false)
@@ -48,9 +48,21 @@ const onSubmit = () => {
   emit('update:data', internalData.value)
   emit('submit', internalData.value)
 }
+
+const handleDisabledEmit = () => {
+  if (props.disabled) {
+    emit('onDisabled')
+  }
+}
 </script>
+
 <template>
-  <Inplace class="s-field" :closable="true" :disbaled="disbaled">
+  <Inplace
+    class="s-field"
+    :closable="true"
+    :disabled="props.disabled"
+    @click="handleDisabledEmit"
+  >
     <template #display>
       {{ props.password ? label : internalData ?? label }}
     </template>
