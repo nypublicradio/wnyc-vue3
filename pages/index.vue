@@ -18,7 +18,7 @@ const route = useRoute()
 const isLoading = ref(true)
 onMounted(() => {
   setTimeout(() => {
-    // if no redirect has happened, we can hide the loading spinner
+    // if no redirect has happened, we can hide the loader
     isLoading.value = false
   }, 999)
 })
@@ -27,12 +27,6 @@ onMounted(() => {
   <div class="page" :class="[`${String(route.name)}`]">
     <Transition name="fade">
       <section v-if="isLoading" style="position: absolute; height: 100vh">
-        <!-- <ProgressSpinner
-          class="loading-spinner"
-          strokeWidth="8"
-          animationDuration=".5s"
-          aria-label="Custom ProgressSpinner"
-        /> -->
         <WnycLoader class="loader-anim" />
       </section>
       <section v-else class="index-page flex flex-column pb-8">

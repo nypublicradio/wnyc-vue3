@@ -15,10 +15,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isApple: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 const settingsSideBar = useSettingSideBar()
@@ -26,16 +22,10 @@ const emit = defineEmits(['update:data'])
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
+const client = useSupabaseClient()
+const config = useRuntimeConfig()
 const imageUploadModal = ref(false)
-const isDisabled = computed(() => {
-  if (props.isApple) {
-    return false
-  } else if (props.disabled) {
-    return true
-  } else {
-    return false
-  }
-})
+const isDisabled = ref(props.disabled)
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
@@ -136,6 +126,8 @@ const handleModal = () => {
         :image="currentUserProfile?.avatar_image_url"
         :currentUser="currentUser"
         :currentUserProfile="currentUserProfile"
+        :client="client"
+        :config="config"
         @imageUploaded="
           () => {
             trackClickEvent(

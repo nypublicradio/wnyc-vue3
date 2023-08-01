@@ -101,7 +101,7 @@ const uploadImage = async (event) => {
       })
       .match({ id: props.currentUser.id })
     if (error) {
-      console.log(error)
+      //console.log(error)
       errorMessage.value = `Error: ${error}`
     } else {
       successMessage.value = props.success
@@ -126,7 +126,7 @@ const deleteImage = async () => {
     })
     .match({ id: props.currentUser.id })
   if (error) {
-    console.log(error)
+    //console.log(error)
     errorMessage.value = `Error: ${error}`
   } else {
     successMessage.value = 'Success! Your file has been deleted.'
@@ -137,7 +137,7 @@ const deleteImage = async () => {
 </script>
 
 <template>
-  <div class="upload-image">
+  <div class="upload-image flex flex-column align-items-center">
     <ProgressSpinner v-if="uploading" class="inline-block mb-4" />
     <img
       v-else-if="imageUrl"
@@ -157,10 +157,10 @@ const deleteImage = async () => {
         :auto="true"
         @uploader="uploadImage"
       />
-      <Button v-if="imageUrl" class="p-button-danger ml-3" @click="deleteImage">
-        Remove Image
-      </Button>
     </div>
+    <Button v-if="imageUrl" class="p-button-danger mt-4" @click="deleteImage">
+      Remove Image
+    </Button>
     <slot name="below-button"></slot>
 
     <template v-if="errorMessage">
@@ -176,10 +176,12 @@ const deleteImage = async () => {
   </div>
 </template>
 
-<style lang="scss">
-.upload-image img {
-  height: 150px;
-  width: 150px;
-  border-radius: 50%;
+<style lang="scss" scoped>
+.upload-image {
+  img {
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+  }
 }
 </style>

@@ -13,12 +13,14 @@ definePageMeta({
     <section>
       Home Page
       <br />
-      <div class="mt-4 container">
-        <h3 class="mb-4">Current User:</h3>
-        <p class="mb-4">{{ currentUser }}</p>
-        <h3 class="mb-4">User Profile Data:</h3>
-        <p class="mb-4">{{ currentUserProfile }}</p>
-      </div>
+      <ClientOnly>
+        <div class="mt-4 container">
+          <h3 class="mb-4">Current User:</h3>
+          <p class="mb-4">{{ currentUser }}</p>
+          <h3 class="mb-4">User Profile Data:</h3>
+          <p class="mb-4">{{ currentUserProfile }}</p>
+        </div>
+      </ClientOnly>
       Home Page
       <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
       Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
