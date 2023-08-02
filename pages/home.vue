@@ -10,36 +10,18 @@ definePageMeta({
 
 <template>
   <div>
-    <section>
-      Home Page
-      <br />
-      <ClientOnly>
+    <!-- <ClientOnly>
         <div class="mt-4 container">
           <h3 class="mb-4">Current User:</h3>
           <p class="mb-4">{{ currentUser }}</p>
           <h3 class="mb-4">User Profile Data:</h3>
           <p class="mb-4">{{ currentUserProfile }}</p>
         </div>
-      </ClientOnly>
-      Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />
-      <!-- <StreamSwitcher />
-      <div class="grid gap-3">
+      </ClientOnly> -->
+
+    <LiveFeature />
+    <!-- <StreamSwitcher /> -->
+    <!-- <div class="grid gap-3">
         <div class="col">
           <MainPlayer />
         </div>
@@ -49,14 +31,30 @@ definePageMeta({
         <div class="col-12 ad300 lg:hidden">
           <div class="htlad-wnyc_rectangle"></div>
         </div>
-      </div>
-    </section>
-    <section>
+      </div> -->
+
+    <!-- <section>
       <OnTodaysShow />
     </section>
     <section>
       <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
-      <TopStories class="pt-6" /> -->
-    </section>
+      <TopStories class="pt-6" />
+    </section> -->
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+    <br />
   </div>
 </template>

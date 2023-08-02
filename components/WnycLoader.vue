@@ -1,69 +1,75 @@
 <script setup>
-import { ref } from 'vue'
-import { getRandomNumber } from '~/utilities/helpers'
-const { $gsap } = useNuxtApp()
-let tl = null
-const wnycLoader = ref(null)
-const ready = shallowRef(false)
-
-onMounted(() => {
-  ready.value = true
-  const bars = wnycLoader.value.getElementsByClassName('st1')
-  tl = $gsap.timeline()
-  // loop through the bars and animate them and when complete, call it again
-  const loop = () => {
-    const rnd = getRandomNumber(-30, -10)
-    let i = 0
-    for (i = 0; i < bars.length; i++) {
-      tl.to(
-        bars[i],
-        {
-          y: rnd,
-          duration: 1,
-          yoyo: true,
-          repeat: 1,
-          onComplete: () => {
-            loop()
-          },
-        },
-        '-=1.5'
-      )
-    }
-  }
-  loop()
+const props = defineProps({
+  size: {
+    default: '100%',
+    type: String,
+  },
 })
-
-onBeforeUnmount(() => {
-  tl.kill()
-  tl = null
-})
+const size = ref(props.size)
 </script>
 
 <template>
-  <transition name="fade">
-    <div v-show="ready" ref="wnycLoader">
-      <svg
-        class="wnyc-loader"
-        x="0px"
-        y="0px"
-        viewBox="0 0 75.1 30"
-        style="enable-background: new 0 0 75.1 30"
-      >
-        <rect id="b4" x="38.7" y="30" class="st1" width="16.9" height="30" />
-        <rect id="b3" x="58.1" y="30" class="st1" width="16.9" height="30" />
-        <rect id="b2" x="19.4" y="30" class="st1" width="16.9" height="30" />
-        <rect id="b1" x="0" y="30" class="st1" width="16.9" height="30" />
+  <div class="wnyc-loader">
+    <div class="svg-holder">
+      <svg class="svg" x="0px" y="0px" viewBox="0 0 75.1 30">
+        <rect id="b4" x="38.7" y="22" class="st1" width="16.9" height="30" />
+        <rect id="b3" x="58.1" y="22" class="st1" width="16.9" height="30" />
+        <rect id="b2" x="19.4" y="22" class="st1" width="16.9" height="30" />
+        <rect id="b1" x="0" y="22" class="st1" width="16.9" height="30" />
       </svg>
     </div>
-  </transition>
+  </div>
 </template>
 
-<style scoped>
-.wnyc-loader .st1 {
-  transform-origin: top;
-  fill: var(--primary-color, #de1e3d);
+<style lang="scss" scoped>
+.wnyc-loader {
+  .svg-holder {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    .svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      width: v-bind(size);
+      height: auto;
+      .st1 {
+        animation: moveUpAndDown 2s infinite;
+        transform-origin: top;
+        fill: var(--primary-color, #de1e3d);
+        transform: translateY(-30);
+      }
+    }
+  }
+
+  @keyframes moveUpAndDown {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-22px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  $animationDuration: 1s;
+  $staggerDelay: $animationDuration * 0.25;
+
+  @for $i from 1 through 4 {
+    .svg-holder .svg .st1:nth-child(#{$i}) {
+      animation: moveUpAndDown $animationDuration infinite;
+      animation-delay: $staggerDelay * ($i - 1) - 2;
+    }
+  }
 }
-.style-mode-dark .wnyc-loader .st1 {
+</style>
+<style lang="scss">
+.style-mode-dark .wnyc-loader .svg-holder .svg .st1 {
   fill: #ffffff;
 }
 </style>
