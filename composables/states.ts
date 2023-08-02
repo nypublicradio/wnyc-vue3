@@ -1,3 +1,27 @@
+// defualt seettings that are over writted by user data
+const localUserProfileDefault: object = {
+    autodownload: false,
+    default_live_stream: 'WNYC 93.9 FM',
+    receive_general_notifications: true,
+    text_size: 'Normal',
+    dark_mode: false,
+}
+/**
+ * Global state for the settings data
+ */
+export const useLocalUserProfileDefault = () => useState('localUserProfileDefault', () => localUserProfileDefault)
+
+const currentUser = null
+// global state for the current authorized user
+export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
+
+const currentUserProfile = null
+// global state for the current authorized user's profile
+export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () => currentUserProfile)
+
+// setting sidebar state
+export const useSettingSideBar = () => useState('useSettingSideBar', () => false)
+
 // audio player globals
 const currentEpisodeObj = null
 /**
@@ -47,22 +71,23 @@ const currentStreamStation = 'wnyc-fm939'
 export const useCurrentStreamStation = () => useState('useCurrentStreamStation', () => currentStreamStation)
 
 
+const navigationObj = null
 /**
  * Global state for the navigation
  */
-const navigationObj: object | any = null
 export const useNavigation = () => useState('navigation', () => navigationObj)
 
+
+const appDirectory = "wnyc-downloads"
 /**
  * Global state for the app directory location
  */
-const appDirectory: string = "wnyc-downloads"
 export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
 
+const fileSystem = []
 /**
  * Global state for the fileSystem
  */
-const fileSystem: any = []
 export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 
 // Local Storage version of the fileSystem
@@ -75,14 +100,6 @@ export const useFileSystemLS = () => useState('fileSystemLS', () => [])
 
 
 
-
-
-
-/**
- * NEW STUFF
- */
-
-
 const bottomMenuState: object = {}
 /**
  * Global state for the bottom navigation
@@ -91,31 +108,10 @@ export const useBottomMenuState = () => useState('bottomMenuState', () => bottom
 
 
 
-// populate from Supabase at some point
-const settingsData: object = {
-    name: 'Peter Gibbons',
-    // profileimage: 'https://media.licdn.com/dms/image/C5603AQHqyqn8BBa6Wg/profile-displayphoto-shrink_800_800/0/1517520876017?e=2147483647&v=beta&t=bbkZ9w4zWWPXI6FsKD3Ml41uIZnB_b49qHYzALH4SKo',
-    profileimage: null,
-    email: 'peter.gibbons@initech.com',
-    password: '12345678',
-    autodownload: false,
-    defaultstream: 'WNYC 93.9 FM',
-    notificationgeneral: true,
-    textsize: 'Normal',
-    darktheme: false,
-}
-/**
- * Global state for the settings data
- */
-export const useSettingsData = () => useState('settingsData', () => settingsData)
-
-/**
- * Global state for TEMP login state
- */
-export const useLoggedState = () => useState('loggedState', () => false)
 
 
-const textSizeOptionsObj = [
+
+const textSizeOptionsArr = [
     { label: 'Normal', value: 'Normal', pixel: '16px' },
     { label: 'Large', value: 'Large', pixel: '18px' },
     { label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
@@ -123,4 +119,4 @@ const textSizeOptionsObj = [
 /**
  * Global state for TEMP login state
  */
-export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsObj)
+export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsArr)

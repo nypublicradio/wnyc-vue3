@@ -14,7 +14,10 @@
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
       "splashFullScreen": true,
-      "splashImmersive": true
+      "splashImmersive": true,
+    },
+    "CapacitorCookies": {
+      "enabled": true
     },
     "PushNotifications": {
       "presentationOptions": [

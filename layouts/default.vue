@@ -16,19 +16,20 @@ import {
   IOSSettings,
 } from 'capacitor-native-settings'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
+
 const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 
-const isRefreshing = ref(false)
-const acceptNotifications = ref(false)
+const isRefreshing = shallowRef(false)
+const acceptNotifications = shallowRef(false)
 
 const fcmToken = ref('')
 //const nNotification = ref(null)
 // const appLaunchUrl = ref(null)
 
-const isApp = ref(Capacitor.getPlatform() !== 'web')
+const isApp = shallowRef(Capacitor.getPlatform() !== 'web')
 
 useHead({
   htmlAttrs: {

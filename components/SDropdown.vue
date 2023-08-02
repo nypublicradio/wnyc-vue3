@@ -77,6 +77,11 @@ const internalData = ref(props.data)
   .p-dropdown-trigger {
     display: none !important;
   }
+  .p-dropdown-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
   .ans {
     @include font-config($type-paragraph1);
   }

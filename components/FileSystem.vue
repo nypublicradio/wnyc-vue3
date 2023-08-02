@@ -16,16 +16,16 @@ const used = ref(0)
 const granted = ref(0)
 
 watch(fileSystem, (value) => {
-  console.log('fileSystem', value)
+  //console.log('fileSystem', value)
 
   navigator.webkitPersistentStorage.queryUsageAndQuota(
     function (usedBytes, grantedBytes) {
-      console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
+      //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
       used.value = usedBytes
       granted.value = grantedBytes
     },
     function (e) {
-      console.log('Error', e)
+      //console.log('Error', e)
     }
   )
 })

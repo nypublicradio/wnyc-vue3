@@ -1,6 +1,6 @@
 import format from 'date-fns/format'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { useFileSystem, useAppDirectory, useCurrentEpisode } from '~/composables/states'
+import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
 const directoryToSaveTo = Directory.External
 
@@ -113,7 +113,7 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
   const mp3Blob = await response.blob();
-  console.log('mp3Blob = ', mp3Blob)
+  //console.log('mp3Blob = ', mp3Blob)
 
   // Read the Blob as a data URL using FileReader
   const reader = new FileReader();
@@ -127,7 +127,7 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
       //create a parralel browser local storage for this data, and bes to add it to the delete function.
       setTimeout(async () => {
 
-        await console.log('fileSystemLS = ', fileSystemLS.value)
+        //await console.log('fileSystemLS = ', fileSystemLS.value)
         // slight delay is needed for the fileSystem to update
         const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
         const filesArr: any = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
@@ -262,13 +262,37 @@ export function capitalizeFirstLetter(str) {
 /**
  * helper function to change the global font size
  */
-export function setFontSize(size) {
+export function setFontSize(size: string) {
+  //console.log('set size = ', size)
   document.documentElement.style.fontSize = size;
 }
 
 /**
  * helper function to toggle darkmode
  */
-export function setDarkMode(bool) {
+export function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
+}
+
+// helper function to get the pixel size from thr label
+export const getTextSizePixel = (label) => {
+  if (typeof label === 'string') {
+    const textSizeOptions = useTextSizeOption()
+    return textSizeOptions.value.find(
+      (item) => item.label === label
+    ).pixel
+  } else {
+    return label.pixel
+  }
+}
+
+// set the display settings in one place
+export const setDisplaySettings = (data) => {
+  setFontSize(getTextSizePixel(data.text_size))
+  setDarkMode(data.dark_mode)
+}
+
+// generate a random number between min and max
+export const getRandomNumber = (min, max) => {
+  return Math.random() * (max - min) + min
 }
