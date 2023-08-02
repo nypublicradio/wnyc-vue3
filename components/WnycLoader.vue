@@ -13,7 +13,7 @@ onMounted(() => {
   // loop through the bars and animate them and when complete, call it again
   const loop = () => {
     const rnd = getRandomNumber(-30, -10)
-    let i
+    let i = 0
     for (i = 0; i < bars.length; i++) {
       tl.to(
         bars[i],

@@ -73,6 +73,7 @@ const errorMessage = ref()
 const successMessage = ref()
 const imageUrl = ref(props.image)
 
+// upload the image to supabase storage and handle messaging
 const uploadImage = async (event) => {
   try {
     uploading.value = true

@@ -71,20 +71,20 @@ const currentStreamStation = 'wnyc-fm939'
 export const useCurrentStreamStation = () => useState('useCurrentStreamStation', () => currentStreamStation)
 
 
-const navigationObj: object | any = null
+const navigationObj = null
 /**
  * Global state for the navigation
  */
 export const useNavigation = () => useState('navigation', () => navigationObj)
 
 
-const appDirectory: string = "wnyc-downloads"
+const appDirectory = "wnyc-downloads"
 /**
  * Global state for the app directory location
  */
 export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
 
-const fileSystem: any = []
+const fileSystem = []
 /**
  * Global state for the fileSystem
  */
