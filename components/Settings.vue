@@ -39,6 +39,7 @@ const isMessage = ref(false)
 const severity = ref('success')
 const theMessage = ref('Settings updated')
 
+// main function to update the message component
 const showMessage = async (
   mySverity = 'success',
   myMessage = 'Settings updated.'
@@ -110,6 +111,8 @@ const updateProfile = async () => {
 
 const tempPassword = ref('')
 const tempEmail = ref(currentUser.value?.email)
+
+// update the user's email with a message to confirm the change in an email
 const updateUserEmail = async () => {
   const { error } = await client.auth.updateUser({
     email: tempEmail.value,
@@ -126,6 +129,8 @@ const updateUserEmail = async () => {
     )
   }
 }
+
+// update the user's password
 const updateUserPassword = async () => {
   const { error } = await client.auth.updateUser({
     password: tempPassword.value,
@@ -152,6 +157,7 @@ watch(currentUserProfile.value, () => {
   updateProfile()
 })
 
+// handles setting the font size and tracking the event
 const onUpdateTextSize = () => {
   setFontSize(currentUserProfile.value.text_size.pixel)
 
@@ -161,6 +167,8 @@ const onUpdateTextSize = () => {
     currentUserProfile.value.text_size.label
   )
 }
+
+// handles tracking the station change event
 const onUpdateStation = () => {
   trackClickEvent(
     'Click Tracking - Default stream',
@@ -168,6 +176,8 @@ const onUpdateStation = () => {
     currentUserProfile.value.default_live_stream
   )
 }
+
+// handles the message when users click on the disabled fields
 const onClickDisabled = () => {
   showMessage('warn', 'Your authentication provider controls this field.')
 }

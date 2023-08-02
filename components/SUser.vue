@@ -39,8 +39,6 @@ const onLogIn = () => {
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
-  const client = useSupabaseClient()
-
   // sign out from supabase
   const { error } = await client.auth.signOut()
   // if (error) {
@@ -49,9 +47,6 @@ const onLogOut = async () => {
 
   // set the currentUser composable to null
   currentUser.value = null
-
-  // set the currentUserProfile composable to null
-  currentUserProfile.value = null
 
   // reset the currentEpisode composable to the default
   currentUserProfile.value = localUserProfileDefault.value
@@ -129,11 +124,12 @@ const handleModal = () => {
         :client="client"
         :config="config"
         @imageUploaded="
-          () => {
+          (imageUrl) => {
+            currentUserProfile.avatar_image_url = imageUrl
             trackClickEvent(
               'Event Tracking - VUloadImage',
               'Settings Sidebar - user section',
-              'image uploaded and saved'
+              `image uploaded and saved: ${imageUrl}`
             )
           }
         "

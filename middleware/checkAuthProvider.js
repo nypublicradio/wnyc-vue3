@@ -11,16 +11,17 @@ export default defineNuxtRouteMiddleware(async () => {
   const redirectSlug = '/home'
   const user = await client.auth.getSession()
 
-  const updateUser = async (currentUser) => {
-    if (currentUser.user_metadata.provider === 'google') {
+  // update the user's profile (name and image) if they signed up with google
+  const updateUser = async () => {
+    if (currentUser.value.user_metadata.provider === 'google') {
       await client
         .from('profiles')
         .update({
           updated_at: new Date().toISOString(),
-          name: currentUser.user_metadata.full_name,
-          avatar_image_url: currentUser.user_metadata.avatar_url,
+          name: currentUser.value.user_metadata.full_name,
+          avatar_image_url: currentUser.value.user_metadata.avatar_url,
         })
-        .match({ id: currentUser.id })
+        .match({ id: currentUser.value.id })
     }
   }
 
@@ -40,7 +41,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
     // redirect to home if the user is logged in
     if (currentUser.value) {
-      await updateUser(currentUser.value)
+      await updateUser()
       window.location.href = redirectSlug
     }
 
@@ -56,7 +57,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
         //('currentUser setTimeout found', currentUser.value)
         // for some reason, navigateTo doesn't work here?!
-        await updateUser(currentUser.value)
+        await updateUser()
         window.location.href = redirectSlug
       }
 

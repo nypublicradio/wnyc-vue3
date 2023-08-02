@@ -36,7 +36,7 @@ const props = defineProps({
   image: {
     default: '',
     required: true,
-    type: String,
+    type: [String, null],
   },
   label: {
     default: 'Upload Image',
@@ -105,7 +105,6 @@ const uploadImage = async (event) => {
       errorMessage.value = `Error: ${error}`
     } else {
       successMessage.value = props.success
-      props.currentUserProfile.avatar_image_url = imageUrl.value
       emit('image-uploaded', imageUrl.value)
     }
   } catch (error) {
@@ -131,7 +130,7 @@ const deleteImage = async () => {
   } else {
     successMessage.value = 'Success! Your file has been deleted.'
     imageUrl.value = null
-    props.currentUserProfile.avatar_image_url = null
+    emit('image-uploaded', null)
   }
 }
 </script>

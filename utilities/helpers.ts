@@ -274,6 +274,7 @@ export function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
 }
 
+// helper function to get the pixel size from thr label
 export const getTextSizePixel = (label) => {
   if (typeof label === 'string') {
     const textSizeOptions = useTextSizeOption()
@@ -285,8 +286,13 @@ export const getTextSizePixel = (label) => {
   }
 }
 
-
+// set the display settings in one place
 export const setDisplaySettings = (data) => {
   setFontSize(getTextSizePixel(data.text_size))
   setDarkMode(data.dark_mode)
+}
+
+// generate a random number between min and max
+export const getRandomNumber = (min, max) => {
+  return Math.random() * (max - min) + min
 }

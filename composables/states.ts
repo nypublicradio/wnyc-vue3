@@ -11,12 +11,12 @@ const localUserProfileDefault: object = {
  */
 export const useLocalUserProfileDefault = () => useState('localUserProfileDefault', () => localUserProfileDefault)
 
-// global state for the current authorized user
 const currentUser = null
+// global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
 
-// global state for the current authorized user's profile
 const currentUserProfile = null
+// global state for the current authorized user's profile
 export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () => currentUserProfile)
 
 // setting sidebar state
@@ -71,22 +71,23 @@ const currentStreamStation = 'wnyc-fm939'
 export const useCurrentStreamStation = () => useState('useCurrentStreamStation', () => currentStreamStation)
 
 
+const navigationObj: object | any = null
 /**
  * Global state for the navigation
  */
-const navigationObj: object | any = null
 export const useNavigation = () => useState('navigation', () => navigationObj)
 
+
+const appDirectory: string = "wnyc-downloads"
 /**
  * Global state for the app directory location
  */
-const appDirectory: string = "wnyc-downloads"
 export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
 
+const fileSystem: any = []
 /**
  * Global state for the fileSystem
  */
-const fileSystem: any = []
 export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 
 // Local Storage version of the fileSystem

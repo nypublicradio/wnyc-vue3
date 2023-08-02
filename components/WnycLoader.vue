@@ -1,21 +1,20 @@
 <script setup>
 import { ref } from 'vue'
+import { getRandomNumber } from '~/utilities/helpers'
 const { $gsap } = useNuxtApp()
 let tl = null
 const wnycLoader = ref(null)
 const ready = ref(false)
 
-function randomNumber(min, max) {
-  return Math.random() * (max - min) + min
-}
-
 onMounted(() => {
   ready.value = true
   const bars = wnycLoader.value.getElementsByClassName('st1')
   tl = $gsap.timeline()
+  // loop through the bars and animate them and when complete, call it again
   const loop = () => {
-    let rnd = randomNumber(-30, -10)
-    for (var i = 0; i < bars.length; i++) {
+    const rnd = getRandomNumber(-30, -10)
+    let i
+    for (i = 0; i < bars.length; i++) {
       tl.to(
         bars[i],
         {

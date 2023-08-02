@@ -4,7 +4,7 @@ import {
     useLocalUserProfileDefault
 } from '~/composables/states'
 import { setDisplaySettings } from '~/utilities/helpers'
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async () => {
     //console.log('checking auth')
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()

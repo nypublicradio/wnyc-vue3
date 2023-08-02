@@ -40,15 +40,16 @@ const onUpdate = (val) => {
   }
 }
 
+// triggered when the user clicks the submit button. closes the inplace component
 const onSubmit = () => {
-  var closeBtn = document.querySelectorAll(
+  const closeBtn = document.querySelectorAll(
     '.s-field .p-inplace-content .p-button-icon-only'
   )
   for (let i = 0; i < closeBtn.length; i++) closeBtn[i].click()
   emit('update:data', internalData.value)
   emit('submit', internalData.value)
 }
-
+// triggered when the user clicks the inplace component. emits the onDisabled event if it is disabled
 const handleDisabledEmit = () => {
   if (props.disabled) {
     emit('onDisabled')
