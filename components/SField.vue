@@ -25,7 +25,7 @@ const props = defineProps({
 const emit = defineEmits(['update:data', 'isValid', 'submit', 'onDisabled'])
 
 const internalData = ref(props.data)
-const error = ref(false)
+const error = shallowRef(false)
 const regexEmailFormat = new RegExp(
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 )

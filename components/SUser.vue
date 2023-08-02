@@ -17,15 +17,16 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['update:data', 'onDisabled'])
+
 const settingsSideBar = useSettingSideBar()
-const emit = defineEmits(['update:data'])
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
-const imageUploadModal = ref(false)
-const isDisabled = ref(props.disabled)
+const imageUploadModal = shallowRef(false)
+const isDisabled = shallowRef(props.disabled)
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
@@ -78,6 +79,8 @@ const onSignUp = () => {
 const handleModal = () => {
   if (!isDisabled.value) {
     imageUploadModal.value = true
+  } else {
+    emit('onDisabled')
   }
   trackClickEvent(
     'Click Tracking - Avatar Image link',

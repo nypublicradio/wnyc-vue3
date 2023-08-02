@@ -15,7 +15,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const isLoading = ref(true)
+const isLoading = shallowRef(true)
 onMounted(() => {
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader

@@ -35,9 +35,9 @@ const isDisabled = computed(() => {
   }
 })
 
-const isMessage = ref(false)
-const severity = ref('success')
-const theMessage = ref('Settings updated')
+const isMessage = shallowRef(false)
+const severity = shallowRef('success')
+const theMessage = shallowRef('Settings updated')
 
 // main function to update the message component
 const showMessage = async (
@@ -109,8 +109,8 @@ const updateProfile = async () => {
   }
 }
 
-const tempPassword = ref('')
-const tempEmail = ref(currentUser.value?.email)
+const tempPassword = shallowRef('')
+const tempEmail = shallowRef(currentUser.value?.email)
 
 // update the user's email with a message to confirm the change in an email
 const updateUserEmail = async () => {
@@ -178,15 +178,15 @@ const onUpdateStation = () => {
 }
 
 // handles the message when users click on the disabled fields
-const onClickDisabled = () => {
-  showMessage('warn', 'Your authentication provider controls this field.')
+const onClickDisabled = (elm = 'field') => {
+  showMessage('warn', `Your authentication provider controls this ${elm}.`)
 }
 </script>
 
 <template>
   <div class="settings m-2">
     <section class="user">
-      <SUser :disabled="isDisabled" />
+      <SUser :disabled="isDisabled" @onDisabled="onClickDisabled('image')" />
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="s-title">Account</div>

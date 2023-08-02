@@ -4,7 +4,7 @@ import { getRandomNumber } from '~/utilities/helpers'
 const { $gsap } = useNuxtApp()
 let tl = null
 const wnycLoader = ref(null)
-const ready = ref(false)
+const ready = shallowRef(false)
 
 onMounted(() => {
   ready.value = true

@@ -68,10 +68,10 @@ if (!props.client && !props.config) {
 
 const supabase = innerClient.value
 
-const uploading = ref(false)
-const errorMessage = ref()
-const successMessage = ref()
-const imageUrl = ref(props.image)
+const uploading = shallowRef(false)
+const errorMessage = shallowRef()
+const successMessage = shallowRef()
+const imageUrl = shallowRef(props.image)
 
 // upload the image to supabase storage and handle messaging
 const uploadImage = async (event) => {
