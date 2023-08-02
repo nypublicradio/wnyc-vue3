@@ -11,3 +11,4 @@ dist
 *.pid
 .npm/*
 .DS_Store
+www
