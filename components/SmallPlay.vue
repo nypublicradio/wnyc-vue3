@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import {
-  useIsEpisodePlaying,
-  useTogglePlayTrigger,
-  useCurrentEpisode,
-  useCurrentEpisodeHolder,
-} from '~/composables/states'
-
 import PlayIcon from '~/components/icons/PlayIcon.vue'
 import PauseIcon from '~/components/icons/PauseIcon.vue'
 
@@ -30,44 +23,26 @@ const props = defineProps({
 
 const emit = defineEmits(['on-click'])
 
-const isEpisodePlaying = useIsEpisodePlaying()
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isPaused = shallowRef(true)
-
 const togglePlay = () => {
-  if (!currentEpisode.value) {
-    currentEpisode.value = currentEpisodeHolder.value
-  }
-  togglePlayTrigger.value = !togglePlayTrigger.value
-  emit('on-click', !isEpisodePlaying.value)
-  isPaused.value = !isPaused.value
+  emit('on-click')
 }
 </script>
 
 <template>
   <div class="small-play">
-    <Button
-      severity="secondary"
-      @click="currentEpisodeHolder ? togglePlay() : null"
-    >
+    <Button severity="secondary" @click="togglePlay">
       <slot name="icon">
         <div
           class="flex align-items-center icon relative"
-          :class="[{ live: props.live, paused: isPaused }]"
+          :class="[{ live: props.live, paused: !props.isPLaying }]"
         >
           <CircularProgressBar />
-          <i v-if="!currentEpisodeHolder" class="pi pi-spin pi-spinner"></i>
-          <PlayIcon v-else-if="!isEpisodePlaying" />
+          <PlayIcon v-if="!props.isPLaying" />
           <PauseIcon v-else />
         </div>
       </slot>
       <slot>
-        <div
-          v-if="currentEpisodeHolder"
-          class="content flex gap-1 white-space-nowrap"
-        >
+        <div class="content flex gap-1 white-space-nowrap">
           <span>{{ props.label }}</span>
 
           <span v-if="props.live" class="flex gap-2 align-items-center">

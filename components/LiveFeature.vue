@@ -8,14 +8,15 @@ import {
 } from '~/composables/states'
 const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isEpisodePlaying = useIsEpisodePlaying()
+const togglePlayTrigger = useTogglePlayTrigger()
+const currentEpisode = useCurrentEpisode()
 
 const togglePlay = () => {
   if (!currentEpisode.value) {
     currentEpisode.value = currentEpisodeHolder.value
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  emit('on-click', !isEpisodePlaying.value)
-  isPaused.value = !isPaused.value
 }
 </script>
 
@@ -41,7 +42,12 @@ const togglePlay = () => {
         class="blurb truncate t2lines"
         v-html="currentEpisodeHolder?.details"
       ></div>
-      <SmallPlay :label="currentEpisodeHolder?.station" live />
+      <SmallPlay
+        :label="currentEpisodeHolder?.station"
+        live
+        :isPLaying="isEpisodePlaying"
+        @onClick="togglePlay"
+      />
     </div>
     <div
       class="content skeleton-holder flex flex-column justify-content-center w-full"
