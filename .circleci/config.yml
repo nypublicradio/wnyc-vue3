@@ -193,6 +193,7 @@ jobs:
       release-key-password: RELEASE_KEY_PASSWORD
       release-key-store-password: RELEASE_KEYSTORE_PASSWORD
       RELEASE_KEYSTORE: keystore
+      ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
