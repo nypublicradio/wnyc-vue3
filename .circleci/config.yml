@@ -66,6 +66,7 @@ workflows:
             - ios
             - xcode
           FASTLANE_LANE: beta
+          env: demo
           <<: *filter_demo
           requires:
             - test
@@ -170,6 +171,7 @@ jobs:
       ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
+      - setup_mobile_env
       - checkout
       - ruby/install-deps:
           app-dir: ios/App
@@ -239,6 +241,13 @@ commands:
           command: |
             echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
             echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
+  setup_mobile_env:
+    steps:
+      - run:
+          name: Setup mobile environment
+          command: |
+            bash ./scripts/rename_env_vars.sh
+            source local-env
     
 executors:
   default:
