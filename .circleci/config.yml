@@ -247,6 +247,7 @@ commands:
           name: Setup mobile environment
           command: |
             bash ./scripts/rename_env_vars.sh
+            source local-env.sh
     
 executors:
   default:
