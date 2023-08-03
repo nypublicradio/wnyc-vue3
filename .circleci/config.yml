@@ -179,7 +179,6 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
-            source local-env.sh
             npm ci
             npm run generate
             npx cap sync
