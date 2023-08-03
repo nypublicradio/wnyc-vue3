@@ -115,3 +115,10 @@ section {
     }
   }
 }
+
+.p-skeleton {
+  background: var(--background3);
+  &:after {
+    //animation-duration: 0.5s;
+  }
+}

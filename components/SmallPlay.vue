@@ -18,6 +18,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  progress: {
+    type: Number,
+    default: 0,
+  },
+  isPLaying: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['on-click'])
@@ -56,7 +64,10 @@ const togglePlay = () => {
         </div>
       </slot>
       <slot>
-        <div class="content flex gap-1 white-space-nowrap">
+        <div
+          v-if="currentEpisodeHolder"
+          class="content flex gap-1 white-space-nowrap"
+        >
           <span>{{ props.label }}</span>
 
           <span v-if="props.live" class="flex gap-2 align-items-center">

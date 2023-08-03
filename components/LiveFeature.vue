@@ -1,8 +1,22 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import { useCurrentEpisodeHolder } from '~/composables/states'
+import {
+  useIsEpisodePlaying,
+  useTogglePlayTrigger,
+  useCurrentEpisode,
+  useCurrentEpisodeHolder,
+} from '~/composables/states'
 const { $analytics } = useNuxtApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+
+const togglePlay = () => {
+  if (!currentEpisode.value) {
+    currentEpisode.value = currentEpisodeHolder.value
+  }
+  togglePlayTrigger.value = !togglePlayTrigger.value
+  emit('on-click', !isEpisodePlaying.value)
+  isPaused.value = !isPaused.value
+}
 </script>
 
 <template>
@@ -18,13 +32,27 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
       <WnycLoader v-else class="image-loader-anim" size="30%" />
     </div>
 
-    <div class="content flex flex-column gap-2">
-      <h2>Title</h2>
-      <p class="blurb truncate t2lines">
-        The Language of Symbols, How to Talk About Making a Will, Shsjdfh w80r
-        sdjfs9ufhs90fs 08d f
-      </p>
-      <SmallPlay label="WNYC 93.9 PM" live />
+    <div
+      v-if="currentEpisodeHolder"
+      class="content flex flex-column gap-2 justify-content-center"
+    >
+      <h2>{{ currentEpisodeHolder?.title }}</h2>
+      <div
+        class="blurb truncate t2lines"
+        v-html="currentEpisodeHolder?.details"
+      ></div>
+      <SmallPlay :label="currentEpisodeHolder?.station" live />
+    </div>
+    <div
+      class="content skeleton-holder flex flex-column justify-content-center w-full"
+      v-else
+    >
+      <Skeleton width="6rem" borderRadius="16px"></Skeleton>
+      <div class="w-full">
+        <Skeleton height="13px" borderRadius="16px" class="mb-1"></Skeleton>
+        <Skeleton height="13px" borderRadius="16px"></Skeleton>
+      </div>
+      <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
     </div>
   </div>
 </template>
@@ -46,6 +74,9 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
   }
   .content {
     padding: 1rem;
+    &.skeleton-holder {
+      gap: 0.75rem;
+    }
   }
 }
 @container (max-width: #{$container-breakpoint-xs}) {
