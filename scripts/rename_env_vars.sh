@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 env_var_prefix=""
 
@@ -15,4 +15,4 @@ while IFS= read -r env_var; do
     echo "${new_env_var}" >> local-env
 done < <(printenv | grep "^${env_var_prefix}")
 
-cat local-env | sed 's/\(^[^=]*\)=\(.*\)/export \1="\2"/' > local-env.sh
+cat local-env | sed 's/\(^[^=]*\)=\(.*\)/export \1="\2"/' >> ~/.bash_profile
