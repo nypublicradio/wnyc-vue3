@@ -171,8 +171,8 @@ jobs:
       ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
-      - setup_mobile_env
       - checkout
+      - setup_mobile_env
       - ruby/install-deps:
           app-dir: ios/App
       - setup_npmrc
