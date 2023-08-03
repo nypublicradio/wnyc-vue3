@@ -6,7 +6,7 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from '~/composables/states'
-const { $analytics } = useNuxtApp()
+import { trackClickEvent } from '~/utilities/helpers'
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -17,6 +17,7 @@ const togglePlay = () => {
     currentEpisode.value = currentEpisodeHolder.value
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
+  trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')
 }
 </script>
 

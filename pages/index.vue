@@ -26,7 +26,7 @@ onMounted(() => {
 <template>
   <div class="page" :class="[`${String(route.name)}`]">
     <Transition name="fade">
-      <section v-if="isLoading" style="position: absolute; height: 100vh">
+      <section v-if="isLoading" class="loading-holder">
         <WnycLoader class="loader-anim" />
       </section>
       <section v-else class="index-page flex flex-column pb-8">
@@ -70,15 +70,24 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.loader-anim {
+.loading-holder {
+  display: flex;
   position: absolute;
-  top: 0;
-  bottom: 0;
+  height: 100vh;
+  width: 100vw;
   left: 0;
   right: 0;
-  margin: auto;
-  width: 100px;
-  height: 50px;
+
+  .loader-anim {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 100px;
+    height: 50px;
+  }
 }
 .index-page {
   .headline {

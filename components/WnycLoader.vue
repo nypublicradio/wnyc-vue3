@@ -23,6 +23,25 @@ const size = ref(props.size)
 
 <style lang="scss" scoped>
 .wnyc-loader {
+  background: -moz-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(rgb(222, 30, 61), 0.3) 0%,
+    rgba(rgb(222, 30, 61), 0) 100%
+  );
+  background: -webkit-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(rgb(222, 30, 61), 0.3) 0%,
+    rgba(rgb(222, 30, 61), 0) 100%
+  );
+  background: radial-gradient(
+    ellipse at center,
+    rgba(rgb(222, 30, 61), 0.3) 0%,
+    rgba(rgb(222, 30, 61), 0) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 );
+
   .svg-holder {
     position: relative;
     width: 100%;
@@ -69,7 +88,26 @@ const size = ref(props.size)
 }
 </style>
 <style lang="scss">
-.style-mode-dark .wnyc-loader .svg-holder .svg .st1 {
-  fill: #ffffff;
+.style-mode-dark .wnyc-loader {
+  background: -moz-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(rgb(255, 255, 255), 0.3) 0%,
+    rgba(rgb(255, 255, 255), 0) 100%
+  );
+  background: -webkit-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(rgb(255, 255, 255), 0.3) 0%,
+    rgba(rgb(255, 255, 255), 0) 100%
+  );
+  background: radial-gradient(
+    ellipse at center,
+    rgba(rgb(255, 255, 255), 0.3) 0%,
+    rgba(rgb(255, 255, 255), 0) 100%
+  );
+  .svg-holder .svg .st1 {
+    fill: #ffffff;
+  }
 }
 </style>
