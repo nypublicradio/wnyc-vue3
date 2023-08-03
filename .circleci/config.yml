@@ -179,6 +179,7 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
+            bash ./scripts/rename_env_vars.sh
             npm ci
             npm run generate
             npx cap sync
