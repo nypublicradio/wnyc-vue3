@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
+    namespace "org.wnyc.android"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "org.wnyc.android"
@@ -40,8 +40,6 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-    implementation platform('com.google.firebase:firebase-bom:31.2.3')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
 
 apply from: 'capacitor.build.gradle'
