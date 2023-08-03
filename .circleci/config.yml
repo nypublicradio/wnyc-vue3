@@ -159,10 +159,15 @@ jobs:
       FASTLANE_LANE:
         type: string
         default: "build"
+      env:
+        type: enum
+        default: "demo"
+        enum: ["demo", "prod"]
     working_directory: ~/project
     environment:
       FL_OUTPUT_DIR: output
       FASTLANE_LANE: <<parameters.FASTLANE_LANE>>
+      ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
