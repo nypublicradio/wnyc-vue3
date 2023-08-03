@@ -5,11 +5,11 @@
 # PROD_VARNAME="Production Value"
 # # Run the script
 # ./rename_env_variables.sh
-
 # Now, the variables will be renamed to VARNAME based on the ENV value
 # echo "$VARNAME"         # Output: "Demo Value with spaces and special characters: * ! @"
 # echo "$PROD_VARNAME"    # Output: "Production Value"
 
+set -o posix; export -p
 env_var_prefix=""
 
 case "${ENV}" in
@@ -26,4 +26,4 @@ while IFS= read -r env_var; do
     quoted_value=$(printf "%q" "${value}")      # Quote the value to handle special characters
     eval "${new_env_var}=${quoted_value}"       # Assign the quoted value to the renamed variable
     export "${new_env_var}"
-done < <(printenv | grep "^${env_var_prefix}")
+done << printenv | grep "^${env_var_prefix}"
