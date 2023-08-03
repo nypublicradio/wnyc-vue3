@@ -1,69 +1,33 @@
-<script setup>
-const props = defineProps({
-  label: {
-    type: String,
-    default: '',
-  },
-})
-</script>
-
 <template>
-  <div class="live-indicator">
-    <div class="live-indicator-wrapper">
-      <span class="live-indicator-live-text mr-2">Live</span>
-      <div class="relative mr-1">
-        <span class="live-indicator-dot absolute" />
-        <span class="live-indicator-dot-pulse absolute" />
-      </div>
-    </div>
-    <span class="live-indicator-label">{{ label }}</span>
-  </div>
+  <span class="live-indicator relative">
+    <span class="live-indicator-dot absolute" />
+    <span class="live-indicator-dot-pulse absolute" />
+  </span>
 </template>
 
 <style lang="scss">
 .live-indicator {
-  display: flex;
-  align-items: center;
-  font-size: var(--font-size-5);
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-feature-settings: 'lnum';
-}
+  height: 6px;
+  width: 6px;
 
-.live-indicator .live-indicator-wrapper {
-  display: flex;
-  align-items: center;
-  background-color: var(--white);
-  border-radius: 3px;
-  padding: 1px 6px;
-  margin-right: 0.6rem;
-}
+  .live-indicator-dot {
+    height: 6px;
+    width: 6px;
+    background: var(--red-500);
+    border-radius: 50%;
+  }
 
-.live-indicator .live-indicator-live-text {
-  color: var(--black);
-  margin-right: 0.25rem;
-}
-
-.live-indicator .live-indicator-dot {
-  height: 8px;
-  width: 8px;
-  background: var(--red);
-  border-radius: 50%;
-  top: -4px;
-  left: -4px;
-}
-
-.live-indicator .live-indicator-dot-pulse {
-  height: 16px;
-  width: 16px;
-  border: 3px solid var(--red);
-  border-radius: 50%;
-  animation: pulsate 2s ease-out;
-  animation-iteration-count: infinite;
-  opacity: 0;
-  top: -8px;
-  left: -8px;
+  .live-indicator-dot-pulse {
+    height: 12px;
+    width: 12px;
+    border: 3px solid var(--red-500);
+    border-radius: 50%;
+    animation: pulsate 2s ease-out;
+    animation-iteration-count: infinite;
+    opacity: 0;
+    top: -3px;
+    left: 0px;
+  }
 }
 
 @keyframes pulsate {
