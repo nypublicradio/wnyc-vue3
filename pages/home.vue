@@ -1,17 +1,12 @@
 <script setup>
-import {
-  useCurrentUser,
-  useCurrentUserProfile,
-  useAllCurrentStations,
-} from '~/composables/states'
+import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-const allCurrentStations = useAllCurrentStations()
+
 definePageMeta({
   middleware: 'check-auth',
 })
-console.log('allCurrentStations = ', allCurrentStations)
 </script>
 
 <template>
