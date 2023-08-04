@@ -23,6 +23,7 @@ const props = defineProps({
 
 const emit = defineEmits(['on-click'])
 
+// handles the click event
 const togglePlay = () => {
   emit('on-click')
 }

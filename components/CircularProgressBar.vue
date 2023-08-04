@@ -20,8 +20,8 @@ const props = defineProps({
   },
 })
 
-const normalizedRadius = ref(props.radius - props.stroke * 2)
-const circumference = ref(normalizedRadius.value * 2 * Math.PI)
+const normalizedRadius = props.radius - props.stroke * 2
+const circumference = normalizedRadius.value * 2 * Math.PI
 
 const strokeDashoffset = computed(() => {
   return circumference.value - (props.progress / 100) * circumference.value

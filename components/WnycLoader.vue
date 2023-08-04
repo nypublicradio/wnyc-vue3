@@ -5,7 +5,6 @@ const props = defineProps({
     type: String,
   },
 })
-const size = ref(props.size)
 </script>
 
 <template>
