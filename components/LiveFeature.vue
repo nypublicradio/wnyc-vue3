@@ -22,7 +22,7 @@ const togglePlay = () => {
 </script>
 
 <template>
-  <div class="live-player flex">
+  <div class="live-feature flex">
     <div class="image-holder">
       <transition name="fade">
         <VImage
@@ -81,10 +81,10 @@ const togglePlay = () => {
 
 <style lang="scss" scoped>
 $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
-.live-player {
+.live-feature {
   container-type: inline-size;
   position: relative;
-  background-color: var(--background2);
+  background-color: var(--live-feature-background);
 
   .image-holder {
     position: relative;
@@ -107,7 +107,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
   }
 }
 @container (max-width: #{$container-breakpoint-xs}) {
-  .live-player {
+  .live-feature {
     .image-holder {
       flex: none;
       width: 90px;
