@@ -24,42 +24,57 @@ const togglePlay = () => {
 <template>
   <div class="live-player flex">
     <div class="image-holder">
-      <VImage
-        v-if="currentEpisodeHolder?.image"
-        :src="currentEpisodeHolder?.image"
-        :ratio="[1, 1]"
-        alt="show poster image"
-        class="image"
-      />
-      <WnycLoader v-else class="image-loader-anim" size="30%" />
+      <transition name="fade">
+        <VImage
+          v-if="currentEpisodeHolder?.image"
+          :src="currentEpisodeHolder?.image"
+          :ratio="[1, 1]"
+          alt="show poster image"
+          class="image"
+        />
+        <WnycLoader v-else class="image-loader-anim" size="30%" />
+      </transition>
     </div>
-
-    <div
-      v-if="currentEpisodeHolder"
-      class="content flex flex-column gap-2 justify-content-center"
-    >
-      <h2>{{ currentEpisodeHolder?.title }}</h2>
-      <div
-        class="blurb truncate t2lines"
-        v-html="currentEpisodeHolder?.details"
-      ></div>
-      <SmallPlay
-        :label="currentEpisodeHolder?.station"
-        live
-        :isPLaying="isEpisodePlaying"
-        @onClick="togglePlay"
-      />
-    </div>
-    <div
-      class="content skeleton-holder flex flex-column justify-content-center w-full"
-      v-else
-    >
-      <Skeleton width="6rem" borderRadius="16px"></Skeleton>
-      <div class="w-full">
-        <Skeleton height="13px" borderRadius="16px" class="mb-1"></Skeleton>
-        <Skeleton height="13px" borderRadius="16px"></Skeleton>
-      </div>
-      <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
+    <div class="content w-full">
+      <transition name="fade">
+        <div
+          v-if="currentEpisodeHolder"
+          class="flex flex-column gap-2 justify-content-center"
+        >
+          <h2>{{ currentEpisodeHolder?.title }}</h2>
+          <div
+            class="blurb truncate t2lines"
+            v-html="currentEpisodeHolder?.details"
+          ></div>
+          <SmallPlay
+            :label="currentEpisodeHolder?.station"
+            live
+            :isPLaying="isEpisodePlaying"
+            @onClick="togglePlay"
+          />
+        </div>
+        <div
+          class="skeleton-holder flex flex-column justify-content-center w-full absolute"
+          v-else
+        >
+          <Skeleton
+            height="20px"
+            width="6rem"
+            borderRadius="16px"
+            style="margin-bottom: 6px"
+          ></Skeleton>
+          <div class="w-full desc">
+            <Skeleton
+              height="13px"
+              width="90%"
+              borderRadius="16px"
+              style="margin-bottom: 6px"
+            ></Skeleton>
+            <Skeleton height="13px" width="94%" borderRadius="16px"></Skeleton>
+          </div>
+          <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -72,17 +87,22 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
   background-color: var(--background2);
 
   .image-holder {
+    position: relative;
     flex: none;
+    width: 138px;
+    height: 138px;
+    background-color: #ffffff;
     .image,
     .image-loader-anim {
+      position: absolute;
       width: 138px;
       height: 138px;
     }
   }
   .content {
     padding: 1rem;
-    &.skeleton-holder {
-      gap: 0.75rem;
+    .skeleton-holder {
+      gap: 0.5rem;
     }
   }
 }
@@ -90,6 +110,8 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
   .live-player {
     .image-holder {
       flex: none;
+      width: 90px;
+      height: 90px;
       .image,
       .image-loader-anim {
         width: 90px;
@@ -99,6 +121,11 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
     .content {
       .blurb {
         display: none;
+      }
+      .skeleton-holder {
+        .desc {
+          display: none;
+        }
       }
     }
   }

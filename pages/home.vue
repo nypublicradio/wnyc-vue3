@@ -1,11 +1,17 @@
 <script setup>
-import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
+import {
+  useCurrentUser,
+  useCurrentUserProfile,
+  useAllCurrentStations,
+} from '~/composables/states'
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
+const allCurrentStations = useAllCurrentStations()
 definePageMeta({
   middleware: 'check-auth',
 })
+console.log('allCurrentStations = ', allCurrentStations)
 </script>
 
 <template>
@@ -40,21 +46,23 @@ definePageMeta({
       <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
       <TopStories class="pt-6" />
     </section> -->
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-    Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-    <br />
+    <section>
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
+      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />Home Page <br />Home Page <br />Home Page <br />Home Page
+      <br />
+    </section>
   </div>
 </template>
