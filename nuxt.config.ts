@@ -88,6 +88,7 @@ export default {
   imports: {
     dirs: [
       'composables', // top-level modules
+      'composables/icons',
       'composables/*/index.{ts,js,mjs,mts}' // one level directories's index.js,
     ]
   },

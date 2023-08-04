@@ -24,6 +24,7 @@ $toolsBreakPoint: 472px;
     --s-box-background-color: var(--background) !important;
     --s-box-stroke-color: var(--background) !important;
     --header-background: var(--background) !important;
+    --live-feature-background: var(--background2) !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -31,4 +32,5 @@ $toolsBreakPoint: 472px;
     --bottom-menu-icon-color: var(--white, #ffffff) !important;
     --s-box-background-color: #ffffff1a !important;
     --header-background: #{map-get($colors-dark-mode, 'background')} !important;
+    --live-feature-background: var(--background3) !important;
 }

@@ -62,7 +62,7 @@ export const useTogglePlayTrigger = () => useState('useTogglePlayTrigger', () =>
 /**
  * Global var for the height of the audio player
  */
-export const audioPlayerHeight = 100
+export const audioPlayerHeight = 60
 
 const currentStreamStation = 'wnyc-fm939'
 /**

@@ -64,7 +64,7 @@ body {
   left: 0;
   right: 0;
   z-index: 9999;
-  background-color: transparentize(#de1e3d, 0.1);
+  background-color: transparentize(#ffffff, 0.1);
   backdrop-filter: blur(5px);
 }
 
@@ -113,5 +113,12 @@ section {
     .p-button-label {
       flex: none;
     }
+  }
+}
+
+.p-skeleton {
+  background: var(--background3);
+  &:after {
+    //animation-duration: 0.5s;
   }
 }

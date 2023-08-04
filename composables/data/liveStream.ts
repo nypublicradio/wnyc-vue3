@@ -1,4 +1,4 @@
-import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentStreamStation } from '~/composables/states'
+import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile } from '~/composables/states'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
 //import fetchDataImport from '~/assets/data/fetchedData.json'
@@ -17,8 +17,8 @@ export async function updateLiveStream(slug: string) {
 export async function updateAllLiveStreams() {
     const config = useRuntimeConfig()
     const allCurrentStations = useAllCurrentStations()
-    const currentStreamStation = useCurrentStreamStation()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
+    const currentUserProfile = useCurrentUserProfile()
 
     const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
     //console.log('fetchData = ', fetchData)
@@ -40,11 +40,13 @@ export async function updateAllLiveStreams() {
     //console.log('allCurrentStations value', allCurrentStations.value)
     // set initial stream with the `currentStreamStation` value in the states.ts file
     const initialStation = allCurrentStations.value.find(
-        (station) => {
-            return station.slug === currentStreamStation.value
+        (option) => {
+            const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
+            return option.station === profile
         }
     )
     currentEpisodeHolder.value = initialStation
+
 }
 
 const formatShowData = (apiResponse) => {

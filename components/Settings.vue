@@ -11,13 +11,21 @@ import {
   useTextSizeOption,
   useCurrentUser,
   useCurrentUserProfile,
+  useCurrentEpisode,
+  useCurrentEpisodeHolder,
+  useIsEpisodePlaying,
 } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
-import { updateAllLiveStreams } from '~/composables/data/liveStream'
+import {
+  updateAllLiveStreams,
+  updateLiveStream,
+} from '~/composables/data/liveStream'
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-
+const currentEpisode = useCurrentEpisode()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isEpisodePlaying = useIsEpisodePlaying()
 const textSizeOptions = useTextSizeOption()
 
 const allCurrentStations = useAllCurrentStations()
@@ -168,8 +176,16 @@ const onUpdateTextSize = () => {
   )
 }
 
+let initialNoPlayToggleFlag = false
 // handles tracking the station change event
-const onUpdateStation = () => {
+const onUpdateStation = async (event) => {
+  await updateLiveStream(event.value.slug)
+
+  if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
+    initialNoPlayToggleFlag = true
+    currentEpisode.value = currentEpisodeHolder.value
+  }
+
   trackClickEvent(
     'Click Tracking - Default stream',
     'Settings Sidebar - Listening Preferences',

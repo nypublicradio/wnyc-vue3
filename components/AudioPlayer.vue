@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
+import PlayIcon from '~/components/icons/PlayIcon.vue'
+import PauseIcon from '~/components/icons/PauseIcon.vue'
 import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
 import {
   useCurrentEpisode,
@@ -91,57 +93,207 @@ watch(isEpisodePlaying, (e) => {
 </script>
 
 <template>
-  <div class="audio-player">
-    <transition name="player">
-      <v-persistent-player
-        data-style-mode="dark"
-        ref="playerRef"
-        v-if="showPlayer"
-        :auto-play="true"
-        :livestream="true"
-        :title="currentEpisode.title"
-        :title-link="currentEpisode.url"
-        :station="currentEpisode.name"
-        :description="currentEpisode.details"
-        :image="currentEpisode.image"
-        :file="currentEpisode.file"
-        :show-skip="false"
-        :can-minimize="true"
-        :showTrack="false"
-        @togglePlay="updateUseIsEpisodePlaying"
-        @is-minimized="updateUseIsPlayerMinimized"
-      />
-    </transition>
-  </div>
+  <!-- <div class="audio-player"> -->
+  <transition name="player">
+    <VPersistentPlayer
+      v-if="showPlayer"
+      ref="playerRef"
+      data-style-mode="dark"
+      :auto-play="true"
+      :can-expand="true"
+      :show-download="false"
+      :hide-download-mobile="true"
+      :can-expand-with-swipe="true"
+      :show-skip="false"
+      :livestream="true"
+      :title="currentEpisode.title"
+      :title-link="currentEpisode.url"
+      :station="currentEpisode.name"
+      :description="currentEpisode.details"
+      :image="currentEpisode.image"
+      :file="currentEpisode.file"
+      @togglePlay="updateUseIsEpisodePlaying"
+      @is-minimized="updateUseIsPlayerMinimized"
+      can-click-anywhere
+    >
+      <template #play>
+        <PlayIcon />
+      </template>
+      <template #pause>
+        <PauseIcon />
+      </template>
+      <!-- <template #chevronDown>
+        <i class="pi pi-twitter"></i>
+      </template>
+      <template #chevronUp>
+        <i class="pi pi-facebook"></i>
+      </template>
+      <template #volumeOn>
+        <i class="pi pi-twitter"></i>
+      </template>
+      <template #volumeOff>
+        <i class="pi pi-facebook"></i>
+      </template>
+      <template #prev>
+        <i class="pi pi-twitter"></i>
+      </template>
+      
+      
+      <template #loading>
+        <i class="pi pi-spin pi-spinner"></i>
+      </template>
+      <template #skip>
+        <i class="pi pi-twitter"></i>
+      </template>
+      <template #download>
+        <i class="pi pi-twitter"></i>
+      </template> -->
+      <template #expanded-content>
+        <section>
+          this is where we would put anything in the expanded view
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          this is where we would put anything in the expanded view
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </section>
+        <section class="expandedFooter">This is fixed to the bottom</section>
+      </template>
+    </VPersistentPlayer>
+  </transition>
+  <!-- </div> -->
 </template>
 
 <style lang="scss">
-.audio-player {
-  bottom: var(--bottom-menu-height);
-  width: 100%;
-  position: fixed;
-  /* display: block; */
-  z-index: 9999;
-  // slide in from bottom to top
-  .player-enter-active {
-    transition: transform calc(var(--transition-duration) * 2) ease-out;
-  }
-
-  .player-leave-active {
-    transition: transform calc(var(--transition-duration) * 2) ease-in;
-  }
-
-  .player-enter-from,
-  .player-leave-to {
-    transform: translateY(v-bind(playerHeight));
-  }
-
+:root {
+  --persistent-player-padding: 0px 1rem 0 0 !important;
+  --persistent-player-height: 60px !important;
+  --persistent-player-title-size: 1rem !important;
+  --persistent-player-play-button-height: 38px;
+  --persistent-player-play-button-width: 38px;
   .persistent-player {
-    position: absolute;
+    .track-info-image {
+      width: 60px;
+      max-width: 60px;
+      height: 60px;
+    }
+    .track-info .track-info-details .track-info-title .title div {
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 18px;
+    }
     .track-info-description p {
+      font-size: 11px !important;
+      display: block;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .track-info-livestream {
+      display: none !important;
+    }
+    .play-button,
+    .p-buttonset > .play-button,
+    .p-splitbutton.p-button-secondary > .play-button {
+      color: var(--night-500);
+      background: #ffffff;
+      border: 1px solid var(--background2--500);
+    }
   }
+}
+</style>
+
+<style lang="scss" scoped>
+.persistent-player {
+  bottom: var(--bottom-menu-height);
+  z-index: 9999;
+
+  .expandedFooter {
+    background-color: var(--red-500);
+
+    display: block;
+    position: fixed;
+    height: 100px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+.player-enter-active {
+  transition: transform calc(var(--transition-duration) * 2) ease-out;
+}
+
+.player-leave-active {
+  transition: transform calc(var(--transition-duration) * 2) ease-in;
+}
+
+.player-enter-from,
+.player-leave-to {
+  transform: translateY(v-bind(playerHeight));
 }
 </style>
