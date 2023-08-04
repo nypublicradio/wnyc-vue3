@@ -153,18 +153,12 @@ jobs:
       - ruby/install-deps:
           app-dir: ios/App
       - setup_npmrc
-      - restore_cache:
-          key: *npm_key
       - run:
           name: Capacitor Setup
           command: |
             npm ci
             npm run generate
             npx cap sync
-      - save_cache:
-          paths:
-            - node_modules
-          key: *npm_key
       - run:
           name: fastlane
           command: |
