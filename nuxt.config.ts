@@ -1,8 +1,8 @@
 export default {
   modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image', '@hypernym/nuxt-gsap'],
   supabase: {
-    url: process.env.NUXT_ENV_SUPABASE_URL,
-    key: process.env.NUXT_ENV_SUPABASE_KEY,
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
     redirect: false,
   },
   image: {
@@ -113,10 +113,10 @@ export default {
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',
       environment: process.env.environment ?? 'demo',
-      supabaseUrl: process.env.NUXT_ENV_SUPABASE_URL,
-      supabaseKey: process.env.NUXT_ENV_SUPABASE_KEY,
-      supabaseAuthSignInRedirectTo: process.env.NUXT_ENV_SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
-      supabaseAuthTokenName: process.env.NUXT_ENV_SUPABASE_AUTH_TOKEN_NAME,
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
+      supabaseAuthSignInRedirectTo: process.env.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
+      supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
     }
   },
 
