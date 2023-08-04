@@ -33,7 +33,7 @@ const togglePlay = () => {
           alt="show poster image"
           class="image"
         />
-        <WnycLoader v-else class="image-loader-anim" size="30%" />
+        <WnycLoader v-else class="image-loader-anim" size="30%" bg />
       </transition>
     </div>
     <div class="content w-full">

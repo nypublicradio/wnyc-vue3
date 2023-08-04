@@ -1,14 +1,18 @@
 <script setup>
 const props = defineProps({
   size: {
-    default: '100%',
     type: String,
+    default: '100%',
+  },
+  bg: {
+    type: Boolean,
+    default: false,
   },
 })
 </script>
 
 <template>
-  <div class="wnyc-loader">
+  <div class="wnyc-loader" :class="[{ bg: props.bg }]">
     <div class="svg-holder">
       <svg class="svg" x="0px" y="0px" viewBox="0 0 75.1 30">
         <rect id="b4" x="38.7" y="22" class="st1" width="16.9" height="30" />
@@ -22,24 +26,26 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .wnyc-loader {
-  background: -moz-radial-gradient(
-    center,
-    ellipse cover,
-    rgba(rgb(222, 30, 61), 0.3) 0%,
-    rgba(rgb(222, 30, 61), 0) 100%
-  );
-  background: -webkit-radial-gradient(
-    center,
-    ellipse cover,
-    rgba(rgb(222, 30, 61), 0.3) 0%,
-    rgba(rgb(222, 30, 61), 0) 100%
-  );
-  background: radial-gradient(
-    ellipse at center,
-    rgba(rgb(222, 30, 61), 0.3) 0%,
-    rgba(rgb(222, 30, 61), 0) 100%
-  );
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 );
+  &.bg {
+    background: -moz-radial-gradient(
+      center,
+      ellipse cover,
+      rgba(rgb(222, 30, 61), 0.3) 0%,
+      rgba(rgb(222, 30, 61), 0) 100%
+    );
+    background: -webkit-radial-gradient(
+      center,
+      ellipse cover,
+      rgba(rgb(222, 30, 61), 0.3) 0%,
+      rgba(rgb(222, 30, 61), 0) 100%
+    );
+    background: radial-gradient(
+      ellipse at center,
+      rgba(rgb(222, 30, 61), 0.3) 0%,
+      rgba(rgb(222, 30, 61), 0) 100%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 );
+  }
 
   .svg-holder {
     position: relative;
@@ -88,23 +94,25 @@ const props = defineProps({
 </style>
 <style lang="scss">
 .style-mode-dark .wnyc-loader {
-  background: -moz-radial-gradient(
-    center,
-    ellipse cover,
-    rgba(rgb(255, 255, 255), 0.3) 0%,
-    rgba(rgb(255, 255, 255), 0) 100%
-  );
-  background: -webkit-radial-gradient(
-    center,
-    ellipse cover,
-    rgba(rgb(255, 255, 255), 0.3) 0%,
-    rgba(rgb(255, 255, 255), 0) 100%
-  );
-  background: radial-gradient(
-    ellipse at center,
-    rgba(rgb(255, 255, 255), 0.3) 0%,
-    rgba(rgb(255, 255, 255), 0) 100%
-  );
+  &.bg {
+    background: -moz-radial-gradient(
+      center,
+      ellipse cover,
+      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0) 100%
+    );
+    background: -webkit-radial-gradient(
+      center,
+      ellipse cover,
+      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0) 100%
+    );
+    background: radial-gradient(
+      ellipse at center,
+      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0) 100%
+    );
+  }
   .svg-holder .svg .st1 {
     fill: #ffffff;
   }
