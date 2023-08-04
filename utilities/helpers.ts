@@ -1,4 +1,4 @@
-import format from 'date-fns/format'
+import { format } from 'date-fns'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
@@ -238,11 +238,7 @@ function getOrdinalSuffix(i) {
  * to get the desired date format for the header
  */
 export function getDate() {
-  const date = new Date();
-  const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const monthname = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-  return `${weekday[date.getDay()]}, ${monthname[date.getMonth()]} ${getOrdinalSuffix(date.getDate())}`;
+  return format(new Date(), 'EEE, MMM do')
 }
 
 /**
