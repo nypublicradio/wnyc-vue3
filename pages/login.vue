@@ -3,6 +3,12 @@ import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/compo
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
+definePageMeta({
+  pageTransition: {
+    name: 'login',
+  },
+})
+
 const router = useRouter()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()

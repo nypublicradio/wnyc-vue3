@@ -1,0 +1,16 @@
+.login-enter-active {
+    transition: all 1s ease-out 1s;
+}
+
+.login-leave-active {
+    transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+// .login-enter-from {
+//     transform: translateX(-100%);
+// }
+
+.login-enter-from,
+.login-leave-to {
+    transform: translateX(100%);
+}

@@ -6,6 +6,13 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 const router = useRouter()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
+
+definePageMeta({
+  pageTransition: {
+    name: 'login',
+  },
+})
+
 useHead({
   bodyAttrs: {
     class: 'background2',

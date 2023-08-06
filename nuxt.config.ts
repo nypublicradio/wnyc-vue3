@@ -1,4 +1,5 @@
-export default {
+export default defineNuxtConfig({
+
   modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image', '@hypernym/nuxt-gsap'],
   supabase: {
     url: process.env.SUPABASE_URL,
@@ -34,6 +35,8 @@ export default {
 
 
   app: {
+    //pageTransition: { name: 'rotate', mode: 'out-in' },
+    pageTransition: true,
     head: {
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -127,4 +130,4 @@ export default {
     vscode: {},
     // ...other options
   }
-};
+})
