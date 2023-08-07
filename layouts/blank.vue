@@ -1,5 +1,11 @@
 <script setup>
 const route = useRoute()
+
+useHead({
+  bodyAttrs: {
+    class: 'template-blank',
+  },
+})
 </script>
 <template>
   <div class="page" :class="[`${String(route.name)}`]">
@@ -13,7 +19,7 @@ const route = useRoute()
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 body {
   background: var(--background);
   transform: none;
@@ -57,7 +63,7 @@ body {
     position: relative !important;
   }
   main {
-    margin-top: $headerHeight; // account for the sticky header height
+    margin-top: 0;
     padding-bottom: calc(
       $bottomMenuHeight + $playerHeight
     ); // account for the sticky bottom menu

@@ -3,6 +3,16 @@ import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/compo
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
+definePageMeta({
+  layout: 'blank',
+  pageTransition: {
+    name: 'login',
+  },
+  layoutTransition: {
+    name: 'login',
+  },
+})
+
 const router = useRouter()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -25,19 +35,23 @@ useHead({
           aria-label="back to previous page"
           @click="
             () => {
-              router.go(-1)
+              navigateTo('/home')
             }
           "
         />
         <h1>Log in</h1>
       </div>
+      <p>
+        Don't have an account yet?
+        <VFlexibleLink to="/signup">Sign up</VFlexibleLink>
+      </p>
       <VLoginWithProvider
         :client="client"
         :config="config"
         provider="google"
         label="Log in with Google"
         severity="secondary"
-        class="center mb-3"
+        class="center my-3"
       />
 
       <VLoginWithProvider
@@ -64,20 +78,6 @@ useHead({
                 >Forgot password?</VFlexibleLink
               >
             </p>
-          </div>
-          <div class="mt-6">
-            <p class="my-2 text-center">Don't have an account yet?</p>
-            <Button
-              class="w-full"
-              label="Sign up"
-              severity="secondary"
-              rounded
-              @click="
-                () => {
-                  navigateTo('/signup')
-                }
-              "
-            />
           </div>
         </template>
       </VLoginWithEmail>

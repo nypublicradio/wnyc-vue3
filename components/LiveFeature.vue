@@ -7,19 +7,26 @@ import {
   useCurrentEpisodeHolder,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
+
 const togglePlay = () => {
-  if (!currentEpisode.value) {
+  if (currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug) {
     currentEpisode.value = currentEpisodeHolder.value
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
   trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')
 }
+
+onMounted(async () => {
+  await nextTick()
+  updateAllLiveStreams()
+})
 </script>
 
 <template>
@@ -42,6 +49,7 @@ const togglePlay = () => {
           v-if="currentEpisodeHolder"
           class="flex flex-column gap-2 justify-content-center"
         >
+          <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
           <h2>{{ currentEpisodeHolder?.title }}</h2>
           <div
             class="blurb truncate t2lines"

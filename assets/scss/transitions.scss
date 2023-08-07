@@ -1,0 +1,26 @@
+.login-enter-active {
+    transition: all $transitionDuration ease-out $transitionDuration;
+}
+
+.login-leave-active {
+    transition: all $transitionDuration ease-in;
+}
+
+.login-enter-from {
+    transform: translateX(-100%);
+}
+.login-leave-to {
+    transform: translateX(100%);
+}
+
+.refresh-enter-active,
+.refresh-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.refresh-enter-from {
+    opacity: 0;
+}
+.refresh-leave-to {
+    opacity: 0;
+}

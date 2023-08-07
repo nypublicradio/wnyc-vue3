@@ -235,7 +235,10 @@ watch(isEpisodePlaying, (e) => {
   --persistent-player-title-size: 1rem !important;
   --persistent-player-play-button-height: 38px;
   --persistent-player-play-button-width: 38px;
+
   .persistent-player {
+    bottom: var(--bottom-menu-height);
+    z-index: 9999;
     .track-info-image {
       width: 60px;
       max-width: 60px;
@@ -265,14 +268,14 @@ watch(isEpisodePlaying, (e) => {
       border: 1px solid var(--background2--500);
     }
   }
+  .template-blank .persistent-player {
+    bottom: 0;
+  }
 }
 </style>
 
 <style lang="scss" scoped>
 .persistent-player {
-  bottom: var(--bottom-menu-height);
-  z-index: 9999;
-
   .expandedFooter {
     background-color: var(--red-500);
 

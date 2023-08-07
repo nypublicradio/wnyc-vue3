@@ -6,6 +6,17 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 const router = useRouter()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
+
+definePageMeta({
+  layout: 'blank',
+  pageTransition: {
+    name: 'login',
+  },
+  layoutTransition: {
+    name: 'login',
+  },
+})
+
 useHead({
   bodyAttrs: {
     class: 'background2',
@@ -25,7 +36,7 @@ useHead({
           aria-label="back to previous page"
           @click="
             () => {
-              router.go(-1)
+              navigateTo('/home')
             }
           "
         />

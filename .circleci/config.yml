@@ -108,8 +108,7 @@ jobs:
             npm run test      
 
   test_nginx:
-    docker:
-      - image: node:18.14.2-slim
+    executor: default
     parameters:
       env:
         type: enum
@@ -153,6 +152,8 @@ jobs:
       - ruby/install-deps:
           app-dir: ios/App
       - setup_npmrc
+      - node/install:
+          node-version: 16.14.2
       - run:
           name: Capacitor Setup
           command: |
@@ -196,7 +197,7 @@ jobs:
           app-dir: android
           key: *android_gems_key
       - node/install:
-          node-version: 18.14.2
+          node-version: 16.14.2
       - setup_npmrc
       - android/restore-gradle-cache
       - android/decode-keystore:
@@ -284,7 +285,7 @@ commands:
 executors:
   default:
     docker:
-      - image: cimg/node:16.14.2
+      - image: node:16.14.2-slim
     environment: 
       JOBS: 2
   macosg2:

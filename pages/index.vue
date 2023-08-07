@@ -7,10 +7,6 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'blank',
-})
-
-definePageMeta({
   middleware: 'check-auth-provider',
 })
 

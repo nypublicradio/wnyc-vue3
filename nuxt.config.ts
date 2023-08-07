@@ -1,4 +1,5 @@
-export default {
+export default defineNuxtConfig({
+
   modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image', '@hypernym/nuxt-gsap'],
   supabase: {
     url: process.env.SUPABASE_URL,
@@ -34,6 +35,9 @@ export default {
 
 
   app: {
+    //pageTransition: { name: 'rotate', mode: 'out-in' },
+    pageTransition: true,
+    layoutTransition: true,
     head: {
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -119,12 +123,4 @@ export default {
       supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
     }
   },
-
-  devtools: {
-    // Enable devtools (default: true)
-    enabled: false,
-    // VS Code Server options
-    vscode: {},
-    // ...other options
-  }
-};
+})
