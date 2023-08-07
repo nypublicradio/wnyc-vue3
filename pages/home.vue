@@ -5,6 +5,7 @@ const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 
 definePageMeta({
+  layout: 'default',
   middleware: 'check-auth',
 })
 </script>

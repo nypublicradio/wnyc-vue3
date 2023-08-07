@@ -33,7 +33,7 @@ useHead({
           aria-label="back to previous page"
           @click="
             () => {
-              router.go(-1)
+              navigateTo('/home')
             }
           "
         />

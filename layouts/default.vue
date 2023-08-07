@@ -113,7 +113,7 @@ const config = useRuntimeConfig()
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .content {
   z-index: 10;
   position: relative;
