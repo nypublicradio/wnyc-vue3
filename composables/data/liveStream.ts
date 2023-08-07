@@ -15,7 +15,6 @@ export async function updateLiveStream(slug: string) {
 
 
 export async function updateAllLiveStreams() {
-    console.log('updateAllLiveStreams')
     const config = useRuntimeConfig()
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()

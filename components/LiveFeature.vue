@@ -14,8 +14,7 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
-console.log('currentEpisode = ', currentEpisode.value?.slug)
-console.log('currentEpisodeHolder = ', currentEpisodeHolder.value?.slug)
+
 const togglePlay = () => {
   if (currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug) {
     currentEpisode.value = currentEpisodeHolder.value
