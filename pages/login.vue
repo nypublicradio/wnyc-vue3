@@ -38,13 +38,17 @@ useHead({
         />
         <h1>Log in</h1>
       </div>
+      <p>
+        Don't have an account yet?
+        <VFlexibleLink to="/signup">Sign up</VFlexibleLink>
+      </p>
       <VLoginWithProvider
         :client="client"
         :config="config"
         provider="google"
         label="Log in with Google"
         severity="secondary"
-        class="center mb-3"
+        class="center my-3"
       />
 
       <VLoginWithProvider
@@ -71,20 +75,6 @@ useHead({
                 >Forgot password?</VFlexibleLink
               >
             </p>
-          </div>
-          <div class="mt-6">
-            <p class="my-2 text-center">Don't have an account yet?</p>
-            <Button
-              class="w-full"
-              label="Sign up"
-              severity="secondary"
-              rounded
-              @click="
-                () => {
-                  navigateTo('/signup')
-                }
-              "
-            />
           </div>
         </template>
       </VLoginWithEmail>
