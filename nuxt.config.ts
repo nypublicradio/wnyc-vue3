@@ -123,12 +123,4 @@ export default defineNuxtConfig({
       supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
     }
   },
-
-  devtools: {
-    // Enable devtools (default: true)
-    enabled: false,
-    // VS Code Server options
-    vscode: {},
-    // ...other options
-  }
 })
