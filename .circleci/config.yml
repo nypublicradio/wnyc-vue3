@@ -283,7 +283,7 @@ commands:
 executors:
   default:
     docker:
-      - image: cimg/node:16.14.2
+      - image: node:16.14.2-slim
     environment: 
       JOBS: 2
   macosg2:
