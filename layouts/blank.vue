@@ -69,15 +69,4 @@ body {
     ); // account for the sticky bottom menu
   }
 }
-
-.top-safe-cover {
-  height: env(safe-area-inset-top);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  background-color: transparentize(#de1e3d, 0.1);
-  backdrop-filter: blur(5px);
-}
 </style>

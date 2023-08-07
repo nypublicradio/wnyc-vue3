@@ -44,6 +44,9 @@ useHead({
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
+  bodyAttrs: {
+    class: 'safe-area-padding',
+  },
 })
 
 // handles the permissions for push notifications in the app
