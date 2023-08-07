@@ -43,7 +43,7 @@ RUN apt-get update \
     python-setuptools \
     unzip
 
-RUN pip install supervisor
+RUN pip3 install supervisor
 
 COPY --chown=www:www scripts/entrypoint.sh ./scripts/entrypoint.sh
 

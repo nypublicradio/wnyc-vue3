@@ -152,6 +152,8 @@ jobs:
       - ruby/install-deps:
           app-dir: ios/App
       - setup_npmrc
+      - node/install:
+          node-version: 16.14.2
       - run:
           name: Capacitor Setup
           command: |
