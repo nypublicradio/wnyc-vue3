@@ -57,7 +57,7 @@ body {
     position: relative !important;
   }
   main {
-    margin-top: $headerHeight; // account for the sticky header height
+    margin-top: 0;
     padding-bottom: calc(
       $bottomMenuHeight + $playerHeight
     ); // account for the sticky bottom menu
