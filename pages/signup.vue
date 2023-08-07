@@ -8,6 +8,7 @@ const client = useSupabaseClient()
 const config = useRuntimeConfig()
 
 definePageMeta({
+  layout: 'blank',
   pageTransition: {
     name: 'login',
   },

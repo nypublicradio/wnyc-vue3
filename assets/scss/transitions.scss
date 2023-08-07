@@ -1,16 +1,26 @@
 .login-enter-active {
-    transition: all 1s ease-out 1s;
+    transition: all $transitionDuration ease-out $transitionDuration;
 }
 
 .login-leave-active {
-    transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all $transitionDuration cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-// .login-enter-from {
-//     transform: translateX(-100%);
-// }
-
-.login-enter-from,
+.login-enter-from {
+    transform: translateX(-100%);
+}
 .login-leave-to {
     transform: translateX(100%);
+}
+
+.refresh-enter-active,
+.refresh-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.refresh-enter-from {
+    opacity: 0;
+}
+.refresh-leave-to {
+    opacity: 0;
 }
