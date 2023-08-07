@@ -1,5 +1,11 @@
 <script setup>
 const route = useRoute()
+
+useHead({
+  bodyAttrs: {
+    class: 'template-blank',
+  },
+})
 </script>
 <template>
   <div class="page" :class="[`${String(route.name)}`]">

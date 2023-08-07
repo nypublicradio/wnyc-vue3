@@ -2,6 +2,11 @@
 import VSmartHeader from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VSmartHeader.vue'
 const route = useRoute()
 const config = useRuntimeConfig()
+useHead({
+  bodyAttrs: {
+    class: 'template-default',
+  },
+})
 </script>
 
 <template>

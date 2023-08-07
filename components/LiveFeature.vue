@@ -24,7 +24,8 @@ const togglePlay = () => {
   trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick()
   updateAllLiveStreams()
 })
 </script>
