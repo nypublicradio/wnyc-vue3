@@ -46,6 +46,7 @@ useHead({
   ],
 })
 
+// handles the permissions for push notifications in the app
 const checkNotificationPermisstions = async () => {
   if (isApp.value) {
     // Request permission to use push notifications
