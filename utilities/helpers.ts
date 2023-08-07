@@ -2,6 +2,11 @@ import { format } from 'date-fns'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
+import {
+  NativeSettings,
+  AndroidSettings,
+  IOSSettings,
+} from 'capacitor-native-settings'
 const directoryToSaveTo = Directory.External
 
 // format ISO timestamp to return only the time
@@ -291,4 +296,12 @@ export const setDisplaySettings = (data) => {
 // generate a random number between min and max
 export const getRandomNumber = (min, max) => {
   return Math.random() * (max - min) + min
+}
+
+// will take the user to their native os system settings
+export const toSystemSettings = () => {
+  NativeSettings.open({
+    optionAndroid: AndroidSettings.ApplicationDetails,
+    optionIOS: IOSSettings.App,
+  })
 }

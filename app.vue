@@ -9,11 +9,7 @@ import {
   Token,
 } from '@capacitor/push-notifications'
 import { LocalNotifications } from '@capacitor/local-notifications'
-import {
-  NativeSettings,
-  AndroidSettings,
-  IOSSettings,
-} from 'capacitor-native-settings'
+
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
 const { isDesktop } = useDevice()
@@ -50,6 +46,39 @@ useHead({
   ],
 })
 
+const checkNotificationPermisstions = async () => {
+  if (isApp.value) {
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    await PushNotifications.requestPermissions().then((result) => {
+      alert('push request' + JSON.stringify(result))
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register()
+        acceptNotifications.value = true
+      } else {
+        //alert('Error Reguistering push notifications')
+        acceptNotifications.value = false
+      }
+    })
+
+    // Check permission to use push notifications for ANDROID ONLY
+    if (Capacitor.getPlatform() === 'android') {
+      await LocalNotifications.requestPermissions().then((result) => {
+        alert('local request = ' + JSON.stringify(result))
+        if (result.display === 'granted') {
+          PushNotifications.register()
+          acceptNotifications.value = true
+        } else {
+          acceptNotifications.value = false
+        }
+      })
+    }
+  }
+}
+
+// adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   await checkNotificationPermisstions()
 
@@ -109,45 +138,6 @@ const addListeners = async () => {
 //   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
 //   alert('App opened with URL: ' + JSON.stringify(url))
 // }
-
-const checkNotificationPermisstions = async () => {
-  if (isApp.value) {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    await PushNotifications.requestPermissions().then((result) => {
-      alert('push request' + JSON.stringify(result))
-      if (result.receive === 'granted') {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register()
-        acceptNotifications.value = true
-      } else {
-        //alert('Error Reguistering push notifications')
-        acceptNotifications.value = false
-      }
-    })
-
-    // Check permission to use push notifications for ANDROID ONLY
-    if (Capacitor.getPlatform() === 'android') {
-      await LocalNotifications.requestPermissions().then((result) => {
-        alert('local request = ' + JSON.stringify(result))
-        if (result.display === 'granted') {
-          PushNotifications.register()
-          acceptNotifications.value = true
-        } else {
-          acceptNotifications.value = false
-        }
-      })
-    }
-  }
-}
-
-const toSystemSettings = async () => {
-  NativeSettings.open({
-    optionAndroid: AndroidSettings.ApplicationDetails,
-    optionIOS: IOSSettings.App,
-  })
-}
 
 onMounted(async () => {
   //initially load all the streams
