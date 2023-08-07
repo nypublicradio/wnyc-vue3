@@ -37,6 +37,7 @@ export default defineNuxtConfig({
   app: {
     //pageTransition: { name: 'rotate', mode: 'out-in' },
     pageTransition: true,
+    layoutTransition: true,
     head: {
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },

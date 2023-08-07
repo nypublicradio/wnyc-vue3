@@ -23,22 +23,22 @@ body {
   background-attachment: fixed;
   max-height: unset !important;
   position: relative !important;
-  // &.hide-header {
-  //   header {
-  //     display: none;
-  //   }
-  //   main {
-  //     margin-top: 0;
-  //   }
-  // }
-  // &.hide-bottom-menu {
-  //   .bottom-menu {
-  //     display: none;
-  //   }
-  //   main {
-  //     padding-bottom: 0px; // account for the sticky bottom menu
-  //   }
-  // }
+  &.hide-header {
+    header {
+      display: none;
+    }
+    main {
+      margin-top: 0;
+    }
+  }
+  &.hide-bottom-menu {
+    .bottom-menu {
+      display: none;
+    }
+    main {
+      padding-bottom: 0px; // account for the sticky bottom menu
+    }
+  }
   &.background2 {
     background: var(--background2);
     .p-divider .p-divider-content {

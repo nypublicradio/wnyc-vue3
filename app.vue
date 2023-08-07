@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { trackClickEvent } from '~/utilities/helpers'
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import {
@@ -22,6 +23,8 @@ const config = useRuntimeConfig()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
+
+const settingsSideBar = useSettingSideBar()
 
 const fcmToken = ref('')
 //const nNotification = ref(null)
@@ -149,7 +152,6 @@ const toSystemSettings = async () => {
 onMounted(async () => {
   //initially load all the streams
   await nextTick()
-
   updateAllLiveStreams()
 
   // if APP then add listeners
@@ -208,4 +210,50 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <Sidebar
+    v-model:visible="settingsSideBar"
+    :baseZIndex="10000"
+    position="right"
+    class="w-full"
+    blockScroll
+    id="settings-sidebar"
+    @hide="
+      () => {
+        trackClickEvent(
+          'Click Tracking - Settings Sidebar Close Button',
+          'Settings Sidebar',
+          `close sidebar`
+        )
+      }
+    "
+  >
+    <template #header><h1 class="font-medium">Settings</h1></template>
+    <Settings />
+  </Sidebar>
+  <AudioPlayer />
 </template>
+
+<style lang="scss">
+#settings-sidebar {
+  background-color: var(--background2);
+  .p-sidebar-header {
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    justify-content: space-between;
+  }
+  .p-sidebar-content {
+    padding: 0;
+  }
+  .p-sidebar-close {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .p-sidebar-close,
+  .p-sidebar-close .p-icon {
+    width: 18px;
+    height: 18px;
+    path {
+      fill: var(--night);
+    }
+  }
+}
+</style>

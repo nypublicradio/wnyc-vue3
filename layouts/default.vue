@@ -108,7 +108,6 @@ const config = useRuntimeConfig()
         <slot />
       </div>
     </main>
-    <AudioPlayer />
     <BottomMenu />
   </div>
 </template>

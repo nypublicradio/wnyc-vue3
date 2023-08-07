@@ -12,6 +12,9 @@ definePageMeta({
   pageTransition: {
     name: 'login',
   },
+  layoutTransition: {
+    name: 'login',
+  },
 })
 
 useHead({

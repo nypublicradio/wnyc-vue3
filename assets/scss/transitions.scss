@@ -3,7 +3,7 @@
 }
 
 .login-leave-active {
-    transition: all $transitionDuration cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all $transitionDuration ease-in;
 }
 
 .login-enter-from {

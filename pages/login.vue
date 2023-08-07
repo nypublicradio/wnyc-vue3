@@ -8,6 +8,9 @@ definePageMeta({
   pageTransition: {
     name: 'login',
   },
+  layoutTransition: {
+    name: 'login',
+  },
 })
 
 const router = useRouter()
