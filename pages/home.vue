@@ -25,7 +25,6 @@ definePageMeta({
       </ClientOnly> -->
 
     <LiveFeature />
-    <!-- <StreamSwitcher /> -->
     <!-- <div class="grid gap-3">
         <div class="col">
           <MainPlayer />

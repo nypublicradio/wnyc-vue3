@@ -76,6 +76,7 @@ watch(
     width: 100%;
     display: flex;
     justify-content: space-around;
+    align-items: flex-start;
     .p-button {
       border-radius: 0 !important;
       font-size: 13px;

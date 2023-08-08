@@ -44,6 +44,9 @@ useHead({
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
+  bodyAttrs: {
+    class: 'safe-area-padding',
+  },
 })
 
 // handles the permissions for push notifications in the app
@@ -276,6 +279,7 @@ useHead({
 
 <style lang="scss">
 #settings-sidebar {
+  padding-top: env(safe-area-inset-top);
   background-color: var(--background2);
   .p-sidebar-header {
     padding: 0.75rem 0.75rem 0.75rem 1.25rem;

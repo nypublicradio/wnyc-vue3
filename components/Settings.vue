@@ -415,7 +415,7 @@ const onClickDisabled = (elm = 'field') => {
   }
   .settings-message {
     position: absolute;
-    top: 0;
+    top: calc(env(safe-area-inset-top) + 40px);
     left: 0;
     right: 0;
   }
