@@ -68,9 +68,9 @@ body {
   background-color: transparentize(#ffffff, 0.1);
   backdrop-filter: blur(5px);
 }
-.safe-area-padding {
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
+// .safe-area-padding {
+//   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+// }
 
 section {
   width: 100%;
