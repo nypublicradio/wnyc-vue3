@@ -62,8 +62,8 @@ const settingsSideBar = useSettingSideBar()
 <style lang="scss">
 .the-header {
   background: var(--header-background);
-  backdrop-filter: blur(5px);
-  border: 1px solid var(--shade-400);
+  //backdrop-filter: blur(5px);
+  border-bottom: 1px solid var(--shade-400);
 
   .pi-bars {
     color: var(--text-color);

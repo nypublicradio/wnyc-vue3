@@ -65,3 +65,9 @@ definePageMeta({
     </section>
   </div>
 </template>
+
+<style lang="scss">
+.top-safe-cover {
+  background: var(--dark-blue-500);
+}
+</style>
