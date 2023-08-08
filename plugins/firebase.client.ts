@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 
 export default defineNuxtPlugin(nuxtApp => {
-    const config = useRuntimeConfig()
+    //const config = useRuntimeConfig()
 
     const firebaseConfig = {
         apiKey: 'AIzaSyB4to38Hl9td4RQmpyAgHMLt1M9HKKEczg',
@@ -11,4 +11,5 @@ export default defineNuxtPlugin(nuxtApp => {
     };
 
     const app = initializeApp(firebaseConfig)
+    //initializeApp(firebaseConfig)
 })

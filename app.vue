@@ -55,11 +55,11 @@ const checkNotificationPermisstions = async () => {
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
-    await PushNotifications.requestPermissions().then(async (result) => {
+    await PushNotifications.requestPermissions().then((result) => {
       alert('push request' + JSON.stringify(result))
       if (result.receive === 'granted') {
         // Register with Apple / Google to receive push via APNS/FCM
-        await PushNotifications.register()
+        PushNotifications.register()
         acceptNotifications.value = true
       } else {
         //alert('Error Reguistering push notifications')
@@ -68,17 +68,17 @@ const checkNotificationPermisstions = async () => {
     })
 
     //Check permission to use push notifications for ANDROID ONLY
-    // if (Capacitor.getPlatform() === 'android') {
-    //   await LocalNotifications.requestPermissions().then((result) => {
-    //     alert('local request = ' + JSON.stringify(result))
-    //     if (result.display === 'granted') {
-    //       //PushNotifications.register()
-    //       acceptNotifications.value = true
-    //     } else {
-    //       acceptNotifications.value = false
-    //     }
-    //   })
-    // }
+    if (Capacitor.getPlatform() === 'android') {
+      await LocalNotifications.requestPermissions().then((result) => {
+        alert('local request = ' + JSON.stringify(result))
+        if (result.display === 'granted') {
+          PushNotifications.register()
+          acceptNotifications.value = true
+        } else {
+          acceptNotifications.value = false
+        }
+      })
+    }
   }
 }
 
