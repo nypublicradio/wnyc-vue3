@@ -55,11 +55,11 @@ const checkNotificationPermisstions = async () => {
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
-    await PushNotifications.requestPermissions().then((result) => {
+    await PushNotifications.requestPermissions().then(async (result) => {
       alert('push request' + JSON.stringify(result))
       if (result.receive === 'granted') {
         // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register()
+        await PushNotifications.register()
         acceptNotifications.value = true
       } else {
         //alert('Error Reguistering push notifications')
@@ -67,18 +67,18 @@ const checkNotificationPermisstions = async () => {
       }
     })
 
-    // Check permission to use push notifications for ANDROID ONLY
-    if (Capacitor.getPlatform() === 'android') {
-      await LocalNotifications.requestPermissions().then((result) => {
-        alert('local request = ' + JSON.stringify(result))
-        if (result.display === 'granted') {
-          PushNotifications.register()
-          acceptNotifications.value = true
-        } else {
-          acceptNotifications.value = false
-        }
-      })
-    }
+    //Check permission to use push notifications for ANDROID ONLY
+    // if (Capacitor.getPlatform() === 'android') {
+    //   await LocalNotifications.requestPermissions().then((result) => {
+    //     alert('local request = ' + JSON.stringify(result))
+    //     if (result.display === 'granted') {
+    //       //PushNotifications.register()
+    //       acceptNotifications.value = true
+    //     } else {
+    //       acceptNotifications.value = false
+    //     }
+    //   })
+    // }
   }
 }
 
@@ -158,7 +158,7 @@ onMounted(async () => {
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       //console.log('focused tab =', event)
-      checkNotificationPermisstions()
+      //checkNotificationPermisstions()
       updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
