@@ -25,7 +25,6 @@ definePageMeta({
       </ClientOnly> -->
 
     <LiveFeature />
-    <!-- <StreamSwitcher /> -->
     <!-- <div class="grid gap-3">
         <div class="col">
           <MainPlayer />
@@ -65,9 +64,3 @@ definePageMeta({
     </section>
   </div>
 </template>
-
-<style lang="scss">
-.top-safe-cover {
-  background: var(--dark-blue-500);
-}
-</style>

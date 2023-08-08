@@ -13,7 +13,6 @@ definePageMeta({
   },
 })
 
-const router = useRouter()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 useHead({
@@ -84,8 +83,3 @@ useHead({
     </section>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.login {
-}
-</style>

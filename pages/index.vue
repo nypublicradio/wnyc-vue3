@@ -71,7 +71,7 @@ onMounted(() => {
 .loading-holder {
   display: flex;
   position: absolute;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   left: 0;
   right: 0;
