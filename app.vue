@@ -279,6 +279,7 @@ useHead({
 
 <style lang="scss">
 #settings-sidebar {
+  padding-top: env(safe-area-inset-top);
   background-color: var(--background2);
   .p-sidebar-header {
     padding: 0.75rem 0.75rem 0.75rem 1.25rem;

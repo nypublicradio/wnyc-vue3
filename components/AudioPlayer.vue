@@ -268,8 +268,13 @@ watch(isEpisodePlaying, (e) => {
       border: 1px solid var(--background2--500);
     }
   }
-  .template-blank .persistent-player {
-    bottom: 0;
+  .template-blank {
+    .persistent-player {
+      bottom: 0;
+    }
+    .expandedFooter {
+      bottom: 0 !important;
+    }
   }
 }
 </style>
@@ -278,13 +283,19 @@ watch(isEpisodePlaying, (e) => {
 .persistent-player {
   .expandedFooter {
     background-color: var(--red-500);
-
     display: block;
     position: fixed;
-    height: 100px;
+    height: 45px;
     bottom: 0;
     left: 0;
     width: 100%;
+    transition: bottom $transitionDuration;
+    -webkit-transition: bottom $transitionDuration;
+  }
+  &.expanded {
+    .expandedFooter {
+      bottom: $bottomMenuHeight;
+    }
   }
 }
 .player-enter-active {

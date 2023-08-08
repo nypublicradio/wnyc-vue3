@@ -25,42 +25,44 @@ onMounted(() => {
       <section v-if="isLoading" class="loading-holder">
         <WnycLoader class="loader-anim" />
       </section>
-      <section v-else class="index-page flex flex-column pb-8">
-        <WnycLogo class="w-12rem m-auto my-7" />
-        <h1 class="headline">What's new?</h1>
-        <ul class="list m-auto mt-4 mb-7">
-          <li>Listen to WNYC's Live Radio Stream</li>
-          <li>Get the latest news updates</li>
-          <li>Stream your favorite podcasts</li>
-          <li>Read local news from Gothamist</li>
-          <li>Follow your favorite shows</li>
-        </ul>
-        <h1 class="headline mb-4">Get started!</h1>
-        <div class="text-center flex flex-column gap-3">
-          <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
-            <Button
-              class="w-full"
-              label="Create Free Account"
-              rounded
-              size="small"
-            />
-          </VFlexibleLink>
-          <p>or</p>
-          <VFlexibleLink raw to="/login" class="w-13rem m-auto">
-            <Button
-              class="w-full"
-              label="Log in"
-              rounded
-              size="small"
-              severity="secondary"
-            />
-          </VFlexibleLink>
-          <p>
-            <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create an
-            account later.
-          </p>
-        </div>
-      </section>
+      <div v-else class="index-page flex">
+        <section class="flex flex-column pb-6">
+          <WnycLogo class="w-12rem m-auto mb-7 flex-none" />
+          <h1 class="headline">What's new?</h1>
+          <ul class="list m-auto mt-4 mb-7">
+            <li>Listen to WNYC's Live Radio Stream</li>
+            <li>Get the latest news updates</li>
+            <li>Stream your favorite podcasts</li>
+            <li>Read local news from Gothamist</li>
+            <li>Follow your favorite shows</li>
+          </ul>
+          <h1 class="headline mb-4">Get started!</h1>
+          <div class="text-center flex flex-column gap-3">
+            <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
+              <Button
+                class="w-full"
+                label="Create Free Account"
+                rounded
+                size="small"
+              />
+            </VFlexibleLink>
+            <p>or</p>
+            <VFlexibleLink raw to="/login" class="w-13rem m-auto">
+              <Button
+                class="w-full"
+                label="Log in"
+                rounded
+                size="small"
+                severity="secondary"
+              />
+            </VFlexibleLink>
+            <p>
+              <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
+              an account later.
+            </p>
+          </div>
+        </section>
+      </div>
     </Transition>
   </div>
 </template>
@@ -86,6 +88,7 @@ onMounted(() => {
   }
 }
 .index-page {
+  height: 100dvh;
   .headline {
     font-size: 30px;
     text-align: center;
