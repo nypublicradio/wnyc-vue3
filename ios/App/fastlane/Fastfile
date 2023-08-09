@@ -150,6 +150,7 @@ platform :ios do
       aws_device_farm(
         name: "first ios app test project",
         run_name: ENV['CIRCLE_BUILD_NUM'],
+        wait_for_completion: false,
       )
       slack(
         channel: "#releases",
