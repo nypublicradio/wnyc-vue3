@@ -1,5 +1,5 @@
 <script setup>
-import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
+//import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
 
 // const currentUser = useCurrentUser()
 // const currentUserProfile = useCurrentUserProfile()
