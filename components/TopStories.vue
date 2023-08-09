@@ -51,14 +51,15 @@ const normalizeAuthor = (author) => {
         :src="getImageUrl(article)"
         :title="article.title"
         :blurb="article.description"
-        loading="eager"
+        :loading="index > 1 ? 'lazy' : 'eager'"
         :link="getArticleLink(article)"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
         :width="318"
         :height="212"
-        verticalMobile
+        :vertical="true"
+        reverse
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',

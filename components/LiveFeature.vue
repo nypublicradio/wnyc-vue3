@@ -66,7 +66,7 @@ onMounted(async () => {
           />
         </div>
         <div
-          class="skeleton-holder flex flex-column justify-content-center w-full absolute"
+          class="skeleton-holder flex flex-column justify-content-center w-full"
           v-else
         >
           <Skeleton
