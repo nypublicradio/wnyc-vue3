@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ruby: circleci/ruby@1.8.0
+  ruby: circleci/ruby@2.1.0
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
 
@@ -160,17 +160,10 @@ jobs:
     steps:
       - checkout
       - setup_mobile_env
-      - restore_cache:
-          keys:
-            - v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
-            - v1-gem-cache-{{ arch }}-{{ .Branch }}
-            - v1-gem-cache-{{ arch }}-
-      - run: bundle install --path vendor/bundle
-      - run: bundle clean --force
-      - save_cache:
+      - ruby/install-deps:
+          app-dir: ios/App
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
-          paths:
-            - vendor/bundle
+          clean-bundle: true
       - setup_npmrc
       - node/install:
           node-version: 16.14.2
