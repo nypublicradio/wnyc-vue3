@@ -1,8 +1,8 @@
 <script setup>
 import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
 
-const currentUser = useCurrentUser()
-const currentUserProfile = useCurrentUserProfile()
+// const currentUser = useCurrentUser()
+// const currentUserProfile = useCurrentUserProfile()
 
 definePageMeta({
   layout: 'default',
