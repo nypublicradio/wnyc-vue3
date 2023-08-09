@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import PlayIcon from '~/components/icons/PlayIcon.vue'
 import PauseIcon from '~/components/icons/PauseIcon.vue'
 import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'

@@ -30,8 +30,7 @@ const allCurrentStations = useAllCurrentStations()
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 
-let gotStream = false
-const slug = ref(props.slug)
+const slug = props.slug
 const streamsMenu = ref(null)
 
 const streamItems = ref([])
@@ -41,7 +40,7 @@ const toggleMenu = async (event) => {
 }
 
 // lifecycle hooks
-onBeforeMount(async () => {
+onBeforeMount(() => {
   updateAllLiveStreams().then(() => {
     allCurrentStations.value.forEach((stream) => {
       streamItems.value.push({

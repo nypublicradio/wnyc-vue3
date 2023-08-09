@@ -26,7 +26,7 @@ const localUserProfileDefault = useLocalUserProfileDefault()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 const imageUploadModal = shallowRef(false)
-const isDisabled = shallowRef(props.disabled)
+const isDisabled = props.disabled
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
@@ -42,9 +42,9 @@ const onLogIn = () => {
 const onLogOut = async () => {
   // sign out from supabase
   const { error } = await client.auth.signOut()
-  // if (error) {
-  //     console.log('error')
-  // }
+  if (error) {
+    alert('Error logging out')
+  }
 
   // set the currentUser composable to null
   currentUser.value = null
@@ -70,18 +70,18 @@ const onSignUp = () => {
     ''
   )
 }
-
+// handles the modal on avatar image when clicked
 const handleModal = () => {
-  if (!isDisabled.value) {
+  if (!isDisabled) {
     imageUploadModal.value = true
+    trackClickEvent(
+      'Click Tracking - Avatar Image link',
+      'Settings Sidebar - user section',
+      'request to upload image'
+    )
   } else {
     emit('onDisabled')
   }
-  trackClickEvent(
-    'Click Tracking - Avatar Image link',
-    'Settings Sidebar - user section',
-    'request to upload image'
-  )
 }
 </script>
 

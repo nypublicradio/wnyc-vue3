@@ -48,6 +48,7 @@ watch(allCurrentStations, (val) => {
 })
 
 let initialNoPlayToggleFlag = false
+// handles the dropdown change event
 const onDropdownChange = async (event) => {
   await updateLiveStream(event.value.slug)
   // update slug
