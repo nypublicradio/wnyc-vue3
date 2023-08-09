@@ -7,6 +7,7 @@ orbs:
 
 android_gems_key: &android_gems_key
   gems-{{ checksum "android/Gemfile.lock" }}
+
 npm_key: &npm_key
   npm-{{ checksum "package-lock.json" }}
 gradle_key: &gradle_key
@@ -160,11 +161,14 @@ jobs:
       - checkout
       - setup_mobile_env
       - restore_cache:
-          key: v1-gem-cache-{{ checksum "ios/App/Gemfile.lock" }}  
-      - ruby/install-deps:
-          app-dir: ios/App
+          keys:
+            - v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
+            - v1-gem-cache-{{ arch }}-{{ .Branch }}
+            - v1-gem-cache-{{ arch }}-
+      - run: bundle install --path vendor/bundle
+      - run: bundle clean --force
       - save_cache:
-          key: v1-gem-cache-{{ checksum "ios/App/Gemfile.lock" }}
+          key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
           paths:
             - vendor/bundle
       - setup_npmrc
