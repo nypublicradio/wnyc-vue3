@@ -1,8 +1,8 @@
 <script setup>
-import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
+//import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
 
-const currentUser = useCurrentUser()
-const currentUserProfile = useCurrentUserProfile()
+// const currentUser = useCurrentUser()
+// const currentUserProfile = useCurrentUserProfile()
 
 definePageMeta({
   layout: 'default',
@@ -26,9 +26,6 @@ definePageMeta({
 
     <LiveFeature />
     <!-- <div class="grid gap-3">
-        <div class="col">
-          <MainPlayer />
-        </div>
         <div class="col-fixed ad300 hidden lg:block">
           <div class="htlad-wnyc_rectangle"></div>
         </div>
@@ -37,30 +34,9 @@ definePageMeta({
         </div>
       </div> -->
 
-    <!-- <section>
-      <OnTodaysShow />
-    </section>
     <section>
-      <h2 class="font-bold font-meta mb-2">Top stories from Gothamist</h2>
-      <TopStories class="pt-6" />
-    </section> -->
-    <section>
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page <br />Home
-      Page <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />Home Page <br />Home Page <br />Home Page <br />Home Page
-      <br />
+      <h2 class="font-bold font-meta mt-4">Top stories from Gothamist</h2>
+      <TopStories class="pt-2" />
     </section>
   </div>
 </template>

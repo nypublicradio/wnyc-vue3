@@ -4,8 +4,8 @@ import {
     useLocalUserProfileDefault
 } from '~/composables/states'
 import { setDisplaySettings } from '~/utilities/helpers'
+import { Preferences } from '@capacitor/preferences'
 export default defineNuxtRouteMiddleware(async () => {
-    //console.log('checking auth')
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
     const localUserProfileDefault = useLocalUserProfileDefault()
@@ -26,7 +26,6 @@ export default defineNuxtRouteMiddleware(async () => {
         if (error) {
             console.error(error)
         } else if (data) {
-            //console.log('data = ', data)
             currentUserProfile.value = data
             //set display settings
             setDisplaySettings(data)
@@ -36,11 +35,10 @@ export default defineNuxtRouteMiddleware(async () => {
 
     // check local storage for the auth token
     if (process.client) {
-        const supabaseAuthToken = JSON.parse(
-            localStorage.getItem(config.supabaseAuthTokenName)
-        )
-        if (supabaseAuthToken) {
-            currentUser.value = supabaseAuthToken.user
+        const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
+
+        if (supabaseAuthToken.value) {
+            currentUser.value = JSON.stringify(supabaseAuthToken.user)
         }
 
         // check supabase session for logged in user
@@ -53,12 +51,15 @@ export default defineNuxtRouteMiddleware(async () => {
             // initially set default user profile settings or use the local storage settings
 
             // does local storage settings exist?
-            if (!localStorage.getItem('localUserProfile')) {
+            const isLocalUserProfile = await Preferences.get({ key: 'localUserProfile' }).value
+            if (!isLocalUserProfile) {
                 // no, set defaults from localUserProfileDefault state
-                localStorage.setItem(
-                    'localUserProfile',
-                    JSON.stringify(localUserProfileDefault.value)
-                )
+
+                const localUserProfileDefaultSTRING = JSON.stringify(localUserProfileDefault.value)
+                await Preferences.set({
+                    key: 'localUserProfile',
+                    value: localUserProfileDefaultSTRING
+                })
                 currentUserProfile.value = {}
                 currentUserProfile.value = localUserProfileDefault.value
                 //set display settings
@@ -67,11 +68,10 @@ export default defineNuxtRouteMiddleware(async () => {
                 // local storage is set, so set currentUserProfile to the local storage settings
 
                 currentUserProfile.value = {}
-                currentUserProfile.value = JSON.parse(
-                    localStorage.getItem('localUserProfile')
-                )
+                currentUserProfile.value = await Preferences.get({ key: 'localUserProfile' })
+
                 //set display settings
-                setDisplaySettings(currentUserProfile.value)
+                setDisplaySettings(JSON.parse(currentUserProfile.value))
             }
             navigateTo('/home')
 

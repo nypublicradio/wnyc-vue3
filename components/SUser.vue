@@ -26,7 +26,6 @@ const localUserProfileDefault = useLocalUserProfileDefault()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 const imageUploadModal = shallowRef(false)
-const isDisabled = shallowRef(props.disabled)
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
@@ -41,9 +40,10 @@ const onLogIn = () => {
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
   // sign out from supabase
-  const { error } = await client.auth.signOut()
+  await client.auth.signOut()
+  //const { error } = await client.auth.signOut()
   // if (error) {
-  //     console.log('error')
+  //   alert('Error logging out')
   // }
 
   // set the currentUser composable to null
@@ -53,9 +53,6 @@ const onLogOut = async () => {
   currentUserProfile.value = localUserProfileDefault.value
   // set display settings
   setDisplaySettings(localUserProfileDefault.value)
-
-  // clear localStorage
-  //localStorage.clear()
 
   settingsSideBar.value = false
   trackClickEvent(
@@ -73,20 +70,18 @@ const onSignUp = () => {
     ''
   )
 }
-//console.log('currentUser = ', currentUser.value)
-//console.log('currentUserProfile = ', currentUserProfile.value)
-
+// handles the modal on avatar image when clicked
 const handleModal = () => {
-  if (!isDisabled.value) {
+  if (!props.disabled) {
     imageUploadModal.value = true
+    trackClickEvent(
+      'Click Tracking - Avatar Image link',
+      'Settings Sidebar - user section',
+      'request to upload image'
+    )
   } else {
     emit('onDisabled')
   }
-  trackClickEvent(
-    'Click Tracking - Avatar Image link',
-    'Settings Sidebar - user section',
-    'request to upload image'
-  )
 }
 </script>
 
@@ -96,7 +91,7 @@ const handleModal = () => {
       :image="currentUserProfile?.avatar_image_url"
       size="large"
       :style="`
-        cursor: ${isDisabled ? 'default' : 'pointer'};
+        cursor: ${props.disabled ? 'default' : 'pointer'};
       `"
       shape="circle"
       @click="handleModal"

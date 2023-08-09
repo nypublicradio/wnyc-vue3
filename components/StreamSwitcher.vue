@@ -48,11 +48,10 @@ watch(allCurrentStations, (val) => {
 })
 
 let initialNoPlayToggleFlag = false
+// handles the dropdown change event
 const onDropdownChange = async (event) => {
-  //console.log('event = ', event)
   await updateLiveStream(event.value.slug)
   // update slug
-  //console.log('currentEpisodeHolder = ', currentEpisodeHolder)
   currentStreamStation.value = currentEpisodeHolder.value.slug
   if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
     initialNoPlayToggleFlag = true

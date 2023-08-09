@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import PlayIcon from '~/components/icons/PlayIcon.vue'
 import PauseIcon from '~/components/icons/PauseIcon.vue'
 import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
@@ -13,10 +13,9 @@ import {
 import { trackClickEvent } from '~/utilities/helpers'
 
 // had to install howler.js locally and add this import to stop it from breaking the build
-import { Howl, Howler } from 'howler'
+//import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
-//console.log('currentEpisode', currentEpisode)
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
@@ -53,7 +52,6 @@ const switchEpisode = () => {
 }
 
 watch(currentEpisode, () => {
-  //console.log('currentEpisode = ', currentEpisode.value)
   switchEpisode()
 })
 
@@ -89,7 +87,6 @@ watch(isEpisodePlaying, (e) => {
     timer = null
   }
 })
-//console.log('currentEpisode = ', currentEpisode.value)
 </script>
 
 <template>

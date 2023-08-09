@@ -44,7 +44,6 @@ export const resizePublisherImage = (url, w, h, q = 80) => {
 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
-  //console.log(category, component, label)
   $analytics.sendEvent('click_tracking', {
     event_category: category,
     component: component,
@@ -118,7 +117,6 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
   // Fetch the MP3 file as a Blob
   const response = await fetch(file.file);
   const mp3Blob = await response.blob();
-  //console.log('mp3Blob = ', mp3Blob)
 
   // Read the Blob as a data URL using FileReader
   const reader = new FileReader();
@@ -132,7 +130,6 @@ export const fetchAndStoreMp3 = async (file: { file: string; title: string; deta
       //create a parralel browser local storage for this data, and bes to add it to the delete function.
       setTimeout(async () => {
 
-        //await console.log('fileSystemLS = ', fileSystemLS.value)
         // slight delay is needed for the fileSystem to update
         const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
         const filesArr: any = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
@@ -264,7 +261,6 @@ export function capitalizeFirstLetter(str) {
  * helper function to change the global font size
  */
 export function setFontSize(size: string) {
-  //console.log('set size = ', size)
   document.documentElement.style.fontSize = size;
 }
 

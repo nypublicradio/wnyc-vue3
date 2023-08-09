@@ -8,7 +8,6 @@ const { data: articles } = await useFetch(config.public.STORIES_API)
 
 // returns an Aviary image template string
 const getImageUrl = (article) => {
-  //console.log('article - ', article)
   const listingImage =
     article.lead_asset?.[0]?.value?.image ??
     article.lead_asset?.[0]?.value?.default_image
@@ -43,7 +42,6 @@ const normalizeAuthor = (author) => {
     url: author.slug && `https://gothamist.com/staff/${author.slug}`,
   }
 }
-//console.log(articles.value.items[0])
 </script>
 
 <template>
@@ -53,14 +51,15 @@ const normalizeAuthor = (author) => {
         :src="getImageUrl(article)"
         :title="article.title"
         :blurb="article.description"
-        loading="eager"
+        :loading="index > 1 ? 'lazy' : 'eager'"
         :link="getArticleLink(article)"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
         :width="318"
         :height="212"
-        verticalMobile
+        :vertical="true"
+        reverse
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',
