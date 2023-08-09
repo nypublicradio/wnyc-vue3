@@ -44,6 +44,16 @@ workflows:
           <<: *filter_all
           requires:
             - build
+      - ios:
+          name: AWS Device Farm
+          context: 
+            - "AWS Deploy"
+            - ios
+            - xcode
+          FASTLANE_LANE: aws_device_farm
+          <<: *filter_all
+          requires:
+            - test
       - deploy:
           name: Deploy (demo)
           context: "AWS Deploy"
