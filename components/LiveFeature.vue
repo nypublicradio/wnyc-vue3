@@ -43,7 +43,10 @@ onMounted(async () => {
           alt="show poster image"
           class="image"
         />
-        <WnycLoader v-else class="image-loader-anim" size="30%" bg />
+        <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
+        <!-- <div v-else class="image-loader-anim">
+          <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        </div> -->
       </transition>
     </div>
     <div class="content w-full relative">

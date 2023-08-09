@@ -8,13 +8,26 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  spinner: {
+    type: Boolean,
+    default: false,
+  },
+  color: {
+    type: String,
+    default: 'var(--primary-color)',
+  },
 })
 </script>
 
 <template>
-  <div class="wnyc-loader" :class="[{ bg: props.bg }]">
-    <div class="svg-holder">
-      <svg class="svg" x="0px" y="0px" viewBox="0 0 75.1 30">
+  <div class="wnyc-loader" :class="[{ bg: props.bg, spinner: props.spinner }]">
+    <div class="svg-holder flex">
+      <i
+        v-if="props.spinner"
+        class="pi pi-spin pi-spinner"
+        :style="`font-size: ${props.size}; color: ${props.color};`"
+      ></i>
+      <svg v-else class="svg" x="0px" y="0px" viewBox="0 0 75.1 30">
         <rect id="b4" x="38.7" y="22" class="st1" width="16.9" height="30" />
         <rect id="b3" x="58.1" y="22" class="st1" width="16.9" height="30" />
         <rect id="b2" x="19.4" y="22" class="st1" width="16.9" height="30" />
@@ -66,6 +79,17 @@ const props = defineProps({
         fill: var(--primary-color, #de1e3d);
         transform: translateY(-30);
       }
+    }
+    .pi-spinner {
+      animation: fa-spin 0.5s infinite linear;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      width: v-bind(size);
+      height: v-bind(size);
     }
   }
 
