@@ -2,6 +2,8 @@
 import {
   useCurrentUser
 } from '~/composables/states'
+import { Capacitor } from '@capacitor/core'
+import { Preferences } from '@capacitor/preferences'
 
 export default defineNuxtRouteMiddleware(async () => {
 
@@ -10,6 +12,9 @@ export default defineNuxtRouteMiddleware(async () => {
   const currentUser = useCurrentUser()
   const redirectSlug = '/home'
   const user = await client.auth.getSession()
+
+  const isApp = shallowRef(Capacitor.getPlatform() !== 'web')
+  console.log('isApp', isApp.value)
 
   // update the user's profile (name and image) if they signed up with google
   const updateUser = async () => {
@@ -27,10 +32,9 @@ export default defineNuxtRouteMiddleware(async () => {
 
   if (process.client) {
     // check local storage for the auth token
-    const supabaseAuthToken = JSON.parse(
-      window.localStorage.getItem(config.supabaseAuthTokenName)
-    )
-    if (supabaseAuthToken) {
+    const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
+
+    if (supabaseAuthToken.value) {
       currentUser.value = supabaseAuthToken.user
     }
 
@@ -42,7 +46,8 @@ export default defineNuxtRouteMiddleware(async () => {
     // redirect to home if the user is logged in
     if (currentUser.value) {
       await updateUser()
-      window.location.href = redirectSlug
+      //window.location.href = redirectSlug
+      navigateTo(redirectSlug)
     }
 
     // sometimes the supabase token doesn't get detected right away when magic links are used
@@ -58,7 +63,8 @@ export default defineNuxtRouteMiddleware(async () => {
         //('currentUser setTimeout found', currentUser.value)
         // for some reason, navigateTo doesn't work here?!
         await updateUser()
-        window.location.href = redirectSlug
+        //window.location.href = redirectSlug
+        navigateTo(redirectSlug)
       }
 
 

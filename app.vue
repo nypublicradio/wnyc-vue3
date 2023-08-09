@@ -56,7 +56,7 @@ const checkNotificationPermisstions = async () => {
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
     await PushNotifications.requestPermissions().then((result) => {
-      alert('push request' + JSON.stringify(result))
+      //alert('push request' + JSON.stringify(result))
       if (result.receive === 'granted') {
         // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register()
@@ -70,7 +70,7 @@ const checkNotificationPermisstions = async () => {
     //Check permission to use push notifications for ANDROID ONLY
     if (Capacitor.getPlatform() === 'android') {
       await LocalNotifications.requestPermissions().then((result) => {
-        alert('local request = ' + JSON.stringify(result))
+        //alert('local request = ' + JSON.stringify(result))
         if (result.display === 'granted') {
           PushNotifications.register()
           acceptNotifications.value = true
@@ -89,12 +89,12 @@ const addListeners = async () => {
   // On success, we should be able to receive notifications
   await PushNotifications.addListener('registration', (token: Token) => {
     fcmToken.value = token.value
-    alert('Push registration success, token: ' + token.value)
+    //alert('Push registration success, token: ' + token.value)
   })
 
   // Some issue with our setup and push will not work
   await PushNotifications.addListener('registrationError', (error: any) => {
-    alert('Error on registration: ' + JSON.stringify(error))
+    //alert('Error on registration: ' + JSON.stringify(error))
   })
 
   // Show us the notification payload if the app is open on our device
@@ -102,7 +102,7 @@ const addListeners = async () => {
     'pushNotificationReceived',
     (notification: PushNotificationSchema) => {
       //nNotification.value = notification
-      alert('Push received: ' + JSON.stringify(notification))
+      //alert('Push received: ' + JSON.stringify(notification))
     }
   )
 
@@ -111,7 +111,7 @@ const addListeners = async () => {
     'pushNotificationActionPerformed',
     (notification: ActionPerformed) => {
       //nNotification.value = notification
-      alert('Push action performed: ' + JSON.stringify(notification))
+      //alert('Push action performed: ' + JSON.stringify(notification))
       const slug = notification.notification.data.slug
       if (slug) {
         router.push(`/${slug}`)

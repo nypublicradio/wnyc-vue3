@@ -9,6 +9,9 @@ const config: CapacitorConfig = {
     androidScheme: 'https'
   },
   plugins: {
+    CapacitorCookies: {
+      enabled: true,
+    },
     SplashScreen: {
       splashBackgroundColor: "#e01e3f",
       iconBackgroundColor: "#e01e3f",
@@ -20,9 +23,6 @@ const config: CapacitorConfig = {
       androidScaleType: "CENTER_CROP",
       splashFullScreen: true,
       splashImmersive: true,
-    },
-    CapacitorCookies: {
-      enabled: true
     },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"]

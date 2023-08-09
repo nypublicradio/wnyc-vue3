@@ -25,7 +25,10 @@ const togglePlay = () => {
 
 onMounted(async () => {
   await nextTick()
-  updateAllLiveStreams()
+  // slight delay is needed for some reason when opening the app with a logged in user
+  setTimeout(() => {
+    updateAllLiveStreams()
+  }, 100)
 })
 </script>
 

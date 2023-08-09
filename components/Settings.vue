@@ -20,6 +20,7 @@ import {
   updateAllLiveStreams,
   updateLiveStream,
 } from '~/composables/data/liveStream'
+import { Preferences } from '@capacitor/preferences'
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -107,10 +108,11 @@ const updateProfile = async () => {
     }
   } else {
     //console.log('local storage update')
-    localStorage.setItem(
-      'localUserProfile',
-      JSON.stringify(currentUserProfile.value)
-    )
+    const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
+    await Preferences.set({
+      key: 'localUserProfile',
+      value: currentUserProfileSTRING,
+    })
     setTimeout(() => {
       showMessage()
     }, 1000)
