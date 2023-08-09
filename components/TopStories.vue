@@ -8,7 +8,6 @@ const { data: articles } = await useFetch(config.public.STORIES_API)
 
 // returns an Aviary image template string
 const getImageUrl = (article) => {
-  //console.log('article - ', article)
   const listingImage =
     article.lead_asset?.[0]?.value?.image ??
     article.lead_asset?.[0]?.value?.default_image
@@ -43,7 +42,6 @@ const normalizeAuthor = (author) => {
     url: author.slug && `https://gothamist.com/staff/${author.slug}`,
   }
 }
-//console.log(articles.value.items[0])
 </script>
 
 <template>

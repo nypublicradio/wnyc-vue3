@@ -2,7 +2,6 @@
 import {
   useCurrentUser
 } from '~/composables/states'
-import { Capacitor } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
 
 export default defineNuxtRouteMiddleware(async () => {
@@ -12,9 +11,6 @@ export default defineNuxtRouteMiddleware(async () => {
   const currentUser = useCurrentUser()
   const redirectSlug = '/home'
   const user = await client.auth.getSession()
-
-  const isApp = shallowRef(Capacitor.getPlatform() !== 'web')
-  console.log('isApp', isApp.value)
 
   // update the user's profile (name and image) if they signed up with google
   const updateUser = async () => {
@@ -46,7 +42,6 @@ export default defineNuxtRouteMiddleware(async () => {
     // redirect to home if the user is logged in
     if (currentUser.value) {
       await updateUser()
-      //window.location.href = redirectSlug
       navigateTo(redirectSlug)
     }
 
@@ -61,9 +56,7 @@ export default defineNuxtRouteMiddleware(async () => {
       if (currentUser.value) {
 
         //('currentUser setTimeout found', currentUser.value)
-        // for some reason, navigateTo doesn't work here?!
         await updateUser()
-        //window.location.href = redirectSlug
         navigateTo(redirectSlug)
       }
 

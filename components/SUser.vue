@@ -54,9 +54,6 @@ const onLogOut = async () => {
   // set display settings
   setDisplaySettings(localUserProfileDefault.value)
 
-  // clear localStorage
-  //localStorage.clear()
-
   settingsSideBar.value = false
   trackClickEvent(
     'Click Tracking - logout button',
@@ -73,8 +70,6 @@ const onSignUp = () => {
     ''
   )
 }
-//console.log('currentUser = ', currentUser.value)
-//console.log('currentUserProfile = ', currentUserProfile.value)
 
 const handleModal = () => {
   if (!isDisabled.value) {

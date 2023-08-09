@@ -14,8 +14,6 @@ const segments = computed(
   () => currentEpisodeHolder?.value?.onTodaysShowSegments
 )
 
-//console.log('currentEpisodeHolder = ', currentEpisodeHolder)
-
 const segmentsToShow = ref(3)
 
 const trackHeadlineEvent = (headline) => {

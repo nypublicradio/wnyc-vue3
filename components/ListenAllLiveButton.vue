@@ -50,7 +50,6 @@ onBeforeMount(async () => {
         slug: stream.attributes.slug,
         image: stream.attributes['image-logo'],
         command: async () => {
-          //console.log('command - ', stream.attributes.slug)
           slug.value = stream.attributes.slug
           await updateLiveStream(stream.attributes.slug)
           currentEpisode.value = currentEpisodeHolder.value

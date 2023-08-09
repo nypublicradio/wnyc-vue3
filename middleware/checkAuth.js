@@ -6,7 +6,6 @@ import {
 import { setDisplaySettings } from '~/utilities/helpers'
 import { Preferences } from '@capacitor/preferences'
 export default defineNuxtRouteMiddleware(async () => {
-    //console.log('checking auth')
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
     const localUserProfileDefault = useLocalUserProfileDefault()
@@ -27,7 +26,6 @@ export default defineNuxtRouteMiddleware(async () => {
         if (error) {
             console.error(error)
         } else if (data) {
-            //console.log('data = ', data)
             currentUserProfile.value = data
             //set display settings
             setDisplaySettings(data)

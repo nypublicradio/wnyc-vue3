@@ -21,7 +21,6 @@ export async function updateAllLiveStreams() {
     const currentUserProfile = useCurrentUserProfile()
 
     const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
-    //console.log('fetchData = ', fetchData)
 
     const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
         //const fetchingAll = await Promise.all(fetchDataImport?.data.map(async (stream) => {
@@ -37,7 +36,6 @@ export async function updateAllLiveStreams() {
     allCurrentStations.value = fetchingAll.filter(Boolean)
     //allCurrentStations.value = allCurrentStationsImport
 
-    //console.log('allCurrentStations value', allCurrentStations.value)
     // set initial stream with the `currentStreamStation` value in the states.ts file
     const initialStation = allCurrentStations.value.find(
         (option) => {
@@ -89,7 +87,7 @@ const formatShowData = (apiResponse) => {
         details = airingData.attributes.description
         titleLink = airingData.attributes.href
     }
-    //console.log('episodeData image tample', formatPublisherImageUrl(episodeData?.attributes['image-main'].template))
+
     const formattedData = {
         details,
         detailsLink: showData ? showData.attributes.url : null,

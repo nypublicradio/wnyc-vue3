@@ -157,8 +157,7 @@ onMounted(async () => {
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
-      //console.log('focused tab =', event)
-      //checkNotificationPermisstions()
+      checkNotificationPermisstions()
       updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
@@ -169,7 +168,6 @@ onMounted(async () => {
   //refresh data every time the cursor enters the window on desktop only
   if (isDesktop) {
     document.addEventListener('pointerenter', () => {
-      //console.log('pointerenter = ', event)
       updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {

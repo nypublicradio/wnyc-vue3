@@ -83,7 +83,6 @@ const updateProfile = async () => {
   // update supabase and local storage
 
   if (currentUser.value) {
-    //console.log('supabase update')
     const { error } = await client
       .from('profiles')
       .upsert({
@@ -107,7 +106,6 @@ const updateProfile = async () => {
       showMessage()
     }
   } else {
-    //console.log('local storage update')
     const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
     await Preferences.set({
       key: 'localUserProfile',

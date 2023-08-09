@@ -16,7 +16,6 @@ import { trackClickEvent } from '~/utilities/helpers'
 import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
-//console.log('currentEpisode', currentEpisode)
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
@@ -53,7 +52,6 @@ const switchEpisode = () => {
 }
 
 watch(currentEpisode, () => {
-  //console.log('currentEpisode = ', currentEpisode.value)
   switchEpisode()
 })
 
@@ -89,7 +87,6 @@ watch(isEpisodePlaying, (e) => {
     timer = null
   }
 })
-//console.log('currentEpisode = ', currentEpisode.value)
 </script>
 
 <template>
