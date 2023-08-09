@@ -13,7 +13,7 @@ import {
 import { trackClickEvent } from '~/utilities/helpers'
 
 // had to install howler.js locally and add this import to stop it from breaking the build
-//import { Howl, Howler } from 'howler'
+import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -226,6 +226,9 @@ watch(isEpisodePlaying, (e) => {
 </template>
 
 <style lang="scss">
+html.style-mode-dark .persistent-player {
+  background-color: map-get($colors-dark-mode, 'background4') !important;
+}
 :root {
   --persistent-player-padding: 0px 1rem 0 0 !important;
   --persistent-player-height: 60px !important;

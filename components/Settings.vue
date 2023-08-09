@@ -200,7 +200,7 @@ const onClickDisabled = (elm = 'field') => {
 </script>
 
 <template>
-  <div class="settings m-2">
+  <div class="settings">
     <section class="user">
       <SUser :disabled="isDisabled" @onDisabled="onClickDisabled('image')" />
     </section>
@@ -240,6 +240,8 @@ const onClickDisabled = (elm = 'field') => {
       <div class="s-title">Listening Preferences</div>
       <SBox label="Autodownload">
         <VInputSwitch
+          yes="ON"
+          no="OFF"
           static-width
           v-model:data="currentUserProfile.autodownload"
           @change="
@@ -266,6 +268,8 @@ const onClickDisabled = (elm = 'field') => {
       <div class="s-title">Notifications</div>
       <SBox label="General">
         <VInputSwitch
+          yes="ON"
+          no="OFF"
           static-width
           v-model:data="currentUserProfile.receive_general_notifications"
           @change="
@@ -291,6 +295,8 @@ const onClickDisabled = (elm = 'field') => {
       </SBox>
       <SBox label="Dark theme">
         <VInputSwitch
+          yes="ON"
+          no="OFF"
           static-width
           v-model:data="currentUserProfile.dark_mode"
           @change="
@@ -307,9 +313,10 @@ const onClickDisabled = (elm = 'field') => {
       </SBox>
     </section>
     <section class="wnyc p-0">
+      <div class="s-title">WNYC</div>
       <SBox
         label="About WNYC"
-        link="https://www.wnyc.org/"
+        link="/about"
         @linkClick="
           (link) => {
             trackClickEvent(

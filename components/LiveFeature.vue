@@ -46,7 +46,7 @@ onMounted(async () => {
         <WnycLoader v-else class="image-loader-anim" size="30%" bg />
       </transition>
     </div>
-    <div class="content w-full">
+    <div class="content w-full relative">
       <transition name="fade">
         <div
           v-if="currentEpisodeHolder"
@@ -66,7 +66,7 @@ onMounted(async () => {
           />
         </div>
         <div
-          class="skeleton-holder flex flex-column justify-content-center w-full"
+          class="skeleton-holder flex flex-column justify-content-center w-full absolute"
           v-else
         >
           <Skeleton
@@ -78,11 +78,11 @@ onMounted(async () => {
           <div class="w-full desc">
             <Skeleton
               height="13px"
-              width="90%"
+              width="85%"
               borderRadius="16px"
               style="margin-bottom: 6px"
             ></Skeleton>
-            <Skeleton height="13px" width="94%" borderRadius="16px"></Skeleton>
+            <Skeleton height="13px" width="90%" borderRadius="16px"></Skeleton>
           </div>
           <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
         </div>

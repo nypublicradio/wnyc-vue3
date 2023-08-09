@@ -9,7 +9,6 @@ import {
   Token,
 } from '@capacitor/push-notifications'
 import { LocalNotifications } from '@capacitor/local-notifications'
-
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
 const { isDesktop } = useDevice()
@@ -146,6 +145,17 @@ const addListeners = async () => {
 onMounted(async () => {
   //initially load all the streams
   await nextTick()
+
+  // use this to initially set the theme preference
+  if (
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  ) {
+    console.log('dark mode')
+  } else {
+    console.log('light mode')
+  }
+
   updateAllLiveStreams()
 
   // if APP then add listeners

@@ -2,7 +2,7 @@ $maxWidth: 1440px;
 $contentWidth: 1200px;
 $thinContentWidth: 768px;
 $headerHeight: 64px;
-$bottomMenuHeight: 80px;
+$bottomMenuHeight: 60px;
 $playerHeight: 100px;
 $toolsBreakPoint: 472px;
 
@@ -12,6 +12,9 @@ $toolsBreakPoint: 472px;
     --player-height: #{$playerHeight};
     --header-z-index: 900;
     --line-clamp: 3;
+
+    --v-input-switch-slider-size: 1.15rem;
+    //--v-input-switch-padding-buffer: 8px;
 }
 
 // component cssvar theme control and base component overrides
@@ -23,7 +26,7 @@ $toolsBreakPoint: 472px;
     --v-card-title-hover-color: red !important;
     --s-box-background-color: var(--background) !important;
     --s-box-stroke-color: var(--background) !important;
-    --header-background: var(--background) !important;
+    --header-background: #ffffffe6 !important;
     --live-feature-background: var(--background2) !important;
 }
 [data-style-mode='dark'],
@@ -31,6 +34,6 @@ $toolsBreakPoint: 472px;
     --wnyc-logo-color: var(--white, #ffffff) !important;
     --bottom-menu-icon-color: var(--white, #ffffff) !important;
     --s-box-background-color: #ffffff1a !important;
-    --header-background: #{map-get($colors-dark-mode, 'background')} !important;
+    --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
     --live-feature-background: var(--background3) !important;
 }

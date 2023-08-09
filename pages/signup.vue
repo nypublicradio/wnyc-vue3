@@ -29,9 +29,10 @@ useHead({
     <section class="signup">
       <div class="flex mb-4">
         <Button
-          class="back-btn empty -ml-3"
+          class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"
           rounded
+          text
           severity="secondary"
           aria-label="back to previous page"
           @click="
