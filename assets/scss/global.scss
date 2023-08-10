@@ -134,7 +134,7 @@ a:focus {
   -moz-box-shadow: none !important;
 }
 a:visited {
-  color: var(--link-color) !important;
+  color: initial;
 }
 
 .p-skeleton {
