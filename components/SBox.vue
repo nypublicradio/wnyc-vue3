@@ -1,5 +1,6 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import { useSettingSideBar } from '~/composables/states.ts'
 const props = defineProps({
   label: {
     type: String,
@@ -11,20 +12,21 @@ const props = defineProps({
     default: null,
   },
 })
-
+const settingSideBar = useSettingSideBar()
 const emit = defineEmits(['link-click'])
+
+const onClick = () => {
+  emit('link-click', props.link)
+  if (settingSideBar.value) {
+    settingSideBar.value = false
+  }
+}
 </script>
 
 <template>
   <div class="s-box" :class="[{ 'is-link': props.link }]">
     <div class="content flex justify-content-between align-items-center">
-      <VFlexibleLink
-        @click="emit('link-click', link)"
-        v-if="link"
-        raw
-        :to="link"
-        class="w-full"
-      >
+      <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
         <Button :label="label" class="w-full text-left" text />
       </VFlexibleLink>
       <p v-else class="label white-space-nowrap">{{ label }}</p>

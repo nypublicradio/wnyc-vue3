@@ -19,7 +19,7 @@ import ProgressSpinner from 'primevue/progressspinner'
 //import Tooltip from 'primevue/tooltip'
 
 export default defineNuxtPlugin(nuxtApp => {
-    nuxtApp.vueApp.use(PrimeVue, { ripple: true })
+    nuxtApp.vueApp.use(PrimeVue, { ripple: false })
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('Dropdown', Dropdown)
     nuxtApp.vueApp.component('Menubar', Menubar)

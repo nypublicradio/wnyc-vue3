@@ -26,7 +26,7 @@ onMounted(() => {
         <WnycLoader class="loader-anim" />
       </section>
       <div v-else class="index-page flex">
-        <section class="flex flex-column pb-2">
+        <section class="flex flex-column">
           <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
           <h1 class="headline">What's new?</h1>
           <ul class="list m-auto mt-4 mb-6">
@@ -37,7 +37,7 @@ onMounted(() => {
             <li>Follow your favorite shows</li>
           </ul>
           <h1 class="headline mb-4">Get started!</h1>
-          <div class="text-center flex flex-column gap-3">
+          <div class="text-center flex flex-column gap-3 mb-4">
             <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
               <Button
                 class="w-full"
