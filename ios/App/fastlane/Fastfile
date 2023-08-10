@@ -69,9 +69,9 @@ platform :ios do
     )
   end
   
-    desc "Submits a new WNYC Beta Build to Apple TestFlight"
-    lane :beta do
-      begin
+  desc "Submits a new WNYC Beta Build to Apple TestFlight"
+  lane :beta do
+    begin
       clear_derived_data # this step required to clear "exit status: 65" errors during testing
       match(type: "appstore")
       app_store_connect_api_key
@@ -129,6 +129,35 @@ platform :ios do
     end
   end
 
+  lane :aws_device_run_ios do
+    begin
+      ENV['AWS_REGION']            = 'us-west-2'
+      #Build For Testing
+      clear_derived_data # this step required to clear "exit status: 65" errors during testing
+      match(type: "appstore")
+      xcodebuild(
+        scheme: "App",
+        destination: "generic/platform=iOS",
+        configuration: "Release",
+        derivedDataPath: "aws",
+      )
+      # Transform .app into AWS compatible IPA
+      aws_device_farm_package(
+        derrived_data_path: "aws",
+        configuration: "Release"
+      )
+      # RUN tests on AWS Device Farm
+      aws_device_farm(
+        name: "first ios app test project",
+        device_pool: "iOS test deploy",
+        run_name: ENV['CIRCLE_BUILD_NUM'],
+        wait_for_completion: false
+      )
+    rescue => exception
+      on_error(exception)
+    end      
+  end
+  
   def build_and_test_lane
     clear_derived_data # this step required to clear "exit status: 65" errors during testing
     scan(scheme: "App")

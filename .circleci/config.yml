@@ -1,12 +1,13 @@
 version: 2.1
 
 orbs:
-  ruby: circleci/ruby@1.8.0
+  ruby: circleci/ruby@2.1.0
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
 
 android_gems_key: &android_gems_key
   gems-{{ checksum "android/Gemfile.lock" }}
+
 npm_key: &npm_key
   npm-{{ checksum "package-lock.json" }}
 gradle_key: &gradle_key
@@ -44,6 +45,16 @@ workflows:
           <<: *filter_all
           requires:
             - build
+      - ios:
+          name: AWS Device Farm Demo(iOS)
+          context: 
+            - "AWS Deploy"
+            - ios
+            - xcode
+          FASTLANE_LANE: aws_device_run_ios
+          <<: *filter_demo
+          requires:
+            - test
       - deploy:
           name: Deploy (demo)
           context: "AWS Deploy"
@@ -89,10 +100,10 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
+      - node/install-packages
       - run: 
           name: Assert that it builds
           command: |
-            npm ci
             npm run build
 
   test:
@@ -100,10 +111,10 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
+      - node/install-packages
       - run:
           name: Run unit tests
           command: |
-            npm ci
             npx nuxi prepare
             npm run test      
 
@@ -151,13 +162,15 @@ jobs:
       - setup_mobile_env
       - ruby/install-deps:
           app-dir: ios/App
+          key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
+          clean-bundle: true
       - setup_npmrc
       - node/install:
           node-version: 16.14.2
+      - node/install-packages
       - run:
           name: Capacitor Setup
           command: |
-            npm ci
             npm run generate
             npx cap sync
       - run:
@@ -222,9 +235,7 @@ jobs:
             cd android; bundle exec fastlane $FASTLANE_LANE
       - android/save-gradle-cache
       - store_artifacts:
-          path: android/App/output
-      - store_test_results:
-          path: android/App/output/scan
+          path: android/App/build
   deploy:
     docker: 
       - image: circleci/python:3.8
@@ -291,6 +302,6 @@ executors:
   macosg2:
     macos:
       xcode: "14.2.0"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.large.gen1
     environment:
       JOBS: 2
