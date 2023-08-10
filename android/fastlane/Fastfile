@@ -35,7 +35,7 @@ platform :android do
       )
       upload_to_play_store(
         release_status: 'draft',
-        package_name: 'org.wnyc.android'
+        package_name: 'org.wnyc.android',
         track: 'internal-testing'
       ) # upload to Google Play Store
       slack(
