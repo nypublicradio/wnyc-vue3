@@ -9,6 +9,7 @@ import {
   useTogglePlayTrigger,
   useIsPlayerMinimized,
   audioPlayerHeight,
+  useIsStreamLoading,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 
@@ -19,6 +20,7 @@ const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
+const isStreamLoading = useIsStreamLoading()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + 'px')
@@ -111,6 +113,7 @@ watch(isEpisodePlaying, (e) => {
       :file="currentEpisode.file"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
+      @is-loading="isStreamLoading.value = $event"
       can-click-anywhere
     >
       <template #play>

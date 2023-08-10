@@ -143,3 +143,7 @@ a:visited {
     //animation-duration: 0.5s;
   }
 }
+
+.pi-spinner {
+  animation: fa-spin 0.5s infinite linear;
+}

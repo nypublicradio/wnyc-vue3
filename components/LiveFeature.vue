@@ -5,6 +5,7 @@ import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsStreamLoading,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
@@ -12,11 +13,15 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+const isStreamLoading = useIsStreamLoading()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 
 const togglePlay = () => {
-  if (currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug) {
+  if (
+    currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
+    currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
+  ) {
     currentEpisode.value = currentEpisodeHolder.value
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
@@ -65,6 +70,7 @@ onMounted(async () => {
             :label="currentEpisodeHolder?.station"
             live
             :isPLaying="isEpisodePlaying"
+            :isLoading="isStreamLoading"
             @onClick="togglePlay"
           />
         </div>
@@ -94,6 +100,17 @@ onMounted(async () => {
   </div>
 </template>
 
+<style lang="scss">
+// removes extra tags from the blurb
+.live-feature .content {
+  .blurb {
+    *:not(:first-child) {
+      display: none;
+    }
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
 .live-feature {
@@ -121,6 +138,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
     }
   }
 }
+
 @container (max-width: #{$container-breakpoint-xs}) {
   .live-feature {
     .image-holder {

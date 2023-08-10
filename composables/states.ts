@@ -48,6 +48,12 @@ const isEpisodePlaying = false
  */
 export const useIsEpisodePlaying = () => useState('useIsEpisodePlaying', () => isEpisodePlaying)
 
+const isStreamLoading = false
+/**
+ * Global state for the current Howler stream loading.
+ */
+export const useIsStreamLoading = () => useState('useIsStreamLoading', () => isStreamLoading)
+
 const isPlayerMinimized = false
 /**
  * Global state for the audio player minimize.

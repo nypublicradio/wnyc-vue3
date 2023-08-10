@@ -81,7 +81,6 @@ const props = defineProps({
       }
     }
     .pi-spinner {
-      animation: fa-spin 0.5s infinite linear;
       position: absolute;
       top: 0;
       left: 0;
