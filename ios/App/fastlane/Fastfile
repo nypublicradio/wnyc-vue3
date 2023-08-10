@@ -149,6 +149,7 @@ platform :ios do
       # RUN tests on AWS Device Farm
       aws_device_farm(
         name: "first ios app test project",
+        device_pool: "iOS test deploy",
         run_name: ENV['CIRCLE_BUILD_NUM'],
         wait_for_completion: false
       )
