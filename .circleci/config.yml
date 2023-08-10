@@ -87,7 +87,7 @@ workflows:
           context: android
           FASTLANE_LANE: beta
           env: demo
-          <<: *filter_demo
+          <<: *filter_all
           requires:
             - test
 

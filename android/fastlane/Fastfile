@@ -36,6 +36,7 @@ platform :android do
       upload_to_play_store(
         release_status: 'draft',
         package_name: 'org.wnyc.android'
+        track: 'internal-testing'
       ) # upload to Google Play Store
       slack(
         channel: "#releases",
@@ -47,6 +48,25 @@ platform :android do
       on_error(exception)
     end
   end
+
+    lane :aws_device_run_android do
+    begin
+      ENV['AWS_REGION']            = 'us-west-2'
+      gradle(task: 'assembleDebug')
+      gradle(task: 'assembleAndroidTest')
+
+      # RUN tests on AWS Device Farm
+      aws_device_farm(
+        name: "android",
+        device_pool: "baseline",
+        run_name: ENV['CIRCLE_BUILD_NUM'],
+        wait_for_completion: false
+      )
+    rescue => exception
+      on_error(exception)
+    end      
+  end
+
   desc "Deploy a new version to the Google Play"
   lane :deploy do
     gradle(task: "clean assembleRelease")
