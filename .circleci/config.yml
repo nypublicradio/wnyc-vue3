@@ -167,10 +167,10 @@ jobs:
       - setup_npmrc
       - node/install:
           node-version: 16.14.2
+      - node/install-packages
       - run:
           name: Capacitor Setup
           command: |
-            npm ci
             npm run generate
             npx cap sync
       - run:
