@@ -26,10 +26,10 @@ onMounted(() => {
         <WnycLoader class="loader-anim" />
       </section>
       <div v-else class="index-page flex">
-        <section class="flex flex-column pb-6">
-          <WnycLogo class="w-12rem m-auto mb-7 flex-none" />
+        <section class="flex flex-column pb-2">
+          <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
           <h1 class="headline">What's new?</h1>
-          <ul class="list m-auto mt-4 mb-7">
+          <ul class="list m-auto mt-4 mb-6">
             <li>Listen to WNYC's Live Radio Stream</li>
             <li>Get the latest news updates</li>
             <li>Stream your favorite podcasts</li>

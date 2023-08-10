@@ -115,6 +115,7 @@ watch(isEpisodePlaying, (e) => {
       @is-minimized="updateUseIsPlayerMinimized"
       @is-loading="isStreamLoading = $event"
       can-click-anywhere
+      marquee
     >
       <template #play>
         <PlayIcon />
@@ -250,6 +251,7 @@ html.style-mode-dark .persistent-player {
     .track-info .track-info-details .track-info-title .title div {
       font-size: 16px;
       font-style: normal;
+      font-family: var(--font-family-header);
       font-weight: 500;
       line-height: 18px;
     }
