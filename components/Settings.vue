@@ -355,7 +355,7 @@ const onClickDisabled = (elm = 'field') => {
       ></SBox>
       <SBox
         label="Donate"
-        link="https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button"
+        link="https://pledge.wnyc.org/support/wnyc?utm_medium=redirect&utm_source=wnyc&utm_campaign=default&"
         @linkClick="
           (link) => {
             trackClickEvent(

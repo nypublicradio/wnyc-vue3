@@ -25,7 +25,7 @@ onMounted(() => {
       <section v-if="isLoading" class="loading-holder">
         <WnycLoader class="loader-anim" />
       </section>
-      <div v-else class="index-page flex">
+      <div v-else class="index-page flex flex-column">
         <section class="flex flex-column">
           <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
           <h1 class="headline">What's new?</h1>
