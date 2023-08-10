@@ -152,12 +152,6 @@ platform :ios do
         run_name: ENV['CIRCLE_BUILD_NUM'],
         wait_for_completion: false,
       )
-      slack(
-        channel: "#releases",
-        message: "iOS Build sent to AWS Device Farm  :rocket:",
-        default_payloads: [:lane, :test_result, :git_branch, :git_author],
-        success: true
-      )      
     rescue => exception
       on_error(exception)
     end      
