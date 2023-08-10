@@ -36,7 +36,7 @@ platform :android do
       upload_to_play_store(
         release_status: 'draft',
         package_name: 'org.wnyc.android',
-        track: 'internal-testing'
+        track: 'Internal testing'
       ) # upload to Google Play Store
       slack(
         channel: "#releases",
@@ -60,6 +60,8 @@ platform :android do
         name: "android",
         device_pool: "baseline",
         run_name: ENV['CIRCLE_BUILD_NUM'],
+        binary_path: "app/build/outputs/apk/app-debug.apk",
+        test_binary_path: "app/build/outputs/apk/app-debug-androidTest-unaligned.apk",
         wait_for_completion: false
       )
     rescue => exception
