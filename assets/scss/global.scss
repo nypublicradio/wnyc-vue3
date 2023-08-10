@@ -10,6 +10,7 @@ html {
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
+
 body {
   background: var(--background);
   transform: none;
@@ -19,12 +20,9 @@ body {
   background-attachment: fixed;
   max-height: unset !important;
   position: relative !important;
-  &.hide-header {
-    header {
-      display: none;
-    }
+  &.show-header {
     main {
-      margin-top: 0;
+      margin-top: $headerHeight;
     }
   }
   &.hide-bottom-menu {
@@ -53,10 +51,26 @@ body {
     position: relative !important;
   }
   main {
-    margin-top: $headerHeight; // account for the sticky header height
+    //margin-top: $headerHeight; // account for the sticky header height
     padding-bottom: calc($bottomMenuHeight + $playerHeight); // account for the sticky bottom menu
   }
 }
+
+/* Light mode */
+// @media (prefers-color-scheme: light) {
+//     body {
+//         background-color: white;
+//         color: black;
+//     }
+// }
+
+// /* Dark mode */
+// @media (prefers-color-scheme: dark) {
+//     body {
+//         background-color: black;
+//         color: white;
+//     }
+// }
 
 .top-safe-cover {
   height: env(safe-area-inset-top);
@@ -101,10 +115,6 @@ section {
 
 .p-button {
   border-radius: 2rem;
-  &.empty {
-    background: none;
-    border: none;
-  }
   &.center {
     justify-content: center;
     i {
@@ -115,10 +125,25 @@ section {
     }
   }
 }
+.p-button:focus,
+.p-link:focus,
+button:focus,
+a:focus {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+a:visited {
+  color: var(--link-color) !important;
+}
 
 .p-skeleton {
   background: var(--background3);
   &:after {
     //animation-duration: 0.5s;
   }
+}
+
+.pi-spinner {
+  animation: fa-spin 0.5s infinite linear;
 }

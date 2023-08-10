@@ -5,6 +5,7 @@ import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsStreamLoading,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
@@ -12,11 +13,15 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+const isStreamLoading = useIsStreamLoading()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 
 const togglePlay = () => {
-  if (currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug) {
+  if (
+    currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
+    currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
+  ) {
     currentEpisode.value = currentEpisodeHolder.value
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
@@ -43,10 +48,13 @@ onMounted(async () => {
           alt="show poster image"
           class="image"
         />
-        <WnycLoader v-else class="image-loader-anim" size="30%" bg />
+        <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
+        <!-- <div v-else class="image-loader-anim">
+          <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        </div> -->
       </transition>
     </div>
-    <div class="content w-full">
+    <div class="content w-full relative">
       <transition name="fade">
         <div
           v-if="currentEpisodeHolder"
@@ -62,11 +70,12 @@ onMounted(async () => {
             :label="currentEpisodeHolder?.station"
             live
             :isPLaying="isEpisodePlaying"
+            :isLoading="isStreamLoading"
             @onClick="togglePlay"
           />
         </div>
         <div
-          class="skeleton-holder flex flex-column justify-content-center w-full"
+          class="skeleton-holder flex flex-column justify-content-center w-full absolute"
           v-else
         >
           <Skeleton
@@ -78,11 +87,11 @@ onMounted(async () => {
           <div class="w-full desc">
             <Skeleton
               height="13px"
-              width="90%"
+              width="85%"
               borderRadius="16px"
               style="margin-bottom: 6px"
             ></Skeleton>
-            <Skeleton height="13px" width="94%" borderRadius="16px"></Skeleton>
+            <Skeleton height="13px" width="90%" borderRadius="16px"></Skeleton>
           </div>
           <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
         </div>
@@ -90,6 +99,17 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+// removes extra tags from the blurb
+.live-feature .content {
+  .blurb {
+    *:not(:first-child) {
+      display: none;
+    }
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
@@ -118,6 +138,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
     }
   }
 }
+
 @container (max-width: #{$container-breakpoint-xs}) {
   .live-feature {
     .image-holder {

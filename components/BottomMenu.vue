@@ -54,7 +54,7 @@ watch(
             :is="slotProps.option.icon"
             :active="bottomMenuState.value == slotProps.option.value"
           ></component>
-          <p>{{ capitalizeFirstLetter(slotProps.option.value) }}</p>
+          {{ capitalizeFirstLetter(slotProps.option.value) }}
         </div>
       </template>
     </SelectButton>
@@ -75,10 +75,9 @@ watch(
     width: 100%;
     display: flex;
     justify-content: space-around;
-    align-items: flex-start;
+    align-items: center;
     .p-button {
       border-radius: 0 !important;
-      font-size: 13px;
       background-color: rgba(0, 0, 0, 0);
       color: #ffffff;
       border-color: rgba(0, 0, 0, 0);
@@ -107,6 +106,10 @@ watch(
         display: flex;
         flex-direction: column;
         align-items: center;
+        font-size: 12px;
+        line-height: 15px;
+        font-weight: var(--font-weight-500);
+        font-family: var(--font-family-header);
       }
     }
   }

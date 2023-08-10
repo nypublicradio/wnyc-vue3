@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['on-click'])
@@ -38,8 +42,9 @@ const togglePlay = () => {
           :class="[{ live: props.live, paused: !props.isPLaying }]"
         >
           <CircularProgressBar />
-          <PlayIcon v-if="!props.isPLaying" />
-          <PauseIcon v-else />
+          <PlayIcon v-if="!props.isPLaying && !props.isLoading" />
+          <PauseIcon v-if="props.isPLaying && !props.isLoading" />
+          <i v-if="props.isLoading" class="pi pi-spin pi-spinner"></i>
         </div>
       </slot>
       <slot>
@@ -84,6 +89,9 @@ const togglePlay = () => {
       .circular-progress-bar {
         display: none;
       }
+    }
+    .pi-spinner {
+      font-size: 13px;
     }
   }
   .content {

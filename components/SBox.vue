@@ -40,6 +40,8 @@ const emit = defineEmits(['link-click'])
   height: 50px;
   padding: 0 1.25rem;
   border: 1px solid var(--shade-400);
+  border-left: none;
+  border-right: none;
   margin-top: -1px;
   &.is-link {
     padding: 0;
@@ -49,7 +51,6 @@ const emit = defineEmits(['link-click'])
         padding-right: 1.25rem;
         color: var(--night);
         font-weight: var(--font-weight-500);
-        text-decoration: underline;
         &:hover {
           background: var(--background3);
         }

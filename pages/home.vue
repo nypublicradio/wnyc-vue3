@@ -11,6 +11,11 @@ definePageMeta({
   },
   middleware: 'check-auth',
 })
+useHead({
+  bodyAttrs: {
+    class: 'show-header',
+  },
+})
 </script>
 
 <template>

@@ -11,11 +11,13 @@ useHead({
 <template>
   <div class="page" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
-    <header>
-      <VSmartHeader :hero-buffer="800" :resume-delay="0">
-        <TheHeader />
-      </VSmartHeader>
-    </header>
+    <transition name="fade">
+      <header v-if="route.name === 'home'">
+        <VSmartHeader :hero-buffer="400" :resume-delay="0">
+          <TheHeader />
+        </VSmartHeader>
+      </header>
+    </transition>
     <main>
       <div class="content">
         <!-- <input :value="fcmToken" />

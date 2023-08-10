@@ -9,16 +9,19 @@ import {
   useTogglePlayTrigger,
   useIsPlayerMinimized,
   audioPlayerHeight,
+  useIsStreamLoading,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 
 // had to install howler.js locally and add this import to stop it from breaking the build
-//import { Howl, Howler } from 'howler'
+// skipcq: JS-0128
+import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
+const isStreamLoading = useIsStreamLoading()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + 'px')
@@ -111,7 +114,9 @@ watch(isEpisodePlaying, (e) => {
       :file="currentEpisode.file"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
+      @is-loading="isStreamLoading = $event"
       can-click-anywhere
+      marquee
     >
       <template #play>
         <PlayIcon />
@@ -226,6 +231,9 @@ watch(isEpisodePlaying, (e) => {
 </template>
 
 <style lang="scss">
+html.style-mode-dark .persistent-player {
+  background-color: map-get($colors-dark-mode, 'background4') !important;
+}
 :root {
   --persistent-player-padding: 0px 1rem 0 0 !important;
   --persistent-player-height: 60px !important;
@@ -244,6 +252,7 @@ watch(isEpisodePlaying, (e) => {
     .track-info .track-info-details .track-info-title .title div {
       font-size: 16px;
       font-style: normal;
+      font-family: var(--font-family-header);
       font-weight: 500;
       line-height: 18px;
     }
