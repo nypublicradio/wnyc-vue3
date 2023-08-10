@@ -95,6 +95,7 @@ const handleDisabledEmit = () => {
 
 <style lang="scss">
 .s-field {
+  position: relative;
   .p-inplace-display:not(.p-disabled):hover {
     &:hover {
       background: var(--background3);
@@ -114,11 +115,15 @@ const handleDisabledEmit = () => {
   }
   .submit-btn {
     position: absolute;
-    width: 90px;
+
+    width: 80px;
     right: 0;
     bottom: 0;
     top: 0;
-    left: 0;
+    left: -80px;
+  }
+  .p-button {
+    border-radius: 8px;
   }
 }
 </style>
