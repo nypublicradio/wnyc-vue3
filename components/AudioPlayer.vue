@@ -113,7 +113,7 @@ watch(isEpisodePlaying, (e) => {
       :file="currentEpisode.file"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
-      @is-loading="isStreamLoading.value = $event"
+      @is-loading="isStreamLoading = $event"
       can-click-anywhere
     >
       <template #play>

@@ -90,6 +90,9 @@ const togglePlay = () => {
         display: none;
       }
     }
+    .pi-spinner {
+      font-size: 13px;
+    }
   }
   .content {
     font-size: 14px;
