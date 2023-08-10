@@ -329,7 +329,7 @@ const onClickDisabled = (elm = 'field') => {
       ></SBox>
       <SBox
         label="Submit Feedback"
-        link="https://www.wnyc.org/"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/"
         @linkClick="
           (link) => {
             trackClickEvent(
@@ -342,7 +342,7 @@ const onClickDisabled = (elm = 'field') => {
       ></SBox>
       <SBox
         label="Contact Us"
-        link="https://www.wnyc.org/"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/"
         @linkClick="
           (link) => {
             trackClickEvent(
