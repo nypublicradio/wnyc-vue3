@@ -52,6 +52,15 @@ workflows:
           <<: *filter_demo
           requires:
             - test
+      - android:
+          name: AWS Device Farm Demo(Android)
+          context: 
+            - "AWS Deploy"
+            - android
+          FASTLANE_LANE: aws_device_run_android
+          <<: *filter_all
+          requires:
+            - test
       - deploy:
           name: Deploy (demo)
           context: "AWS Deploy"
@@ -84,7 +93,7 @@ workflows:
           context: android
           FASTLANE_LANE: beta
           env: demo
-          <<: *filter_all
+          <<: *filter_demo
           requires:
             - test
 
