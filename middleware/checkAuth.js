@@ -65,9 +65,7 @@ export default defineNuxtRouteMiddleware(async () => {
                 //set display settings
                 setDisplaySettings(localUserProfileDefault.value)
             } else {
-                // local storage is set, so set currentUserProfile to the local storage settings
-
-                console.log('isLocalUserProfile', isLocalUserProfile)
+                // local storage is set, so set currentUserProfile to the local storage settings                
                 currentUserProfile.value = {}
                 currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
 
