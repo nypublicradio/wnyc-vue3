@@ -151,9 +151,9 @@ onMounted(async () => {
     window.matchMedia &&
     window.matchMedia('(prefers-color-scheme: dark)').matches
   ) {
-    console.log('dark mode')
+    //console.log('dark mode')
   } else {
-    console.log('light mode')
+    //console.log('light mode')
   }
 
   updateAllLiveStreams()

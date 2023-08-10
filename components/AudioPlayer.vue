@@ -14,6 +14,7 @@ import {
 import { trackClickEvent } from '~/utilities/helpers'
 
 // had to install howler.js locally and add this import to stop it from breaking the build
+// skipcq: JS-0128
 import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
