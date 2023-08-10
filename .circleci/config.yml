@@ -100,10 +100,10 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
+      - node/install-packages
       - run: 
           name: Assert that it builds
           command: |
-            npm ci
             npm run build
 
   test:
@@ -111,10 +111,10 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
+      - node/install-packages
       - run:
           name: Run unit tests
           command: |
-            npm ci
             npx nuxi prepare
             npm run test      
 
