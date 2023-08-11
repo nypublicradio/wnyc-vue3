@@ -1,22 +1,29 @@
 <script setup async>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import { setStatusDarkMode } from '~/utilities/helpers'
 useHead({
   bodyAttrs: {
-    class: 'hide-header hide-bottom-menu background-gradient style-mode-dark',
+    class:
+      'no-bottom-padding hide-bottom-menu background-gradient style-mode-dark',
   },
 })
 
 definePageMeta({
+  layout: 'default',
   middleware: 'check-auth-provider',
 })
 
 const route = useRoute()
 const isLoading = shallowRef(true)
 onMounted(() => {
+  setStatusDarkMode(true)
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader
     isLoading.value = false
   }, 999)
+})
+onBeforeUnmount(() => {
+  setStatusDarkMode(false)
 })
 </script>
 <template>

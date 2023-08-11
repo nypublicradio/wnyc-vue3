@@ -265,16 +265,24 @@ export function setFontSize(size: string) {
   document.documentElement.style.fontSize = size;
 }
 
+
+/**
+ * helper function to toggle darkmode of the status bar
+ */
+export async function setStatusDarkMode(bool: boolean) {
+
+  if (useIsApp().value) {
+    bool ? await StatusBar.setStyle({ style: Style.Dark }) : await StatusBar.setStyle({ style: Style.Light });
+  }
+}
 /**
  * helper function to toggle darkmode
  */
 export async function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
-  if (useIsApp().value) {
-    bool ? await StatusBar.setStyle({ style: Style.Dark }) : await StatusBar.setStyle({ style: Style.Light });
-  }
-
+  setStatusDarkMode(bool)
 }
+
 
 // helper function to get the pixel size from thr label
 export const getTextSizePixel = (label) => {

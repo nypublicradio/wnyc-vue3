@@ -54,6 +54,11 @@ body {
     //margin-top: $headerHeight; // account for the sticky header height
     padding-bottom: calc($bottomMenuHeight + $playerHeight); // account for the sticky bottom menu
   }
+  &.no-bottom-padding {
+    main {
+      padding-bottom: 0px !important;
+    }
+  }
 }
 
 /* Light mode */
