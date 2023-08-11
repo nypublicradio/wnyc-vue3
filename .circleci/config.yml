@@ -58,7 +58,7 @@ workflows:
             - "AWS Deploy"
             - android
           FASTLANE_LANE: aws_device_run_android
-          <<: *filter_all
+          <<: *filter_demo
           requires:
             - test
       - deploy:
