@@ -15,6 +15,7 @@ const props = defineProps({
 const settingSideBar = useSettingSideBar()
 const emit = defineEmits(['link-click'])
 
+// handles when the button is clicked. emits and closes the side panel
 const onClick = () => {
   emit('link-click', props.link)
   if (settingSideBar.value) {
