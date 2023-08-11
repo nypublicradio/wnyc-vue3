@@ -69,6 +69,7 @@ watch(
   left: 0;
   z-index: 10000;
   width: 100%;
+  padding-bottom: env(safe-area-inset-bottom);
 
   .p-selectbutton {
     height: var(--bottom-menu-height);
