@@ -66,7 +66,10 @@ onMounted(async () => {
             <h2>{{ currentEpisodeHolder?.title }}</h2>
             <div
               class="blurb truncate t2lines"
-              v-html="currentEpisodeHolder?.details"
+              v-html="
+                currentEpisodeHolder?.onTodaysShowHeadline ??
+                currentEpisodeHolder?.details
+              "
             ></div>
             <SmallPlay
               :label="currentEpisodeHolder?.station"
@@ -111,6 +114,7 @@ onMounted(async () => {
 // removes extra tags from the blurb
 .live-feature .content {
   .blurb {
+    font-size: 13px;
     *:not(:first-child) {
       display: none;
     }

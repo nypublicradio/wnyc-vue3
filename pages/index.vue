@@ -71,7 +71,7 @@ onMounted(() => {
 .loading-holder {
   display: flex;
   position: absolute;
-  height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   width: 100vw;
   left: 0;
   right: 0;
@@ -88,7 +88,7 @@ onMounted(() => {
   }
 }
 .index-page {
-  height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   .headline {
     font-size: 30px;
     text-align: center;

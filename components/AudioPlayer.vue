@@ -109,7 +109,9 @@ watch(isEpisodePlaying, (e) => {
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
-      :description="currentEpisode.details"
+      :description="
+        currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details
+      "
       :image="currentEpisode.image"
       :file="currentEpisode.file"
       @togglePlay="updateUseIsEpisodePlaying"
@@ -152,7 +154,7 @@ watch(isEpisodePlaying, (e) => {
       </template> -->
       <template #expanded-content>
         <section>
-          this is where we would put anything in the expanded view
+          {{ currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details }}
           <br />
           <br />
           <br />
@@ -213,7 +215,7 @@ watch(isEpisodePlaying, (e) => {
           <br />
           <br />
           <br />
-          this is where we would put anything in the expanded view
+          {{ currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details }}
           <br />
           <br />
           <br />
@@ -256,8 +258,8 @@ html.style-mode-dark .persistent-player {
       font-weight: 500;
       line-height: 18px;
     }
-    .track-info-description p {
-      font-size: 11px !important;
+    .track-info-description {
+      font-size: 11px;
       display: block;
       white-space: nowrap;
       overflow: hidden;

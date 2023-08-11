@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption } from '~/composables/states'
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption, useIsApp } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences';
 import {
   NativeSettings,
@@ -267,8 +268,12 @@ export function setFontSize(size: string) {
 /**
  * helper function to toggle darkmode
  */
-export function setDarkMode(bool: boolean) {
+export async function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
+  if (useIsApp().value) {
+    bool ? await StatusBar.setStyle({ style: Style.Dark }) : await StatusBar.setStyle({ style: Style.Light });
+  }
+
 }
 
 // helper function to get the pixel size from thr label

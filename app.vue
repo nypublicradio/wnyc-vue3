@@ -8,6 +8,7 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
+import { useSettingSideBar, useIsApp } from '~/composables/states'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
@@ -20,12 +21,13 @@ const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
 
 const settingsSideBar = useSettingSideBar()
+const isApp = useIsApp()
 
 const fcmToken = ref('')
 //const nNotification = ref(null)
 // const appLaunchUrl = ref(null)
 
-const isApp = shallowRef(Capacitor.getPlatform() !== 'web')
+isApp.value = Capacitor.getPlatform() !== 'web'
 
 useHead({
   htmlAttrs: {
