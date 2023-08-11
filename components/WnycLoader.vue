@@ -14,7 +14,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: 'var(--primary-color)',
+    default: 'var(--text-color)',
   },
 })
 </script>
@@ -43,21 +43,20 @@ const props = defineProps({
     background: -moz-radial-gradient(
       center,
       ellipse cover,
-      rgba(rgb(222, 30, 61), 0.3) 0%,
-      rgba(rgb(222, 30, 61), 0) 100%
+      rgba(rgb(16, 16, 18), 0.3) 0%,
+      rgba(rgb(16, 16, 18), 0) 100%
     );
     background: -webkit-radial-gradient(
       center,
       ellipse cover,
-      rgba(rgb(222, 30, 61), 0.3) 0%,
-      rgba(rgb(222, 30, 61), 0) 100%
+      rgba(rgb(16, 16, 18), 0.3) 0%,
+      rgba(rgb(16, 16, 18), 0) 100%
     );
     background: radial-gradient(
       ellipse at center,
-      rgba(rgb(222, 30, 61), 0.3) 0%,
-      rgba(rgb(222, 30, 61), 0) 100%
+      rgba(rgb(16, 16, 18), 0.3) 0%,
+      rgba(rgb(16, 16, 18), 0) 100%
     );
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 );
   }
 
   .svg-holder {
@@ -76,7 +75,7 @@ const props = defineProps({
       .st1 {
         animation: moveUpAndDown 2s infinite;
         transform-origin: top;
-        fill: var(--primary-color, #de1e3d);
+        fill: v-bind(color);
         transform: translateY(-30);
       }
     }

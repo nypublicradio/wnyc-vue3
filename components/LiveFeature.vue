@@ -1,5 +1,6 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import {
   useIsEpisodePlaying,
   useTogglePlayTrigger,
@@ -38,65 +39,71 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="live-feature flex">
-    <div class="image-holder">
-      <transition name="fade">
-        <VImage
-          v-if="currentEpisodeHolder?.image"
-          :src="currentEpisodeHolder?.image"
-          :ratio="[1, 1]"
-          alt="show poster image"
-          class="image"
-        />
-        <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
-        <!-- <div v-else class="image-loader-anim">
+  <div class="live-feature">
+    <VFlexibleLink raw to="/live" class="flex">
+      <div class="image-holder">
+        <transition name="fade">
+          <VImage
+            v-if="currentEpisodeHolder?.image"
+            :src="currentEpisodeHolder?.image"
+            :ratio="[1, 1]"
+            alt="show poster image"
+            class="image"
+          />
+          <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
+          <!-- <div v-else class="image-loader-anim">
           <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
         </div> -->
-      </transition>
-    </div>
-    <div class="content w-full relative">
-      <transition name="fade">
-        <div
-          v-if="currentEpisodeHolder"
-          class="flex flex-column gap-2 justify-content-center"
-        >
-          <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
-          <h2>{{ currentEpisodeHolder?.title }}</h2>
+        </transition>
+      </div>
+      <div class="content w-full relative">
+        <transition name="fade">
           <div
-            class="blurb truncate t2lines"
-            v-html="currentEpisodeHolder?.details"
-          ></div>
-          <SmallPlay
-            :label="currentEpisodeHolder?.station"
-            live
-            :isPLaying="isEpisodePlaying"
-            :isLoading="isStreamLoading"
-            @onClick="togglePlay"
-          />
-        </div>
-        <div
-          class="skeleton-holder flex flex-column justify-content-center w-full absolute"
-          v-else
-        >
-          <Skeleton
-            height="20px"
-            width="6rem"
-            borderRadius="16px"
-            style="margin-bottom: 6px"
-          ></Skeleton>
-          <div class="w-full desc">
+            v-if="currentEpisodeHolder"
+            class="flex flex-column gap-2 justify-content-center"
+          >
+            <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
+            <h2>{{ currentEpisodeHolder?.title }}</h2>
+            <div
+              class="blurb truncate t2lines"
+              v-html="currentEpisodeHolder?.details"
+            ></div>
+            <SmallPlay
+              :label="currentEpisodeHolder?.station"
+              live
+              :isPLaying="isEpisodePlaying"
+              :isLoading="isStreamLoading"
+              @onClick="togglePlay"
+            />
+          </div>
+          <div
+            class="skeleton-holder flex flex-column justify-content-center w-full absolute"
+            v-else
+          >
             <Skeleton
-              height="13px"
-              width="85%"
+              height="20px"
+              width="6rem"
               borderRadius="16px"
               style="margin-bottom: 6px"
             ></Skeleton>
-            <Skeleton height="13px" width="90%" borderRadius="16px"></Skeleton>
+            <div class="w-full desc">
+              <Skeleton
+                height="13px"
+                width="85%"
+                borderRadius="16px"
+                style="margin-bottom: 6px"
+              ></Skeleton>
+              <Skeleton
+                height="13px"
+                width="90%"
+                borderRadius="16px"
+              ></Skeleton>
+            </div>
+            <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
           </div>
-          <Skeleton height="28px" width="9rem" borderRadius="16px"></Skeleton>
-        </div>
-      </transition>
-    </div>
+        </transition>
+      </div>
+    </VFlexibleLink>
   </div>
 </template>
 

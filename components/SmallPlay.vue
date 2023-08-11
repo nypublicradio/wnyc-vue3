@@ -35,7 +35,7 @@ const togglePlay = () => {
 
 <template>
   <div class="small-play">
-    <Button severity="secondary" @click="togglePlay">
+    <Button severity="secondary" @click.prevent="togglePlay">
       <slot name="icon">
         <div
           class="flex align-items-center icon relative"
