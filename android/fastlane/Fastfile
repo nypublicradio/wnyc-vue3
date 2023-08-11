@@ -16,9 +16,6 @@
 default_platform(:android)
 
 platform :android do
-  before_all do
-    setup_circle_ci
-  end
 
   desc "Runs all the tests"
   lane :test do
@@ -50,14 +47,15 @@ platform :android do
 
     lane :aws_device_run_android do
     begin
-      ENV['AWS_REGION']            = 'us-west-2'
-      gradle(task: 'assembleDebug')
-      gradle(task: 'assembleAndroidTest')
-
+      ENV['AWS_REGION'] = 'us-west-2'
+      gradle(
+        task: 'assemble' 
+      )
       # RUN tests on AWS Device Farm
       aws_device_farm(
         name: "android",
         device_pool: "baseline",
+        binary_path: "app/build/outputs/apk/release/app-release.apk",
         run_name: ENV['CIRCLE_BUILD_NUM'],
         wait_for_completion: false
       )
