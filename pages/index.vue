@@ -17,15 +17,18 @@ definePageMeta({
 const currentUserProfile = useCurrentUserProfile()
 const route = useRoute()
 const isLoading = shallowRef(true)
-onMounted(() => {
+onBeforeMount(() => {
+  // this page has the body class "style-mode-dark", so we need to force the status bar to be dark as well
   setStatusDarkMode(true)
+})
+onMounted(() => {
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader
     isLoading.value = false
   }, 999)
 })
 onUnmounted(() => {
-  // check if are set to light mode first, if yes, then set it back to light mode
+  // check if are set to light mode first, if yes, then set the status bar back to light mode
   setStatusDarkMode(currentUserProfile.value?.dark_mode)
 })
 </script>

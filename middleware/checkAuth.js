@@ -69,7 +69,7 @@ export default defineNuxtRouteMiddleware(async () => {
                 const defaults = localUserProfileDefault.value
 
                 //get the system's current theme and apply it to the initial defaults              
-                defaults.dark_mode = detectSystemDarkMode
+                defaults.dark_mode = detectSystemDarkMode()
 
                 const defaultsSTRING = JSON.stringify(defaults)
                 await Preferences.set({
