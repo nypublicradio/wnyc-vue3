@@ -22,6 +22,9 @@ export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () 
 // setting sidebar state
 export const useSettingSideBar = () => useState('useSettingSideBar', () => false)
 
+// global state if this instance is a native app
+export const useIsApp = () => useState('useIsApp', () => false)
+
 
 // audio player globals
 const currentEpisodeObj = null

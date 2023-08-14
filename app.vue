@@ -8,6 +8,7 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
+import { useSettingSideBar, useIsApp } from '~/composables/states'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
@@ -20,12 +21,13 @@ const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
 
 const settingsSideBar = useSettingSideBar()
+const isApp = useIsApp()
 
 const fcmToken = ref('')
 //const nNotification = ref(null)
 // const appLaunchUrl = ref(null)
 
-const isApp = shallowRef(Capacitor.getPlatform() !== 'web')
+isApp.value = Capacitor.getPlatform() !== 'web'
 
 useHead({
   htmlAttrs: {
@@ -43,9 +45,9 @@ useHead({
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
-  bodyAttrs: {
-    class: 'safe-area-padding',
-  },
+  // bodyAttrs: {
+  //   class: 'safe-area-padding',
+  // },
 })
 
 // handles the permissions for push notifications in the app
@@ -145,17 +147,6 @@ const addListeners = async () => {
 onMounted(async () => {
   //initially load all the streams
   await nextTick()
-
-  // use this to initially set the theme preference
-  if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  ) {
-    //console.log('dark mode')
-  } else {
-    //console.log('light mode')
-  }
-
   updateAllLiveStreams()
 
   // if APP then add listeners

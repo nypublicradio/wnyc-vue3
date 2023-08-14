@@ -62,11 +62,11 @@ body {
     max-height: unset !important;
     position: relative !important;
   }
-  main {
-    margin-top: 0;
-    padding-bottom: calc(
-      $bottomMenuHeight + $playerHeight
-    ); // account for the sticky bottom menu
-  }
+  // main {
+  //   margin-top: 0;
+  //   padding-bottom: calc(
+  //     $bottomMenuHeight + $playerHeight
+  //   ); // account for the sticky bottom menu
+  // }
 }
 </style>
