@@ -297,8 +297,7 @@ export const getTextSizePixel = (label) => {
 
 // detect system theme preference 
 export const detectSystemDarkMode = () => {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return true
-  return false
+  return Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 }
 
 
