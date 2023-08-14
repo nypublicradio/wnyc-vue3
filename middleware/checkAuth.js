@@ -3,7 +3,7 @@ import {
     useCurrentUserProfile,
     useLocalUserProfileDefault
 } from '~/composables/states'
-import { setDisplaySettings } from '~/utilities/helpers'
+import { setDisplaySettings, detectSystemDarkMode } from '~/utilities/helpers'
 import { Preferences } from '@capacitor/preferences'
 export default defineNuxtRouteMiddleware(async () => {
     const currentUser = useCurrentUser()
@@ -26,8 +26,20 @@ export default defineNuxtRouteMiddleware(async () => {
         if (error) {
             console.error(error)
         } else if (data) {
+            if (data.initial) {
+                // update the current local profile data response
+                data.initial = false
+                // update supabase profile data
+                await client
+                    .from('profiles')
+                    .update({
+                        initial: false,
+                    })
+                    .match({ id: currentUser.value.id })
+            }
+
+            // set the current user profile state
             currentUserProfile.value = data
-            //set display settings
             setDisplaySettings(data)
             navigateTo('/home')
         }
@@ -54,11 +66,15 @@ export default defineNuxtRouteMiddleware(async () => {
             const isLocalUserProfile = await Preferences.get({ key: 'localUserProfile' })
             if (!isLocalUserProfile.value) {
                 // no, set defaults from localUserProfileDefault state
+                const defaults = localUserProfileDefault.value
 
-                const localUserProfileDefaultSTRING = JSON.stringify(localUserProfileDefault.value)
+                //get the system's current theme and apply it to the initial defaults              
+                defaults.dark_mode = detectSystemDarkMode
+
+                const defaultsSTRING = JSON.stringify(defaults)
                 await Preferences.set({
                     key: 'localUserProfile',
-                    value: localUserProfileDefaultSTRING
+                    value: defaultsSTRING
                 })
                 currentUserProfile.value = {}
                 currentUserProfile.value = localUserProfileDefault.value

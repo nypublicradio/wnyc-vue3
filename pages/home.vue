@@ -4,6 +4,9 @@
 // const currentUser = useCurrentUser()
 // const currentUserProfile = useCurrentUserProfile()
 
+// console.log('home currentUser = ', currentUser.value)
+// console.log('home currentUserProfile = ', currentUserProfile.value)
+
 definePageMeta({
   layout: 'default',
   layoutTransition: {

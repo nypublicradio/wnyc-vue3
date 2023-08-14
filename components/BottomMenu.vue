@@ -68,7 +68,7 @@ watch(
   bottom: 0;
   left: 0;
   z-index: 10000;
-  width: 100%;
+  width: 100vw;
   padding-bottom: env(safe-area-inset-bottom);
 
   .p-selectbutton {

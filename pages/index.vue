@@ -1,6 +1,7 @@
 <script setup async>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import { setStatusDarkMode } from '~/utilities/helpers'
+import { useCurrentUserProfile } from '~/composables/states.ts'
 useHead({
   bodyAttrs: {
     class:
@@ -13,6 +14,7 @@ definePageMeta({
   middleware: 'check-auth-provider',
 })
 
+const currentUserProfile = useCurrentUserProfile()
 const route = useRoute()
 const isLoading = shallowRef(true)
 onMounted(() => {
@@ -22,8 +24,9 @@ onMounted(() => {
     isLoading.value = false
   }, 999)
 })
-onBeforeUnmount(() => {
-  setStatusDarkMode(false)
+onUnmounted(() => {
+  // check if are set to light mode first, if yes, then set it back to light mode
+  setStatusDarkMode(currentUserProfile.value?.dark_mode)
 })
 </script>
 <template>

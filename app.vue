@@ -45,9 +45,9 @@ useHead({
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
-  bodyAttrs: {
-    class: 'safe-area-padding',
-  },
+  // bodyAttrs: {
+  //   class: 'safe-area-padding',
+  // },
 })
 
 // handles the permissions for push notifications in the app
@@ -147,17 +147,6 @@ const addListeners = async () => {
 onMounted(async () => {
   //initially load all the streams
   await nextTick()
-
-  // use this to initially set the theme preference
-  if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  ) {
-    //console.log('dark mode')
-  } else {
-    //console.log('light mode')
-  }
-
   updateAllLiveStreams()
 
   // if APP then add listeners
