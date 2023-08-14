@@ -280,11 +280,11 @@ export async function setStatusDarkMode(bool: boolean) {
  */
 export async function setDarkMode(bool: boolean) {
   bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
-  setStatusDarkMode(bool)
+  await setStatusDarkMode(bool)
 }
 
 // helper function to get the pixel size from thr label
-export const getTextSizePixel = (label: any) => {
+export const getTextSizePixel = (label) => {
   if (typeof label === 'string') {
     const textSizeOptions = useTextSizeOption()
     return textSizeOptions.value.find(
@@ -297,23 +297,15 @@ export const getTextSizePixel = (label: any) => {
 
 // detect system theme preference 
 export const detectSystemDarkMode = () => {
-  if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  ) {
-    //console.log('dark mode')
-    return true
-  } else {
-    //console.log('light mode')
-    return false
-  }
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return true
+  return false
 }
 
 
 // set the display settings in one place
-export const setDisplaySettings = (data) => {
+export const setDisplaySettings = async (data) => {
   setFontSize(getTextSizePixel(data.text_size))
-  setDarkMode(data.dark_mode)
+  await setDarkMode(data.dark_mode)
 }
 
 // generate a random number between min and max
