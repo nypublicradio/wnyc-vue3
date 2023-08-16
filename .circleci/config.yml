@@ -237,7 +237,7 @@ jobs:
             cd android; bundle exec fastlane $FASTLANE_LANE
       - android/save-gradle-cache
       - store_artifacts:
-          path: android/App/build
+          path: android/app/build/outputs/apk
   deploy:
     docker: 
       - image: circleci/python:3.8

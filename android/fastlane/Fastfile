@@ -22,6 +22,9 @@ platform :android do
     gradle(task: "test")
   end
 
+  lane :build do
+    gradle(task: "assemble", build_type: "Release")
+  end
 
   lane :beta do
     begin
