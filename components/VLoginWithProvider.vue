@@ -1,5 +1,5 @@
 <script setup>
-import { Browser } from '@capacitor/browser'
+//import { Browser } from '@capacitor/browser'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import { ref } from 'vue'
@@ -41,7 +41,7 @@ const login = async () => {
   emit('submit-click')
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
-      skipBrowserRedirect: true,
+      //skipBrowserRedirect: true,
       //redirectTo: 'org.wnyc.android://auth',
     },
     provider: props.provider,
@@ -54,7 +54,7 @@ const login = async () => {
     errorMessage.value = res.error
   } else {
     emit('submit-success')
-    await Browser.open({ url: redirectUrl })
+    //await Browser.open({ url: redirectUrl })
   }
 }
 // capitalise the first letter of a string

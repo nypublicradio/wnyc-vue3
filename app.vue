@@ -11,7 +11,7 @@ import {
 import { useSettingSideBar, useIsApp } from '~/composables/states'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-import { Browser } from '@capacitor/browser'
+//import { Browser } from '@capacitor/browser'
 const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
@@ -127,10 +127,8 @@ const addListeners = async () => {
   // this is for deep links
   await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
     //alert('appUrlOpen')
-    Browser.close()
-
+    //Browser.close()
     //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
-
     // const slug = event.url.split('.app').pop()
     // if (slug) {
     //   router.push(slug)
