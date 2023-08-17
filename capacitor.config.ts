@@ -6,7 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   backgroundColor: "#d4d4d4",
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    // url: "myapp://",
   },
   plugins: {
     CapacitorCookies: {

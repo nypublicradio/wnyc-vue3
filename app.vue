@@ -11,7 +11,7 @@ import {
 import { useSettingSideBar, useIsApp } from '~/composables/states'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-
+import { Browser } from '@capacitor/browser'
 const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
@@ -128,6 +128,8 @@ const addListeners = async () => {
   await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
     // Example url: https://beerswift.app/tabs/tab2
     // slug = /tabs/tab2
+    alert('appUrlOpen')
+    Browser.close()
     const slug = event.url.split('.app').pop()
     if (slug) {
       router.push(slug)
