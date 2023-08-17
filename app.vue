@@ -126,14 +126,15 @@ const addListeners = async () => {
 
   // this is for deep links
   await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-    // Example url: https://beerswift.app/tabs/tab2
-    // slug = /tabs/tab2
-    alert('appUrlOpen')
+    //alert('appUrlOpen')
     Browser.close()
-    const slug = event.url.split('.app').pop()
-    if (slug) {
-      router.push(slug)
-    }
+
+    //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
+
+    // const slug = event.url.split('.app').pop()
+    // if (slug) {
+    //   router.push(slug)
+    // }
     // If no match, do nothing - let regular routing
     // logic take over
   })
