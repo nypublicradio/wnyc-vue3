@@ -1,0 +1,5 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target" : { "namespace": "android_app", "package_name": "org.wnyc.android",
+               "sha256_cert_fingerprints": ["CC:9D:98:FD:AA:D6:1C:1F:E5:B8:35:6A:CE:FF:89:69:F9:80:96:AA:DE:CA:36:95:A4:F4:66:0A:7A:3D:1D:E7"] }
+}]
