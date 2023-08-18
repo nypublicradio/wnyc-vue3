@@ -67,6 +67,10 @@ android {
     }
 }
 
+plugins {
+  id 'newrelic'
+}
+
 repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
