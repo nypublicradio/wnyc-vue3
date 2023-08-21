@@ -27,13 +27,29 @@ export default defineNuxtRouteMiddleware(async () => {
             console.error(error)
         } else if (data) {
             if (data.initial) {
-                // update the current local profile data response
+                // if first time logging in with new profile
+                const lsSTRING = await Preferences.get({ key: 'localUserProfile' })
+                const ls = JSON.parse(lsSTRING.value)
+                console.log('ls = ', ls)
+                console.log('currentUser.value = ', currentUser.value)
                 data.initial = false
+                data.autodownload = ls.autodownload
+                data.default_live_stream = ls.default_live_stream.label
+                data.receive_general_notifications = ls.receive_general_notifications
+                data.dark_mode = ls.dark_mode
+                data.text_size = ls.text_size.label
+
                 // update supabase profile data
+                // set the supabase prferences with what is currently set in the local storage
                 await client
                     .from('profiles')
                     .update({
                         initial: false,
+                        autodownload: ls.autodownload,
+                        default_live_stream: ls.default_live_stream.label,
+                        receive_general_notifications: ls.receive_general_notifications,
+                        dark_mode: ls.dark_mode,
+                        text_size: ls.text_size.label,
                     })
                     .match({ id: currentUser.value.id })
             }
