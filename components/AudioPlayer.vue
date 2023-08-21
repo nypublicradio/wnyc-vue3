@@ -244,7 +244,7 @@ html.style-mode-dark .persistent-player {
   --persistent-player-play-button-width: 38px;
 
   .persistent-player {
-    bottom: var(--bottom-menu-height);
+    bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
     z-index: 9999;
     .track-info-image {
       width: 60px;
@@ -278,10 +278,10 @@ html.style-mode-dark .persistent-player {
   }
   .template-blank {
     .persistent-player {
-      bottom: 0;
+      bottom: env(safe-area-inset-bottom);
     }
     .expandedFooter {
-      bottom: 0 !important;
+      bottom: env(safe-area-inset-bottom) !important;
     }
   }
 }
@@ -302,7 +302,7 @@ html.style-mode-dark .persistent-player {
   }
   &.expanded {
     .expandedFooter {
-      bottom: $bottomMenuHeight;
+      bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
     }
   }
 }

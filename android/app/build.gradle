@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'newrelic'
 
 def keyStorePropertiesFile = rootProject.file("keystore.properties")
 def keyStoreProperties = new Properties()
@@ -66,6 +67,7 @@ android {
         }
     }
 }
+
 
 repositories {
     flatDir{

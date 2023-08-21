@@ -8,6 +8,7 @@ import {
   AndroidSettings,
   IOSSettings,
 } from 'capacitor-native-settings'
+import { Browser } from '@capacitor/browser';
 const directoryToSaveTo = Directory.External
 
 // format ISO timestamp to return only the time
@@ -318,4 +319,10 @@ export const toSystemSettings = () => {
     optionAndroid: AndroidSettings.ApplicationDetails,
     optionIOS: IOSSettings.App,
   })
+}
+
+
+// helper function to open a link in the browser IN the app
+export async function openOAuthUrl(url: string) {
+  await Browser.open({ url });
 }
