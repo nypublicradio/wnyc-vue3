@@ -4,8 +4,8 @@ deployments:
       ./squash_Dockerfile
     build_options:
       --secret id=PAT,env=PAT
-      --secret SUPABASE_URL,env=SUPABASE_URL
-      --secret SUPABASE_KEY,env=SUPABASE_KEY
+      --secret id=SUPABASE_URL,env=SUPABASE_URL
+      --secret id=SUPABASE_KEY,env=SUPABASE_KEY
     port_forwarding:
       80:3000
     environment:
