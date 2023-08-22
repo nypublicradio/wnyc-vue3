@@ -14,7 +14,7 @@ RUN --mount=type=secret,id=SUPABASE_KEY export SUPABASE_KEY=$(cat /run/secrets/S
 
 COPY ./package.json .
 COPY ./package-lock.json .
-COPY .env .
+
 RUN npm ci
 RUN npm install sass
 
