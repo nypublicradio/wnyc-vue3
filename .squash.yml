@@ -4,6 +4,8 @@ deployments:
       ./squash_Dockerfile
     build_options:
       --secret id=PAT,env=PAT
+      --secret id=SUPABASE_URL,env=SUPABASE_URL
+      --secret id=SUPABASE_KEY,env=SUPABASE_KEY
     port_forwarding:
       80:3000
     environment:
@@ -14,5 +16,3 @@ deployments:
       --env NUXT_HOST=$NUXT_HOST
       --env NUXT_PORT=$NUXT_PORT
       --env DOCKER_BUILDKIT=$DOCKER_BUILDKIT
-      --env SUPABASE_URL=$SUPABASE_URL
-      --env SUPABASE_KEY=$SUPABASE_KEY
