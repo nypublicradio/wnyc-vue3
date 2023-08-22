@@ -35,10 +35,13 @@ workflows:
   test-and-deploy:
     jobs:
       - build:
+          context: "dockerhub"
           <<: *filter_all
       - test_nginx:
+          context: "dockerhub"
           <<: *filter_all  
       - test:
+          context: "dockerhub"
           <<: *filter_all
           requires:
             - build
@@ -141,10 +144,11 @@ jobs:
           environment:
             ENV: <<parameters.env>>
           command: |
-            sudo apt-get update && \
-            sudo apt-get install -y nginx-extras
-            sudo cp ./nginx/*.conf /etc/nginx/
-            sudo nginx -t
+            apt-get update && \
+            apt-get install -y nginx-extras
+            mkdir -p /app/nginx 
+            cp ./nginx/*.conf /etc/nginx/
+            nginx -t
 
   ios:
     executor: macosg2
@@ -297,7 +301,10 @@ commands:
 executors:
   default:
     docker:
-      - image: cimg/node:16.14.2
+      - image: node:16.14.2-slim
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASS
     environment: 
       JOBS: 2
   macosg2:
