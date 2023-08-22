@@ -141,11 +141,10 @@ jobs:
           environment:
             ENV: <<parameters.env>>
           command: |
-            apt-get update && \
-            apt-get install -y nginx-extras
-            mkdir -p /app/nginx 
-            cp ./nginx/*.conf /etc/nginx/
-            nginx -t
+            sudo apt-get update && \
+            sudo apt-get install -y nginx-extras
+            sudo cp ./nginx/*.conf /etc/nginx/
+            sudo nginx -t
 
   ios:
     executor: macosg2
