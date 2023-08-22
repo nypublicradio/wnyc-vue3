@@ -35,10 +35,13 @@ workflows:
   test-and-deploy:
     jobs:
       - build:
+          context: "dockerhub"
           <<: *filter_all
       - test_nginx:
+          context: "dockerhub"
           <<: *filter_all  
       - test:
+          context: "dockerhub"
           <<: *filter_all
           requires:
             - build
@@ -299,6 +302,9 @@ executors:
   default:
     docker:
       - image: node:16.14.2-slim
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASS
     environment: 
       JOBS: 2
   macosg2:

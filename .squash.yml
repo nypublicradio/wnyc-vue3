@@ -1,9 +1,11 @@
 deployments:
-  gothamist-vue3:
+  wnyc-vue3:
     filename:
       ./squash_Dockerfile
     build_options:
       --secret id=PAT,env=PAT
+      --secret id=SUPABASE_URL,env=SUPABASE_URL
+      --secret id=SUPABASE_KEY,env=SUPABASE_KEY
     port_forwarding:
       80:3000
     environment:
