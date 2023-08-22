@@ -9,9 +9,12 @@ WORKDIR /code
 
 RUN echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
 RUN --mount=type=secret,id=PAT export PAT=$(cat /run/secrets/PAT) && echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
+RUN --mount=type=secret,id=SUPABASE_URL export SUPABASE_URL=$(cat /run/secrets/SUPABASE_URL) && echo "SUPABASE_URL=$SUPABASE_URL" >> .env
+RUN --mount=type=secret,id=SUPABASE_KEY export SUPABASE_KEY=$(cat /run/secrets/SUPABASE_KEY) && echo "SUPABASE_KEY=$SUPABASE_KEY" >> .env
 
 COPY ./package.json .
 COPY ./package-lock.json .
+COPY .env .
 RUN npm ci
 RUN npm install sass
 
