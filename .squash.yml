@@ -14,5 +14,5 @@ deployments:
       --env NUXT_HOST=$NUXT_HOST
       --env NUXT_PORT=$NUXT_PORT
       --env DOCKER_BUILDKIT=$DOCKER_BUILDKIT
-      --env SUPABASE_URL=${SUPABASE_URL}
-      --env SUPABASE_KEY=${SUPABASE_KEY}
+      --env SUPABASE_URL="${SUPABASE_URL}"
+      --env SUPABASE_KEY="${SUPABASE_KEY}"
