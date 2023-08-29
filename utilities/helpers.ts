@@ -323,6 +323,6 @@ export const toSystemSettings = () => {
 
 
 // helper function to open a link in the browser IN the app
-export async function openOAuthUrl(url: string) {
+export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url });
 }

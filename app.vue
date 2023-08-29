@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { trackClickEvent } from '~/utilities/helpers'
-import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from '@newrelic/newrelic-capacitor-plugin';
+import {
+  NewRelicCapacitorPlugin,
+  NREnums,
+  AgentConfiguration,
+} from '@newrelic/newrelic-capacitor-plugin'
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import {
@@ -127,10 +131,11 @@ const addListeners = async () => {
 
   // this is for deep links
   await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-    //alert('appUrlOpen')
-    //Browser.close()
     //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
-    // const slug = event.url.split('.app').pop()
+
+    const slug = event.url.split('.app').pop()
+    alert('event = ' + event)
+    alert('slug = ' + slug)
     // if (slug) {
     //   router.push(slug)
     // }
@@ -158,7 +163,7 @@ onMounted(async () => {
   }
 
   //New Relic Instrumentation
-  let appToken;
+  let appToken
   if (Capacitor.getPlatform() === 'ios') {
     appToken = 'AA731b117edcff278d3a204187b46ab3d347a16888-NRMA'
   } else {
@@ -197,10 +202,13 @@ onMounted(async () => {
     logLevel: NREnums.LogLevel.INFO,
 
     // Optional: Enable or disable sending JS console logs to New Relic.
-    sendConsoleEvents: true
+    sendConsoleEvents: true,
   }
 
-  NewRelicCapacitorPlugin.start({ appKey: appToken, agentConfiguration: agentConfig })
+  NewRelicCapacitorPlugin.start({
+    appKey: appToken,
+    agentConfiguration: agentConfig,
+  })
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
