@@ -134,8 +134,8 @@ const addListeners = async () => {
     //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
 
     const slug = event.url.split('.app').pop()
-    alert('event = ', JSON.stringify(event))
-    alert('slug = ', JSON.stringify(slug))
+    alert('event = ' + JSON.stringify(event))
+    alert('slug = ' + JSON.stringify(slug))
     // if (slug) {
     //   router.push(slug)
     // }
