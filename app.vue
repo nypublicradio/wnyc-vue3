@@ -13,7 +13,15 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
-import { useSettingSideBar, useIsApp } from '~/composables/states'
+import {
+  useSettingSideBar,
+  useIsApp,
+  useCurrentUserProfile,
+} from '~/composables/states'
+import {
+  useBrowserTopColor,
+  useBrowserTopColorDarkMode,
+} from '~/composables/globals.ts'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 //import { Browser } from '@capacitor/browser'
@@ -22,6 +30,9 @@ const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+const currentUserProfile = useCurrentUserProfile()
+const browserTopColor = useBrowserTopColor()
+const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
@@ -51,6 +62,7 @@ useHead({
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
+
   // bodyAttrs: {
   //   class: 'safe-area-padding',
   // },
@@ -301,6 +313,22 @@ useHead({
       <Meta
         name="twitter:image"
         content="https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png"
+      />
+      <Meta
+        name="theme-color"
+        :content="
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
+        "
+      />
+      <Meta
+        name="msapplication-TileColor"
+        :content="
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
+        "
       />
     </Head>
   </Html>
