@@ -132,34 +132,14 @@ const addListeners = async () => {
 
   // this is for deep links
   const client = useSupabaseClient()
-  const currentUser = useCurrentUser()
   await App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
-    //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
+    //when redirected to the app from a deep link, we need to exchange the url parame code for a session
 
     const code = event.url.split('=')[1]
-    alert('code = ' + JSON.stringify(code))
-
-    // const { error } = await client.auth.setSession(code)
-    // if (error) {
-    //   alert('error = ' + JSON.stringify(error))
-    // } else {
-    //   alert('Session set successfully')
-    // }
-
-    // const user = await client.auth.getSession()
-    // if (user.error) {
-    //   alert('error = ' + JSON.stringify(user.error))
-    // } else {
-    //   alert('session = ' + JSON.stringify(user.data.session))
-    // }
-
-    const user = client.auth.exchangeCodeForSession(code)
-
-    alert('user = ' + JSON.stringify(user))
-    if (user?.data?.session?.user) {
-      currentUser.value = user?.data?.session?.user
+    if (code) {
+      client.auth.exchangeCodeForSession(code)
+      await navigateTo('/home')
     }
-    await navigateTo('/home')
   })
 }
 
