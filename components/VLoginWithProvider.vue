@@ -42,12 +42,12 @@ const login = async () => {
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
       //skipBrowserRedirect: true,
-      //redirectTo: 'org.wnyc.android://auth',
+      //redirectTo: 'http://localhost:3000/confirm',
     },
     provider: props.provider,
   })
 
-  const redirectUrl = await res.data.url
+  //const redirectUrl = await res.data.url
 
   if (res.error) {
     emit('submit-error', res.error)
@@ -72,8 +72,13 @@ const capFirstChar = (str) => {
         {{ errorMessage }}
       </Message>
     </template>
-    <Button class="w-full" :label="props.label ?? `Log in with ${capFirstChar(props.provider)}`" v-bind="{ ...$attrs }"
-      :aria-label="`${props.provider} login button`" @click="login">
+    <Button
+      class="w-full"
+      :label="props.label ?? `Log in with ${capFirstChar(props.provider)}`"
+      v-bind="{ ...$attrs }"
+      :aria-label="`${props.provider} login button`"
+      @click="login"
+    >
       <template #icon>
         <slot name="icon">
           <i :class="`pi pi-${props.provider}`"></i>

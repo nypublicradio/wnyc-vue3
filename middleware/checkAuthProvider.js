@@ -5,7 +5,6 @@ import {
 import { Preferences } from '@capacitor/preferences'
 
 export default defineNuxtRouteMiddleware(async () => {
-
   const client = useSupabaseClient()
   const config = useRuntimeConfig()
   const currentUser = useCurrentUser()

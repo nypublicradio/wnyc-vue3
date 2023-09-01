@@ -17,6 +17,7 @@ import { useSettingSideBar, useIsApp } from '~/composables/states'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 //import { Browser } from '@capacitor/browser'
+
 const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
@@ -130,17 +131,35 @@ const addListeners = async () => {
   })
 
   // this is for deep links
-  await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+  const client = useSupabaseClient()
+  const currentUser = useCurrentUser()
+  await App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
     //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
 
-    const slug = event.url.split('.app').pop()
-    alert('event = ' + JSON.stringify(event))
-    alert('slug = ' + JSON.stringify(slug))
-    // if (slug) {
-    //   router.push(slug)
+    const code = event.url.split('=')[1]
+    alert('code = ' + JSON.stringify(code))
+
+    // const { error } = await client.auth.setSession(code)
+    // if (error) {
+    //   alert('error = ' + JSON.stringify(error))
+    // } else {
+    //   alert('Session set successfully')
     // }
-    // If no match, do nothing - let regular routing
-    // logic take over
+
+    // const user = await client.auth.getSession()
+    // if (user.error) {
+    //   alert('error = ' + JSON.stringify(user.error))
+    // } else {
+    //   alert('session = ' + JSON.stringify(user.data.session))
+    // }
+
+    const user = client.auth.exchangeCodeForSession(code)
+
+    alert('user = ' + JSON.stringify(user))
+    if (user?.data?.session?.user) {
+      currentUser.value = user?.data?.session?.user
+    }
+    await navigateTo('/home')
   })
 }
 
