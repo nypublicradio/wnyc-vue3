@@ -159,6 +159,7 @@ jobs:
     environment:
       FL_OUTPUT_DIR: output
       FASTLANE_LANE: <<parameters.FASTLANE_LANE>>
+      ISAPP: "true"
       ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
@@ -205,6 +206,7 @@ jobs:
       release-key-password: RELEASE_KEY_PASSWORD
       release-key-store-password: RELEASE_KEYSTORE_PASSWORD
       RELEASE_KEYSTORE: keystore
+      ISAPP: "true"
       ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
@@ -257,6 +259,7 @@ jobs:
           environment:
             ENV: <<parameters.env>>
             TAG: <<parameters.tag>>
+            ISAPP: "false"
             ROLE: wnyc-vue3-<<parameters.env>>
           command: |
             TAG=${TAG:-$CIRCLE_TAG}
