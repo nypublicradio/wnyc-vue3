@@ -17,6 +17,7 @@ watch(
     if (user.value) {
       return navigateTo('/home')
     }
+    return null
   },
   { immediate: true }
 )
