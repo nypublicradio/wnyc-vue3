@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { trackClickEvent } from '~/utilities/helpers'
-import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from '@newrelic/newrelic-capacitor-plugin';
+import {
+  NewRelicCapacitorPlugin,
+  NREnums,
+  AgentConfiguration,
+} from '@newrelic/newrelic-capacitor-plugin'
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import {
@@ -9,14 +13,26 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
-import { useSettingSideBar, useIsApp } from '~/composables/states'
+import {
+  useSettingSideBar,
+  useIsApp,
+  useCurrentUserProfile,
+} from '~/composables/states'
+import {
+  useBrowserTopColor,
+  useBrowserTopColorDarkMode,
+} from '~/composables/globals.ts'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 //import { Browser } from '@capacitor/browser'
+
 const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+const currentUserProfile = useCurrentUserProfile()
+const browserTopColor = useBrowserTopColor()
+const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
@@ -46,6 +62,7 @@ useHead({
     height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
     },
   ],
+
   // bodyAttrs: {
   //   class: 'safe-area-padding',
   // },
@@ -126,16 +143,15 @@ const addListeners = async () => {
   })
 
   // this is for deep links
-  await App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-    //alert('appUrlOpen')
-    //Browser.close()
-    //when redirected to the app rom a deep link, I have to see if the URL is a oauth link, where I have to set the session from it and route to the home page, or another link where I have to route based on the URL
-    // const slug = event.url.split('.app').pop()
-    // if (slug) {
-    //   router.push(slug)
-    // }
-    // If no match, do nothing - let regular routing
-    // logic take over
+  const client = useSupabaseClient()
+  await App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
+    //when redirected to the app from a deep link, we need to exchange the url parame code for a session
+
+    const code = event.url.split('=')[1]
+    if (code) {
+      client.auth.exchangeCodeForSession(code)
+      await navigateTo('/home')
+    }
   })
 }
 
@@ -158,7 +174,7 @@ onMounted(async () => {
   }
 
   //New Relic Instrumentation
-  let appToken;
+  let appToken
   if (Capacitor.getPlatform() === 'ios') {
     appToken = 'AA731b117edcff278d3a204187b46ab3d347a16888-NRMA'
   } else {
@@ -197,10 +213,13 @@ onMounted(async () => {
     logLevel: NREnums.LogLevel.INFO,
 
     // Optional: Enable or disable sending JS console logs to New Relic.
-    sendConsoleEvents: true
+    sendConsoleEvents: true,
   }
 
-  NewRelicCapacitorPlugin.start({ appKey: appToken, agentConfiguration: agentConfig })
+  NewRelicCapacitorPlugin.start({
+    appKey: appToken,
+    agentConfiguration: agentConfig,
+  })
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
@@ -294,6 +313,22 @@ useHead({
       <Meta
         name="twitter:image"
         content="https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png"
+      />
+      <Meta
+        name="theme-color"
+        :content="
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
+        "
+      />
+      <Meta
+        name="msapplication-TileColor"
+        :content="
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
+        "
       />
     </Head>
   </Html>

@@ -2,6 +2,7 @@
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import { setStatusDarkMode } from '~/utilities/helpers'
 import { useCurrentUserProfile } from '~/composables/states.ts'
+import { useBrowserTopColorDarkMode } from '~/composables/globals.ts'
 useHead({
   bodyAttrs: {
     class:
@@ -15,6 +16,7 @@ definePageMeta({
 })
 
 const currentUserProfile = useCurrentUserProfile()
+const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
 const isLoading = shallowRef(true)
 onBeforeMount(() => {
@@ -33,6 +35,13 @@ onUnmounted(() => {
 })
 </script>
 <template>
+  <Html>
+    <!-- force browser top color dark -->
+    <Head>
+      <Meta name="theme-color" :content="browserTopColorDarkMode" />
+      <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
+    </Head>
+  </Html>
   <div class="page" :class="[`${String(route.name)}`]">
     <Transition name="fade">
       <section v-if="isLoading" class="loading-holder">

@@ -41,7 +41,7 @@ onMounted(async () => {
 <template>
   <div class="live-feature">
     <div class="inner">
-      <VFlexibleLink raw to="/live" class="flex">
+      <VFlexibleLink raw to="/live" class="flex align-items-center">
         <div class="image-holder">
           <transition name="fade">
             <VImage

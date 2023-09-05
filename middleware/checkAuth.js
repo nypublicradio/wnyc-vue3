@@ -30,8 +30,6 @@ export default defineNuxtRouteMiddleware(async () => {
                 // if first time logging in with new profile
                 const lsSTRING = await Preferences.get({ key: 'localUserProfile' })
                 const ls = JSON.parse(lsSTRING.value)
-                console.log('ls = ', ls)
-                console.log('currentUser.value = ', currentUser.value)
                 data.initial = false
                 data.autodownload = ls.autodownload
                 data.default_live_stream = ls.default_live_stream.label

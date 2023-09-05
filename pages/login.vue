@@ -1,6 +1,6 @@
 <script async setup>
 import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
-// import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
+import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
 definePageMeta({
@@ -65,12 +65,7 @@ useHead({
       <Divider class="my-4" align="center">
         <b>or</b>
       </Divider>
-      <VLoginWithEmail
-        label="Log in"
-        :client="client"
-        :config="config"
-        slug="/home"
-      >
+      <VLoginWithEmail label="Log in" :client="client" :config="config">
         <template #belowSubmit>
           <div class="mt-4">
             <p class="text-center">
