@@ -5,11 +5,6 @@ orbs:
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
 
-npm_key: &npm_key
-  v1-npm-{{ arch }}-{{ .Branch }}-{{ checksum "package-lock.json" }}
-gradle_key: &gradle_key
-  gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
-
 filter_all: &filter_all
   filters:
     branches:
@@ -243,7 +238,7 @@ jobs:
           path: android/app/build/outputs/apk
   deploy:
     docker: 
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     parameters:
       env:
         type: enum
