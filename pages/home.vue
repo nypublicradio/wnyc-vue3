@@ -43,7 +43,7 @@ useHead({
       </div> -->
 
     <section>
-      <h2 class="mt-4 mb-2">Letest News Updates</h2>
+      <h2 class="mt-4 mb-2">Latest News Updates</h2>
       <LatestNewsUpdates class="pt-2" />
     </section>
     <section>

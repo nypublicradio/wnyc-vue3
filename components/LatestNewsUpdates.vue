@@ -45,7 +45,7 @@ const local = {
     updated_date: '2022-03-24T05:00:50.783506-04:40',
     bitrate: 128,
     error: 'g',
-    duration: 151,
+    duration: 151000,
     filename: 'news_latest_newscast.mp3',
     'id3-size': 15111,
     path: 'https://chrt.fm/track/53A61E/pdst.fm/e/dts.podtrac.com/pts/redirect.mp3/waaa.wnyc.org/newscast/news_latest_newscast.mp3',
@@ -60,7 +60,7 @@ const props = defineProps({
   //   },
 })
 
-const togglePlay = () => {
+const togglePlay = (media) => {
   if (
     currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
@@ -68,7 +68,14 @@ const togglePlay = () => {
     currentEpisode.value = currentEpisodeHolder.value
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')
+  trackClickEvent('Click Tracking - Latest News Updates', media, 'toggle play')
+}
+
+const getSeconds = (ms) => {
+  const seconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`
 }
 
 //const emit = defineEmits(["change", "click"]);
@@ -80,8 +87,8 @@ onMounted(() => {})
 <template>
   <div>
     <div class="latest-news-updates grid">
-      <div v-if="local" class="col-6">
-        <div class="news-card">
+      <div class="col-6">
+        <div class="news-card" @click="togglePlay(local)">
           <badge label="Local NYC News" />
           <div class="news-title">
             <div class="font-bold">Current Headlines</div>
@@ -94,10 +101,10 @@ onMounted(() => {})
             </div>
           </div>
           <SmallPlay
-            :label="local.attributes.duration"
+            :label="getSeconds(local.attributes.duration)"
             :isPLaying="isEpisodePlaying"
             :isLoading="isStreamLoading"
-            @onClick="togglePlay"
+            @onClick.prevent="togglePlay"
           />
         </div>
       </div>
