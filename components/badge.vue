@@ -1,0 +1,46 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+
+const props = defineProps({
+  label: {
+    type: String,
+    default: null,
+    required: true,
+  },
+  bgColor: {
+    type: String,
+    default: 'var(--yellow)',
+  },
+  color: {
+    type: String,
+    default: 'var(--text-color)',
+  },
+})
+
+//const emit = defineEmits(["change", "click"]);
+
+// lifecycle hooks
+onMounted(() => {})
+</script>
+
+<template>
+  <div class="badge">
+    <div class="content">{{ props.label }}</div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.badge {
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-family: var(--font-family);
+  font-size: 10px;
+  display: flex;
+  .content {
+    padding: 1px 6px;
+    color: v-bind(color);
+    background-color: v-bind(bgColor);
+    width: auto;
+  }
+}
+</style>
