@@ -1,4 +1,4 @@
-import { format } from 'date-fns'
+import { format, formatDistanceToNowStrict } from 'date-fns'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption, useIsApp } from '~/composables/states'
@@ -236,6 +236,15 @@ function getOrdinalSuffix(i) {
     return `${i}rd`;
   }
   return `${i}th`;
+}
+
+/**
+ * to get how long ago a date was
+ */
+export function howLongAgo(date) {
+  return formatDistanceToNowStrict(new Date(date), {
+    addSuffix: true,
+  })
 }
 
 /**
