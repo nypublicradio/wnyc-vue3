@@ -1,22 +1,8 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-
-const props = defineProps({
-  //   propVar: {
-  //     type: Boolean,
-  //     default: false,
-  //   },
-})
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-onMounted(() => {})
-</script>
+<script setup></script>
 
 <template>
   <div>
-    <div class="latest-news-updates">Here</div>
+    <div class="latest-news-updates">In Progress</div>
   </div>
 </template>
 
