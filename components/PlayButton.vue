@@ -64,11 +64,6 @@ const checkEpisodeMatch = computed(() => {
 })
 
 const getProgress = computed(() => {
-  console.log(
-    Math.ceil(
-      (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
-    )
-  )
   return Math.ceil(
     (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
   )

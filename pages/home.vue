@@ -47,7 +47,7 @@ useHead({
       <LatestNewsUpdates class="pt-2" />
     </section>
     <section>
-      <h2 class="mt-4 mb-2">Top stories from Gothamist</h2>
+      <h2 class="mb-2">Top stories from Gothamist</h2>
       <TopStories />
     </section>
   </div>
