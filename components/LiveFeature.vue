@@ -69,7 +69,7 @@ onMounted(async () => {
               v-if="currentEpisodeHolder"
               class="flex flex-column gap-2 justify-content-center p-3"
             >
-              <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
+              <pre>{{ currentEpisodeHolder }}</pre>
               <h2>{{ currentEpisodeHolder?.title }}</h2>
               <div
                 class="blurb truncate t2lines"
@@ -81,8 +81,6 @@ onMounted(async () => {
               <SmallPlay
                 :label="currentEpisodeHolder?.station"
                 live
-                :isPLaying="isEpisodePlaying"
-                :isLoading="isStreamLoading"
                 @onClick="togglePlay"
               />
             </div>

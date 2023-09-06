@@ -335,3 +335,8 @@ export const toSystemSettings = () => {
 export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url });
 }
+
+// helper function to determine if the file url is a live stream or .mp3 file
+export function isLiveStream(url: string) {
+  return !url.includes('.mp3')
+}

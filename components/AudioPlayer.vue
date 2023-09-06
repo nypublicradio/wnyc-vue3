@@ -11,7 +11,7 @@ import {
   audioPlayerHeight,
   useIsStreamLoading,
 } from '~/composables/states'
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 
 // had to install howler.js locally and add this import to stop it from breaking the build
 // skipcq: JS-0128
@@ -94,6 +94,7 @@ watch(isEpisodePlaying, (e) => {
 
 <template>
   <!-- <div class="audio-player"> -->
+
   <transition name="player">
     <VPersistentPlayer
       v-if="showPlayer"
@@ -105,7 +106,7 @@ watch(isEpisodePlaying, (e) => {
       :hide-download-mobile="true"
       :can-expand-with-swipe="true"
       :show-skip="false"
-      :livestream="true"
+      :livestream="isLiveStream(currentEpisode.file)"
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
@@ -246,6 +247,9 @@ html.style-mode-dark .persistent-player {
   .persistent-player {
     bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
     z-index: 9999;
+    .track-info {
+      //position: relative;
+    }
     .track-info-image {
       width: 60px;
       max-width: 60px;
@@ -266,6 +270,25 @@ html.style-mode-dark .persistent-player {
       text-overflow: ellipsis;
     }
     .track-info-livestream {
+      display: none !important;
+    }
+    .progress-control {
+      position: absolute;
+      bottom: 0px;
+      width: calc(100% - 60px);
+      left: 60px;
+      height: 2px;
+      .p-slider-range {
+        background: #000000;
+      }
+      .p-slider-handle {
+        display: none;
+      }
+      .p-slider {
+        position: initial;
+      }
+    }
+    .track-info-time {
       display: none !important;
     }
     .play-button,

@@ -31,16 +31,18 @@ onMounted(() => {})
 
 <style lang="scss" scoped>
 .badge {
-  border-radius: 2px;
   text-transform: uppercase;
   font-family: var(--font-family);
   font-size: 10px;
   display: flex;
   .content {
     padding: 1px 6px;
+    border-radius: 2px;
     color: v-bind(color);
     background-color: v-bind(bgColor);
     width: auto;
+    font-weight: var(--font-weight-600);
+    letter-spacing: -2%;
   }
 }
 </style>

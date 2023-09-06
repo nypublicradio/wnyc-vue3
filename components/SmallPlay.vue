@@ -2,6 +2,16 @@
 import PlayIcon from '~/components/icons/PlayIcon.vue'
 import PauseIcon from '~/components/icons/PauseIcon.vue'
 
+import {
+  useCurrentEpisode,
+  useIsStreamLoading,
+  useIsEpisodePlaying,
+} from '~/composables/states'
+
+const isEpisodePlaying = useIsEpisodePlaying()
+const currentEpisode = useCurrentEpisode()
+const isStreamLoading = useIsStreamLoading()
+
 const props = defineProps({
   label: {
     type: String,
@@ -15,13 +25,9 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  isPLaying: {
-    type: Boolean,
-    default: false,
-  },
-  isLoading: {
-    type: Boolean,
-    default: false,
+  episode: {
+    default: {},
+    type: Object,
   },
 })
 
@@ -31,20 +37,52 @@ const emit = defineEmits(['on-click'])
 const togglePlay = () => {
   emit('on-click')
 }
+
+const checkEpisodeMatchAndPlaying = computed(() => {
+  if (currentEpisode.value) {
+    if (
+      currentEpisode.value.file === props.episode.file &&
+      isEpisodePlaying.value
+    ) {
+      return true
+    }
+  }
+  return false
+})
+
+const checkEpisodeMatch = computed(() => {
+  if (currentEpisode.value) {
+    if (currentEpisode.value.file === props.episode.file) {
+      return true
+    }
+  }
+  return false
+})
 </script>
 
 <template>
   <div class="small-play">
-    <Button severity="secondary" @click.prevent="togglePlay">
+    <Button
+      severity="secondary"
+      @click.prevent="togglePlay"
+      :class="[
+        { active: checkEpisodeMatch },
+        { anim: checkEpisodeMatchAndPlaying },
+      ]"
+    >
       <slot name="icon">
         <div
+          v-if="checkEpisodeMatch"
           class="flex align-items-center icon relative"
-          :class="[{ live: props.live, paused: !props.isPLaying }]"
+          :class="[{ live: props.live, paused: !isEpisodePlaying }]"
         >
           <CircularProgressBar />
-          <PlayIcon v-if="!props.isPLaying && !props.isLoading" />
-          <PauseIcon v-if="props.isPLaying && !props.isLoading" />
-          <i v-if="props.isLoading" class="pi pi-spin pi-spinner"></i>
+          <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
+          <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
+          <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
+        </div>
+        <div v-else class="flex align-items-center icon">
+          <PlayIcon />
         </div>
       </slot>
       <slot>
@@ -65,6 +103,8 @@ const togglePlay = () => {
 .small-play {
   .p-button {
     padding: 0.25rem 0.75rem;
+    &.active {
+    }
   }
   .icon {
     margin-right: 0.25rem;
