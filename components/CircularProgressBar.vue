@@ -8,7 +8,7 @@ const props = defineProps({
   },
   progress: {
     type: Number,
-    default: 100,
+    default: 0,
   },
   stroke: {
     type: String,
@@ -18,13 +18,17 @@ const props = defineProps({
     type: String,
     default: 'var(--night-500)',
   },
+  bgColor: {
+    type: String,
+    default: 'var(--background2)',
+  },
 })
 
 const normalizedRadius = props.radius - props.stroke * 2
-const circumference = normalizedRadius.value * 2 * Math.PI
+const circumference = Math.ceil(normalizedRadius * 2 * Math.PI)
 
 const strokeDashoffset = computed(() => {
-  return circumference.value - (props.progress / 100) * circumference.value
+  return circumference - (props.progress / 100) * circumference
 })
 </script>
 <template>
@@ -35,10 +39,19 @@ const strokeDashoffset = computed(() => {
     class="circular-progress-bar"
   >
     <circle
+      :stroke="bgColor"
+      fill="transparent"
+      :stroke-dasharray="circumference"
+      :stroke-width="stroke"
+      :r="normalizedRadius"
+      :cx="radius"
+      :cy="radius"
+    />
+    <circle
       :stroke="color"
       fill="transparent"
-      :stroke-dasharray="circumference + ' ' + circumference"
-      :style="{ strokeDashoffset }"
+      :stroke-dasharray="circumference"
+      :style="`stroke-dashoffset: ${strokeDashoffset}px;`"
       :stroke-width="stroke"
       :r="normalizedRadius"
       :cx="radius"

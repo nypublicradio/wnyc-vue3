@@ -34,7 +34,11 @@ const currentEpisodeObj = null
 export const useCurrentEpisode = () => useState('useCurrentEpisode', () => currentEpisodeObj)
 
 /**
- * Global state for the current episode progress. 
+ * Global state for the current episode total duration in seconds. 
+ */
+export const useCurrentEpisodeDuration = () => useState('useCurrentEpisodeDuration', () => 0)
+/**
+ * Global state for the current episode progress in seconds. 
  */
 export const useCurrentEpisodeProgress = () => useState('useCurrentEpisodeProgress', () => 0)
 

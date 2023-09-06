@@ -78,7 +78,7 @@ onMounted(async () => {
                   currentEpisodeHolder?.details
                 "
               ></div>
-              <SmallPlay
+              <PlayButton
                 :label="currentEpisodeHolder?.station"
                 live
                 @onClick="togglePlay"

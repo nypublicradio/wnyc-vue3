@@ -6,11 +6,15 @@ import {
   useCurrentEpisode,
   useIsStreamLoading,
   useIsEpisodePlaying,
+  useCurrentEpisodeDuration,
+  useCurrentEpisodeProgress,
 } from '~/composables/states'
 
 const isEpisodePlaying = useIsEpisodePlaying()
 const currentEpisode = useCurrentEpisode()
 const isStreamLoading = useIsStreamLoading()
+const currentEpisodeDuration = useCurrentEpisodeDuration()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
 
 const props = defineProps({
   label: {
@@ -58,6 +62,17 @@ const checkEpisodeMatch = computed(() => {
   }
   return false
 })
+
+const getProgress = computed(() => {
+  console.log(
+    Math.ceil(
+      (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
+    )
+  )
+  return Math.ceil(
+    (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
+  )
+})
 </script>
 
 <template>
@@ -76,7 +91,7 @@ const checkEpisodeMatch = computed(() => {
           class="flex align-items-center icon relative"
           :class="[{ live: props.live, paused: !isEpisodePlaying }]"
         >
-          <CircularProgressBar />
+          <CircularProgressBar :progress="getProgress" />
           <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
           <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
           <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>

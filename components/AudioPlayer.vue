@@ -10,6 +10,8 @@ import {
   useIsPlayerMinimized,
   audioPlayerHeight,
   useIsStreamLoading,
+  useCurrentEpisodeDuration,
+  useCurrentEpisodeProgress,
 } from '~/composables/states'
 import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 
@@ -22,6 +24,8 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
+const currentEpisodeDuration = useCurrentEpisodeDuration()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + 'px')
@@ -48,6 +52,7 @@ let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
   showPlayer.value = false
+  currentEpisodeProgress.value = 0
   setTimeout(() => {
     showPlayer.value = true
     delay = 1000
@@ -118,6 +123,8 @@ watch(isEpisodePlaying, (e) => {
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
       @is-loading="isStreamLoading = $event"
+      @duration="currentEpisodeDuration = $event"
+      @current-duration="currentEpisodeProgress = $event"
       can-click-anywhere
       marquee
     >

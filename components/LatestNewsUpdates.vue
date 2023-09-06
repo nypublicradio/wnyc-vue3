@@ -1,18 +1,9 @@
 <script setup>
 import { trackClickEvent, howLongAgo } from '~/utilities/helpers'
-import {
-  useIsEpisodePlaying,
-  useTogglePlayTrigger,
-  useCurrentEpisode,
-  useCurrentEpisodeHolder,
-  useIsStreamLoading,
-} from '~/composables/states'
+import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
 
-const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
-const isStreamLoading = useIsStreamLoading()
 
 // const { data: local } = await useFetch(
 //   'https://api.wnyc.org/api/v3/media-file/news_latest_newscast.mp3'
@@ -98,7 +89,7 @@ const getMinutes = (ms) => {
               }}
             </div>
           </div>
-          <SmallPlay :label="getMinutes(local.duration)" :episode="local" />
+          <PlayButton :label="getMinutes(local.duration)" :episode="local" />
         </div>
       </div>
       <div class="col-6">
@@ -118,7 +109,7 @@ const getMinutes = (ms) => {
               }}
             </div>
           </div>
-          <SmallPlay
+          <PlayButton
             :label="getMinutes(national.duration)"
             :episode="national"
           />
