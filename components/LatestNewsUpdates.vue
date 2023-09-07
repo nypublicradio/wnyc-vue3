@@ -83,7 +83,17 @@ const whenTime = (data) => {
           <badge label="Local NYC News" />
           <div class="news-title">
             <div class="font-bold">Current Headlines</div>
-            <div>WNYC&nbsp;|&nbsp;{{ whenTime(local) }}</div>
+            <PipeData>
+              <template #left>WNYC</template>
+              <template #right>
+                <span class="nobreak">{{ whenTime(local) }}</span>
+              </template>
+            </PipeData>
+            <!-- <div class="flex gap-1 flex-wrap">
+              <div>WNYC</div>
+              <div>|</div>
+              <div class="nobreak">{{ whenTime(local) }}</div>
+            </div> -->
           </div>
           <PlayButton :label="getMinutes(local.duration)" :episode="local" />
         </div>
