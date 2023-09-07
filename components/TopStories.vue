@@ -124,7 +124,7 @@ const normalizeAuthor = (author) => {
       font-size: 0.813rem;
       font-weight: 400;
       .flexible-link {
-        color: initial;
+        color: inherit;
         text-decoration: none;
       }
       .v-byline {

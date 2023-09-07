@@ -1,6 +1,4 @@
 <script setup>
-//import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
-
 // const currentUser = useCurrentUser()
 // const currentUserProfile = useCurrentUserProfile()
 
@@ -50,5 +48,11 @@ useHead({
       <h2 class="mb-2">Top stories from Gothamist</h2>
       <TopStories />
     </section>
+    <section>
+      <h2 class="mb-2">Featured from WNYC</h2>
+      <WNYCFeatured />
+    </section>
   </div>
 </template>
+
+<style lang="scss" scoped></style>
