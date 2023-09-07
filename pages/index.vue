@@ -35,57 +35,62 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <Html>
-    <!-- force browser top color dark -->
-    <Head>
-      <Meta name="theme-color" :content="browserTopColorDarkMode" />
-      <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
-    </Head>
-  </Html>
-  <div class="page" :class="[`${String(route.name)}`]">
-    <Transition name="fade">
-      <section v-if="isLoading" class="loading-holder">
-        <WnycLoader class="loader-anim" />
-      </section>
-      <div v-else class="index-page flex flex-column">
-        <section class="flex flex-column">
-          <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
-          <h1 class="headline">What's new?</h1>
-          <ul class="list m-auto mt-4 mb-6">
-            <li>Listen to WNYC's Live Radio Stream</li>
-            <li>Get the latest news updates</li>
-            <li>Stream your favorite podcasts</li>
-            <li>Read local news from Gothamist</li>
-            <li>Follow your favorite shows</li>
-          </ul>
-          <h1 class="headline mb-4">Get started!</h1>
-          <div class="text-center flex flex-column gap-3 mb-4">
-            <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
-              <Button
-                class="w-full"
-                label="Create Free Account"
-                rounded
-                size="small"
-              />
-            </VFlexibleLink>
-            <p>or</p>
-            <VFlexibleLink raw to="/login" class="w-13rem m-auto">
-              <Button
-                class="w-full"
-                label="Log in"
-                rounded
-                size="small"
-                severity="secondary"
-              />
-            </VFlexibleLink>
-            <p>
-              <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
-              an account later.
-            </p>
-          </div>
+  <div>
+    <Html>
+      <!-- force browser top color dark -->
+      <Head>
+        <Meta name="theme-color" :content="browserTopColorDarkMode" />
+        <Meta
+          name="msapplication-TileColor"
+          :content="browserTopColorDarkMode"
+        />
+      </Head>
+    </Html>
+    <div class="page" :class="[`${String(route.name)}`]">
+      <Transition name="fade">
+        <section v-if="isLoading" class="loading-holder">
+          <WnycLoader class="loader-anim" />
         </section>
-      </div>
-    </Transition>
+        <div v-else class="index-page flex flex-column">
+          <section class="flex flex-column">
+            <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
+            <h1 class="headline">What's new?</h1>
+            <ul class="list m-auto mt-4 mb-6">
+              <li>Listen to WNYC's Live Radio Stream</li>
+              <li>Get the latest news updates</li>
+              <li>Stream your favorite podcasts</li>
+              <li>Read local news from Gothamist</li>
+              <li>Follow your favorite shows</li>
+            </ul>
+            <h1 class="headline mb-4">Get started!</h1>
+            <div class="text-center flex flex-column gap-3 mb-4">
+              <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
+                <Button
+                  class="w-full"
+                  label="Create Free Account"
+                  rounded
+                  size="small"
+                />
+              </VFlexibleLink>
+              <p>or</p>
+              <VFlexibleLink raw to="/login" class="w-13rem m-auto">
+                <Button
+                  class="w-full"
+                  label="Log in"
+                  rounded
+                  size="small"
+                  severity="secondary"
+                />
+              </VFlexibleLink>
+              <p>
+                <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
+                an account later.
+              </p>
+            </div>
+          </section>
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
 
