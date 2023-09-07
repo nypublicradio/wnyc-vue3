@@ -15,7 +15,7 @@ const currentEpisode = useCurrentEpisode()
 const national = {
   type: 'media-file',
   id: '235725',
-  first_published_at: '2022-03-24T05:00:50.783506-04:00',
+  first_published_at: '2023-09-06T05:00:50.783506-04:00',
   updated_date: null,
   bitrate: 128,
   error: 'g',
@@ -31,8 +31,8 @@ const national = {
 const local = {
   type: 'media-file',
   id: '235724',
-  first_published_at: '2022-03-24T05:00:50.783506-04:00',
-  updated_date: '2022-03-24T05:00:50.783506-04:40',
+  first_published_at: '2023-08-24T05:00:50.783506-04:00',
+  updated_date: '2023-09-07T12:00:50.783506-04:00',
   bitrate: 128,
   error: 'g',
   duration: 124000,
@@ -71,6 +71,12 @@ const getMinutes = (ms) => {
   remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
 }
+
+const whenTime = (data) => {
+  return data.updated_date
+    ? howLongAgo(data.updated_date)
+    : howLongAgo(data.first_published_at)
+}
 </script>
 
 <template>
@@ -81,13 +87,7 @@ const getMinutes = (ms) => {
           <badge label="Local NYC News" />
           <div class="news-title">
             <div class="font-bold">Current Headlines</div>
-            <div>
-              WNYC&nbsp;|&nbsp;{{
-                local.updated_date
-                  ? howLongAgo(local.updated_date)
-                  : howLongAgo(local.first_published_at)
-              }}
-            </div>
+            <div>WNYC&nbsp;|&nbsp;{{ whenTime(local) }}</div>
           </div>
           <PlayButton :label="getMinutes(local.duration)" :episode="local" />
         </div>
@@ -101,13 +101,7 @@ const getMinutes = (ms) => {
           />
           <div class="news-title">
             <div class="font-bold">11AM Update</div>
-            <div>
-              NPR&nbsp;|&nbsp;{{
-                national.updated_date
-                  ? howLongAgo(national.updated_date)
-                  : howLongAgo(national.first_published_at)
-              }}
-            </div>
+            <div>NPR&nbsp;|&nbsp;{{ whenTime(national) }}</div>
           </div>
           <PlayButton
             :label="getMinutes(national.duration)"
@@ -128,6 +122,7 @@ const getMinutes = (ms) => {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    cursor: pointer;
     .news-title {
       font-size: 0.813rem;
     }
