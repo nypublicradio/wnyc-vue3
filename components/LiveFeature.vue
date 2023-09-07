@@ -2,19 +2,15 @@
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 import {
-  useIsEpisodePlaying,
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
-  useIsStreamLoading,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
-const isStreamLoading = useIsStreamLoading()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 

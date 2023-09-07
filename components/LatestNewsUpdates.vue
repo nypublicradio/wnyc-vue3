@@ -45,13 +45,6 @@ const local = {
   state: 'done',
 }
 
-// const props = defineProps({
-//   //   propVar: {
-//   //     type: Boolean,
-//   //     default: false,
-//   //   },
-// })
-
 const togglePlay = (media) => {
   if (currentEpisode.value?.file !== media.file) {
     currentEpisode.value = media
@@ -64,6 +57,7 @@ const togglePlay = (media) => {
   )
 }
 
+// returns the rounded up minutes duration of the episode
 const getMinutes = (ms) => {
   const seconds = Math.floor(ms / 1000)
   let minutes = Math.floor(seconds / 60)
@@ -72,6 +66,7 @@ const getMinutes = (ms) => {
   return `${minutes} min`
 }
 
+// returns the time since the episode was published, but checks for updated_date first
 const whenTime = (data) => {
   return data.updated_date
     ? howLongAgo(data.updated_date)

@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-
 const props = defineProps({
   label: {
     type: String,
@@ -16,11 +14,6 @@ const props = defineProps({
     default: 'var(--text-color)',
   },
 })
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-onMounted(() => {})
 </script>
 
 <template>
