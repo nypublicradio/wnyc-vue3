@@ -32,7 +32,7 @@ const local = {
   type: 'media-file',
   id: '235724',
   first_published_at: '2023-08-24T05:00:50.783506-04:00',
-  updated_date: '2023-09-07T12:00:50.783506-04:00',
+  updated_date: '2023-09-07T13:10:50',
   bitrate: 128,
   error: 'g',
   duration: 124000,

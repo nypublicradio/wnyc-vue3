@@ -242,9 +242,12 @@ function getOrdinalSuffix(i) {
  * to get how long ago a date was
  */
 export function howLongAgo(date) {
-  return formatDistanceToNowStrict(new Date(date), {
+  const res = formatDistanceToNowStrict(new Date(date), {
     addSuffix: true,
   })
+
+  return res.replace('minutes', 'min').replace('minute', 'min')
+
 }
 
 /**
