@@ -61,6 +61,11 @@ onMounted(() => {})
     overflow: hidden;
     max-width: 248px;
     background-color: var(--background2);
+    .top {
+    }
+    .bottom {
+      padding: 1rem;
+    }
   }
 }
 </style>
