@@ -47,7 +47,7 @@ const normalizeAuthor = (author) => {
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles.items" :key="index" class="mb-4">
-      <!--       <pre>{{ article }}</pre> -->
+      <!-- <pre>{{ article }}</pre> -->
       <VCard
         :src="getImageUrl(article)"
         :title="article.title"

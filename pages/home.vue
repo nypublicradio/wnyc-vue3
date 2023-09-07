@@ -43,11 +43,11 @@ useHead({
       </div> -->
 
     <section>
-      <h2 class="font-bold font-meta mt-4">Letest News Updates</h2>
+      <h2 class="mt-4 mb-2">Latest News Updates</h2>
       <LatestNewsUpdates class="pt-2" />
     </section>
     <section>
-      <h2 class="font-bold font-meta mt-4">Top stories from Gothamist</h2>
+      <h2 class="mb-2">Top stories from Gothamist</h2>
       <TopStories />
     </section>
   </div>

@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   image: {
     dir: 'public',
     wagtail: {
-      baseURL: "https://cms.demo.nypr.digital/images/",
+      baseURL: process.env.IMAGE_BASE_URL,
       screens: {
         xs: 375,
         sm: 576,

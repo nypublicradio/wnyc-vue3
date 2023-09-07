@@ -242,9 +242,12 @@ function getOrdinalSuffix(i) {
  * to get how long ago a date was
  */
 export function howLongAgo(date) {
-  return formatDistanceToNowStrict(new Date(date), {
+  const res = formatDistanceToNowStrict(new Date(date), {
     addSuffix: true,
   })
+
+  return res.replace('minutes', 'min').replace('minute', 'min')
+
 }
 
 /**
@@ -334,4 +337,9 @@ export const toSystemSettings = () => {
 // helper function to open a link in the browser IN the app
 export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url });
+}
+
+// helper function to determine if the file url is a live stream or .mp3 file
+export function isLiveStream(url: string) {
+  return !url.includes('.mp3')
 }
