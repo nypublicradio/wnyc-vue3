@@ -114,6 +114,7 @@ const getProgress = computed(() => {
   .p-button {
     padding: 0.25rem 0.75rem;
     &.active {
+      border: var(--night) 1px solid;
     }
   }
   .icon {
