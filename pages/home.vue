@@ -50,8 +50,8 @@ useHead({
     </section>
     <section>
       <h2 class="mb-2">Featured from WNYC</h2>
-      <WNYCFeatured />
     </section>
+    <WNYCFeatured />
   </div>
 </template>
 
