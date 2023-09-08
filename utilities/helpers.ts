@@ -343,3 +343,19 @@ export async function openLinkInAppBrowser(url: string) {
 export function isLiveStream(url: string) {
   return !url.includes('.mp3')
 }
+
+// returns the time since the episode was published, but checks for updated_date first
+export const whenTime = (data) => {
+  return data.updated_date
+    ? howLongAgo(data.updated_date)
+    : data['publish-at'] ? howLongAgo(data['publish-at']) : howLongAgo(data.first_published_at)
+}
+
+// returns the rounded up minutes duration of the episode
+export const getMinutes = (ms, mult = 1000) => {
+  const seconds = Math.floor(ms / mult)
+  let minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  remainingSeconds > 30 ? minutes++ : minutes
+  return `${minutes} min`
+}

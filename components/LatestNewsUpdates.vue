@@ -1,16 +1,9 @@
 <script setup>
-import { trackClickEvent, howLongAgo } from '~/utilities/helpers'
+import { trackClickEvent, whenTime, getMinutes } from '~/utilities/helpers'
 import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
 
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
-
-// const { data: local } = await useFetch(
-//   'https://api.wnyc.org/api/v3/media-file/news_latest_newscast.mp3'
-// )
-// const { data: national } = await useFetch(
-//   'https://www.wnyc.org/audio/json/346659/'
-// )
 
 const national = {
   type: 'media-file',
@@ -57,22 +50,6 @@ const togglePlay = (media) => {
     'toggle play'
   )
 }
-
-// returns the rounded up minutes duration of the episode
-const getMinutes = (ms) => {
-  const seconds = Math.floor(ms / 1000)
-  let minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  remainingSeconds > 30 ? minutes++ : minutes
-  return `${minutes} min`
-}
-
-// returns the time since the episode was published, but checks for updated_date first
-const whenTime = (data) => {
-  return data.updated_date
-    ? howLongAgo(data.updated_date)
-    : howLongAgo(data.first_published_at)
-}
 </script>
 
 <template>
@@ -89,11 +66,6 @@ const whenTime = (data) => {
                 <span class="nobreak">{{ whenTime(local) }}</span>
               </template>
             </PipeData>
-            <!-- <div class="flex gap-1 flex-wrap">
-              <div>WNYC</div>
-              <div>|</div>
-              <div class="nobreak">{{ whenTime(local) }}</div>
-            </div> -->
           </div>
           <PlayButton :label="getMinutes(local.duration)" :episode="local" />
         </div>
@@ -107,7 +79,12 @@ const whenTime = (data) => {
           />
           <div class="news-title">
             <div class="font-bold">11AM Update</div>
-            <div>NPR&nbsp;|&nbsp;{{ whenTime(national) }}</div>
+            <PipeData>
+              <template #left>WNYC</template>
+              <template #right>
+                <span class="nobreak">{{ whenTime(national) }}</span>
+              </template>
+            </PipeData>
           </div>
           <PlayButton
             :label="getMinutes(national.duration)"
