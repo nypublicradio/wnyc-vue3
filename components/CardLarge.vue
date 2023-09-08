@@ -7,8 +7,11 @@ import {
   copyToClipBoard,
 } from '~/utilities/helpers'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
+import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
+const togglePlayTrigger = useTogglePlayTrigger()
+const currentEpisode = useCurrentEpisode()
 const toast = useToast()
 
 const props = defineProps({
@@ -69,8 +72,36 @@ const menuItems = ref([
   },
 ])
 
-const togglePlay = (event) => {
-  console.log(event)
+const normalizedItem = computed(() => {
+  return {
+    ...props.item,
+    file: props.item.attributes.audio,
+    image: props.item.attributes['image-main'].url,
+    duration: props.item.attributes['estimated-duration'],
+    details: props.item.attributes.body,
+    first_published_at: props.item.attributes['publish-at'],
+    attributes: {
+      ...props.item.attributes,
+      'show-title': props.item.attributes['show-title'].replace(
+        'The Brian Lehrer Show',
+        'Brian Lehrer'
+      ),
+    },
+  }
+})
+
+// handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
+const togglePlay = () => {
+  console.log('normalizedItem - ', normalizedItem.value)
+  //if (currentEpisode.value?.file !== normalizedItem.value.file) {
+  currentEpisode.value = normalizedItem.value
+  //}
+  togglePlayTrigger.value = !togglePlayTrigger.value
+  trackClickEvent(
+    'Click Tracking - Large Card',
+    props.item.attributes.title,
+    'toggle play'
+  )
 }
 </script>
 
@@ -113,9 +144,10 @@ const togglePlay = (event) => {
             <template #end>
               <div class="p-2 pb-0">
                 <Textarea
+                  disabled
                   class="w-full text-xs"
                   v-model="props.item.attributes['embed-code']"
-                  rows="5"
+                  rows="9"
                 />
               </div>
             </template>
