@@ -337,6 +337,7 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <Toast />
   <Sidebar
     v-model:visible="settingsSideBar"
     :baseZIndex="10000"

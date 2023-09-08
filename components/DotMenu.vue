@@ -7,11 +7,6 @@ const props = defineProps({
     default: null,
     required: true,
   },
-  data: {
-    type: Object,
-    default: null,
-    required: true,
-  },
 })
 
 const menu = ref()

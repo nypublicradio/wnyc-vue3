@@ -10,6 +10,8 @@ import Skeleton from 'primevue/skeleton/skeleton.esm.js'
 import TabMenu from 'primevue/tabmenu/tabmenu.esm.js'
 import Textarea from 'primevue/textarea'
 import TieredMenu from 'primevue/tieredmenu/tieredmenu.esm.js'
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
 import SelectButton from 'primevue/selectbutton'
 import Inplace from 'primevue/inplace'
 import InputText from 'primevue/inputtext'
@@ -22,6 +24,7 @@ import ProgressSpinner from 'primevue/progressspinner'
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, { ripple: false })
+    nuxtApp.vueApp.use(ToastService)
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('Dropdown', Dropdown)
     nuxtApp.vueApp.component('Menu', Menu)
@@ -31,6 +34,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('TabMenu', TabMenu)
     nuxtApp.vueApp.component('Textarea', Textarea)
     nuxtApp.vueApp.component('TieredMenu', TieredMenu)
+    nuxtApp.vueApp.component('Toast', Toast)
     nuxtApp.vueApp.component('SelectButton', SelectButton)
     nuxtApp.vueApp.component('Inplace', Inplace)
     nuxtApp.vueApp.component('InputText', InputText)
