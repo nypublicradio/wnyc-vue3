@@ -359,3 +359,16 @@ export const getMinutes = (ms, mult = 1000) => {
   remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
 }
+
+// global funcrtion for copying to clipboard
+export const copyToClipBoard = async (content, msg = null) => {
+  if (!navigator.clipboard) return
+  await navigator.clipboard.writeText(content)
+    .then(() => {
+      //createToast(msg ? msg : 'Copied to the clipboard', toastConfig)
+    })
+    .catch(() => {
+      //(err)
+      //createToast({ title: 'Copy to clipboard failed', description: 'Try again another time' }, toastConfigDanger)
+    })
+}

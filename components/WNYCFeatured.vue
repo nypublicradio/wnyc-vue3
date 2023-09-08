@@ -5,7 +5,7 @@ import {
   whenTime,
 } from '~/utilities/helpers'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   //   propVar: {
@@ -25,11 +25,49 @@ console.log(
   'bucket = ',
   bucket.value.data.attributes['bucket-items'][0].attributes
 )
-//
-//const emit = defineEmits(["change", "click"]);
 
-// lifecycle hooks
-onMounted(() => {})
+const menu = ref(false)
+const menuItems = ref([
+  {
+    label: 'Options',
+    items: [
+      {
+        label: 'Download',
+        icon: 'pi pi-download',
+        command: () => {
+          window.open(props.episode['audio'], '_blank')
+          //   createToast(
+          //     {
+          //       title: 'Download started...',
+          //     },
+          //     toastConfig.value
+          //   )
+          //   $analytics.sendEvent('click_tracking', {
+          //     event_category: 'Click Tracking',
+          //     component: 'Episode Tools',
+          //     event_label: 'Download',
+          //   })
+        },
+      },
+      {
+        label: 'Copy embed code',
+        icon: 'pi pi-code',
+      },
+    ],
+  },
+])
+
+const menuClick = (event) => {
+  console.log(event)
+}
+
+const toggle = (event) => {
+  console.log(event)
+  menu.value.toggle(event)
+}
+const togglePlay = (event) => {
+  console.log(event)
+}
 </script>
 
 <template>
@@ -63,36 +101,34 @@ onMounted(() => {})
                 <span class="nobreak">{{ whenTime(item.attributes) }}</span>
               </template>
             </PipeData>
-            <div class="flex mt-1 justify-content-between">
+            <div class="flex justify-content-between align-items-center">
               <PlayButton
                 :label="getMinutes(item.attributes['estimated-duration'], 1)"
                 @onClick="togglePlay"
               />
-              <Dropdown
-                title="Choose platform"
-                v-model="selectedPlayService"
-                :options="playServices"
-                :panel-class="menuClass"
-                option-label="name"
-                aria-label="Select a service to play this episode"
-                aria-labelledby="Select a service to play this episode"
-              >
-                <template #option="slotProps">
-                  <div class="service-item">
-                    <img
-                      alt="icon"
-                      :src="
-                        '/play-service-icons/' + slotProps.option.icon + '.svg'
-                      "
+              <DotMenu :items="menuItems" :data="item.attributes">
+                <template #item="slotProps">
+                  <a
+                    class="flex"
+                    v-bind="slotProps.props.action"
+                    @click="menuClick"
+                  >
+                    <span v-bind="slotProps.props.icon" />
+                    <span v-bind="slotProps.props.label">{{
+                      slotProps.label
+                    }}</span>
+                  </a>
+                </template>
+                <template #end>
+                  <div class="p-2 pb-0">
+                    <Textarea
+                      class="w-full text-xs"
+                      v-model="item.attributes['embed-code']"
+                      rows="5"
                     />
-                    <div>{{ slotProps.option.name }}</div>
-                    <div
-                      class="hack-click"
-                      @click="launchService(slotProps.option)"
-                    ></div>
                   </div>
                 </template>
-              </Dropdown>
+              </DotMenu>
             </div>
           </div>
         </div>
