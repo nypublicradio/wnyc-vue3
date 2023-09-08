@@ -1,7 +1,7 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { trackClickEvent, howLongAgo } from '~/utilities/helpers'
+import { trackClickEvent, whenTime } from '~/utilities/helpers'
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
 const { data: articles } = await useFetch(config.public.STORIES_API)
@@ -76,28 +76,32 @@ const normalizeAuthor = (author) => {
       >
         <template #belowBlurb>
           <div class="article-metadata">
-            <VByline
-              prefix=""
-              :authors="article.related_authors?.map(normalizeAuthor)"
-              @name-click="
-                trackClickEvent(
-                  'Click Tracking - Top Story',
-                  'Article Card Author Name',
-                  $event.url
-                )
-              "
-              @organization-click="
-                trackClickEvent(
-                  'Click Tracking - Top Story',
-                  'Article Card Author Organization',
-                  $event.url
-                )
-              "
-            >
-              <template #afterNames>
-                <span>| {{ howLongAgo(article.meta.first_published_at) }}</span>
+            <PipeData>
+              <template #left>
+                <VByline
+                  prefix=""
+                  :authors="article.related_authors?.map(normalizeAuthor)"
+                  @name-click="
+                    trackClickEvent(
+                      'Click Tracking - Top Story',
+                      'Article Card Author Name',
+                      $event.url
+                    )
+                  "
+                  @organization-click="
+                    trackClickEvent(
+                      'Click Tracking - Top Story',
+                      'Article Card Author Organization',
+                      $event.url
+                    )
+                  "
+                >
+                </VByline>
               </template>
-            </VByline>
+              <template #right>
+                <span class="nobreak">{{ whenTime(article.meta) }}</span>
+              </template>
+            </PipeData>
           </div>
         </template>
       </VCard>
@@ -128,7 +132,7 @@ const normalizeAuthor = (author) => {
         text-decoration: none;
       }
       .v-byline {
-        gap: 5px;
+        gap: 0;
       }
     }
   }

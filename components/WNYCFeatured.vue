@@ -1,5 +1,9 @@
 <script async setup>
-import { formatPublisherImageUrl } from '~/utilities/helpers'
+import {
+  formatPublisherImageUrl,
+  getMinutes,
+  whenTime,
+} from '~/utilities/helpers'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
 import { ref, computed, onMounted } from 'vue'
 
@@ -45,7 +49,52 @@ onMounted(() => {})
               :height="159"
             />
           </div>
-          <div class="bottom">content</div>
+          <div class="bottom flex flex-column gap-2">
+            <div class="title text-sm font-bold font-meta line-height-2">
+              {{ item.attributes.title }}
+            </div>
+            <div
+              class="desc text-xs line-height-3"
+              v-html="item.attributes.body"
+            />
+            <PipeData class="text-xs">
+              <template #left>{{ item.attributes['show-title'] }}</template>
+              <template #right>
+                <span class="nobreak">{{ whenTime(item.attributes) }}</span>
+              </template>
+            </PipeData>
+            <div class="flex mt-1 justify-content-between">
+              <PlayButton
+                :label="getMinutes(item.attributes['estimated-duration'], 1)"
+                @onClick="togglePlay"
+              />
+              <Dropdown
+                title="Choose platform"
+                v-model="selectedPlayService"
+                :options="playServices"
+                :panel-class="menuClass"
+                option-label="name"
+                aria-label="Select a service to play this episode"
+                aria-labelledby="Select a service to play this episode"
+              >
+                <template #option="slotProps">
+                  <div class="service-item">
+                    <img
+                      alt="icon"
+                      :src="
+                        '/play-service-icons/' + slotProps.option.icon + '.svg'
+                      "
+                    />
+                    <div>{{ slotProps.option.name }}</div>
+                    <div
+                      class="hack-click"
+                      @click="launchService(slotProps.option)"
+                    ></div>
+                  </div>
+                </template>
+              </Dropdown>
+            </div>
+          </div>
         </div>
       </HorizontalScrollFeature>
     </div>
@@ -65,6 +114,14 @@ onMounted(() => {})
     }
     .bottom {
       padding: 1rem;
+      .title {
+        @include truncate();
+        @include t3lines();
+      }
+      .desc {
+        @include truncate();
+        @include t5lines();
+      }
     }
   }
 }
