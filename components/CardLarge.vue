@@ -5,6 +5,7 @@ import {
   whenTime,
   trackClickEvent,
   copyToClipBoard,
+  resizePublisherImage,
 } from '~/utilities/helpers'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
 import { ref } from 'vue'
@@ -76,7 +77,13 @@ const normalizedItem = computed(() => {
   return {
     ...props.item,
     file: props.item.attributes.audio,
-    image: props.item.attributes['image-main'].url,
+    title: props.item.attributes.title,
+    image: resizePublisherImage(
+      props.item.attributes['image-main'].template,
+      60,
+      60,
+      80
+    ),
     duration: props.item.attributes['estimated-duration'],
     details: props.item.attributes.body,
     first_published_at: props.item.attributes['publish-at'],
@@ -138,6 +145,7 @@ const togglePlay = () => {
         <div class="flex justify-content-between align-items-center">
           <PlayButton
             :label="getMinutes(props.item.attributes['estimated-duration'], 1)"
+            :episode="normalizedItem"
             @onClick="togglePlay"
           />
           <DotMenu :items="menuItems" :data="props.item.attributes">
