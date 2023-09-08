@@ -17,6 +17,7 @@ console.log(
         <CardLarge
           v-for="item in bucket?.data?.attributes['bucket-items']"
           :item="item"
+          style="min-width: 248px"
         />
       </HorizontalScrollFeature>
     </div>

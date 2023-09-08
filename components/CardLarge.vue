@@ -88,20 +88,22 @@ const togglePlay = (event) => {
           :height="159"
         />
       </div>
-      <div class="bottom flex flex-column gap-2">
-        <div class="title text-sm font-bold font-meta line-height-2">
-          {{ props.item.attributes.title }}
+      <div class="bottom flex flex-column gap-2 justify-content-between">
+        <div class="flex flex-column gap-2">
+          <div class="title text-sm font-bold font-meta line-height-2">
+            {{ props.item.attributes.title }}
+          </div>
+          <div
+            class="desc text-xs line-height-3"
+            v-html="props.item.attributes.body"
+          />
+          <PipeData class="text-xs">
+            <template #left>{{ props.item.attributes['show-title'] }}</template>
+            <template #right>
+              <span class="nobreak">{{ whenTime(props.item.attributes) }}</span>
+            </template>
+          </PipeData>
         </div>
-        <div
-          class="desc text-xs line-height-3"
-          v-html="props.item.attributes.body"
-        />
-        <PipeData class="text-xs">
-          <template #left>{{ props.item.attributes['show-title'] }}</template>
-          <template #right>
-            <span class="nobreak">{{ whenTime(props.item.attributes) }}</span>
-          </template>
-        </PipeData>
         <div class="flex justify-content-between align-items-center">
           <PlayButton
             :label="getMinutes(props.item.attributes['estimated-duration'], 1)"
@@ -136,13 +138,14 @@ const togglePlay = (event) => {
   }
   .bottom {
     padding: 1rem;
+    height: 100%;
     .title {
       @include truncate();
       @include t3lines();
     }
     .desc {
       @include truncate();
-      @include t5lines();
+      @include t4lines();
     }
   }
 }

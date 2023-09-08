@@ -5,6 +5,7 @@ $headerHeight: 88px;
 $bottomMenuHeight: 60px;
 $playerHeight: 100px;
 $toolsBreakPoint: 472px;
+$padding: 1.25rem;
 
 :root {
     --header-height: #{$headerHeight};
@@ -28,6 +29,7 @@ $toolsBreakPoint: 472px;
     --s-box-stroke-color: var(--background) !important;
     --header-background: #ffffffe6 !important;
     --live-feature-background: var(--background2) !important;
+    --horzScrollGradient: var(--background);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -36,6 +38,7 @@ $toolsBreakPoint: 472px;
     --s-box-background-color: #ffffff1a !important;
     --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
     --live-feature-background: var(--background3) !important;
+    --horzScrollGradient: var(--dark-blue);
 }
 
 :root {
