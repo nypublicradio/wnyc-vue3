@@ -113,6 +113,7 @@ export default defineNuxtConfig({
       LIVESTREAM_URL: process.env.LIVESTREAM_URL ?? 'https://api.demo.nypr.digital/api/v4/whats_on/',
       //NAVIGATION_API: process.env.NAVIGATION_API ?? 'https://cms.demo.nypr.digital/api/v2/navigation/3/',
       STORIES_API: process.env.STORIES_API ?? 'https://cms.demo.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false',
+      PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? 'https://api.wnyc.org/api/v3/',
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.demo.nypr.digital/images/',
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',

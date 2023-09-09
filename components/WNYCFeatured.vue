@@ -1,12 +1,11 @@
 <script async setup>
 import { ref } from 'vue'
 
-const { data: bucket } = await useFetch(
-  'https://api.wnyc.org//api/v3/buckets/wnyc-home-middle/'
-)
+const bucket = await usePublisherFetch('/buckets/wnyc-home-middle/')
+
 console.log(
   'bucket = ',
-  bucket?.value?.data?.attributes['bucket-items'][0].attributes
+  bucket?.data?.value?.data?.attributes.bucketItems[0].attributes
 )
 </script>
 
@@ -15,7 +14,7 @@ console.log(
     <div class="wnyc-featured">
       <HorizontalScrollFeature>
         <CardLarge
-          v-for="item in bucket?.data?.attributes['bucket-items']"
+          v-for="item in bucket?.data?.value?.data?.attributes?.bucketItems"
           :item="item"
           style="min-width: 248px"
         />
