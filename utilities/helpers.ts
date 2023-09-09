@@ -348,7 +348,7 @@ export function isLiveStream(url: string) {
 export const whenTime = (data) => {
   return data.updated_date
     ? howLongAgo(data.updated_date)
-    : data['publish-at'] ? howLongAgo(data['publish-at']) : howLongAgo(data.first_published_at)
+    : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.first_published_at)
 }
 
 // returns the rounded up minutes duration of the episode

@@ -49,7 +49,7 @@ const menuItems = ref([
         label: 'Copy embed code',
         icon: 'pi pi-code',
         command: () => {
-          copyToClipBoard(props.item.attributes['embed-code'])
+          copyToClipBoard(props.item.attributes.embedCode)
             ? toast.add({
                 severity: 'info',
                 summary: 'Copied',
@@ -65,7 +65,7 @@ const menuItems = ref([
           trackClickEvent(
             'Click Tracking - Audio Copy Embed Code',
             `Large Card`,
-            props.item.attributes['embed-code']
+            props.item.attributes.embedCode
           )
         },
       },
@@ -79,21 +79,14 @@ const normalizedItem = computed(() => {
     file: props.item.attributes.audio,
     title: props.item.attributes.title,
     image: resizePublisherImage(
-      props.item.attributes['image-main'].template,
+      props.item.attributes.imageMain.template,
       60,
       60,
       80
     ),
-    duration: props.item.attributes['estimated-duration'],
+    duration: props.item.attributes.estimatedDuration,
     details: props.item.attributes.body,
-    first_published_at: props.item.attributes['publish-at'],
-    attributes: {
-      ...props.item.attributes,
-      'show-title': props.item.attributes['show-title'].replace(
-        'The Brian Lehrer Show',
-        'Brian Lehrer'
-      ),
-    },
+    first_published_at: props.item.attributes.publishAt,
   }
 })
 
@@ -118,12 +111,11 @@ const togglePlay = () => {
       <div class="top">
         <VImagePublisher
           :src="
-            formatPublisherImageUrl(
-              props.item.attributes['image-main'].template
-            )
+            formatPublisherImageUrl(props.item.attributes.imageMain.template)
           "
           :width="248"
           :height="159"
+          :ratio="[248, 159]"
         />
       </div>
       <div class="bottom flex flex-column gap-2 justify-content-between">
@@ -136,7 +128,7 @@ const togglePlay = () => {
             v-html="props.item.attributes.body"
           />
           <PipeData class="text-xs">
-            <template #left>{{ props.item.attributes['show-title'] }}</template>
+            <template #left>{{ props.item.attributes.showTitle }}</template>
             <template #right>
               <span class="nobreak">{{ whenTime(props.item.attributes) }}</span>
             </template>
@@ -144,7 +136,7 @@ const togglePlay = () => {
         </div>
         <div class="flex justify-content-between align-items-center">
           <PlayButton
-            :label="getMinutes(props.item.attributes['estimated-duration'], 1)"
+            :label="getMinutes(props.item.attributes.estimatedDuration, 1)"
             :episode="normalizedItem"
             @onClick="togglePlay"
           />
@@ -154,7 +146,7 @@ const togglePlay = () => {
                 <Textarea
                   disabled
                   class="w-full text-xs"
-                  v-model="props.item.attributes['embed-code']"
+                  v-model="props.item.attributes.embedCode"
                   rows="9"
                 />
               </div>
