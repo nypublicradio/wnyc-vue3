@@ -104,11 +104,6 @@ const togglePlay = () => {
     'toggle play'
   )
 }
-
-console.log(
-  'props.item.attributes.imageMain.template = ',
-  props.item.attributes.imageMain
-)
 </script>
 
 <template>
