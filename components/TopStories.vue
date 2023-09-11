@@ -1,19 +1,14 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { trackClickEvent, whenTime } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  whenTime,
+  getAviaryImageSrcId,
+} from '~/utilities/helpers'
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
 const { data: articles } = await useFetch(config.public.STORIES_API)
-
-// returns an Aviary image template string
-const getImageUrl = (article) => {
-  const listingImage =
-    article.lead_asset?.[0]?.value?.image ??
-    article.lead_asset?.[0]?.value?.default_image
-  if (!listingImage) return ''
-  return String(listingImage.id)
-}
 
 // returns the article link
 const getArticleLink = (article) => {
@@ -42,6 +37,8 @@ const normalizeAuthor = (author) => {
     url: author.slug && `https://gothamist.com/staff/${author.slug}`,
   }
 }
+
+console.log('articles = ', articles)
 </script>
 
 <template>
@@ -49,7 +46,7 @@ const normalizeAuthor = (author) => {
     <div v-for="(article, index) in articles.items" :key="index" class="mb-4">
       <!-- <pre>{{ article }}</pre> -->
       <VCard
-        :src="getImageUrl(article)"
+        :src="getAviaryImageSrcId(article)"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
         :link="getArticleLink(article)"
