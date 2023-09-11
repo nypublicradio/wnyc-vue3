@@ -9,7 +9,7 @@ const props = defineProps({
   },
 })
 
-onMounted(async () => {
+onMounted(() => {
   // you can't have script tags in v-html
   // so we need to load the twitter embeds script manually
   if (window.twttr) {
@@ -26,7 +26,7 @@ onMounted(async () => {
 
 <template>
   <div class="streamfield">
-    <template v-for="(block, index) in streamfield" :key="index">
+    <div v-for="(block, index) in streamfield" :key="index">
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"
@@ -87,7 +87,7 @@ onMounted(async () => {
           :author="block.value.attribution"
         />
       </section>
-    </template>
+    </div>
   </div>
 </template>
 
