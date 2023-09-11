@@ -61,6 +61,12 @@ body {
   }
 }
 
+hr {
+  border: none;
+  height: 1px;
+  background: rgba(234, 234, 234, 1);
+}
+
 /* Light mode */
 // @media (prefers-color-scheme: light) {
 //     body {
