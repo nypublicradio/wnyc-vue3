@@ -8,6 +8,7 @@ import {
   resizePublisherImage,
 } from '~/utilities/helpers'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage'
 import { ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
@@ -103,12 +104,31 @@ const togglePlay = () => {
     'toggle play'
   )
 }
+
+console.log(
+  'props.item.attributes.imageMain.template = ',
+  props.item.attributes.imageMain
+)
 </script>
 
 <template>
   <div>
     <div class="card-large mb-4">
       <div class="top">
+        <!-- <pre>{{ props.item }}</pre> -->
+        <!-- <VImage
+          :src="
+            resizePublisherImage(
+              formatPublisherImageUrl(props.item.attributes.imageMain.template),
+              248,
+              159,
+              80
+            )
+          "
+          :width="248"
+          :height="159"
+          :ratio="[248, 159]"
+        /> -->
         <VImagePublisher
           :src="
             formatPublisherImageUrl(props.item.attributes.imageMain.template)
