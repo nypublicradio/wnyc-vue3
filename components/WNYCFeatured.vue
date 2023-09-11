@@ -3,10 +3,10 @@ import { ref } from 'vue'
 
 const bucket = await usePublisherFetch('/buckets/wnyc-home-middle/')
 
-console.log(
-  'bucket = ',
-  bucket?.data?.value?.data?.attributes.bucketItems[0].attributes
-)
+// console.log(
+//   'bucket = ',
+//   bucket?.data?.value?.data?.attributes.bucketItems[0].attributes
+// )
 </script>
 
 <template>

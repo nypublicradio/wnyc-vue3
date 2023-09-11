@@ -15,6 +15,8 @@ import {
 } from '@capacitor/push-notifications'
 import {
   useSettingSideBar,
+  useLoginSideBar,
+  useSigninSideBar,
   useIsApp,
   useCurrentUserProfile,
 } from '~/composables/states'
@@ -24,6 +26,7 @@ import {
 } from '~/composables/globals.ts'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
+import { logIn } from 'ionicons/icons'
 //import { Browser } from '@capacitor/browser'
 
 const { isDesktop } = useDevice()
@@ -38,6 +41,9 @@ const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
 
 const settingsSideBar = useSettingSideBar()
+const loginSideBar = useLoginSideBar()
+const signinSideBar = useSigninSideBar()
+
 const isApp = useIsApp()
 
 const fcmToken = ref('')
@@ -338,6 +344,7 @@ useHead({
     <NuxtPage />
   </NuxtLayout>
   <Toast />
+  <AudioPlayer />
   <Sidebar
     v-model:visible="settingsSideBar"
     :baseZIndex="10000"
@@ -358,7 +365,46 @@ useHead({
     <template #header><h1 class="font-medium">Settings</h1></template>
     <Settings />
   </Sidebar>
-  <AudioPlayer />
+  <Sidebar
+    v-model:visible="loginSideBar"
+    :baseZIndex="10001"
+    position="right"
+    class="w-full"
+    blockScroll
+    id="login-sidebar"
+    @hide="
+      () => {
+        trackClickEvent(
+          'Click Tracking - Login Sidebar Close Button',
+          'Login Sidebar',
+          `close sidebar`
+        )
+      }
+    "
+  >
+    <template #header><h1 class="font-medium">Log in</h1></template>
+    <LogIn />
+  </Sidebar>
+  <Sidebar
+    v-model:visible="signinSideBar"
+    :baseZIndex="10001"
+    position="right"
+    class="w-full"
+    blockScroll
+    id="signin-sidebar"
+    @hide="
+      () => {
+        trackClickEvent(
+          'Click Tracking - Sign in Sidebar Close Button',
+          'Sign in Sidebar',
+          `close sidebar`
+        )
+      }
+    "
+  >
+    <template #header><h1 class="font-medium">Sign in</h1></template>
+    <SignIn />
+  </Sidebar>
 </template>
 
 <style lang="scss">
