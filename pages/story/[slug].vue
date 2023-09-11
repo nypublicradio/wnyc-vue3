@@ -93,16 +93,17 @@ const formatDate = (date) => {
 .story-page-author,
 .story-page-author a,
 .story-page-comments {
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 18px;
-  color: rgba(16, 16, 18, 0.7);
+  font-size: var(--font-size-4);
+  font-weight: var(--font-weight-400);
+  line-height: var(--font-size-6);
+  color: var(--background4);
 }
 
 .story-page h1 {
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 27px;
+  font-family: var(--font-family-header);
+  font-size: var(--font-size-8);
+  font-weight: var(--font-weight-400);
+  line-height: var(--font-size-10);
 }
 
 .story-page .star-icon {

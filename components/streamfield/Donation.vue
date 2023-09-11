@@ -21,19 +21,20 @@
   background: linear-gradient(180deg, #224256, #1c262c);
 }
 .streamfield-donation h2 {
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 27px;
-  letter-spacing: -0.02em;
-  color: white;
+  font-family: var(--font-family-tisa);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-700);
+  line-height: var(--font-size-11);
+  color: var(--text-color-on-dark);
 }
 .streamfield-donation p {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: white;
+  font-size: var(--font-size-5);
+  font-weight: var(--font-weight-400);
+  line-height: var(--font-size-8);
+  color: var(--text-color-on-dark);
 }
 .streamfield-donation .p-button {
   width: 181px;
+  height: 39px;
 }
 </style>

@@ -100,6 +100,7 @@ onMounted(async () => {
 }
 
 .streamfield .streamfield-block-quote {
+  // left border matches prime vue Divider styles
   border-left: 1px solid rgba(234, 234, 234, 1);
   padding-left: 1rem;
 }
