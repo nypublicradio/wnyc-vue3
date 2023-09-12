@@ -343,3 +343,10 @@ export async function openLinkInAppBrowser(url: string) {
 export function isLiveStream(url: string) {
   return !url.includes('.mp3')
 }
+
+// returns the time since the episode was published, but checks for updated_date first
+export const whenTime = (data) => {
+  return data.updated_date
+    ? howLongAgo(data.updated_date)
+    : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.first_published_at)
+}

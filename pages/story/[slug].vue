@@ -1,34 +1,10 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
+import { whenTime } from '~/utilities/helpers'
 
 // TO DO - replace dummy data with BFF data
 import storyData from './story-data.json'
-
-// format the date to show X min ago, X hours ago, or the date in Month Day, YYYY format
-const formatDate = (date) => {
-  const dateObj = new Date(date)
-  const now = new Date()
-  const diff = now - dateObj
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const minutes = Math.floor(diff / (1000 * 60))
-
-  if (days > 0) {
-    // return the date in Month Day, YYYY format
-    return dateObj.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    })
-  } else if (hours < 1) {
-    return `${minutes} minutes ago`
-  } else if (hours < 2) {
-    return '1 hour ago'
-  } else {
-    return `${hours} hours ago`
-  }
-}
 </script>
 
 <template>
@@ -45,13 +21,16 @@ const formatDate = (date) => {
       class="story-page-image mb-2"
     />
     <section>
-      <p class="story-page-date mb-3">
-        <nuxt-link :to="storyData.source_url" class="no-underline">
-          {{ storyData.source }}
-        </nuxt-link>
-        <span class="mx-1">|</span>
-        {{ formatDate(storyData.updated_date) }}
-      </p>
+      <pipe-data class="mb-3">
+        <template #left>
+          <nuxt-link :to="storyData.source_url" class="no-underline">
+            {{ storyData.source }}
+          </nuxt-link>
+        </template>
+        <template #right>
+          <span class="nobreak">{{ whenTime(storyData) }}</span>
+        </template>
+      </pipe-data>
       <h1 class="mb-1">{{ storyData.title }}</h1>
       <p class="story-page-author mb-4">
         <v-byline :authors="storyData.authors" />
@@ -76,18 +55,15 @@ const formatDate = (date) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-.story-page-image {
+<style lang="scss">
+.story-page .story-page-image {
   width: 100%;
   height: 242px;
   object-fit: cover;
 }
 
-.story-page-date,
-.story-page-date a,
-.story-page-author,
-.story-page-author a,
-.story-page-comments {
+.story-page .pipe-data *,
+.story-page .story-page-comments {
   font-size: var(--font-size-4);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-6);
