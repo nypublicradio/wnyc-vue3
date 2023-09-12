@@ -60,6 +60,15 @@ body {
   }
 }
 
+.p-message{
+  &.text-only{
+    background: transparent;
+    .p-message-icon, .p-message-close{
+      display: none;
+    }
+  }
+}
+
 /* Light mode */
 // @media (prefers-color-scheme: light) {
 //     body {
