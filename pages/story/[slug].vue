@@ -1,13 +1,13 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { whenTime } from '~/utilities/helpers'
+import { trackClickEvent, whenTime } from '~/utilities/helpers'
 
 // TO DO - replace dummy data with BFF data
 import storyData from './story-data.json'
 
 const backHome = () => {
-  // gtag tracking here
+  trackClickEvent('story', 'story page', 'back home button')
   navigateTo('/home')
 }
 </script>
