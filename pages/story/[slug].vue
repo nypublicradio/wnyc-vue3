@@ -1,5 +1,6 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
 
 // TO DO - replace dummy data with BFF data
 import storyData from './story-data.json'
@@ -53,13 +54,7 @@ const formatDate = (date) => {
       </p>
       <h1 class="mb-1">{{ storyData.title }}</h1>
       <p class="story-page-author mb-4">
-        By
-        <span v-for="(author, index) in storyData.authors" :key="index">
-          <nuxt-link :to="author.url" class="no-underline">
-            {{ author.name }}
-          </nuxt-link>
-          <span v-if="index < storyData.authors.length - 1">, </span>
-        </span>
+        <v-byline :authors="storyData.authors" />
       </p>
       <div class="flex align-items-center">
         <icons-star-icon />

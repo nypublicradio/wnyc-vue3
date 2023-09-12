@@ -225,7 +225,8 @@
     ],
     "authors": [
         {
-            "name": "Matt Katz",
+            "firstName": "Matt",
+            "lastName": "Katz",
             "url": "https://gothamist.com/staff/matt-katz"
         }
     ],
