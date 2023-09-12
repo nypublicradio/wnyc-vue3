@@ -116,15 +116,16 @@ const handleModal = () => {
       v-model:visible="imageUploadModal"
       modal
       header="Upload Profile Image"
-      :style="{ width: '80vw' }"
+      :draggable="false"
     >
       <VUploadImage
-        style="padding: 40px"
+        style="padding: 1.25rem; width: 300px;"
         :image="currentUserProfile?.avatar_image_url"
         :currentUser="currentUser"
         :currentUserProfile="currentUserProfile"
         :client="client"
-        :config="config"
+        :config="config"  
+        @close-dialog="() => imageUploadModal = false"
         @imageUploaded="
           (imageUrl) => {
             currentUserProfile.avatar_image_url = imageUrl

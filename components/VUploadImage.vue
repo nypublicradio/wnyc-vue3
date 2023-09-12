@@ -47,7 +47,7 @@ const props = defineProps({
     type: Number,
   },
   success: {
-    default: 'Success! Your changes have been saved.',
+    default: '<p>Success! <br/> Your changes have been saved.</p>',
     type: String,
   },
   table: {
@@ -56,7 +56,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['image-uploaded'])
+const emit = defineEmits(['image-uploaded', 'close-dialog'])
 
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
@@ -134,6 +134,11 @@ const deleteImage = async () => {
     emit('image-uploaded', null)
   }
 }
+
+const uploadLabel = computed(() => {
+  return imageUrl.value ? 'Upload new image' : props.label
+})
+
 </script>
 
 <template>
@@ -145,34 +150,37 @@ const deleteImage = async () => {
       alt="profile photo"
       class="mb-4"
     />
+    <template v-if="errorMessage">
+      <Message :sticky="false" :life="5000" class="mt-0 text-only"  severity="error">
+        <div class="text-center" v-html="errorMessage"></div>
+      </Message>
+    </template>
+    <template v-if="successMessage">
+      <Message :sticky="false" :life="5000" class="mt-0 text-only" severity="success">
+        <div class="text-center" v-html="successMessage"></div>
+      </Message>
+    </template>
     <slot v-else name="above-button"> </slot>
-    <div class="flex">
-      <FileUpload
+    <Button v-if="imageUrl" label="Done" class="mb-3 w-full" @click="() => emit('close-dialog')"/>
+    <div class="flex w-full">
+      <FileUpload        
+        :class="[{'p-button-secondary': imageUrl}]"
+        class="w-full"
         mode="basic"
         :custom-upload="true"
         :accept="props.accept"
         :max-file-size="props.maxFileSize"
         :file-limit="props.fileLimit"
-        :choose-label="props.label"
+        :choose-label="uploadLabel"
         :auto="true"
         @uploader="uploadImage"
       />
     </div>
-    <Button v-if="imageUrl" class="p-button-danger mt-4" @click="deleteImage">
-      Remove Image
-    </Button>
+    <Button v-if="imageUrl" label="Remove Image" icon="pi pi-trash" text class="p-button-danger my-4 link" @click="deleteImage"/>
+      
     <slot name="below-button"></slot>
 
-    <template v-if="errorMessage">
-      <Message class="mt-4" severity="error">
-        {{ errorMessage }}
-      </Message>
-    </template>
-    <template v-if="successMessage">
-      <Message :sticky="false" :life="5000" class="mt-4" severity="success">
-        {{ successMessage }}
-      </Message>
-    </template>
+    
   </div>
 </template>
 
@@ -182,6 +190,10 @@ const deleteImage = async () => {
     height: 150px;
     width: 150px;
     border-radius: 50%;
+    object-fit: cover;
+  }
+  .p-fileupload{
+    width:100%;
   }
 }
 </style>
