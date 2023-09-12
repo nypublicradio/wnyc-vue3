@@ -65,7 +65,7 @@ body {
 hr {
   border: none;
   height: 1px;
-  background: rgba(234, 234, 234, 1);
+  background: var(--stroke);
 }
 
 /* Light mode */
