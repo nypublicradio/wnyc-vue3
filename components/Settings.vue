@@ -197,6 +197,21 @@ const onUpdateStation = async (event) => {
 const onClickDisabled = (elm = 'field') => {
   showMessage('warn', `Your authentication provider controls this ${elm}.`)
 }
+
+console.log('currentUser = ', currentUser.value)
+
+const accountHeader = computed(() => {
+  switch(currentUser.value?.app_metadata?.provider) {
+  case "google":
+  return {label:'Google Account', icon:'mr-2 pi pi-google'}
+  case "apple":
+  return {label:'Apple Account', icon:'mr-2 pi pi-apple'}
+  default:
+  return {label:'Account', icon:''}
+}
+})
+
+
 </script>
 
 <template>
@@ -205,7 +220,10 @@ const onClickDisabled = (elm = 'field') => {
       <SUser :disabled="isDisabled" @onDisabled="onClickDisabled('image')" />
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
-      <div class="s-title">Account</div>
+      <div class="flex s-title-holder">
+      <i :class="`${accountHeader.icon}`"></i>
+      <div class="s-title">{{ accountHeader.label }}</div>
+    </div>
       <SBox label="Name">
         <SField
           label="Tap to add a name"
@@ -390,13 +408,15 @@ const onClickDisabled = (elm = 'field') => {
   section {
     margin-bottom: 30px;
   }
-  .s-title {
+  .s-title-holder{
     margin-bottom: 8px;
     padding: 0 1.25rem;
+  .s-title {
     font-size: 13px;
     text-transform: uppercase;
     opacity: 0.7;
     color: var(--text-color);
+  }
   }
   .user {
   }
