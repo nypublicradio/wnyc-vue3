@@ -4,12 +4,28 @@ import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/comp
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
-import { useSignupSideBar } from '~/composables/states'
+import {
+  useSignupSideBar,
+  useLoginSideBar,
+  useSettingSideBar,
+} from '~/composables/states'
 
+const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
+const loginSideBar = useLoginSideBar()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
+
+const onLoginClick = () => {
+  loginSideBar.value = true
+  signUpSideBar.value = false
+}
+const closeAll = () => {
+  loginSideBar.value = false
+  signUpSideBar.value = false
+  settingsSideBar.value = false
+}
 </script>
 
 <template>
@@ -33,7 +49,7 @@ const config = useRuntimeConfig()
       </div>
       <p>
         Already have an account?
-        <VFlexibleLink to="/login">Log in</VFlexibleLink>
+        <Button link label="Log in" class="link" @click="onLoginClick" />
       </p>
       <VLoginWithProvider
         :client="client"
@@ -59,6 +75,7 @@ const config = useRuntimeConfig()
         :config="config"
         label="Sign up"
         slug="/home"
+        @login-success="closeAll"
       >
         <template #aboveSubmit>
           <p class="mb-3">

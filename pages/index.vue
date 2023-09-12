@@ -3,10 +3,12 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import { setStatusDarkMode } from '~/utilities/helpers'
 import { useCurrentUserProfile } from '~/composables/states.ts'
 import { useBrowserTopColorDarkMode } from '~/composables/globals.ts'
+
+import { useSignupSideBar, useLoginSideBar } from '~/composables/states'
+
 useHead({
   bodyAttrs: {
-    class:
-      'no-bottom-padding hide-bottom-menu background-gradient style-mode-dark',
+    class: 'no-bottom-padding hide-bottom-menu background-gradient',
   },
 })
 
@@ -14,6 +16,8 @@ definePageMeta({
   layout: 'default',
   middleware: 'check-auth-provider',
 })
+const loginSideBar = useLoginSideBar()
+const signupSideBar = useSignupSideBar()
 
 const currentUserProfile = useCurrentUserProfile()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
@@ -46,7 +50,7 @@ onUnmounted(() => {
         />
       </Head>
     </Html>
-    <div class="page" :class="[`${String(route.name)}`]">
+    <div class="page style-mode-dark" :class="[`${String(route.name)}`]">
       <Transition name="fade">
         <section v-if="isLoading" class="loading-holder">
           <WnycLoader class="loader-anim" />
@@ -64,24 +68,32 @@ onUnmounted(() => {
             </ul>
             <h1 class="headline mb-4">Get started!</h1>
             <div class="text-center flex flex-column gap-3 mb-4">
-              <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
-                <Button
-                  class="w-full"
-                  label="Create Free Account"
-                  rounded
-                  size="small"
-                />
-              </VFlexibleLink>
+              <Button
+                class="w-13rem m-auto"
+                label="Create Free Account"
+                rounded
+                size="small"
+                @click="
+                  () => {
+                    signupSideBar = true
+                  }
+                "
+              />
+
               <p>or</p>
-              <VFlexibleLink raw to="/login" class="w-13rem m-auto">
-                <Button
-                  class="w-full"
-                  label="Log in"
-                  rounded
-                  size="small"
-                  severity="secondary"
-                />
-              </VFlexibleLink>
+
+              <Button
+                class="w-13rem m-auto"
+                label="Log in"
+                rounded
+                size="small"
+                severity="secondary"
+                @click="
+                  () => {
+                    loginSideBar = true
+                  }
+                "
+              />
               <p>
                 <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
                 an account later.
