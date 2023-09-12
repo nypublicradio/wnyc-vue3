@@ -5,13 +5,23 @@ import { whenTime } from '~/utilities/helpers'
 
 // TO DO - replace dummy data with BFF data
 import storyData from './story-data.json'
+
+const backHome = () => {
+  // gtag tracking here
+  navigateTo('/home')
+}
 </script>
 
 <template>
   <div v-if="storyData" class="story-page">
-    <div class="p-3 flex align-items-center">
-      <icons-back-arrow class="mr-2" />
-      <h5><nuxt-link to="/home" class="no-underline">Home</nuxt-link></h5>
+    <div class="px-3 py-2 flex align-items-center">
+      <Button
+        label="Home"
+        link
+        icon="pi pi-chevron-left"
+        @click="backHome()"
+        class="mr-2"
+      />
     </div>
     <v-image
       v-if="storyData?.image"
@@ -56,18 +66,29 @@ import storyData from './story-data.json'
 </template>
 
 <style lang="scss">
+.story-page .p-button.p-button-link {
+  color: var(--text-color);
+}
+
 .story-page .story-page-image {
   width: 100%;
   height: 242px;
   object-fit: cover;
 }
 
+.story-page .v-byline *,
+.story-page .v-byline .flexible-link:not(.raw):not(.null),
 .story-page .pipe-data *,
 .story-page .story-page-comments {
   font-size: var(--font-size-4);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-6);
-  color: var(--background4);
+  color: var(--text-secondary-color);
+  text-decoration: none;
+}
+
+.story-page .comments-icon path {
+  fill: var(--text-color);
 }
 
 .story-page h1 {
