@@ -4,6 +4,8 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import UserIcon from '~/components/icons/UserIcon.vue'
 import {
   useSettingSideBar,
+  useLoginSideBar,
+  useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
   useLocalUserProfileDefault,
@@ -20,6 +22,9 @@ const props = defineProps({
 const emit = defineEmits(['update:data', 'onDisabled'])
 
 const settingsSideBar = useSettingSideBar()
+const loginSideBar = useLoginSideBar()
+const signupSideBar = useSignupSideBar()
+
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
@@ -29,8 +34,7 @@ const imageUploadModal = shallowRef(false)
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
-  navigateTo('/login')
-  settingsSideBar.value = false
+  loginSideBar.value = true
   trackClickEvent(
     'Click Tracking - login button',
     'Settings Sidebar - user section',
@@ -63,7 +67,7 @@ const onLogOut = async () => {
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
-  settingsSideBar.value = false
+  signupSideBar.value = true
   trackClickEvent(
     'Click Tracking - sign up link',
     'Settings Sidebar - user section',
@@ -145,7 +149,7 @@ const handleModal = () => {
 
       <p>
         Don't have an account yet?
-        <VFlexibleLink to="/signup" @click="onSignUp"> Sign up </VFlexibleLink>
+        <VFlexibleLink to="#" @click="onSignUp"> Sign up </VFlexibleLink>
       </p>
     </div>
   </div>

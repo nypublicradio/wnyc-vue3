@@ -3,23 +3,12 @@ import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/compo
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
-definePageMeta({
-  layout: 'blank',
-  pageTransition: {
-    name: 'login',
-  },
-  layoutTransition: {
-    name: 'login',
-  },
-})
+import { useLoginSideBar } from '~/composables/states'
+
+const loginSideBar = useLoginSideBar()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
-useHead({
-  bodyAttrs: {
-    class: 'background2',
-  },
-})
 </script>
 
 <template>
@@ -35,7 +24,7 @@ useHead({
           aria-label="back to previous page"
           @click="
             () => {
-              navigateTo('/home')
+              loginSideBar = false
             }
           "
         />

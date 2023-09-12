@@ -3,24 +3,13 @@ import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/comp
 //import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+
+import { useSignupSideBar } from '~/composables/states'
+
+const signUpSideBar = useSignupSideBar()
+
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
-
-definePageMeta({
-  layout: 'blank',
-  pageTransition: {
-    name: 'login',
-  },
-  layoutTransition: {
-    name: 'login',
-  },
-})
-
-useHead({
-  bodyAttrs: {
-    class: 'background2',
-  },
-})
 </script>
 
 <template>
@@ -36,7 +25,7 @@ useHead({
           aria-label="back to previous page"
           @click="
             () => {
-              navigateTo('/home')
+              signUpSideBar = false
             }
           "
         />
