@@ -42,6 +42,7 @@
     "@nypublicradio/nypr-design-system-vue3": "^2.0.63",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
+    "axios": "^1.5.0",
     "capacitor-native-settings": "^5.0.0",
     "firebase": "^9.17.1",
     "humps": "^2.0.1",

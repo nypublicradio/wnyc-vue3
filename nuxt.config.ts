@@ -111,7 +111,7 @@ export default defineNuxtConfig({
       HTL_JS: process.env.HTL_JS ?? 'https://htlbid.com/stage/v3/wnyc.org/htlbid.js',
       HTL_IS_TESTING: process.env.HTL_IS_TESTING ?? 'yes',
       LIVESTREAM_URL: process.env.LIVESTREAM_URL ?? 'https://api.demo.nypr.digital/api/v4/whats_on/',
-      //NAVIGATION_API: process.env.NAVIGATION_API ?? 'https://cms.demo.nypr.digital/api/v2/navigation/3/',
+      NAVIGATION_API: process.env.NAVIGATION_API ?? 'https://cms.demo.nypr.digital/api/v2/navigation/3/',
       STORIES_API: process.env.STORIES_API ?? 'https://cms.demo.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false',
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.demo.nypr.digital/images/',
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
