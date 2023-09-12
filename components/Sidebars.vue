@@ -4,11 +4,13 @@ import {
   useSettingSideBar,
   useLoginSideBar,
   useSignupSideBar,
+  useForgotPasswordSideBar,
 } from '~/composables/states'
 
 const settingsSideBar = useSettingSideBar()
 const loginSideBar = useLoginSideBar()
 const signinSideBar = useSignupSideBar()
+const forgotPasswordSideBar = useForgotPasswordSideBar()
 </script>
 
 <template>
@@ -55,7 +57,7 @@ const signinSideBar = useSignupSideBar()
     </Sidebar>
     <Sidebar
       v-model:visible="signinSideBar"
-      :baseZIndex="10001"
+      :baseZIndex="10002"
       position="right"
       class="w-full hideX"
       blockScroll
@@ -71,6 +73,25 @@ const signinSideBar = useSignupSideBar()
       "
     >
       <Signup />
+    </Sidebar>
+    <Sidebar
+      v-model:visible="forgotPasswordSideBar"
+      :baseZIndex="10003"
+      position="right"
+      class="w-full hideX"
+      blockScroll
+      id="forgot-password-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Forgot Password Sidebar Close Button',
+            'Forgot Password Sidebar',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <ForgotPassword />
     </Sidebar>
   </div>
 </template>
