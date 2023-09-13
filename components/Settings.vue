@@ -197,17 +197,25 @@ const onClickDisabled = (elm = 'field') => {
 console.log('currentUser = ', currentUser.value)
 
 const accountHeader = computed(() => {
-  switch(currentUser.value?.app_metadata?.provider) {
-  case "google":
-    return {label:'Google Account', icon:'mr-2 pi pi-google', type:'google'}
-  case "apple":
-    return {label:'Apple Account', icon:'mr-2 pi pi-apple', type:'apple'}
-  default:
-    return {label:'Account', icon:'', type:null}
-}
+  switch (currentUser.value?.app_metadata?.provider) {
+    case 'google':
+      return {
+        label: 'Google Account',
+        icon: 'mr-2 pi pi-google',
+        type: 'google',
+      }
+    case 'apple':
+      return { label: 'Apple Account', icon: 'mr-2 pi pi-apple', type: 'apple' }
+    default:
+      return { label: 'Account', icon: '', type: null }
+  }
 })
 
-
+const editField = (field) => {
+  if (!isDisabled.value) {
+    //trigger sidebar
+  }
+}
 </script>
 
 <template>
@@ -217,41 +225,23 @@ const accountHeader = computed(() => {
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="flex s-title-holder">
-      <i :class="`${accountHeader.icon}`"></i>
-      <div class="s-title">{{ accountHeader.label }}</div>
-    </div>
-      <SBox label="Name">
-        <SField
-          label="Tap to add a name"
-          :disabled="isDisabled"
-          v-model:data="currentUserProfile.name"
-          @onDisabled="onClickDisabled"
-        />
+        <i :class="`${accountHeader.icon}`"></i>
+        <div class="s-title">{{ accountHeader.label }}</div>
+      </div>
+      <SBox label="Name" @click="editField('name')">
+        <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile.name }}</p>
       </SBox>
-      <SBox label="Email">
-        <SField
-          label="Tap to add an email"
-          email
-          :disabled="isDisabled || isApple"
-          v-model:data="tempEmail"
-          @submit="updateUserEmail"
-          @onDisabled="onClickDisabled"
-        />
+      <SBox label="Email" @click="editField('email')">
+        <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
-      <SBox label="Password" v-if="accountHeader.type === null">
-        <SField
-          label="************"
-          password
-          :disabled="isDisabled || isApple"
-          v-model:data="tempPassword"
-          @submit="updateUserPassword"
-          @onDisabled="onClickDisabled"
-        />
+      <SBox label="Password" v-if="isEmail" @click="editField('password')">
+        <p :class="[{ disabled: isDisabled }]">*********</p>
       </SBox>
-      <!-- v-model:data="currentUser?.password" -->
     </section>
     <section class="listening-preferences p-0">
-      <div class="s-title">Listening Preferences</div>
+      <div class="flex s-title-holder">
+        <div class="s-title">Listening Preferences</div>
+      </div>
       <SBox label="Autodownload">
         <VInputSwitch
           yes="ON"
@@ -279,7 +269,9 @@ const accountHeader = computed(() => {
       </SBox>
     </section>
     <section class="notifications p-0">
-      <div class="s-title">Notifications</div>
+      <div class="flex s-title-holder">
+        <div class="s-title">Notifications</div>
+      </div>
       <SBox label="General">
         <VInputSwitch
           yes="ON"
@@ -299,7 +291,9 @@ const accountHeader = computed(() => {
       </SBox>
     </section>
     <section class="display p-0">
-      <div class="s-title">Display</div>
+      <div class="flex s-title-holder">
+        <div class="s-title">Display</div>
+      </div>
       <SBox label="Text size">
         <SDropdown
           v-model:data="currentUserProfile.text_size"
@@ -327,7 +321,9 @@ const accountHeader = computed(() => {
       </SBox>
     </section>
     <section class="wnyc p-0">
-      <div class="s-title">WNYC</div>
+      <div class="flex s-title-holder">
+        <div class="s-title">WNYC</div>
+      </div>
       <SBox
         label="About WNYC"
         link="/about"
@@ -404,19 +400,25 @@ const accountHeader = computed(() => {
   section {
     margin-bottom: 30px;
   }
-  .s-title-holder{
-    margin-bottom: 8px;
+  .s-title-holder {
     padding: 0 1.25rem;
-  .s-title {
-    font-size: 13px;
-    text-transform: uppercase;
-    opacity: 0.7;
-    color: var(--text-color);
-  }
+    margin-bottom: 8px;
+    .s-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      color: var(--text-color);
+    }
   }
   .user {
   }
-  .preferences {
+  .user-preferences {
+    p.disabled {
+      opacity: 60%;
+      cursor: default !important;
+      pointer-events: none;
+      user-select: none;
+    }
   }
   .footer {
     text-align: center;
