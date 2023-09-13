@@ -18,20 +18,21 @@
 
 <style lang="scss" scoped>
 .streamfield-donation {
-  background: linear-gradient(180deg, #224256, #1c262c);
+  background: var(--donation-bg);
+  //background: $backgroundGradient1;
 }
 .streamfield-donation h2 {
   font-family: var(--font-family-tisa);
   font-size: var(--font-size-10);
   font-weight: var(--font-weight-700);
   line-height: var(--font-size-11);
-  color: var(--text-color-on-dark);
+  color: var(--donation-text);
 }
 .streamfield-donation p {
   font-size: var(--font-size-5);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-8);
-  color: var(--text-color-on-dark);
+  color: var(--donation-text);
 }
 .streamfield-donation .p-button {
   width: 181px;
