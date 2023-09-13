@@ -5,11 +5,9 @@ import {
   trackClickEvent,
   whenTime,
 } from '~/utilities/helpers'
-// get the navigation data from Aviary
 const config = useRuntimeConfig()
 const { data: pagedata } = await useFetch('/api/homepage')
 const articles = pagedata.value.top_stories;
-console.log('article', articles[0], articles[0])
 
 </script>
 
