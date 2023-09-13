@@ -34,14 +34,10 @@ const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
 const isApple = currentUser.value?.app_metadata?.provider === 'apple'
+const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
+const isEmail = currentUser.value?.app_metadata?.provider === 'email'
 const isDisabled = computed(() => {
-  if (isApple) {
-    return false
-  } else if (currentUser.value?.app_metadata?.provider !== 'email') {
-    return true
-  } else {
-    return false
-  }
+  return !isEmail
 })
 
 const isMessage = shallowRef(false)
@@ -203,11 +199,11 @@ console.log('currentUser = ', currentUser.value)
 const accountHeader = computed(() => {
   switch(currentUser.value?.app_metadata?.provider) {
   case "google":
-  return {label:'Google Account', icon:'mr-2 pi pi-google'}
+    return {label:'Google Account', icon:'mr-2 pi pi-google', type:'google'}
   case "apple":
-  return {label:'Apple Account', icon:'mr-2 pi pi-apple'}
+    return {label:'Apple Account', icon:'mr-2 pi pi-apple', type:'apple'}
   default:
-  return {label:'Account', icon:''}
+    return {label:'Account', icon:'', type:null}
 }
 })
 
@@ -217,7 +213,7 @@ const accountHeader = computed(() => {
 <template>
   <div class="settings">
     <section class="user">
-      <SUser :disabled="isDisabled" @onDisabled="onClickDisabled('image')" />
+      <SUser :disabled="isDisabled" />
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="flex s-title-holder">
@@ -242,7 +238,7 @@ const accountHeader = computed(() => {
           @onDisabled="onClickDisabled"
         />
       </SBox>
-      <SBox label="Password">
+      <SBox label="Password" v-if="accountHeader.type === null">
         <SField
           label="************"
           password
