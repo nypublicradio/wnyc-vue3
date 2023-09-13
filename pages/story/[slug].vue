@@ -14,19 +14,24 @@ const backHome = () => {
 
 <template>
   <div v-if="storyData" class="story-page">
-    <div class="px-3 py-2 flex align-items-center">
-      <Button
-        label="Home"
-        link
-        icon="pi pi-chevron-left"
-        @click="backHome()"
-        class="mr-2"
-      />
-    </div>
+    <section class="">
+      <div class="flex">
+        <Button
+          class="back-btn text-color -ml-3"
+          icon="pi pi-chevron-left"
+          rounded
+          text
+          severity="secondary"
+          aria-label="back to previous page"
+          @click="backHome"
+        />
+        <h1>Home</h1>
+      </div>
+    </section>
     <v-image
       v-if="storyData?.image"
       :src="storyData?.image.url"
-      :ratio="[1, 1]"
+      :ratio="[3, 2]"
       :alt="storyData?.image.alt"
       class="story-page-image mb-2"
     />
@@ -41,7 +46,7 @@ const backHome = () => {
           <span class="nobreak">{{ whenTime(storyData) }}</span>
         </template>
       </pipe-data>
-      <h1 class="mb-1">{{ storyData.title }}</h1>
+      <h1 class="mb-1 alt">{{ storyData.title }}</h1>
       <p class="story-page-author mb-4">
         <v-byline :authors="storyData.authors" />
       </p>
@@ -66,13 +71,11 @@ const backHome = () => {
 </template>
 
 <style lang="scss">
-.story-page .p-button.p-button-link {
-  color: var(--text-color);
-}
 
 .story-page .story-page-image {
   width: 100%;
-  height: 242px;
+  max-height: 333.33px;
+  aspect-ratio: 3/2;
   object-fit: cover;
 }
 
@@ -83,15 +86,19 @@ const backHome = () => {
   font-size: var(--font-size-4);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-6);
-  color: var(--text-secondary-color);
+  color: var(--text-color);
   text-decoration: none;
+}
+
+.story-page .v-byline, .story-page .pipe-data{
+  opacity: 70%;
 }
 
 .story-page .comments-icon path {
   fill: var(--text-color);
 }
 
-.story-page h1 {
+.story-page h1.alt {
   font-family: var(--font-family-header);
   font-size: var(--font-size-8);
   font-weight: var(--font-weight-400);
