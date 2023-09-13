@@ -6,6 +6,7 @@ import { trackClickEvent, whenTime } from '~/utilities/helpers'
 // TO DO - replace dummy data with BFF data
 import storyData from './story-data.json'
 
+// navigate back to home and track it
 const backHome = () => {
   trackClickEvent('story', 'story page', 'back home button')
   navigateTo('/home')
