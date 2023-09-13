@@ -44,15 +44,6 @@ export const resizePublisherImage = (url, w, h, q = 80) => {
   return finalUrlArr.join('/')
 }
 
-// returns an Aviary image ID
-export const getAviaryImageSrcId = (article: object) => {
-  const listingImage =
-    article.lead_asset?.[0]?.value?.image ??
-    article.lead_asset?.[0]?.value?.default_image
-  if (!listingImage) return ''
-  return String(listingImage.id)
-}
-
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   $analytics.sendEvent('click_tracking', {
@@ -61,18 +52,6 @@ export const trackClickEvent = (category, component, label) => {
     event_label: label,
   })
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const fileNameFromURL = (url: string) => {
   return url.substring(url.lastIndexOf('/') + 1);

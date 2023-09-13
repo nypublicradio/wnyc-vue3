@@ -4,11 +4,10 @@ import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VB
 import {
   trackClickEvent,
   whenTime,
-  getAviaryImageSrcId,
 } from '~/utilities/helpers'
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
-const { data: pagedata } = await useFetch('http://localhost:3000/api/homepage')
+const { data: pagedata } = await useFetch('/api/homepage')
 const articles = pagedata.value.top_stories;
 console.log('article', articles[0], articles[0])
 
@@ -19,7 +18,7 @@ console.log('article', articles[0], articles[0])
     <div v-for="(article, index) in articles" :key="index" class="mb-4">
       <!-- <pre>{{ article }}</pre> -->
       <VCard
-        :src="getAviaryImageSrcId(article)"
+        :src="article.leadImage"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
         :link="article.link"
