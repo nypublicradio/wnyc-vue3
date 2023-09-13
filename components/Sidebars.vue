@@ -5,12 +5,14 @@ import {
   useLoginSideBar,
   useSignupSideBar,
   useForgotPasswordSideBar,
+  useEditProfileSideBar,
 } from '~/composables/states'
 
 const settingsSideBar = useSettingSideBar()
 const loginSideBar = useLoginSideBar()
 const signinSideBar = useSignupSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
+const editProfileSideBar = useEditProfileSideBar()
 </script>
 
 <template>
@@ -92,6 +94,26 @@ const forgotPasswordSideBar = useForgotPasswordSideBar()
       "
     >
       <ForgotPassword />
+    </Sidebar>
+
+    <Sidebar
+      v-model:visible="editProfileSideBar"
+      :baseZIndex="10003"
+      position="right"
+      class="w-full hideX"
+      blockScroll
+      id="edit-profile-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Edit Profile Sidebar Close Button',
+            'Edit Profile Sidebar',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <EditProfile />
     </Sidebar>
   </div>
 </template>

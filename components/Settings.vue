@@ -14,6 +14,7 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
   useIsEpisodePlaying,
+  useEditProfileSideBar,
 } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
 import {
@@ -28,6 +29,7 @@ const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const textSizeOptions = useTextSizeOption()
+const editProfileSideBar = useEditProfileSideBar()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
@@ -189,11 +191,6 @@ const onUpdateStation = async (event) => {
   )
 }
 
-// handles the message when users click on the disabled fields
-const onClickDisabled = (elm = 'field') => {
-  showMessage('warn', `Your authentication provider controls this ${elm}.`)
-}
-
 console.log('currentUser = ', currentUser.value)
 
 const accountHeader = computed(() => {
@@ -213,7 +210,7 @@ const accountHeader = computed(() => {
 
 const editField = (field) => {
   if (!isDisabled.value) {
-    //trigger sidebar
+    editProfileSideBar.value = true
   }
 }
 </script>

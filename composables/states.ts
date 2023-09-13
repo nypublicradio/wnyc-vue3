@@ -31,6 +31,9 @@ export const useSignupSideBar = () => useState('useSignupSideBar', () => false)
 // signin sidebar state
 export const useForgotPasswordSideBar = () => useState('useForgotPasswordSideBar', () => false)
 
+// edit profile sidebar state
+export const useEditProfileSideBar = () => useState('useEditProfileSideBar', () => false)
+
 
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
