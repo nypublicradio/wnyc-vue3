@@ -28,6 +28,8 @@ $toolsBreakPoint: 472px;
     --s-box-stroke-color: var(--background) !important;
     --header-background: #ffffffe6 !important;
     --live-feature-background: var(--background2) !important;
+    --donation-bg: linear-gradient(to top, var(--dark-blue), var(--blue)) !important;
+    --donation-text: var(--text-color-on-dark) !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -36,4 +38,6 @@ $toolsBreakPoint: 472px;
     --s-box-background-color: #ffffff1a !important;
     --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
     --live-feature-background: var(--background3) !important;
+    --donation-bg: linear-gradient(to top, var(--background3-500), var(--background-500)) !important;
+    --donation-text: var(--night-500) !important;
 }
