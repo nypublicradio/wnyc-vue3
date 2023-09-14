@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  clickable: {
+    type: Boolean,
+    default: false,
+  },
 })
 const settingSideBar = useSettingSideBar()
 const emit = defineEmits(['link-click'])
@@ -25,7 +29,10 @@ const onClick = () => {
 </script>
 
 <template>
-  <div class="s-box" :class="[{ 'is-link': props.link }]">
+  <div
+    class="s-box"
+    :class="[{ 'is-link': props.link, clickable: props.clickable }]"
+  >
     <div class="content flex justify-content-between align-items-center">
       <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
         <Button :label="label" class="w-full text-left" text />
@@ -46,6 +53,9 @@ const onClick = () => {
   border-left: none;
   border-right: none;
   margin-top: -1px;
+  &.clickable {
+    cursor: pointer;
+  }
   &.is-link {
     padding: 0;
     .flexible-link {

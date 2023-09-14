@@ -29,24 +29,11 @@ const closeAll = () => {
 </script>
 
 <template>
-  <div>
-    <section class="signup">
-      <div class="flex mb-4">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="
-            () => {
-              signUpSideBar = false
-            }
-          "
-        />
-        <h1>Sign up</h1>
-      </div>
+  <div class="signup">
+    <section>
+      <SHeader label="Sign up" @close-sidebar="signUpSideBar = false" />
+    </section>
+    <section>
       <p>
         Already have an account?
         <Button link label="Log in" class="link" @click="onLoginClick" />

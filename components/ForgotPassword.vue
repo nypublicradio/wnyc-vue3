@@ -11,21 +11,11 @@ const forgotPasswordSideBar = useForgotPasswordSideBar()
 
 <template>
   <div>
-    <section class="flex mb-4">
-      <Button
-        class="back-btn text-color -ml-3"
-        icon="pi pi-chevron-left"
-        rounded
-        text
-        severity="secondary"
-        aria-label="back to previous page"
-        @click="
-          () => {
-            forgotPasswordSideBar = false
-          }
-        "
+    <section>
+      <SHeader
+        label="Forgot password?"
+        @close-sidebar="forgotPasswordSideBar = false"
       />
-      <h1>Forgot password?</h1>
     </section>
     <section class="text-center">
       <p class="mb-4 lg:w-7 m-auto">

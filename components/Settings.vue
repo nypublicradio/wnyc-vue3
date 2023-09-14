@@ -225,13 +225,18 @@ const editField = (field) => {
         <i :class="`${accountHeader.icon}`"></i>
         <div class="s-title">{{ accountHeader.label }}</div>
       </div>
-      <SBox label="Name" @click="editField('name')">
+      <SBox label="Name" @click="editField('name')" clickable>
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile.name }}</p>
       </SBox>
-      <SBox label="Email" @click="editField('email')">
+      <SBox label="Email" @click="editField('email')" clickable>
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
-      <SBox label="Password" v-if="isEmail" @click="editField('password')">
+      <SBox
+        label="Password"
+        v-if="isEmail"
+        @click="editField('password')"
+        clickable
+      >
         <p :class="[{ disabled: isDisabled }]">*********</p>
       </SBox>
     </section>

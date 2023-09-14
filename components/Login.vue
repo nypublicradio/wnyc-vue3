@@ -36,24 +36,11 @@ const openForgotPassword = () => {
 </script>
 
 <template>
-  <div>
-    <section class="login">
-      <div class="flex mb-4">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="
-            () => {
-              loginSideBar = false
-            }
-          "
-        />
-        <h1>Log in</h1>
-      </div>
+  <div class="login">
+    <section>
+      <SHeader label="Log in" @close-sidebar="loginSideBar = false" />
+    </section>
+    <section>
       <p>
         Don't have an account yet?
         <Button link label="Sign up" class="link" @click="onSignupClick" />
