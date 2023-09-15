@@ -16,53 +16,98 @@ const bucketItems = bucket?.data?.value?.data?.attributes?.bucketItems
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: '',
-      items: [
-        {
-          label: 'Download',
-          icon: '',
-          command: () => {
-            // TODO: file system download
-            alert(bucketItem.attributes.title)
-            toast.add({
+      label: 'Download',
+      icon: '',
+      command: () => {
+        // TODO: file system download
+        alert(bucketItem.attributes.title)
+        toast.add({
+          severity: 'info',
+          summary: 'Downloading...',
+          detail: bucketItem.attributes.title,
+          life: 3000,
+        })
+        trackClickEvent(
+          'Click Tracking - Audio Download',
+          `Large Card`,
+          bucketItem.attributes.title
+        )
+      },
+    },
+    {
+      label: 'Copy embed code',
+      icon: '',
+      command: () => {
+        copyToClipBoard(bucketItem.attributes.embedCode)
+          ? toast.add({
               severity: 'info',
-              summary: 'Downloading...',
-              detail: bucketItem.attributes.title,
+              summary: 'Embed code copied to clipboard',
               life: 3000,
             })
-            trackClickEvent(
-              'Click Tracking - Audio Download',
-              `Large Card`,
-              bucketItem.attributes.title
-            )
-          },
-        },
-        {
-          label: 'Copy embed code',
-          icon: '',
-          command: () => {
-            copyToClipBoard(bucketItem.attributes.embedCode)
-              ? toast.add({
-                  severity: 'info',
-                  summary: 'Embed code copied to clipboard',
-                  life: 3000,
-                })
-              : toast.add({
-                  severity: 'error',
-                  summary: 'Copy to clipboard failed. Try again another time',
-                  life: 3000,
-                })
-            trackClickEvent(
-              'Click Tracking - Audio Copy Embed Code',
-              `Large Card`,
-              bucketItem.attributes.embedCode
-            )
-          },
-        },
-      ],
+          : toast.add({
+              severity: 'error',
+              summary: 'Copy to clipboard failed. Try again another time',
+              life: 3000,
+            })
+        trackClickEvent(
+          'Click Tracking - Audio Copy Embed Code',
+          `Large Card`,
+          bucketItem.attributes.embedCode
+        )
+      },
     },
   ]
 }
+// const getDotMenuItems = (bucketItem) => {
+//   return [
+//     {
+//       label: '',
+//       items: [
+//         {
+//           label: 'Download',
+//           icon: '',
+//           command: () => {
+//             // TODO: file system download
+//             alert(bucketItem.attributes.title)
+//             toast.add({
+//               severity: 'info',
+//               summary: 'Downloading...',
+//               detail: bucketItem.attributes.title,
+//               life: 3000,
+//             })
+//             trackClickEvent(
+//               'Click Tracking - Audio Download',
+//               `Large Card`,
+//               bucketItem.attributes.title
+//             )
+//           },
+//         },
+//         {
+//           label: 'Copy embed code',
+//           icon: '',
+//           command: () => {
+//             copyToClipBoard(bucketItem.attributes.embedCode)
+//               ? toast.add({
+//                   severity: 'info',
+//                   summary: 'Embed code copied to clipboard',
+//                   life: 3000,
+//                 })
+//               : toast.add({
+//                   severity: 'error',
+//                   summary: 'Copy to clipboard failed. Try again another time',
+//                   life: 3000,
+//                 })
+//             trackClickEvent(
+//               'Click Tracking - Audio Copy Embed Code',
+//               `Large Card`,
+//               bucketItem.attributes.embedCode
+//             )
+//           },
+//         },
+//       ],
+//     },
+//   ]
+// }
 
 const normalizedItem = (item) => {
   return {

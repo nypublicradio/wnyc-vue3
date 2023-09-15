@@ -12,6 +12,7 @@ const props = defineProps({
   },
 })
 const visibleBottom = ref(false)
+const selectedItem = ref('Download')
 //swipe setup
 const contentRef = ref(null)
 const { direction, lengthY } = useSwipe(contentRef, {
@@ -47,6 +48,13 @@ defineExpose({ openMenu })
             {{ props.label }}
           </h3>
           <Menu :model="menuItems" @click="visibleBottom = false" />
+          <!-- <Menu :model="menuItems" /> -->
+          <!-- <Listbox
+            v-model="selectedItem"
+            :options="menuItems"
+            optionLabel="label"
+            class="w-full"
+          /> -->
           <slot name="end"></slot>
         </div>
       </template>
@@ -95,12 +103,19 @@ defineExpose({ openMenu })
           .p-menuitem-content {
             padding: 0.5rem 0;
           }
+          .p-menuitem-icon:before {
+            color: #ffffff !important;
+          }
           .p-menuitem-content,
           .p-menuitem-text,
           .p-menuitem-link {
             color: #ffffff !important;
             font-weight: var(--font-weight-600);
             font-size: 0.938rem;
+          }
+          .p-menuitem-link {
+            //justify-content: space-between;
+            //flex-direction: row-reverse;
           }
         }
       }

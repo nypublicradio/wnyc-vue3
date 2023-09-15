@@ -41,15 +41,18 @@ const internalData = ref(props.data)
         <div class="ans">{{ data }}</div>
       </span>
     </template>
+    <template #header>
+      <i class="pi pi-minus" />
+    </template>
     <template #option="slotProps">
       <div class="flex align-items-center station-options">
-        <img
+        <!-- <img
           v-if="slotProps.option.image"
           :alt="slotProps.option.label"
           :src="slotProps.option.image"
           class="mr-2"
           style="width: 18px; height: 18px"
-        />
+        /> -->
         <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
       </div>
     </template>
@@ -87,9 +90,31 @@ const internalData = ref(props.data)
   }
 }
 .p-dropdown-panel {
+  position: absolute;
+  top: unset !important;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  transform-origin: center bottom !important;
+  border-radius: 28px 28px 0px 0px;
+  -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 1);
+  box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 1);
+  background: var(--background4) !important;
+  .pi-minus {
+    color: #ffffff;
+    font-size: 30px;
+    text-align: center;
+    width: 100%;
+    opacity: 30%;
+  }
   .p-dropdown-items-wrapper {
-    max-height: 400px !important;
+    max-height: unset !important;
+    padding: 5px 20px calc($bottomMenuHeight + $playerHeight) 20px;
     .p-dropdown-item {
+      color: #ffffff !important;
+      font-weight: var(--font-weight-600);
+      font-size: 0.938rem;
+      padding: 0.5rem 0;
       .station-options {
         margin: 10px 0;
         img {
