@@ -1,5 +1,4 @@
 <script async setup>
-import { ref } from 'vue'
 import {
   getMinutes,
   resizePublisherImage,
