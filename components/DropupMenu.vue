@@ -76,8 +76,8 @@ defineExpose({ openMenu })
   .p-sidebar-content {
     padding: 0;
     border-radius: 28px 28px 0px 0px;
-    -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 1);
-    box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 1);
+    -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
+    box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
     .content-base {
       padding: 5px 20px calc($bottomMenuHeight + $playerHeight) 20px;
       .p-submenu-header-replace {
