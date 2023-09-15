@@ -27,7 +27,7 @@ onMounted(() => {})
   background: transparent;
   position: relative;
   .scroll {
-    padding: 0 $padding;
+    padding: 0 $padding 20px $padding;
     overflow-y: hidden;
     overflow-x: auto;
     -webkit-mask-image: linear-gradient(
