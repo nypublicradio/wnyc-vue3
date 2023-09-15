@@ -156,7 +156,7 @@ const togglePlay = () => {
             @onClick="togglePlay"
           />
           <DotMenu :items="menuItems" :data="props.item.attributes">
-            <template #end>
+            <template #end v-if="props.item.attributes.embedCode">
               <div class="p-2 pb-0">
                 <Textarea
                   disabled

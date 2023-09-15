@@ -11,8 +11,11 @@ const props = defineProps({
 
 const menu = ref()
 
+const visibleBottom = ref(false)
+
 const toggle = (event) => {
   menu.value.toggle(event)
+  visibleBottom.value = !visibleBottom.value
 }
 </script>
 <template>
@@ -29,6 +32,11 @@ const toggle = (event) => {
       aria-haspopup="true"
       aria-controls="overlay_menu"
     />
+    <Sidebar v-model:visible="visibleBottom" position="bottom" blockScroll>
+      <template #default>
+        <slot name="end"></slot>
+      </template>
+    </Sidebar>
     <Menu ref="menu" id="dots-overlay_menu" :model="props.items" :popup="true">
       <!-- <template #item="{ item, label, props }">
         <slot name="item" :props="props" :label="label" />

@@ -43,14 +43,18 @@ const formData = reactive({
   password: '',
 })
 
+// for checking if the field has changed
 const hasFieldChanged = (key) => {
   return formData[key] !== formDataOriginal[key]
 }
 
+// Vuelidate rule for having at least one number
 const hasAtleastOneNumber = helpers.withMessage(
   'Must contain at least 1 number',
   (value) => /\d/.test(value)
 )
+
+// Vuelidate rule for password
 const passwordRules = computed(() => {
   if (formData.password.length > 0) {
     return {
@@ -63,6 +67,7 @@ const passwordRules = computed(() => {
   }
 })
 
+// Vuelidate rules
 const rules = computed(() => {
   return {
     email: {
@@ -78,6 +83,7 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, formData)
 
+// submit the form
 const submitForm = async () => {
   emit('submit-click')
   v$.value.$validate()

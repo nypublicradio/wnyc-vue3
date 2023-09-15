@@ -11,6 +11,9 @@ import {
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
 import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 const props = defineProps({
   disabled: {
@@ -64,6 +67,11 @@ const onLogOut = async () => {
     'Settings Sidebar - user section',
     ''
   )
+  toast.add({
+    severity: 'success',
+    summary: `You have logged out.`,
+    life: 3000,
+  })
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
@@ -119,13 +127,13 @@ const handleModal = () => {
       :draggable="false"
     >
       <VUploadImage
-        style="padding: 1.25rem; width: 300px;"
+        style="padding: 1.25rem; width: 300px"
         :image="currentUserProfile?.avatar_image_url"
         :currentUser="currentUser"
         :currentUserProfile="currentUserProfile"
         :client="client"
-        :config="config"  
-        @close-dialog="() => imageUploadModal = false"
+        :config="config"
+        @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {
             currentUserProfile.avatar_image_url = imageUrl
