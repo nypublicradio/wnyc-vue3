@@ -1,55 +1,20 @@
 <script setup>
 import { useVuelidate } from '@vuelidate/core'
-import {
-  email,
-  helpers,
-  minLength,
-  required,
-  //sameAs,
-} from '@vuelidate/validators'
+import { email, helpers, minLength, required } from '@vuelidate/validators'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
 import Password from 'primevue/password'
 import { computed, reactive, ref } from 'vue'
 import { trackClickEvent } from '~/utilities/helpers'
-import { useCurrentUser, useCurrentUserProfile } from '~/composables/states'
+import {
+  useCurrentUser,
+  useCurrentUserProfile,
+  useEditProfileSideBar,
+} from '~/composables/states'
+import { useToast } from 'primevue/usetoast'
 
-const props = defineProps({
-  client: {
-    default: null,
-    type: Object,
-  },
-  config: {
-    default: null,
-    type: Object,
-  },
-  error: {
-    default: '',
-    type: String,
-  },
-  errorAlreadyRegistered: {
-    default:
-      'Looks like you already have an account! If you do not remember your password, you can retrieve it by clicking the "Forgot Password" link below.',
-    type: String,
-  },
-  label: {
-    default: 'Sign up with email',
-    type: String,
-  },
-  slug: {
-    default: '/dashboard',
-    type: String,
-  },
-  success: {
-    default: 'Account updated successfully!',
-    type: String,
-  },
-  editMode: {
-    default: false,
-    type: Boolean,
-  },
-})
+const toast = useToast()
 
 const emit = defineEmits([
   'submit-click',
@@ -59,16 +24,18 @@ const emit = defineEmits([
 ])
 
 const client = useSupabaseClient()
-const config = useRuntimeConfig()
+//const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
+const editProfileSideBar = useEditProfileSideBar()
 
-const hasAtleastOneNumber = helpers.withMessage(
-  'Must contain at least 1 number',
-  (value) => /\d/.test(value)
-)
+const tempPassword = '••••••••••'
 
-const tempPassword = '**********'
+const formDataOriginal = {
+  email: currentUser.value.email,
+  name: currentUserProfile.value.name,
+  password: '',
+}
 
 const formData = reactive({
   email: currentUser.value.email,
@@ -76,6 +43,14 @@ const formData = reactive({
   password: '',
 })
 
+const hasFieldChanged = (key) => {
+  return formData[key] !== formDataOriginal[key]
+}
+
+const hasAtleastOneNumber = helpers.withMessage(
+  'Must contain at least 1 number',
+  (value) => /\d/.test(value)
+)
 const passwordRules = computed(() => {
   if (formData.password.length > 0) {
     return {
@@ -88,9 +63,6 @@ const passwordRules = computed(() => {
   }
 })
 
-const sbErrorMsg = ref('')
-const sbSuccessMsg = ref('')
-
 const rules = computed(() => {
   return {
     email: {
@@ -101,105 +73,131 @@ const rules = computed(() => {
       required: helpers.withMessage('Please add your name', required),
     },
     password: passwordRules.value,
-    // password: {
-    //   hasAtleastOneNumber,
-    //   minLength: minLength(8),
-    //   required: helpers.withMessage('This field is required', required),
-    // },
   }
 })
 
 const v$ = useVuelidate(rules, formData)
-// clears out the error messages after a delay
-const clearMsg = (delay = 500) => {
-  setTimeout(() => {
-    sbErrorMsg.value = ''
-    sbSuccessMsg.value = ''
-  }, delay)
-}
 
 const submitForm = async () => {
-  // clear the error message so the message re-animates on each submit
-  clearMsg(0)
   emit('submit-click')
   v$.value.$validate()
-  console.log('formData.password.length = ', formData.password.length)
+
   if (!v$.value.$error) {
     //success with Vuelidate
 
-    // name
-    const { error } = await client
-      .from('profiles')
-      .update({
-        updated_at: new Date().toISOString(),
-        name: formData.name,
-      })
-      .eq('id', currentUser.value.id)
+    // name supabase update
+    if (hasFieldChanged('name')) {
+      const { errorName } = await client
+        .from('profiles')
+        .update({
+          updated_at: new Date().toISOString(),
+          name: formData.name,
+        })
+        .eq('id', currentUser.value.id)
 
-    if (error) {
-      emit('submit-error', error?.message)
-
-      sbErrorMsg.value = props.error
-        ? props.error
-        : `Account update failed: ${error.message}`
-    } else {
-      emit('submit-success')
-      sbSuccessMsg.value = props.success
-      trackClickEvent(
-        'Event Tracking - Account Updated',
-        'Settings Sidebar - Account',
-        formData
-      )
-      // update local state
-      currentUserProfile.value.name = formData.name
+      if (errorName) {
+        emit('submit-error', errorName?.message)
+        toast.add({
+          severity: 'error',
+          summary: `Name update failed: ${errorName.message}`,
+          life: 3000,
+        })
+      } else {
+        emit('submit-success')
+        toast.add({
+          severity: 'success',
+          summary: `Name updated successfully!`,
+          life: 3000,
+        })
+        trackClickEvent(
+          'Event Tracking - Account Name Updated',
+          'Settings Sidebar - Account',
+          formData.name
+        )
+        // update local state
+        currentUserProfile.value.name = formData.name
+      }
     }
 
-    console.log('GOOD TO GO', formData.name, currentUser.value)
+    // email supabase update
+    if (hasFieldChanged('email')) {
+      const { errorEmail } = await client.auth.updateUser({
+        email: formData.email,
+      })
 
-    /* const sbError = await innerClient.value.auth.signUp({
-      email: formData.email,
-      options: {
-        data: {
-          name: formData.name,
-        },
-      },
-      password: formData.password,
-    })
-    if (!sbError.error) {
-      //success with Supabase
-      emit('submit-success')
-      sbSuccessMsg.value = props.success
-    } else {
-      // error with Supabase
-      emit('submit-error', sbError?.error?.message)
-      if (sbError?.error?.message.toString().includes('already registered')) {
-        sbErrorMsg.value = props.errorAlreadyRegistered
+      if (errorEmail) {
+        // error with Supabase
+        emit('submit-error', errorEmail?.message)
+        if (errorEmail?.message.toString().includes('already registered')) {
+          toast.add({
+            severity: 'error',
+            summary:
+              'Looks like this email address is already used by another account.',
+            life: 3000,
+          })
+        } else {
+          toast.add({
+            severity: 'error',
+            summary: errorEmail?.message,
+            life: 3000,
+          })
+        }
       } else {
-        sbErrorMsg.value = `${props.error} ${sbError?.error?.message}`
+        //success with Supabase
+        emit('submit-success')
+        toast.add({
+          severity: 'success',
+          summary:
+            'Email updated: A confirmation email has been sent to your inbox.',
+          life: 6000,
+        })
+        trackClickEvent(
+          'Event Tracking - Account email updated',
+          'Settings Sidebar - Account',
+          formData.email
+        )
+        // update local state
+        currentUserProfile.value.email = formData.email
       }
-    } */
+    }
+
+    // password supabase update
+    if (hasFieldChanged('password')) {
+      const { errorPassword } = await client.auth.updateUser({
+        password: formData.password,
+      })
+
+      if (errorPassword) {
+        // error with Supabase
+        emit('submit-error', errorPassword?.message)
+
+        toast.add({
+          severity: 'error',
+          summary: errorPassword?.message,
+          life: 6000,
+        })
+      } else {
+        //success with Supabase
+        emit('submit-success')
+        toast.add({
+          severity: 'success',
+          summary: 'Password updated!',
+          life: 3000,
+        })
+        trackClickEvent(
+          'Event Tracking - Account password updated',
+          'Settings Sidebar - Account',
+          'Password data private'
+        )
+      }
+    }
   }
 }
-console.log('currentUserProfile.value - ', currentUserProfile.value)
 </script>
 
 <template>
   <div>
-    <div v-if="sbSuccessMsg">
-      <div>
-        <Message class="mb-3" severity="success">
-          <span v-html="sbSuccessMsg"></span>
-        </Message>
-        <slot name="success"> </slot>
-      </div>
-    </div>
-    <template v-if="sbErrorMsg && sbErrorMsg !== undefined">
-      <Message class="mb-3" severity="warning" @close="clearMsg()">
-        <span v-html="sbErrorMsg"></span>
-      </Message>
-    </template>
-
-    <div>
+    <div class="mt-6">
       <form v-if="formData" novalidate @submit.prevent="submitForm">
         <div class="grid mb-2">
           <div class="flex flex-column gap-2 col-12">
@@ -268,17 +266,21 @@ console.log('currentUserProfile.value - ', currentUserProfile.value)
         </div>
         <slot name="aboveSubmit" />
         <Button
-          :label="props.label"
+          label="Save"
           v-bind="{ ...$attrs }"
           class="w-full mt-3"
-          :aria-label="`${props.label} button`"
+          aria-label="Save button"
           type="submit"
         >
           <template #icon> <slot name="icon"></slot> </template>
         </Button>
-        <slot name="belowSubmit" />
+        <Button
+          label="Cancel"
+          link
+          class="mt-4 w-full"
+          @click="editProfileSideBar = false"
+        />
       </form>
     </div>
   </div>
 </template>
-editMode

@@ -12,16 +12,7 @@ const editProfileSideBar = useEditProfileSideBar()
       <SHeader label="Account" @close-sidebar="editProfileSideBar = false" />
     </section>
     <section>
-      <SUpdateAccount label="Save">
-        <template #belowSubmit>
-          <Button
-            label="Cancel"
-            link
-            class="mt-4 w-full"
-            @click="editProfileSideBar = false"
-          />
-        </template>
-      </SUpdateAccount>
+      <SUpdateAccount />
     </section>
   </div>
 </template>

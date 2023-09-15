@@ -333,9 +333,10 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <Toast />
+
   <AudioPlayer />
   <Sidebars />
+  <Toast position="top-center" />
 </template>
 
 <style lang="scss">
