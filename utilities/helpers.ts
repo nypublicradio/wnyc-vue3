@@ -25,10 +25,23 @@ formats the url of a publisher image so it works with our design system image co
 */
 export const formatPublisherImageUrl = (url) => { return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%") }
 
-export const resizePublisherImage = (url, w, h, q = 80) => {
+/*
+finds the image first then formats the url of a publisher image so it works with our design system image components
+*/
+export const formatPublisherImage = (attributes) => {
+  const img = attributes.imageMain ?? attributes.image
+  const url = img.template
+  console.log(url)
+  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
+}
+
+export const resizePublisherImage = (attributes, w, h, q = 80) => {
   //https://media.wnyc.org/i/630/365/c/80/photologue/photos/brian2_630x365.jpg
 
   //https://media.wnyc.org/i/1860/1240/l/80/2020/10/NYPR_020819_1161_R1_silo_layers-Alison-Stewart.jpg
+
+  const img = attributes.imageMain ?? attributes.image
+  const url = img.template
 
   const pieces = url.split('/')
   const finalUrlArr = []
@@ -251,12 +264,13 @@ function getOrdinalSuffix(i) {
  * to get how long ago a date was
  */
 export function howLongAgo(date) {
-  const res = formatDistanceToNowStrict(new Date(date), {
-    addSuffix: true,
-  })
+  if (date) {
+    const res = formatDistanceToNowStrict(new Date(date), {
+      addSuffix: true,
+    })
 
-  return res.replace('minutes', 'min').replace('minute', 'min')
-
+    return res.replace('minutes', 'min').replace('minute', 'min')
+  }
 }
 
 /**

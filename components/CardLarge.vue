@@ -1,9 +1,5 @@
 <script setup>
-import {
-  formatPublisherImageUrl,
-  getMinutes,
-  whenTime,
-} from '~/utilities/helpers'
+import { formatPublisherImage, getMinutes, whenTime } from '~/utilities/helpers'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
 
 const props = defineProps({
@@ -13,6 +9,7 @@ const props = defineProps({
     required: true,
   },
 })
+console.log(props.item)
 </script>
 
 <template>
@@ -20,9 +17,7 @@ const props = defineProps({
     <div class="card-large mb-4">
       <div class="top">
         <VImagePublisher
-          :src="
-            formatPublisherImageUrl(props.item.attributes.imageMain.template)
-          "
+          :src="formatPublisherImage(props.item.attributes)"
           :width="248"
           :height="159"
           :ratio="[248, 159]"

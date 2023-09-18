@@ -20,7 +20,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:data'])
+const emit = defineEmits(['update:data', 'swipe-down'])
 
 const internalData = ref(props.data)
 
@@ -30,25 +30,46 @@ const headerRef = ref(null)
 const closeMenu = () => {
   sDropDownRef.value.click()
 }
+
+const panel = ref(null)
+const shadowHeight = 70
+
+const setPanel = async () => {
+  await nextTick()
+  panel.value = document.getElementById('p-dropup-panel')
+}
+const unsetPanel = async () => {
+  panel.value = null
+}
+
 const swipe1 = useSwipe(headerRef, {
+  passive: true,
+  onSwipeStart() {
+    panel.value.classList.remove('release')
+  },
   onSwipe() {
-    console.log('swiping', swipe1.direction.value)
-    if (swipe1.direction.value === 'down' && swipe1.lengthY.value < -5) {
-      closeMenu()
-      //emit('swipe-down')
+    const length = swipe1.lengthY.value
+    //if (swipe1.direction.value === 'down') {
+    if (length < 0) {
+      console.log('length', length)
+      panel.value.style.bottom = `${length}px`
     }
   },
-  passive: true,
-})
-const swipe2 = useSwipe(hackRef, {
-  onSwipe() {
-    console.log('swiping', swipe2.direction.value)
-    if (swipe2.direction.value === 'down' && swipe2.lengthY.value < -5) {
-      closeMenu()
+  onSwipeEnd() {
+    if (swipe1.direction.value === 'down' && swipe1.lengthY.value < -100) {
+      panel.value.classList.add('release')
+      panel.value.style.bottom =
+        (panel.value.offsetHeight + shadowHeight) * -1 + 'px'
+      setTimeout(() => {
+        closeMenu()
+      }, 250)
+      //closeMenu()
       //emit('swipe-down')
+    } else {
+      panel.value.classList.add('release')
+      panel.value.style.bottom = `0px`
     }
   },
-  passive: true,
 })
 </script>
 <template>
@@ -58,8 +79,12 @@ const swipe2 = useSwipe(hackRef, {
     :options="options"
     :optionLabel="props.optionLabel"
     placeholder="Select a station"
-    class="s-dropdown"
+    class="s-dropup"
     @update:modelValue="$emit('update:data', $event)"
+    @show="setPanel"
+    @hide="unsetPanel"
+    panelClass="p-dropup-panel"
+    :panelProps="{ id: 'p-dropup-panel' }"
   >
     <template #value="slotProps">
       <div
@@ -81,7 +106,6 @@ const swipe2 = useSwipe(hackRef, {
           {{ props.label }}
         </h3>
       </div>
-      <div ref="hackRef" class="hackRef"></div>
     </template>
     <template #option="slotProps">
       <div
@@ -102,7 +126,7 @@ const swipe2 = useSwipe(hackRef, {
 </template>
 
 <style lang="scss" scoped>
-.s-dropdown {
+.s-dropup {
   width: 80%;
   height: 42px;
   margin-right: -1rem;
@@ -122,7 +146,7 @@ const swipe2 = useSwipe(hackRef, {
 }
 </style>
 <style lang="scss">
-.s-dropdown {
+.s-dropup {
   .p-dropdown-trigger {
     display: none !important;
   }
@@ -135,7 +159,11 @@ const swipe2 = useSwipe(hackRef, {
     @include font-config($type-paragraph1);
   }
 }
-.p-dropdown-panel {
+.p-dropup-panel {
+  &.release {
+    transition: bottom 0.25s;
+    -webkit-transition: bottom 0.25s;
+  }
   position: absolute;
   top: unset !important;
   bottom: 0;
@@ -162,15 +190,6 @@ const swipe2 = useSwipe(hackRef, {
     margin-top: 20px;
     margin-bottom: 20px;
     padding-left: 1.25rem;
-  }
-  .hackRef {
-    width: 100%;
-    height: 900px;
-    position: absolute;
-    top: 40px;
-    left: 0;
-    background: transparent;
-    //z-index: 111;
   }
   .p-dropdown-items-wrapper {
     max-height: unset !important;

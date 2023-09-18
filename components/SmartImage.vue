@@ -1,9 +1,6 @@
 <script setup>
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
-import {
-  formatPublisherImageUrl,
-  getAviaryImageSrcId,
-} from '~/utilities/helpers'
+import { formatPublisherImage, getAviaryImageSrcId } from '~/utilities/helpers'
 import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
@@ -190,7 +187,7 @@ onMounted(() => {})
       :ratio="props.ratio"
     />
     <VImagePublisher
-      :src="formatPublisherImageUrl(props.src.attributes.imageMain.template)"
+      :src="formatPublisherImage(props.src.attributes)"
       :width="props.width"
       :height="props.height"
       :ratio="props.ratio"
