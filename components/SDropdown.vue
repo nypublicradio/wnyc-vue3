@@ -23,49 +23,56 @@ const props = defineProps({
 const emit = defineEmits(['update:data', 'swipe-down'])
 
 const internalData = ref(props.data)
-
 const sDropDownRef = ref(null)
-const hackRef = ref(null)
-const headerRef = ref(null)
+
+// clicks the dropdown again to close it
 const closeMenu = () => {
   sDropDownRef.value.click()
 }
 
 const panel = ref(null)
+// to match the total height of the shadow that is being applied to the panel
 const shadowHeight = 70
 
+// when the dropdown is opened, set the panel ref
 const setPanel = async () => {
   await nextTick()
   panel.value = document.getElementById('p-dropup-panel')
 }
+
+// when the dropdown is closed, unset the panel ref
 const unsetPanel = async () => {
   panel.value = null
 }
 
-const swipe1 = useSwipe(headerRef, {
+// swipe setup
+const swipe = useSwipe(panel, {
   passive: true,
   onSwipeStart() {
+    // removes class to the css animation so the drag will be 1:1 with the finger
     panel.value.classList.remove('release')
   },
   onSwipe() {
-    const length = swipe1.lengthY.value
-    //if (swipe1.direction.value === 'down') {
+    const length = swipe.lengthY.value
+    // so it does not drag hight than the height of the panel
     if (length < 0) {
-      console.log('length', length)
       panel.value.style.bottom = `${length}px`
     }
   },
   onSwipeEnd() {
-    if (swipe1.direction.value === 'down' && swipe1.lengthY.value < -100) {
+    if (swipe.direction.value === 'down' && swipe.lengthY.value < -100) {
+      // adds the release class to enable the css animation
       panel.value.classList.add('release')
+      // set the panel bottom to the height of the panel + the shadow height
       panel.value.style.bottom =
         (panel.value.offsetHeight + shadowHeight) * -1 + 'px'
+      // close the dropdown after the animation is done
       setTimeout(() => {
         closeMenu()
       }, 250)
-      //closeMenu()
-      //emit('swipe-down')
+      emit('swipe-down')
     } else {
+      // adds the release class to enable the css animation and bring it back to the top smoothly
       panel.value.classList.add('release')
       panel.value.style.bottom = `0px`
     }
@@ -100,12 +107,10 @@ const swipe1 = useSwipe(headerRef, {
       </span>
     </template>
     <template #header>
-      <div ref="headerRef">
-        <i class="pi pi-minus" @click="closeMenu" />
-        <h3 v-if="props.label" class="p-submenu-header-replace">
-          {{ props.label }}
-        </h3>
-      </div>
+      <i class="pi pi-minus" @click="closeMenu" />
+      <h3 v-if="props.label" class="p-submenu-header-replace">
+        {{ props.label }}
+      </h3>
     </template>
     <template #option="slotProps">
       <div
