@@ -262,10 +262,11 @@ const editField = (field) => {
         />
       </SBox>
       <SBox label="Default stream">
-        <SDropdown
+        <DropupMenuNew
           v-model:data="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
+          placeholder="Select a station"
           label="Default stream"
           @change="onUpdateStation"
         />
@@ -298,9 +299,10 @@ const editField = (field) => {
         <div class="s-title">Display</div>
       </div>
       <SBox label="Text size">
-        <SDropdown
+        <DropupMenuNew
           v-model:data="currentUserProfile.text_size"
           :options="textSizeOptions"
+          placeholder="Select a Text Size"
           label="Text Size"
           @change="onUpdateTextSize"
         />

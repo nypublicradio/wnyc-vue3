@@ -14,50 +14,73 @@ const bucket = await usePublisherFetch('/buckets/wnyc-home-middle/')
 const bucketItems = bucket?.data?.value?.data?.attributes?.bucketItems
 
 const getDotMenuItems = (bucketItem) => {
+  console.log('bucketItem', bucketItem)
   return [
     {
       label: 'Download',
-      icon: '',
-      command: () => {
-        // TODO: file system download
-        alert(bucketItem.attributes.title)
-        toast.add({
-          severity: 'info',
-          summary: 'Downloading...',
-          detail: bucketItem.attributes.title,
-          life: 3000,
-        })
-        trackClickEvent(
-          'Click Tracking - Audio Download',
-          `Large Card`,
-          bucketItem.attributes.title
-        )
-      },
+      name: 'testt',
+      station: 'test',
+      code: 'testt',
+      slug: 'test',
+      image: 'test',
+      times: `${'test'} - ${'test'}`,
     },
     {
       label: 'Copy embed code',
-      icon: '',
-      command: () => {
-        copyToClipBoard(bucketItem.attributes.embedCode)
-          ? toast.add({
-              severity: 'info',
-              summary: 'Embed code copied to clipboard',
-              life: 3000,
-            })
-          : toast.add({
-              severity: 'error',
-              summary: 'Copy to clipboard failed. Try again another time',
-              life: 3000,
-            })
-        trackClickEvent(
-          'Click Tracking - Audio Copy Embed Code',
-          `Large Card`,
-          bucketItem.attributes.embedCode
-        )
-      },
+      name: 'testt',
+      station: 'test',
+      code: 'testt',
+      slug: 'test',
+      image: 'test',
+      times: `${'test'} - ${'test'}`,
     },
   ]
 }
+
+// const getDotMenuItems = (bucketItem) => {
+//   return [
+//     {
+//       label: 'Download',
+//       icon: '',
+//       command: () => {
+//         // TODO: file system download
+//         toast.add({
+//           severity: 'info',
+//           summary: 'Downloading...',
+//           detail: bucketItem.attributes.title,
+//           life: 3000,
+//         })
+//         trackClickEvent(
+//           'Click Tracking - Audio Download',
+//           `Large Card`,
+//           bucketItem.attributes.title
+//         )
+//       },
+//     },
+//     {
+//       label: 'Copy embed code',
+//       icon: '',
+//       command: () => {
+//         copyToClipBoard(bucketItem.attributes.embedCode)
+//           ? toast.add({
+//               severity: 'info',
+//               summary: 'Embed code copied to clipboard',
+//               life: 3000,
+//             })
+//           : toast.add({
+//               severity: 'error',
+//               summary: 'Copy to clipboard failed. Try again another time',
+//               life: 3000,
+//             })
+//         trackClickEvent(
+//           'Click Tracking - Audio Copy Embed Code',
+//           `Large Card`,
+//           bucketItem.attributes.embedCode
+//         )
+//       },
+//     },
+//   ]
+// }
 
 const normalizedItem = (item) => {
   return {
@@ -80,6 +103,10 @@ const togglePlay = (item) => {
     'toggle play'
   )
 }
+
+const onMenuChange = (e) => {
+  console.log('onMenuChange', e)
+}
 </script>
 
 <template>
@@ -99,7 +126,11 @@ const togglePlay = (item) => {
             />
           </template>
           <template #menu>
-            <DotMenu :menuItems="getDotMenuItems(item)" label="Options">
+            <DotMenu
+              :menuItems="getDotMenuItems(item)"
+              label="Options"
+              @changeEmit="onMenuChange"
+            >
               <template #end v-if="item.attributes.embedCode">
                 <div class="p-0">
                   <Textarea
