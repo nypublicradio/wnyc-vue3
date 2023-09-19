@@ -211,3 +211,14 @@ a:visited {
 .nobreak {
   white-space: nowrap;
 }
+
+
+// text plain button colors
+.p-button.p-button-text.p-button-plain {
+  color: $textColor;
+}
+
+.p-button.p-button-text.p-button-plain:enabled:hover {
+  background: #e8e8e8;
+  color: $textColor;
+}

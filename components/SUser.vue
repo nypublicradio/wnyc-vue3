@@ -10,6 +10,7 @@ import {
   useCurrentUserProfile,
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
 import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
 import { useToast } from 'primevue/usetoast'
 
@@ -62,16 +63,23 @@ const onLogOut = async () => {
   setDisplaySettings(localUserProfileDefault.value)
 
   settingsSideBar.value = false
+
+  //GTM
   trackClickEvent(
     'Click Tracking - logout button',
     'Settings Sidebar - user section',
-    ''
+    'logged out'
   )
+
+  // show toast
   toast.add({
     severity: 'success',
     summary: `You have logged out.`,
     life: 3000,
   })
+
+  // update all live streams
+  updateAllLiveStreams()
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {

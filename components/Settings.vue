@@ -191,7 +191,7 @@ const onUpdateStation = async (event) => {
   )
 }
 
-console.log('currentUser = ', currentUser.value)
+//console.log('currentUser = ', currentUser.value)
 
 const accountHeader = computed(() => {
   switch (currentUser.value?.app_metadata?.provider) {
