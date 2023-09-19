@@ -40,7 +40,7 @@ body {
     }
   }
   &.background-gradient {
-    background: linear-gradient(to bottom, #1b223c, #244873);
+    //background: linear-gradient(to bottom, #1b223c, #244873);
     background: $backgroundGradient1;
     transform: none;
     height: 100% !important;
@@ -156,10 +156,6 @@ section {
   font-family: var(--font-family-tisa);
 }
 
-.p-sidebar {
-  background: var(--background);
-}
-
 label {
   color: var(--text-color);
 }
@@ -214,10 +210,23 @@ a:visited {
 
 // text plain button colors
 .p-button.p-button-text.p-button-plain {
-  color: $textColor;
+  color: var(--text-color);
 }
 
 .p-button.p-button-text.p-button-plain:enabled:hover {
   background: #e8e8e8;
-  color: $textColor;
+  color: var(--text-color);
+}
+
+.p-inputtext {
+  background-color: var(--s-box-background-color);
+  color: var(--text-color);
+  border-color: var(--stroke);
+}
+
+.p-divider {
+  .p-divider-content {
+    background-color: var(--background2);
+    color: var(--text-color);
+  }
 }

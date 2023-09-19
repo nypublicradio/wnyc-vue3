@@ -7,6 +7,10 @@ $playerHeight: 100px;
 $toolsBreakPoint: 472px;
 $padding: 1.25rem;
 
+// DS UPDATE
+$backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
+//
+
 :root {
     --header-height: #{$headerHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
@@ -24,7 +28,7 @@ $padding: 1.25rem;
 .style-mode-light {
     --wnyc-logo-color: var(--red, #de1e3d) !important;
     --bottom-menu-icon-color: var(--night, #101012) !important;
-    --v-card-title-hover-color: red !important;
+    --v-card-title-hover-color: var(--link-button-hover-color) !important;
     --s-box-background-color: var(--background) !important;
     --s-box-stroke-color: var(--background) !important;
     --header-background: #ffffffe6 !important;
@@ -35,7 +39,8 @@ $padding: 1.25rem;
 .style-mode-dark {
     --wnyc-logo-color: var(--white, #ffffff) !important;
     --bottom-menu-icon-color: var(--white, #ffffff) !important;
-    --s-box-background-color: #ffffff1a !important;
+    --v-card-title-hover-color: var(--link-button-hover-color) !important;
+    --s-box-background-color: #32384f !important;
     --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
     --live-feature-background: var(--background3) !important;
     --horzScrollGradient: var(--dark-blue);

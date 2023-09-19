@@ -102,6 +102,9 @@ export default defineNuxtConfig({
       'primevue'
     ]
   },
+  plugins: [
+    '~/plugins/primevue.js'
+  ],
 
   runtimeConfig: {
     public: {

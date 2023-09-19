@@ -8,6 +8,15 @@ import {
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
+
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
+
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -37,7 +46,12 @@ onMounted(async () => {
 <template>
   <div class="live-feature">
     <div class="inner">
-      <VFlexibleLink raw to="/live" class="flex align-items-center">
+      <VFlexibleLink
+        raw
+        to="/live"
+        class="flex align-items-center p-ripple"
+        v-ripple
+      >
         <div class="image-holder">
           <transition name="fade">
             <VImage

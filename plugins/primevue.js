@@ -21,11 +21,13 @@ import InlineMessage from 'primevue/inlinemessage'
 import Divider from 'primevue/divider'
 import Message from 'primevue/message'
 import ProgressSpinner from 'primevue/progressspinner'
+import Ripple from 'primevue/ripple'
 //import Tooltip from 'primevue/tooltip'
 
 export default defineNuxtPlugin(nuxtApp => {
-    nuxtApp.vueApp.use(PrimeVue, { ripple: false })
+    nuxtApp.vueApp.use(PrimeVue, { ripple: true })
     nuxtApp.vueApp.use(ToastService)
+    nuxtApp.vueApp.directive('ripple', Ripple)
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('Dropdown', Dropdown)
     nuxtApp.vueApp.component('Listbox', Listbox)

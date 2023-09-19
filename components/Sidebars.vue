@@ -124,4 +124,27 @@ const editProfileSideBar = useEditProfileSideBar()
     display: none !important;
   }
 }
+.p-sidebar {
+  padding-top: env(safe-area-inset-top);
+  background: var(--background2);
+  .p-sidebar-header {
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    justify-content: space-between;
+  }
+  .p-sidebar-content {
+    padding: 0;
+  }
+  .p-sidebar-close {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .p-sidebar-close,
+  .p-sidebar-close .p-icon {
+    width: 18px;
+    height: 18px;
+    path {
+      fill: var(--night);
+    }
+  }
+}
 </style>

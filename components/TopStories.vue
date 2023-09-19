@@ -6,6 +6,15 @@ import {
   whenTime,
   getAviaryImageSrcId,
 } from '~/utilities/helpers'
+
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
+
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
 const { data: articles } = await useFetch(config.public.STORIES_API)
@@ -44,16 +53,19 @@ const normalizeAuthor = (author) => {
     <div v-for="(article, index) in articles.items" :key="index" class="mb-4">
       <!-- <pre>{{ article }}</pre> -->
       <VCard
+        v-ripple
+        class="p-ripple"
         :src="getAviaryImageSrcId(article)"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
-        :link="getArticleLink(article)"
+        :link="`/story/${article.meta.slug}`"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
         :width="116"
         :height="116"
         :ratio="[1, 1]"
+        @click="navigateTo(`/story/${article.meta.slug}`)"
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',
@@ -107,6 +119,7 @@ const normalizeAuthor = (author) => {
 <style lang="scss">
 .top-stories {
   .v-card {
+    cursor: pointer;
     .card-details {
       flex: 1;
       align-self: stretch !important;

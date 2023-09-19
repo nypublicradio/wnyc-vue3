@@ -2,6 +2,14 @@
 import { trackClickEvent, whenTime, getMinutes } from '~/utilities/helpers'
 import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
 
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
+
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
@@ -56,8 +64,8 @@ const togglePlay = (media) => {
   <div>
     <div class="latest-news-updates grid">
       <div class="col-6">
-        <div class="card-small" @click="togglePlay(local)">
-          <Badge label="Local NYC News" />
+        <div class="card-small p-ripple" @click="togglePlay(local)" v-ripple>
+          <Badge :label="local.title" />
           <div class="news-title">
             <div class="font-bold">Current Headlines</div>
             <PipeData>
@@ -70,10 +78,11 @@ const togglePlay = (media) => {
           <PlayButton :label="getMinutes(local.duration)" :episode="local" />
         </div>
       </div>
+
       <div class="col-6">
-        <div class="card-small" @click="togglePlay(national)">
+        <div class="card-small p-ripple" @click="togglePlay(national)" v-ripple>
           <Badge
-            label="national NYC News"
+            :label="national.title"
             color="var(--background-500)"
             bg-color="var(--indigo-500)"
           />
