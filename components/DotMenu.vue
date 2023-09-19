@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-
 const props = defineProps({
   label: {
     type: String,
@@ -12,40 +10,17 @@ const props = defineProps({
     required: true,
   },
 })
-const emit = defineEmits(['update:data', 'changeEmit'])
-
-const dropupMenuRef = ref(null)
+const dataRef = ref(props.label)
+const emit = defineEmits(['changeEmit'])
 </script>
 <template>
   <div class="card flex justify-content-center">
-    <!-- <Button
-      class="text-cyan-500 hover:bg-cyan-50 relative"
-      icon="pi pi-ellipsis-v"
-      text
-      rounded
-      aria-label="menu"
-      size="small"
-      type="button"
-      @click="dropupMenuRef.openMenu()"
-      aria-haspopup="true"
-      aria-controls="overlay_menu"
-    /> -->
-    <!-- <DropupMenu
-      ref="dropupMenuRef"
-      :menuItems="props.menuItems"
-      :label="props.label"
-    >
-      <template #end>
-        <slot name="end"></slot>
-      </template>
-    </DropupMenu> -->
     <DropupMenuNew
-      v-model:data="props.menuItems"
+      v-model:data="dataRef"
       :options="props.menuItems"
-      optionLabel="label"
       :label="props.label"
       @change="emit('changeEmit', $event)"
-      menu
+      :menu="true"
     />
   </div>
 </template>

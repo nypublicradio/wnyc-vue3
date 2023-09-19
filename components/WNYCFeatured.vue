@@ -14,73 +14,57 @@ const bucket = await usePublisherFetch('/buckets/wnyc-home-middle/')
 const bucketItems = bucket?.data?.value?.data?.attributes?.bucketItems
 
 const getDotMenuItems = (bucketItem) => {
-  console.log('bucketItem', bucketItem)
   return [
     {
       label: 'Download',
-      name: 'testt',
-      station: 'test',
-      code: 'testt',
-      slug: 'test',
-      image: 'test',
-      times: `${'test'} - ${'test'}`,
+      title: bucketItem.attributes.title,
     },
     {
       label: 'Copy embed code',
-      name: 'testt',
-      station: 'test',
-      code: 'testt',
-      slug: 'test',
-      image: 'test',
-      times: `${'test'} - ${'test'}`,
+      title: bucketItem.attributes.title,
+      embedCode: bucketItem.attributes.embedCode,
     },
   ]
 }
 
-// const getDotMenuItems = (bucketItem) => {
-//   return [
-//     {
-//       label: 'Download',
-//       icon: '',
-//       command: () => {
-//         // TODO: file system download
-//         toast.add({
-//           severity: 'info',
-//           summary: 'Downloading...',
-//           detail: bucketItem.attributes.title,
-//           life: 3000,
-//         })
-//         trackClickEvent(
-//           'Click Tracking - Audio Download',
-//           `Large Card`,
-//           bucketItem.attributes.title
-//         )
-//       },
-//     },
-//     {
-//       label: 'Copy embed code',
-//       icon: '',
-//       command: () => {
-//         copyToClipBoard(bucketItem.attributes.embedCode)
-//           ? toast.add({
-//               severity: 'info',
-//               summary: 'Embed code copied to clipboard',
-//               life: 3000,
-//             })
-//           : toast.add({
-//               severity: 'error',
-//               summary: 'Copy to clipboard failed. Try again another time',
-//               life: 3000,
-//             })
-//         trackClickEvent(
-//           'Click Tracking - Audio Copy Embed Code',
-//           `Large Card`,
-//           bucketItem.attributes.embedCode
-//         )
-//       },
-//     },
-//   ]
-// }
+const onDownloadClick = (item) => {
+  // TODO: file system download
+  toast.add({
+    severity: 'info',
+    summary: 'Downloading...',
+    detail: item.title,
+    life: 3000,
+  })
+  trackClickEvent('Click Tracking - Audio Download', `Large Card`, item.title)
+}
+
+const onCopyEmbedCode = (item) => {
+  copyToClipBoard(item.embedCode)
+    ? toast.add({
+        severity: 'info',
+        summary: 'Embed code copied to clipboard',
+        life: 3000,
+      })
+    : toast.add({
+        severity: 'error',
+        summary: 'Copy to clipboard failed. Try again another time',
+        life: 3000,
+      })
+  trackClickEvent(
+    'Click Tracking - Audio Copy Embed Code',
+    `Large Card`,
+    item.embedCode
+  )
+}
+
+const onMenuChange = (e) => {
+  console.log('onMenuChange', e)
+  if (e.value.label === 'Download') {
+    onDownloadClick(e.value)
+  } else if (e.value.label === 'Copy embed code') {
+    onCopyEmbedCode(e.value)
+  }
+}
 
 const normalizedItem = (item) => {
   return {
@@ -102,10 +86,6 @@ const togglePlay = (item) => {
     item.attributes.title,
     'toggle play'
   )
-}
-
-const onMenuChange = (e) => {
-  console.log('onMenuChange', e)
 }
 </script>
 

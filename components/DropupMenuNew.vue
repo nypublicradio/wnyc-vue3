@@ -30,17 +30,23 @@ const props = defineProps({
 
 const emit = defineEmits(['update:data', 'swipe-down'])
 
+const dataRef = ref(props.data)
+
 const sDropDownRef = ref(null)
 
 function preventScrollOnTouch(event) {
   event.preventDefault()
 }
 
-// clicks the dropdown again to close it
-const closeMenu = () => {
+const removeBodyTouch = () => {
   document.body.removeEventListener('touchmove', preventScrollOnTouch, {
     passive: false,
   })
+}
+
+// clicks the dropdown again to close it
+const closeMenu = () => {
+  removeBodyTouch()
 
   sDropDownRef.value.click()
   sDropDownRef.value.blur()
@@ -58,6 +64,7 @@ const setPanel = async () => {
 
 // when the dropdown is closed, unset the panel ref
 const unsetPanel = async () => {
+  removeBodyTouch()
   panel.value = null
 }
 
@@ -100,7 +107,7 @@ const swipe = useSwipe(panel, {
 </script>
 <template>
   <Dropdown
-    v-model="props.data"
+    v-model="dataRef"
     :options="props.options"
     :optionLabel="props.optionLabel"
     :placeholder="props.placeholder"
@@ -115,7 +122,7 @@ const swipe = useSwipe(panel, {
     <template #value="slotProps">
       <div
         ref="sDropDownRef"
-        v-if="slotProps.value[props.optionLabel]"
+        v-if="slotProps.value[props.optionLabel] && !props.menu"
         class="flex align-items-center justify-content-end"
       >
         <div class="ans">{{ slotProps.value[props.optionLabel] }}</div>
@@ -209,11 +216,13 @@ const swipe = useSwipe(panel, {
     transition: bottom 0.25s;
     -webkit-transition: bottom 0.25s;
   }
+  &.is-menu {
+    .p-highlight:after {
+      display: none !important;
+    }
+  }
   position: fixed !important;
   display: block !important;
-  &.is-menu {
-    //position: fixed !important;
-  }
   top: unset !important;
   bottom: 0;
   left: 0;
