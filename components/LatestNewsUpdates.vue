@@ -57,7 +57,7 @@ const togglePlay = (media) => {
     <div class="latest-news-updates grid">
       <div class="col-6">
         <div class="card-small" @click="togglePlay(local)">
-          <badge label="Local NYC News" />
+          <Badge label="Local NYC News" />
           <div class="news-title">
             <div class="font-bold">Current Headlines</div>
             <PipeData>
@@ -72,7 +72,7 @@ const togglePlay = (media) => {
       </div>
       <div class="col-6">
         <div class="card-small" @click="togglePlay(national)">
-          <badge
+          <Badge
             label="national NYC News"
             color="var(--background-500)"
             bg-color="var(--indigo-500)"
