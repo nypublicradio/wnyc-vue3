@@ -46,10 +46,9 @@ const removeBodyTouch = () => {
 
 // clicks the dropdown again to close it
 const closeMenu = () => {
-  removeBodyTouch()
-
   sDropDownRef.value.click()
   sDropDownRef.value.blur()
+  removeBodyTouch()
 }
 
 const panel = ref(null)
@@ -60,13 +59,23 @@ const shadowHeight = 70
 const setPanel = async () => {
   await nextTick()
   panel.value = document.getElementById('p-dropup-panel')
+  // removes class to the css animation so the drag will be 1:1 with the finger
+  panel.value.classList.remove('release')
+  document.body.addEventListener('touchmove', preventScrollOnTouch, {
+    passive: false,
+  })
 }
 
-// when the dropdown is closed, unset the panel ref
+// when the dropdown is closed, unset the panel ref and removes body prevent touch scroll
 const unsetPanel = async () => {
-  removeBodyTouch()
   panel.value = null
+  removeBodyTouch()
 }
+
+onUnmounted(() => {
+  panel.value = null
+  removeBodyTouch()
+})
 
 // swipe setup
 const swipe = useSwipe(panel, {
@@ -74,9 +83,6 @@ const swipe = useSwipe(panel, {
   onSwipeStart() {
     // removes class to the css animation so the drag will be 1:1 with the finger
     panel.value.classList.remove('release')
-    document.body.addEventListener('touchmove', preventScrollOnTouch, {
-      passive: false,
-    })
   },
   onSwipe() {
     const length = swipe.lengthY.value
