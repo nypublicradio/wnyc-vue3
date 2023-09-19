@@ -13,57 +13,54 @@ const currentEpisode = useCurrentEpisode()
 const bucket = await usePublisherFetch('/buckets/wnyc-home-middle/')
 const bucketItems = bucket?.data?.value?.data?.attributes?.bucketItems
 
+// set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
     {
       label: 'Download',
       title: bucketItem.attributes.title,
+      command: () => {
+        toast.add({
+          severity: 'info',
+          summary: 'Downloading...',
+          detail: bucketItem.title,
+          life: 3000,
+        })
+        trackClickEvent(
+          'Click Tracking - Audio Download',
+          `Large Card`,
+          bucketItem.attributes.title
+        )
+      },
     },
     {
       label: 'Copy embed code',
       title: bucketItem.attributes.title,
       embedCode: bucketItem.attributes.embedCode,
+      command: () => {
+        copyToClipBoard(bucketItem.attributes.embedCode)
+          ? toast.add({
+              severity: 'info',
+              summary: 'Embed code copied to clipboard',
+              life: 3000,
+            })
+          : toast.add({
+              severity: 'error',
+              summary: 'Copy to clipboard failed. Try again another time',
+              life: 3000,
+            })
+        trackClickEvent(
+          'Click Tracking - Audio Copy Embed Code',
+          `Large Card`,
+          bucketItem.attributes.embedCode
+        )
+      },
     },
   ]
 }
 
-const onDownloadClick = (item) => {
-  // TODO: file system download
-  toast.add({
-    severity: 'info',
-    summary: 'Downloading...',
-    detail: item.title,
-    life: 3000,
-  })
-  trackClickEvent('Click Tracking - Audio Download', `Large Card`, item.title)
-}
-
-const onCopyEmbedCode = (item) => {
-  copyToClipBoard(item.embedCode)
-    ? toast.add({
-        severity: 'info',
-        summary: 'Embed code copied to clipboard',
-        life: 3000,
-      })
-    : toast.add({
-        severity: 'error',
-        summary: 'Copy to clipboard failed. Try again another time',
-        life: 3000,
-      })
-  trackClickEvent(
-    'Click Tracking - Audio Copy Embed Code',
-    `Large Card`,
-    item.embedCode
-  )
-}
-
 const onMenuChange = (e) => {
-  console.log('onMenuChange', e)
-  if (e.value.label === 'Download') {
-    onDownloadClick(e.value)
-  } else if (e.value.label === 'Copy embed code') {
-    onCopyEmbedCode(e.value)
-  }
+  e.value.command()
 }
 
 const normalizedItem = (item) => {
@@ -95,6 +92,7 @@ const togglePlay = (item) => {
       <HorizontalScrollFeature>
         <CardLarge
           v-for="item in bucketItems"
+          :key="item.label"
           :item="item"
           style="min-width: 248px"
         >

@@ -31,7 +31,6 @@ finds the image first then formats the url of a publisher image so it works with
 export const formatPublisherImage = (attributes) => {
   const img = attributes.imageMain ?? attributes.image
   const url = img.template
-  console.log(url)
   return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
 }
 
