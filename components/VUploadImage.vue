@@ -138,7 +138,6 @@ const deleteImage = async () => {
 const uploadLabel = computed(() => {
   return imageUrl.value ? 'Upload new image' : props.label
 })
-
 </script>
 
 <template>
@@ -151,20 +150,35 @@ const uploadLabel = computed(() => {
       class="mb-4"
     />
     <template v-if="errorMessage">
-      <Message :sticky="false" :life="5000" class="mt-0 text-only"  severity="error">
+      <Message
+        :sticky="false"
+        :life="5000"
+        class="mt-0 text-only"
+        severity="error"
+      >
         <div class="text-center" v-html="errorMessage"></div>
       </Message>
     </template>
     <template v-if="successMessage">
-      <Message :sticky="false" :life="5000" class="mt-0 text-only" severity="success">
+      <Message
+        :sticky="false"
+        :life="5000"
+        class="mt-0 text-only"
+        severity="success"
+      >
         <div class="text-center" v-html="successMessage"></div>
       </Message>
     </template>
     <slot v-else name="above-button"> </slot>
-    <Button v-if="imageUrl" label="Done" class="mb-3 w-full" @click="() => emit('close-dialog')"/>
+    <Button
+      v-if="imageUrl"
+      label="Done"
+      class="mb-3 w-full"
+      @click="() => emit('close-dialog')"
+    />
     <div class="flex w-full">
-      <FileUpload        
-        :class="[{'p-button-secondary': imageUrl}]"
+      <FileUpload
+        :class="[{ 'p-button-secondary': imageUrl }]"
         class="w-full"
         mode="basic"
         :custom-upload="true"
@@ -176,24 +190,30 @@ const uploadLabel = computed(() => {
         @uploader="uploadImage"
       />
     </div>
-    <Button v-if="imageUrl" label="Remove Image" icon="pi pi-trash" text class="p-button-danger my-4 link" @click="deleteImage"/>
-      
-    <slot name="below-button"></slot>
+    <Button
+      v-if="imageUrl"
+      label="Remove Image"
+      icon="pi pi-trash"
+      text
+      class="p-button-danger my-4"
+      @click="deleteImage"
+    />
 
-    
+    <slot name="below-button"></slot>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .upload-image {
+  width: 250px;
   img {
     height: 150px;
     width: 150px;
     border-radius: 50%;
     object-fit: cover;
   }
-  .p-fileupload{
-    width:100%;
+  .p-fileupload {
+    width: 100%;
   }
 }
 </style>

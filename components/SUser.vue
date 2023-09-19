@@ -1,6 +1,6 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-//`import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
+import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
 import UserIcon from '~/components/icons/UserIcon.vue'
 import {
   useSettingSideBar,
@@ -135,7 +135,6 @@ const handleModal = () => {
       :draggable="false"
     >
       <VUploadImage
-        style="padding: 1.25rem; width: 300px"
         :image="currentUserProfile?.avatar_image_url"
         :currentUser="currentUser"
         :currentUserProfile="currentUserProfile"
