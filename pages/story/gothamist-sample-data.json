@@ -1,0 +1,494 @@
+{
+    "id": 151233,
+    "meta": {
+        "first_published_at": "2022-07-11T11:41:08.623300-04:00",
+        "type": "news.ArticlePage",
+        "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/151233/",
+        "html_url": "http://cms.prod.nypr.digital/news/article-test-page/",
+        "slug": "article-test-page",
+        "show_in_menus": true,
+        "seo_title": "Test Page Title",
+        "search_description": "",
+        "parent": {
+            "id": 4,
+            "meta": {
+                "type": "standardpages.IndexPage",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/4/",
+                "html_url": "http://cms.prod.nypr.digital/news/"
+            },
+            "title": "News"
+        }
+    },
+    "title": "Article Test Page!",
+    "listing_title": "",
+    "listing_summary": "",
+    "listing_image": null,
+    "social_image": null,
+    "social_title": "",
+    "social_text": "",
+    "show_on_index_listing": true,
+    "prevent_search_indexing": false,
+    "uuid": "5158f7fb-9aaf-4ca9-8618-838c6df505cc",
+    "url": "https://gothamist-vue3demo.gothamist.com/news/article-test-page",
+    "canonical_url": "",
+    "publication_date": "2022-07-22T11:41:00-04:00",
+    "updated_date": "2022-07-27T14:00:00-04:00",
+    "description": "This is an article test page!!",
+    "lead_asset": [
+        {
+            "type": "lead_image",
+            "value": {
+                "image": {
+                    "id": 329922,
+                    "title": "NJ marijuana_DO NOT REUSE_GettyImages-1315597178.jpg",
+                    "width": 4339,
+                    "height": 2892,
+                    "created_at": "2022-03-24T17:30:14.831272-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 13929042,
+                    "file_hash": "ad7a5339bfbc4dd256e2307d696eb9641af92407",
+                    "alt": "Sour Diesel marijuana flowers are pictured inside Garden State Dispensary in New Jersey.",
+                    "caption": "Sour Diesel marijuana flowers are pictured inside Garden State Dispensary in New Jersey.",
+                    "credit": "Natalie Kolb/Tim Leedy/MediaNews Group/Reading Eagle via Getty Image",
+                    "credit_link": "https://www.google.com",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/NJ_marijuana_DO_NOT_REUSE_GettyImages-1315597178.jpg",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 106
+                },
+                "caption": "NEW IMAGE CAPTION OVERRIDE",
+                "image_link": ""
+            },
+            "id": "7fdc8963-9911-48c5-a802-d72b0411dffa"
+        }
+    ],
+    "body": [
+        {
+            "type": "paragraph",
+            "value": "<p>This is a <i>paragraph</i> with some<b> inline styles</b>.</p><p>UPDATED</p><ul><li>bullet one</li><li>bullet 22222<ul><li>a sub bullet point!</li><li>sub bullet point #2</li></ul></li><li>bullet point #3</li></ul><ol><li>an ordered list</li><li>here is number 2<ol><li>a sub ordered list</li><li>sub list item 2</li></ol></li><li>#3 goes here</li></ol><p></p><hr/><p></p><p><a href=\"https://www.google.com\" rel=\"noopener\" target=\"_blank\">Lorem ipsum dolor</a> sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><p>Duis aute irure dolor in reprehenderit in Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><h2>h2 header text</h2><h3>h3 header text</h3><h4>h4 header text</h4><h5>h5 header text</h5><h6>h6 header text</h6>",
+            "id": "50ceffa7-d2c8-48ba-8882-b2990cf80291"
+        },
+        {
+            "type": "heading",
+            "value": "This is a heading",
+            "id": "6a5edff9-5c87-4568-b892-42ce39695d58"
+        },
+        {
+            "type": "image",
+            "value": {
+                "image": {
+                    "id": 329919,
+                    "title": "DSC00769.JPG",
+                    "width": 5472,
+                    "height": 3648,
+                    "created_at": "2022-03-24T17:18:54.828125-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 4464794,
+                    "file_hash": "abbbe9be96a1f501da9ee298550e2c2ab55bed46",
+                    "alt": "A photo of a \"Vote Yes\" banner held by Amazon union organizers.",
+                    "caption": "Amazon union organizers rally for a union ahead of a vote that begins Friday.",
+                    "credit": "Gwynne Hogan/Gothamist",
+                    "credit_link": "",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/DSC00769.JPG",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 123
+                },
+                "caption": "ANOTHER CAPTION OVERRIDE"
+            },
+            "id": "5b7afde7-187d-4492-b9cd-f0ce26e26945"
+        },
+        {
+            "type": "image",
+            "value": {
+                "image": {
+                    "id": 329919,
+                    "title": "DSC00769.JPG",
+                    "width": 5472,
+                    "height": 3648,
+                    "created_at": "2022-03-24T17:18:54.828125-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 4464794,
+                    "file_hash": "abbbe9be96a1f501da9ee298550e2c2ab55bed46",
+                    "alt": "A photo of a \"Vote Yes\" banner held by Amazon union organizers.",
+                    "caption": "Amazon union organizers rally for a union ahead of a vote that begins Friday.",
+                    "credit": "Gwynne Hogan/Gothamist",
+                    "credit_link": "",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/DSC00769.JPG",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 123
+                },
+                "caption": "VOTE YES! This is a caption override. YAY!"
+            },
+            "id": "7a907edf-af2b-43a2-8d64-dea6d196a8ee"
+        },
+        {
+            "type": "pull_quote",
+            "value": {
+                "pull_quote": "Here is a pull quote. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                "attribution": "Kim LaRocca"
+            },
+            "id": "0501ac30-c6bb-47a9-945b-9deacdb3fe47"
+        },
+        {
+            "type": "block_quote",
+            "value": {
+                "block_quote": "\"Here is a block quote. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\""
+            },
+            "id": "21035394-48ce-4e49-93c9-6b9b2e2b1aa9"
+        },
+        {
+            "type": "embed",
+            "value": {
+                "title": "Youtube Embed",
+                "embed": "<div>\n    <iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen title=\"Rick Astley - Never Gonna Give You Up (Official Music Video)\"></iframe>\n</div>\n"
+            },
+            "id": "52db3382-673d-4550-bf91-5036369ffbd1"
+        },
+        {
+            "type": "embed",
+            "value": {
+                "title": "vertical youtube video test",
+                "embed": "<div>\n    <iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/KRntP-q_R9s?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen title=\"Billie Eilish - bad guy (Vertical Video)\"></iframe>\n</div>\n"
+            },
+            "id": "f80cfce6-4315-4801-b90f-c35221b4e2f1"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "Youtube Code Embed Test",
+                "code": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"
+            },
+            "id": "6d4c2865-1654-421e-bea5-7bfc361446a1"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "Table Example",
+                "code": "<table>\n  <tr class=\"headerline\">\n    <td>Name</td>\n    <td>Knocky</td>\n    <td>Flor</td>\n    <td>Ella</td>\n    <td>Juan</td>\n  </tr>\n  <tr>\n    <td>Breed</td>\n    <td>Jack Russell</td>\n    <td>Poodle</td>\n    <td>Streetdog</td>\n    <td>Cocker Spaniel</td>\n  </tr>\n  <tr>\n    <td>Age</td>\n    <td>16</td>\n    <td>9</td>\n    <td>10</td>\n    <td>5</td>\n  </tr>\n  <tr>\n    <td>Owner</td>\n    <td>Mother-in-law</td>\n    <td>Me</td>\n    <td>Me</td>\n    <td>Sister-in-law</td>\n  </tr>\n  <tr>\n    <td>Eating Habits</td>\n    <td>Eats everyone's leftovers</td>\n    <td>Nibbles at food</td>\n    <td>Hearty eater</td>\n    <td>Will eat till he explodes</td>\n  </tr>\n  <tr class=\"totalline\">\n    <td>Total</td>\n    <td>1</td>\n    <td>2</td>\n    <td>3</td>\n    <td>4</td>\n  </tr>\n</table>"
+            },
+            "id": "7ca4a7b3-526b-47ba-a857-8b2564bde61a"
+        },
+        {
+            "type": "paragraph",
+            "value": "<p></p><hr/><p>Horizontal Lines</p><p>Russian: Антон Павлович Чехов</p><p></p><hr/><p></p>",
+            "id": "f0077ae1-11c1-475f-a68f-b1f1dd5d1666"
+        },
+        {
+            "type": "embed",
+            "value": {
+                "title": "Twitter - tweet",
+                "embed": "<div>\n    <blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">I’m not just dressed like a pickle... I AM A PICKLE. I’d like you all to meet.... Dr. Dill. <a href=\"https://t.co/DDolrk2JSE\">pic.twitter.com/DDolrk2JSE</a></p>&mdash; Miz Cracker (@miz_cracker) <a href=\"https://twitter.com/miz_cracker/status/987128554520330241?ref_src=twsrc%5Etfw\">April 20, 2018</a></blockquote>\n<script async src=\"https://platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>\n\n</div>\n"
+            },
+            "id": "74518c18-7890-4ac2-bf9c-8ee61a316e3f"
+        },
+        {
+            "type": "paragraph",
+            "value": "<p><b>Hanif Abdurraqib</b> is known as a <i>poet</i>, an essayist and an esteemed critic whose ability to analyze, report on, and share his passions — from A Tribe Called Quest to the American notion of community and the magic of jukeboxes — has made him one of the most vital cultural voices of our time. He&#x27;s now applied all his skills to the art of curation: Abdurraqib has organized the 2022 spring music series for the Brooklyn Academy of Music, one designed to showcase, as the venue describes it, &quot;performance that is visually dynamic, spans genres and generations, and makes use of the natural world.&quot;</p><p><br/>The shows, which kick off this Friday with Tuareg guitar maestro Mdou Moctar and up-and-coming indie rocker Bartees Strange, features an eclectic, genre-pushing lineup that includes some of the most exciting new Black musicians working in the realms of rock, neo-soul and psych (Moses Sumney, Dev Hynes, L&#x27;Rain, Dawn Richards). Gospel and soul legend Mavis Staples is paired with singer-songwriter Amy Helm for one show; fiery British rapper Little Simz is paired with poet Nikki Giovanni for another. There&#x27;s a world premiere of Omar Offendum&#x27;s hip-hop musical Little Syria, and there&#x27;s an anniversary screening of Juice to top things off. (You can get all ticket info here.)</p><p><br/>We spoke this week with Abdurraqib about how his relationship with live performance changed during the pandemic, why he wanted to curate his own festival and how he chose the pairings. He was eager to talk about his excitement over the return of live music.</p>",
+            "id": "07693890-06bf-4946-9a4d-7cf67fa8e9dd"
+        },
+        {
+            "type": "paragraph",
+            "value": "<p>This is a link to <a href=\"https://www.google.com\" rel=\"noopener\" target=\"_blank\">Google</a></p><p>This is a link to a <a href=\"https://gothamist-vue3demo.gothamist.com/news/edny-fines-king-of-gas-stations-250k-for-environmental-justice-violations-in-ny-nj\">story on Gothamist</a></p><p>This is an <a href=\"#ahoy\">anchor link</a></p>",
+            "id": "c77c2e3c-92f6-4cca-a795-b8605727272d"
+        },
+        {
+            "type": "paragraph",
+            "value": "<h2>This is an H2</h2><p>It feels like a lot of people just get to come along with me and live that dream. I&#x27;m also just excited for the somewhat communal nature of live music, and what live music can do for an audience who comes together to witness it.&quot; he continues.</p><p></p><h3>This is an H3</h3><p>It feels like a lot of people just get to come along with me and live that dream. I&#x27;m also just excited for the somewhat communal nature of live music, and what live music can do for an audience who comes together to witness it.&quot; he continues.</p><p></p><h4>This is an H4</h4><p>It feels like a lot of people just get to come along with me and live that dream. I&#x27;m also just excited for the somewhat communal nature of live music, and what live music can do for an audience who comes together to witness it.&quot; he continues.</p><p></p><h5>This is an H5</h5><p>It feels like a lot of people just get to come along with me and live that dream. I&#x27;m also just excited for the somewhat communal nature of live music, and what live music can do for an audience who comes together to witness it.&quot; he continues.</p><p></p><h6>This is an H6</h6><p>It feels like a lot of people just get to come along with me and live that dream. I&#x27;m also just excited for the somewhat communal nature of live music, and what live music can do for an audience who comes together to witness it.&quot; he continues.</p>",
+            "id": "0c1c4ea5-3393-42b7-86c2-236d63e547c2"
+        },
+        {
+            "type": "image",
+            "value": {
+                "image": {
+                    "id": 329836,
+                    "title": "times-square.jpg",
+                    "width": 2598,
+                    "height": 3484,
+                    "created_at": "2022-03-18T14:46:56.639444-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 3979558,
+                    "file_hash": "d618b4e04c80beba54e5f9f9aa693d9e361acf13",
+                    "alt": "A photo of A view of Times Square. Taken on May 5, 2020 at 7:13:05 PM",
+                    "caption": "A view of Times Square at the beginning of the Covid-19 pandemic. Taken on May 5, 2020 at 7:13:05 PM",
+                    "credit": "Charlie Bennet",
+                    "credit_link": "",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/times-square.jpg",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 30
+                },
+                "caption": ""
+            },
+            "id": "15c943f0-2b70-4e34-aa01-93820ca59b74"
+        },
+        {
+            "type": "image",
+            "value": {
+                "image": {
+                    "id": 329924,
+                    "title": "tennis.jpg",
+                    "width": 2047,
+                    "height": 1536,
+                    "created_at": "2022-03-25T09:13:07.035782-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 1222532,
+                    "file_hash": "50a28eb7feaff05725d908d41172ffeeb8064c82",
+                    "alt": "tennis courts in Queens",
+                    "caption": "",
+                    "credit": "Shalom Stavsky",
+                    "credit_link": "https://flickr.com/photos/shalomstavsky/51958393791/in/pool-gothamist/",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/tennis.jpg",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 33
+                },
+                "caption": ""
+            },
+            "id": "6154a4fd-678c-4b4b-a7e0-5b6ec80c07eb"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "",
+                "code": "<div id=\"ahoy\">Anchor ends up here</div>"
+            },
+            "id": "907244a5-ba15-4d85-a746-0afe118736c0"
+        },
+        {
+            "type": "paragraph",
+            "value": "<p>Hexagon dreamcatcher thundercats art party hot chicken kinfolk lomo. Cloud bread next level tacos bitters pitchfork 8-bit direct trade venmo. Taiyaki vegan vice mlkshk butcher normcore raclette kombucha poke. Disrupt tbh green juice banjo, chartreuse raclette tumeric humblebrag scenester farm-to-table austin. Put a bird on it street art prism raw denim banh mi irony pinterest cliche plaid raclette freegan gentrify 8-bit food truck poke. Sustainable health goth palo santo bitters ethical asymmetrical vice single-origin coffee.</p><p>Hella truffaut yes plz ethical, hexagon taiyaki intelligentsia church-key pork belly waistcoat freegan aesthetic coloring book tousled godard. XOXO occupy brunch, copper mug 90&#x27;s waistcoat crucifix. Hoodie deep v beard, post-ironic listicle activated charcoal typewriter etsy pour-over viral. Lo-fi tacos meditation vape, vegan quinoa seitan microdosing subway tile 3 wolf moon.</p><p>Tacos cardigan street art waistcoat lumbersexual umami readymade fingerstache cred chicharrones art party tattooed meditation. Tousled edison bulb kinfolk forage raw denim. Etsy health goth master cleanse, fashion axe air plant messenger bag kogi irony. Direct trade ugh selfies, kogi crucifix plaid mlkshk messenger bag twee activated charcoal wolf. Keytar trust fund heirloom, messenger bag fanny pack ugh organic fam cronut.</p><p>Lumbersexual vexillologist put a bird on it, franzen stumptown meditation direct trade ethical fingerstache iPhone hot chicken 90&#x27;s scenester. Typewriter selfies iPhone, migas 90&#x27;s heirloom gluten-free hashtag disrupt blue bottle venmo keytar. Chillwave tumblr air plant brunch freegan, green juice typewriter meh. Prism cornhole stumptown, chillwave whatever succulents sartorial gentrify try-hard tofu. 90&#x27;s schlitz keytar, flexitarian kombucha single-origin coffee readymade praxis meggings vaporware. Mlkshk marfa umami DIY selfies drinking vinegar.</p><p>Tilde butcher kinfolk synth beard narwhal twee food truck tumblr meditation kogi banh mi. Echo park blog austin typewriter VHS master cleanse. Pickled synth echo park, kombucha hell of vice kitsch microdosing la croix polaroid twee next level retro. Mixtape live-edge celiac coloring book before they sold out humblebrag.</p>",
+            "id": "2e932c9d-b617-4c43-86d4-cefc4fbdfbd3"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "Do SVGs Work?",
+                "code": "<p>Hey the SVG should be here</p>\n<svg width=\"200\" height=\"200\" viewBox=\"-100 -100 200 200\">      \n  <g transform=\"translate(0 5)\">\n    <g>\n      <polygon points=\"0,0 36,-50 0,-100\" fill=\"#EDD8B7\" />\n      <polygon points=\"0,0 -36,-50 0,-100\" fill=\"#E5C39C\" />\n    </g>\n    <g transform=\"rotate(72)\">\n      <polygon points=\"0,0 36,-50 0,-100\" fill=\"#EDD8B7\" />\n      <polygon points=\"0,0 -36,-50 0,-100\" fill=\"#E5C39C\" />\n    </g>\n    <g transform=\"rotate(-72)\">\n      <polygon points=\"0,0 36,-50 0,-100\" fill=\"#EDD8B7\" />\n      <polygon points=\"0,0 -36,-50 0,-100\" fill=\"#E5C39C\" />\n    </g>\n    <g transform=\"rotate(144)\">\n      <polygon points=\"0,0 36,-50 0,-100\" fill=\"#EDD8B7\" />\n      <polygon points=\"0,0 -36,-50 0,-100\" fill=\"#E5C39C\" />\n    </g>\n    <g transform=\"rotate(-144)\">\n      <polygon points=\"0,0 36,-50 0,-100\" fill=\"#EDD8B7\" />\n      <polygon points=\"0,0 -36,-50 0,-100\" fill=\"#E5C39C\" />\n    </g>\n  </g>\n</svg>"
+            },
+            "id": "2d77b69c-1c29-4837-b344-db7d0352d994"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "Absurd insta embed code",
+                "code": "<blockquote class=\"instagram-media\" data-instgrm-captioned data-instgrm-permalink=\"https://www.instagram.com/p/CVnoxvxrq2f/?utm_source=ig_embed&amp;utm_campaign=loading\" data-instgrm-version=\"14\" style=\" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);\"><div style=\"padding:16px;\"> <a href=\"https://www.instagram.com/p/CVnoxvxrq2f/?utm_source=ig_embed&amp;utm_campaign=loading\" style=\" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;\" target=\"_blank\"> <div style=\" display: flex; flex-direction: row; align-items: center;\"> <div style=\"background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;\"></div> <div style=\"display: flex; flex-direction: column; flex-grow: 1; justify-content: center;\"> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;\"></div> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;\"></div></div></div><div style=\"padding: 19% 0;\"></div> <div style=\"display:block; height:50px; margin:0 auto 12px; width:50px;\"><svg width=\"50px\" height=\"50px\" viewBox=\"0 0 60 60\" version=\"1.1\" xmlns=\"https://www.w3.org/2000/svg\" xmlns:xlink=\"https://www.w3.org/1999/xlink\"><g stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"><g transform=\"translate(-511.000000, -20.000000)\" fill=\"#000000\"><g><path d=\"M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631\"></path></g></g></g></svg></div><div style=\"padding-top: 8px;\"> <div style=\" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;\">View this post on Instagram</div></div><div style=\"padding: 12.5% 0;\"></div> <div style=\"display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;\"><div> <div style=\"background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);\"></div> <div style=\"background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;\"></div> <div style=\"background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);\"></div></div><div style=\"margin-left: 8px;\"> <div style=\" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;\"></div> <div style=\" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)\"></div></div><div style=\"margin-left: auto;\"> <div style=\" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);\"></div> <div style=\" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);\"></div> <div style=\" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);\"></div></div></div> <div style=\"display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;\"> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;\"></div> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;\"></div></div></a><p style=\" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;\"><a href=\"https://www.instagram.com/p/CVnoxvxrq2f/?utm_source=ig_embed&amp;utm_campaign=loading\" style=\" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;\" target=\"_blank\">A post shared by Menswear Dog (@mensweardog)</a></p></div></blockquote> <script async src=\"//www.instagram.com/embed.js\"></script>"
+            },
+            "id": "3680d97c-a168-4586-b8b5-c3a10a77fafb"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "SpaceX Insta Embed",
+                "code": "<blockquote class=\"instagram-media\" data-instgrm-captioned data-instgrm-permalink=\"https://www.instagram.com/p/Ch7ShCau0Ed/?utm_source=ig_embed&amp;utm_campaign=loading\" data-instgrm-version=\"14\" style=\" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);\"><div style=\"padding:16px;\"> <a href=\"https://www.instagram.com/p/Ch7ShCau0Ed/?utm_source=ig_embed&amp;utm_campaign=loading\" style=\" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;\" target=\"_blank\"> <div style=\" display: flex; flex-direction: row; align-items: center;\"> <div style=\"background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;\"></div> <div style=\"display: flex; flex-direction: column; flex-grow: 1; justify-content: center;\"> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;\"></div> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;\"></div></div></div><div style=\"padding: 19% 0;\"></div> <div style=\"display:block; height:50px; margin:0 auto 12px; width:50px;\"><svg width=\"50px\" height=\"50px\" viewBox=\"0 0 60 60\" version=\"1.1\" xmlns=\"https://www.w3.org/2000/svg\" xmlns:xlink=\"https://www.w3.org/1999/xlink\"><g stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"><g transform=\"translate(-511.000000, -20.000000)\" fill=\"#000000\"><g><path d=\"M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631\"></path></g></g></g></svg></div><div style=\"padding-top: 8px;\"> <div style=\" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;\">View this post on Instagram</div></div><div style=\"padding: 12.5% 0;\"></div> <div style=\"display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;\"><div> <div style=\"background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);\"></div> <div style=\"background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;\"></div> <div style=\"background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);\"></div></div><div style=\"margin-left: 8px;\"> <div style=\" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;\"></div> <div style=\" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)\"></div></div><div style=\"margin-left: auto;\"> <div style=\" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);\"></div> <div style=\" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);\"></div> <div style=\" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);\"></div></div></div> <div style=\"display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;\"> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;\"></div> <div style=\" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;\"></div></div></a><p style=\" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;\"><a href=\"https://www.instagram.com/p/Ch7ShCau0Ed/?utm_source=ig_embed&amp;utm_campaign=loading\" style=\" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;\" target=\"_blank\">A post shared by SpaceX (@spacex)</a></p></div></blockquote> <script async src=\"//www.instagram.com/embed.js\"></script>"
+            },
+            "id": "27bd881c-45c1-4343-a215-f3b43965f52e"
+        },
+        {
+            "type": "code",
+            "value": {
+                "title": "twitter embed again",
+                "code": "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">In the coming weeks, we’ll also simplify the sticker picker and remove the ability to DM stickers. You can still DM with emojis and add stickers to your photos! These changes will be on iOS, web, and Android. We’ll keep you updated as they happen.</p>&mdash; Twitter Support (@TwitterSupport) <a href=\"https://twitter.com/TwitterSupport/status/1133841267002040320?ref_src=twsrc%5Etfw\">May 29, 2019</a></blockquote> <script async src=\"https://platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>"
+            },
+            "id": "855b40c1-75df-4594-acc0-5ee74f7aee8a"
+        }
+    ],
+    "sponsored_content": false,
+    "disable_comments": false,
+    "provocative_content": false,
+    "sensitive_content": false,
+    "related_links": [
+        {
+            "type": "cms_page",
+            "value": {
+                "page": 151193,
+                "title_override": ""
+            },
+            "id": "283db17f-4931-4cc6-aed0-f087a0ba8b4c"
+        },
+        {
+            "type": "cms_page",
+            "value": {
+                "page": 151233,
+                "title_override": ""
+            },
+            "id": "a864e726-14f9-4267-81f5-466de45a18f8"
+        },
+        {
+            "type": "cms_page",
+            "value": {
+                "page": 151193,
+                "title_override": "Hospital Override"
+            },
+            "id": "db66f583-90de-49f3-94a1-5f23739dda0a"
+        },
+        {
+            "type": "external_link",
+            "value": {
+                "url": "https://google.com",
+                "title": "Checkout the magic of Google.com",
+                "thumbnail": {
+                    "id": 329934,
+                    "title": "traditional-food-around-the-world-Travlinmad.jpeg",
+                    "width": 960,
+                    "height": 589,
+                    "created_at": "2022-09-13T05:41:41.557763-04:00",
+                    "focal_point_x": null,
+                    "focal_point_y": null,
+                    "focal_point_width": null,
+                    "focal_point_height": null,
+                    "file_size": 376370,
+                    "file_hash": "475ff05ed409177432214120a72c24b0527bb440",
+                    "alt": "image of foods around the world test",
+                    "caption": "caption test",
+                    "credit": "credit test",
+                    "credit_link": "",
+                    "file": "https://cdn.cms.demo.nypr.digital/original_images/traditional-food-around-the-world-Travlinmad.jpeg",
+                    "usage_limitations": "",
+                    "expiry_date": null,
+                    "collection": 1,
+                    "uploaded_by_user": 133
+                }
+            },
+            "id": "40445ba7-ac2c-4b2f-bfbb-91d23b532b8e"
+        }
+    ],
+    "related_authors": [
+        {
+            "contributing_organization": {
+                "id": 1,
+                "name": "The Hechinger Report",
+                "slug": "the-hechinger-report",
+                "external_link": "https://hechingerreport.org"
+            },
+            "id": 68,
+            "first_name": "Jacob",
+            "last_name": "Dobkin",
+            "photo": 327433,
+            "job_title": "Co-founder of Gothamist",
+            "biography": "Jake Dobkin co-founded Gothamist with Jen Chung.  In 2019, Jake released Ask a Native New Yorker, a book based on his Gothamist advice column.",
+            "website": "http://www.bluejake.com",
+            "email": "jakedobkin@gmail.com",
+            "slug": "jake-dobkin",
+            "social_media_profile": [
+                {
+                    "service": "facebook",
+                    "profile_url": "https://www.facebook.com/jakedobkin"
+                },
+                {
+                    "service": "instagram",
+                    "profile_url": "https://www.instagram.com/jakedobkin/"
+                },
+                {
+                    "service": "linkedin",
+                    "profile_url": "https://www.linkedin.com/in/jakedobkin/"
+                },
+                {
+                    "service": "twitter",
+                    "profile_url": "https://twitter.com/jakedobkin"
+                }
+            ]
+        },
+        {
+            "id": 403,
+            "first_name": "Bianca",
+            "last_name": "Consunji",
+            "job_title": "Gothamist Editor",
+            "biography": "",
+            "website": "",
+            "email": "",
+            "slug": "bianca-consunji",
+            "social_media_profile": []
+        }
+    ],
+    "related_contributing_organizations": [
+        {
+            "id": 2,
+            "name": "Chalkbeat",
+            "slug": "chalkbeat",
+            "external_link": "https://chalkbeat.org/"
+        }
+    ],
+    "related_sponsors": [],
+    "tags": [
+        {
+            "name": "test",
+            "slug": "test"
+        },
+        {
+            "name": "google",
+            "slug": "google"
+        },
+        {
+            "name": "josé Andrés",
+            "slug": "jose-andres"
+        },
+        {
+            "name": "dog",
+            "slug": "dog"
+        },
+        {
+            "name": "style",
+            "slug": "style"
+        },
+        {
+            "name": "news",
+            "slug": "news"
+        }
+    ],
+    "show_as_feature": false,
+    "legacy_id": null,
+    "ancestry": [
+        {
+            "id": 4,
+            "meta": {
+                "type": "standardpages.IndexPage",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/4/",
+                "html_url": "http://cms.prod.nypr.digital/news/"
+            },
+            "title": "News",
+            "slug": "news"
+        },
+        {
+            "id": 3,
+            "meta": {
+                "type": "home.HomePage",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/3/",
+                "html_url": "http://cms.prod.nypr.digital/"
+            },
+            "title": "Gothamist",
+            "slug": "home"
+        },
+        {
+            "id": 1,
+            "meta": {
+                "type": "wagtailcore.Page",
+                "detail_url": "https://cms.demo.nypr.digital/api/v2/pages/1/",
+                "html_url": null
+            },
+            "title": "Root",
+            "slug": "root"
+        }
+    ]
+}

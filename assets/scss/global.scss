@@ -60,6 +60,7 @@ body {
   }
 }
 
+
 .p-message {
   background-color: var(--background4) !important;
   color: #ffffff;
@@ -96,6 +97,14 @@ body {
       }
     }
   }
+}
+
+// match the prime vue Divider styles
+hr {
+  border: none;
+  height: 1px;
+  background: var(--stroke-500);
+
 }
 
 /* Light mode */
