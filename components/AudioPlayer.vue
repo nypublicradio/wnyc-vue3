@@ -5,6 +5,7 @@ import PauseIcon from '~/components/icons/PauseIcon.vue'
 import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
 import {
   useCurrentEpisode,
+  useCurrentEpisodeHolder,
   useIsEpisodePlaying,
   useTogglePlayTrigger,
   useIsPlayerMinimized,
@@ -20,6 +21,7 @@ import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
@@ -161,79 +163,9 @@ watch(isEpisodePlaying, (e) => {
         <i class="pi pi-twitter"></i>
       </template> -->
       <template #expanded-content>
-        <section>
-          {{ currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details }}
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          {{ currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details }}
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-        </section>
-        <section class="expandedFooter">This is fixed to the bottom</section>
+        <div>
+          <ExpandedPlayer />
+        </div>
       </template>
     </VPersistentPlayer>
   </transition>
@@ -310,32 +242,11 @@ html.style-mode-dark .persistent-player {
     .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
-    .expandedFooter {
-      bottom: env(safe-area-inset-bottom) !important;
-    }
   }
 }
 </style>
 
 <style lang="scss" scoped>
-.persistent-player {
-  .expandedFooter {
-    background-color: var(--red-500);
-    display: block;
-    position: fixed;
-    height: 45px;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    transition: bottom $transitionDuration;
-    -webkit-transition: bottom $transitionDuration;
-  }
-  &.expanded {
-    .expandedFooter {
-      bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
-    }
-  }
-}
 .player-enter-active {
   transition: transform calc(var(--transition-duration) * 2) ease-out;
 }
