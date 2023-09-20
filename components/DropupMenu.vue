@@ -22,12 +22,12 @@ const props = defineProps({
     type: String,
     default: 'Select',
   },
-  menu: {
+  customButton: {
     type: Boolean,
     default: false,
   },
 })
-
+console.log('props', props)
 const emit = defineEmits(['update:data', 'swipe-down'])
 
 const dataRef = ref(props.data)
@@ -174,38 +174,35 @@ onUnmounted(() => {
     :optionLabel="props.optionLabel"
     :placeholder="props.placeholder"
     class="s-dropup"
-    :class="[{ dots: props.menu }]"
+    :class="[{ customButton: props.customButton }]"
     @update:modelValue="$emit('update:data', $event)"
     @show="setPanel"
     @hide="unsetPanel"
-    :panelClass="`p-dropup-panel ${props.menu ? 'is-menu' : ''}`"
+    :panelClass="`p-dropup-panel ${
+      props.customButton ? 'is-customButton' : ''
+    }`"
     :panelProps="{ id: 'p-dropup-panel' }"
   >
     <template #value="slotProps">
-      <div
-        ref="sDropDownRef"
-        v-if="slotProps.value[props.optionLabel] && !props.menu"
-        class="flex align-items-center justify-content-end"
-      >
-        <div class="ans">{{ slotProps.value[props.optionLabel] }}</div>
+      <div ref="sDropDownRef" class="ans">
+        <slot name="customButton" label="">
+          <!-- populate from LocalStorage -->
+          <div
+            v-if="slotProps.value[props.optionLabel] && !props.customButton"
+            class="flex align-items-center justify-content-end"
+          >
+            <div class="ans">
+              {{ slotProps.value[props.optionLabel] }}
+            </div>
+          </div>
+          <span v-else>
+            <!-- populate from Supabase -->
+            <div class="ans">
+              {{ data }}
+            </div>
+          </span>
+        </slot>
       </div>
-      <span v-else>
-        <!-- placeholder -->
-        <div v-if="!props.menu" class="ans">{{ data }}</div>
-        <div v-else ref="sDropDownRef" class="ans">
-          <Button
-            class="text-cyan-500 hover:bg-cyan-50"
-            icon="pi pi-ellipsis-v"
-            text
-            rounded
-            aria-label="menu"
-            size="small"
-            type="button"
-            aria-haspopup="true"
-            aria-controls="overlay_menu"
-          />
-        </div>
-      </span>
     </template>
     <template #header>
       <i class="pi pi-minus" @click="closeMenu" />
@@ -214,9 +211,11 @@ onUnmounted(() => {
       </h3>
     </template>
     <template #option="slotProps">
+      <!--  <pre>{{ slotProps.option }}</pre> -->
       <div
-        :key="slotProps.option.label"
+        :key="slotProps.option[props.optionLabel]"
         class="flex align-items-center station-options"
+        :class="[{ selected: slotProps.option[props.optionLabel] === dataRef }]"
       >
         <!-- <img
           v-if="slotProps.option.image"
@@ -257,6 +256,20 @@ onUnmounted(() => {
 }
 </style>
 <style lang="scss">
+@mixin checkMark {
+  &:after {
+    font-family: primeicons;
+    content: '\e909';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    right: 20px;
+    width: 1rem;
+    height: 1rem;
+  }
+}
 .s-dropup {
   .p-dropdown-trigger {
     display: none !important;
@@ -269,7 +282,7 @@ onUnmounted(() => {
   .ans {
     @include font-config($type-paragraph1);
   }
-  &.dots .p-dropdown-label {
+  &.customButton .p-dropdown-label {
     justify-content: center;
   }
 }
@@ -278,7 +291,7 @@ onUnmounted(() => {
     transition: bottom 0.25s;
     -webkit-transition: bottom 0.25s;
   }
-  &.is-menu {
+  &.is-customButton {
     .p-highlight:after {
       display: none !important;
     }
@@ -325,18 +338,7 @@ onUnmounted(() => {
       }
       &.p-highlight {
         background: unset !important;
-        &:after {
-          font-family: primeicons;
-          content: '\e909';
-          position: absolute;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          margin: auto;
-          right: 20px;
-          width: 1rem;
-          height: 1rem;
-        }
+        @include checkMark;
       }
       .station-options {
         margin: 10px 0;
@@ -346,6 +348,9 @@ onUnmounted(() => {
         }
         .option {
           font-size: 16px;
+        }
+        &.selected {
+          @include checkMark;
         }
       }
     }

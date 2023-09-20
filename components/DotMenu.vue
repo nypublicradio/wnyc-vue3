@@ -20,7 +20,21 @@ const emit = defineEmits(['changeEmit'])
       :options="props.menuItems"
       :label="props.label"
       @change="emit('changeEmit', $event)"
-      :menu="true"
-    />
+      :customButton="true"
+    >
+      <template #customButton="slotProps">
+        <Button
+          class="text-cyan-500 hover:bg-cyan-50"
+          icon="pi pi-ellipsis-v"
+          text
+          rounded
+          aria-label="menu"
+          size="small"
+          type="button"
+          aria-haspopup="true"
+          aria-controls="overlay_menu"
+        />
+      </template>
+    </DropupMenu>
   </div>
 </template>
