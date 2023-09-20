@@ -270,6 +270,8 @@ export function howLongAgo(date) {
 
     return res.replace('minutes', 'min').replace('minute', 'min')
   }
+
+  return null
 }
 
 /**
@@ -377,8 +379,8 @@ export const whenTime = (data) => {
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.floor(ms / mult)
   let minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  remainingSeconds > 30 ? minutes++ : minutes
+  //const remainingSeconds = seconds % 60
+  //remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
 }
 

@@ -112,7 +112,7 @@ const submitForm = async () => {
         emit('submit-success')
         toast.add({
           severity: 'success',
-          summary: `Name updated successfully!`,
+          summary: 'Name updated successfully!',
           life: 3000,
         })
         trackClickEvent(
@@ -273,7 +273,6 @@ const submitForm = async () => {
         <slot name="aboveSubmit" />
         <Button
           label="Save"
-          v-bind="{ ...$attrs }"
           class="w-full mt-3"
           aria-label="Save button"
           type="submit"

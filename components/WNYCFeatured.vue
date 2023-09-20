@@ -51,7 +51,7 @@ const getDotMenuItems = (bucketItem) => {
             })
         trackClickEvent(
           'Click Tracking - Audio Copy Embed Code',
-          `Large Card`,
+          'Large Card',
           bucketItem.attributes.embedCode
         )
       },
@@ -59,10 +59,12 @@ const getDotMenuItems = (bucketItem) => {
   ]
 }
 
+// fire the command located in tehe menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e.value.command()
 }
 
+// normalize the bucket item data
 const normalizedItem = (item) => {
   return {
     ...item,
@@ -75,6 +77,7 @@ const normalizedItem = (item) => {
   }
 }
 
+// handle the play button click
 const togglePlay = (item) => {
   currentEpisode.value = normalizedItem(item)
   togglePlayTrigger.value = !togglePlayTrigger.value

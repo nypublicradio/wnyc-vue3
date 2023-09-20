@@ -1,7 +1,6 @@
 <script async setup>
 import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
 import {
   useSignupSideBar,
@@ -18,17 +17,20 @@ const forgotPasswordSideBar = useForgotPasswordSideBar()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 
+// handle the login and signup sidebars when the user clicks on the sign up link
 const onSignupClick = () => {
   loginSideBar.value = false
   signUpSideBar.value = true
 }
 
+// close all sidebars
 const closeAll = () => {
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
 }
 
+// open the forgot password sidebar
 const openForgotPassword = () => {
   loginSideBar.value = false
   forgotPasswordSideBar.value = true

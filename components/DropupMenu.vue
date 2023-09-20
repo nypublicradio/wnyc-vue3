@@ -1,125 +1,357 @@
 <script setup>
 import { useSwipe } from '@vueuse/core'
 const props = defineProps({
+  options: {
+    type: Array,
+    default: null,
+    required: true,
+  },
+  optionLabel: {
+    type: String,
+    default: 'label',
+  },
+  data: {
+    type: [String, Object],
+    default: null,
+  },
   label: {
     type: String,
     default: null,
   },
-  menuItems: {
-    type: Object,
-    default: null,
-    required: true,
+  placeholder: {
+    type: String,
+    default: 'Select',
   },
-})
-const visibleBottom = ref(false)
-const selectedItem = ref('Download')
-//swipe setup
-const contentRef = ref(null)
-const { direction, lengthY } = useSwipe(contentRef, {
-  onSwipe() {
-    if (direction.value === 'down' && lengthY.value < -5) {
-      visibleBottom.value = false
-      //emit('swipe-down')
-    }
+  menu: {
+    type: Boolean,
+    default: false,
   },
-  passive: true,
 })
 
-const openMenu = () => {
-  visibleBottom.value = true
+const emit = defineEmits(['update:data', 'swipe-down'])
+
+const dataRef = ref(props.data)
+
+const sDropDownRef = ref(null)
+const panel = ref(null)
+// to match the total height of the shadow that is being applied to the panel
+const shadowHeight = 70
+
+let touchstartY = 0
+let touchendY = 0
+let touchPrevY = 0
+let touchCurrentY = 0
+let touchstartTime = 0
+let touchendTime = 0
+const swipeThreshold = 0.5
+let distanceThreshold = 125
+const distanceThresholdDivider = 2.2
+let isDraggingDown = false
+
+// prevents the body from scrolling when the dropdown is open
+function preventScrollOnTouch(event) {
+  event.preventDefault()
+}
+// remove touch listener to the body
+const removeBodyTouch = () => {
+  document.body.removeEventListener('touchmove', preventScrollOnTouch, {
+    passive: false,
+  })
 }
 
-defineExpose({ openMenu })
-</script>
+// clicks the dropdown again to close it
+const closeMenu = () => {
+  sDropDownRef.value.click()
+  sDropDownRef.value.blur()
+  removeBodyTouch()
+}
 
+// brings teh panel back up to the top
+const reopenPanel = () => {
+  panel.value.classList.add('release')
+  panel.value.style.bottom = '0px'
+}
+
+// when the dropdown is opened, set the panel ref
+const setPanel = async () => {
+  await nextTick()
+  panel.value = document.getElementById('p-dropup-panel')
+  // removes class to the css animation so the drag will be 1:1 with the finger
+  panel.value.classList.remove('release')
+  document.body.addEventListener('touchmove', preventScrollOnTouch, {
+    passive: false,
+  })
+  //sets distanceThreshold based on the height of the panel
+  distanceThreshold = panel.value.offsetHeight / distanceThresholdDivider
+}
+
+// when the dropdown is closed, unset the panel ref and removes body prevent touch scroll
+const unsetPanel = () => {
+  panel.value = null
+  removeBodyTouch()
+}
+
+// swipe setup
+const swipe = useSwipe(panel, {
+  passive: true,
+  onSwipeStart() {
+    // removes class to the css animation so the drag will be 1:1 with the finger
+    panel.value.classList.remove('release')
+
+    touchstartY = swipe.lengthY.value
+    touchstartTime = new Date().getTime()
+  },
+  onSwipe() {
+    touchCurrentY = swipe.lengthY.value
+    // so it does not drag hight than the height of the panel
+    if (touchCurrentY < 0) {
+      panel.value.style.bottom = `${touchCurrentY}px`
+    }
+    handleSwipeDirection()
+    touchPrevY = touchCurrentY
+  },
+  onSwipeEnd() {
+    touchendY = swipe.lengthY.value
+    touchendTime = new Date().getTime()
+    handleSwipe()
+  },
+})
+
+// handles the detection of the direction of the drag movment
+function handleSwipeDirection() {
+  const tempBool = isDraggingDown
+  if (touchCurrentY < touchPrevY) {
+    isDraggingDown = true
+  }
+  if (touchCurrentY > touchPrevY) {
+    isDraggingDown = false
+  }
+  //reset the touchstartY and touchstartTime if the direction changes
+  if (tempBool !== isDraggingDown) {
+    touchstartY = touchCurrentY
+    touchstartTime = new Date().getTime()
+  }
+}
+
+// handles the swipe ended logic
+function handleSwipe() {
+  const distance = Math.abs(touchendY - touchstartY)
+  const time = touchendTime - touchstartTime
+  const velocity = distance / time
+  if (isDraggingDown) {
+    if (velocity > swipeThreshold || distance > distanceThreshold) {
+      if (touchendY < touchstartY) {
+        panel.value.classList.add('release')
+        // set the panel bottom to the height of the panel + the shadow height
+        panel.value.style.bottom = `${
+          (panel.value.offsetHeight + shadowHeight) * -1
+        }px`
+        // close the dropdown after the animation is done
+        setTimeout(() => {
+          closeMenu()
+        }, 250)
+        emit('swipe-down')
+      }
+      if (touchendY > touchstartY) {
+        reopenPanel()
+      }
+    } else {
+      reopenPanel()
+    }
+  } else {
+    reopenPanel()
+  }
+}
+
+onUnmounted(() => {
+  unsetPanel()
+})
+</script>
 <template>
-  <div class="dropup-menu">
-    <Sidebar
-      v-model:visible="visibleBottom"
-      class="dropup-menu"
-      position="bottom"
-      :showCloseIcon="false"
-    >
-      <template #header></template>
-      <template #default>
-        <div ref="contentRef" class="content-base">
-          <i class="pi pi-minus" @click="visibleBottom = false" />
-          <h3 v-if="props.label" class="p-submenu-header-replace">
-            {{ props.label }}
-          </h3>
-          <Menu :model="menuItems" @click="visibleBottom = false" />
-          <!-- <Menu :model="menuItems" /> -->
-          <!-- <Listbox
-            v-model="selectedItem"
-            :options="menuItems"
-            optionLabel="label"
-            class="w-full"
-          /> -->
-          <slot name="end"></slot>
+  <Dropdown
+    v-model="dataRef"
+    :options="props.options"
+    :optionLabel="props.optionLabel"
+    :placeholder="props.placeholder"
+    class="s-dropup"
+    :class="[{ dots: props.menu }]"
+    @update:modelValue="$emit('update:data', $event)"
+    @show="setPanel"
+    @hide="unsetPanel"
+    :panelClass="`p-dropup-panel ${props.menu ? 'is-menu' : ''}`"
+    :panelProps="{ id: 'p-dropup-panel' }"
+  >
+    <template #value="slotProps">
+      <div
+        ref="sDropDownRef"
+        v-if="slotProps.value[props.optionLabel] && !props.menu"
+        class="flex align-items-center justify-content-end"
+      >
+        <div class="ans">{{ slotProps.value[props.optionLabel] }}</div>
+      </div>
+      <span v-else>
+        <!-- placeholder -->
+        <div v-if="!props.menu" class="ans">{{ data }}</div>
+        <div v-else ref="sDropDownRef" class="ans">
+          <Button
+            class="text-cyan-500 hover:bg-cyan-50"
+            icon="pi pi-ellipsis-v"
+            text
+            rounded
+            aria-label="menu"
+            size="small"
+            type="button"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+          />
         </div>
-      </template>
-    </Sidebar>
-  </div>
+      </span>
+    </template>
+    <template #header>
+      <i class="pi pi-minus" @click="closeMenu" />
+      <h3 v-if="props.label" class="p-submenu-header-replace">
+        {{ props.label }}
+      </h3>
+    </template>
+    <template #option="slotProps">
+      <div
+        :key="slotProps.option.label"
+        class="flex align-items-center station-options"
+      >
+        <!-- <img
+          v-if="slotProps.option.image"
+          :alt="slotProps.option.label"
+          :src="slotProps.option.image"
+          class="mr-2"
+          style="width: 18px; height: 18px"
+        /> -->
+        <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
+      </div>
+    </template>
+    <template #footer="slotProps">
+      <div class="footer">
+        <slot name="footer"></slot>
+      </div>
+    </template>
+  </Dropdown>
 </template>
 
-<style lang="scss">
-.dropup-menu {
-  background: var(--background4) !important;
-  border-radius: 28px 28px 0px 0px;
-  //overflow: hidden;
-  color: #ffffff !important;
-  height: unset !important;
-  .p-sidebar-header,
-  .p-submenu-header {
+<style lang="scss" scoped>
+.s-dropup {
+  width: 80%;
+  height: 42px;
+  margin-right: -1rem;
+  background: transparent;
+  border: none;
+  text-align: right;
+  &.p-focus {
+    outline: none;
+    box-shadow: none;
+  }
+  .p-dropdown-trigger {
     display: none !important;
   }
-  .p-sidebar-content {
-    padding: 0;
-    border-radius: 28px 28px 0px 0px;
-    -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
-    box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
-    .content-base {
-      padding: 5px 20px calc($bottomMenuHeight + $playerHeight) 20px;
-      .p-submenu-header-replace {
-        background: transparent;
-        color: #ffffff !important;
-        font-weight: var(--font-weight-700);
-        font-size: 1.625rem;
-        font-family: var(--font-family-header);
-        margin-bottom: 20px;
-        padding-left: 0.5rem;
+  &:hover {
+    background: var(--background3);
+  }
+}
+</style>
+<style lang="scss">
+.s-dropup {
+  .p-dropdown-trigger {
+    display: none !important;
+  }
+  .p-dropdown-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .ans {
+    @include font-config($type-paragraph1);
+  }
+  &.dots .p-dropdown-label {
+    justify-content: center;
+  }
+}
+.p-dropup-panel {
+  &.release {
+    transition: bottom 0.25s;
+    -webkit-transition: bottom 0.25s;
+  }
+  &.is-menu {
+    .p-highlight:after {
+      display: none !important;
+    }
+  }
+  position: fixed !important;
+  display: block !important;
+  top: unset !important;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  transform-origin: center bottom !important;
+  border-radius: 28px 28px 0px 0px;
+  -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
+  background: var(--background4) !important;
+  .pi-minus {
+    color: #ffffff;
+    font-size: 30px;
+    text-align: center;
+    width: 100%;
+    opacity: 30%;
+  }
+  .p-submenu-header-replace {
+    background: transparent;
+    color: #ffffff !important;
+    font-weight: var(--font-weight-700);
+    font-size: 1.625rem;
+    font-family: var(--font-family-header);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 1.25rem;
+  }
+  .p-dropdown-items-wrapper {
+    max-height: unset !important;
+    padding: 5px 0px 0px 0px;
+    .p-dropdown-item {
+      color: #ffffff !important;
+      font-weight: var(--font-weight-600);
+      font-size: 0.938rem;
+      padding: 0.5rem 20px;
+      background: unset !important;
+      &:hover {
+        background: #ffffff3d !important;
       }
-      .pi-minus {
-        font-size: 30px;
-        text-align: center;
-        width: 100%;
-        opacity: 30%;
+      &.p-highlight {
+        background: unset !important;
+        &:after {
+          font-family: primeicons;
+          content: '\e909';
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          right: 20px;
+          width: 1rem;
+          height: 1rem;
+        }
       }
-      .p-menu {
-        border: none;
-        background: transparent;
-        width: unset;
-        .p-menuitem {
-          .p-menuitem-content {
-            padding: 0.5rem 0;
-          }
-          .p-menuitem-icon:before {
-            color: #ffffff !important;
-          }
-          .p-menuitem-content,
-          .p-menuitem-text,
-          .p-menuitem-link {
-            color: #ffffff !important;
-            font-weight: var(--font-weight-600);
-            font-size: 0.938rem;
-          }
-          .p-menuitem-link {
-            //justify-content: space-between;
-            //flex-direction: row-reverse;
-          }
+      .station-options {
+        margin: 10px 0;
+        img {
+          width: 40px !important;
+          height: 40px !important;
+        }
+        .option {
+          font-size: 16px;
         }
       }
     }
+  }
+  .footer {
+    padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
   }
 }
 </style>

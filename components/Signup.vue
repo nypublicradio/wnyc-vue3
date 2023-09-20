@@ -17,10 +17,13 @@ const loginSideBar = useLoginSideBar()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 
+// handle the login and signup sidebars when the user clicks on the login link
 const onLoginClick = () => {
   loginSideBar.value = true
   signUpSideBar.value = false
 }
+
+// close all sidebars
 const closeAll = () => {
   loginSideBar.value = false
   signUpSideBar.value = false

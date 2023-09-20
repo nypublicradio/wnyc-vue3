@@ -74,7 +74,7 @@ const onLogOut = async () => {
   // show toast
   toast.add({
     severity: 'success',
-    summary: `You have logged out.`,
+    summary: 'You have logged out.',
     life: 3000,
   })
 

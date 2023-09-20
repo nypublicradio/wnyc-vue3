@@ -208,6 +208,7 @@ const accountHeader = computed(() => {
   }
 })
 
+// fire edit profile sidebar if the user clicks on a field
 const editField = (field) => {
   if (!isDisabled.value) {
     editProfileSideBar.value = true
@@ -262,7 +263,7 @@ const editField = (field) => {
         />
       </SBox>
       <SBox label="Default stream">
-        <DropupMenuNew
+        <DropupMenu
           v-model:data="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
@@ -299,7 +300,7 @@ const editField = (field) => {
         <div class="s-title">Display</div>
       </div>
       <SBox label="Text size">
-        <DropupMenuNew
+        <DropupMenu
           v-model:data="currentUserProfile.text_size"
           :options="textSizeOptions"
           placeholder="Select a Text Size"

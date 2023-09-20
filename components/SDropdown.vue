@@ -25,7 +25,7 @@ const props = defineProps({
 })
 </script>
 <template>
-  <DropupMenuNew
+  <DropupMenu
     v-model="props.data"
     :label="props.label"
     :options="props.options"
@@ -33,5 +33,3 @@ const props = defineProps({
     :placeholder="props.placeholder"
   />
 </template>
-
-<style lang="scss" scoped></style>

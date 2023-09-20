@@ -15,7 +15,7 @@ const emit = defineEmits(['changeEmit'])
 </script>
 <template>
   <div class="card flex justify-content-center">
-    <DropupMenuNew
+    <DropupMenu
       v-model:data="dataRef"
       :options="props.menuItems"
       :label="props.label"
