@@ -187,7 +187,7 @@ const onUpdateStation = async (event) => {
   trackClickEvent(
     'Click Tracking - Default stream',
     'Settings Sidebar - Listening Preferences',
-    currentUserProfile.value.default_live_stream
+    currentUserProfile.value.default_live_stream.station
   )
 }
 
@@ -303,6 +303,7 @@ const editField = (field) => {
         <DropupMenu
           v-model:data="currentUserProfile.text_size"
           :options="textSizeOptions"
+          optionLabel="label"
           placeholder="Select a Text Size"
           label="Text Size"
           @change="onUpdateTextSize"
