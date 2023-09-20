@@ -33,6 +33,20 @@ const emit = defineEmits(['update:data', 'swipe-down'])
 const dataRef = ref(props.data)
 
 const sDropDownRef = ref(null)
+const panel = ref(null)
+// to match the total height of the shadow that is being applied to the panel
+const shadowHeight = 70
+
+let touchstartY = 0
+let touchendY = 0
+let touchPrevY = 0
+let touchCurrentY = 0
+let touchstartTime = 0
+let touchendTime = 0
+const swipeThreshold = 0.5
+let distanceThreshold = 125
+const distanceThresholdDivider = 2.2
+let isDraggingDown = false
 
 function preventScrollOnTouch(event) {
   event.preventDefault()
@@ -51,9 +65,10 @@ const closeMenu = () => {
   removeBodyTouch()
 }
 
-const panel = ref(null)
-// to match the total height of the shadow that is being applied to the panel
-const shadowHeight = 70
+const reopenPanel = () => {
+  panel.value.classList.add('release')
+  panel.value.style.bottom = `0px`
+}
 
 // when the dropdown is opened, set the panel ref
 const setPanel = async () => {
@@ -64,6 +79,8 @@ const setPanel = async () => {
   document.body.addEventListener('touchmove', preventScrollOnTouch, {
     passive: false,
   })
+  //sets distanceThreshold based on the height of the panel
+  distanceThreshold = panel.value.offsetHeight / distanceThresholdDivider
 }
 
 // when the dropdown is closed, unset the panel ref and removes body prevent touch scroll
@@ -72,43 +89,71 @@ const unsetPanel = async () => {
   removeBodyTouch()
 }
 
-onUnmounted(() => {
-  panel.value = null
-  removeBodyTouch()
-})
-
 // swipe setup
 const swipe = useSwipe(panel, {
   passive: true,
   onSwipeStart() {
     // removes class to the css animation so the drag will be 1:1 with the finger
     panel.value.classList.remove('release')
+
+    touchstartY = swipe.lengthY.value
+    touchstartTime = new Date().getTime()
   },
   onSwipe() {
-    const length = swipe.lengthY.value
+    touchCurrentY = swipe.lengthY.value
     // so it does not drag hight than the height of the panel
-    if (length < 0) {
-      panel.value.style.bottom = `${length}px`
+    if (touchCurrentY < 0) {
+      panel.value.style.bottom = `${touchCurrentY}px`
     }
+    handleSwipeDirection()
+    touchPrevY = touchCurrentY
   },
   onSwipeEnd() {
-    if (swipe.direction.value === 'down' && swipe.lengthY.value < -100) {
-      // adds the release class to enable the css animation
-      panel.value.classList.add('release')
-      // set the panel bottom to the height of the panel + the shadow height
-      panel.value.style.bottom =
-        (panel.value.offsetHeight + shadowHeight) * -1 + 'px'
-      // close the dropdown after the animation is done
-      setTimeout(() => {
-        closeMenu()
-      }, 250)
-      emit('swipe-down')
-    } else {
-      // adds the release class to enable the css animation and bring it back to the top smoothly
-      panel.value.classList.add('release')
-      panel.value.style.bottom = `0px`
-    }
+    touchendY = swipe.lengthY.value
+    touchendTime = new Date().getTime()
+    handleSwipe()
   },
+})
+
+function handleSwipeDirection() {
+  if (touchCurrentY < touchPrevY) {
+    isDraggingDown = true
+  }
+  if (touchCurrentY > touchPrevY) {
+    isDraggingDown = false
+  }
+}
+
+function handleSwipe() {
+  let distance = Math.abs(touchendY - touchstartY)
+  let time = touchendTime - touchstartTime
+  let velocity = distance / time
+  if (isDraggingDown) {
+    if (velocity > swipeThreshold || distance > distanceThreshold) {
+      if (touchendY < touchstartY) {
+        panel.value.classList.add('release')
+        // set the panel bottom to the height of the panel + the shadow height
+        panel.value.style.bottom =
+          (panel.value.offsetHeight + shadowHeight) * -1 + 'px'
+        // close the dropdown after the animation is done
+        setTimeout(() => {
+          closeMenu()
+        }, 250)
+        emit('swipe-down')
+      }
+      if (touchendY > touchstartY) {
+        reopenPanel()
+      }
+    } else {
+      reopenPanel()
+    }
+  } else {
+    reopenPanel()
+  }
+}
+
+onUnmounted(() => {
+  unsetPanel()
 })
 </script>
 <template>
