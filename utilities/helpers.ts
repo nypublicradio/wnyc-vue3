@@ -378,7 +378,7 @@ export const whenTime = (data) => {
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.floor(ms / mult)
-  let minutes = Math.floor(seconds / 60)
+  const minutes = Math.floor(seconds / 60)
   //const remainingSeconds = seconds % 60
   //remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
@@ -394,4 +394,5 @@ export const copyToClipBoard = async (content: string) => {
     .catch(() => {
       return false
     })
+  return null
 }

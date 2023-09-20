@@ -28,7 +28,7 @@ const getDotMenuItems = (bucketItem) => {
         })
         trackClickEvent(
           'Click Tracking - Audio Download',
-          `Large Card`,
+          'Large Card',
           bucketItem.attributes.title
         )
       },

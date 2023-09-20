@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <div class="horizontal-scroll-feature">
     <div class="scroll flex gap-3 align-items-stretch">
