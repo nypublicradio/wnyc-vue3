@@ -27,7 +27,7 @@ const props = defineProps({
     default: false,
   },
 })
-console.log('props', props)
+
 const emit = defineEmits(['update:data', 'swipe-down'])
 
 const dataRef = ref(props.data)
