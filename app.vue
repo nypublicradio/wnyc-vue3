@@ -13,17 +13,14 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
-import {
-  useSettingSideBar,
-  useIsApp,
-  useCurrentUserProfile,
-} from '~/composables/states'
+import { useIsApp, useCurrentUserProfile } from '~/composables/states'
 import {
   useBrowserTopColor,
   useBrowserTopColorDarkMode,
 } from '~/composables/globals.ts'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
+import { logIn } from 'ionicons/icons'
 //import { Browser } from '@capacitor/browser'
 
 const { isDesktop } = useDevice()
@@ -37,7 +34,6 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
 
-const settingsSideBar = useSettingSideBar()
 const isApp = useIsApp()
 
 const fcmToken = ref('')
@@ -181,45 +177,47 @@ onMounted(async () => {
     appToken = 'AA8cda4e9935230376ef2dad8356c3b9bada1365df-NRMA'
   }
 
-  let agentConfig: AgentConfiguration = {
-    // Android specific option
-    // Optional: Enable or disable collection of event data.
-    analyticsEventEnabled: true,
+  // this is giving a lot of warnings in the console
 
-    // iOS specific option
-    // Optional: Enable/Disable automatic instrumentation of WebViews.
-    webViewInstrumentation: true,
+  // let agentConfig: AgentConfiguration = {
+  //   // Android specific option
+  //   // Optional: Enable or disable collection of event data.
+  //   analyticsEventEnabled: true,
 
-    // Optional: Enable or disable crash reporting.
-    crashReportingEnabled: true,
+  //   // iOS specific option
+  //   // Optional: Enable/Disable automatic instrumentation of WebViews.
+  //   webViewInstrumentation: true,
 
-    // Optional: Enable or disable interaction tracing. Trace instrumentation still occurs, but no traces are harvested. This will disable default and custom interactions.
-    interactionTracingEnabled: true,
+  //   // Optional: Enable or disable crash reporting.
+  //   crashReportingEnabled: true,
 
-    // Optional: Enable or disable reporting successful HTTP requests to the MobileRequest event type.
-    networkRequestEnabled: true,
+  //   // Optional: Enable or disable interaction tracing. Trace instrumentation still occurs, but no traces are harvested. This will disable default and custom interactions.
+  //   interactionTracingEnabled: true,
 
-    // Optional: Enable or disable reporting network and HTTP request errors to the MobileRequestError event type.
-    networkErrorRequestEnabled: true,
+  //   // Optional: Enable or disable reporting successful HTTP requests to the MobileRequest event type.
+  //   networkRequestEnabled: true,
 
-    // Optional: Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
-    httpResponseBodyCaptureEnabled: true,
+  //   // Optional: Enable or disable reporting network and HTTP request errors to the MobileRequestError event type.
+  //   networkErrorRequestEnabled: true,
 
-    // Optional: Enable or disable agent logging.
-    loggingEnabled: true,
+  //   // Optional: Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
+  //   httpResponseBodyCaptureEnabled: true,
 
-    // Optional: Specifies the log level. Omit this field for the default log level.
-    // Options include: ERROR (least verbose), WARNING, INFO, VERBOSE, AUDIT (most verbose).
-    logLevel: NREnums.LogLevel.INFO,
+  //   // Optional: Enable or disable agent logging.
+  //   loggingEnabled: true,
 
-    // Optional: Enable or disable sending JS console logs to New Relic.
-    sendConsoleEvents: true,
-  }
+  //   // Optional: Specifies the log level. Omit this field for the default log level.
+  //   // Options include: ERROR (least verbose), WARNING, INFO, VERBOSE, AUDIT (most verbose).
+  //   logLevel: NREnums.LogLevel.INFO,
 
-  NewRelicCapacitorPlugin.start({
-    appKey: appToken,
-    agentConfiguration: agentConfig,
-  })
+  //   // Optional: Enable or disable sending JS console logs to New Relic.
+  //   sendConsoleEvents: true,
+  // }
+
+  // NewRelicCapacitorPlugin.start({
+  //   appKey: appToken,
+  //   agentConfiguration: agentConfig,
+  // })
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
@@ -335,51 +333,8 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <Sidebar
-    v-model:visible="settingsSideBar"
-    :baseZIndex="10000"
-    position="right"
-    class="w-full"
-    blockScroll
-    id="settings-sidebar"
-    @hide="
-      () => {
-        trackClickEvent(
-          'Click Tracking - Settings Sidebar Close Button',
-          'Settings Sidebar',
-          `close sidebar`
-        )
-      }
-    "
-  >
-    <template #header><h1 class="font-medium">Settings</h1></template>
-    <Settings />
-  </Sidebar>
-  <AudioPlayer />
-</template>
 
-<style lang="scss">
-#settings-sidebar {
-  padding-top: env(safe-area-inset-top);
-  background-color: var(--background2);
-  .p-sidebar-header {
-    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
-    justify-content: space-between;
-  }
-  .p-sidebar-content {
-    padding: 0;
-  }
-  .p-sidebar-close {
-    width: 32px !important;
-    height: 32px !important;
-  }
-  .p-sidebar-close,
-  .p-sidebar-close .p-icon {
-    width: 18px;
-    height: 18px;
-    path {
-      fill: var(--night);
-    }
-  }
-}
-</style>
+  <AudioPlayer />
+  <Sidebars />
+  <Toast position="top-center" />
+</template>

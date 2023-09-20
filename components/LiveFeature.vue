@@ -8,6 +8,15 @@ import {
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
+
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
+
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -37,7 +46,12 @@ onMounted(async () => {
 <template>
   <div class="live-feature">
     <div class="inner">
-      <VFlexibleLink raw to="/live" class="flex align-items-center">
+      <VFlexibleLink
+        raw
+        to="/live"
+        class="flex align-items-center p-ripple"
+        v-ripple
+      >
         <div class="image-holder">
           <transition name="fade">
             <VImage
@@ -65,7 +79,6 @@ onMounted(async () => {
               v-if="currentEpisodeHolder"
               class="flex flex-column gap-2 justify-content-center p-3"
             >
-              <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
               <h2>{{ currentEpisodeHolder?.title }}</h2>
               <div
                 class="blurb truncate t2lines"
@@ -150,6 +163,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
       }
     }
     .content {
+      min-height: 138px;
       .skeleton-holder {
         gap: 0.5rem;
       }

@@ -23,8 +23,6 @@ export default defineNuxtRouteMiddleware(async () => {
         })
         .match({ id: currentUser.value.id })
     }
-
-
   }
 
   if (process.client) {

@@ -3,10 +3,12 @@ import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import { setStatusDarkMode } from '~/utilities/helpers'
 import { useCurrentUserProfile } from '~/composables/states.ts'
 import { useBrowserTopColorDarkMode } from '~/composables/globals.ts'
+
+import { useSignupSideBar, useLoginSideBar } from '~/composables/states'
+
 useHead({
   bodyAttrs: {
-    class:
-      'no-bottom-padding hide-bottom-menu background-gradient style-mode-dark',
+    class: 'no-bottom-padding hide-bottom-menu background-gradient',
   },
 })
 
@@ -14,6 +16,8 @@ definePageMeta({
   layout: 'default',
   middleware: 'check-auth-provider',
 })
+const loginSideBar = useLoginSideBar()
+const signupSideBar = useSignupSideBar()
 
 const currentUserProfile = useCurrentUserProfile()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
@@ -35,57 +39,70 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <Html>
-    <!-- force browser top color dark -->
-    <Head>
-      <Meta name="theme-color" :content="browserTopColorDarkMode" />
-      <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
-    </Head>
-  </Html>
-  <div class="page" :class="[`${String(route.name)}`]">
-    <Transition name="fade">
-      <section v-if="isLoading" class="loading-holder">
-        <WnycLoader class="loader-anim" />
-      </section>
-      <div v-else class="index-page flex flex-column">
-        <section class="flex flex-column">
-          <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
-          <h1 class="headline">What's new?</h1>
-          <ul class="list m-auto mt-4 mb-6">
-            <li>Listen to WNYC's Live Radio Stream</li>
-            <li>Get the latest news updates</li>
-            <li>Stream your favorite podcasts</li>
-            <li>Read local news from Gothamist</li>
-            <li>Follow your favorite shows</li>
-          </ul>
-          <h1 class="headline mb-4">Get started!</h1>
-          <div class="text-center flex flex-column gap-3 mb-4">
-            <VFlexibleLink raw to="/signup" class="w-13rem m-auto">
+  <div>
+    <Html>
+      <!-- force browser top color dark -->
+      <Head>
+        <Meta name="theme-color" :content="browserTopColorDarkMode" />
+        <Meta
+          name="msapplication-TileColor"
+          :content="browserTopColorDarkMode"
+        />
+      </Head>
+    </Html>
+    <div class="page style-mode-dark" :class="[`${String(route.name)}`]">
+      <Transition name="fade">
+        <section v-if="isLoading" class="loading-holder">
+          <WnycLoader class="loader-anim" />
+        </section>
+        <div v-else class="index-page flex flex-column">
+          <section class="flex flex-column">
+            <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
+            <h1 class="headline">What's new?</h1>
+            <ul class="list m-auto mt-4 mb-6">
+              <li>Listen to WNYC's Live Radio Stream</li>
+              <li>Get the latest news updates</li>
+              <li>Stream your favorite podcasts</li>
+              <li>Read local news from Gothamist</li>
+              <li>Follow your favorite shows</li>
+            </ul>
+            <h1 class="headline mb-4">Get started!</h1>
+            <div class="text-center flex flex-column gap-3 mb-4">
               <Button
-                class="w-full"
+                class="w-13rem m-auto"
                 label="Create Free Account"
                 rounded
                 size="small"
+                @click="
+                  () => {
+                    signupSideBar = true
+                  }
+                "
               />
-            </VFlexibleLink>
-            <p>or</p>
-            <VFlexibleLink raw to="/login" class="w-13rem m-auto">
+
+              <p>or</p>
+
               <Button
-                class="w-full"
+                class="w-13rem m-auto"
                 label="Log in"
                 rounded
                 size="small"
                 severity="secondary"
+                @click="
+                  () => {
+                    loginSideBar = true
+                  }
+                "
               />
-            </VFlexibleLink>
-            <p>
-              <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
-              an account later.
-            </p>
-          </div>
-        </section>
-      </div>
-    </Transition>
+              <p>
+                <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
+                an account later.
+              </p>
+            </div>
+          </section>
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
 

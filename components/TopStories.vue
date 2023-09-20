@@ -1,19 +1,23 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { trackClickEvent, howLongAgo } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  whenTime,
+  getAviaryImageSrcId,
+} from '~/utilities/helpers'
+
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
+
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
 const { data: articles } = await useFetch(config.public.STORIES_API)
-
-// returns an Aviary image template string
-const getImageUrl = (article) => {
-  const listingImage =
-    article.lead_asset?.[0]?.value?.image ??
-    article.lead_asset?.[0]?.value?.default_image
-  if (!listingImage) return ''
-  return String(listingImage.id)
-}
 
 // returns the article link
 const getArticleLink = (article) => {
@@ -49,16 +53,19 @@ const normalizeAuthor = (author) => {
     <div v-for="(article, index) in articles.items" :key="index" class="mb-4">
       <!-- <pre>{{ article }}</pre> -->
       <VCard
-        :src="getImageUrl(article)"
+        v-ripple
+        class="p-ripple"
+        :src="getAviaryImageSrcId(article)"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
-        :link="getArticleLink(article)"
+        :link="`/story/${article.meta.slug}`"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
         :width="116"
         :height="116"
         :ratio="[1, 1]"
+        @click="navigateTo(`/story/${article.meta.slug}`)"
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',
@@ -76,28 +83,32 @@ const normalizeAuthor = (author) => {
       >
         <template #belowBlurb>
           <div class="article-metadata">
-            <VByline
-              prefix=""
-              :authors="article.related_authors?.map(normalizeAuthor)"
-              @name-click="
-                trackClickEvent(
-                  'Click Tracking - Top Story',
-                  'Article Card Author Name',
-                  $event.url
-                )
-              "
-              @organization-click="
-                trackClickEvent(
-                  'Click Tracking - Top Story',
-                  'Article Card Author Organization',
-                  $event.url
-                )
-              "
-            >
-              <template #afterNames>
-                <span>| {{ howLongAgo(article.meta.first_published_at) }}</span>
+            <PipeData>
+              <template #left>
+                <VByline
+                  prefix=""
+                  :authors="article.related_authors?.map(normalizeAuthor)"
+                  @name-click="
+                    trackClickEvent(
+                      'Click Tracking - Top Story',
+                      'Article Card Author Name',
+                      $event.url
+                    )
+                  "
+                  @organization-click="
+                    trackClickEvent(
+                      'Click Tracking - Top Story',
+                      'Article Card Author Organization',
+                      $event.url
+                    )
+                  "
+                >
+                </VByline>
               </template>
-            </VByline>
+              <template #right>
+                <span class="nobreak">{{ whenTime(article.meta) }}</span>
+              </template>
+            </PipeData>
           </div>
         </template>
       </VCard>
@@ -108,6 +119,7 @@ const normalizeAuthor = (author) => {
 <style lang="scss">
 .top-stories {
   .v-card {
+    cursor: pointer;
     .card-details {
       flex: 1;
       align-self: stretch !important;
@@ -124,11 +136,11 @@ const normalizeAuthor = (author) => {
       font-size: 0.813rem;
       font-weight: 400;
       .flexible-link {
-        color: initial;
+        color: inherit;
         text-decoration: none;
       }
       .v-byline {
-        gap: 5px;
+        gap: 0;
       }
     }
   }

@@ -3,48 +3,43 @@ import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/comp
 //import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+
+import {
+  useSignupSideBar,
+  useLoginSideBar,
+  useSettingSideBar,
+} from '~/composables/states'
+
+const settingsSideBar = useSettingSideBar()
+const signUpSideBar = useSignupSideBar()
+const loginSideBar = useLoginSideBar()
+
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 
-definePageMeta({
-  layout: 'blank',
-  pageTransition: {
-    name: 'login',
-  },
-  layoutTransition: {
-    name: 'login',
-  },
-})
+// handle the login and signup sidebars when the user clicks on the login link
+const onLoginClick = () => {
+  loginSideBar.value = true
+  signUpSideBar.value = false
+}
 
-useHead({
-  bodyAttrs: {
-    class: 'background2',
-  },
-})
+// close all sidebars
+const closeAll = () => {
+  loginSideBar.value = false
+  signUpSideBar.value = false
+  settingsSideBar.value = false
+}
 </script>
 
 <template>
-  <div>
-    <section class="signup">
-      <div class="flex mb-4">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="
-            () => {
-              navigateTo('/home')
-            }
-          "
-        />
-        <h1>Sign up</h1>
-      </div>
+  <div class="signup">
+    <section>
+      <SHeader label="Sign up" @close-sidebar="signUpSideBar = false" />
+    </section>
+    <section>
       <p>
         Already have an account?
-        <VFlexibleLink to="/login">Log in</VFlexibleLink>
+        <Button link label="Log in" class="link" @click="onLoginClick" />
       </p>
       <VLoginWithProvider
         :client="client"
@@ -70,6 +65,7 @@ useHead({
         :config="config"
         label="Sign up"
         slug="/home"
+        @login-success="closeAll"
       >
         <template #aboveSubmit>
           <p class="mb-3">

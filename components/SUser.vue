@@ -1,14 +1,20 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-//`import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
+import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
 import UserIcon from '~/components/icons/UserIcon.vue'
 import {
   useSettingSideBar,
+  useLoginSideBar,
+  useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
 import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 const props = defineProps({
   disabled: {
@@ -20,6 +26,9 @@ const props = defineProps({
 const emit = defineEmits(['update:data', 'onDisabled'])
 
 const settingsSideBar = useSettingSideBar()
+const loginSideBar = useLoginSideBar()
+const signupSideBar = useSignupSideBar()
+
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const localUserProfileDefault = useLocalUserProfileDefault()
@@ -29,8 +38,7 @@ const imageUploadModal = shallowRef(false)
 
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
-  navigateTo('/login')
-  settingsSideBar.value = false
+  loginSideBar.value = true
   trackClickEvent(
     'Click Tracking - login button',
     'Settings Sidebar - user section',
@@ -55,15 +63,27 @@ const onLogOut = async () => {
   setDisplaySettings(localUserProfileDefault.value)
 
   settingsSideBar.value = false
+
+  //GTM
   trackClickEvent(
     'Click Tracking - logout button',
     'Settings Sidebar - user section',
-    ''
+    'logged out'
   )
+
+  // show toast
+  toast.add({
+    severity: 'success',
+    summary: 'You have logged out.',
+    life: 3000,
+  })
+
+  // update all live streams
+  updateAllLiveStreams()
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
-  settingsSideBar.value = false
+  signupSideBar.value = true
   trackClickEvent(
     'Click Tracking - sign up link',
     'Settings Sidebar - user section',
@@ -112,15 +132,15 @@ const handleModal = () => {
       v-model:visible="imageUploadModal"
       modal
       header="Upload Profile Image"
-      :style="{ width: '80vw' }"
+      :draggable="false"
     >
       <VUploadImage
-        style="padding: 40px"
         :image="currentUserProfile?.avatar_image_url"
         :currentUser="currentUser"
         :currentUserProfile="currentUserProfile"
         :client="client"
         :config="config"
+        @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {
             currentUserProfile.avatar_image_url = imageUrl
@@ -145,7 +165,7 @@ const handleModal = () => {
 
       <p>
         Don't have an account yet?
-        <VFlexibleLink to="/signup" @click="onSignUp"> Sign up </VFlexibleLink>
+        <VFlexibleLink to="#" @click="onSignUp"> Sign up </VFlexibleLink>
       </p>
     </div>
   </div>

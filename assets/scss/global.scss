@@ -22,7 +22,7 @@ body {
   position: relative !important;
   &.show-header {
     main {
-      margin-top: $headerHeight;
+      padding-top: $headerHeight;
     }
   }
   &.hide-bottom-menu {
@@ -40,7 +40,7 @@ body {
     }
   }
   &.background-gradient {
-    background: linear-gradient(to bottom, #1b223c, #244873);
+    //background: linear-gradient(to bottom, #1b223c, #244873);
     background: $backgroundGradient1;
     transform: none;
     height: 100% !important;
@@ -51,7 +51,6 @@ body {
     position: relative !important;
   }
   main {
-    //margin-top: $headerHeight; // account for the sticky header height
     padding-bottom: calc($bottomMenuHeight + $playerHeight); // account for the sticky bottom menu
   }
   &.no-bottom-padding {
@@ -61,11 +60,51 @@ body {
   }
 }
 
+
+.p-message {
+  background-color: var(--background4) !important;
+  color: #ffffff;
+  &.text-only {
+    background: transparent !important;
+    .p-message-icon,
+    .p-message-close {
+      display: none;
+    }
+  }
+}
+.p-toast {
+  opacity: 1 !important;
+  width: 90%;
+  max-width: 25rem;
+  .p-toast-message {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    background-color: var(--background4) !important;
+    .p-toast-message-content {
+      justify-content: center;
+      align-items: center;
+      .p-icon {
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+      }
+      .p-toast-message-text {
+        flex: unset;
+        font-size: 0.875rem;
+        .p-toast-detail {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 // match the prime vue Divider styles
 hr {
   border: none;
   height: 1px;
   background: var(--stroke-500);
+
 }
 
 /* Light mode */
@@ -98,7 +137,7 @@ hr {
 section {
   width: 100%;
   max-width: $contentWidth;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem $padding;
   margin: auto;
   @include media('<lg') {
     width: 100%;
@@ -126,6 +165,10 @@ section {
   font-family: var(--font-family-tisa);
 }
 
+label {
+  color: var(--text-color);
+}
+
 .p-button {
   border-radius: 2rem;
   &.center {
@@ -137,7 +180,16 @@ section {
       flex: none;
     }
   }
+  &.link {
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    text-decoration: underline;
+    color: var(--link);
+  }
 }
+
 .p-button:focus,
 .p-link:focus,
 button:focus,
@@ -161,6 +213,29 @@ a:visited {
   animation: fa-spin 0.5s infinite linear;
 }
 
-.p-message {
-  background-color: var(--background4);
+.nobreak {
+  white-space: nowrap;
+}
+
+// text plain button colors
+.p-button.p-button-text.p-button-plain {
+  color: var(--text-color);
+}
+
+.p-button.p-button-text.p-button-plain:enabled:hover {
+  background: #e8e8e8;
+  color: var(--text-color);
+}
+
+.p-inputtext {
+  background-color: var(--s-box-background-color);
+  color: var(--text-color);
+  border-color: var(--stroke);
+}
+
+.p-divider {
+  .p-divider-content {
+    background-color: var(--background2);
+    color: var(--text-color);
+  }
 }
