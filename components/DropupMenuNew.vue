@@ -116,11 +116,17 @@ const swipe = useSwipe(panel, {
 })
 
 function handleSwipeDirection() {
+  const tempBool = isDraggingDown
   if (touchCurrentY < touchPrevY) {
     isDraggingDown = true
   }
   if (touchCurrentY > touchPrevY) {
     isDraggingDown = false
+  }
+  //reset the touchstartY and touchstartTime if the direction changes
+  if (tempBool !== isDraggingDown) {
+    touchstartY = touchCurrentY
+    touchstartTime = new Date().getTime()
   }
 }
 
