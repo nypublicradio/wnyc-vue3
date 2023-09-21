@@ -88,7 +88,10 @@ export default defineNuxtConfig({
       }
     },
   },
-
+  components: [
+    '~/components',
+    '~/components/icons'
+  ],
   imports: {
     dirs: [
       'composables', // top-level modules
@@ -109,18 +112,18 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // SENTRY_DSN: process.env['SENTRY_DSN'],
-      ENV: process.env.ENV ?? 'demo',
+      ENV: process.env.ENV ?? 'prod',
       HTL_CSS: process.env.HTL_CSS ?? 'https://htlbid.com/stage/v3/wnyc.org/htlbid.css',
       HTL_JS: process.env.HTL_JS ?? 'https://htlbid.com/stage/v3/wnyc.org/htlbid.js',
       HTL_IS_TESTING: process.env.HTL_IS_TESTING ?? 'yes',
       LIVESTREAM_URL: process.env.LIVESTREAM_URL ?? 'https://api.prod.nypr.digital/api/v4/whats_on/',
-      //NAVIGATION_API: process.env.NAVIGATION_API ?? 'https://cms.demo.nypr.digital/api/v2/navigation/3/',
+      //NAVIGATION_API: process.env.NAVIGATION_API ?? 'https://cms.prod.nypr.digital/api/v2/navigation/3/',
       STORIES_API: process.env.STORIES_API ?? 'https://cms.prod.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false',
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? 'https://api.wnyc.org/api/v3/',
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.prod.nypr.digital/images/',
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',
-      environment: process.env.environment ?? 'demo',
+      environment: process.env.environment ?? 'prod',
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
       supabaseAuthSignInRedirectTo: process.env.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
