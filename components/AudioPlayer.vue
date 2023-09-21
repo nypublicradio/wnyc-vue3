@@ -163,9 +163,7 @@ watch(isEpisodePlaying, (e) => {
         <i class="pi pi-twitter"></i>
       </template> -->
       <template #expanded-content>
-        <div>
-          <ExpandedPlayer />
-        </div>
+        <AudioPlayerExpanded />
       </template>
     </VPersistentPlayer>
   </transition>
@@ -236,6 +234,13 @@ html.style-mode-dark .persistent-player {
       color: var(--night-500);
       background: #ffffff;
       border: 1px solid var(--background2--500);
+    }
+    .expanded-view {
+      .expanded-content-holder {
+        .header {
+          padding: 1rem 0.5rem;
+        }
+      }
     }
   }
   .template-blank {

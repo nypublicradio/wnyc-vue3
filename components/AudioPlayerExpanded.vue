@@ -1,4 +1,7 @@
 <script setup>
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
+import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -9,7 +12,6 @@ import {
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
 } from '~/composables/states'
-
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -28,19 +30,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="expanded-player">
-    <!-- <Vimage
+  <section class="expanded-player flex flex-column gap-3">
+    <VImagePublisher
       :src="currentEpisode.image"
       :alt="currentEpisode.title"
-      class="expanded-image"
+      :width="144"
+      :height="144"
+      class="show-image max-w-9rem m-auto"
+      :ratio="[1, 1]"
     />
-    <VImage
+    <div class="station flex gap-2">
+      <LiveBadge />
+      <p>{{ currentEpisode.station }}</p>
+    </div>
+    <h2 class="text-lg">{{ currentEpisode.title }}</h2>
+    <h2 class="title">{{ currentEpisode.details }}</h2>
+    <div class="title" v-html="currentEpisode.episodeTitle" />
+    <div>CONTROLS</div>
+    <div>icons</div>
+    <div>image</div>
+    <div>description</div>
+    <div>author</div>
+    <hr />
+    <div>More from {{ currentEpisode.title }} ></div>
+
+    <!-- <VImage
       v-if="currentEpisodeHolder?.image"
       :src="currentEpisodeHolder?.image"
       :ratio="[1, 1]"
       alt="show poster image"
       class="image"
     /> -->
+    <pre>{{ currentEpisode.onTodaysShowImageTemplate }}</pre>
     <pre>{{ currentEpisode }}</pre>
     <br />
     <br />
@@ -115,7 +136,7 @@ onMounted(() => {
     <div ref="expandedFooterRef" class="expanded-footer">
       This is fixed to the bottom
     </div>
-  </div>
+  </section>
 </template>
 
 <style lang="scss">

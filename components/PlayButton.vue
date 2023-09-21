@@ -96,13 +96,14 @@ const getProgress = computed(() => {
         </div>
       </slot>
       <slot>
-        <div class="content flex gap-1 white-space-nowrap">
+        <div class="content flex white-space-nowrap">
           <span>{{ props.label }}</span>
-
-          <span v-if="props.live" class="flex gap-2 align-items-center">
-            <LiveIndicator />
-            <span>LIVE</span>
-          </span>
+          <LiveBadge
+            v-if="props.live"
+            font-size="14px"
+            bg-color="transparent"
+            padding="1px 8px 1px 3px"
+          />
         </div>
       </slot>
     </Button>
@@ -149,6 +150,7 @@ const getProgress = computed(() => {
     font-size: 14px;
     font-weight: 700;
     line-height: normal;
+    align-items: center;
   }
 }
 </style>
