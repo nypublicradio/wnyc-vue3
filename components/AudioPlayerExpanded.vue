@@ -1,5 +1,4 @@
 <script setup>
-import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
 import VProgressScrubber from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue'
 import { trackClickEvent, isLiveStream, whenTime } from '~/utilities/helpers'
@@ -74,7 +73,7 @@ const moreFromClick = () => {
     </div>
 
     <div class="controls flex gap-3 justify-content-center">
-      <Button severity="secondary" rounded>
+      <Button disabled="!isLiveStream" severity="secondary" rounded>
         <template #icon> <Previous10 /></template>
       </Button>
       <Button v-if="isEpisodePlaying" severity="secondary" rounded>
@@ -83,7 +82,7 @@ const moreFromClick = () => {
       <Button v-else severity="secondary" rounded>
         <template #icon> <PlayIcon /></template>
       </Button>
-      <Button severity="secondary" rounded>
+      <Button disabled="!isLiveStream" severity="secondary" rounded>
         <template #icon> <Next10 /></template>
       </Button>
     </div>
