@@ -11,6 +11,7 @@ export async function updateLiveStream(slug: string) {
     const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
 
     currentEpisodeHolder.value = formatShowData(fetchData.data.value)
+    console.log('currentEpisodeHolder.value', currentEpisodeHolder.value)
 }
 
 
@@ -28,7 +29,7 @@ export async function updateAllLiveStreams() {
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
             const fetchedRunningShowData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-
+            console.log('fetchedRunningShowData.data.value', fetchedRunningShowData.data.value)
             return formatShowData(fetchedRunningShowData.data.value)
         }
     }))
@@ -46,6 +47,7 @@ export async function updateAllLiveStreams() {
         }
     )
     currentEpisodeHolder.value = initialStation
+
 
 }
 
@@ -93,6 +95,8 @@ const formatShowData = (apiResponse) => {
         detailsLink: showData ? showData.attributes.url : null,
         episodeTitle: episodeData ? episodeData.attributes.title : null,
         episodeLink: episodeData ? episodeData.attributes.url : null,
+        episodeBody: episodeData ? episodeData.attributes.body : null,
+        episodeTranscript: episodeData ? episodeData.attributes.transcript : null,
         file: apiResponse.data[0].attributes['mobile-mp3'],
         image: imageData ? 'https://media.wnyc.org/i/448/448/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
         slug: apiResponse.data[0].attributes.slug,
@@ -101,6 +105,9 @@ const formatShowData = (apiResponse) => {
         timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
         title,
         titleLink,
+        updated_date: null,
+        publishAt: null,
+        first_published_at: null,
         onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,
         onTodaysShowHeadlineLink: episodeData ? episodeData.attributes.url : null,
         onTodaysShowHosts: showData ? showData.attributes.about.roles.host : null,

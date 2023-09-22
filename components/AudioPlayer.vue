@@ -238,6 +238,7 @@ html.style-mode-dark .persistent-player {
     .expanded-view {
       .expanded-content-holder {
         .header {
+          z-index: 1;
           padding: 1rem 0.5rem;
         }
       }

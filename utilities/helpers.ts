@@ -370,9 +370,10 @@ export function isLiveStream(url: string) {
 
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
-  return data.updated_date
+  const res = data.updated_date
     ? howLongAgo(data.updated_date)
     : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.first_published_at)
+  return res ?? null
 }
 
 // returns the rounded up minutes duration of the episode

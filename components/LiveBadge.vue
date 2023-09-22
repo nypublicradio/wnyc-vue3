@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-
 const props = defineProps({
   label: {
     type: String,
