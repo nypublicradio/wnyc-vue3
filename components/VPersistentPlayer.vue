@@ -323,45 +323,32 @@ function handleSwipe() {
   }
 }
 
-// let touchFlag = false
 onMounted(() => {
-  //   playerRef.value.addEventListener(
-  //     'touchstart',
-  //     function (event) {
-  //       touchstartY = event.touches[0].clientY
-  //       touchstartTime = new Date().getTime()
-  //       console.log('touchstart', event)
-  //     },
-  //     { passive: true }
-  //   )
-
-  playerRef.value.addEventListener('touchmove', function (event) {
-    event.preventDefault()
-    // Your code here
-
-    console.log('Touch moved to', event.touches[0].clientY)
+  playerRef.value.addEventListener('touchmove', preventScrollOnTouch, {
+    passive: false,
   })
-  //   playerRef.value.addEventListener('touchend', function (event) {
-  //     console.log('touchend', event)
-  //     touchendY = touchCurrentY
-  //     touchendTime = new Date().getTime()
-  //     touchFlag = false
-  //     handleSwipe()
-  //   })
 })
 const sMove = useSwipe(playerRef, {
   onSwipeEnd() {
     if (props.canExpand && props.canExpandWithSwipe) {
       if (sMove.direction.value === 'up' && sMove.lengthY.value > 100) {
         isExpanded.value = true
-        //toggleExpanded(true)
+
+        playerRef.value.removeEventListener('touchmove', preventScrollOnTouch, {
+          passive: false,
+        })
+
         emit('swipe-up')
       }
     }
     if (props.canExpand && props.canUnexpandWithSwipe) {
       if (sMove.direction.value === 'down' && sMove.lengthY.value < -100) {
         isExpanded.value = false
-        //toggleExpanded(false)
+
+        playerRef.value.addEventListener('touchmove', preventScrollOnTouch, {
+          passive: false,
+        })
+
         emit('swipe-down')
       }
     }
@@ -516,27 +503,14 @@ const toggleMinimize = (e) => {
 
 // handle scroll blocking with js when player is expanded
 const scrollToggle = (e) => {
-  /*   if (e) {
-    // Get the current page scroll position
-    const scrollTop = window.pageYOffset ?? document.documentElement.scrollTop
-    const scrollLeft = window.pageXOffset ?? document.documentElement.scrollLeft
-    // if any scroll is attempted, set this to the previous value
-    window.onscroll = function () {
-      window.scrollTo(scrollLeft, scrollTop)
-    }
-  } else {
-    window.onscroll = function () {}
-  } */
   if (e) {
-    // document.body.addEventListener('touchmove', preventScrollOnTouch, {
-    //   passive: false,
-    // })
-    //document.body.classList.add('v-persistent-player-stop-window-scrolling')
+    playerRef.value.removeEventListener('touchmove', preventScrollOnTouch, {
+      passive: false,
+    })
   } else {
-    // document.body.removeEventListener('touchmove', preventScrollOnTouch, {
-    //   passive: false,
-    // })
-    //document.body.classList.remove('v-persistent-player-stop-window-scrolling')
+    playerRef.value.addEventListener('touchmove', preventScrollOnTouch, {
+      passive: false,
+    })
   }
 }
 // exposed method to handle the expanding toggle
