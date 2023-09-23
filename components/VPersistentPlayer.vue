@@ -306,20 +306,42 @@ function handleSwipe() {
   const distance = Math.abs(touchendY - touchstartY)
   const time = touchendTime - touchstartTime
   const velocity = distance / time
-  if (!isDraggingDown) {
-    if (velocity > swipeThreshold || distance > distanceThreshold) {
-      if (touchendY < touchstartY) {
+  console.log('________________________________________________________')
+  console.log('distance', distance)
+  console.log('distanceThreshold', distanceThreshold)
+  console.log('time', time)
+  console.log('velocity', velocity)
+  console.log('swipeThreshold', swipeThreshold)
+  console.log('isDraggingDown', isDraggingDown)
+  console.log('touchendY', touchendY)
+  console.log('touchstartY', touchstartY)
+  if (props.canExpand && props.canExpandWithSwipe) {
+    if (!isDraggingDown) {
+      if (velocity > swipeThreshold) {
+        //if (touchendY > touchstartY) {
+        console.log('EXPAND')
+        playerRef.value.removeEventListener('touchmove', preventScrollOnTouch, {
+          passive: false,
+        })
         isExpanded.value = true
-        emit('swipe-down')
+        emit('swipe-up')
+        //}
       }
-      if (touchendY > touchstartY) {
-        isExpanded.value = false
-      }
-    } else {
-      isExpanded.value = false
     }
-  } else {
-    isExpanded.value = false
+  }
+  if (props.canExpand && props.canUnexpandWithSwipe) {
+    if (isDraggingDown) {
+      if (velocity > swipeThreshold) {
+        //if (touchendY > touchstartY) {
+        console.log('UNEXPAND')
+        playerRef.value.addEventListener('touchmove', preventScrollOnTouch, {
+          passive: false,
+        })
+        isExpanded.value = false
+        emit('swipe-down')
+        //}
+      }
+    }
   }
 }
 
@@ -329,29 +351,43 @@ onMounted(() => {
   })
 })
 const sMove = useSwipe(playerRef, {
+  onSwipeStart() {
+    touchstartY = sMove.lengthY.value
+    touchstartTime = new Date().getTime()
+  },
+  onSwipe() {
+    touchCurrentY = sMove.lengthY.value
+
+    handleSwipeDirection()
+    touchPrevY = touchCurrentY
+  },
   onSwipeEnd() {
-    if (props.canExpand && props.canExpandWithSwipe) {
-      if (sMove.direction.value === 'up' && sMove.lengthY.value > 100) {
-        isExpanded.value = true
+    // if (props.canExpand && props.canExpandWithSwipe) {
+    //   if (sMove.direction.value === 'up' && sMove.lengthY.value > 100) {
+    //     isExpanded.value = true
 
-        playerRef.value.removeEventListener('touchmove', preventScrollOnTouch, {
-          passive: false,
-        })
+    //     playerRef.value.removeEventListener('touchmove', preventScrollOnTouch, {
+    //       passive: false,
+    //     })
 
-        emit('swipe-up')
-      }
-    }
-    if (props.canExpand && props.canUnexpandWithSwipe) {
-      if (sMove.direction.value === 'down' && sMove.lengthY.value < -100) {
-        isExpanded.value = false
+    //     emit('swipe-up')
+    //   }
+    // }
+    // if (props.canExpand && props.canUnexpandWithSwipe) {
+    //   if (sMove.direction.value === 'down' && sMove.lengthY.value < -100) {
+    //     isExpanded.value = false
 
-        playerRef.value.addEventListener('touchmove', preventScrollOnTouch, {
-          passive: false,
-        })
+    //     playerRef.value.addEventListener('touchmove', preventScrollOnTouch, {
+    //       passive: false,
+    //     })
 
-        emit('swipe-down')
-      }
-    }
+    //     emit('swipe-down')
+    //   }
+    // }
+
+    touchendY = sMove.lengthY.value
+    touchendTime = new Date().getTime()
+    handleSwipe()
   },
   passive: true,
 })

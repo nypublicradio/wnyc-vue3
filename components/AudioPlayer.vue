@@ -110,6 +110,7 @@ watch(isEpisodePlaying, (e) => {
       :auto-play="true"
       :can-expand="true"
       :can-expand-with-swipe="true"
+      :can-unexpand-with-swipe="true"
       :show-download="false"
       :hide-download-mobile="true"
       :show-skip="false"
@@ -147,6 +148,7 @@ watch(isEpisodePlaying, (e) => {
 <style lang="scss">
 html.style-mode-dark .persistent-player {
   background-color: map-get($colors-dark-mode, 'background4') !important;
+
   .expanded-view .header,
   .expanded-view .expanded-footer {
     background-color: var(--expandedHeaderBackground) !important;
@@ -219,7 +221,6 @@ html.style-mode-dark .persistent-player {
         .header {
           z-index: 1;
           padding: 1rem 0.5rem;
-          background-color: var(--expandedHeaderBackground);
         }
       }
     }
