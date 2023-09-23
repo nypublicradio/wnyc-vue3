@@ -1,7 +1,12 @@
 <script setup>
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
 import VProgressScrubber from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue'
-import { trackClickEvent, isLiveStream, whenTime } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  isLiveStream,
+  whenTime,
+  resizePublisherImageUrl,
+} from '~/utilities/helpers'
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -139,12 +144,16 @@ const moreFromClick = () => {
     </VImagePublisher>
 
     <div v-if="currentEpisode.onTodaysShowHosts">
-      <Author
-        v-for="author in currentEpisode.onTodaysShowHosts"
-        :imgSrc="author.image"
-        :name="`${author['first-name']} ${author['last-name']}`"
-        :to="author.url"
-      />
+      <div class="flex gap-4 flex-wrap">
+        <ClientOnly>
+          <Author
+            v-for="author in currentEpisode.onTodaysShowHosts"
+            :imgSrc="resizePublisherImageUrl(author.image, 40, 40, 80)"
+            :name="`${author['first-name']} ${author['last-name']}`"
+            :to="author.url"
+          />
+        </ClientOnly>
+      </div>
     </div>
     <div v-if="currentEpisode.episodeTranscript">
       <h2>Transcript</h2>

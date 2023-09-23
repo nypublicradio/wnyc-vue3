@@ -270,9 +270,6 @@ function preventScrollOnTouch(event) {
 }
 
 //swipe setup
-
-const shadowHeight = 70
-
 let touchstartY = 0
 let touchendY = 0
 let touchPrevY = 0
@@ -281,7 +278,6 @@ let touchstartTime = 0
 let touchendTime = 0
 const swipeThreshold = 0.5
 let distanceThreshold = 125
-const distanceThresholdDivider = 2.2
 let isDraggingDown = false
 const playerRef = ref(null)
 
@@ -391,6 +387,8 @@ const sMove = useSwipe(playerRef, {
   },
   passive: true,
 })
+// END swipe
+
 // method to handle update the currentSeconds with the audio playhead
 const updateCurrentSeconds = () => {
   currentSeconds.value = sound.seek()

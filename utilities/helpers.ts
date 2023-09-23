@@ -55,6 +55,22 @@ export const resizePublisherImage = (attributes, w, h, q = 80) => {
   })
   return finalUrlArr.join('/')
 }
+export const resizePublisherImageUrl = (url, w, h, q = 80) => {
+  //https://media.wnyc.org/i/630/365/c/80/photologue/photos/brian2_630x365.jpg
+
+  const pieces = url.split('/')
+  const finalUrlArr = []
+
+  pieces.map((piece, index) => {
+    if (index < 4 || index > 7) {
+      finalUrlArr.push(piece)
+    }
+    if (index === 4) {
+      finalUrlArr.push(`${w}/${h}/c/${q}`)
+    }
+  })
+  return finalUrlArr.join('/')
+}
 
 // returns an Aviary image ID
 export const getAviaryImageSrcId = (article: object) => {

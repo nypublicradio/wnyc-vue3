@@ -15,7 +15,6 @@ const props = defineProps({
     default: null,
   },
 })
-console.log(props)
 </script>
 
 <template>
@@ -40,5 +39,20 @@ console.log(props)
 
 <style lang="scss" scoped>
 .author {
+  .image-holder {
+    border-radius: 50%;
+    overflow: hidden;
+  }
+}
+</style>
+
+<style lang="scss">
+// TEMP, updated in DS comp, remove with updated
+.author {
+  .image-holder {
+    .image {
+      display: block;
+    }
+  }
 }
 </style>
