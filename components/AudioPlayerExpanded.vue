@@ -145,14 +145,12 @@ const moreFromClick = () => {
 
     <div v-if="currentEpisode.onTodaysShowHosts">
       <div class="flex gap-4 flex-wrap">
-        <ClientOnly>
-          <Author
-            v-for="author in currentEpisode.onTodaysShowHosts"
-            :imgSrc="resizePublisherImageUrl(author.image, 40, 40, 80)"
-            :name="`${author['first-name']} ${author['last-name']}`"
-            :to="author.url"
-          />
-        </ClientOnly>
+        <Author
+          v-for="author in currentEpisode.onTodaysShowHosts"
+          :imgSrc="resizePublisherImageUrl(author.image, 40, 40, 80)"
+          :name="`${author['first-name']} ${author['last-name']}`"
+          :to="author.url"
+        />
       </div>
     </div>
     <div v-if="currentEpisode.episodeTranscript">

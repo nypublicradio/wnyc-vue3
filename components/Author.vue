@@ -45,14 +45,3 @@ const props = defineProps({
   }
 }
 </style>
-
-<style lang="scss">
-// TEMP, updated in DS comp, remove with updated
-.author {
-  .image-holder {
-    .image {
-      display: block;
-    }
-  }
-}
-</style>
