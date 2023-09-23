@@ -103,13 +103,14 @@ watch(isEpisodePlaying, (e) => {
   <!-- <div class="audio-player"> -->
 
   <transition name="player">
-    <!-- :can-expand-with-swipe="true" -->
     <VPersistentPlayer
       v-if="showPlayer"
       ref="playerRef"
       data-style-mode="dark"
       :auto-play="true"
       :can-expand="true"
+      :can-expand-with-swipe="true"
+      :can-unexpand-with-swipe="true"
       :show-download="false"
       :hide-download-mobile="true"
       :show-skip="false"
@@ -136,33 +137,6 @@ watch(isEpisodePlaying, (e) => {
       <template #pause>
         <PauseIcon />
       </template>
-      <!-- <template #chevronDown>
-        <i class="pi pi-twitter"></i>
-      </template>
-      <template #chevronUp>
-        <i class="pi pi-facebook"></i>
-      </template>
-      
-      <template #volumeOn>
-        <i class="pi pi-twitter"></i>
-      </template>
-      <template #volumeOff>
-        <i class="pi pi-facebook"></i>
-      </template>
-      <template #prev>
-        <i class="pi pi-twitter"></i>
-      </template>
-      
-      
-      <template #loading>
-        <i class="pi pi-spin pi-spinner"></i>
-      </template>
-      <template #skip>
-        <i class="pi pi-twitter"></i>
-      </template>
-      <template #download>
-        <i class="pi pi-twitter"></i>
-      </template> -->
       <template #expanded-content>
         <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
       </template>

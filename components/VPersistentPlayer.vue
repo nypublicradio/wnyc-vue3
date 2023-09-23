@@ -270,18 +270,96 @@ function preventScrollOnTouch(event) {
 }
 
 //swipe setup
+
+const shadowHeight = 70
+
+let touchstartY = 0
+let touchendY = 0
+let touchPrevY = 0
+let touchCurrentY = 0
+let touchstartTime = 0
+let touchendTime = 0
+const swipeThreshold = 0.5
+let distanceThreshold = 125
+const distanceThresholdDivider = 2.2
+let isDraggingDown = false
 const playerRef = ref(null)
-const { direction, lengthY } = useSwipe(playerRef, {
-  onSwipe() {
+
+// handles the detection of the direction of the drag movment
+function handleSwipeDirection() {
+  const tempBool = isDraggingDown
+  if (touchCurrentY < touchPrevY) {
+    isDraggingDown = true
+  }
+  if (touchCurrentY > touchPrevY) {
+    isDraggingDown = false
+  }
+  //reset the touchstartY and touchstartTime if the direction changes
+  if (tempBool !== isDraggingDown) {
+    touchstartY = touchCurrentY
+    touchstartTime = new Date().getTime()
+  }
+}
+
+// handles the swipe ended logic
+function handleSwipe() {
+  const distance = Math.abs(touchendY - touchstartY)
+  const time = touchendTime - touchstartTime
+  const velocity = distance / time
+  if (!isDraggingDown) {
+    if (velocity > swipeThreshold || distance > distanceThreshold) {
+      if (touchendY < touchstartY) {
+        isExpanded.value = true
+        emit('swipe-down')
+      }
+      if (touchendY > touchstartY) {
+        isExpanded.value = false
+      }
+    } else {
+      isExpanded.value = false
+    }
+  } else {
+    isExpanded.value = false
+  }
+}
+
+// let touchFlag = false
+onMounted(() => {
+  //   playerRef.value.addEventListener(
+  //     'touchstart',
+  //     function (event) {
+  //       touchstartY = event.touches[0].clientY
+  //       touchstartTime = new Date().getTime()
+  //       console.log('touchstart', event)
+  //     },
+  //     { passive: true }
+  //   )
+
+  playerRef.value.addEventListener('touchmove', function (event) {
+    event.preventDefault()
+    // Your code here
+
+    console.log('Touch moved to', event.touches[0].clientY)
+  })
+  //   playerRef.value.addEventListener('touchend', function (event) {
+  //     console.log('touchend', event)
+  //     touchendY = touchCurrentY
+  //     touchendTime = new Date().getTime()
+  //     touchFlag = false
+  //     handleSwipe()
+  //   })
+})
+const sMove = useSwipe(playerRef, {
+  onSwipeEnd() {
     if (props.canExpand && props.canExpandWithSwipe) {
-      if (direction.value === 'up' && lengthY.value > 100) {
+      if (sMove.direction.value === 'up' && sMove.lengthY.value > 100) {
         isExpanded.value = true
         //toggleExpanded(true)
         emit('swipe-up')
       }
     }
     if (props.canExpand && props.canUnexpandWithSwipe) {
-      if (direction.value === 'down' && lengthY.value < -100) {
+      if (sMove.direction.value === 'down' && sMove.lengthY.value < -100) {
         isExpanded.value = false
         //toggleExpanded(false)
         emit('swipe-down')
