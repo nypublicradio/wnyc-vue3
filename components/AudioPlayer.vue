@@ -103,6 +103,7 @@ watch(isEpisodePlaying, (e) => {
   <!-- <div class="audio-player"> -->
 
   <transition name="player">
+    <!-- :can-expand-with-swipe="true" -->
     <VPersistentPlayer
       v-if="showPlayer"
       ref="playerRef"
@@ -111,7 +112,6 @@ watch(isEpisodePlaying, (e) => {
       :can-expand="true"
       :show-download="false"
       :hide-download-mobile="true"
-      :can-expand-with-swipe="true"
       :show-skip="false"
       :livestream="isLiveStream(currentEpisode.file)"
       :title="currentEpisode.title"
@@ -142,6 +142,7 @@ watch(isEpisodePlaying, (e) => {
       <template #chevronUp>
         <i class="pi pi-facebook"></i>
       </template>
+      
       <template #volumeOn>
         <i class="pi pi-twitter"></i>
       </template>
@@ -163,7 +164,7 @@ watch(isEpisodePlaying, (e) => {
         <i class="pi pi-twitter"></i>
       </template> -->
       <template #expanded-content>
-        <AudioPlayerExpanded />
+        <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
       </template>
     </VPersistentPlayer>
   </transition>

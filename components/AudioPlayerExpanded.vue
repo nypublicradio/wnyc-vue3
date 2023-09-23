@@ -12,6 +12,9 @@ import {
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
 } from '~/composables/states'
+
+const emit = defineEmits(['close-panel'])
+
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -34,6 +37,8 @@ const moreFromClick = () => {
     'Expanded Audio Player',
     currentEpisode.title
   )
+  emit('close-panel')
+  navigateTo(`/shows/${currentEpisode.slug}`)
 }
 </script>
 

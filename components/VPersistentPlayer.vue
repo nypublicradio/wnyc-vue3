@@ -276,12 +276,14 @@ const { direction, lengthY } = useSwipe(playerRef, {
     if (props.canExpand && props.canExpandWithSwipe) {
       if (direction.value === 'up' && lengthY.value > 100) {
         isExpanded.value = true
+        //toggleExpanded(true)
         emit('swipe-up')
       }
     }
     if (props.canExpand && props.canUnexpandWithSwipe) {
       if (direction.value === 'down' && lengthY.value < -100) {
         isExpanded.value = false
+        //toggleExpanded(false)
         emit('swipe-down')
       }
     }
@@ -448,14 +450,14 @@ const scrollToggle = (e) => {
     window.onscroll = function () {}
   } */
   if (e) {
-    document.body.addEventListener('touchmove', preventScrollOnTouch, {
-      passive: false,
-    })
+    // document.body.addEventListener('touchmove', preventScrollOnTouch, {
+    //   passive: false,
+    // })
     //document.body.classList.add('v-persistent-player-stop-window-scrolling')
   } else {
-    document.body.removeEventListener('touchmove', preventScrollOnTouch, {
-      passive: false,
-    })
+    // document.body.removeEventListener('touchmove', preventScrollOnTouch, {
+    //   passive: false,
+    // })
     //document.body.classList.remove('v-persistent-player-stop-window-scrolling')
   }
 }
@@ -555,6 +557,7 @@ defineExpose({
         <slot v-else name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
       </Button>
     </div>
+
     <Transition name="expand">
       <div v-if="!isExpanded" class="player-controls">
         <div
@@ -684,6 +687,7 @@ defineExpose({
         </Button>
       </div>
     </Transition>
+
     <Transition name="expand-delay">
       <div v-if="isExpanded" class="expanded-view">
         <div class="expanded-content-holder">
