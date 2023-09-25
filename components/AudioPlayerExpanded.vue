@@ -6,6 +6,7 @@ import {
   isLiveStream,
   whenTime,
   resizePublisherImageUrl,
+  copyToClipBoard,
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
@@ -17,6 +18,8 @@ import {
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
 } from '~/composables/states'
+import { useToast } from 'primevue/usetoast'
+const toast = useToast()
 
 const emit = defineEmits(['close-panel'])
 
@@ -35,6 +38,61 @@ const expandedFooterheight = ref(0)
 onMounted(() => {
   expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
 })
+
+// set the items for the Dot menu
+const getDotMenuItems = (bucketItem) => {
+  return [
+    {
+      label: 'Download',
+      title: bucketItem.title,
+      command: () => {
+        toast.add({
+          severity: 'info',
+          summary: 'Downloading...',
+          detail: bucketItem.title,
+          life: 3000,
+        })
+        trackClickEvent(
+          'Click Tracking - Audio Download',
+          'Large Card',
+          bucketItem.title
+        )
+      },
+    },
+    ...(bucketItem.embedCode
+      ? [
+          {
+            label: 'Copy embed code',
+            title: bucketItem.title,
+            embedCode: bucketItem.embedCode,
+            command: () => {
+              copyToClipBoard(bucketItem.embedCode)
+                ? toast.add({
+                    severity: 'info',
+                    summary: 'Embed code copied to clipboard',
+                    life: 3000,
+                  })
+                : toast.add({
+                    severity: 'error',
+                    summary: 'Copy to clipboard failed. Try again another time',
+                    life: 3000,
+                  })
+              trackClickEvent(
+                'Click Tracking - Audio Copy Embed Code',
+                'Large Card',
+                bucketItem.embedCode
+              )
+            },
+          },
+        ]
+      : []),
+  ]
+}
+
+// fire the command located in tehe menuItems data object above when the user clicks on the menu item
+const onMenuChange = (e) => {
+  e.value.command()
+}
 
 const moreFromClick = () => {
   trackClickEvent(
@@ -117,8 +175,23 @@ const moreFromClick = () => {
         <Button text severity="secondary" rounded>
           <template #icon> <ShareIcon /></template>
         </Button>
-        <Button icon="pi pi-ellipsis-v" text severity="secondary" rounded>
-        </Button>
+        <!-- <Button icon="pi pi-ellipsis-v" text severity="secondary" rounded> -->
+        <DotMenu
+          :menuItems="getDotMenuItems(currentEpisode)"
+          label="Options"
+          @changeEmit="onMenuChange"
+        >
+          <template #end v-if="currentEpisode.embedCode">
+            <div class="p-0">
+              <Textarea
+                disabled
+                class="w-full text-xs mt-2"
+                v-model="currentEpisode.embedCode"
+                rows="9"
+              />
+            </div>
+          </template>
+        </DotMenu>
       </div>
     </div>
     <VImagePublisher
@@ -144,7 +217,7 @@ const moreFromClick = () => {
     </VImagePublisher>
 
     <div v-if="currentEpisode.onTodaysShowHosts">
-      <div class="flex gap-4 flex-wrap">
+      <div class="flex gap-4 flex-wrap mb-3">
         <Author
           v-for="author in currentEpisode.onTodaysShowHosts"
           :imgSrc="resizePublisherImageUrl(author.image, 40, 40, 80)"
@@ -188,6 +261,7 @@ const moreFromClick = () => {
       );
       .expanded-footer {
         background: var(--persistent-player-bg);
+
         display: block;
         position: fixed;
         //height: 45px;

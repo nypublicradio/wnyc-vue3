@@ -151,7 +151,7 @@ html.style-mode-dark .persistent-player {
 
   .expanded-view .header,
   .expanded-view .expanded-footer {
-    background-color: var(--expandedHeaderBackground) !important;
+    background-color: var(--expandedHeaderBackgroundTransparent) !important;
     backdrop-filter: blur(4px);
   }
 }
@@ -221,6 +221,12 @@ html.style-mode-dark .persistent-player {
         .header {
           z-index: 1;
           padding: 1rem 0.5rem;
+          background-color: var(--persistent-player-bg-transparent);
+          backdrop-filter: blur(4px);
+        }
+        .expanded-footer {
+          background-color: var(--persistent-player-bg-transparent);
+          backdrop-filter: blur(4px);
         }
       }
     }
