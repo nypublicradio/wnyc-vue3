@@ -6,7 +6,6 @@ import {
   isLiveStream,
   whenTime,
   resizePublisherImageUrl,
-  copyToClipBoard,
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
@@ -22,6 +21,10 @@ import { useToast } from 'primevue/usetoast'
 
 import StarIcon from '~/components/icons/StarIcon.vue'
 import DownloadIcon from '~/components/icons/DownloadIcon.vue'
+import ShareIcon from '~/components/icons/ShareIcon.vue'
+import QueueIcon from '~/components/icons/QueueIcon.vue'
+import MoreEpisodesIcon from '~/components/icons/MoreEpisodesIcon.vue'
+import FollowIcon from '~/components/icons/FollowIcon.vue'
 
 const toast = useToast()
 
@@ -48,7 +51,6 @@ const getDotMenuItems = (bucketItem) => {
   return [
     {
       label: 'Favorite Episode',
-      //icon: 'pi pi-google',
       customIcon: StarIcon,
       active: true,
       title: bucketItem.title,
@@ -74,6 +76,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: DownloadIcon,
       title: bucketItem.title,
       command: () => {
+        // update CapacitorJs filesystem
         toast.add({
           severity: 'info',
           summary: 'Downloading...',
@@ -87,34 +90,91 @@ const getDotMenuItems = (bucketItem) => {
         )
       },
     },
-    ...(bucketItem.embedCode
-      ? [
-          {
-            label: 'Copy embed code',
-            icon: 'pi pi-google',
-            title: bucketItem.title,
-            embedCode: bucketItem.embedCode,
-            command: () => {
-              copyToClipBoard(bucketItem.embedCode)
-                ? toast.add({
-                    severity: 'info',
-                    summary: 'Embed code copied to clipboard',
-                    life: 3000,
-                  })
-                : toast.add({
-                    severity: 'error',
-                    summary: 'Copy to clipboard failed. Try again another time',
-                    life: 3000,
-                  })
-              trackClickEvent(
-                'Click Tracking - Audio Copy Embed Code',
-                'Large Card',
-                bucketItem.embedCode
-              )
-            },
-          },
-        ]
-      : []),
+    {
+      label: 'Share',
+      customIcon: ShareIcon,
+      title: bucketItem.title,
+      command: () => {
+        // trigger sharing system
+
+        trackClickEvent(
+          'Click Tracking - Audio share',
+          'Expanded Audio Player',
+          bucketItem.title
+        )
+      },
+    },
+    {
+      label: 'Add to Queue',
+      active: true,
+      customIcon: QueueIcon,
+      title: bucketItem.title,
+      command: () => {
+        // toggle active state
+        // update SB and LS with new state
+        trackClickEvent(
+          'Click Tracking - Add to Queue',
+          'Expanded Audio Player',
+          bucketItem.title
+        )
+      },
+    },
+    {
+      label: 'More Episodes',
+      customIcon: MoreEpisodesIcon,
+      title: bucketItem.title,
+      command: () => {
+        // navitget to show page
+        trackClickEvent(
+          'Click Tracking - More Episodes',
+          'Expanded Audio Player',
+          bucketItem.title
+        )
+      },
+    },
+    {
+      label: `Follow ${bucketItem.title}`,
+      customIcon: FollowIcon,
+      active: true,
+      title: bucketItem.title,
+      command: () => {
+        // toggle active state
+        // update SB and LS with new state
+        trackClickEvent(
+          `Click Tracking - Follow ${bucketItem.title}`,
+          'Expanded Audio Player',
+          bucketItem.title
+        )
+      },
+    },
+    // ...(bucketItem.embedCode
+    //   ? [
+    //       {
+    //         label: 'Copy embed code',
+    //         icon: 'pi pi-google',
+    //         title: bucketItem.title,
+    //         embedCode: bucketItem.embedCode,
+    //         command: () => {
+    //           copyToClipBoard(bucketItem.embedCode)
+    //             ? toast.add({
+    //                 severity: 'info',
+    //                 summary: 'Embed code copied to clipboard',
+    //                 life: 3000,
+    //               })
+    //             : toast.add({
+    //                 severity: 'error',
+    //                 summary: 'Copy to clipboard failed. Try again another time',
+    //                 life: 3000,
+    //               })
+    //           trackClickEvent(
+    //             'Click Tracking - Audio Copy Embed Code',
+    //             'Large Card',
+    //             bucketItem.embedCode
+    //           )
+    //         },
+    //       },
+    //     ]
+    //   : []),
   ]
 }
 
@@ -136,12 +196,14 @@ const moreFromClick = () => {
 const togglePlay = () => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
+
+console.log('currentEpisode = ', currentEpisode)
 </script>
 
 <template>
   <section class="expanded-player flex flex-column gap-3">
     <VImagePublisher
-      :src="currentEpisode.image"
+      :src="resizePublisherImageUrl(currentEpisode.image, 144, 144, 70)"
       :alt="`${currentEpisode.title} show image`"
       :width="144"
       :height="144"
@@ -216,9 +278,9 @@ const togglePlay = () => {
         <!-- <Button icon="pi pi-ellipsis-v" text severity="secondary" rounded> -->
         <DotMenu
           :menuItems="getDotMenuItems(currentEpisode)"
-          label="Options"
           @changeEmit="onMenuChange"
         >
+          <!-- label="Options" -->
           <template #end v-if="currentEpisode.embedCode">
             <div class="p-0">
               <Textarea
@@ -227,6 +289,27 @@ const togglePlay = () => {
                 v-model="currentEpisode.embedCode"
                 rows="9"
               />
+            </div>
+          </template>
+          <template #header-bottom>
+            <div>
+              <div class="flex gap-3 px-4">
+                <VImagePublisher
+                  :src="
+                    resizePublisherImageUrl(currentEpisode.image, 60, 60, 70)
+                  "
+                  :alt="`${currentEpisode.title} show image`"
+                  :width="60"
+                  :height="60"
+                  class="show-image-in-menu"
+                  :ratio="[1, 1]"
+                />
+                <div class="info">
+                  <h2>{{ currentEpisode.title }}</h2>
+                  <p>{{ currentEpisode.station }}</p>
+                </div>
+              </div>
+              <hr class="mt-5 mb-2 dim" />
             </div>
           </template>
         </DotMenu>

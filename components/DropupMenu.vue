@@ -206,10 +206,13 @@ onUnmounted(() => {
     </template>
     <template #header>
       <div class="style-mode-dark">
-        <i class="pi pi-minus" @click="closeMenu" />
-        <h3 v-if="props.label" class="p-submenu-header-replace">
-          {{ props.label }}
-        </h3>
+        <div class="px-4">
+          <i class="pi pi-minus" @click="closeMenu" />
+          <h3 v-if="props.label" class="p-submenu-header-replace">
+            {{ props.label }}
+          </h3>
+        </div>
+        <slot name="header" />
       </div>
     </template>
     <template #option="slotProps">
@@ -339,7 +342,6 @@ onUnmounted(() => {
     font-family: var(--font-family-header);
     margin-top: 20px;
     margin-bottom: 20px;
-    padding-left: 1.25rem;
   }
   .p-dropdown-items-wrapper {
     max-height: unset !important;
@@ -348,7 +350,7 @@ onUnmounted(() => {
       color: #ffffff !important;
       font-weight: var(--font-weight-600);
       font-size: 0.938rem;
-      padding: 0.5rem 20px;
+      padding: 0.75rem 20px;
       background: unset !important;
       &:hover {
         background: #ffffff3d !important;
@@ -358,7 +360,7 @@ onUnmounted(() => {
         @include checkMark;
       }
       .station-options {
-        margin: 10px 0;
+        //margin: 10px 0;
         img {
           width: 40px !important;
           height: 40px !important;

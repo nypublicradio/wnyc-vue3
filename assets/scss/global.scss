@@ -180,6 +180,9 @@ hr {
   border: none;
   height: 1px;
   background: var(--stroke-500);
+  &.dim {
+    opacity: 0.25;
+  }
 }
 
 /* Light mode */
