@@ -205,26 +205,43 @@ onUnmounted(() => {
       </div>
     </template>
     <template #header>
-      <i class="pi pi-minus" @click="closeMenu" />
-      <h3 v-if="props.label" class="p-submenu-header-replace">
-        {{ props.label }}
-      </h3>
+      <div class="style-mode-dark">
+        <i class="pi pi-minus" @click="closeMenu" />
+        <h3 v-if="props.label" class="p-submenu-header-replace">
+          {{ props.label }}
+        </h3>
+      </div>
     </template>
     <template #option="slotProps">
       <!--  <pre>{{ slotProps.option }}</pre> -->
-      <div
-        :key="slotProps.option[props.optionLabel]"
-        class="flex align-items-center station-options"
-        :class="[{ selected: slotProps.option[props.optionLabel] === dataRef }]"
-      >
-        <!-- <img
-          v-if="slotProps.option.image"
-          :alt="slotProps.option.label"
-          :src="slotProps.option.image"
-          class="mr-2"
-          style="width: 18px; height: 18px"
-        /> -->
-        <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
+      <div class="style-mode-dark">
+        <div
+          :key="slotProps.option[props.optionLabel]"
+          class="flex align-items-center station-options"
+          :class="[
+            { selected: slotProps.option[props.optionLabel] === dataRef },
+          ]"
+        >
+          <img
+            v-if="slotProps.option.image"
+            :alt="slotProps.option.label"
+            :src="slotProps.option.image"
+            class="mr-3"
+            style="width: 18px; height: 18px"
+          />
+          <i
+            v-if="slotProps.option.icon"
+            class="mr-3"
+            :class="slotProps.option.icon"
+          ></i>
+          <component
+            class="mr-3 custom-icon"
+            :active="slotProps.option.active ?? false"
+            v-if="slotProps.option.customIcon"
+            :is="slotProps.option.customIcon"
+          />
+          <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
+        </div>
       </div>
     </template>
     <template #footer="slotProps">
@@ -316,7 +333,7 @@ onUnmounted(() => {
   }
   .p-submenu-header-replace {
     background: transparent;
-    color: #ffffff !important;
+    color: var(--text-color);
     font-weight: var(--font-weight-700);
     font-size: 1.625rem;
     font-family: var(--font-family-header);
@@ -352,6 +369,10 @@ onUnmounted(() => {
         &.selected {
           @include checkMark;
         }
+      }
+      .custom-icon {
+        width: 2rem;
+        height: 2rem;
       }
     }
   }

@@ -19,6 +19,10 @@ import {
   useCurrentEpisodeProgress,
 } from '~/composables/states'
 import { useToast } from 'primevue/usetoast'
+
+import StarIcon from '~/components/icons/StarIcon.vue'
+import DownloadIcon from '~/components/icons/DownloadIcon.vue'
+
 const toast = useToast()
 
 const emit = defineEmits(['close-panel'])
@@ -43,7 +47,31 @@ onMounted(() => {
 const getDotMenuItems = (bucketItem) => {
   return [
     {
+      label: 'Favorite Episode',
+      //icon: 'pi pi-google',
+      customIcon: StarIcon,
+      active: true,
+      title: bucketItem.title,
+      command: () => {
+        // toggle active state
+        // update SB and LS with new state
+        toast.add({
+          severity: 'info',
+          summary: 'Updated your favorites.',
+          detail: bucketItem.title,
+          life: 3000,
+        })
+        trackClickEvent(
+          'Click Tracking - Add/remove from favorites',
+          'Expanded Audio Player',
+          bucketItem.title
+        )
+      },
+    },
+    {
       label: 'Download',
+      //icon: 'pi pi-google',
+      customIcon: DownloadIcon,
       title: bucketItem.title,
       command: () => {
         toast.add({
@@ -54,7 +82,7 @@ const getDotMenuItems = (bucketItem) => {
         })
         trackClickEvent(
           'Click Tracking - Audio Download',
-          'Large Card',
+          'Expanded Audio Player',
           bucketItem.title
         )
       },
@@ -63,6 +91,7 @@ const getDotMenuItems = (bucketItem) => {
       ? [
           {
             label: 'Copy embed code',
+            icon: 'pi pi-google',
             title: bucketItem.title,
             embedCode: bucketItem.embedCode,
             command: () => {
@@ -102,6 +131,10 @@ const moreFromClick = () => {
   )
   emit('close-panel')
   navigateTo(`/shows/${currentEpisode.slug}`)
+}
+
+const togglePlay = () => {
+  togglePlayTrigger.value = !togglePlayTrigger.value
 }
 </script>
 
@@ -144,10 +177,15 @@ const moreFromClick = () => {
       <Button disabled="!isLiveStream" severity="secondary" rounded>
         <template #icon> <Previous10 /></template>
       </Button>
-      <Button v-if="isEpisodePlaying" severity="secondary" rounded>
+      <Button
+        v-if="isEpisodePlaying"
+        severity="secondary"
+        rounded
+        @click="togglePlay"
+      >
         <template #icon> <PauseIcon /></template>
       </Button>
-      <Button v-else severity="secondary" rounded>
+      <Button v-else severity="secondary" rounded @click="togglePlay">
         <template #icon> <PlayIcon /></template>
       </Button>
       <Button disabled="!isLiveStream" severity="secondary" rounded>

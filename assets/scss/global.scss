@@ -315,10 +315,10 @@ a:visited {
   }
 }
 
-// TEMP, updated in DS comp, remove with updated
+// ?!?!?!?, I have to force a display change here in order for the image to show up
 .v-image-publisher {
   .image {
-    display: block;
+    display: flex !important;
   }
 }
 
