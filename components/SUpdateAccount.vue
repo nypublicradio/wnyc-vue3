@@ -41,14 +41,14 @@ const formDataOriginal = {
   email: currentUser.value.email,
   name: currentUserProfile.value.name,
   password: '',
-  password_confirm: '',
+  email_confirm: '',
 }
 
 const formData = reactive({
   email: currentUser.value.email,
   name: currentUserProfile.value.name,
   password: '',
-  password_confirm: '',
+  email_confirm: '',
 })
 
 // for checking if the field has changed
@@ -80,17 +80,17 @@ const passwordRules = computed(() => {
     return false
   }
 })
-// Vuelidate rule for password confirm
-const passwordRulesConfirm = computed(() => {
-  if (formData.password.length > 0) {
+// Vuelidate rule for email confirm
+const emailRulesConfirm = computed(() => {
+  if (hasFieldChanged('email')) {
     return {
       required: helpers.withMessage(
-        'The password confirmation field is required ',
+        'The email confirmation field is required ',
         required
       ),
       sameAs: helpers.withMessage(
-        "Passwords don't match",
-        sameAs(formData.password)
+        "email addresses don't match",
+        sameAs(formData.email)
       ),
     }
   } else {
@@ -109,7 +109,7 @@ const rules = computed(() => {
       required: helpers.withMessage('Please add your name', required),
     },
     password: passwordRules.value,
-    password_confirm: passwordRulesConfirm.value,
+    email_confirm: emailRulesConfirm.value,
   }
 })
 
@@ -118,9 +118,11 @@ const v$ = useVuelidate(rules, formData)
 // submit the form
 const submitForm = async () => {
   emit('submit-click')
+  console.log('submit')
   v$.value.$validate()
 
   if (!v$.value.$error) {
+    console.log('validated')
     //success with Vuelidate
 
     // if nothing has changed, then abort and ckose the sidebar
@@ -161,6 +163,7 @@ const submitForm = async () => {
 
     // email supabase update
     if (hasFieldChanged('email')) {
+      console.log('updating supabase email')
       const { errorEmail } = await client.auth.updateUser({
         email: formData.email,
       })
@@ -298,6 +301,33 @@ const beforeYouLeave = (e) => {
             </small>
           </div>
 
+          <div
+            v-if="hasFieldChanged('email')"
+            class="flex flex-column gap-2 col-12"
+          >
+            <label for="email">Email confirm</label>
+            <InputText
+              v-model="formData.email_confirm"
+              type="text"
+              name="email"
+              class="w-full"
+              :class="{
+                'p-invalid':
+                  v$.email_confirm.$error && v$.email_confirm.$invalid,
+              }"
+              required
+              @update="v$.email_confirm.$touch"
+            />
+            <small class="p-error">
+              <span v-for="err of v$.email_confirm.$errors" :key="err.$uid">
+                {{ err.$message }}<br />
+              </span>
+              <!-- <p v-if="!v$.email_confirm.$errors.length > 0">
+                email addresses must match
+              </p> -->
+            </small>
+          </div>
+
           <div class="flex flex-column gap-2 col-12">
             <label for="password">Password</label>
             <Password
@@ -318,33 +348,6 @@ const beforeYouLeave = (e) => {
               </span>
               <p v-if="!v$.password.$errors.length > 0">
                 must be at least 8 characters and 1 number
-              </p>
-            </small>
-          </div>
-
-          <div
-            v-if="hasFieldChanged('password')"
-            class="flex flex-column gap-2 col-12"
-          >
-            <label for="password">Password confirm</label>
-            <Password
-              v-model="formData.password_confirm"
-              type="password"
-              name="password"
-              :class="{
-                'p-invalid':
-                  v$.password_confirm.$error && v$.password_confirm.$invalid,
-              }"
-              required
-              :feedback="false"
-              @update="v$.password_confirm.$touch"
-            />
-            <small class="p-error">
-              <span v-for="err of v$.password_confirm.$errors" :key="err.$uid">
-                {{ err.$message }}<br />
-              </span>
-              <p v-if="!v$.password_confirm.$errors.length > 0">
-                passwords must match
               </p>
             </small>
           </div>

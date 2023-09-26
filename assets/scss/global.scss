@@ -256,6 +256,13 @@ label {
   color: var(--text-color);
 }
 
+// remove sticky hover on mobile
+@media (hover: hover) {
+  .p-button:hover {
+    background-color: #ccf6c8;
+  }
+}
+
 .p-button {
   border-radius: 2rem;
   &.center {
@@ -274,6 +281,12 @@ label {
     font-weight: inherit;
     text-decoration: underline;
     color: var(--link);
+  }
+  &.p-button-secondary {
+    .p-button-icon:before,
+    .p-button-icon:after {
+      color: var(--text-color);
+    }
   }
 }
 

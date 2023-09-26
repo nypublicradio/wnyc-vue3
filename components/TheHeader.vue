@@ -67,7 +67,6 @@ const settingsSideBar = useSettingSideBar()
   height: var(--header-height);
   display: flex;
   .pi-bars {
-    color: var(--text-color);
     font-size: var(--font-size-8);
   }
 }
