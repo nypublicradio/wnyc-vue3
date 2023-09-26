@@ -1,13 +1,13 @@
 <script async setup>
-import { useEditProfileSideBar } from '~/composables/states'
-const editProfileSideBar = useEditProfileSideBar()
+// import { useEditProfileSideBar } from '~/composables/states'
+// const editProfileSideBar = useEditProfileSideBar()
 </script>
 
 <template>
   <div class="login">
-    <section>
+    <!--     <section>
       <SHeader label="Account" @close-sidebar="editProfileSideBar = false" />
-    </section>
+    </section> -->
     <section>
       <SUpdateAccount />
     </section>

@@ -147,6 +147,14 @@ body {
     .p-message-close {
       display: none;
     }
+    .p-message-text * {
+      //color: var(--night-500);
+    }
+    &.error {
+      .p-message-text * {
+        color: var(--red-500);
+      }
+    }
   }
 }
 .p-toast {
@@ -323,5 +331,17 @@ a:visited {
 .v-image-publisher {
   .image {
     display: flex !important;
+  }
+}
+
+.p-dialog {
+  .p-dialog-header,
+  .p-dialog-content,
+  .p-dialog-footer {
+    background: var(--background2);
+    color: var(--text-color);
+  }
+  .p-dialog-header-icon svg path {
+    fill: var(--text-color);
   }
 }

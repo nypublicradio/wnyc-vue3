@@ -324,8 +324,8 @@ onUnmounted(() => {
   width: 100%;
   transform-origin: center bottom !important;
   border-radius: 28px 28px 0px 0px;
-  -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
-  box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
   background: var(--background4) !important;
   .pi-minus {
     color: #ffffff;
@@ -379,7 +379,8 @@ onUnmounted(() => {
     }
   }
   .footer {
-    padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
+    //padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
+    padding: 0px 20px calc($bottomMenuHeight + 20px) 20px;
   }
 }
 </style>

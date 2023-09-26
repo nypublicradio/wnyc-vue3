@@ -1,6 +1,6 @@
 <script setup>
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
+//import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
 import UserIcon from '~/components/icons/UserIcon.vue'
 import {
   useSettingSideBar,
@@ -18,6 +18,10 @@ const toast = useToast()
 
 const props = defineProps({
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  isEmail: {
     type: Boolean,
     default: false,
   },
@@ -120,7 +124,7 @@ const handleModal = () => {
         <UserIcon />
 
         <Button
-          v-if="currentUser"
+          v-if="currentUser && props.isEmail"
           icon="pi pi-plus"
           severity="secondary"
           rounded
@@ -131,7 +135,7 @@ const handleModal = () => {
     <Dialog
       v-model:visible="imageUploadModal"
       modal
-      header="Upload Profile Image"
+      header="Your Profile Image"
       :draggable="false"
     >
       <VUploadImage
@@ -140,6 +144,7 @@ const handleModal = () => {
         :currentUserProfile="currentUserProfile"
         :client="client"
         :config="config"
+        :maxFileSize="2500000"
         @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {

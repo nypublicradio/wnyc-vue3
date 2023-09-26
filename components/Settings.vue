@@ -219,7 +219,7 @@ const editField = (field) => {
 <template>
   <div class="settings">
     <section class="user">
-      <SUser :disabled="isDisabled" />
+      <SUser :disabled="isDisabled" :isEmail="isEmail" />
     </section>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="flex s-title-holder">

@@ -1,6 +1,12 @@
 <script setup>
 import { useVuelidate } from '@vuelidate/core'
-import { email, helpers, minLength, required } from '@vuelidate/validators'
+import {
+  email,
+  helpers,
+  minLength,
+  required,
+  sameAs,
+} from '@vuelidate/validators'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
@@ -35,17 +41,25 @@ const formDataOriginal = {
   email: currentUser.value.email,
   name: currentUserProfile.value.name,
   password: '',
+  password_confirm: '',
 }
 
 const formData = reactive({
   email: currentUser.value.email,
   name: currentUserProfile.value.name,
   password: '',
+  password_confirm: '',
 })
 
 // for checking if the field has changed
 const hasFieldChanged = (key) => {
-  return formData[key] !== formDataOriginal[key]
+  return toRaw(formData[key]) !== formDataOriginal[key]
+}
+// for checking if the field has changed
+const hasAnyFieldsChanged = () => {
+  console.log('formDataOriginal= ', formDataOriginal)
+  console.log('toRaw(formData)= ', toRaw(formData))
+  return JSON.stringify(toRaw(formData)) !== JSON.stringify(formDataOriginal)
 }
 
 // Vuelidate rule for having at least one number
@@ -66,6 +80,23 @@ const passwordRules = computed(() => {
     return false
   }
 })
+// Vuelidate rule for password confirm
+const passwordRulesConfirm = computed(() => {
+  if (formData.password.length > 0) {
+    return {
+      required: helpers.withMessage(
+        'The password confirmation field is required ',
+        required
+      ),
+      sameAs: helpers.withMessage(
+        "Passwords don't match",
+        sameAs(formData.password)
+      ),
+    }
+  } else {
+    return false
+  }
+})
 
 // Vuelidate rules
 const rules = computed(() => {
@@ -78,6 +109,7 @@ const rules = computed(() => {
       required: helpers.withMessage('Please add your name', required),
     },
     password: passwordRules.value,
+    password_confirm: passwordRulesConfirm.value,
   }
 })
 
@@ -90,6 +122,12 @@ const submitForm = async () => {
 
   if (!v$.value.$error) {
     //success with Vuelidate
+
+    // if nothing has changed, then abort and ckose the sidebar
+    if (!hasAnyFieldsChanged()) {
+      editProfileSideBar.value = false
+      return
+    }
 
     // name supabase update
     if (hasFieldChanged('name')) {
@@ -110,11 +148,6 @@ const submitForm = async () => {
         })
       } else {
         emit('submit-success')
-        toast.add({
-          severity: 'success',
-          summary: 'Name updated successfully!',
-          life: 3000,
-        })
         trackClickEvent(
           'Event Tracking - Account Name Updated',
           'Settings Sidebar - Account',
@@ -122,6 +155,7 @@ const submitForm = async () => {
         )
         // update local state
         currentUserProfile.value.name = formData.name
+        editProfileSideBar.value = false
       }
     }
 
@@ -164,6 +198,7 @@ const submitForm = async () => {
         )
         // update local state
         currentUserProfile.value.email = formData.email
+        editProfileSideBar.value = false
       }
     }
 
@@ -187,24 +222,41 @@ const submitForm = async () => {
         emit('submit-success')
         toast.add({
           severity: 'success',
-          summary: 'Password updated!',
-          life: 3000,
+          summary: 'Password updated',
+          life: 6000,
         })
         trackClickEvent(
           'Event Tracking - Account password updated',
           'Settings Sidebar - Account',
           'Password data private'
         )
+        editProfileSideBar.value = false
       }
     }
+  }
+}
+
+const beforeYouLeaveDialog = ref(false)
+
+const beforeYouLeave = (e) => {
+  if (hasAnyFieldsChanged()) {
+    beforeYouLeaveDialog.value = true
+  } else {
+    editProfileSideBar.value = false
   }
 }
 </script>
 
 <template>
   <div>
-    <div class="mt-6">
-      <form v-if="formData" novalidate @submit.prevent="submitForm">
+    <div>
+      <SHeader label="Account" @close-sidebar="beforeYouLeave" />
+      <form
+        v-if="formData"
+        class="mt-6"
+        novalidate
+        @submit.prevent="submitForm"
+      >
         <div class="grid mb-2">
           <div class="flex flex-column gap-2 col-12">
             <label for="first_name">Name</label>
@@ -269,6 +321,33 @@ const submitForm = async () => {
               </p>
             </small>
           </div>
+
+          <div
+            v-if="hasFieldChanged('password')"
+            class="flex flex-column gap-2 col-12"
+          >
+            <label for="password">Password confirm</label>
+            <Password
+              v-model="formData.password_confirm"
+              type="password"
+              name="password"
+              :class="{
+                'p-invalid':
+                  v$.password_confirm.$error && v$.password_confirm.$invalid,
+              }"
+              required
+              :feedback="false"
+              @update="v$.password_confirm.$touch"
+            />
+            <small class="p-error">
+              <span v-for="err of v$.password_confirm.$errors" :key="err.$uid">
+                {{ err.$message }}<br />
+              </span>
+              <p v-if="!v$.password_confirm.$errors.length > 0">
+                passwords must match
+              </p>
+            </small>
+          </div>
         </div>
         <slot name="aboveSubmit" />
         <Button
@@ -283,9 +362,38 @@ const submitForm = async () => {
           label="Cancel"
           link
           class="mt-4 w-full"
-          @click="editProfileSideBar = false"
+          @click="beforeYouLeave"
         />
       </form>
+      <Dialog
+        v-model:visible="beforeYouLeaveDialog"
+        modal
+        dismissableMask
+        :draggable="false"
+        header="Unsaved changes"
+        :style="{ width: '70vw' }"
+      >
+        <p class="text-base">
+          Are you sure you want to leave this page? Changes you made will not be
+          saved.
+        </p>
+        <template #footer>
+          <div class="flex justify-content-between">
+            <Button label="Cancel" @click="beforeYouLeaveDialog = false" />
+            <Button
+              text
+              label="Leave"
+              @click="
+                () => {
+                  beforeYouLeaveDialog = false
+                  editProfileSideBar = false
+                }
+              "
+              autofocus
+            />
+          </div>
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>
