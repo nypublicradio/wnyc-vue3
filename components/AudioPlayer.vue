@@ -164,7 +164,6 @@ html.style-mode-dark .persistent-player {
 
   .persistent-player {
     bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
-    z-index: 9999;
     .track-info {
       //position: relative;
     }

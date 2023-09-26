@@ -6,6 +6,7 @@ import {
   isLiveStream,
   whenTime,
   resizePublisherImageUrl,
+  shareAPI,
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
@@ -25,6 +26,7 @@ import ShareIcon from '~/components/icons/ShareIcon.vue'
 import QueueIcon from '~/components/icons/QueueIcon.vue'
 import MoreEpisodesIcon from '~/components/icons/MoreEpisodesIcon.vue'
 import FollowIcon from '~/components/icons/FollowIcon.vue'
+import SleepIcon from '~/components/icons/SleepIcon.vue'
 
 const toast = useToast()
 
@@ -60,7 +62,6 @@ const getDotMenuItems = (bucketItem) => {
         toast.add({
           severity: 'info',
           summary: 'Updated your favorites.',
-          detail: bucketItem.title,
           life: 3000,
         })
         trackClickEvent(
@@ -80,7 +81,6 @@ const getDotMenuItems = (bucketItem) => {
         toast.add({
           severity: 'info',
           summary: 'Downloading...',
-          detail: bucketItem.title,
           life: 3000,
         })
         trackClickEvent(
@@ -96,7 +96,10 @@ const getDotMenuItems = (bucketItem) => {
       title: bucketItem.title,
       command: () => {
         // trigger sharing system
-
+        shareAPI({
+          title: bucketItem.title,
+          url: bucketItem.url,
+        })
         trackClickEvent(
           'Click Tracking - Audio share',
           'Expanded Audio Player',
@@ -147,6 +150,21 @@ const getDotMenuItems = (bucketItem) => {
         )
       },
     },
+    {
+      label: 'Sleep Timer',
+      customIcon: SleepIcon,
+      active: true,
+      title: bucketItem.title,
+      command: () => {
+        // toggle active state
+        // show sleep timer interface
+        trackClickEvent(
+          'Click Tracking - Sleep Timer',
+          'Expanded Audio Player',
+          bucketItem.title
+        )
+      },
+    },
     // ...(bucketItem.embedCode
     //   ? [
     //       {
@@ -178,7 +196,7 @@ const getDotMenuItems = (bucketItem) => {
   ]
 }
 
-// fire the command located in tehe menuItems data object above when the user clicks on the menu item
+// fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e.value.command()
 }
@@ -209,6 +227,7 @@ console.log('currentEpisode = ', currentEpisode)
       :height="144"
       class="show-image max-w-9rem m-auto"
       :ratio="[1, 1]"
+      style="min-height: 144px"
     />
     <div v-if="!isLiveStream" class="station live flex gap-2">
       <LiveBadge />
@@ -303,10 +322,13 @@ console.log('currentEpisode = ', currentEpisode)
                   :height="60"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"
+                  style="min-height: 60px"
                 />
+
                 <div class="info">
                   <h2>{{ currentEpisode.title }}</h2>
-                  <p>{{ currentEpisode.station }}</p>
+                  <p v-if="isLiveStream">{{ currentEpisode.station }}</p>
+                  <p v-else>{{ currentEpisode.show }}</p>
                 </div>
               </div>
               <hr class="mt-5 mb-2 dim" />

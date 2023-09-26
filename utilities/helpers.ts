@@ -1,4 +1,3 @@
-import { useSwipe } from '@vueuse/core'
 import { format, formatDistanceToNowStrict } from 'date-fns'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -415,114 +414,19 @@ export const copyToClipBoard = async (content: string) => {
   return null
 }
 
+/*basic function that detects if the site is running in a mobile browser*/
+function isMobileBrowser() {
+  return (typeof window.orientation !== "undefined")
+    || (navigator.userAgent.indexOf('IEMobile') !== -1
+    )
+};
 
-export const setSwipeToggle = (elm, bool, props) => {
-
-  const supportSwipe =
-    (props.canExpand && props.canExpandWithSwipe) ||
-    (props.canExpand && props.canUnexpandWithSwipe)
-
-  // prevents the body from scrolling when the dropdown is open
-  function preventScrollOnTouch(event) {
-    event.preventDefault()
+// share API
+export const shareAPI = async (content: object) => {
+  if (navigator.canShare(content) && isMobileBrowser()) {
+    await navigator.share(content)
+    return true
+  } else {
+    return false
   }
-  if (supportSwipe) {
-    let touchstartY = 0
-    let touchendY = 0
-    let touchPrevY = 0
-    let touchCurrentY = 0
-    let touchstartTime = 0
-    let touchendTime = 0
-    const swipeThreshold = 0.5
-    let distanceThreshold = 125
-    let isDraggingDown = false
-
-    // handles the detection of the direction of the drag movment
-    function handleSwipeDirection() {
-      const tempBool = isDraggingDown
-      if (touchCurrentY < touchPrevY) {
-        isDraggingDown = true
-      }
-      if (touchCurrentY > touchPrevY) {
-        isDraggingDown = false
-      }
-      //reset the touchstartY and touchstartTime if the direction changes
-      if (tempBool !== isDraggingDown) {
-        touchstartY = touchCurrentY
-        touchstartTime = new Date().getTime()
-      }
-    }
-
-    // handles the swipe ended logic
-    function handleSwipe() {
-      const distance = Math.abs(touchendY - touchstartY)
-      const time = touchendTime - touchstartTime
-      const velocity = distance / time
-      // console.log('________________________________________________________')
-      // console.log('distance', distance)
-      // console.log('distanceThreshold', distanceThreshold)
-      // console.log('time', time)
-      // console.log('velocity', velocity)
-      // console.log('swipeThreshold', swipeThreshold)
-      // console.log('isDraggingDown', isDraggingDown)
-      // console.log('touchendY', touchendY)
-      // console.log('touchstartY', touchstartY)
-      if (props.canExpand && props.canExpandWithSwipe) {
-        if (!isDraggingDown) {
-          if (velocity > swipeThreshold) {
-            //console.log('EXPAND')
-            elm.value.removeEventListener(
-              'touchmove',
-              preventScrollOnTouch,
-              {
-                passive: false,
-              }
-            )
-            bool.value = true
-          }
-        }
-      }
-      if (props.canExpand && props.canUnexpandWithSwipe) {
-        if (isDraggingDown) {
-          if (velocity > swipeThreshold) {
-            //console.log('UNEXPAND')
-            elm.value.addEventListener('touchmove', preventScrollOnTouch, {
-              passive: false,
-            })
-            bool.value = false
-          }
-        }
-      }
-    }
-
-    const sMove = useSwipe(elm, {
-      onSwipeStart() {
-        touchstartY = sMove.lengthY.value
-        touchstartTime = new Date().getTime()
-      },
-      onSwipe() {
-        touchCurrentY = sMove.lengthY.value
-
-        handleSwipeDirection()
-        touchPrevY = touchCurrentY
-      },
-      onSwipeEnd() {
-
-        touchendY = sMove.lengthY.value
-        touchendTime = new Date().getTime()
-        handleSwipe()
-      },
-      passive: true,
-    })
-
-
-    onMounted(() => {
-
-      elm.value.addEventListener('touchmove', preventScrollOnTouch, {
-        passive: false,
-      })
-
-    })
-  }
-
 }
