@@ -13,7 +13,7 @@ const props = defineProps({
       <div class="flex column-gap-1 row-gap-0 flex-wrap">
         <slot name="left" />
         <div class="flex column-gap-1">
-          <div v-if="props.hidePipe">|</div>
+          <div v-if="!props.hidePipe">|</div>
           <slot name="right" />
         </div>
       </div>

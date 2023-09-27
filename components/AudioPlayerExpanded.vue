@@ -235,7 +235,7 @@ console.log('currentEpisode = ', currentEpisode)
       <h2 class="text-lg">{{ currentEpisode.title }}</h2>
     </div>
     <div v-else class="station">
-      <PipeData class="text-xs" :hidePipe="whenTime(currentEpisode)">
+      <PipeData class="text-xs" :hidePipe="Boolean(whenTime(currentEpisode))">
         <template #left
           ><h2>{{ currentEpisode.title }}</h2></template
         >

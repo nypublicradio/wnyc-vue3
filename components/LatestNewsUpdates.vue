@@ -89,7 +89,7 @@ const togglePlay = (media) => {
           <div class="news-title">
             <div class="font-bold">11AM Update</div>
             <PipeData>
-              <template #left>WNYC</template>
+              <template #left>NPR</template>
               <template #right>
                 <span class="nobreak">{{ whenTime(national) }}</span>
               </template>
