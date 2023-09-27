@@ -20,7 +20,9 @@ export async function updateAllLiveStreams() {
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentUserProfile = useCurrentUserProfile()
 
-    const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
+    const { data: pagedata } = await useFetch('/api/homepage')
+    const articles = pagedata.value.streams;
+        const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
 
     const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
         //const fetchingAll = await Promise.all(fetchDataImport?.data.map(async (stream) => {
@@ -28,7 +30,7 @@ export async function updateAllLiveStreams() {
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
             const fetchedRunningShowData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-
+console.log(stream.attributes.slug, fetchedRunningShowData.data.value);
             return formatShowData(fetchedRunningShowData.data.value)
         }
     }))
