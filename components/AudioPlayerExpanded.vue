@@ -1,6 +1,6 @@
 <script setup>
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
-import VProgressScrubber from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue'
+import VTrackInfo from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue'
 import {
   trackClickEvent,
   isLiveStream,
@@ -17,6 +17,8 @@ import {
   useIsStreamLoading,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
+  useSkipAheadTrigger,
+  useSkipBackTrigger,
 } from '~/composables/states'
 import { useToast } from 'primevue/usetoast'
 
@@ -38,6 +40,8 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
+const skipAheadTrigger = useSkipAheadTrigger()
+const skipBackTrigger = useSkipBackTrigger()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 
@@ -215,6 +219,13 @@ const togglePlay = () => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
+const skipAhead = () => {
+  skipAheadTrigger.value = !skipAheadTrigger.value
+}
+const skipBack = () => {
+  skipBackTrigger.value = !skipBackTrigger.value
+}
+
 console.log('currentEpisode = ', currentEpisode)
 </script>
 
@@ -229,13 +240,14 @@ console.log('currentEpisode = ', currentEpisode)
       :ratio="[1, 1]"
       style="min-height: 144px"
     />
-    <div v-if="!isLiveStream" class="station live flex gap-2">
+
+    <div v-if="isLiveStream()" class="station live flex gap-2">
       <LiveBadge />
       <p>{{ currentEpisode.station }}</p>
       <h2 class="text-lg">{{ currentEpisode.title }}</h2>
     </div>
     <div v-else class="station">
-      <PipeData class="text-xs" :hidePipe="Boolean(whenTime(currentEpisode))">
+      <PipeData class="text-xs" :hidePipe="!Boolean(whenTime(currentEpisode))">
         <template #left
           ><h2>{{ currentEpisode.title }}</h2></template
         >
@@ -246,16 +258,25 @@ console.log('currentEpisode = ', currentEpisode)
     </div>
     <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
 
-    <div v-if="!isLiveStream" class="progress-holder">
-      <VProgressScrubber :progress="currentEpisodeProgress" />
-      <div class="flex justify-content-between">
-        <div>{{ currentEpisodeProgress }}</div>
-        <div>{{ currentEpisodeDuration }}</div>
-      </div>
+    <div v-if="!isLiveStream()" class="progress-holder">
+      <VTrackInfo
+        :current-seconds="currentEpisodeProgress"
+        :duration-seconds="currentEpisodeDuration"
+        :hide-time-on-mobile="false"
+        :timeline-interactive="false"
+      />
+      <!-- @scrub-timeline-change="scrubTimelineChange"
+        @scrub-timeline-end="scrubTimelineEnd"
+        @timeline-click="timelineClick" -->
     </div>
 
     <div class="controls flex gap-3 justify-content-center">
-      <Button disabled="!isLiveStream" severity="secondary" rounded>
+      <Button
+        :disabled="isLiveStream()"
+        severity="secondary"
+        rounded
+        @click="skipBack"
+      >
         <template #icon> <Previous10 /></template>
       </Button>
       <Button
@@ -269,12 +290,17 @@ console.log('currentEpisode = ', currentEpisode)
       <Button v-else severity="secondary" rounded @click="togglePlay">
         <template #icon> <PlayIcon /></template>
       </Button>
-      <Button disabled="!isLiveStream" severity="secondary" rounded>
+      <Button
+        :disabled="isLiveStream()"
+        severity="secondary"
+        rounded
+        @click="skipAhead"
+      >
         <template #icon> <Next10 /></template>
       </Button>
     </div>
     <div class="tools flex justify-content-between">
-      <div v-if="isLiveStream" class="flex gap-3">
+      <div v-if="isLiveStream()" class="flex gap-3">
         <Button text severity="secondary" rounded>
           <template #icon> <FollowIcon /></template>
         </Button>
@@ -327,7 +353,7 @@ console.log('currentEpisode = ', currentEpisode)
 
                 <div class="info">
                   <h2>{{ currentEpisode.title }}</h2>
-                  <p v-if="isLiveStream">{{ currentEpisode.station }}</p>
+                  <p v-if="isLiveStream()">{{ currentEpisode.station }}</p>
                   <p v-else>{{ currentEpisode.show }}</p>
                 </div>
               </div>
@@ -422,6 +448,16 @@ console.log('currentEpisode = ', currentEpisode)
           width: 100%;
           .p-slider-horizontal .p-slider-range {
             height: 0.286rem;
+          }
+        }
+        // .p-slider-handle {
+        //   display: block !important;
+        // }
+        .track-info-time {
+          display: flex !important;
+          justify-content: space-between;
+          .track-info-time-separator {
+            display: none;
           }
         }
       }

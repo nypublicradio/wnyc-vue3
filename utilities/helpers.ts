@@ -11,6 +11,8 @@ import {
 import { Browser } from '@capacitor/browser';
 const directoryToSaveTo = Directory.External
 
+
+
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
   if (date) {
@@ -380,8 +382,9 @@ export async function openLinkInAppBrowser(url: string) {
 }
 
 // helper function to determine if the file url is a live stream or .mp3 file
-export function isLiveStream(url: string) {
-  return !url.includes('.mp3')
+export const isLiveStream = () => {
+  const currentEpisode = useCurrentEpisode()
+  return !currentEpisode.value.file.includes('.mp3')
 }
 
 // returns the time since the episode was published, but checks for updated_date first
@@ -394,8 +397,8 @@ export const whenTime = (data) => {
 
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
-  const seconds = Math.floor(ms / mult)
-  const minutes = Math.floor(seconds / 60)
+  const seconds = Math.ceil(ms / mult)
+  const minutes = Math.ceil(seconds / 60)
   //const remainingSeconds = seconds % 60
   //remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
@@ -429,4 +432,10 @@ export const shareAPI = async (content: object) => {
   } else {
     return false
   }
+}
+
+// time converter
+export const convertTime = (val) => {
+  const hhmmss = new Date(val * 1000).toISOString().substr(11, 8)
+  return hhmmss.indexOf('00:') === 0 ? hhmmss.substr(3) : hhmmss
 }

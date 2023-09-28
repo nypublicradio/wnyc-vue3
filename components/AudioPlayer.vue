@@ -13,6 +13,8 @@ import {
   useIsStreamLoading,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
+  useSkipAheadTrigger,
+  useSkipBackTrigger,
 } from '~/composables/states'
 import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 
@@ -26,6 +28,8 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
+const skipAheadTrigger = useSkipAheadTrigger()
+const skipBackTrigger = useSkipBackTrigger()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const showPlayer = ref(false)
@@ -67,6 +71,13 @@ watch(currentEpisode, () => {
 
 watch(togglePlayTrigger, () => {
   if (playerRef.value) playerRef.value.togglePlay()
+})
+
+watch(skipAheadTrigger, () => {
+  if (playerRef.value) playerRef.value.skipAhead()
+})
+watch(skipBackTrigger, () => {
+  if (playerRef.value) playerRef.value.skipBack()
 })
 let timer = null
 let isInitialPing = true
@@ -114,7 +125,7 @@ watch(isEpisodePlaying, (e) => {
       :show-download="false"
       :hide-download-mobile="true"
       :show-skip="false"
-      :livestream="isLiveStream(currentEpisode.file)"
+      :livestream="isLiveStream()"
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
@@ -123,6 +134,8 @@ watch(isEpisodePlaying, (e) => {
       "
       :image="currentEpisode.image"
       :file="currentEpisode.file"
+      :skipAheadTime="10"
+      :skipBackTime="10"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
       @is-loading="isStreamLoading = $event"
@@ -202,7 +215,7 @@ html.style-mode-dark .persistent-player {
         display: none;
       }
       .p-slider {
-        position: initial;
+        //position: initial;
       }
     }
     .track-info-time {

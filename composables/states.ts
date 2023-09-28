@@ -91,6 +91,18 @@ const togglePlayTrigger = false
  */
 export const useTogglePlayTrigger = () => useState('useTogglePlayTrigger', () => togglePlayTrigger)
 
+const skipAheadTrigger = false
+/**
+ * Global state to trigger the skip ahead.
+ */
+export const useSkipAheadTrigger = () => useState('useSkipAheadTrigger', () => skipAheadTrigger)
+
+const skipBackTrigger = false
+/**
+ * Global state to trigger the skip back.
+ */
+export const useSkipBackTrigger = () => useState('useSkipBackTrigger', () => skipBackTrigger)
+
 /**
  * Global var for the height of the audio player
  */
