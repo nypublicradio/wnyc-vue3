@@ -35,6 +35,8 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + 'px')
+
+const route = useRoute()
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
   trackClickEvent(
@@ -108,6 +110,16 @@ watch(isEpisodePlaying, (e) => {
     timer = null
   }
 })
+
+// if the route changes, and the expanded player is expanded, close the expanded player
+watch(
+  () => route.name,
+  (e) => {
+    if (playerRef.value && !isPlayerMinimized.value) {
+      playerRef.value.toggleExpanded()
+    }
+  }
+)
 </script>
 
 <template>
