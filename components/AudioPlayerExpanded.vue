@@ -53,151 +53,246 @@ onMounted(() => {
     expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
 })
 
+const handleAddToFavorites = (bucketItem) => {
+  // toggle active state
+  // update SB and LS with new state
+  toast.add({
+    severity: 'info',
+    summary: 'Updated your favorites.',
+    life: 3000,
+  })
+  trackClickEvent(
+    'Click Tracking - Add/remove from favorites',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const handleDownload = (bucketItem) => {
+  // update CapacitorJs filesystem
+  toast.add({
+    severity: 'info',
+    summary: 'Downloading...',
+    life: 3000,
+  })
+  trackClickEvent(
+    'Click Tracking - Audio Download',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const handleShare = (bucketItem) => {
+  // trigger sharing system
+  shareAPI({
+    title: bucketItem.title,
+    url: bucketItem.url,
+  })
+  trackClickEvent(
+    'Click Tracking - Audio share',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const handleAddToQueue = (bucketItem) => {
+  // toggle active state
+  // update SB and LS with new state
+  trackClickEvent(
+    'Click Tracking - Add to Queue',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const handleMoreEpisodes = (bucketItem) => {
+  // navitget to show page
+  trackClickEvent(
+    'Click Tracking - More Episodes',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const handleFollow = (bucketItem) => {
+  // toggle active state
+  // update SB and LS with new state
+  trackClickEvent(
+    `Click Tracking - Follow ${bucketItem.title}`,
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const handleSleepTimer = (bucketItem) => {
+  // toggle active state
+  // show sleep timer interface
+  trackClickEvent(
+    'Click Tracking - Sleep Timer',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
+
+const isLive = computed(() => {
+  return isLiveStream()
+})
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
-    {
-      label: 'Favorite Episode',
-      customIcon: StarIcon,
-      active: true,
-      title: bucketItem.title,
-      command: () => {
-        // toggle active state
-        // update SB and LS with new state
-        toast.add({
-          severity: 'info',
-          summary: 'Updated your favorites.',
-          life: 3000,
-        })
-        trackClickEvent(
-          'Click Tracking - Add/remove from favorites',
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    {
-      label: 'Download',
-      //icon: 'pi pi-google',
-      customIcon: DownloadIcon,
-      title: bucketItem.title,
-      command: () => {
-        // update CapacitorJs filesystem
-        toast.add({
-          severity: 'info',
-          summary: 'Downloading...',
-          life: 3000,
-        })
-        trackClickEvent(
-          'Click Tracking - Audio Download',
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    {
-      label: 'Share',
-      customIcon: ShareIcon,
-      title: bucketItem.title,
-      command: () => {
-        // trigger sharing system
-        shareAPI({
-          title: bucketItem.title,
-          url: bucketItem.url,
-        })
-        trackClickEvent(
-          'Click Tracking - Audio share',
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    {
-      label: 'Add to Queue',
-      active: true,
-      customIcon: QueueIcon,
-      title: bucketItem.title,
-      command: () => {
-        // toggle active state
-        // update SB and LS with new state
-        trackClickEvent(
-          'Click Tracking - Add to Queue',
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    {
-      label: 'More Episodes',
-      customIcon: MoreEpisodesIcon,
-      title: bucketItem.title,
-      command: () => {
-        // navitget to show page
-        trackClickEvent(
-          'Click Tracking - More Episodes',
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    {
-      label: `Follow ${bucketItem.title}`,
-      customIcon: FollowIcon,
-      active: true,
-      title: bucketItem.title,
-      command: () => {
-        // toggle active state
-        // update SB and LS with new state
-        trackClickEvent(
-          `Click Tracking - Follow ${bucketItem.title}`,
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    {
-      label: 'Sleep Timer',
-      customIcon: SleepIcon,
-      active: true,
-      title: bucketItem.title,
-      command: () => {
-        // toggle active state
-        // show sleep timer interface
-        trackClickEvent(
-          'Click Tracking - Sleep Timer',
-          'Expanded Audio Player',
-          bucketItem.title
-        )
-      },
-    },
-    // ...(bucketItem.embedCode
-    //   ? [
-    //       {
-    //         label: 'Copy embed code',
-    //         icon: 'pi pi-google',
-    //         title: bucketItem.title,
-    //         embedCode: bucketItem.embedCode,
-    //         command: () => {
-    //           copyToClipBoard(bucketItem.embedCode)
-    //             ? toast.add({
-    //                 severity: 'info',
-    //                 summary: 'Embed code copied to clipboard',
-    //                 life: 3000,
-    //               })
-    //             : toast.add({
-    //                 severity: 'error',
-    //                 summary: 'Copy to clipboard failed. Try again another time',
-    //                 life: 3000,
-    //               })
-    //           trackClickEvent(
-    //             'Click Tracking - Audio Copy Embed Code',
-    //             'Large Card',
-    //             bucketItem.embedCode
-    //           )
-    //         },
-    //       },
-    //     ]
-    //   : []),
+    // {
+    //   label: 'Favorite Episode',
+    //   customIcon: StarIcon,
+    //   active: true,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleAddToFavorites(bucketItem)
+    //   },
+    // },
+    // {
+    //   label: 'Download',
+    //   //icon: 'pi pi-google',
+    //   customIcon: DownloadIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleDownload(bucketItem)
+    //   },
+    // },
+    // {
+    //   label: 'Share',
+    //   customIcon: ShareIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleShare(bucketItem)
+    //   },
+    // },
+    // {
+    //   label: 'Add to Queue',
+    //   active: true,
+    //   customIcon: QueueIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleAddToQueue(bucketItem)
+    //   },
+    // },
+    // {
+    //   label: 'More Episodes',
+    //   customIcon: MoreEpisodesIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleMoreEpisodes(bucketItem)
+    //   },
+    // },
+    // {
+    //   label: `Follow ${bucketItem.title}`,
+    //   customIcon: FollowIcon,
+    //   active: true,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleFollow()
+    //   },
+    // },
+    // {
+    //   label: 'Sleep Timer',
+    //   customIcon: SleepIcon,
+    //   active: true,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleSleepTimer()
+    //   },
+    // },
+    ...(isLive.value
+      ? [
+          {
+            label: `Follow ${bucketItem.title}`,
+            customIcon: FollowIcon,
+            active: true,
+            title: bucketItem.title,
+            command: () => {
+              handleFollow()
+            },
+          },
+          {
+            label: 'Sleep Timer',
+            customIcon: SleepIcon,
+            active: true,
+            title: bucketItem.title,
+            command: () => {
+              handleSleepTimer()
+            },
+          },
+          {
+            label: 'Share',
+            customIcon: ShareIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleShare(bucketItem)
+            },
+          },
+          {
+            label: 'More Episodes',
+            customIcon: MoreEpisodesIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleMoreEpisodes(bucketItem)
+            },
+          },
+        ]
+      : [
+          {
+            label: 'Favorite Episode',
+            customIcon: StarIcon,
+            active: true,
+            title: bucketItem.title,
+            command: () => {
+              handleAddToFavorites(bucketItem)
+            },
+          },
+          {
+            label: 'Download',
+            //icon: 'pi pi-google',
+            customIcon: DownloadIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleDownload(bucketItem)
+            },
+          },
+          {
+            label: 'Share',
+            customIcon: ShareIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleShare(bucketItem)
+            },
+          },
+          {
+            label: 'Add to Queue',
+            active: true,
+            customIcon: QueueIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleAddToQueue(bucketItem)
+            },
+          },
+          {
+            label: 'More Episodes',
+            customIcon: MoreEpisodesIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleMoreEpisodes(bucketItem)
+            },
+          },
+          {
+            label: `Follow ${bucketItem.title}`,
+            customIcon: FollowIcon,
+            active: true,
+            title: bucketItem.title,
+            command: () => {
+              handleFollow()
+            },
+          },
+        ]),
   ]
 }
 
@@ -226,10 +321,6 @@ const skipAhead = () => {
 const skipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
-
-const isLive = computed(() => {
-  return isLiveStream()
-})
 
 console.log('currentEpisode = ', currentEpisode)
 </script>
