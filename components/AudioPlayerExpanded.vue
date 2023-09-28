@@ -49,7 +49,8 @@ const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
 
 onMounted(() => {
-  expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
+  if (expandedFooterheight.value)
+    expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
 })
 
 // set the items for the Dot menu
@@ -226,6 +227,10 @@ const skipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
 
+const isLive = computed(() => {
+  return isLiveStream()
+})
+
 console.log('currentEpisode = ', currentEpisode)
 </script>
 
@@ -241,7 +246,7 @@ console.log('currentEpisode = ', currentEpisode)
       style="min-height: 144px"
     />
 
-    <div v-if="isLiveStream()" class="station live flex gap-2">
+    <div v-if="isLive" class="station live flex gap-2">
       <LiveBadge />
       <p>{{ currentEpisode.station }}</p>
       <h2 class="text-lg">{{ currentEpisode.title }}</h2>
@@ -258,7 +263,7 @@ console.log('currentEpisode = ', currentEpisode)
     </div>
     <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
 
-    <div v-if="!isLiveStream()" class="progress-holder">
+    <div v-if="!isLive" class="progress-holder">
       <VTrackInfo
         :current-seconds="currentEpisodeProgress"
         :duration-seconds="currentEpisodeDuration"
@@ -271,12 +276,7 @@ console.log('currentEpisode = ', currentEpisode)
     </div>
 
     <div class="controls flex gap-3 justify-content-center">
-      <Button
-        :disabled="isLiveStream()"
-        severity="secondary"
-        rounded
-        @click="skipBack"
-      >
+      <Button :disabled="isLive" severity="secondary" rounded @click="skipBack">
         <template #icon> <Previous10 /></template>
       </Button>
       <Button
@@ -291,7 +291,7 @@ console.log('currentEpisode = ', currentEpisode)
         <template #icon> <PlayIcon /></template>
       </Button>
       <Button
-        :disabled="isLiveStream()"
+        :disabled="isLive"
         severity="secondary"
         rounded
         @click="skipAhead"
@@ -300,7 +300,7 @@ console.log('currentEpisode = ', currentEpisode)
       </Button>
     </div>
     <div class="tools flex justify-content-between">
-      <div v-if="isLiveStream()" class="flex gap-3">
+      <div v-if="isLive" class="flex gap-3">
         <Button text severity="secondary" rounded>
           <template #icon> <FollowIcon /></template>
         </Button>
@@ -338,7 +338,7 @@ console.log('currentEpisode = ', currentEpisode)
           </template>
           <template #header-bottom>
             <div>
-              <div class="flex gap-3 px-4">
+              <div class="flex gap-3 px-4 align-items-center">
                 <VImagePublisher
                   :src="
                     resizePublisherImageUrl(currentEpisode.image, 60, 60, 70)
@@ -353,7 +353,7 @@ console.log('currentEpisode = ', currentEpisode)
 
                 <div class="info">
                   <h2>{{ currentEpisode.title }}</h2>
-                  <p v-if="isLiveStream()">{{ currentEpisode.station }}</p>
+                  <p v-if="isLive">{{ currentEpisode.station }}</p>
                   <p v-else>{{ currentEpisode.show }}</p>
                 </div>
               </div>
@@ -403,7 +403,11 @@ console.log('currentEpisode = ', currentEpisode)
       ></div>
     </div>
 
-    <div ref="expandedFooterRef" class="expanded-footer">
+    <div
+      ref="expandedFooterRef"
+      v-if="currentEpisode.slug"
+      class="expanded-footer"
+    >
       <section class="pb-2">
         <hr class="mb-2" />
         <Button
