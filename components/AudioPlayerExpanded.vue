@@ -464,8 +464,7 @@ console.log('currentEpisode = ', currentEpisode)
   .persistent-player {
     .expanded-player {
       padding-bottom: calc(
-        $bottomMenuHeight + env(safe-area-inset-bottom) +
-          v-bind(expandedFooterheight)
+        $bottomMenuHeight + env(safe-area-inset-bottom) + 2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);

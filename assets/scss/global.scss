@@ -73,13 +73,13 @@ body {
     }
   }
   a {
-    color: var(--blue-500);
+    color: var(--link);
     &:hover,
     &:active {
-      color: var(--blue-300);
+      color: var(--link);
     }
     &:visited {
-      color: var(--blue-500);
+      color: var(--link);
     }
   }
   p,
