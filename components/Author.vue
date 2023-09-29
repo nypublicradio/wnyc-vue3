@@ -15,33 +15,40 @@ const props = defineProps({
     default: null,
   },
 })
+const emit = defineEmits(['on-click'])
+
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
 </script>
 
 <template>
-  <div class="author flex gap-2">
-    <div v-if="props.imgSrc" class="image-holder">
-      <VImagePublisher
-        :src="props.imgSrc"
-        :ratio="[1, 1]"
-        alt="author image"
-        class="image"
-      />
-    </div>
-    <div class="name flex flex-column justify-content-center">
-      <h2>{{ props.name }}</h2>
-
-      <!-- <VFlexibleLink :to="props.to">
+  <VFlexibleLink
+    :to="props.to"
+    @click="emit('on-click')"
+    raw
+    class="author p-ripple border-round-3xl pr-3"
+    v-ripple
+  >
+    <div class="flex gap-2 p-0">
+      <div
+        v-if="props.imgSrc"
+        class="image-holder border-circle overflow-hidden"
+      >
+        <VImagePublisher
+          :src="props.imgSrc"
+          :ratio="[1, 1]"
+          alt="author image"
+          class="image"
+        />
+      </div>
+      <div class="name flex flex-column justify-content-center">
         <h2>{{ props.name }}</h2>
-      </VFlexibleLink> -->
+      </div>
     </div>
-  </div>
+  </VFlexibleLink>
 </template>
-
-<style lang="scss" scoped>
-.author {
-  .image-holder {
-    border-radius: 50%;
-    overflow: hidden;
-  }
-}
-</style>

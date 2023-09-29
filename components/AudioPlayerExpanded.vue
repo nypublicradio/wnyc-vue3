@@ -84,6 +84,7 @@ const handleDownload = (bucketItem) => {
 
 const handleShare = (bucketItem) => {
   // trigger sharing system
+  console.log('bucketItem = ', bucketItem)
   shareAPI({
     title: bucketItem.title,
     url: bucketItem.url,
@@ -141,67 +142,6 @@ const isLive = computed(() => {
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
-    // {
-    //   label: 'Favorite Episode',
-    //   customIcon: StarIcon,
-    //   active: true,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleAddToFavorites(bucketItem)
-    //   },
-    // },
-    // {
-    //   label: 'Download',
-    //   //icon: 'pi pi-google',
-    //   customIcon: DownloadIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleDownload(bucketItem)
-    //   },
-    // },
-    // {
-    //   label: 'Share',
-    //   customIcon: ShareIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleShare(bucketItem)
-    //   },
-    // },
-    // {
-    //   label: 'Add to Queue',
-    //   active: true,
-    //   customIcon: QueueIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleAddToQueue(bucketItem)
-    //   },
-    // },
-    // {
-    //   label: 'More Episodes',
-    //   customIcon: MoreEpisodesIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleMoreEpisodes(bucketItem)
-    //   },
-    // },
-    // {
-    //   label: `Follow ${bucketItem.title}`,
-    //   customIcon: FollowIcon,
-    //   active: true,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleFollow()
-    //   },
-    // },
-    // {
-    //   label: 'Sleep Timer',
-    //   customIcon: SleepIcon,
-    //   active: true,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleSleepTimer()
-    //   },
-    // },
     ...(isLive.value
       ? [
           {
@@ -337,22 +277,25 @@ console.log('currentEpisode = ', currentEpisode)
       style="min-height: 144px"
     />
 
-    <div v-if="isLive" class="station live flex gap-2">
-      <LiveBadge />
-      <p>{{ currentEpisode.station }}</p>
+    <div v-if="isLive" class="station flex flex-column gap-2">
+      <div class="live flex gap-2">
+        <LiveBadge />
+        <p>{{ currentEpisode.station }}</p>
+      </div>
       <h2 class="text-lg">{{ currentEpisode.title }}</h2>
+      <h2 class="text-md">{{ currentEpisode.onTodaysShowHeadline }}</h2>
     </div>
-    <div v-else class="station">
+    <div v-else class="station flex flex-column gap-2">
       <PipeData class="text-xs" :hidePipe="!Boolean(whenTime(currentEpisode))">
-        <template #left
-          ><h2>{{ currentEpisode.title }}</h2></template
-        >
+        <template #left>
+          <p>{{ currentEpisode.title }}</p>
+        </template>
         <template #right>
-          <h2 class="nobreak">{{ whenTime(currentEpisode) }}</h2>
+          <p class="nobreak">{{ whenTime(currentEpisode) }}</p>
         </template>
       </PipeData>
+      <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
     </div>
-    <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
 
     <div v-if="!isLive" class="progress-holder">
       <VTrackInfo
@@ -483,6 +426,7 @@ console.log('currentEpisode = ', currentEpisode)
           :imgSrc="resizePublisherImageUrl(author.image, 40, 40, 80)"
           :name="`${author['first-name']} ${author['last-name']}`"
           :to="author.url"
+          @onClick="emit('close-panel')"
         />
       </div>
     </div>
