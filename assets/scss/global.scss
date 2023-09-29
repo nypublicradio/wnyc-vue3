@@ -358,3 +358,14 @@ a:visited {
     fill: var(--text-color);
   }
 }
+
+// image caption button
+.caption {
+  .caption-button {
+    background-color: #ffffff;
+    border: none;
+    color: var(--night-500);
+    height: 38px;
+    width: 38px;
+  }
+}

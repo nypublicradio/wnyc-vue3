@@ -1,5 +1,7 @@
 <script setup>
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
+import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 import VTrackInfo from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue'
 import {
   trackClickEvent,
@@ -87,6 +89,7 @@ const handleShare = (bucketItem) => {
   console.log('bucketItem = ', bucketItem)
   shareAPI({
     title: bucketItem.title,
+    text: bucketItem.details,
     url: bucketItem.url,
   })
   trackClickEvent(
@@ -268,7 +271,7 @@ console.log('currentEpisode = ', currentEpisode)
 <template>
   <section class="expanded-player flex flex-column gap-3">
     <VImagePublisher
-      :src="resizePublisherImageUrl(currentEpisode.image, 144, 144, 70)"
+      :src="currentEpisode.image"
       :alt="`${currentEpisode.title} show image`"
       :width="144"
       :height="144"
@@ -350,11 +353,15 @@ console.log('currentEpisode = ', currentEpisode)
           <template #icon> <DownloadIcon /></template>
         </Button>
       </div>
-      <div class="flex gap-3">
-        <Button text severity="secondary" rounded>
+      <div class="flex gap-1">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          @click="handleShare(currentEpisode)"
+        >
           <template #icon> <ShareIcon /></template>
         </Button>
-        <!-- <Button icon="pi pi-ellipsis-v" text severity="secondary" rounded> -->
         <DotMenu
           :menuItems="getDotMenuItems(currentEpisode)"
           @changeEmit="onMenuChange"
@@ -374,12 +381,11 @@ console.log('currentEpisode = ', currentEpisode)
             <div>
               <div class="flex gap-3 px-4 align-items-center">
                 <VImagePublisher
-                  :src="
-                    resizePublisherImageUrl(currentEpisode.image, 60, 60, 70)
-                  "
+                  :src="currentEpisode.image"
                   :alt="`${currentEpisode.title} show image`"
                   :width="60"
                   :height="60"
+                  :sizes="[2]"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"
                   style="min-height: 60px"
@@ -397,18 +403,19 @@ console.log('currentEpisode = ', currentEpisode)
         </DotMenu>
       </div>
     </div>
-    <VImagePublisher
+    <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
       :alt="`${currentEpisode.title} featured image`"
       :width="421"
       :height="275"
+      :sizes="[2]"
       class="show-feature-image"
     >
       <template #caption>
-        <div
-          class="caption text-sm mt-2"
-          v-html="currentEpisode.onTodaysShowImageCaption"
+        <VImageCaption
+          :text="currentEpisode.onTodaysShowImageCaption"
+          class="caption"
         />
       </template>
       <template #belowImage>
@@ -417,13 +424,16 @@ console.log('currentEpisode = ', currentEpisode)
           v-html="currentEpisode.episodeBody"
         />
       </template>
-    </VImagePublisher>
+    </VImage>
 
-    <div v-if="currentEpisode.onTodaysShowHosts">
-      <div class="flex gap-4 flex-wrap mb-3">
+    <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
+      <h2>
+        Author{{ currentEpisode.onTodaysShowHosts.length > 0 ? 's' : '' }}
+      </h2>
+      <div class="flex gap-4 flex-wrap my-3">
         <Author
           v-for="author in currentEpisode.onTodaysShowHosts"
-          :imgSrc="resizePublisherImageUrl(author.image, 40, 40, 80)"
+          :imgSrc="author.image"
           :name="`${author['first-name']} ${author['last-name']}`"
           :to="author.url"
           @onClick="emit('close-panel')"

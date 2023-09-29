@@ -1,5 +1,5 @@
 <script setup>
-import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 const props = defineProps({
   name: {
@@ -13,6 +13,14 @@ const props = defineProps({
   to: {
     type: String,
     default: null,
+  },
+  width: {
+    type: Number,
+    default: 40,
+  },
+  height: {
+    type: Number,
+    default: 40,
   },
 })
 const emit = defineEmits(['on-click'])
@@ -35,16 +43,22 @@ defineExpose({
     v-ripple
   >
     <div class="flex gap-2 p-0">
-      <div
-        v-if="props.imgSrc"
-        class="image-holder border-circle overflow-hidden"
-      >
-        <VImagePublisher
+      <!-- <pre>{{ props }}</pre> -->
+      <div v-if="props.imgSrc" class="image-holder">
+        <VImage
           :src="props.imgSrc"
           :ratio="[1, 1]"
+          :width="props.width"
+          :height="props.height"
           alt="author image"
           class="image"
         />
+      </div>
+      <div
+        v-else
+        class="image-holder flex align-items-center justify-content-center border-1"
+      >
+        <UserIcon />
       </div>
       <div class="name flex flex-column justify-content-center">
         <h2>{{ props.name }}</h2>
@@ -52,3 +66,14 @@ defineExpose({
     </div>
   </VFlexibleLink>
 </template>
+
+<style lang="scss" scoped>
+.author {
+  .image-holder {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+  }
+}
+</style>

@@ -23,13 +23,13 @@ const national = {
   duration: 178000,
   filename: 'news_latest_npr.mp3',
   title: 'National News',
-  image: 'https://media.wnyc.org/i/60/60/l/85/1/WNYC_news.png',
+  image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg',
   'id3-size': 15111,
   file: 'https://chrt.fm/track/53A61E/pdst.fm/e/dts.podtrac.com/pts/redirect.mp3/waaa.wnyc.org/newscast/news_latest_npr.mp3',
   details: '<p>Latest news from NPR.</p>',
   state: 'done',
   onTodaysShowImageTemplate:
-    'https://media.wnyc.org/i/%width%/%height%/c/%quality%/2023/09/twelfth_night_photo_for_nypl.jpg',
+    'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/twelfth_night_photo_for_nypl.jpg',
   onTodaysShowHeadline:
     'This is an example of todays show headline. It is a very long headline that will wrap to the next line.',
   onTodaysShowImageCaption: 'Sample image caption',
@@ -39,23 +39,22 @@ const national = {
     {
       url: '/people/paul-cavalconte/',
       image:
-        'https://media.wnyc.org/i/1860/1860/c/80/2019/12/WQXR_Headshots_JukeBox_PaulCavalconte.jpg',
+        'https://media.wnyc.org/i/%s/%s/%s/%s/2019/12/WQXR_Headshots_JukeBox_PaulCavalconte.jpg',
       'last-name': 'Cavalconte',
       'first-name': 'Paul',
     },
     {
       url: '/people/paul-cavalconte/',
-      image:
-        'https://media.wnyc.org/i/1860/1860/c/80/2019/12/WQXR_Headshots_JukeBox_PaulCavalconte.jpg',
-      'last-name': 'Cavalconte',
-      'first-name': 'Paul',
+      image: '',
+      'last-name': 'NoImage',
+      'first-name': 'Jim',
     },
     {
       url: '/people/paul-cavalconte/',
       image:
-        'https://media.wnyc.org/i/1860/1860/c/80/2019/12/WQXR_Headshots_JukeBox_PaulCavalconte.jpg',
-      'last-name': 'Cavalconte',
-      'first-name': 'Paul',
+        'https://media.wnyc.org/i/%s/%s/%s/%s/2019/12/WQXR_Headshots_JukeBox_PaulCavalconte.jpg',
+      'last-name': 'Gibbons',
+      'first-name': 'Peter',
     },
   ],
   episodeTranscript:
