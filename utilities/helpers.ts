@@ -36,18 +36,23 @@ export const formatPublisherImage = (attributes) => {
   return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
 }
 
-export const resizePublisherImage = (attributes, w, h, q = 80) => {
-  //https://media.wnyc.org/i/630/365/c/80/photologue/photos/brian2_630x365.jpg
+interface ImageAttributes {
+  imageMain?: {
+    template: string
+  }
+  image?: {
+    template: string
+  }
+}
 
-  //https://media.wnyc.org/i/1860/1240/l/80/2020/10/NYPR_020819_1161_R1_silo_layers-Alison-Stewart.jpg
-
+export const resizePublisherImage = (attributes: ImageAttributes, w: number, h: number, q = 80): string => {
   const img = attributes.imageMain ?? attributes.image
   const url = img.template
 
   const pieces = url.split('/')
-  const finalUrlArr = []
+  const finalUrlArr: string[] = []
 
-  pieces.map((piece, index) => {
+  pieces.forEach((piece: string, index: number) => {
     if (index < 4 || index > 7) {
       finalUrlArr.push(piece)
     }
@@ -57,20 +62,17 @@ export const resizePublisherImage = (attributes, w, h, q = 80) => {
   })
   return finalUrlArr.join('/')
 }
-export const resizePublisherImageUrl = (url, w, h, q = 80) => {
-  //https://media.wnyc.org/i/630/365/c/80/photologue/photos/brian2_630x365.jpg
 
+export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 80): string => {
   const pieces = url.split('/')
-  const finalUrlArr = []
+  const finalUrlArr: string[] = []
 
-  pieces.map((piece, index) => {
+  pieces.forEach((piece: string, index: number) => {
     if (index < 4 || index > 7) {
       finalUrlArr.push(piece)
-      return true
     }
     if (index === 4) {
       finalUrlArr.push(`${w}/${h}/c/${q}`)
-      return true
     }
   })
   return finalUrlArr.join('/')

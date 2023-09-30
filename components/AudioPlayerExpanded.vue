@@ -269,7 +269,7 @@ const skipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
 
-console.log('currentEpisode = ', currentEpisode)
+//console.log('currentEpisode = ', currentEpisode)
 </script>
 
 <template>
