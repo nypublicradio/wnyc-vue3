@@ -79,7 +79,9 @@ const normalizedItem = (item) => {
 
 // handle the play button click
 const togglePlay = (item) => {
-  currentEpisode.value = normalizedItem(item)
+  if (currentEpisode.value?.id !== item.id) {
+    currentEpisode.value = normalizedItem(item)
+  }
   togglePlayTrigger.value = !togglePlayTrigger.value
   trackClickEvent(
     'Click Tracking - Large Card',
