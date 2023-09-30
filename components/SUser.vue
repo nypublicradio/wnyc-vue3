@@ -21,6 +21,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isEmail: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:data', 'onDisabled'])
@@ -120,7 +124,7 @@ const handleModal = () => {
         <UserIcon />
 
         <Button
-          v-if="currentUser"
+          v-if="currentUser && props.isEmail"
           icon="pi pi-plus"
           severity="secondary"
           rounded
@@ -131,7 +135,7 @@ const handleModal = () => {
     <Dialog
       v-model:visible="imageUploadModal"
       modal
-      header="Upload Profile Image"
+      header="Your Profile Image"
       :draggable="false"
     >
       <VUploadImage
@@ -140,6 +144,7 @@ const handleModal = () => {
         :currentUserProfile="currentUserProfile"
         :client="client"
         :config="config"
+        :maxFileSize="2500000"
         @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {

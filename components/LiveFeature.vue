@@ -90,6 +90,7 @@ onMounted(async () => {
               <PlayButton
                 :label="currentEpisodeHolder?.station"
                 live
+                :episode="currentEpisodeHolder"
                 @onClick="togglePlay"
               />
             </div>

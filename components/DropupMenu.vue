@@ -205,26 +205,46 @@ onUnmounted(() => {
       </div>
     </template>
     <template #header>
-      <i class="pi pi-minus" @click="closeMenu" />
-      <h3 v-if="props.label" class="p-submenu-header-replace">
-        {{ props.label }}
-      </h3>
+      <div class="style-mode-dark">
+        <div class="px-4">
+          <i class="pi pi-minus" @click="closeMenu" />
+          <h3 v-if="props.label" class="p-submenu-header-replace">
+            {{ props.label }}
+          </h3>
+        </div>
+        <slot name="header" />
+      </div>
     </template>
     <template #option="slotProps">
       <!--  <pre>{{ slotProps.option }}</pre> -->
-      <div
-        :key="slotProps.option[props.optionLabel]"
-        class="flex align-items-center station-options"
-        :class="[{ selected: slotProps.option[props.optionLabel] === dataRef }]"
-      >
-        <!-- <img
-          v-if="slotProps.option.image"
-          :alt="slotProps.option.label"
-          :src="slotProps.option.image"
-          class="mr-2"
-          style="width: 18px; height: 18px"
-        /> -->
-        <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
+      <div class="style-mode-dark">
+        <div
+          :key="slotProps.option[props.optionLabel]"
+          class="flex align-items-center station-options"
+          :class="[
+            { selected: slotProps.option[props.optionLabel] === dataRef },
+          ]"
+        >
+          <img
+            v-if="slotProps.option.image"
+            :alt="slotProps.option.label"
+            :src="slotProps.option.image"
+            class="mr-3"
+            style="width: 18px; height: 18px"
+          />
+          <i
+            v-if="slotProps.option.icon"
+            class="mr-3"
+            :class="slotProps.option.icon"
+          ></i>
+          <component
+            class="mr-3 custom-icon"
+            :active="slotProps.option.active ?? false"
+            v-if="slotProps.option.customIcon"
+            :is="slotProps.option.customIcon"
+          />
+          <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
+        </div>
       </div>
     </template>
     <template #footer="slotProps">
@@ -304,8 +324,8 @@ onUnmounted(() => {
   width: 100%;
   transform-origin: center bottom !important;
   border-radius: 28px 28px 0px 0px;
-  -webkit-box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
-  box-shadow: 0 -20px 50px 0 rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
   background: var(--background4) !important;
   .pi-minus {
     color: #ffffff;
@@ -316,13 +336,12 @@ onUnmounted(() => {
   }
   .p-submenu-header-replace {
     background: transparent;
-    color: #ffffff !important;
+    color: var(--text-color);
     font-weight: var(--font-weight-700);
     font-size: 1.625rem;
     font-family: var(--font-family-header);
     margin-top: 20px;
     margin-bottom: 20px;
-    padding-left: 1.25rem;
   }
   .p-dropdown-items-wrapper {
     max-height: unset !important;
@@ -331,7 +350,7 @@ onUnmounted(() => {
       color: #ffffff !important;
       font-weight: var(--font-weight-600);
       font-size: 0.938rem;
-      padding: 0.5rem 20px;
+      padding: 0.75rem 20px;
       background: unset !important;
       &:hover {
         background: #ffffff3d !important;
@@ -341,7 +360,7 @@ onUnmounted(() => {
         @include checkMark;
       }
       .station-options {
-        margin: 10px 0;
+        //margin: 10px 0;
         img {
           width: 40px !important;
           height: 40px !important;
@@ -353,10 +372,15 @@ onUnmounted(() => {
           @include checkMark;
         }
       }
+      .custom-icon {
+        width: 2rem;
+        height: 2rem;
+      }
     }
   }
   .footer {
-    padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
+    //padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
+    padding: 0px 20px calc($bottomMenuHeight + 20px) 20px;
   }
 }
 </style>

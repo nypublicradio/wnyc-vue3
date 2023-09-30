@@ -11,6 +11,8 @@ import {
 import { Browser } from '@capacitor/browser';
 const directoryToSaveTo = Directory.External
 
+
+
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
   if (date) {
@@ -34,18 +36,40 @@ export const formatPublisherImage = (attributes) => {
   return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
 }
 
-export const resizePublisherImage = (attributes, w, h, q = 80) => {
-  //https://media.wnyc.org/i/630/365/c/80/photologue/photos/brian2_630x365.jpg
+interface ImageAttributes {
+  imageMain?: {
+    template: string
+  }
+  image?: {
+    template: string
+  }
+}
 
-  //https://media.wnyc.org/i/1860/1240/l/80/2020/10/NYPR_020819_1161_R1_silo_layers-Alison-Stewart.jpg
-
+// returns a resized image url when provided the entire image object
+export const resizePublisherImage = (attributes: ImageAttributes, w: number, h: number, q = 80): string => {
   const img = attributes.imageMain ?? attributes.image
   const url = img.template
 
   const pieces = url.split('/')
-  const finalUrlArr = []
+  const finalUrlArr: string[] = []
 
-  pieces.map((piece, index) => {
+  pieces.forEach((piece: string, index: number) => {
+    if (index < 4 || index > 7) {
+      finalUrlArr.push(piece)
+    }
+    if (index === 4) {
+      finalUrlArr.push(`${w}/${h}/c/${q}`)
+    }
+  })
+  return finalUrlArr.join('/')
+}
+
+// returns a resized image url when provided just the image URL
+export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 80): string => {
+  const pieces = url.split('/')
+  const finalUrlArr: string[] = []
+
+  pieces.forEach((piece: string, index: number) => {
     if (index < 4 || index > 7) {
       finalUrlArr.push(piece)
     }
@@ -364,21 +388,23 @@ export async function openLinkInAppBrowser(url: string) {
 }
 
 // helper function to determine if the file url is a live stream or .mp3 file
-export function isLiveStream(url: string) {
-  return !url.includes('.mp3')
+export const isLiveStream = () => {
+  const currentEpisode = useCurrentEpisode()
+  return !currentEpisode.value.file.includes('.mp3')
 }
 
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
-  return data.updated_date
+  const res = data.updated_date
     ? howLongAgo(data.updated_date)
     : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.first_published_at)
+  return res ?? null
 }
 
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
-  const seconds = Math.floor(ms / mult)
-  const minutes = Math.floor(seconds / 60)
+  const seconds = Math.ceil(ms / mult)
+  const minutes = Math.ceil(seconds / 60)
   //const remainingSeconds = seconds % 60
   //remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
@@ -395,4 +421,27 @@ export const copyToClipBoard = async (content: string) => {
       return false
     })
   return null
+}
+
+/*basic function that detects if the site is running in a mobile browser*/
+function isMobileBrowser() {
+  return (typeof window.orientation !== "undefined")
+    || (navigator.userAgent.indexOf('IEMobile') !== -1
+    )
+};
+
+// share API
+export const shareAPI = async (content: object) => {
+  if (navigator.canShare(content) && isMobileBrowser()) {
+    await navigator.share(content)
+    return true
+  } else {
+    return false
+  }
+}
+
+// time converter
+export const convertTime = (val) => {
+  const hhmmss = new Date(val * 1000).toISOString().substring(11, 19)
+  return hhmmss.startsWith('00:') ? hhmmss.substring(3) : hhmmss
 }

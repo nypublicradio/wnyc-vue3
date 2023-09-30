@@ -9,6 +9,7 @@ html {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overscroll-behavior: none;
 }
 
 body {
@@ -59,7 +60,83 @@ body {
     }
   }
 }
-
+@mixin html-formatting() {
+  h1 {
+    font-size: var(--font-size-12);
+    line-height: var(--font-size-12);
+    font-weight: var(--font-weight-700);
+    letter-spacing: -1px;
+    color: var(--text-color);
+    @include media('<md') {
+      font-size: var(--font-size-9);
+      line-height: var(--font-size-9);
+    }
+  }
+  a {
+    color: var(--link);
+    &:hover,
+    &:active {
+      color: var(--link);
+    }
+    &:visited {
+      color: var(--link);
+    }
+  }
+  p,
+  dl {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+  }
+  strong {
+    font-weight: var(--font-weight-700);
+  }
+  img {
+    max-width: 100%;
+    position: relative;
+  }
+  .button {
+    border-radius: 2rem;
+    align-items: center;
+    cursor: pointer;
+    display: inline-flex;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    vertical-align: bottom;
+    //background: var(--white100);
+    border: 2px solid transparent;
+    //color: var(--black500);
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  iframe {
+    width: 100%;
+    max-width: 100%;
+  }
+  .user-embedded-video {
+    div {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+.html-formatting {
+  @include html-formatting();
+}
 
 .p-message {
   background-color: var(--background4) !important;
@@ -70,6 +147,14 @@ body {
     .p-message-close {
       display: none;
     }
+    .p-message-text * {
+      //color: var(--night-500);
+    }
+    &.error {
+      .p-message-text * {
+        color: var(--red-500);
+      }
+    }
   }
 }
 .p-toast {
@@ -77,7 +162,7 @@ body {
   width: 90%;
   max-width: 25rem;
   .p-toast-message {
-    border: none;
+    border: none !important;
     box-shadow: none;
     border-radius: 0;
     background-color: var(--background4) !important;
@@ -104,7 +189,9 @@ hr {
   border: none;
   height: 1px;
   background: var(--stroke-500);
-
+  &.dim {
+    opacity: 0.25;
+  }
 }
 
 /* Light mode */
@@ -169,6 +256,13 @@ label {
   color: var(--text-color);
 }
 
+// remove sticky hover on mobile
+@media (hover: hover) {
+  .p-button:hover {
+    background-color: #ccf6c8;
+  }
+}
+
 .p-button {
   border-radius: 2rem;
   &.center {
@@ -187,6 +281,12 @@ label {
     font-weight: inherit;
     text-decoration: underline;
     color: var(--link);
+  }
+  &.p-button-secondary {
+    .p-button-icon:before,
+    .p-button-icon:after {
+      color: var(--text-color);
+    }
   }
 }
 
@@ -237,5 +337,35 @@ a:visited {
   .p-divider-content {
     background-color: var(--background2);
     color: var(--text-color);
+  }
+}
+
+// ?!?!?!?, I have to force a display change here in order for the image to show up
+.v-image-publisher {
+  .image {
+    display: flex !important;
+  }
+}
+
+.p-dialog {
+  .p-dialog-header,
+  .p-dialog-content,
+  .p-dialog-footer {
+    background: var(--background2);
+    color: var(--text-color);
+  }
+  .p-dialog-header-icon svg path {
+    fill: var(--text-color);
+  }
+}
+
+// image caption button
+.caption {
+  .caption-button {
+    background-color: #ffffff;
+    border: none;
+    color: var(--night-500);
+    height: 38px;
+    width: 38px;
   }
 }

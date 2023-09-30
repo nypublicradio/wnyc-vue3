@@ -5,6 +5,7 @@ import PauseIcon from '~/components/icons/PauseIcon.vue'
 import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
 import {
   useCurrentEpisode,
+  useCurrentEpisodeHolder,
   useIsEpisodePlaying,
   useTogglePlayTrigger,
   useIsPlayerMinimized,
@@ -12,6 +13,8 @@ import {
   useIsStreamLoading,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
+  useSkipAheadTrigger,
+  useSkipBackTrigger,
 } from '~/composables/states'
 import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 
@@ -20,15 +23,20 @@ import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
 import { Howl, Howler } from 'howler'
 
 const currentEpisode = useCurrentEpisode()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
+const skipAheadTrigger = useSkipAheadTrigger()
+const skipBackTrigger = useSkipBackTrigger()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + 'px')
+
+const route = useRoute()
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
   trackClickEvent(
@@ -66,6 +74,13 @@ watch(currentEpisode, () => {
 watch(togglePlayTrigger, () => {
   if (playerRef.value) playerRef.value.togglePlay()
 })
+
+watch(skipAheadTrigger, () => {
+  if (playerRef.value) playerRef.value.skipAhead()
+})
+watch(skipBackTrigger, () => {
+  if (playerRef.value) playerRef.value.skipBack()
+})
 let timer = null
 let isInitialPing = true
 // const pingEvent = () => {
@@ -95,6 +110,16 @@ watch(isEpisodePlaying, (e) => {
     timer = null
   }
 })
+
+// if the route changes, and the expanded player is expanded, close the expanded player
+watch(
+  () => route.name,
+  (e) => {
+    if (playerRef.value && !isPlayerMinimized.value) {
+      playerRef.value.toggleExpanded()
+    }
+  }
+)
 </script>
 
 <template>
@@ -107,11 +132,12 @@ watch(isEpisodePlaying, (e) => {
       data-style-mode="dark"
       :auto-play="true"
       :can-expand="true"
+      :can-expand-with-swipe="true"
+      :can-unexpand-with-swipe="true"
       :show-download="false"
       :hide-download-mobile="true"
-      :can-expand-with-swipe="true"
       :show-skip="false"
-      :livestream="isLiveStream(currentEpisode.file)"
+      :livestream="isLiveStream()"
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
@@ -120,6 +146,8 @@ watch(isEpisodePlaying, (e) => {
       "
       :image="currentEpisode.image"
       :file="currentEpisode.file"
+      :skipAheadTime="10"
+      :skipBackTime="10"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
       @is-loading="isStreamLoading = $event"
@@ -134,106 +162,8 @@ watch(isEpisodePlaying, (e) => {
       <template #pause>
         <PauseIcon />
       </template>
-      <!-- <template #chevronDown>
-        <i class="pi pi-twitter"></i>
-      </template>
-      <template #chevronUp>
-        <i class="pi pi-facebook"></i>
-      </template>
-      <template #volumeOn>
-        <i class="pi pi-twitter"></i>
-      </template>
-      <template #volumeOff>
-        <i class="pi pi-facebook"></i>
-      </template>
-      <template #prev>
-        <i class="pi pi-twitter"></i>
-      </template>
-      
-      
-      <template #loading>
-        <i class="pi pi-spin pi-spinner"></i>
-      </template>
-      <template #skip>
-        <i class="pi pi-twitter"></i>
-      </template>
-      <template #download>
-        <i class="pi pi-twitter"></i>
-      </template> -->
       <template #expanded-content>
-        <section>
-          {{ currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details }}
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          {{ currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details }}
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-        </section>
-        <section class="expandedFooter">This is fixed to the bottom</section>
+        <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
       </template>
     </VPersistentPlayer>
   </transition>
@@ -243,6 +173,12 @@ watch(isEpisodePlaying, (e) => {
 <style lang="scss">
 html.style-mode-dark .persistent-player {
   background-color: map-get($colors-dark-mode, 'background4') !important;
+
+  .expanded-view .header,
+  .expanded-view .expanded-footer {
+    background-color: var(--expandedHeaderBackgroundTransparent) !important;
+    backdrop-filter: blur(4px);
+  }
 }
 :root {
   --persistent-player-padding: 0px 1rem 0 0 !important;
@@ -253,7 +189,6 @@ html.style-mode-dark .persistent-player {
 
   .persistent-player {
     bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
-    z-index: 9999;
     .track-info {
       //position: relative;
     }
@@ -292,7 +227,7 @@ html.style-mode-dark .persistent-player {
         display: none;
       }
       .p-slider {
-        position: initial;
+        //position: initial;
       }
     }
     .track-info-time {
@@ -305,37 +240,30 @@ html.style-mode-dark .persistent-player {
       background: #ffffff;
       border: 1px solid var(--background2--500);
     }
+    .expanded-view {
+      .expanded-content-holder {
+        .header {
+          z-index: 1;
+          padding: 1rem 0.5rem;
+          background-color: var(--persistent-player-bg-transparent);
+          backdrop-filter: blur(4px);
+        }
+        .expanded-footer {
+          background-color: var(--persistent-player-bg-transparent);
+          backdrop-filter: blur(4px);
+        }
+      }
+    }
   }
   .template-blank {
     .persistent-player {
       bottom: env(safe-area-inset-bottom);
-    }
-    .expandedFooter {
-      bottom: env(safe-area-inset-bottom) !important;
     }
   }
 }
 </style>
 
 <style lang="scss" scoped>
-.persistent-player {
-  .expandedFooter {
-    background-color: var(--red-500);
-    display: block;
-    position: fixed;
-    height: 45px;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    transition: bottom $transitionDuration;
-    -webkit-transition: bottom $transitionDuration;
-  }
-  &.expanded {
-    .expandedFooter {
-      bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
-    }
-  }
-}
 .player-enter-active {
   transition: transform calc(var(--transition-duration) * 2) ease-out;
 }

@@ -35,6 +35,11 @@ const emit = defineEmits(['changeEmit'])
           aria-controls="overlay_menu"
         />
       </template>
+      <template #header="slotProps">
+        <div class="style-mode-dark">
+          <slot name="header-bottom" />
+        </div>
+      </template>
     </DropupMenu>
   </div>
 </template>

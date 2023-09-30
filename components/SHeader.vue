@@ -18,7 +18,7 @@ const emit = defineEmits(['close-sidebar'])
           icon="pi pi-chevron-left"
           rounded
           text
-          plain
+          severity="secondary"
           :aria-label="`${$props.pabel} sidebar close button`"
           @click="emit('close-sidebar')"
         />
