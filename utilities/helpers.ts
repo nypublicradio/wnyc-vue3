@@ -45,6 +45,7 @@ interface ImageAttributes {
   }
 }
 
+// returns a resized image url when provided the entire image object
 export const resizePublisherImage = (attributes: ImageAttributes, w: number, h: number, q = 80): string => {
   const img = attributes.imageMain ?? attributes.image
   const url = img.template
@@ -63,6 +64,7 @@ export const resizePublisherImage = (attributes: ImageAttributes, w: number, h: 
   return finalUrlArr.join('/')
 }
 
+// returns a resized image url when provided just the image URL
 export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 80): string => {
   const pieces = url.split('/')
   const finalUrlArr: string[] = []
