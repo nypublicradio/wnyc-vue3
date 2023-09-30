@@ -57,8 +57,8 @@ const hasFieldChanged = (key) => {
 }
 // for checking if the field has changed
 const hasAnyFieldsChanged = () => {
-  console.log('formDataOriginal= ', formDataOriginal)
-  console.log('toRaw(formData)= ', toRaw(formData))
+  //console.log('formDataOriginal= ', formDataOriginal)
+  //console.log('toRaw(formData)= ', toRaw(formData))
   return JSON.stringify(toRaw(formData)) !== JSON.stringify(formDataOriginal)
 }
 
@@ -118,11 +118,11 @@ const v$ = useVuelidate(rules, formData)
 // submit the form
 const submitForm = async () => {
   emit('submit-click')
-  console.log('submit')
+  //console.log('submit')
   v$.value.$validate()
 
   if (!v$.value.$error) {
-    console.log('validated')
+    //console.log('validated')
     //success with Vuelidate
 
     // if nothing has changed, then abort and ckose the sidebar
@@ -163,7 +163,7 @@ const submitForm = async () => {
 
     // email supabase update
     if (hasFieldChanged('email')) {
-      console.log('updating supabase email')
+      //console.log('updating supabase email')
       const { errorEmail } = await client.auth.updateUser({
         email: formData.email,
       })
@@ -241,6 +241,7 @@ const submitForm = async () => {
 
 const beforeYouLeaveDialog = ref(false)
 
+// handles the before you leave dialog. If there are changes, then show the dialog, otherwise close the sidebar
 const beforeYouLeave = (e) => {
   if (hasAnyFieldsChanged()) {
     beforeYouLeaveDialog.value = true

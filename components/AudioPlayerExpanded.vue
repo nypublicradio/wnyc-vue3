@@ -7,7 +7,6 @@ import {
   trackClickEvent,
   isLiveStream,
   whenTime,
-  resizePublisherImageUrl,
   shareAPI,
 } from '~/utilities/helpers'
 import {
@@ -86,7 +85,7 @@ const handleDownload = (bucketItem) => {
 
 const handleShare = (bucketItem) => {
   // trigger sharing system
-  console.log('bucketItem = ', bucketItem)
+  //console.log('bucketItem = ', bucketItem)
   shareAPI({
     title: bucketItem.title,
     text: bucketItem.details,
@@ -244,6 +243,7 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
+// handles the click on the bottom fixed footer
 const moreFromClick = () => {
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${currentEpisode.title}`,
@@ -254,13 +254,17 @@ const moreFromClick = () => {
   navigateTo(`/shows/${currentEpisode.slug}`)
 }
 
+// handles the click on the play button to toggle play
 const togglePlay = () => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
+// handles the click on the skip ahead button
 const skipAhead = () => {
   skipAheadTrigger.value = !skipAheadTrigger.value
 }
+
+// handles the click on the skip back button
 const skipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
@@ -433,6 +437,7 @@ console.log('currentEpisode = ', currentEpisode)
       <div class="flex gap-4 flex-wrap my-3">
         <Author
           v-for="author in currentEpisode.onTodaysShowHosts"
+          :key="author.url"
           :imgSrc="author.image"
           :name="`${author['first-name']} ${author['last-name']}`"
           :to="author.url"

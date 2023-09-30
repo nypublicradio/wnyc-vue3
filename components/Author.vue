@@ -25,7 +25,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['on-click'])
 
-// TEMP fix to make ripple work
+// TEMP fix to make ripple work+
 import { usePrimeVue } from 'primevue/config'
 const $primevue = usePrimeVue()
 defineExpose({

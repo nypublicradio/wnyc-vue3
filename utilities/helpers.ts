@@ -66,9 +66,11 @@ export const resizePublisherImageUrl = (url, w, h, q = 80) => {
   pieces.map((piece, index) => {
     if (index < 4 || index > 7) {
       finalUrlArr.push(piece)
+      return true
     }
     if (index === 4) {
       finalUrlArr.push(`${w}/${h}/c/${q}`)
+      return true
     }
   })
   return finalUrlArr.join('/')
@@ -436,6 +438,6 @@ export const shareAPI = async (content: object) => {
 
 // time converter
 export const convertTime = (val) => {
-  const hhmmss = new Date(val * 1000).toISOString().substr(11, 8)
-  return hhmmss.indexOf('00:') === 0 ? hhmmss.substr(3) : hhmmss
+  const hhmmss = new Date(val * 1000).toISOString().substring(11, 19)
+  return hhmmss.startsWith('00:') ? hhmmss.substring(3) : hhmmss
 }
