@@ -37,7 +37,7 @@ const getImageUrl = (article: any) => {
 		article.lead_asset?.[0]?.value?.image ??
 		article.lead_asset?.[0]?.value?.default_image
 	if (!listingImage) return ''
-	return String(listingImage.id)
+	return String(listingImage.file)
 }
 
 // returns the article link

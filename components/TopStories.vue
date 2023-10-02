@@ -3,8 +3,7 @@ import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCar
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
 import {
   trackClickEvent,
-  whenTime,
-getAviaryImageSrcId,
+  whenTime
 } from '~/utilities/helpers'
 
 const props = defineProps({
@@ -30,7 +29,7 @@ defineExpose({
       <VCard
         v-ripple
         class="p-ripple"
-        :src="getAviaryImageSrcId(article)"
+        :src="article.lead_image"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
         :link="`/story/${article.meta.slug}`"
