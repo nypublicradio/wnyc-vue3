@@ -11,15 +11,8 @@ import {
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
-  useCurrentEpisodeHolder,
-  useIsEpisodePlaying,
-  useTogglePlayTrigger,
-  useIsPlayerMinimized,
-  useIsStreamLoading,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
-  useSkipAheadTrigger,
-  useSkipBackTrigger,
 } from '~/composables/states'
 import { useToast } from 'primevue/usetoast'
 
@@ -36,13 +29,6 @@ const toast = useToast()
 const emit = defineEmits(['close-panel'])
 
 const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isEpisodePlaying = useIsEpisodePlaying()
-const togglePlayTrigger = useTogglePlayTrigger()
-const isPlayerMinimized = useIsPlayerMinimized()
-const isStreamLoading = useIsStreamLoading()
-const skipAheadTrigger = useSkipAheadTrigger()
-const skipBackTrigger = useSkipBackTrigger()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 
@@ -254,21 +240,6 @@ const moreFromClick = () => {
   navigateTo(`/shows/${currentEpisode.slug}`)
 }
 
-// handles the click on the play button to toggle play
-const togglePlay = () => {
-  togglePlayTrigger.value = !togglePlayTrigger.value
-}
-
-// handles the click on the skip ahead button
-const skipAhead = () => {
-  skipAheadTrigger.value = !skipAheadTrigger.value
-}
-
-// handles the click on the skip back button
-const skipBack = () => {
-  skipBackTrigger.value = !skipBackTrigger.value
-}
-
 //console.log('currentEpisode = ', currentEpisode)
 </script>
 
@@ -315,31 +286,7 @@ const skipBack = () => {
         @scrub-timeline-end="scrubTimelineEnd"
         @timeline-click="timelineClick" -->
     </div>
-
-    <div class="controls flex gap-3 justify-content-center">
-      <Button :disabled="isLive" severity="secondary" rounded @click="skipBack">
-        <template #icon> <Previous10 /></template>
-      </Button>
-      <Button
-        v-if="isEpisodePlaying"
-        severity="secondary"
-        rounded
-        @click="togglePlay"
-      >
-        <template #icon> <PauseIcon /></template>
-      </Button>
-      <Button v-else severity="secondary" rounded @click="togglePlay">
-        <template #icon> <PlayIcon /></template>
-      </Button>
-      <Button
-        :disabled="isLive"
-        severity="secondary"
-        rounded
-        @click="skipAhead"
-      >
-        <template #icon> <Next10 /></template>
-      </Button>
-    </div>
+    <PlayAndSkipButtons />
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
         <Button text severity="secondary" rounded>
@@ -511,17 +458,6 @@ const skipBack = () => {
           justify-content: space-between;
           .track-info-time-separator {
             display: none;
-          }
-        }
-      }
-      .controls {
-        .p-button {
-          width: 50px;
-          height: 50px;
-          .play-icon,
-          .pause-icon {
-            width: 20px;
-            height: 20px;
           }
         }
       }
