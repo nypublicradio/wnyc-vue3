@@ -12,9 +12,10 @@ const backHome = () => {
   navigateTo(`/shows/${episodeData?.['show-slug']}`)
 }
 
-// handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+
+// handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlay = (media) => {
   if (currentEpisode.value?.file !== media.file) {
     currentEpisode.value = media
