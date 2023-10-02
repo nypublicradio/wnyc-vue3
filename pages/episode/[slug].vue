@@ -8,7 +8,7 @@ import episodeData from './episode-data.json'
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent('episode', 'episode page', 'back home button')
-  navigateTo(`/shows/${episodeData.show}`)
+  navigateTo(`/shows/${episodeData?.['show-slug']}`)
 }
 </script>
 
@@ -28,13 +28,22 @@ const backHome = () => {
         <h1>{{ episodeData?.show }}</h1>
       </div>
     </section>
-    <v-image
-      v-if="episodeData?.image"
-      :src="episodeData?.image.url"
-      :ratio="[3, 2]"
-      :alt="episodeData?.image.alt"
-      class="episode-page-image mb-2"
-    />
+    <div class="relative mb-4">
+      <v-image
+        v-if="episodeData?.image"
+        :src="episodeData?.image.url"
+        :ratio="[3, 2]"
+        :alt="episodeData?.image.alt"
+        class="episode-page-image mb-2"
+      />
+      <v-image
+        v-if="episodeData?.['show-logo']"
+        :src="episodeData?.['show-logo']"
+        :ratio="[1, 1]"
+        :alt="episodeData?.show"
+        class="episode-page-show-image mb-2"
+      />
+    </div>
     <section>
       <p class="episode-page-date mb-1">{{ whenTime(episodeData) }}</p>
       <h1 class="mb-4 alt">{{ episodeData.title }}</h1>
@@ -53,6 +62,15 @@ const backHome = () => {
   max-height: 333.33px;
   aspect-ratio: 3/2;
   object-fit: cover;
+}
+
+.episode-page .episode-page-show-image {
+  width: 72px;
+  height: 72px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  bottom: -36px;
+  left: 20px;
 }
 
 .episode-page .episode-page-date {
