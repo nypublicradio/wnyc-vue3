@@ -4,7 +4,6 @@ import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VB
 import {
   trackClickEvent,
   whenTime,
-  getAviaryImageSrcId,
 } from '~/utilities/helpers'
 
 // TEMP fix to make ripple work
@@ -17,48 +16,21 @@ defineExpose({
 
 // get the navigation data from Aviary
 const config = useRuntimeConfig()
-const { data: articles } = await useFetch(config.public.STORIES_API)
-
-// returns the article link
-const getArticleLink = (article) => {
-  if (article.ancestry) {
-    return `https://gothamist.com/${article.ancestry[0].slug}/${article.meta.slug}`
-  } else if (article.path) {
-    return article.path.replace('/home/', 'https://gothamist.com')
-  }
-  return 'https://gothamist.com'
-}
-
-const normalizeAuthor = (author) => {
-  return {
-    id: author.id,
-    firstName: author.first_name,
-    lastName: author.last_name,
-    organization: author.contributing_organization?.name,
-    organizationUrl: author.contributing_organization?.url,
-    name: `${author.first_name} ${author.last_name}`,
-    photoID: author.photo,
-    jobTitle: author.job_title,
-    biography: author.biography,
-    website: author.website,
-    email: author.email,
-    slug: author.slug,
-    url: author.slug && `https://gothamist.com/staff/${author.slug}`,
-  }
-}
+const { data: pagedata } = await useFetch('/api/homepage')
+const articles = pagedata.value.top_stories;
 </script>
 
 <template>
   <div v-if="articles" class="top-stories">
-    <div v-for="(article, index) in articles.items" :key="index" class="mb-4">
+    <div v-for="(article, index) in articles" :key="index" class="mb-4">
       <!-- <pre>{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
-        :src="getAviaryImageSrcId(article)"
+        :src="article.leadImage"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
-        :link="`/story/${article.meta.slug}`"
+        :link="article.link"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
@@ -87,7 +59,7 @@ const normalizeAuthor = (author) => {
               <template #left>
                 <VByline
                   prefix=""
-                  :authors="article.related_authors?.map(normalizeAuthor)"
+                  :authors="article.authors"
                   @name-click="
                     trackClickEvent(
                       'Click Tracking - Top Story',
