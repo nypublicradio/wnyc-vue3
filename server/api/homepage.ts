@@ -1,5 +1,6 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
+import humps from 'humps'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
 const GOTHAMISTDOTCOM = 'https://gothamist.com/'
@@ -97,6 +98,11 @@ const getLivestreams = async () => {
 	return streams;
 }
 
+const getMiddleBucket = async () => {
+    const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
+    return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
+}
+
 const formatShowData = (apiResponse) => {
 	const showData = apiResponse.included.find((obj) =>
 		obj.type === 'show'
@@ -171,13 +177,15 @@ const formatShowData = (apiResponse) => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	const streams = await getLivestreams();
-	console.log(streams);
+	//const streams = await getLivestreams();
+	//console.log(streams);
 	const articles = await getTopStories();
 	const nav = await getNavigation();
+	const bucket = await getMiddleBucket();
 	return {
 		navigation: nav,
-		streams: streams,
-		top_stories: articles
+		//streams: streams,
+		top_stories: articles,
+		middle_bucket: bucket
 	}
 })
