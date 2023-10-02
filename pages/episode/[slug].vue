@@ -1,6 +1,7 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import { trackClickEvent, whenTime } from '~/utilities/helpers'
+import { getMinutes, trackClickEvent, whenTime } from '~/utilities/helpers'
+import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
 
 // TO DO - replace dummy data with BFF data
 import episodeData from './episode-data.json'
@@ -9,6 +10,21 @@ import episodeData from './episode-data.json'
 const backHome = () => {
   trackClickEvent('episode', 'episode page', 'back home button')
   navigateTo(`/shows/${episodeData?.['show-slug']}`)
+}
+
+// handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
+const togglePlayTrigger = useTogglePlayTrigger()
+const currentEpisode = useCurrentEpisode()
+const togglePlay = (media) => {
+  if (currentEpisode.value?.file !== media.file) {
+    currentEpisode.value = media
+  }
+  togglePlayTrigger.value = !togglePlayTrigger.value
+  trackClickEvent(
+    'Click Tracking - Episode Details Page',
+    media.title,
+    'toggle play'
+  )
 }
 </script>
 
@@ -31,9 +47,9 @@ const backHome = () => {
     <div class="relative mb-4">
       <v-image
         v-if="episodeData?.image"
-        :src="episodeData?.image.url"
+        :src="episodeData?.image"
         :ratio="[3, 2]"
-        :alt="episodeData?.image.alt"
+        :alt="episodeData?.title"
         class="episode-page-image mb-2"
       />
       <v-image
@@ -46,12 +62,21 @@ const backHome = () => {
     </div>
     <section>
       <p class="episode-page-date mb-1">{{ whenTime(episodeData) }}</p>
-      <h1 class="mb-4 alt">{{ episodeData.title }}</h1>
-      <div class="episode-page-body" v-html="episodeData.body" />
+      <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
+      <PlayButton
+        :label="getMinutes(episodeData?.duration)"
+        :episode="episodeData"
+        @onClick="togglePlay(episodeData)"
+        class="mb-5"
+      />
+      <div class="episode-page-body" v-html="episodeData?.episodeBody" />
     </section>
-    <section v-if="episodeData.transcript">
+    <section v-if="episodeData?.episodeTranscript">
       <h3 class="mb-4">Transcript</h3>
-      <div class="episode-page-transcript" v-html="episodeData.transcript" />
+      <div
+        class="episode-page-transcript"
+        v-html="episodeData?.episodeTranscript"
+      />
     </section>
   </div>
 </template>
