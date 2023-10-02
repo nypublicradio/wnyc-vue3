@@ -5,6 +5,10 @@
 // console.log('home currentUser = ', currentUser.value)
 // console.log('home currentUserProfile = ', currentUserProfile.value)
 
+const {data: pagedata} = await useFetch("/api/homepage");
+const topStories = pagedata.value.top_stories;
+const bucketItems = pagedata.value.middle_bucket;
+
 definePageMeta({
   layout: 'default',
   layoutTransition: {
@@ -46,11 +50,11 @@ useHead({
     </section>
     <section>
       <h2 class="mb-2">Top stories from Gothamist</h2>
-      <TopStories />
+      <TopStories :articles="topStories" />
     </section>
     <section>
       <h2>Featured from WNYC</h2>
     </section>
-    <WNYCFeatured />
+    <WNYCFeatured :bucketItems="bucketItems" />
   </div>
 </template>

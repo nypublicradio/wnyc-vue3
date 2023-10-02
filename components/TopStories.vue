@@ -4,7 +4,16 @@ import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VB
 import {
   trackClickEvent,
   whenTime,
+getAviaryImageSrcId,
 } from '~/utilities/helpers'
+
+const props = defineProps({
+  articles: {
+    type: Array,
+    default: null,
+    required: true,
+  }
+})
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from 'primevue/config'
@@ -12,12 +21,6 @@ const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
-// TEMP fix to make ripple work
-
-// get the navigation data from Aviary
-const config = useRuntimeConfig()
-const { data: pagedata } = await useFetch('/api/homepage')
-const articles = pagedata.value.top_stories;
 </script>
 
 <template>
@@ -27,10 +30,10 @@ const articles = pagedata.value.top_stories;
       <VCard
         v-ripple
         class="p-ripple"
-        :src="article.leadImage"
+        :src="getAviaryImageSrcId(article)"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
-        :link="article.link"
+        :link="`/story/${article.meta.slug}`"
         :maxWidth="article.listingImage?.width"
         :maxHeight="article.listingImage?.height"
         :sponsored="article.sponsoredContent"
