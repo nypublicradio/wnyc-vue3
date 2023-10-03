@@ -14,6 +14,7 @@
     padding: 0 $padding 20px $padding;
     overflow-y: hidden;
     overflow-x: auto;
+    scroll-behavior: smooth;
     -webkit-mask-image: linear-gradient(
       to right,
       rgba(0, 0, 0, 0) 0%,

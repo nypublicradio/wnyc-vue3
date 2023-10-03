@@ -14,6 +14,8 @@ import {
   useIsStreamLoading,
 } from '~/composables/states'
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+const route = useRoute()
+const router = useRouter()
 const allCurrentStations = useAllCurrentStations()
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -25,40 +27,62 @@ const isStreamLoading = useIsStreamLoading()
 
 const togglePlay = async (station) => {
   if (currentEpisode.value !== station) {
+    console.log('station = ', station)
     await updateLiveStream(station.slug)
     // update slug
-    currentStreamStation.value = station.slug
-    currentEpisode.value = station
-    currentEpisodeHolder.value = station
 
+    currentStreamStation.value = currentEpisodeHolder.value.slug
+    currentEpisode.value = currentEpisodeHolder.value
     // currentEpisode.value = station
     // currentStreamStation.value = station.slug
     // togglePlayTrigger.value = !togglePlayTrigger.value
     trackClickEvent(
       'Click Tracking - Station Button',
       'Live Page',
-      `select station ${station.name}`
+      `select station ${currentEpisodeHolder.value.name}`
     )
   }
 }
-onMounted(async () => {
+
+const scrollToActiveStation = () => {
+  const activeStation = document.getElementsByClassName('activestation')
+  if (activeStation[0]) {
+    console.log('scrolling')
+    activeStation[0].scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'start',
+    })
+  }
+}
+
+onMounted(() => {
   //await nextTick()
-  // slight delay is needed for some reason when opening the app with a logged in user
-  setTimeout(async () => {
-    await updateLiveStream(currentStreamStation.value)
-  }, 100)
+  setTimeout(() => {
+    scrollToActiveStation()
+  }, 200)
 })
+
+watch(
+  currentEpisodeHolder,
+  () => {
+    setTimeout(() => {
+      scrollToActiveStation()
+    }, 200)
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <div class="live-page">
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature class="live-stations-holder">
-        <div class="live-stations flex gap-3">
+        <div class="live-stations flex">
           <div
             v-for="station in allCurrentStations"
             class="station-holder"
             :class="{
-              active:
+              activestation:
                 currentEpisodeHolder?.station === station.station ||
                 currentEpisode?.station === station.station,
             }"
@@ -102,12 +126,13 @@ onMounted(async () => {
           <div class="content flex flex-column gap-1 justify-content-start">
             <LiveBadge class="align-self-start" />
             <h2>{{ currentEpisodeHolder?.title }}</h2>
-            <p class="blurb truncate t3lines">
-              {{
+            <div
+              class="blurb truncate t3lines"
+              v-html="
                 currentEpisodeHolder?.onTodaysShowHeadline ??
                 currentEpisodeHolder?.details
-              }}
-            </p>
+              "
+            />
           </div>
         </div>
       </section>
@@ -125,7 +150,7 @@ onMounted(async () => {
             <h2 class="title">All Things Considered</h2>
           </div>
         </div>
-        <FollowIcon :active="true" />
+        <FollowIcon :active="false" />
       </div>
     </section>
   </div>
@@ -136,6 +161,9 @@ onMounted(async () => {
   .top {
     padding: 1.5rem 0;
     background-color: var(--night-500);
+    .horizontal-scroll-feature .scroll {
+      padding-left: 0 !important;
+    }
     .station-holder {
       :after {
         transition: bottom 0.5s;
@@ -153,7 +181,7 @@ onMounted(async () => {
         border-top: 10px solid var(--red);
         z-index: -1;
       }
-      &.active {
+      &.activestation {
         :after {
           bottom: -10px;
         }
@@ -164,6 +192,10 @@ onMounted(async () => {
         &:active {
           background: var(--red);
           border: 1px solid transparent;
+        }
+        margin-left: 1rem;
+        &:first-child {
+          margin-left: 1.25rem;
         }
       }
     }
@@ -179,7 +211,7 @@ onMounted(async () => {
       .selected {
         border: 2px solid var(--red);
         border-radius: 8px;
-        margin-right: 0.75rem;
+        margin-right: 1rem;
         height: 27px;
       }
       .follow-icon {
@@ -192,14 +224,11 @@ onMounted(async () => {
 </style>
 
 <style lang="scss">
-// .live-page {
-//   .top {
-//     .station-btn {
-//       .p-button-label {
-//         //font-size: 14px;
-//       }
-//     }
-//   }
-// }
-//
+.live-page {
+  .top {
+    .horizontal-scroll-feature .scroll {
+      padding-left: 0 !important;
+    }
+  }
+}
 </style>
