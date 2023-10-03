@@ -155,7 +155,7 @@ const updateUserPassword = async () => {
 }
 
 onMounted(async () => {
-  await updateAllLiveStreams()
+  //await updateAllLiveStreams()
   await initializeStationList(allCurrentStations.value)
 })
 

@@ -223,7 +223,7 @@ onMounted(async () => {
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       checkNotificationPermisstions()
-      updateAllLiveStreams()
+      //updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false
@@ -233,7 +233,7 @@ onMounted(async () => {
   //refresh data every time the cursor enters the window on desktop only
   if (isDesktop) {
     document.addEventListener('pointerenter', () => {
-      updateAllLiveStreams()
+      //updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false

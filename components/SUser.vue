@@ -83,7 +83,7 @@ const onLogOut = async () => {
   })
 
   // update all live streams
-  updateAllLiveStreams()
+  //updateAllLiveStreams()
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {

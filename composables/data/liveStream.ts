@@ -49,8 +49,6 @@ export async function updateAllLiveStreams() {
         }
     )
     currentEpisodeHolder.value = initialStation
-
-
 }
 
 const formatShowData = (apiResponse) => {
