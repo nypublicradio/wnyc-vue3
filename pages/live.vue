@@ -1,42 +1,67 @@
 <script setup>
 import { trackClickEvent } from '~/utilities/helpers'
 import {
+  updateAllLiveStreams,
+  updateLiveStream,
+} from '~/composables/data/liveStream'
+import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useCurrentStreamStation,
   useAllCurrentStations,
   useIsEpisodePlaying,
   useIsStreamLoading,
 } from '~/composables/states'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 const allCurrentStations = useAllCurrentStations()
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const currentStreamStation = useCurrentStreamStation()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
-const togglePlay = (station) => {
+const togglePlay = async (station) => {
   if (currentEpisode.value !== station) {
+    await updateLiveStream(station.slug)
+    // update slug
+    currentStreamStation.value = station.slug
     currentEpisode.value = station
-    togglePlayTrigger.value = !togglePlayTrigger.value
+    currentEpisodeHolder.value = station
+
+    // currentEpisode.value = station
+    // currentStreamStation.value = station.slug
+    // togglePlayTrigger.value = !togglePlayTrigger.value
     trackClickEvent(
       'Click Tracking - Station Button',
       'Live Page',
-      'select station'
+      `select station ${station.name}`
     )
   }
 }
+onMounted(async () => {
+  //await nextTick()
+  // slight delay is needed for some reason when opening the app with a logged in user
+  setTimeout(async () => {
+    await updateLiveStream(currentStreamStation.value)
+  }, 100)
+})
 </script>
 <template>
   <div class="live-page">
-    <div class="top flex flex-column gap-3">
+    <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature class="live-stations-holder">
         <div class="live-stations flex gap-3">
           <div
             v-for="station in allCurrentStations"
             class="station-holder"
-            :class="{ active: currentEpisode?.station === station.station }"
+            :class="{
+              active:
+                currentEpisodeHolder?.station === station.station ||
+                currentEpisode?.station === station.station,
+            }"
             :key="station.station"
           >
             <div class="relative">
@@ -52,7 +77,7 @@ const togglePlay = (station) => {
                       class="pi pi-spin pi-spinner mr-2"
                     ></i>
                     <SoundWave
-                      v-else-if="isEpisodePlaying"
+                      v-else
                       class="mr-2"
                       :class="[{ paused: !isEpisodePlaying }]"
                     />
@@ -63,11 +88,46 @@ const togglePlay = (station) => {
           </div>
         </div>
       </HorizontalScrollFeature>
-      <div class="current-station-info">
-        <!-- info -->
-        <PlayAndSkipButtons v-if="currentEpisode" />
-      </div>
+      <section class="current-station-info flex gap-3">
+        <VImage
+          v-if="currentEpisodeHolder?.image"
+          :src="currentEpisodeHolder?.image"
+          :width="100"
+          :height="100"
+          :ratio="[1, 1]"
+          alt="show poster image"
+          class="image"
+        />
+        <div class="info flex gap-3">
+          <div class="content flex flex-column gap-1 justify-content-start">
+            <LiveBadge class="align-self-start" />
+            <h2>{{ currentEpisodeHolder?.title }}</h2>
+            <p class="blurb truncate t3lines">
+              {{
+                currentEpisodeHolder?.onTodaysShowHeadline ??
+                currentEpisodeHolder?.details
+              }}
+            </p>
+          </div>
+        </div>
+      </section>
+      <PlayAndSkipButtons v-if="currentEpisode" />
     </div>
+    <section class="schedule">
+      <h2>Schedule</h2>
+      <div
+        class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
+      >
+        <div class="flex align-items-center">
+          <div class="selected" />
+          <div>
+            <p class="time">12:00 AM</p>
+            <h2 class="title">All Things Considered</h2>
+          </div>
+        </div>
+        <FollowIcon :active="true" />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -105,6 +165,26 @@ const togglePlay = (station) => {
           background: var(--red);
           border: 1px solid transparent;
         }
+      }
+    }
+    .current-station-info {
+      .v-image-publisher.image {
+        flex: none;
+        width: 100px;
+      }
+    }
+  }
+  .schedule {
+    .schedule-entry {
+      .selected {
+        border: 2px solid var(--red);
+        border-radius: 8px;
+        margin-right: 0.75rem;
+        height: 27px;
+      }
+      .follow-icon {
+        width: 28px;
+        height: 28px;
       }
     }
   }
