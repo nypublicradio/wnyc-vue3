@@ -56,8 +56,14 @@ const scrollToActiveStation = () => {
   }
 }
 
-onMounted(() => {
-  //await nextTick()
+onMounted(async () => {
+  // if (!currentEpisodeHolder) {
+  //   await nextTick()
+  //   // slight delay is needed for some reason when opening the app with a logged in user
+  //   setTimeout(() => {
+  //     updateAllLiveStreams()
+  //   }, 100)
+  // }
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
@@ -91,6 +97,12 @@ watch(
             <div class="relative">
               <Button
                 class="station-btn text-sm white-space-nowrap"
+                :severity="
+                  currentEpisodeHolder?.station === station.station ||
+                  currentEpisode?.station === station.station
+                    ? 'primary'
+                    : 'secondary'
+                "
                 :label="station.station"
                 @click="togglePlay(station)"
               >
