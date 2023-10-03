@@ -5,7 +5,7 @@
 // console.log('home currentUser = ', currentUser.value)
 // console.log('home currentUserProfile = ', currentUserProfile.value)
 
-const {data: pagedata} = await useFetch(`${config.public['BFF_URL']}/api/homepage`);
+const {data: pagedata} = await useFetch("/api/homepage");
 const topStories = pagedata.value.top_stories;
 const bucketItems = pagedata.value.middle_bucket;
 
