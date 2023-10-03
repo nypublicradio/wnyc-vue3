@@ -122,6 +122,7 @@ export default defineNuxtConfig({
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? 'https://api.wnyc.org/api/v3/',
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.prod.nypr.digital/images/',
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
+      BFF_URL: process.env.BFF_URL ?? 'https://demo.wnyc.org',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',
       environment: process.env.environment ?? 'prod',
       supabaseUrl: process.env.SUPABASE_URL,
