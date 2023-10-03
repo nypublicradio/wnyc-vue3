@@ -17,18 +17,15 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
 const togglePlay = (station) => {
-  if (
-    currentEpisode.value?.slug !== station?.slug ||
-    currentEpisode.value?.timeStart !== station?.timeStart
-  ) {
+  if (currentEpisode.value !== station) {
     currentEpisode.value = station
+    togglePlayTrigger.value = !togglePlayTrigger.value
+    trackClickEvent(
+      'Click Tracking - Station Button',
+      'Live Page',
+      'select station'
+    )
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent(
-    'Click Tracking - Station Button',
-    'Live Page',
-    'select station'
-  )
 }
 </script>
 <template>
@@ -49,14 +46,17 @@ const togglePlay = (station) => {
                 @click="togglePlay(station)"
               >
                 <template #icon>
-                  <SoundWave
-                    class="mr-2"
-                    v-if="isEpisodePlaying && !isStreamLoading"
-                  />
-                  <i
-                    v-if="isStreamLoading"
-                    class="pi pi-spin pi-spinner mr-2"
-                  ></i>
+                  <div v-if="currentEpisode?.station === station.station">
+                    <SoundWave
+                      class="mr-2"
+                      v-if="isEpisodePlaying && !isStreamLoading"
+                    />
+
+                    <i
+                      v-if="isStreamLoading"
+                      class="pi pi-spin pi-spinner mr-2"
+                    ></i>
+                  </div>
                 </template>
               </Button>
             </div>
@@ -75,21 +75,26 @@ const togglePlay = (station) => {
 .live-page {
   .top {
     padding-top: 1.5rem;
-    background-color: var(--night-500);
+    //background-color: var(--night-500);
     .station-holder {
+      :after {
+        transition: bottom 0.5s;
+        -webkit-transition: bottom 0.5s;
+        content: '';
+        position: absolute;
+        bottom: 0px;
+        right: 0;
+        left: 0;
+        margin: auto;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid var(--red);
+      }
       &.active {
         :after {
-          content: '';
-          position: absolute;
           bottom: -10px;
-          right: 0;
-          left: 0;
-          margin: auto;
-          width: 0;
-          height: 0;
-          border-left: 10px solid transparent;
-          border-right: 10px solid transparent;
-          border-top: 10px solid var(--red);
         }
       }
       .station-btn {
@@ -99,6 +104,7 @@ const togglePlay = (station) => {
           background: var(--red);
           border: 1px solid transparent;
         }
+        z-index: 1;
       }
     }
   }
