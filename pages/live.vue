@@ -47,15 +47,15 @@ const togglePlay = (station) => {
               >
                 <template #icon>
                   <div v-if="currentEpisode?.station === station.station">
-                    <SoundWave
-                      class="mr-2"
-                      v-if="isEpisodePlaying && !isStreamLoading"
-                    />
-
                     <i
                       v-if="isStreamLoading"
                       class="pi pi-spin pi-spinner mr-2"
                     ></i>
+                    <SoundWave
+                      v-else-if="isEpisodePlaying"
+                      class="mr-2"
+                      :class="[{ paused: !isEpisodePlaying }]"
+                    />
                   </div>
                 </template>
               </Button>
@@ -65,7 +65,7 @@ const togglePlay = (station) => {
       </HorizontalScrollFeature>
       <div class="current-station-info">
         <!-- info -->
-        <!-- <PlayAndSkipButtons /> -->
+        <PlayAndSkipButtons v-if="currentEpisode" />
       </div>
     </div>
   </div>
@@ -74,8 +74,8 @@ const togglePlay = (station) => {
 <style lang="scss" scoped>
 .live-page {
   .top {
-    padding-top: 1.5rem;
-    //background-color: var(--night-500);
+    padding: 1.5rem 0;
+    background-color: var(--night-500);
     .station-holder {
       :after {
         transition: bottom 0.5s;
@@ -91,6 +91,7 @@ const togglePlay = (station) => {
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
         border-top: 10px solid var(--red);
+        z-index: -1;
       }
       &.active {
         :after {
@@ -104,7 +105,6 @@ const togglePlay = (station) => {
           background: var(--red);
           border: 1px solid transparent;
         }
-        z-index: 1;
       }
     }
   }

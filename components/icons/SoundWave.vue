@@ -89,5 +89,10 @@ onMounted(() => {})
     opacity: 0;
     pointer-events: none;
   }
+  &.paused {
+    .bar {
+      animation-play-state: paused;
+    }
+  }
 }
 </style>
