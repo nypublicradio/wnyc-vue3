@@ -10,25 +10,29 @@ const linkMapper = (link: any) => {
 }
 
 const getNavigation = async () => {
-	const res = await axios(config.public.NAVIGATION_API)
+	try {
+		const res = await axios(config.public.NAVIGATION_API)
 
-	const headerLinks = res.data.primary_navigation.map(linkMapper)
-	const footer1 = res.data.primary_footer_links.map(linkMapper)
-	const footer2 = res.data.secondary_footer_links.map(linkMapper)
-	const legalLinks = res.data.legal_links.map(linkMapper)
+		const headerLinks = res.data.primary_navigation.map(linkMapper)
+		const footer1 = res.data.primary_footer_links.map(linkMapper)
+		const footer2 = res.data.secondary_footer_links.map(linkMapper)
+		const legalLinks = res.data.legal_links.map(linkMapper)
 
-	return {
-		// nav: res.data,
-		copyright: res.data.copyright_year,
-		description: res.data.property_description,
-		sponser: {
-			title: "WNYC is supported by the JLGreene Foundation",
-			url: "https://jlgreene.org/"
-		},
-		headerNav: headerLinks,
-		legalLinks: legalLinks,
-		footer1: footer1,
-		footer2: footer2
+		return {
+			// nav: res.data,
+			copyright: res.data.copyright_year,
+			description: res.data.property_description,
+			sponser: {
+				title: "WNYC is supported by the JLGreene Foundation",
+				url: "https://jlgreene.org/"
+			},
+			headerNav: headerLinks,
+			legalLinks: legalLinks,
+			footer1: footer1,
+			footer2: footer2
+		}
+	} catch (e) {
+		console.log(e)
 	}
 }
 
@@ -69,15 +73,19 @@ const normalizeAuthor = (author: any) => {
 }
 
 const getTopStories = async () => {
-	const res = await axios(config.public.STORIES_API)
-	return res.data.items.map((article: any) => {
-		article.authors = article.related_authors.map((author: any) => {
-			return normalizeAuthor(author)
-		});
-		article.link = getArticleLink(article);
-		article.leadImage = getImageUrl(article);
-		return article;
-	})
+	try {
+		const res = await axios(config.public.STORIES_API);
+		return res.data.items.map((article: any) => {
+			article.authors = article.related_authors.map((author: any) => {
+				return normalizeAuthor(author)
+			});
+			article.link = getArticleLink(article);
+			article.leadImage = getImageUrl(article);
+			return article;
+		})
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 const getLivestream = async (slug: String) => {
@@ -99,8 +107,12 @@ const getLivestreams = async () => {
 }
 
 const getMiddleBucket = async () => {
-    const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
-    return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
+	try {
+    	const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
+		return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 const formatShowData = (apiResponse) => {
@@ -180,10 +192,10 @@ export default defineEventHandler(async (event) => {
 	//const streams = await getLivestreams();
 	//console.log(streams);
 	const articles = await getTopStories();
-	const nav = await getNavigation();
+	//const nav = await getNavigation();
 	const bucket = await getMiddleBucket();
 	return {
-		navigation: nav,
+		//navigation: nav,
 		//streams: streams,
 		top_stories: articles,
 		middle_bucket: bucket
