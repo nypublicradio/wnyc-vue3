@@ -68,6 +68,14 @@ const scrollToActiveStation = () => {
   }
 }
 
+const toggleFollow = (episode) => {
+  trackClickEvent(
+    'Click Tracking - Schedule Follow Button',
+    'Live Page',
+    `follow show ${episode.name}`
+  )
+}
+
 onMounted(() => {
   setTimeout(() => {
     scrollToActiveStation()
@@ -167,7 +175,11 @@ watch(
             <h2 class="title">All Things Considered</h2>
           </div>
         </div>
-        <FollowIcon :active="false" />
+        <Button severity="secondary" text plain rounded @click="toggleFollow">
+          <template #icon>
+            <FollowIcon :active="false" />
+          </template>
+        </Button>
       </div>
     </section>
   </div>
