@@ -29,7 +29,7 @@ defineExpose({
       <VCard
         v-ripple
         class="p-ripple"
-        :src="article.lead_image"
+        :src="article.leadImage"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
         :link="`/story/${article.meta.slug}`"
