@@ -12,18 +12,27 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 
+const emit = defineEmits([
+  'beforeTogglePlay',
+  'beforeSkipAhead',
+  'beforeSkipBack',
+])
+
 // handles the click on the play button to toggle play
 const togglePlay = () => {
+  emit('beforeTogglePlay')
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 // handles the click on the skip ahead button
 const skipAhead = () => {
+  emit('beforeSkipAhead')
   skipAheadTrigger.value = !skipAheadTrigger.value
 }
 
 // handles the click on the skip back button
 const skipBack = () => {
+  emit('beforeSkipBack')
   skipBackTrigger.value = !skipBackTrigger.value
 }
 

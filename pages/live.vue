@@ -25,23 +25,35 @@ const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
-const togglePlay = async (station) => {
+const switchStation = async (station) => {
   if (currentEpisode.value !== station) {
-    console.log('station = ', station)
     await updateLiveStream(station.slug)
-    // update slug
 
-    currentStreamStation.value = currentEpisodeHolder.value.slug
-    currentEpisode.value = currentEpisodeHolder.value
-    // currentEpisode.value = station
-    // currentStreamStation.value = station.slug
-    // togglePlayTrigger.value = !togglePlayTrigger.value
+    //if (isEpisodePlaying.value) {
+    togglePlayTrigger.value = !togglePlayTrigger.value
+    currentStreamStation.value = station.slug
+    currentEpisode.value = station
+    currentEpisodeHolder.value = station
+    //}
+
     trackClickEvent(
       'Click Tracking - Station Button',
       'Live Page',
-      `select station ${currentEpisodeHolder.value.name}`
+      `switch station ${currentEpisodeHolder.value.name}`
     )
   }
+}
+const togglePlay = () => {
+  if (currentEpisode.value !== currentEpisodeHolder.value) {
+    //update slug
+    currentStreamStation.value = currentEpisodeHolder.value.slug
+    currentEpisode.value = currentEpisodeHolder.value
+  }
+  trackClickEvent(
+    'Click Tracking - Toggle Play Button',
+    'Live Page',
+    `play pause station ${currentEpisodeHolder.value.name}`
+  )
 }
 
 const scrollToActiveStation = () => {
@@ -56,14 +68,7 @@ const scrollToActiveStation = () => {
   }
 }
 
-onMounted(async () => {
-  // if (!currentEpisodeHolder) {
-  //   await nextTick()
-  //   // slight delay is needed for some reason when opening the app with a logged in user
-  //   setTimeout(() => {
-  //     updateAllLiveStreams()
-  //   }, 100)
-  // }
+onMounted(() => {
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
@@ -104,7 +109,7 @@ watch(
                     : 'secondary'
                 "
                 :label="station.station"
-                @click="togglePlay(station)"
+                @click="switchStation(station)"
               >
                 <template #icon>
                   <div v-if="currentEpisode?.station === station.station">
@@ -148,7 +153,7 @@ watch(
           </div>
         </div>
       </section>
-      <PlayAndSkipButtons v-if="currentEpisode" />
+      <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
     </div>
     <section class="schedule">
       <h2>Schedule</h2>
