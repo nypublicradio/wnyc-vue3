@@ -21,6 +21,8 @@ export async function updateAllLiveStreams() {
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentUserProfile = useCurrentUserProfile()
 
+    //const { data: pagedata } = await useFetch('/api/homepage')
+    //const articles = pagedata.value.streams;
     const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
 
     const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {

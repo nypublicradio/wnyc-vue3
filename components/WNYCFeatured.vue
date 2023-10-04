@@ -10,8 +10,15 @@ import { useToast } from 'primevue/usetoast'
 const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
-const bucket = await usePublisherFetch('/buckets/wnyc-home-middle/')
-const bucketItems = bucket?.data?.value?.data?.attributes?.bucketItems
+
+const props = defineProps({
+  bucketItems: {
+    type: Object,
+    default: null,
+    required: true,
+  }
+})
+
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
