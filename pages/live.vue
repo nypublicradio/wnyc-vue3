@@ -1,9 +1,6 @@
 <script setup>
 import { trackClickEvent } from '~/utilities/helpers'
-import {
-  updateAllLiveStreams,
-  updateLiveStream,
-} from '~/composables/data/liveStream'
+import { updateLiveStream } from '~/composables/data/liveStream'
 import {
   useTogglePlayTrigger,
   useCurrentEpisode,
@@ -14,8 +11,7 @@ import {
   useIsStreamLoading,
 } from '~/composables/states'
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-const route = useRoute()
-const router = useRouter()
+
 const allCurrentStations = useAllCurrentStations()
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()

@@ -1,3 +1,7 @@
+// Homepage data
+// // global state for the Bff useHomepageData data
+// export const useHomepageData = () => useState('useHomepageData', () => null)
+
 // defualt seettings that are over writted by user data
 const localUserProfileDefault: object = {
     autodownload: false,

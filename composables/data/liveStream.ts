@@ -31,7 +31,7 @@ export async function updateAllLiveStreams() {
         // conditional to check what shows are currently running
         if (stream.relationships['current-show'].data !== null) {
             const fetchedRunningShowData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-            console.log('fetchedRunningShowData.data.value', fetchedRunningShowData.data.value)
+            //console.log('fetchedRunningShowData.data.value', fetchedRunningShowData.data.value)
             return formatShowData(fetchedRunningShowData.data.value)
         }
     }))
