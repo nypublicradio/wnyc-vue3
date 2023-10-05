@@ -11,17 +11,17 @@ const topics = ref([
   {
     label: 'Tech & Media',
     value: 'tech-and-media',
-    color: 'var(--red)',
+    color: 'var(--info)',
   },
   {
     label: 'Local News',
     value: 'local-news',
-    color: 'var(--red)',
+    color: 'var(--purple)',
   },
   {
     label: 'Storytelling',
     value: 'storytelling',
-    color: 'var(--red)',
+    color: 'var(--success)',
   },
 ])
 
@@ -30,7 +30,11 @@ const clearSearchField = () => {
 }
 
 const selectTopic = (topic) => {
-  currentTopic.value = topic.label
+  if (currentTopic.value === topic.label) {
+    currentTopic.value = ''
+  } else {
+    currentTopic.value = topic.label
+  }
 }
 </script>
 
@@ -59,7 +63,7 @@ const selectTopic = (topic) => {
     </section>
     <div v-if="!searchFieldValue">
       <div class="topics">
-        <section>
+        <section class="pb-0">
           <h2>Browse By Topic</h2>
         </section>
         <HorizontalScrollFeature class="topics-holder">
@@ -77,6 +81,7 @@ const selectTopic = (topic) => {
                   class="topic-btn text-sm white-space-nowrap"
                   :label="topic.label"
                   @click="selectTopic(topic)"
+                  :style="`background-color: ${topic.color};`"
                 >
                 </Button>
               </div>
@@ -84,13 +89,18 @@ const selectTopic = (topic) => {
           </div>
         </HorizontalScrollFeature>
       </div>
+      <section v-if="currentTopic" class="topic-results">
+        <h2>{{ currentTopic }} Results</h2>
+      </section>
       <section class="featured-shows">
         <h2>Featured Shows</h2>
       </section>
     </div>
-    <section v-else class="results">
-      <h2>Rearch Results</h2>
-    </section>
+    <div v-else>
+      <section class="results">
+        <h2>Rearch Results</h2>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -107,11 +117,11 @@ const selectTopic = (topic) => {
   }
   .topics {
     .topic-btn {
+      border: 1px solid transparent !important;
       &:hover,
       &:focus,
       &:active {
-        background: var(--red);
-        border: 1px solid transparent;
+        border: 1px solid transparent !important;
       }
       margin-left: 1rem;
       &:first-child {
