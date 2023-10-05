@@ -8,6 +8,9 @@ const getLivestream = async (slug: String) => {
 
 export default defineEventHandler(async (event) => {
 	console.dir(event);
-	const slug: String = event?.context?.params?.stationslug;
-	return getLivestream(slug);
+	const slug: String | undefined = event?.context?.params?.stationslug;
+	if (slug) {
+		return getLivestream(slug);
+	}
+	return null;
 });

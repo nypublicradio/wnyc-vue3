@@ -13,7 +13,11 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications'
-import { useIsApp, useCurrentUserProfile } from '~/composables/states'
+import {
+  useIsApp,
+  useCurrentUserProfile,
+  //useHomepageData,
+} from '~/composables/states'
 import {
   useBrowserTopColor,
   useBrowserTopColorDarkMode,
@@ -41,6 +45,12 @@ const fcmToken = ref('')
 // const appLaunchUrl = ref(null)
 
 isApp.value = Capacitor.getPlatform() !== 'web'
+
+// const homepageData = useHomepageData()
+// const { data: homepageFetchData } = await useFetch(
+//   `${config.public.BFF_URL}/api/homepage`
+// )
+// homepageData.value = homepageFetchData
 
 useHead({
   htmlAttrs: {
@@ -223,7 +233,7 @@ onMounted(async () => {
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       checkNotificationPermisstions()
-      updateAllLiveStreams()
+      //updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false
@@ -233,7 +243,7 @@ onMounted(async () => {
   //refresh data every time the cursor enters the window on desktop only
   if (isDesktop) {
     document.addEventListener('pointerenter', () => {
-      updateAllLiveStreams()
+      //updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false

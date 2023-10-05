@@ -49,8 +49,6 @@ export async function updateAllLiveStreams() {
         }
     )
     currentEpisodeHolder.value = initialStation
-
-
 }
 
 const formatShowData = (apiResponse) => {
@@ -122,7 +120,8 @@ const formatShowData = (apiResponse) => {
         onTodaysShowImageCredits: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-name'] : null,
         onTodaysShowImageCreditsUrl: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-url'] : null,
         onTodaysShowSegments: segmentData.length > 0 ? formattedSegments : null,
-        onTodaysShowSocial: showData ? showData.attributes.about.social : null
+        onTodaysShowSocial: showData ? showData.attributes.about.social : null,
+        showSchedule: scheduleData ? scheduleData.attributes : null
     }
     return formattedData
 }
