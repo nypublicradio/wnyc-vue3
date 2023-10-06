@@ -37,7 +37,7 @@ const togglePlay = () => {
 
 <template>
   <div class="live-feature">
-    <div class="inner" v-if="currentEpisodeHolder">
+    <div class="inner">
       <VFlexibleLink
         raw
         to="/live"

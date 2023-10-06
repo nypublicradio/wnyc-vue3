@@ -43,7 +43,7 @@ export async function updateAllLiveStreams() {
     // set initial stream with the `currentStreamStation` value in the states.ts file
     const initialStation = allCurrentStations.value.find(
         (option) => {
-            console.log('currentUserProfile.value  = ', currentUserProfile.value)
+            //console.log('currentUserProfile.value  = ', currentUserProfile.value)
             if (currentUserProfile.value) {
                 const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
                 return option.station === profile
@@ -52,7 +52,7 @@ export async function updateAllLiveStreams() {
     )
 
     currentEpisodeHolder.value = initialStation
-    console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
+    //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
 }
 
 const formatShowData = (apiResponse) => {

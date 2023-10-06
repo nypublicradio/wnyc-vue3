@@ -55,7 +55,7 @@ export default defineNuxtRouteMiddleware(async () => {
             }
 
             // set the current user profile state
-            console.log('data', data)
+            //console.log('data', data)
             currentUserProfile.value = data
             updateAllLiveStreams()
             setDisplaySettings(data)

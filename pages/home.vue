@@ -6,8 +6,6 @@ const { data: pagedata } = await useFetch(
 )
 const topStories = pagedata.value.top_stories
 const bucketItems = pagedata.value.middle_bucket
-console.log('bucketItems = ', bucketItems)
-//})
 
 definePageMeta({
   layout: 'default',
