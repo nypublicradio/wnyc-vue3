@@ -88,9 +88,6 @@ const onLogOut = async () => {
     summary: 'You have logged out.',
     life: 3000,
   })
-
-  // update all live streams
-  //updateAllLiveStreams()
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {

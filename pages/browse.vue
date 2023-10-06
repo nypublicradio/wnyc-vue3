@@ -96,6 +96,10 @@ const getAlgoliaSuggestion = computed(() => {
 const goToShowPage = (show) => {
   navigateTo(`shows/${show.slug}`)
 }
+
+const viewAllShows = () => {
+  console.log('not sure yet')
+}
 </script>
 
 <template>
@@ -160,7 +164,16 @@ const goToShowPage = (show) => {
         <h2>{{ currentTopic }} Results</h2>
       </section>
       <section v-else class="featured-shows">
-        <h2 class="mb-3">Featured Shows</h2>
+        <div class="flex justify-content-between mb-3">
+          <h2>Featured Shows</h2>
+          <Button
+            link
+            label="View All Shows"
+            @click="viewAllShows"
+            class="p-0 m-0 underline"
+            size="small"
+          />
+        </div>
         <div class="shows flex flex-column gap-3">
           <div
             v-for="show in tempResults"

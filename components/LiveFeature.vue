@@ -7,7 +7,6 @@ import {
   useCurrentEpisodeHolder,
 } from '~/composables/states'
 import { trackClickEvent } from '~/utilities/helpers'
-import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from 'primevue/config'

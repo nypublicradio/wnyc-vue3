@@ -24,8 +24,6 @@ import {
 } from '~/composables/globals.ts'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-import { logIn } from 'ionicons/icons'
-//import { Browser } from '@capacitor/browser'
 
 const { isDesktop } = useDevice()
 const route = useRoute()
@@ -232,7 +230,6 @@ onMounted(async () => {
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
       checkNotificationPermisstions()
-      //updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false
@@ -242,7 +239,6 @@ onMounted(async () => {
   //refresh data every time the cursor enters the window on desktop only
   if (isDesktop) {
     document.addEventListener('pointerenter', () => {
-      //updateAllLiveStreams()
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false

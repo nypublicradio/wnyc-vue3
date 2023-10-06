@@ -17,10 +17,7 @@ import {
   useEditProfileSideBar,
 } from '~/composables/states.ts'
 import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
-import {
-  updateAllLiveStreams,
-  updateLiveStream,
-} from '~/composables/data/liveStream'
+import { updateLiveStream } from '~/composables/data/liveStream'
 import { Preferences } from '@capacitor/preferences'
 
 const currentUser = useCurrentUser()
@@ -155,7 +152,6 @@ const updateUserPassword = async () => {
 }
 
 onMounted(async () => {
-  //await updateAllLiveStreams()
   await initializeStationList(allCurrentStations.value)
 })
 

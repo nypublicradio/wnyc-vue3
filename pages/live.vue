@@ -55,7 +55,7 @@ const togglePlay = () => {
 const scrollToActiveStation = () => {
   const activeStation = document.getElementsByClassName('activestation')
   if (activeStation[0]) {
-    console.log('scrolling')
+    //console.log('scrolling')
     activeStation[0].scrollIntoView({
       behavior: 'smooth',
       block: 'center',
