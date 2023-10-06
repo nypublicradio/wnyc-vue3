@@ -5,6 +5,8 @@ import {
 } from '~/composables/states'
 import { setDisplaySettings, detectSystemDarkMode } from '~/utilities/helpers'
 import { Preferences } from '@capacitor/preferences'
+import { updateAllLiveStreams } from '~/composables/data/liveStream'
+import { set } from 'date-fns'
 export default defineNuxtRouteMiddleware(async () => {
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
@@ -53,9 +55,13 @@ export default defineNuxtRouteMiddleware(async () => {
             }
 
             // set the current user profile state
+            console.log('data', data)
             currentUserProfile.value = data
+            updateAllLiveStreams()
             setDisplaySettings(data)
-            navigateTo('/home')
+
+            //navigateTo('/home')
+
         }
     }
 
@@ -102,7 +108,7 @@ export default defineNuxtRouteMiddleware(async () => {
                 //set display settings
                 setDisplaySettings(currentUserProfile.value)
             }
-            navigateTo('/home')
+            //navigateTo('/home')
 
         } else {
             // if they are a user, get their profile data

@@ -169,10 +169,9 @@ const addListeners = async () => {
 // }
 
 onMounted(async () => {
-  //initially load all the streams
   await nextTick()
+  //initially load all the streams
   updateAllLiveStreams()
-
   // if APP then add listeners
   if (isApp.value) {
     addListeners()

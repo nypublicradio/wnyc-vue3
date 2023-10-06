@@ -33,19 +33,11 @@ const togglePlay = () => {
   togglePlayTrigger.value = !togglePlayTrigger.value
   trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')
 }
-
-// onMounted(async () => {
-//   await nextTick()
-//   // slight delay is needed for some reason when opening the app with a logged in user
-//   setTimeout(() => {
-//     updateAllLiveStreams()
-//   }, 100)
-// })
 </script>
 
 <template>
   <div class="live-feature">
-    <div class="inner">
+    <div class="inner" v-if="currentEpisodeHolder">
       <VFlexibleLink
         raw
         to="/live"
@@ -56,7 +48,7 @@ const togglePlay = () => {
           <transition name="fade">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :src="currentEpisodeHolder.image"
+              :src="currentEpisodeHolder?.image"
               :ratio="[1, 1]"
               alt="show poster image"
               class="image"
