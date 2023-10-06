@@ -1,15 +1,7 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-
-// TEMP fix to make ripple work
-import { usePrimeVue } from 'primevue/config'
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
+const router = useRouter()
 const searchFieldValue = ref('')
 const isSearching = ref(false)
-const currentTopic = ref('')
 const topics = ref([
   {
     label: 'Arts & Culture',
@@ -82,11 +74,10 @@ const clearSearchField = () => {
 }
 
 const selectTopic = (topic) => {
-  if (currentTopic.value === topic.label) {
-    currentTopic.value = ''
-  } else {
-    currentTopic.value = topic.label
-  }
+  router.push({
+    name: 'browse-topic',
+    query: { topic: topic.label },
+  })
 }
 
 const getAlgoliaSuggestion = computed(() => {
@@ -98,7 +89,7 @@ const goToShowPage = (show) => {
 }
 
 const viewAllShows = () => {
-  console.log('not sure yet')
+  navigateTo('browse-all')
 }
 </script>
 
@@ -137,33 +128,19 @@ const viewAllShows = () => {
               class="station-holder"
               :key="topic.label"
             >
-              <div
-                class="relative topic-btn-holder"
-                :class="[{ activetopicholder: currentTopic === topic.label }]"
-                :style="`border-top-color: ${topic.color};`"
-              >
-                <div
-                  class="arrow"
-                  :style="`border-top-color: ${topic.color};`"
-                ></div>
+              <div class="relative topic-btn-holder">
                 <Button
                   class="topic-btn text-sm white-space-nowrap font-meta"
-                  :class="[{ activetopic: currentTopic === topic.label }]"
                   :label="topic.label"
                   @click="selectTopic(topic)"
                   :style="`background-color: ${topic.color};`"
-                  :icon="currentTopic === topic.label ? 'pi pi-times' : ''"
-                >
-                </Button>
+                />
               </div>
             </div>
           </div>
         </HorizontalScrollFeature>
       </div>
-      <section v-if="currentTopic" class="topic-results">
-        <h2>{{ currentTopic }} Results</h2>
-      </section>
-      <section v-else class="featured-shows">
+      <section class="featured-shows">
         <div class="flex justify-content-between mb-3">
           <h2>Featured Shows</h2>
           <Button
@@ -175,30 +152,12 @@ const viewAllShows = () => {
           />
         </div>
         <div class="shows flex flex-column gap-3">
-          <div
+          <BrowseItem
             v-for="show in tempResults"
-            class="flex justify-content-between align-items-center p-ripple"
-            v-ripple
-            @click.prevent="goToShowPage(show)"
-          >
-            <div class="flex gap-3">
-              <VImage
-                :src="show.image"
-                :height="72"
-                :width="72"
-                :ratio="[1, 1]"
-              />
-              <div>
-                <h2>{{ show.title }}</h2>
-                <p>{{ show.org }}</p>
-              </div>
-            </div>
-            <Button text plain rounded>
-              <template #icon>
-                <StarIcon class="h-2rem" :active="false" />
-              </template>
-            </Button>
-          </div>
+            :show="show"
+            :key="show.title"
+            @onClick="goToShowPage(show)"
+          />
         </div>
       </section>
     </div>
