@@ -1,4 +1,12 @@
 <script setup>
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+
+// TEMP fix to make ripple work
+import { usePrimeVue } from 'primevue/config'
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
 const searchFieldValue = ref('')
 const isSearching = ref(false)
 const currentTopic = ref('')
@@ -25,6 +33,50 @@ const topics = ref([
   },
 ])
 
+const tempResults = [
+  {
+    id: '1',
+    isLive: true,
+    image:
+      'https://media.wnyc.org/i/%s/%s/%s/%s/2023/01/52650126647_4bf5e103e0_o.jpg',
+    title: 'The Brian Leher Show',
+    slug: 'The-brian-leher-show',
+    org: 'WNYC',
+  },
+  {
+    id: '2',
+    isLive: false,
+    image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2020/06/AllOfIt.png',
+    title: 'All Of It',
+    slug: 'all-of-it',
+    org: 'WNYC',
+  },
+  {
+    id: '3',
+    isLive: false,
+    image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2019/07/NYPR.DSM_1400.jpg',
+    title: 'Death, Sex & Money',
+    slug: 'death-sex-and-money',
+    org: 'WNYC',
+  },
+  {
+    id: '4',
+    isLive: true,
+    image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/bbc-newshour-tile.jpg',
+    title: 'BBC Newshour',
+    slug: 'bbc-newshour',
+    org: 'BBC',
+  },
+  {
+    id: '5',
+    isLive: false,
+    image: '304978',
+    title: 'Article Title Here',
+    slug: 'article-title-here',
+    org: 'Gothamist',
+  },
+]
+
 const clearSearchField = () => {
   searchFieldValue.value = ''
 }
@@ -35,6 +87,14 @@ const selectTopic = (topic) => {
   } else {
     currentTopic.value = topic.label
   }
+}
+
+const getAlgoliaSuggestion = computed(() => {
+  return 'Blah blah'
+})
+
+const goToShowPage = (show) => {
+  navigateTo(`shows/${show.slug}`)
 }
 </script>
 
@@ -63,7 +123,7 @@ const selectTopic = (topic) => {
     </section>
     <div v-if="!searchFieldValue">
       <div class="topics">
-        <section class="pb-0">
+        <section>
           <h2>Browse By Topic</h2>
         </section>
         <HorizontalScrollFeature class="topics-holder">
@@ -71,17 +131,24 @@ const selectTopic = (topic) => {
             <div
               v-for="topic in topics"
               class="station-holder"
-              :class="{
-                activetopic: currentTopic === topic.label,
-              }"
               :key="topic.label"
             >
-              <div class="relative">
+              <div
+                class="relative topic-btn-holder"
+                :class="[{ activetopicholder: currentTopic === topic.label }]"
+                :style="`border-top-color: ${topic.color};`"
+              >
+                <div
+                  class="arrow"
+                  :style="`border-top-color: ${topic.color};`"
+                ></div>
                 <Button
-                  class="topic-btn text-sm white-space-nowrap"
+                  class="topic-btn text-sm white-space-nowrap font-meta"
+                  :class="[{ activetopic: currentTopic === topic.label }]"
                   :label="topic.label"
                   @click="selectTopic(topic)"
                   :style="`background-color: ${topic.color};`"
+                  :icon="currentTopic === topic.label ? 'pi pi-times' : ''"
                 >
                 </Button>
               </div>
@@ -92,13 +159,67 @@ const selectTopic = (topic) => {
       <section v-if="currentTopic" class="topic-results">
         <h2>{{ currentTopic }} Results</h2>
       </section>
-      <section class="featured-shows">
-        <h2>Featured Shows</h2>
+      <section v-else class="featured-shows">
+        <h2 class="mb-3">Featured Shows</h2>
+        <div class="shows flex flex-column gap-3">
+          <div
+            v-for="show in tempResults"
+            class="flex justify-content-between align-items-center p-ripple"
+            v-ripple
+            @click.prevent="goToShowPage(show)"
+          >
+            <div class="flex gap-3">
+              <VImage
+                :src="show.image"
+                :height="72"
+                :width="72"
+                :ratio="[1, 1]"
+              />
+              <div>
+                <h2>{{ show.title }}</h2>
+                <p>{{ show.org }}</p>
+              </div>
+            </div>
+            <Button text plain rounded>
+              <template #icon>
+                <StarIcon class="h-2rem" :active="false" />
+              </template>
+            </Button>
+          </div>
+        </div>
       </section>
     </div>
     <div v-else>
       <section class="results">
-        <h2>Rearch Results</h2>
+        <!-- if results show them -->
+        <div class="results-list">
+          <h2>Rearch Results</h2>
+        </div>
+        <!-- if no results show this -->
+        <div class="text-center flex flex-column gap-4 mt-8">
+          <h2>No results for {{ searchFieldValue }}</h2>
+          <img
+            src="/noResults.svg"
+            class="max-w-6rem m-auto"
+            alt="No Results"
+          />
+          <div>
+            <p class="mb-2">
+              Did you mean:
+              <Button
+                link
+                text
+                class="p-0 text-sm"
+                :label="getAlgoliaSuggestion"
+                @click="searchFieldValue = getAlgoliaSuggestion"
+              />
+            </p>
+            <p>
+              Or... try searching again using<br />
+              different keywords or spelling
+            </p>
+          </div>
+        </div>
       </section>
     </div>
   </div>
@@ -116,16 +237,39 @@ const selectTopic = (topic) => {
     margin-left: -2.5rem;
   }
   .topics {
-    .topic-btn {
-      border: 1px solid transparent !important;
-      &:hover,
-      &:focus,
-      &:active {
-        border: 1px solid transparent !important;
-      }
+    .topic-btn-holder {
       margin-left: 1rem;
       &:first-child {
         margin-left: 1.25rem;
+      }
+      .topic-btn {
+        border: 1px solid transparent !important;
+        &:hover,
+        &:focus,
+        &:active {
+          border: 1px solid transparent !important;
+        }
+      }
+
+      .arrow {
+        transition: bottom 0.5s;
+        -webkit-transition: bottom 0.5s;
+        position: absolute;
+        bottom: 0px;
+        right: 0;
+        left: 0;
+        margin: auto;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid var(--red);
+        z-index: -1;
+      }
+      &.activetopicholder {
+        .arrow {
+          bottom: -10px;
+        }
       }
     }
   }

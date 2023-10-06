@@ -197,7 +197,7 @@ watch(
         position: absolute;
         bottom: 0px;
         right: 0;
-        left: 0;
+        left: 1.25rem;
         margin: auto;
         width: 0;
         height: 0;
