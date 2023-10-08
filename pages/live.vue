@@ -22,21 +22,23 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
 const switchStation = async (station) => {
-  if (currentEpisode.value !== station) {
-    await updateLiveStream(station.slug)
+  if (!isStreamLoading.value) {
+    if (currentEpisode.value !== station) {
+      await updateLiveStream(station.slug)
 
-    //if (isEpisodePlaying.value) {
-    togglePlayTrigger.value = !togglePlayTrigger.value
-    currentStreamStation.value = station.slug
-    currentEpisode.value = station
-    currentEpisodeHolder.value = station
-    //}
+      //if (isEpisodePlaying.value) {
+      togglePlayTrigger.value = !togglePlayTrigger.value
+      currentStreamStation.value = station.slug
+      currentEpisode.value = station
+      currentEpisodeHolder.value = station
+      //}
 
-    trackClickEvent(
-      'Click Tracking - Station Button',
-      'Live Page',
-      `switch station ${currentEpisodeHolder.value.name}`
-    )
+      trackClickEvent(
+        'Click Tracking - Station Button',
+        'Live Page',
+        `switch station ${currentEpisodeHolder.value.name}`
+      )
+    }
   }
 }
 const togglePlay = () => {
@@ -113,6 +115,7 @@ watch(
                     : 'secondary'
                 "
                 :label="station.station"
+                :aria-disabled="isStreamLoading"
                 @click="switchStation(station)"
               >
                 <template #icon>
