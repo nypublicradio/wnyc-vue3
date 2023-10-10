@@ -448,8 +448,10 @@ export const getAndSetUserProfile = async () => {
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
 
+  console.log('huh')
   // function that gets a user profile
   const getProfile = async () => {
+    console.log('get')
     const {
       data,
       error
