@@ -1,4 +1,9 @@
 <script setup>
+definePageMeta({
+  layout: 'default',
+  middleware: 'check-auth',
+})
+
 const router = useRouter()
 const searchFieldValue = ref('')
 const isSearching = ref(false)
@@ -32,7 +37,7 @@ const tempResults = [
     image:
       'https://media.wnyc.org/i/%s/%s/%s/%s/2023/01/52650126647_4bf5e103e0_o.jpg',
     title: 'The Brian Leher Show',
-    slug: 'The-brian-leher-show',
+    slug: 'the-brian-leher-show',
     org: 'WNYC',
   },
   {
@@ -97,8 +102,8 @@ const viewAllShows = () => {
   <div class="browse-page">
     <section class="search">
       <span class="p-input-icon-left w-full">
-        <i v-if="isSearching" class="pi pi-spin pi-spinner" />
-        <i v-else class="pi pi-search" />
+        <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
+        <i v-else class="pi pi-search text-color" />
         <InputText
           v-model="searchFieldValue"
           placeholder="Search"
@@ -200,7 +205,7 @@ const viewAllShows = () => {
 <style lang="scss" scoped>
 .browse-page {
   .search-field {
-    background-color: var(--background2);
+    background-color: var(--searchFieldBackground);
   }
   .closer {
     position: absolute;

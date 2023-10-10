@@ -318,6 +318,10 @@ a:visited {
   white-space: nowrap;
 }
 
+.text-color {
+  color: var(--text-color);
+}
+
 // text plain button colors
 .p-button.p-button-text.p-button-plain {
   color: var(--text-color);

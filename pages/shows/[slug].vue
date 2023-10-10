@@ -1,9 +1,12 @@
 <script setup>
 // navigate back to home and track it
+const route = useRoute()
 const router = useRouter()
 const backHome = () => {
   router.go(-1)
 }
+
+console.log('route', route)
 </script>
 
 <template>
@@ -19,7 +22,7 @@ const backHome = () => {
           aria-label="back to previous page"
           @click="backHome"
         />
-        <h1>Shows</h1>
+        <h1>Show page : {{ route.fullPath }}</h1>
       </div>
     </section>
   </div>

@@ -12,6 +12,11 @@ import {
 } from '~/composables/states'
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 
+definePageMeta({
+  layout: 'default',
+  middleware: 'check-auth',
+})
+
 const allCurrentStations = useAllCurrentStations()
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()

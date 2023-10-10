@@ -31,7 +31,7 @@ const props = defineProps({
         :width="72"
         :ratio="[1, 1]"
       />
-      <div>
+      <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="props.show.isLive" class="mb-1" />
         <h2>{{ props.show.title }}</h2>
         <p>{{ props.show.org }}</p>
