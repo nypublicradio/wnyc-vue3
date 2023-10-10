@@ -1,9 +1,4 @@
 <script setup>
-definePageMeta({
-  layout: 'default',
-  middleware: 'check-auth',
-})
-
 const router = useRouter()
 const searchFieldValue = ref('')
 const isSearching = ref(false)

@@ -12,7 +12,6 @@ definePageMeta({
   layoutTransition: {
     name: 'login',
   },
-  middleware: 'check-auth',
 })
 useHead({
   bodyAttrs: {

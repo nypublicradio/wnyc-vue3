@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent, getAndSetUserProfile } from '~/utilities/helpers'
 import {
   NewRelicCapacitorPlugin,
   NREnums,
@@ -167,9 +167,8 @@ const addListeners = async () => {
 // }
 
 onMounted(async () => {
-  await nextTick()
-  //initially load all the streams
-  updateAllLiveStreams()
+  await getAndSetUserProfile()
+
   // if APP then add listeners
   if (isApp.value) {
     addListeners()
