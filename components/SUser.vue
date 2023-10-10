@@ -11,7 +11,11 @@ import {
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  setDisplaySettings,
+  getAndSetUserProfile,
+} from '~/utilities/helpers'
 import { useToast } from 'primevue/usetoast'
 import { Preferences } from '@capacitor/preferences'
 
@@ -62,16 +66,7 @@ const onLogOut = async () => {
   // set the currentUser composable to null
   currentUser.value = null
 
-  // reset the currentEpisode composable to the local storage default
-  const lsSTRING = await Preferences.get({ key: 'localUserProfile' })
-  const ls = JSON.parse(lsSTRING.value)
-  currentUserProfile.value = ls ? ls : localUserProfileDefault.value
-
-  // update all live streams preference based on user
-  updateAllLiveStreams()
-
-  // set display settings
-  setDisplaySettings(localUserProfileDefault.value)
+  getAndSetUserProfile()
 
   settingsSideBar.value = false
 
