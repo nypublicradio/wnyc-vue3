@@ -4,8 +4,10 @@ const config = useRuntimeConfig()
 const { data: pagedata } = await useFetch(
   `${config.public.BFF_URL}/api/homepage`
 )
-const topStories = pagedata.value.top_stories
 const bucketItems = pagedata.value.middle_bucket
+const topStories = pagedata.value.top_stories
+const localNewscast = pagedata.value.local_newscast
+const nationalNewscast = pagedata.value.national_newscast
 
 definePageMeta({
   layout: 'default',
@@ -43,7 +45,11 @@ useHead({
 
     <section>
       <h2 class="mt-4 mb-2">Latest News Updates</h2>
-      <LatestNewsUpdates class="pt-2" />
+      <LatestNewsUpdates
+        class="pt-2"
+        :localNewscast="localNewscast"
+        :nationalNewscast="nationalNewscast"
+      />
     </section>
     <section>
       <h2 class="mb-2">Top stories from Gothamist</h2>

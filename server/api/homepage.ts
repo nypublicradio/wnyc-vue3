@@ -30,7 +30,7 @@ const getLocalNewscast = async () => {
 		resData.attributes.duration = duration;
 		return resData.attributes;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 
@@ -43,13 +43,13 @@ const getNationalNewscast = async () => {
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
-        resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
+		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
 		//Fetch the mp3 last modified date
 		const mp3Res = await axios(resData.attributes.audio);
 		resData.attributes.newsdate = mp3Res.headers['last-modified'];
 		return resData.attributes;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 const getNavigation = async () => {
@@ -166,7 +166,7 @@ const getWNYCTopStories = async () => {
 				article.cmsSource = 'publisher';
 				article.SortDate = article.attributes.publishAt;
 				return article;
-				
+
 			});
 			return articles;
 		} else {
@@ -200,7 +200,7 @@ const getLivestreams = async () => {
 	const streams_url = `${config.public.LIVESTREAM_URL}/?filter[slug]=${stream_slugs.join(',')}&include=${fields.join(',')}`;
 	console.log(streams_url);
 	const res = await axios(streams_url);
-	const streams = res.data.data.map( (stream: any) => {
+	const streams = res.data.data.map((stream: any) => {
 		return formatShowData(stream);
 	})
 	return streams;
@@ -208,7 +208,7 @@ const getLivestreams = async () => {
 
 const getMiddleBucket = async () => {
 	try {
-    	const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
+		const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
 		return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
 	} catch (e) {
 		console.log(e);

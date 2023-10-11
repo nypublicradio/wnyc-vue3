@@ -39,13 +39,7 @@ const props = defineProps({
           </PipeData>
         </div>
         <div class="flex justify-content-between align-items-center">
-          <slot name="play">
-            <PlayButton
-              :label="getMinutes(props.item.attributes.estimatedDuration, 1)"
-              :episode="normalizedItem"
-              @onClick="togglePlay"
-            />
-          </slot>
+          <slot name="play" />
           <slot name="menu" />
         </div>
       </div>

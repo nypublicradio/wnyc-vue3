@@ -10,6 +10,19 @@ defineExpose({
 })
 // TEMP fix to make ripple work
 
+const props = defineProps({
+  localNewscast: {
+    type: Object,
+    default: null,
+    required: true,
+  },
+  nationalNewscast: {
+    type: Object,
+    default: null,
+    required: true,
+  },
+})
+
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
@@ -95,42 +108,21 @@ const togglePlay = (media) => {
   <div>
     <div class="latest-news-updates grid">
       <div class="col-6">
-        <div class="card-small p-ripple" @click="togglePlay(local)" v-ripple>
-          <Badge :label="local.title" />
-          <div class="news-title">
-            <div class="font-bold">Current Headlines</div>
-            <PipeData>
-              <template #left>WNYC</template>
-              <template #right>
-                <span class="nobreak">{{ whenTime(local) }}</span>
-              </template>
-            </PipeData>
-          </div>
-          <PlayButton :label="getMinutes(local.duration)" :episode="local" />
-        </div>
+        <NewsCard
+          :newsData="localNewscast"
+          @onClick="togglePlay(localNewscast)"
+        />
       </div>
 
       <div class="col-6">
-        <div class="card-small p-ripple" @click="togglePlay(national)" v-ripple>
-          <Badge
-            :label="national.title"
-            color="var(--background-500)"
-            bg-color="var(--indigo-500)"
-          />
-          <div class="news-title">
-            <div class="font-bold">11AM Update</div>
-            <PipeData>
-              <template #left>NPR</template>
-              <template #right>
-                <span class="nobreak">{{ whenTime(national) }}</span>
-              </template>
-            </PipeData>
-          </div>
-          <PlayButton
-            :label="getMinutes(national.duration)"
-            :episode="national"
-          />
-        </div>
+        <NewsCard
+          :newsData="nationalNewscast"
+          source="NPR"
+          badgeLabel="National News"
+          bagdeColor="var(--background-500)"
+          badgeBgColor="var(--indigo-500)"
+          @onClick="togglePlay(nationalNewscast)"
+        />
       </div>
     </div>
   </div>

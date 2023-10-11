@@ -281,11 +281,18 @@ function getOrdinalSuffix(i) {
  */
 export function howLongAgo(date) {
   if (date) {
+
+    // check if unix tiumestamp
+    if (Number.isInteger(date)) {
+      date = new Date(date * 1000);
+    }
+
     const res = formatDistanceToNowStrict(new Date(date), {
       addSuffix: true,
     })
 
     return res.replace('minutes', 'min').replace('minute', 'min')
+
   }
 
   return null
@@ -388,6 +395,7 @@ export const isLiveStream = () => {
 
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
+
   const res = data.updatedDate
     ? howLongAgo(data.updatedDate)
     : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
@@ -448,7 +456,6 @@ export const getAndSetUserProfile = async () => {
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
 
-  console.log('huh')
   // function that gets a user profile
   const getProfile = async () => {
     console.log('get')

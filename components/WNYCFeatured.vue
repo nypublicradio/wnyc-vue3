@@ -16,9 +16,8 @@ const props = defineProps({
     type: Object,
     default: null,
     required: true,
-  }
+  },
 })
-
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -75,7 +74,7 @@ const onMenuChange = (e) => {
 const normalizedItem = (item) => {
   return {
     ...item,
-    file: item.attributes.audio,
+    file: item.attributes.file,
     title: item.attributes.title,
     image: resizePublisherImage(item.attributes, 60, 60, 80),
     duration: item.attributes.estimatedDuration,
@@ -111,7 +110,7 @@ const togglePlay = (item) => {
           <template #play>
             <PlayButton
               :label="getMinutes(item.attributes.estimatedDuration, 1)"
-              :episode="normalizedItem(item)"
+              :file="normalizedItem(item).file"
               @onClick="togglePlay(item)"
             />
           </template>

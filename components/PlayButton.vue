@@ -29,9 +29,9 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  episode: {
-    default: {},
-    type: Object,
+  file: {
+    default: '',
+    type: String,
   },
 })
 
@@ -46,10 +46,7 @@ const togglePlay = () => {
 
 const checkEpisodeMatchAndPlaying = computed(() => {
   if (currentEpisode.value) {
-    if (
-      currentEpisode.value.file === props.episode.file &&
-      isEpisodePlaying.value
-    ) {
+    if (currentEpisode.value.file === props.file && isEpisodePlaying.value) {
       return true
     }
   }
@@ -58,7 +55,7 @@ const checkEpisodeMatchAndPlaying = computed(() => {
 
 const checkEpisodeMatch = computed(() => {
   if (currentEpisode.value) {
-    if (currentEpisode.value.file === props.episode.file) {
+    if (currentEpisode.value.file === props.file) {
       return true
     }
   }

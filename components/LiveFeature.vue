@@ -81,7 +81,7 @@ const togglePlay = () => {
               <PlayButton
                 :label="currentEpisodeHolder?.station"
                 live
-                :episode="currentEpisodeHolder"
+                :file="currentEpisodeHolder?.file"
                 @onClick="togglePlay"
               />
             </div>
