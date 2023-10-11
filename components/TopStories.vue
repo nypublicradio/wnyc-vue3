@@ -25,7 +25,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="index" class="mb-4">
-      <!-- <pre>{{ article }}</pre> -->
+       <!-- <pre>{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
@@ -33,8 +33,8 @@ defineExpose({
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
         :link="`/story/${article.meta.slug}`"
-        :maxWidth="article.listingImage?.width"
-        :maxHeight="article.listingImage?.height"
+        :maxWidth="article.leadImageMaxWidth"
+        :maxHeight="article.leadImageMaxHeight"
         :sponsored="article.sponsoredContent"
         :width="116"
         :height="116"
