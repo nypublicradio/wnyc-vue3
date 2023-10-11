@@ -11,35 +11,22 @@ const linkMapper = (link: any) => {
 
 const getNavigation = async () => {
 	try {
-		const res = await axios(config.public.NAVIGATION_API)
-
-		const headerLinks = res.data.primary_navigation.map(linkMapper)
-		const footer1 = res.data.primary_footer_links.map(linkMapper)
-		const footer2 = res.data.secondary_footer_links.map(linkMapper)
-		const legalLinks = res.data.legal_links.map(linkMapper)
-
-		return {
-			// nav: res.data,
-			copyright: res.data.copyright_year,
-			description: res.data.property_description,
-			sponser: {
-				title: "WNYC is supported by the JLGreene Foundation",
-				url: "https://jlgreene.org/"
-			},
-			headerNav: headerLinks,
-			legalLinks: legalLinks,
-			footer1: footer1,
-			footer2: footer2
-		}
+		const options = {
+			method: 'GET',
+			url: config.public.PUBLISHER_BASE_API + 'link-roll/navigation-shows-wnyc-app/',
+		};
+		const res = await axios(options);
+		const nav = humps.camelizeKeys(res.data).data.attributes.links.map(linkMapper);
+		return nav;
 	} catch (e) {
-		console.log(e)
+		console.log(e);
 	}
 }
 
-const getImageUrl = (article: any) => {
+const getWagtailImageId = (article: any) => {
 	const listingImage =
-		article.lead_asset?.[0]?.value?.image ??
-		article.lead_asset?.[0]?.value?.default_image
+		article.leadAsset?.[0]?.value?.image ??
+		article.leadAsset?.[0]?.value?.defaultImage
 	if (!listingImage) return ''
 	return String(listingImage.id)
 }
@@ -57,13 +44,13 @@ const getArticleLink = (article: any) => {
 const normalizeAuthor = (author: any) => {
 	return {
 		id: author.id,
-		firstName: author.first_name,
-		lastName: author.last_name,
-		organization: author.contributing_organization?.name,
-		organizationUrl: author.contributing_organization?.url,
-		name: `${author.first_name} ${author.last_name}`,
+		firstName: author.firstName,
+		lastName: author.lastName,
+		organization: author.contributingOrganization?.name,
+		organizationUrl: author.contributingOrganization?.url,
+		name: `${author.firstName} ${author.lastName}`,
 		photoID: author.photo,
-		jobTitle: author.job_title,
+		jobTitle: author.jobTitle,
 		biography: author.biography,
 		website: author.website,
 		email: author.email,
@@ -80,12 +67,84 @@ const getTopStories = async () => {
 				return normalizeAuthor(author)
 			});
 			article.link = getArticleLink(article);
-			article.leadImage = getImageUrl(article);
+			article.leadImage = getWagtailImageId(article);
 			return article;
 		})
 	} catch (e) {
 		console.log(e);
 	}
+}
+
+const getGothamistTopStories = async () => {
+	try {
+		const options = {
+			method: 'GET',
+			url: config.public.AVIARY_BASE_API + 'pages/',
+			params: {
+				type: 'news.ArticlePage',
+				fields: 'id,title,lead_asset,related_authors,publication_date,ancestry',
+				order: '-publication_date',
+				show_on_index_listing: true,
+				limit: 3,
+				sponsored_content: false
+			}
+		};
+		const res = await axios(options);
+		const resData = humps.camelizeKeys(res.data).items;
+		console.log(resData);
+		const articles = resData.map((article: any) => {
+			article.authors = article.relatedAuthors.map((author: any) => {
+				return normalizeAuthor(author);
+			});
+			article.link = getArticleLink(article);
+			article.leadImage = getWagtailImageId(article);
+			article.leadImageMaxWidth = article.leadAsset?.[0]?.value?.image?.width;
+			article.leadImageMaxHeight = article.leadAsset?.[0]?.value?.image?.height;
+			article.cmsSource = 'wagtail';
+			article.SortDate = article.publicationDate;
+			return article;
+		});
+		return articles;
+	} catch (e) {
+		console.log(e);
+	}
+}
+
+//Gets the top stories from the WNYC API and 
+const getWNYCTopStories = async () => {
+	try {
+		const options = {
+			method: 'GET',
+			url: config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-top',
+		};
+		const res = await axios(options);
+		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
+		if (resData) {
+			const articles = resData.map((article: any) => {
+				article.cmsSource = 'publisher';
+				article.SortDate = article.attributes.publishAt;
+				return article;
+				
+			});
+			return articles;
+		} else {
+			return [];
+		}
+		//return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
+	} catch (e) {
+		console.log(e);
+	}
+
+}
+
+// Write a function that takes in 2 json objects and returns a single array of articles sorted by publication date.
+const mergeArticles = (articles1: any, articles2: any) => {
+	const mergedArticles = [...articles1, ...articles2];
+	return mergedArticles.sort((a: any, b: any) => {
+		const aDate = new Date(a.SortDate);
+		const bDate = new Date(b.SortDate);
+		return bDate.getTime() - aDate.getTime();
+	});
 }
 
 const getLivestream = async (slug: String) => {
@@ -100,7 +159,6 @@ const getLivestreams = async () => {
 	console.log(streams_url);
 	const res = await axios(streams_url);
 	const streams = res.data.data.map( (stream: any) => {
-		console.log(stream);
 		return formatShowData(stream);
 	})
 	return streams;
@@ -115,26 +173,27 @@ const getMiddleBucket = async () => {
 	}
 }
 
-const formatShowData = (apiResponse) => {
-	const showData = apiResponse.included.find((obj) =>
+const formatShowData = (apiResponse: any) => {
+	const showData = apiResponse.included.find((obj: any) =>
 		obj.type === 'show'
 	)
-	const scheduleData = apiResponse.included.find((obj) => {
+	console.log(showData);
+	const scheduleData = apiResponse.included.find((obj: any) => {
 		return obj.type === 'show-schedule'
 	})
-	const imageData = apiResponse.included.find((obj) => {
+	const imageData = apiResponse.included.find((obj: any) => {
 		return obj.type === 'image'
 	})
-	const episodeData = apiResponse.included.find((obj) => {
+	const episodeData = apiResponse.included.find((obj: any) => {
 		return obj.type === 'episode'
 	})
-	const airingData = apiResponse.included.find((obj) => {
+	const airingData = apiResponse.included.find((obj: any) => {
 		return obj.type === 'airing'
 	})
-	const segmentData = apiResponse.included.filter(item => item.type === 'segment')
-	const formattedSegments = []
+	const segmentData = apiResponse.included.filter((item: { type: string }) => item.type === 'segment')
+	const formattedSegments: { title: any; url: string; newWindow: boolean }[] = []
 	if (segmentData !== null) {
-		segmentData.forEach(function (value) {
+		segmentData.forEach(function (value: { attributes: { title: any; slug: string } }) {
 			formattedSegments.push(
 				{
 					title: value.attributes.title,
@@ -190,14 +249,18 @@ const formatShowData = (apiResponse) => {
  */
 export default defineEventHandler(async (event) => {
 	//const streams = await getLivestreams();
-	//console.log(streams);
 	const articles = await getTopStories();
+	const aviary = await getGothamistTopStories();
+	const publisher = await getWNYCTopStories();
 	//const nav = await getNavigation();
 	const bucket = await getMiddleBucket();
+	const topStories = mergeArticles(aviary, publisher);
 	return {
 		//navigation: nav,
 		//streams: streams,
-		top_stories: articles,
-		middle_bucket: bucket
+		top_stories: aviary,
+		middle_bucket: bucket,
+		combined: topStories,
+		wnyc: publisher,
 	}
 })
