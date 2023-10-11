@@ -9,6 +9,33 @@ const linkMapper = (link: any) => {
 	return { title: link.value.title, url: link.value.url }
 }
 
+const getLocalNewscast = async () => {
+	try {
+		const options = {
+			method: 'GET',
+			url: config.public.PUBLISHER_BASE_API + '/story/latest-newscast/',
+		};
+		const res = await axios(options);
+		const resData = humps.camelizeKeys(res.data).data;
+		return resData;
+	} catch (e) {
+		console.log(e);
+	}
+}
+
+const getNationalNewscast = async () => {
+	try {
+		const options = {
+			method: 'GET',
+			url: config.public.PUBLISHER_BASE_API + '/story/npr-newscast',
+		};
+		const res = await axios(options);
+		const resData = humps.camelizeKeys(res.data).data;
+		return resData;
+	} catch (e) {
+		console.log(e);
+	}
+}
 const getNavigation = async () => {
 	try {
 		const options = {
@@ -255,6 +282,8 @@ export default defineEventHandler(async (event) => {
 	//const nav = await getNavigation();
 	const bucket = await getMiddleBucket();
 	const topStories = mergeArticles(aviary, publisher);
+	const local_newscast = await getLocalNewscast();
+	const national_newscast = await getNationalNewscast();
 	return {
 		//navigation: nav,
 		//streams: streams,
@@ -262,5 +291,7 @@ export default defineEventHandler(async (event) => {
 		middle_bucket: bucket,
 		combined: topStories,
 		wnyc: publisher,
+		local_newscast: local_newscast,
+		national_newscast: national_newscast,
 	}
 })
