@@ -22,21 +22,23 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
 const switchStation = async (station) => {
-  if (currentEpisode.value !== station) {
-    await updateLiveStream(station.slug)
+  if (!isStreamLoading.value) {
+    if (currentEpisode.value !== station) {
+      await updateLiveStream(station.slug)
 
-    //if (isEpisodePlaying.value) {
-    togglePlayTrigger.value = !togglePlayTrigger.value
-    currentStreamStation.value = station.slug
-    currentEpisode.value = station
-    currentEpisodeHolder.value = station
-    //}
+      //if (isEpisodePlaying.value) {
+      togglePlayTrigger.value = !togglePlayTrigger.value
+      currentStreamStation.value = station.slug
+      currentEpisode.value = station
+      currentEpisodeHolder.value = station
+      //}
 
-    trackClickEvent(
-      'Click Tracking - Station Button',
-      'Live Page',
-      `switch station ${currentEpisodeHolder.value.name}`
-    )
+      trackClickEvent(
+        'Click Tracking - Station Button',
+        'Live Page',
+        `switch station ${currentEpisodeHolder.value.name}`
+      )
+    }
   }
 }
 const togglePlay = () => {
@@ -55,7 +57,7 @@ const togglePlay = () => {
 const scrollToActiveStation = () => {
   const activeStation = document.getElementsByClassName('activestation')
   if (activeStation[0]) {
-    console.log('scrolling')
+    //console.log('scrolling')
     activeStation[0].scrollIntoView({
       behavior: 'smooth',
       block: 'center',
@@ -113,6 +115,7 @@ watch(
                     : 'secondary'
                 "
                 :label="station.station"
+                :aria-disabled="isStreamLoading"
                 @click="switchStation(station)"
               >
                 <template #icon>
@@ -197,7 +200,7 @@ watch(
         position: absolute;
         bottom: 0px;
         right: 0;
-        left: 0;
+        left: 1.25rem;
         margin: auto;
         width: 0;
         height: 0;

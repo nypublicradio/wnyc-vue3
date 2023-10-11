@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getAndSetUserProfile } from '~/utilities/helpers'
 useHead({
   bodyAttrs: {
     class:
@@ -13,8 +14,10 @@ definePageMeta({
 const user = useSupabaseUser()
 watch(
   user,
-  () => {
+  async () => {
     if (user.value) {
+      await nextTick()
+      getAndSetUserProfile()
       return navigateTo('/home')
     }
     return null

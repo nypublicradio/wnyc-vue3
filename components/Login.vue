@@ -71,6 +71,7 @@ const openForgotPassword = () => {
         label="Log in"
         :client="client"
         :config="config"
+        slug="/confirm"
         @submit-success="closeAll"
       >
         <template #belowSubmit>

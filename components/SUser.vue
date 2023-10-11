@@ -11,8 +11,13 @@ import {
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
-import { trackClickEvent, setDisplaySettings } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  setDisplaySettings,
+  getAndSetUserProfile,
+} from '~/utilities/helpers'
 import { useToast } from 'primevue/usetoast'
+import { Preferences } from '@capacitor/preferences'
 
 const toast = useToast()
 
@@ -61,10 +66,7 @@ const onLogOut = async () => {
   // set the currentUser composable to null
   currentUser.value = null
 
-  // reset the currentEpisode composable to the default
-  currentUserProfile.value = localUserProfileDefault.value
-  // set display settings
-  setDisplaySettings(localUserProfileDefault.value)
+  getAndSetUserProfile()
 
   settingsSideBar.value = false
 
@@ -81,9 +83,6 @@ const onLogOut = async () => {
     summary: 'You have logged out.',
     life: 3000,
   })
-
-  // update all live streams
-  //updateAllLiveStreams()
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
@@ -185,6 +184,7 @@ const handleModal = () => {
     flex: none;
     background-color: #ffffff;
     color: var(--night--500);
+    border-radius: 50%;
     .p-button {
       position: absolute;
       transform: scale(0.5);

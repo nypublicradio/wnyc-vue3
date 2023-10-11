@@ -1,16 +1,15 @@
 <script setup>
 // navigate back to home and track it
-const route = useRoute()
 const router = useRouter()
+const route = useRoute()
 const backHome = () => {
   router.go(-1)
 }
 
-console.log('route', route)
+const topic = route.query.topic
 </script>
-
 <template>
-  <div class="shows-page">
+  <div class="browse-topic-page">
     <section class="">
       <div class="flex">
         <Button
@@ -22,13 +21,13 @@ console.log('route', route)
           aria-label="back to previous page"
           @click="backHome"
         />
-        <h1>Show page : {{ route.fullPath }}</h1>
+        <h1>{{ topic }}</h1>
       </div>
     </section>
   </div>
 </template>
 
 <style lang="scss">
-.shows-page {
+.browse-topic-page {
 }
 </style>

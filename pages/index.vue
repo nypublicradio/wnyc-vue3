@@ -14,7 +14,7 @@ useHead({
 
 definePageMeta({
   layout: 'default',
-  middleware: 'check-auth-provider',
+  middleware: ['check-auth-provider'],
 })
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
@@ -31,7 +31,7 @@ onMounted(() => {
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader
     isLoading.value = false
-  }, 999)
+  }, 1500)
 })
 onUnmounted(() => {
   // check if are set to light mode first, if yes, then set the status bar back to light mode

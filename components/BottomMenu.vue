@@ -29,7 +29,8 @@ watch(
   (e) => {
     bottomMenuState.value = { value: null }
     options.value.forEach((item) => {
-      if (e === item.value) bottomMenuState.value = { value: item.value }
+      //console.log('item', item.value, 'route', e)
+      if (e.includes(item.value)) bottomMenuState.value = { value: item.value }
       //if (e === 'index') bottomMenuState.value = { value: 'home' }
     })
   },

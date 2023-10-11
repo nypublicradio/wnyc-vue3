@@ -6,14 +6,12 @@ const { data: pagedata } = await useFetch(
 )
 const topStories = pagedata.value.top_stories
 const bucketItems = pagedata.value.middle_bucket
-//})
 
 definePageMeta({
   layout: 'default',
   layoutTransition: {
     name: 'login',
   },
-  middleware: 'check-auth',
 })
 useHead({
   bodyAttrs: {

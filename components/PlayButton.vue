@@ -39,7 +39,9 @@ const emit = defineEmits(['on-click'])
 
 // handles the click event
 const togglePlay = () => {
-  emit('on-click')
+  if (!isStreamLoading.value) {
+    emit('on-click')
+  }
 }
 
 const checkEpisodeMatchAndPlaying = computed(() => {
@@ -75,6 +77,7 @@ const getProgress = computed(() => {
     <Button
       severity="secondary"
       @click.prevent="togglePlay"
+      :aria-disabled="isStreamLoading"
       :class="[
         { active: checkEpisodeMatch },
         { anim: checkEpisodeMatchAndPlaying },
