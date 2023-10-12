@@ -20,6 +20,10 @@ const getLocalNewscast = async () => {
 		//Fetch the mp3 Content-Length and calculate the duration in seconds
 		const mp3Res = await axios(resData.attributes.audio);
 		const mp3Size = mp3Res.headers['content-length'];
+		// Calculate the duration in seconds not converting size into bits. 
+		// The bitrate is 128kps according to vlc and the file size is in bytes.
+		//Multiplying the file size by 8 and dividing by 128000 gives the same 
+		//duration as dividing by 16000 and not multiplying the file size by 8.
 		const duration = Math.round(mp3Size / 16000);
 		resData.attributes.duration = duration;
 		return resData;
