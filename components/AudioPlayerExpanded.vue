@@ -370,6 +370,9 @@ const moreFromClick = () => {
         />
       </template>
       <template #belowImage>
+        <div class="text-xs mt-2">
+          {{ currentEpisode.onTodaysShowImageCredits }}
+        </div>
         <div
           class="caption text-sm mt-2 html-formatting"
           v-html="currentEpisode.episodeBody"

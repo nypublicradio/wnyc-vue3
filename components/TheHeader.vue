@@ -11,16 +11,16 @@ const settingsSideBar = useSettingSideBar()
     <section class="full-width">
       <div class="flex justify-content-between align-items-center">
         <div class="flex align-items-center">
-          <VFlexibleLink
+          <!--  <VFlexibleLink
             raw
             to="/home"
             class="mr-3"
             @flexible-link-click="
               trackClickEvent('Click Tracking - WNYC Logo', 'WNYC Logo', '/')
             "
-          >
-            <WnycLogo class="w-5rem" />
-          </VFlexibleLink>
+          > -->
+          <WnycLogo class="w-5rem mr-3" />
+          <!-- </VFlexibleLink> -->
           <span class="font-meta">{{ getDate() }}</span>
         </div>
         <div class="flex">

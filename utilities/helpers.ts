@@ -419,7 +419,6 @@ export const whenTime = (data) => {
 
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
-  console.log('ms', ms)
   const seconds = Math.round(ms / mult)
   const minutes = Math.round(seconds / 60)
   //const remainingSeconds = seconds % 60

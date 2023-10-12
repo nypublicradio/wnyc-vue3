@@ -34,7 +34,7 @@ const props = defineProps({
 
 const emit = defineEmits(['on-click'])
 
-console.log('newsData' + props.source, props.newsData)
+//console.log('newsData' + props.source, props.newsData)
 </script>
 
 <template>
