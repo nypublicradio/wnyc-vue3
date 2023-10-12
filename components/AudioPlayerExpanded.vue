@@ -1,6 +1,5 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
 import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 import VTrackInfo from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue'
 import {
@@ -247,7 +246,7 @@ const moreFromClick = () => {
 <template>
   <section class="expanded-player flex flex-column gap-3">
     <pre class="text-xs">{{ currentEpisode }}</pre>
-    <VImagePublisher
+    <VImage
       :src="templatizePublisherImageUrl(currentEpisode.image)"
       :alt="`${currentEpisode.title} show image`"
       :width="144"
@@ -333,7 +332,7 @@ const moreFromClick = () => {
           <template #header-bottom>
             <div>
               <div class="flex gap-3 px-4 align-items-center">
-                <VImagePublisher
+                <VImage
                   :src="templatizePublisherImageUrl(currentEpisode.image)"
                   :alt="`${currentEpisode.title} show image`"
                   :width="60"
