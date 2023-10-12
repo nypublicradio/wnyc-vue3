@@ -8,6 +8,7 @@ import {
   isLiveStream,
   whenTime,
   shareAPI,
+  templatizePublisherImageUrl,
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
@@ -245,8 +246,9 @@ const moreFromClick = () => {
 
 <template>
   <section class="expanded-player flex flex-column gap-3">
+    <pre class="text-xs">{{ currentEpisode }}</pre>
     <VImagePublisher
-      :src="currentEpisode.image"
+      :src="templatizePublisherImageUrl(currentEpisode.image)"
       :alt="`${currentEpisode.title} show image`"
       :width="144"
       :height="144"
@@ -332,14 +334,13 @@ const moreFromClick = () => {
             <div>
               <div class="flex gap-3 px-4 align-items-center">
                 <VImagePublisher
-                  :src="currentEpisode.image"
+                  :src="templatizePublisherImageUrl(currentEpisode.image)"
                   :alt="`${currentEpisode.title} show image`"
                   :width="60"
                   :height="60"
                   :sizes="[2]"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"
-                  style="min-height: 60px"
                 />
 
                 <div class="info">
@@ -423,10 +424,12 @@ const moreFromClick = () => {
 
 <style lang="scss">
 :root {
+  $expandedFooterHeight: 100px;
   .persistent-player {
     .expanded-player {
       padding-bottom: calc(
-        $bottomMenuHeight + env(safe-area-inset-bottom) + 2rem
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
+          2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);

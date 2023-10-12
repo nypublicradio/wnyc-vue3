@@ -56,6 +56,7 @@ export async function updateAllLiveStreams() {
 }
 
 const formatShowData = (apiResponse) => {
+    console.log('apiResponse', apiResponse)
     const showData = apiResponse.included.find((obj) =>
         obj.type === 'show'
     )

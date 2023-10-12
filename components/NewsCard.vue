@@ -46,19 +46,16 @@ console.log('newsData' + props.source, props.newsData)
         :bg-color="props.badgeBgColor"
       />
       <div class="news-title mt-2">
-        <div class="font-bold">{{ newsData.title }}</div>
+        <div class="font-bold">{{ newsData.cardTitle }}</div>
         <PipeData>
           <template #left>{{ props.source }}</template>
           <template #right>
-            <span class="nobreak">{{ howLongAgo(newsData.dateLineTs) }}</span>
+            <span class="nobreak">{{ howLongAgo(newsData.newsdate) }}</span>
           </template>
         </PipeData>
       </div>
     </div>
-    <PlayButton
-      :label="getMinutes(newsData.estimatedDuration * 1000)"
-      :file="newsData.file"
-    />
+    <PlayButton :label="getMinutes(newsData.duration)" :file="newsData.file" />
   </div>
 </template>
 

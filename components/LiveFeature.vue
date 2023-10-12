@@ -6,7 +6,10 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from '~/composables/states'
-import { trackClickEvent } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  templatizePublisherImageUrl,
+} from '~/utilities/helpers'
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from 'primevue/config'
@@ -47,7 +50,9 @@ const togglePlay = () => {
           <transition name="fade">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :src="currentEpisodeHolder?.image"
+              :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
+              :width="138"
+              :height="138"
               :ratio="[1, 1]"
               alt="show poster image"
               class="image"

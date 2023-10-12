@@ -18,7 +18,8 @@ const getLocalNewscast = async () => {
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
-		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/WNYC_news.png';
+		//resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/WNYC_news.png';
+		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
 		//Fetch the mp3 Content-Length and calculate the duration in seconds
 		const mp3Res = await axios(resData.attributes.audio);
 		const mp3Size = mp3Res.headers['content-length'];
@@ -26,8 +27,9 @@ const getLocalNewscast = async () => {
 		// The bitrate is 128kps according to vlc and the file size is in bytes.
 		//Multiplying the file size by 8 and dividing by 128000 gives the same 
 		//duration as dividing by 16000 and not multiplying the file size by 8.
-		const duration = Math.round(mp3Size / 16000);
+		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
+		resData.attributes.cardTitle = 'Latest Headlines';
 		return resData.attributes;
 	} catch (e) {
 		//console.log(e);
@@ -47,6 +49,14 @@ const getNationalNewscast = async () => {
 		//Fetch the mp3 last modified date
 		const mp3Res = await axios(resData.attributes.audio);
 		resData.attributes.newsdate = mp3Res.headers['last-modified'];
+		const mp3Size = mp3Res.headers['content-length'];
+		// Calculate the duration in seconds not converting size into bits. 
+		// The bitrate is 128kps according to vlc and the file size is in bytes.
+		//Multiplying the file size by 8 and dividing by 128000 gives the same 
+		//duration as dividing by 16000 and not multiplying the file size by 8.
+		const duration = Math.round(mp3Size / 16000) * 1000;
+		resData.attributes.duration = duration;
+		resData.attributes.cardTitle = 'NPR Newscast';
 		return resData.attributes;
 	} catch (e) {
 		//console.log(e);

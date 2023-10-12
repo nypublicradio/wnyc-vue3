@@ -81,6 +81,21 @@ export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 8
   })
   return finalUrlArr.join('/')
 }
+// returns a templated image url when provided just the image URL
+export const templatizePublisherImageUrl = (url: string): string => {
+  const pieces = url.split('/')
+  const finalUrlArr: string[] = []
+
+  pieces.forEach((piece: string, index: number) => {
+    if (index < 4 || index > 7) {
+      finalUrlArr.push(piece)
+    }
+    if (index === 4) {
+      finalUrlArr.push(`%s/%s/%s/%s`)
+    }
+  })
+  return finalUrlArr.join('/')
+}
 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
@@ -404,8 +419,9 @@ export const whenTime = (data) => {
 
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
-  const seconds = Math.ceil(ms / mult)
-  const minutes = Math.ceil(seconds / 60)
+  console.log('ms', ms)
+  const seconds = Math.round(ms / mult)
+  const minutes = Math.round(seconds / 60)
   //const remainingSeconds = seconds % 60
   //remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
