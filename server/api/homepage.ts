@@ -17,6 +17,11 @@ const getLocalNewscast = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
+		//Fetch the mp3 Content-Length and calculate the duration in seconds
+		const mp3Res = await axios(resData.attributes.audio);
+		const mp3Size = mp3Res.headers['content-length'];
+		const duration = Math.round(mp3Size / 16000);
+		resData.attributes.duration = duration;
 		return resData;
 	} catch (e) {
 		console.log(e);
@@ -31,6 +36,10 @@ const getNationalNewscast = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
+		//Fetch the mp3 last modified date
+		const mp3Res = await axios(resData.attributes.audio);
+		console
+		resData.attributes.newsdate = mp3Res.headers['last-modified'];
 		return resData;
 	} catch (e) {
 		console.log(e);
@@ -118,7 +127,6 @@ const getGothamistTopStories = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).items;
-		console.log(resData);
 		const articles = resData.map((article: any) => {
 			article.authors = article.relatedAuthors.map((author: any) => {
 				return normalizeAuthor(author);
