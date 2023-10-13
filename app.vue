@@ -23,7 +23,6 @@ import {
   useBrowserTopColorDarkMode,
 } from '~/composables/globals.ts'
 import { LocalNotifications } from '@capacitor/local-notifications'
-import { updateAllLiveStreams } from '~/composables/data/liveStream'
 
 const { isDesktop } = useDevice()
 const route = useRoute()

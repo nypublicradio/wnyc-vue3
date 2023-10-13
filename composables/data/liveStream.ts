@@ -6,37 +6,25 @@ import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
-    const config = useRuntimeConfig()
-    const currentEpisodeHolder = useCurrentEpisodeHolder()
-    const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
+    //BFF
+    const { data: fetchData } = await useFetch(`/api/whatson/${slug}`)
 
-    currentEpisodeHolder.value = formatShowData(fetchData.data.value)
-    //console.log('currentEpisodeHolder.value', currentEpisodeHolder.value)
+    const currentEpisodeHolder = useCurrentEpisodeHolder()
+    currentEpisodeHolder.value = fetchData.value
 }
 
 
 export async function updateAllLiveStreams() {
-    const config = useRuntimeConfig()
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentUserProfile = useCurrentUserProfile()
     //const localUserProfileDefault = useLocalUserProfileDefault()
 
-    //const { data: pagedata } = await useFetch('/api/homepage')
-    //const articles = pagedata.value.streams;
-    const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
-    console.log('fetchData = ', fetchData)
-
-    const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream: any) => {
-        //const fetchingAll = await Promise.all(fetchDataImport?.data.map(async (stream) => {
-        //const fetchingAll = await Promise.all(fetchData?.data.map(async (stream) => {
-        const fetchedRunningShowData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-
-        return formatShowData(fetchedRunningShowData.data.value)
-
-    }))
+    // BFF
+    const { data: fetchingAll } = await useFetch('/api/streams')
+    console.log('fetchingAll = ', fetchingAll)
     // set all streams
-    allCurrentStations.value = fetchingAll.filter(Boolean)
+    allCurrentStations.value = fetchingAll.value.filter(Boolean)
     //allCurrentStations.value = allCurrentStationsImport
 
     // set initial stream with the `currentStreamStation` value in the states.ts file
@@ -52,87 +40,4 @@ export async function updateAllLiveStreams() {
 
     currentEpisodeHolder.value = initialStation
     //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
-}
-
-const formatShowData = (apiResponse) => {
-
-    const showData = apiResponse?.included?.find((obj) =>
-        obj.type === 'show'
-    )
-    const scheduleData = apiResponse?.included?.find((obj) => {
-        return obj.type === 'show-schedule'
-    })
-    const imageData = apiResponse?.included?.find((obj) => {
-        return obj.type === 'image'
-    })
-    const episodeData = apiResponse?.included?.find((obj) => {
-        return obj.type === 'episode'
-    })
-    const airingData = apiResponse?.included?.find((obj) => {
-        return obj.type === 'airing'
-    })
-    const segmentData = apiResponse?.included?.filter(item => item.type === 'segment')
-    const formattedSegments = []
-    if (apiResponse.included) {
-        if (segmentData !== null) {
-            segmentData.forEach(function (value) {
-                formattedSegments.push(
-                    {
-                        title: value.attributes.title,
-                        url: 'https://www.wnyc.org/story/' + value.attributes.slug,
-                        newWindow: true
-                    }
-                )
-            })
-        }
-    }
-    let title = showData ? showData.attributes.title : null
-    let details = showData ? showData.attributes.tease : null
-    let titleLink = showData ? showData.attributes.url : null
-    // handle special airings
-    if (airingData) {
-        title = airingData.attributes.title
-        details = airingData.attributes.description
-        titleLink = airingData.attributes.href
-    }
-
-    if (!apiResponse.included) {
-        title = apiResponse.data[0].attributes.name
-        details = apiResponse.data[0].attributes['short-description']
-    }
-
-    const formattedData = {
-        details,
-        detailsLink: showData ? showData.attributes.url : null,
-        episodeTitle: episodeData ? episodeData.attributes.title : null,
-        episodeLink: episodeData ? episodeData.attributes.url : null,
-        episodeBody: episodeData ? episodeData.attributes.body : null,
-        episodeTranscript: episodeData ? episodeData.attributes.transcript : null,
-        file: apiResponse.data[0].attributes['mobile-mp3'],
-        image: imageData ? 'https://media.wnyc.org/i/448/448/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
-        slug: apiResponse.data[0].attributes.slug,
-        station: apiResponse.data[0].attributes.name,
-        timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
-        timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
-        title,
-        titleLink,
-        updated_date: null,
-        publishAt: null,
-        first_published_at: null,
-        onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,
-        onTodaysShowHeadlineLink: episodeData ? episodeData.attributes.url : null,
-        onTodaysShowHosts: showData ? showData.attributes.about.roles.host : null,
-        onTodaysShowImage: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].url : null,
-        onTodaysShowImageMaxWidth: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].w : null,
-        onTodaysShowImageMaxHeight: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].h : null,
-        onTodaysShowImageTemplate: episodeData && episodeData.attributes['image-main'] ? formatPublisherImageUrl(episodeData.attributes['image-main'].template) : null,
-        onTodaysShowImageAltText: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['alt-text'] : null,
-        onTodaysShowImageCaption: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].caption : null,
-        onTodaysShowImageCredits: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-name'] : null,
-        onTodaysShowImageCreditsUrl: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-url'] : null,
-        onTodaysShowSegments: segmentData?.length > 0 ? formattedSegments : null,
-        onTodaysShowSocial: showData ? showData.attributes.about.social : null,
-        showSchedule: scheduleData ? scheduleData.attributes : null
-    }
-    return formattedData
 }
