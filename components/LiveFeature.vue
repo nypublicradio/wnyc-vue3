@@ -160,7 +160,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
       }
     }
     .content {
-      //min-height: 138px;
+      min-height: 138px;
       .skeleton-holder {
         gap: 0.5rem;
       }
@@ -182,6 +182,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
         }
       }
       .content {
+        min-height: 90px;
         .blurb {
           display: none;
         }
