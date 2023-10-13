@@ -20,7 +20,6 @@ const getSchedule = async (slug: String) => {
 const removePastShows = (schedule: any) => {
     const now = new Date();
     const filteredSchedule = schedule.filter((show: any) => {
-        console.log(show);
         const end = new Date(show.attributes.end);
         return end > now;
     });
