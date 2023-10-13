@@ -11,6 +11,7 @@ import {
   useIsStreamLoading,
 } from '~/composables/states'
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
 
@@ -20,6 +21,8 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
+
+const scheduleRef = ref(null)
 
 const switchStation = async (station) => {
   if (!isStreamLoading.value) {
@@ -74,6 +77,22 @@ const toggleFollow = (episode) => {
   )
 }
 
+const getTime = (startArg, endArg, index) => {
+  const start = new Date(startArg)
+  const startTime = start.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  })
+  const end = new Date(endArg)
+  const endTime = end.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  })
+  return index === 0 ? `Now Until ${endTime}` : startTime
+}
+
 onMounted(() => {
   setTimeout(() => {
     scrollToActiveStation()
@@ -86,6 +105,16 @@ watch(
     setTimeout(() => {
       scrollToActiveStation()
     }, 200)
+  },
+  { immediate: true }
+)
+watch(
+  currentStreamStation,
+  async () => {
+    const { data: schedule } = await useFetch(
+      `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`
+    )
+    scheduleRef.value = schedule.value
   },
   { immediate: true }
 )
@@ -162,19 +191,35 @@ watch(
       </section>
       <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
     </div>
-    <section class="schedule">
+    <section class="schedule" v-if="scheduleRef">
       <h2>Schedule</h2>
       <div
+        v-for="(entry, index) in scheduleRef"
+        :key="entry.id"
         class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
       >
         <div class="flex align-items-center">
-          <div class="selected" />
+          <div class="left" :class="[{ selected: index === 0 }]" />
           <div>
-            <p class="time">12:00 AM</p>
-            <h2 class="title">All Things Considered</h2>
+            <p class="time">
+              {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
+            </p>
+            <h2 class="title">
+              {{
+                entry.attributes.scheduleEventTitle ??
+                entry.attributes.parentTitle
+              }}
+            </h2>
           </div>
         </div>
-        <Button severity="secondary" text plain rounded @click="toggleFollow">
+        <Button
+          severity="secondary"
+          text
+          plain
+          rounded
+          class="flex-none"
+          @click="toggleFollow"
+        >
           <template #icon>
             <FollowIcon :active="false" />
           </template>
@@ -236,11 +281,14 @@ watch(
   }
   .schedule {
     .schedule-entry {
-      .selected {
-        border: 2px solid var(--red);
+      .left {
+        border: 2px solid transparent;
         border-radius: 8px;
         margin-right: 1rem;
         height: 27px;
+        &.selected {
+          border-color: var(--red);
+        }
       }
       .follow-icon {
         width: 28px;
