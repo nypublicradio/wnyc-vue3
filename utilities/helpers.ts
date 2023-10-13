@@ -473,7 +473,6 @@ export const getAndSetUserProfile = async () => {
 
   // function that gets a user profile
   const getProfile = async () => {
-    console.log('get')
     const {
       data,
       error

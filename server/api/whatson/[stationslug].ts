@@ -5,6 +5,7 @@ import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 const config = useRuntimeConfig()
 const getLivestream = async (slug: String) => {
 	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
+	console.log('res.data = ', res.data)
 	return humps.camelizeKeys(formatShowData(res.data))
 }
 
@@ -91,9 +92,7 @@ const formatShowData = (apiResponse: any) => {
 
 
 export default defineEventHandler(async (event) => {
-	console.dir(event);
 	const slug: String | undefined = event?.context?.params?.stationslug;
-	console.log('slug', slug)
 	if (slug) {
 		return getLivestream(slug);
 	}

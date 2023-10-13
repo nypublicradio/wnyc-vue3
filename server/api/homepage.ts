@@ -31,7 +31,7 @@ const getLocalNewscast = async () => {
 		resData.attributes.cardTitle = 'Latest Headlines';
 		return resData.attributes;
 	} catch (e) {
-		//console.log(e);
+		////console.log(e);
 	}
 }
 
@@ -58,7 +58,7 @@ const getNationalNewscast = async () => {
 		resData.attributes.cardTitle = 'NPR Newscast';
 		return resData.attributes;
 	} catch (e) {
-		//console.log(e);
+		////console.log(e);
 	}
 }
 const getNavigation = async () => {
@@ -71,7 +71,7 @@ const getNavigation = async () => {
 		const nav = humps.camelizeKeys(res.data).data.attributes.links.map(linkMapper);
 		return nav;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 
@@ -123,7 +123,7 @@ const getTopStories = async () => {
 			return article;
 		})
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 
@@ -157,7 +157,7 @@ const getGothamistTopStories = async () => {
 		});
 		return articles;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 
@@ -183,7 +183,7 @@ const getWNYCTopStories = async () => {
 		}
 		//return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 
 }
@@ -203,7 +203,7 @@ const getMiddleBucket = async () => {
 		const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
 		return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 

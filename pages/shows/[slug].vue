@@ -5,8 +5,6 @@ const router = useRouter()
 const backHome = () => {
   router.go(-1)
 }
-
-console.log('route', route)
 </script>
 
 <template>

@@ -1,27 +1,21 @@
-import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, /* useLocalUserProfileDefault */ } from '~/composables/states'
-import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
-
-//import fetchDataImport from '~/assets/data/fetchedData.json'
-//import allCurrentStationsImport from '~/assets/data/allCurrentStationsImport.json'
+import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, } from '~/composables/states'
 
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
     //BFF
     const { data: fetchData } = await useFetch(`/api/whatson/${slug}`)
-
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     currentEpisodeHolder.value = fetchData.value
 }
-
 
 export async function updateAllLiveStreams() {
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentUserProfile = useCurrentUserProfile()
-    //const localUserProfileDefault = useLocalUserProfileDefault()
 
     // BFF
     const { data: fetchingAll } = await useFetch('/api/streams')
+    //console.log('fetchingAll = ', fetchingAll.value)
     // set all streams
     allCurrentStations.value = fetchingAll.value.filter(Boolean)
     //allCurrentStations.value = allCurrentStationsImport

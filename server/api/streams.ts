@@ -8,13 +8,14 @@ const getLivestreams = async () => {
         const fields = ['current-airing.image', 'current-show.show.image', 'current-episode.segments']
         const streams_url = `${config.public.LIVESTREAM_URL}/?filter[slug]=${stream_slugs.join(',')}&include=${fields.join(',')}`;
         const res = await axios(streams_url);
+        //console.log('res.data = ', res.data)
         const resData = await Promise.all(res.data.data.map(async (stream: any) => {
             const streamData = await axios(`${config.public.BFF_URL}/api/whatson/${stream.attributes.slug}`);
             return streamData.data;
         }));
         return humps.camelizeKeys(resData);
     } catch (e) {
-        console.log(e);
+        //console.log(e);
     }
 }
 
