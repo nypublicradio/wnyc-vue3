@@ -81,6 +81,21 @@ export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 8
   })
   return finalUrlArr.join('/')
 }
+// returns a templated image url when provided just the image URL
+export const templatizePublisherImageUrl = (url: string): string => {
+  const pieces = url.split('/')
+  const finalUrlArr: string[] = []
+
+  pieces.forEach((piece: string, index: number) => {
+    if (index < 4 || index > 7) {
+      finalUrlArr.push(piece)
+    }
+    if (index === 4) {
+      finalUrlArr.push(`%s/%s/%s/%s`)
+    }
+  })
+  return finalUrlArr.join('/')
+}
 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
@@ -281,11 +296,18 @@ function getOrdinalSuffix(i) {
  */
 export function howLongAgo(date) {
   if (date) {
+
+    // check if unix tiumestamp
+    if (Number.isInteger(date)) {
+      date = new Date(date * 1000);
+    }
+
     const res = formatDistanceToNowStrict(new Date(date), {
       addSuffix: true,
     })
 
     return res.replace('minutes', 'min').replace('minute', 'min')
+
   }
 
   return null
@@ -388,6 +410,7 @@ export const isLiveStream = () => {
 
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
+
   const res = data.updatedDate
     ? howLongAgo(data.updatedDate)
     : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
@@ -396,8 +419,8 @@ export const whenTime = (data) => {
 
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
-  const seconds = Math.ceil(ms / mult)
-  const minutes = Math.ceil(seconds / 60)
+  const seconds = Math.round(ms / mult)
+  const minutes = Math.round(seconds / 60)
   //const remainingSeconds = seconds % 60
   //remainingSeconds > 30 ? minutes++ : minutes
   return `${minutes} min`
@@ -448,7 +471,6 @@ export const getAndSetUserProfile = async () => {
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
 
-  console.log('huh')
   // function that gets a user profile
   const getProfile = async () => {
     console.log('get')

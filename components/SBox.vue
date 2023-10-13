@@ -17,7 +17,7 @@ const props = defineProps({
   },
 })
 const settingSideBar = useSettingSideBar()
-const emit = defineEmits(['link-click'])
+const emit = defineEmits(['link-click', 'label-click'])
 
 // handles when the button is clicked. emits and closes the side panel
 const onClick = () => {
@@ -37,7 +37,15 @@ const onClick = () => {
       <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
         <Button :label="label" class="w-full text-left" text />
       </VFlexibleLink>
-      <p v-else class="label white-space-nowrap">{{ label }}</p>
+      <div
+        v-else
+        class="flex h-full align-items-center"
+        @click="emit('label-click')"
+      >
+        <p class="label white-space-nowrap">
+          {{ label }}
+        </p>
+      </div>
       <slot />
     </div>
   </div>

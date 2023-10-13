@@ -210,6 +210,10 @@ const editField = (field) => {
     editProfileSideBar.value = true
   }
 }
+
+const clickThisId = (id) => {
+  document.getElementById(id).click()
+}
 </script>
 
 <template>
@@ -258,8 +262,9 @@ const editField = (field) => {
           "
         />
       </SBox>
-      <SBox label="Default stream">
+      <SBox label="Default stream" @labelClick="clickThisId('default-stream')">
         <DropupMenu
+          id="default-stream"
           v-model:data="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
@@ -295,8 +300,9 @@ const editField = (field) => {
       <div class="flex s-title-holder">
         <div class="s-title">Display</div>
       </div>
-      <SBox label="Text size">
+      <SBox label="Text size" @labelClick="clickThisId('text-size')">
         <DropupMenu
+          id="text-size"
           v-model:data="currentUserProfile.text_size"
           :options="textSizeOptions"
           optionLabel="label"

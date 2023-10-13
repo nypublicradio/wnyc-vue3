@@ -1,6 +1,6 @@
 <script setup>
 import { formatPublisherImage, getMinutes, whenTime } from '~/utilities/helpers'
-import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher'
+import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage'
 
 const props = defineProps({
   item: {
@@ -15,7 +15,7 @@ const props = defineProps({
   <div>
     <div class="card-large mb-4">
       <div class="top">
-        <VImagePublisher
+        <VImage
           :src="formatPublisherImage(props.item.attributes)"
           :width="248"
           :height="159"
@@ -39,13 +39,7 @@ const props = defineProps({
           </PipeData>
         </div>
         <div class="flex justify-content-between align-items-center">
-          <slot name="play">
-            <PlayButton
-              :label="getMinutes(props.item.attributes.estimatedDuration, 1)"
-              :episode="normalizedItem"
-              @onClick="togglePlay"
-            />
-          </slot>
+          <slot name="play" />
           <slot name="menu" />
         </div>
       </div>

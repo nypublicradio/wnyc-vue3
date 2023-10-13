@@ -6,7 +6,10 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from '~/composables/states'
-import { trackClickEvent } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  templatizePublisherImageUrl,
+} from '~/utilities/helpers'
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from 'primevue/config'
@@ -47,7 +50,9 @@ const togglePlay = () => {
           <transition name="fade">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :src="currentEpisodeHolder?.image"
+              :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
+              :width="138"
+              :height="138"
               :ratio="[1, 1]"
               alt="show poster image"
               class="image"
@@ -81,7 +86,7 @@ const togglePlay = () => {
               <PlayButton
                 :label="currentEpisodeHolder?.station"
                 live
-                :episode="currentEpisodeHolder"
+                :file="currentEpisodeHolder?.file"
                 @onClick="togglePlay"
               />
             </div>
@@ -165,23 +170,26 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
 
 @container (max-width: #{$container-breakpoint-xs}) {
   .live-feature {
-    .image-holder {
-      flex: none;
-      width: 90px;
-      height: 90px;
-      .image,
-      .image-loader-anim {
+    .inner {
+      .image-holder {
+        flex: none;
         width: 90px;
         height: 90px;
+        .image,
+        .image-loader-anim {
+          width: 90px;
+          height: 90px;
+        }
       }
-    }
-    .content {
-      .blurb {
-        display: none;
-      }
-      .skeleton-holder {
-        .desc {
+      .content {
+        min-height: 90px;
+        .blurb {
           display: none;
+        }
+        .skeleton-holder {
+          .desc {
+            display: none;
+          }
         }
       }
     }

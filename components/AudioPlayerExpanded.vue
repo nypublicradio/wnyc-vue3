@@ -1,6 +1,5 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VImagePublisher from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImagePublisher.vue'
 import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 import VTrackInfo from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue'
 import {
@@ -8,6 +7,7 @@ import {
   isLiveStream,
   whenTime,
   shareAPI,
+  templatizePublisherImageUrl,
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
@@ -245,8 +245,9 @@ const moreFromClick = () => {
 
 <template>
   <section class="expanded-player flex flex-column gap-3">
-    <VImagePublisher
-      :src="currentEpisode.image"
+    <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
+    <VImage
+      :src="templatizePublisherImageUrl(currentEpisode.image)"
       :alt="`${currentEpisode.title} show image`"
       :width="144"
       :height="144"
@@ -331,15 +332,14 @@ const moreFromClick = () => {
           <template #header-bottom>
             <div>
               <div class="flex gap-3 px-4 align-items-center">
-                <VImagePublisher
-                  :src="currentEpisode.image"
+                <VImage
+                  :src="templatizePublisherImageUrl(currentEpisode.image)"
                   :alt="`${currentEpisode.title} show image`"
                   :width="60"
                   :height="60"
                   :sizes="[2]"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"
-                  style="min-height: 60px"
                 />
 
                 <div class="info">
@@ -370,6 +370,9 @@ const moreFromClick = () => {
         />
       </template>
       <template #belowImage>
+        <div class="text-xs mt-2">
+          {{ currentEpisode.onTodaysShowImageCredits }}
+        </div>
         <div
           class="caption text-sm mt-2 html-formatting"
           v-html="currentEpisode.episodeBody"
@@ -423,10 +426,12 @@ const moreFromClick = () => {
 
 <style lang="scss">
 :root {
+  $expandedFooterHeight: 100px;
   .persistent-player {
     .expanded-player {
       padding-bottom: calc(
-        $bottomMenuHeight + env(safe-area-inset-bottom) + 2rem
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
+          2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);

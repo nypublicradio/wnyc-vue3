@@ -16,7 +16,11 @@ import {
   useSkipAheadTrigger,
   useSkipBackTrigger,
 } from '~/composables/states'
-import { trackClickEvent, isLiveStream } from '~/utilities/helpers'
+import {
+  trackClickEvent,
+  isLiveStream,
+  templatizePublisherImageUrl,
+} from '~/utilities/helpers'
 
 // had to install howler.js locally and add this import to stop it from breaking the build
 // skipcq: JS-0128
@@ -144,7 +148,7 @@ watch(
       :description="
         currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details
       "
-      :image="currentEpisode.image"
+      :image="templatizePublisherImageUrl(currentEpisode.image)"
       :file="currentEpisode.file"
       :skipAheadTime="10"
       :skipBackTime="10"

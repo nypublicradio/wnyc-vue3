@@ -10,7 +10,6 @@ import {
   useCurrentUserProfile,
   useLocalUserProfileDefault,
 } from '~/composables/states.ts'
-import { updateAllLiveStreams } from '~/composables/data/liveStream'
 import {
   trackClickEvent,
   setDisplaySettings,
