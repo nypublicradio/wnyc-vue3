@@ -160,7 +160,7 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
       }
     }
     .content {
-      min-height: 138px;
+      //min-height: 138px;
       .skeleton-holder {
         gap: 0.5rem;
       }
@@ -170,23 +170,25 @@ $container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
 
 @container (max-width: #{$container-breakpoint-xs}) {
   .live-feature {
-    .image-holder {
-      flex: none;
-      width: 90px;
-      height: 90px;
-      .image,
-      .image-loader-anim {
+    .inner {
+      .image-holder {
+        flex: none;
         width: 90px;
         height: 90px;
+        .image,
+        .image-loader-anim {
+          width: 90px;
+          height: 90px;
+        }
       }
-    }
-    .content {
-      .blurb {
-        display: none;
-      }
-      .skeleton-holder {
-        .desc {
+      .content {
+        .blurb {
           display: none;
+        }
+        .skeleton-holder {
+          .desc {
+            display: none;
+          }
         }
       }
     }

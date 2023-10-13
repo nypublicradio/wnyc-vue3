@@ -25,16 +25,15 @@ export async function updateAllLiveStreams() {
     //const { data: pagedata } = await useFetch('/api/homepage')
     //const articles = pagedata.value.streams;
     const fetchData = await useFetch(`${config.public['LIVESTREAM_URL']}?include=current-airing.image,current-show.show.image,current-episode.segments`)
+    console.log('fetchData = ', fetchData)
 
-    const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream) => {
+    const fetchingAll = await Promise.all(fetchData?.data?.value.data.map(async (stream: any) => {
         //const fetchingAll = await Promise.all(fetchDataImport?.data.map(async (stream) => {
         //const fetchingAll = await Promise.all(fetchData?.data.map(async (stream) => {
-        // conditional to check what shows are currently running
-        if (stream.relationships['current-show'].data !== null) {
-            const fetchedRunningShowData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-            //console.log('fetchedRunningShowData.data.value', fetchedRunningShowData.data.value)
-            return formatShowData(fetchedRunningShowData.data.value)
-        }
+        const fetchedRunningShowData = await useFetch(`${config.public['LIVESTREAM_URL']}?filter[slug]=${stream.attributes.slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
+
+        return formatShowData(fetchedRunningShowData.data.value)
+
     }))
     // set all streams
     allCurrentStations.value = fetchingAll.filter(Boolean)
@@ -56,34 +55,36 @@ export async function updateAllLiveStreams() {
 }
 
 const formatShowData = (apiResponse) => {
-    //console.log('apiResponse', apiResponse)
-    const showData = apiResponse.included.find((obj) =>
+
+    const showData = apiResponse?.included?.find((obj) =>
         obj.type === 'show'
     )
-    const scheduleData = apiResponse.included.find((obj) => {
+    const scheduleData = apiResponse?.included?.find((obj) => {
         return obj.type === 'show-schedule'
     })
-    const imageData = apiResponse.included.find((obj) => {
+    const imageData = apiResponse?.included?.find((obj) => {
         return obj.type === 'image'
     })
-    const episodeData = apiResponse.included.find((obj) => {
+    const episodeData = apiResponse?.included?.find((obj) => {
         return obj.type === 'episode'
     })
-    const airingData = apiResponse.included.find((obj) => {
+    const airingData = apiResponse?.included?.find((obj) => {
         return obj.type === 'airing'
     })
-    const segmentData = apiResponse.included.filter(item => item.type === 'segment')
+    const segmentData = apiResponse?.included?.filter(item => item.type === 'segment')
     const formattedSegments = []
-    if (segmentData !== null) {
-        segmentData.forEach(function (value) {
-            formattedSegments.push(
-                {
-                    title: value.attributes.title,
-                    url: 'https://www.wnyc.org/story/' + value.attributes.slug,
-                    newWindow: true
-                }
-            )
-        })
+    if (apiResponse.included) {
+        if (segmentData !== null) {
+            segmentData.forEach(function (value) {
+                formattedSegments.push(
+                    {
+                        title: value.attributes.title,
+                        url: 'https://www.wnyc.org/story/' + value.attributes.slug,
+                        newWindow: true
+                    }
+                )
+            })
+        }
     }
     let title = showData ? showData.attributes.title : null
     let details = showData ? showData.attributes.tease : null
@@ -93,6 +94,11 @@ const formatShowData = (apiResponse) => {
         title = airingData.attributes.title
         details = airingData.attributes.description
         titleLink = airingData.attributes.href
+    }
+
+    if (!apiResponse.included) {
+        title = apiResponse.data[0].attributes.name
+        details = apiResponse.data[0].attributes['short-description']
     }
 
     const formattedData = {
@@ -124,7 +130,7 @@ const formatShowData = (apiResponse) => {
         onTodaysShowImageCaption: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].caption : null,
         onTodaysShowImageCredits: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-name'] : null,
         onTodaysShowImageCreditsUrl: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-url'] : null,
-        onTodaysShowSegments: segmentData.length > 0 ? formattedSegments : null,
+        onTodaysShowSegments: segmentData?.length > 0 ? formattedSegments : null,
         onTodaysShowSocial: showData ? showData.attributes.about.social : null,
         showSchedule: scheduleData ? scheduleData.attributes : null
     }
