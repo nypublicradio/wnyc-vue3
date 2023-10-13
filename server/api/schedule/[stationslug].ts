@@ -11,7 +11,20 @@ const getSchedule = async (slug: String) => {
         }
     };    
     const res = await axios(options);
-    return humps.camelizeKeys(res.data).data;
+    const resData =  humps.camelizeKeys(res.data).data;
+    const filteredSchedule = removePastShows(resData);
+    return filteredSchedule;
+};
+
+// Write a function that removes scheduled shows that have already aired using the attribute "end"
+const removePastShows = (schedule: any) => {
+    const now = new Date();
+    const filteredSchedule = schedule.filter((show: any) => {
+        console.log(show);
+        const end = new Date(show.attributes.end);
+        return end > now;
+    });
+    return filteredSchedule;
 };
 
 export default defineEventHandler(async (event) => {
