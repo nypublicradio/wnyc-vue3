@@ -23,6 +23,9 @@ const props = defineProps({
   },
 })
 
+console.log('localNewscast', props.localNewscast)
+console.log('nationalNewscast', props.nationalNewscast)
+
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 

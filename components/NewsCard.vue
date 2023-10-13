@@ -55,6 +55,7 @@ const emit = defineEmits(['on-click'])
         </PipeData>
       </div>
     </div>
+    <pre>{{ newsData.duration }}</pre>
     <PlayButton :label="getMinutes(newsData.duration)" :file="newsData.file" />
   </div>
 </template>

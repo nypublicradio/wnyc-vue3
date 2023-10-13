@@ -9,9 +9,7 @@ const getLivestreams = async () => {
         const streams_url = `${config.public.LIVESTREAM_URL}/?filter[slug]=${stream_slugs.join(',')}&include=${fields.join(',')}`;
         const res = await axios(streams_url);
         const resData = await Promise.all(res.data.data.map(async (stream: any) => {
-            // const streamData = await getLivestream(stream.attributes.slug);
             const streamData = await axios(`${config.public.BFF_URL}/api/whatson/${stream.attributes.slug}`);
-            console.log('streamData', streamData.data);
             return streamData.data;
         }));
         return humps.camelizeKeys(resData);

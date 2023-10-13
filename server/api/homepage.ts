@@ -1,7 +1,6 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
 const GOTHAMISTDOTCOM = 'https://gothamist.com/'
 
@@ -18,7 +17,8 @@ const getLocalNewscast = async () => {
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
-		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/WNYC_news.png';
+		//resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/WNYC_news.png';
+		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
 		//Fetch the mp3 Content-Length and calculate the duration in seconds
 		const mp3Res = await axios(resData.attributes.audio);
 		const mp3Size = mp3Res.headers['content-length'];
@@ -26,11 +26,12 @@ const getLocalNewscast = async () => {
 		// The bitrate is 128kps according to vlc and the file size is in bytes.
 		//Multiplying the file size by 8 and dividing by 128000 gives the same 
 		//duration as dividing by 16000 and not multiplying the file size by 8.
-		const duration = Math.round(mp3Size / 16000);
+		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
+		resData.attributes.cardTitle = 'Latest Headlines';
 		return resData.attributes;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 
@@ -47,9 +48,17 @@ const getNationalNewscast = async () => {
 		//Fetch the mp3 last modified date
 		const mp3Res = await axios(resData.attributes.audio);
 		resData.attributes.newsdate = mp3Res.headers['last-modified'];
+		const mp3Size = mp3Res.headers['content-length'];
+		// Calculate the duration in seconds not converting size into bits. 
+		// The bitrate is 128kps according to vlc and the file size is in bytes.
+		//Multiplying the file size by 8 and dividing by 128000 gives the same 
+		//duration as dividing by 16000 and not multiplying the file size by 8.
+		const duration = Math.round(mp3Size / 16000) * 1000;
+		resData.attributes.duration = duration;
+		resData.attributes.cardTitle = 'NPR Newscast';
 		return resData.attributes;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 }
 const getNavigation = async () => {
@@ -189,28 +198,6 @@ const mergeArticles = (articles1: any, articles2: any) => {
 	});
 }
 
-const getLivestream = async (slug: String) => {
-	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-	return res.data
-}
-
-const getLivestreams = async () => {
-	try {
-		const stream_slugs = ['wnyc-fm939', 'wnyc-am820', 'q2', 'jonathan-channel', 'special-events-stream', 'wqxr', 'wqxr-special', 'wqxr-special2'];
-		const fields = ['current-airing.image', 'current-show.show.image', 'current-episode.segments']
-		const streams_url = `${config.public.LIVESTREAM_URL}/?filter[slug]=${stream_slugs.join(',')}&include=${fields.join(',')}`;
-		const res = await axios(streams_url);
-		const resData = await Promise.all(res.data.data.map(async (stream: any) => {
-			const streamData = await getLivestream(stream.attributes.slug);
-			return formatShowData(streamData);
-		}));
-		return resData;;
-	} catch (e) {
-		console.log(e);
-	}
-
-}
-
 const getMiddleBucket = async () => {
 	try {
 		const res = await axios(config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-middle');
@@ -220,92 +207,11 @@ const getMiddleBucket = async () => {
 	}
 }
 
-const formatShowData = (apiResponse: any) => {
-	const showData = apiResponse?.included?.find((obj: any) =>
-		obj.type === 'show'
-	)
-	const scheduleData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'show-schedule'
-	})
-	const imageData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'image'
-	})
-	const episodeData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'episode'
-	})
-	const airingData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'airing'
-	})
-	const segmentData = apiResponse?.included?.filter((item: any) => item.type === 'segment')
-	const formattedSegments: any = []
-	if (apiResponse.included) {
-		if (segmentData !== null) {
-			segmentData.forEach(function (value: any) {
-				formattedSegments.push(
-					{
-						title: value.attributes.title,
-						url: 'https://www.wnyc.org/story/' + value.attributes.slug,
-						newWindow: true
-					}
-				)
-			})
-		}
-	}
-	let title = showData ? showData.attributes.title : null
-	let details = showData ? showData.attributes.tease : null
-	let titleLink = showData ? showData.attributes.url : null
-	// handle special airings
-	if (airingData) {
-		title = airingData.attributes.title
-		details = airingData.attributes.description
-		titleLink = airingData.attributes.href
-	}
-	if (!apiResponse.included) {
-		title = apiResponse.data[0].attributes.name
-		details = apiResponse.data[0].attributes['short-description']
-	}
-	const formattedData = {
-		details,
-		detailsLink: showData ? showData.attributes.url : null,
-		episodeTitle: episodeData ? episodeData.attributes.title : null,
-		episodeLink: episodeData ? episodeData.attributes.url : null,
-		episodeBody: episodeData ? episodeData.attributes.body : null,
-		episodeTranscript: episodeData ? episodeData.attributes.transcript : null,
-		file: apiResponse.data[0].attributes['mobile-mp3'],
-		image: imageData ? 'https://media.wnyc.org/i/448/448/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
-		slug: apiResponse.data[0].attributes.slug,
-		station: apiResponse.data[0].attributes.name,
-		timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
-		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
-		title,
-		titleLink,
-		updated_date: null,
-		publishAt: null,
-		first_published_at: null,
-		onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,
-		onTodaysShowHeadlineLink: episodeData ? episodeData.attributes.url : null,
-		onTodaysShowHosts: showData ? showData.attributes.about.roles.host : null,
-		onTodaysShowImage: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].url : null,
-		onTodaysShowImageMaxWidth: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].w : null,
-		onTodaysShowImageMaxHeight: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].h : null,
-		onTodaysShowImageTemplate: episodeData && episodeData.attributes['image-main'] ? formatPublisherImageUrl(episodeData.attributes['image-main'].template) : null,
-		onTodaysShowImageAltText: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['alt-text'] : null,
-		onTodaysShowImageCaption: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main'].caption : null,
-		onTodaysShowImageCredits: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-name'] : null,
-		onTodaysShowImageCreditsUrl: episodeData && episodeData.attributes['image-main'] ? episodeData.attributes['image-main']['credits-url'] : null,
-		onTodaysShowSegments: segmentData?.length > 0 ? formattedSegments : null,
-		onTodaysShowSocial: showData ? showData.attributes.about.social : null,
-		showSchedule: scheduleData ? scheduleData.attributes : null
-	}
-	return formattedData
-};
-
 /**
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	//const streams = await getLivestreams();
 	const articles = await getTopStories();
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
@@ -314,7 +220,6 @@ export default defineEventHandler(async (event) => {
 	const local_newscast = await getLocalNewscast();
 	const national_newscast = await getNationalNewscast();
 	return {
-		//streams: streams,
 		top_stories: aviary,
 		middle_bucket: bucket,
 		local_newscast: local_newscast,
