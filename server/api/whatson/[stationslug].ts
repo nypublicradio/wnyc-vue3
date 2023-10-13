@@ -5,7 +5,6 @@ import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 const config = useRuntimeConfig()
 const getLivestream = async (slug: String) => {
 	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-	console.log('res.data = ', res.data)
 	return humps.camelizeKeys(formatShowData(res.data))
 }
 
