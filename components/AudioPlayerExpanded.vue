@@ -245,7 +245,7 @@ const moreFromClick = () => {
 
 <template>
   <section class="expanded-player flex flex-column gap-3">
-    <pre class="text-xs">{{ currentEpisode }}</pre>
+    <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <VImage
       :src="templatizePublisherImageUrl(currentEpisode.image)"
       :alt="`${currentEpisode.title} show image`"
