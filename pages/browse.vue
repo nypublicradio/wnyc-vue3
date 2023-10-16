@@ -1,31 +1,15 @@
 <script setup>
+import { useFuse } from '@vueuse/integrations/useFuse'
+import { useAllShows } from '~/composables/states.ts'
+import { useShowTopics } from '~/composables/globals.ts'
+
+const allShows = useAllShows()
+const showTopics = useShowTopics()
 const router = useRouter()
 const searchFieldValue = ref('')
 const isSearching = ref(false)
-const topics = ref([
-  {
-    label: 'Arts & Culture',
-    value: 'arts-and-culture',
-    color: 'var(--red)',
-  },
-  {
-    label: 'Tech & Media',
-    value: 'tech-and-media',
-    color: 'var(--info)',
-  },
-  {
-    label: 'Local News',
-    value: 'local-news',
-    color: 'var(--purple)',
-  },
-  {
-    label: 'Storytelling',
-    value: 'storytelling',
-    color: 'var(--success)',
-  },
-])
 
-const tempResults = [
+const featuredShows = [
   {
     id: '1',
     isLive: true,
@@ -34,6 +18,7 @@ const tempResults = [
     title: 'The Brian Leher Show',
     slug: 'the-brian-leher-show',
     org: 'WNYC',
+    topic: 'Arts & Culture',
   },
   {
     id: '2',
@@ -42,6 +27,7 @@ const tempResults = [
     title: 'All Of It',
     slug: 'all-of-it',
     org: 'WNYC',
+    topic: 'Local News',
   },
   {
     id: '3',
@@ -50,6 +36,7 @@ const tempResults = [
     title: 'Death, Sex & Money',
     slug: 'death-sex-and-money',
     org: 'WNYC',
+    topic: 'Arts & Culture',
   },
   {
     id: '4',
@@ -58,6 +45,7 @@ const tempResults = [
     title: 'BBC Newshour',
     slug: 'bbc-newshour',
     org: 'BBC',
+    topic: 'Tech & Media',
   },
   {
     id: '5',
@@ -66,8 +54,21 @@ const tempResults = [
     title: 'Article Title Here',
     slug: 'article-title-here',
     org: 'Gothamist',
+    topic: 'Arts & Culture',
   },
 ]
+
+const keys = computed(() => {
+  return ['title']
+})
+
+const options = computed(() => ({
+  fuseOptions: {
+    keys: keys.value,
+  },
+}))
+
+const { results } = useFuse(searchFieldValue, featuredShows, options)
 
 const clearSearchField = () => {
   searchFieldValue.value = ''
@@ -80,9 +81,9 @@ const selectTopic = (topic) => {
   })
 }
 
-const getAlgoliaSuggestion = computed(() => {
-  return 'Blah blah'
-})
+// const getAlgoliaSuggestion = computed(() => {
+//   return 'Blah blah'
+// })
 
 const goToShowPage = (show) => {
   navigateTo(`shows/${show.slug}`)
@@ -124,7 +125,7 @@ const viewAllShows = () => {
         <HorizontalScrollFeature class="topics-holder">
           <div class="flex">
             <div
-              v-for="topic in topics"
+              v-for="topic in showTopics"
               class="station-holder"
               :key="topic.label"
             >
@@ -153,7 +154,7 @@ const viewAllShows = () => {
         </div>
         <div class="shows flex flex-column gap-3">
           <BrowseItem
-            v-for="show in tempResults"
+            v-for="show in featuredShows"
             :show="show"
             :key="show.title"
             @onClick="goToShowPage(show)"
@@ -167,8 +168,19 @@ const viewAllShows = () => {
         <div class="results-list">
           <h2>Rearch Results</h2>
         </div>
+        <div class="shows flex flex-column gap-3">
+          <BrowseItem
+            v-for="show in results"
+            :show="show.item"
+            :key="show.item.title"
+            @onClick="goToShowPage(show.item)"
+          />
+        </div>
         <!-- if no results show this -->
-        <div class="text-center flex flex-column gap-4 mt-8">
+        <div
+          v-if="results.length === 0"
+          class="text-center flex flex-column gap-4 mt-8"
+        >
           <h2>No results for {{ searchFieldValue }}</h2>
           <img
             src="/noResults.svg"
@@ -176,7 +188,7 @@ const viewAllShows = () => {
             alt="No Results"
           />
           <div>
-            <p class="mb-2">
+            <!-- <p class="mb-2">
               Did you mean:
               <Button
                 link
@@ -185,7 +197,7 @@ const viewAllShows = () => {
                 :label="getAlgoliaSuggestion"
                 @click="searchFieldValue = getAlgoliaSuggestion"
               />
-            </p>
+            </p> -->
             <p>
               Or... try searching again using<br />
               different keywords or spelling

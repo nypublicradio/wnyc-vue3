@@ -145,17 +145,11 @@ export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 export const useFileSystemLS = () => useState('fileSystemLS', () => [])
 
 
-
-
-
 const bottomMenuState: object = {}
 /**
  * Global state for the bottom navigation
  */
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
-
-
-
 
 
 
@@ -168,3 +162,12 @@ const textSizeOptionsArr = [
  * Global state for TEMP login state
  */
 export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsArr)
+
+
+/**
+ * Global state for all the shows data
+ */
+export const useAllShows = () => useState('allShows', () => null)
+
+
+
