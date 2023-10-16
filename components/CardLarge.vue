@@ -1,6 +1,7 @@
 <script setup>
 import { formatPublisherImage, getMinutes, whenTime } from '~/utilities/helpers'
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage'
+import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 
 const props = defineProps({
   item: {
@@ -13,7 +14,11 @@ const props = defineProps({
 
 <template>
   <div>
-    <div class="card-large mb-4">
+    <VFlexibleLink
+      raw
+      :to="`story/${props.item.attributes.slug}`"
+      class="card-large mb-4"
+    >
       <div class="top">
         <VImage
           :src="formatPublisherImage(props.item.attributes)"
@@ -27,10 +32,9 @@ const props = defineProps({
           <div class="title text-sm font-bold font-meta line-height-2">
             {{ props.item.attributes.title }}
           </div>
-          <div
-            class="desc html-formatting noLinks"
-            v-html="props.item.attributes.body"
-          />
+          <div class="desc">
+            {{ props.item.attributes.tease }}
+          </div>
           <PipeData class="text-xs">
             <template #left>{{ props.item.attributes.showTitle }}</template>
             <template #right>
@@ -43,11 +47,11 @@ const props = defineProps({
           <slot name="menu" />
         </div>
       </div>
-    </div>
+    </VFlexibleLink>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .card-large {
   display: flex;
   flex-direction: column;
@@ -67,9 +71,7 @@ const props = defineProps({
     .desc {
       @include truncate();
       @include t4lines();
-      * {
-        font-size: 13px;
-      }
+      font-size: 13px;
     }
   }
 }

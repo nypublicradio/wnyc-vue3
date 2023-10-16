@@ -144,6 +144,8 @@ a {
   &.noLinks {
     a {
       pointer-events: none;
+      color: var(--text-color);
+      text-decoration: none;
     }
   }
 }
