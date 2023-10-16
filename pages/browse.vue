@@ -18,7 +18,7 @@ const featuredShows = [
     title: 'The Brian Leher Show',
     slug: 'the-brian-leher-show',
     org: 'WNYC',
-    topic: 'Arts & Culture',
+    topic: ['Arts & Culture'],
   },
   {
     id: '2',
@@ -27,7 +27,7 @@ const featuredShows = [
     title: 'All Of It',
     slug: 'all-of-it',
     org: 'WNYC',
-    topic: 'Local News',
+    topic: ['Local News'],
   },
   {
     id: '3',
@@ -36,7 +36,7 @@ const featuredShows = [
     title: 'Death, Sex & Money',
     slug: 'death-sex-and-money',
     org: 'WNYC',
-    topic: 'Arts & Culture',
+    topic: ['Arts & Culture'],
   },
   {
     id: '4',
@@ -45,7 +45,7 @@ const featuredShows = [
     title: 'BBC Newshour',
     slug: 'bbc-newshour',
     org: 'BBC',
-    topic: 'Tech & Media',
+    topic: ['Tech & Media'],
   },
   {
     id: '5',
@@ -54,7 +54,7 @@ const featuredShows = [
     title: 'Article Title Here',
     slug: 'article-title-here',
     org: 'Gothamist',
-    topic: 'Arts & Culture',
+    topic: ['Arts & Culture'],
   },
 ]
 

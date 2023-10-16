@@ -1,17 +1,14 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import {
-  trackClickEvent,
-  whenTime
-} from '~/utilities/helpers'
+import { trackClickEvent, whenTime } from '~/utilities/helpers'
 
 const props = defineProps({
   articles: {
     type: Array,
     default: null,
     required: true,
-  }
+  },
 })
 
 // TEMP fix to make ripple work
@@ -25,7 +22,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="index" class="mb-4">
-       <!-- <pre>{{ article }}</pre> -->
+      <!-- <pre>{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
@@ -59,24 +56,7 @@ defineExpose({
           <div class="article-metadata">
             <PipeData>
               <template #left>
-                <VByline
-                  prefix=""
-                  :authors="article.authors"
-                  @name-click="
-                    trackClickEvent(
-                      'Click Tracking - Top Story',
-                      'Article Card Author Name',
-                      $event.url
-                    )
-                  "
-                  @organization-click="
-                    trackClickEvent(
-                      'Click Tracking - Top Story',
-                      'Article Card Author Organization',
-                      $event.url
-                    )
-                  "
-                >
+                <VByline prefix="" :authors="article.authors" isBlockLinks>
                 </VByline>
               </template>
               <template #right>

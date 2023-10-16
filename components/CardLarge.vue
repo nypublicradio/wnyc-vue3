@@ -28,7 +28,7 @@ const props = defineProps({
             {{ props.item.attributes.title }}
           </div>
           <div
-            class="desc text-xs line-height-3"
+            class="desc html-formatting noLinks"
             v-html="props.item.attributes.body"
           />
           <PipeData class="text-xs">
@@ -67,6 +67,9 @@ const props = defineProps({
     .desc {
       @include truncate();
       @include t4lines();
+      * {
+        font-size: 13px;
+      }
     }
   }
 }
