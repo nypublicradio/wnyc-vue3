@@ -1,9 +1,10 @@
 import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, } from '~/composables/states'
 
-const config = useRuntimeConfig()
+
 
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string) {
+    const config = useRuntimeConfig()
     //BFF
     const { data: fetchData } = await useFetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
     const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -14,7 +15,7 @@ export async function updateAllLiveStreams() {
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentUserProfile = useCurrentUserProfile()
-
+    const config = useRuntimeConfig()
     // BFF
     const { data: fetchingAll } = await useFetch(`${config.public.BFF_URL}/api/streams`)
     //console.log('fetchingAll = ', fetchingAll.value)
