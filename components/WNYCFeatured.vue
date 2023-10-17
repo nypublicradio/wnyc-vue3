@@ -102,6 +102,7 @@ const togglePlay = (item) => {
     <div class="wnyc-featured">
       <HorizontalScrollFeature>
         <CardLarge
+          v-if="bucketItems"
           v-for="item in bucketItems"
           :key="item.label"
           :item="item"
@@ -133,6 +134,81 @@ const togglePlay = (item) => {
             </DotMenu>
           </template>
         </CardLarge>
+
+        <div v-else v-for="item in 5">
+          <div class="skeleton-holder">
+            <Skeleton
+              class="flex-none"
+              height="159px"
+              width="100%"
+              borderRadius="0px"
+            ></Skeleton>
+            <div
+              class="flex w-full h-full flex-column justify-content-between p-3 pb-4 gap-3 h-15rem"
+            >
+              <div class="flex flex-column gap-2">
+                <div>
+                  <Skeleton
+                    height="12px"
+                    width="95%"
+                    borderRadius="16px"
+                    style="margin-bottom: 4px; margin-top: 4px"
+                  ></Skeleton>
+                  <Skeleton
+                    height="12px"
+                    width="70%"
+                    borderRadius="16px"
+                    style="margin-bottom: 6px"
+                  ></Skeleton>
+                </div>
+                <div class="flex flex-column gap-2">
+                  <Skeleton
+                    class=""
+                    height="10.5px"
+                    width="97%"
+                    borderRadius="16px"
+                  ></Skeleton>
+                  <Skeleton
+                    class=""
+                    height="10.5px"
+                    width="95%"
+                    borderRadius="16px"
+                  ></Skeleton>
+                  <Skeleton
+                    class=""
+                    height="10.5px"
+                    width="85%"
+                    borderRadius="16px"
+                  ></Skeleton>
+                  <Skeleton
+                    class=""
+                    height="10.5px"
+                    width="100%"
+                    borderRadius="16px"
+                  ></Skeleton>
+                </div>
+                <Skeleton
+                  class="mt-2"
+                  height="10px"
+                  width="100%"
+                  borderRadius="16px"
+                ></Skeleton>
+              </div>
+              <div class="flex justify-content-between">
+                <Skeleton
+                  height="28px"
+                  width="84px"
+                  borderRadius="15px"
+                ></Skeleton>
+                <Skeleton
+                  height="28px"
+                  width="10px"
+                  borderRadius="15px"
+                ></Skeleton>
+              </div>
+            </div>
+          </div>
+        </div>
       </HorizontalScrollFeature>
     </div>
   </div>
@@ -140,5 +216,14 @@ const togglePlay = (item) => {
 
 <style lang="scss" scoped>
 .wnyc-featured {
+  .skeleton-holder {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 248px;
+    min-width: 248px;
+    background-color: var(--background2);
+  }
 }
 </style>

@@ -18,7 +18,7 @@ export async function updateAllLiveStreams() {
     const config = useRuntimeConfig()
     // BFF
     const { data: fetchingAll } = await useFetch(`${config.public.BFF_URL}/api/streams`)
-    //console.log('fetchingAll = ', fetchingAll.value)
+    console.log('fetchingAll = ', fetchingAll.value)
     // set all streams
     allCurrentStations.value = fetchingAll.value.filter(Boolean)
     //allCurrentStations.value = allCurrentStationsImport

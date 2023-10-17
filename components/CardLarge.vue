@@ -7,9 +7,10 @@ const props = defineProps({
   item: {
     type: Object,
     default: null,
-    required: true,
   },
 })
+
+console.log('props.item', props.item)
 </script>
 
 <template>
@@ -32,9 +33,7 @@ const props = defineProps({
           <div class="title text-sm font-bold font-meta line-height-2">
             {{ props.item.attributes.title }}
           </div>
-          <div class="desc">
-            {{ props.item.attributes.tease }}
-          </div>
+          <div class="desc" v-html="props.item.attributes.tease" />
           <PipeData class="text-xs">
             <template #left>{{ props.item.attributes.showTitle }}</template>
             <template #right>
