@@ -1,17 +1,13 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import {
-  trackClickEvent,
-  whenTime
-} from '~/utilities/helpers'
+import { trackClickEvent, whenTime } from '~/utilities/helpers'
 
 const props = defineProps({
   articles: {
     type: Array,
     default: null,
-    required: true,
-  }
+  },
 })
 
 // TEMP fix to make ripple work
@@ -25,7 +21,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="index" class="mb-4">
-       <!-- <pre>{{ article }}</pre> -->
+      <!-- <pre>{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
@@ -59,24 +55,7 @@ defineExpose({
           <div class="article-metadata">
             <PipeData>
               <template #left>
-                <VByline
-                  prefix=""
-                  :authors="article.authors"
-                  @name-click="
-                    trackClickEvent(
-                      'Click Tracking - Top Story',
-                      'Article Card Author Name',
-                      $event.url
-                    )
-                  "
-                  @organization-click="
-                    trackClickEvent(
-                      'Click Tracking - Top Story',
-                      'Article Card Author Organization',
-                      $event.url
-                    )
-                  "
-                >
+                <VByline prefix="" :authors="article.authors" isBlockLinks>
                 </VByline>
               </template>
               <template #right>
@@ -86,6 +65,42 @@ defineExpose({
           </div>
         </template>
       </VCard>
+    </div>
+  </div>
+  <div v-else>
+    <div
+      class="skeleton-holder flex gap-3 mb-4"
+      v-for="(article, index) in 3"
+      :key="`skeleton-${index}`"
+    >
+      <Skeleton
+        class="flex-none"
+        height="116px"
+        width="116px"
+        borderRadius="0px"
+      ></Skeleton>
+      <div class="flex w-full flex-column justify-content-between py-1">
+        <div>
+          <Skeleton
+            height="12px"
+            width="85%"
+            borderRadius="16px"
+            style="margin-bottom: 6px"
+          ></Skeleton>
+          <Skeleton
+            height="12px"
+            width="70%"
+            borderRadius="16px"
+            style="margin-bottom: 6px"
+          ></Skeleton>
+        </div>
+        <Skeleton
+          class="opacity-50"
+          height="12px"
+          width="60%"
+          borderRadius="16px"
+        ></Skeleton>
+      </div>
     </div>
   </div>
 </template>

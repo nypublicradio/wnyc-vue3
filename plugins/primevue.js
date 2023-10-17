@@ -9,6 +9,8 @@ import PrimeVue from 'primevue/config'
 import Sidebar from 'primevue/sidebar'
 import Skeleton from 'primevue/skeleton'
 import TabMenu from 'primevue/tabmenu'
+import TabView from 'primevue/tabview'
+import TabPanel from 'primevue/tabpanel'
 import Textarea from 'primevue/textarea'
 import TieredMenu from 'primevue/tieredmenu'
 import Toast from 'primevue/toast'
@@ -36,6 +38,8 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Sidebar', Sidebar)
     nuxtApp.vueApp.component('Skeleton', Skeleton)
     nuxtApp.vueApp.component('TabMenu', TabMenu)
+    nuxtApp.vueApp.component('TabView', TabView)
+    nuxtApp.vueApp.component('TabPanel', TabPanel)
     nuxtApp.vueApp.component('Textarea', Textarea)
     nuxtApp.vueApp.component('TieredMenu', TieredMenu)
     nuxtApp.vueApp.component('Toast', Toast)

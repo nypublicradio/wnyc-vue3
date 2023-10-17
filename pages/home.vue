@@ -1,13 +1,11 @@
 <script setup>
 //onBeforeMount(async () => {
 const config = useRuntimeConfig()
-const { data: pagedata } = await useFetch(
-  `${config.public.BFF_URL}/api/homepage`
-)
-const bucketItems = pagedata.value.middle_bucket
-const topStories = pagedata.value.top_stories
-const localNewscast = pagedata.value.local_newscast
-const nationalNewscast = pagedata.value.national_newscast
+const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
+const bucketItems = ref(pagedata?.value?.middle_bucket ?? null)
+const topStories = ref(pagedata?.value?.top_stories ?? null)
+const localNewscast = ref(pagedata?.value?.local_newscast ?? null)
+const nationalNewscast = ref(pagedata?.value?.national_newscast ?? null)
 
 definePageMeta({
   layout: 'default',
@@ -19,6 +17,13 @@ useHead({
   bodyAttrs: {
     class: 'show-header',
   },
+})
+
+watch(pagedata, () => {
+  bucketItems.value = pagedata.value.middle_bucket
+  topStories.value = pagedata.value.top_stories
+  localNewscast.value = pagedata.value.local_newscast
+  nationalNewscast.value = pagedata.value.national_newscast
 })
 </script>
 

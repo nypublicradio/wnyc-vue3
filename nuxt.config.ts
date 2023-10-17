@@ -1,6 +1,13 @@
 export default defineNuxtConfig({
 
-  modules: ['@nuxtjs/supabase', '@nuxtjs/ionic', '@nuxtjs/device', '@nuxt/image', '@hypernym/nuxt-gsap'],
+  modules: [
+    '@nuxtjs/supabase',
+    '@nuxtjs/ionic',
+    '@nuxtjs/device',
+    '@nuxt/image',
+    '@hypernym/nuxt-gsap',
+    "@vueuse/nuxt"
+  ],
   supabase: {
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,

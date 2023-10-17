@@ -3,6 +3,30 @@ export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffff
 //Global vars for the browser top color or Darkmode
 export const useBrowserTopColorDarkMode = () => useState('browserTopColorDarkMode', () => '#1f2741')
 
+//Global vars for the browser top color or Darkmode
+export const useShowTopics = () => useState('showTopics', () => [
+    {
+        label: 'Arts & Culture',
+        value: 'arts-and-culture',
+        color: 'var(--red)',
+    },
+    {
+        label: 'Tech & Media',
+        value: 'tech-and-media',
+        color: 'var(--info)',
+    },
+    {
+        label: 'Local News',
+        value: 'local-news',
+        color: 'var(--purple)',
+    },
+    {
+        label: 'Storytelling',
+        value: 'storytelling',
+        color: 'var(--success)',
+    },
+])
+
 
 // const imageShape = {
 //     alt: "A choreographer working with dancers in a studio",

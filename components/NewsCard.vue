@@ -12,7 +12,6 @@ const props = defineProps({
   newsData: {
     type: Object,
     default: null,
-    required: true,
   },
   source: {
     type: String,
@@ -38,7 +37,12 @@ const emit = defineEmits(['on-click'])
 </script>
 
 <template>
-  <div class="news-card p-ripple" @click="emit('on-click')" v-ripple>
+  <div
+    v-if="newsData"
+    class="news-card p-ripple"
+    @click="emit('on-click')"
+    v-ripple
+  >
     <div>
       <Badge
         :label="props.badgeLabel"
@@ -46,16 +50,34 @@ const emit = defineEmits(['on-click'])
         :bg-color="props.badgeBgColor"
       />
       <div class="news-title mt-2">
-        <div class="font-bold">{{ newsData.cardTitle }}</div>
+        <div class="font-bold">{{ props.newsData?.cardTitle }}</div>
         <PipeData>
           <template #left>{{ props.source }}</template>
           <template #right>
-            <span class="nobreak">{{ howLongAgo(newsData.newsdate) }}</span>
+            <span class="nobreak">{{
+              howLongAgo(props.newsData?.newsdate)
+            }}</span>
           </template>
         </PipeData>
       </div>
     </div>
-    <PlayButton :label="getMinutes(newsData.duration)" :file="newsData.file" />
+    <PlayButton
+      :label="getMinutes(props.newsData?.duration)"
+      :file="props.newsData?.file"
+    />
+  </div>
+  <div v-else class="news-card skeleton-holder flex">
+    <Skeleton height="16px" width="91px" borderRadius="0px"></Skeleton>
+    <div class="w-full">
+      <Skeleton
+        height="13px"
+        width="55%"
+        borderRadius="16px"
+        style="margin-bottom: 8px"
+      ></Skeleton>
+      <Skeleton height="13px" width="70%" borderRadius="16px"></Skeleton>
+    </div>
+    <Skeleton height="28px" width="84px" borderRadius="15px"></Skeleton>
   </div>
 </template>
 
