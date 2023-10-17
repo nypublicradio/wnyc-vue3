@@ -7,7 +7,6 @@ const props = defineProps({
   articles: {
     type: Array,
     default: null,
-    required: true,
   },
 })
 

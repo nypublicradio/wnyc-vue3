@@ -14,12 +14,10 @@ const props = defineProps({
   localNewscast: {
     type: Object,
     default: null,
-    required: true,
   },
   nationalNewscast: {
     type: Object,
     default: null,
-    required: true,
   },
 })
 

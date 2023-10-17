@@ -12,7 +12,6 @@ const props = defineProps({
   newsData: {
     type: Object,
     default: null,
-    required: true,
   },
   source: {
     type: String,

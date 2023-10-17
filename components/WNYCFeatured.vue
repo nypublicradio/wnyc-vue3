@@ -15,7 +15,6 @@ const props = defineProps({
   bucketItems: {
     type: Object,
     default: null,
-    required: true,
   },
 })
 
