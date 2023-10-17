@@ -1,9 +1,7 @@
 <script setup>
 import { useFuse } from '@vueuse/integrations/useFuse'
-import { useAllShows } from '~/composables/states.ts'
 import { useShowTopics } from '~/composables/globals.ts'
 
-const allShows = useAllShows()
 const showTopics = useShowTopics()
 const router = useRouter()
 const searchFieldValue = ref('')
@@ -88,10 +86,6 @@ const selectTopic = (topic) => {
 const goToShowPage = (show) => {
   navigateTo(`shows/${show.slug}`)
 }
-
-const viewAllShows = () => {
-  navigateTo('browse-all')
-}
 </script>
 
 <template>
@@ -141,26 +135,38 @@ const viewAllShows = () => {
           </div>
         </HorizontalScrollFeature>
       </div>
-      <section class="featured-shows">
-        <div class="flex justify-content-between mb-3">
-          <h2>Featured Shows</h2>
-          <Button
-            link
-            label="View All Shows"
-            @click="viewAllShows"
-            class="p-0 m-0 underline"
-            size="small"
-          />
-        </div>
-        <div class="shows flex flex-column gap-3">
-          <BrowseItem
-            v-for="show in featuredShows"
-            :show="show"
-            :key="show.title"
-            @onClick="goToShowPage(show)"
-          />
-        </div>
-      </section>
+
+      <div class="tabs mt-3">
+        <TabView>
+          <TabPanel header="Featured Shows">
+            <section class="shows flex flex-column gap-3">
+              <BrowseItem
+                v-for="show in featuredShows"
+                :show="show"
+                :key="show.title"
+                @onClick="goToShowPage(show)"
+              />
+            </section>
+          </TabPanel>
+          <TabPanel header="All Shows">
+            <section class="shows flex flex-column gap-3">
+              <!-- TEMP till we get the fill list -->
+              <BrowseItem
+                v-for="show in featuredShows"
+                :show="show"
+                :key="show.title"
+                @onClick="goToShowPage(show)"
+              />
+              <BrowseItem
+                v-for="show in featuredShows"
+                :show="show"
+                :key="show.title"
+                @onClick="goToShowPage(show)"
+              />
+            </section>
+          </TabPanel>
+        </TabView>
+      </div>
     </div>
     <div v-else>
       <section class="results">
@@ -265,6 +271,24 @@ const viewAllShows = () => {
   .topics {
     .horizontal-scroll-feature .scroll {
       padding-left: 0 !important;
+    }
+  }
+}
+.p-tabview {
+  .p-tabview-nav {
+    border-color: transparent;
+    li {
+      margin-right: 2rem;
+      .p-tabview-nav-link {
+        border-color: transparent;
+        color: var(--text-color);
+        padding-left: 0;
+        padding-right: 0;
+      }
+      &.p-highlight .p-tabview-nav-link {
+        border-color: var(--link);
+        color: var(--text-color);
+      }
     }
   }
 }

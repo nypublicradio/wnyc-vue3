@@ -9,8 +9,6 @@ const props = defineProps({
     default: null,
   },
 })
-
-console.log('props.item', props.item)
 </script>
 
 <template>

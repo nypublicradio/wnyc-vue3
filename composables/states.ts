@@ -164,10 +164,3 @@ const textSizeOptionsArr = [
 export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsArr)
 
 
-/**
- * Global state for all the shows data
- */
-export const useAllShows = () => useState('allShows', () => null)
-
-
-
