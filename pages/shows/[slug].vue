@@ -1,6 +1,11 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import { templatizePublisherImageUrl } from '~/utilities/helpers'
+
+import StarIcon from '~/components/icons/StarIcon.vue'
+import PlayIcon from '~/components/icons/PlayIcon.vue'
+import ShareIcon from '~/components/icons/ShareIcon.vue'
+
 // navigate back to home and track it
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +24,7 @@ const tempShowData = {
   episodes: [
     {
       id: 1,
+      show: 'Death, Sex & Money',
       title: 'Feeling Lost or Stuck? Try Craigslist, says John Wilson.',
       slug: 'feeling-lost-or-stuck-try-craigslist-says-john-wilson',
       image:
@@ -37,6 +43,7 @@ const tempShowData = {
     },
     {
       id: 2,
+      show: 'Death, Sex & Money',
       title: 'A New York City Mover Who Carries More Than Your Boxes.',
       slug: 'a-new-york-city-mover-who-carries-more-than-your-boxes',
       image:
@@ -57,7 +64,17 @@ const tempShowData = {
 }
 
 const goToEpisodePage = (show) => {
-  navigateTo(`/shows/episodes/${route.params.slug}`)
+  navigateTo(`/shows/episode/${route.params.slug}`)
+}
+
+const togglePlay = () => {
+  console.log('togglePlay')
+}
+const handleStar = () => {
+  console.log('handleStar')
+}
+const handleShare = () => {
+  console.log('handleShare')
 }
 </script>
 
@@ -65,15 +82,15 @@ const goToEpisodePage = (show) => {
   <section class="shows-page">
     <div class="flex align-items-center">
       <Button
-        class="back-btn text-color -ml-3"
+        class="back-btn text-color -ml-4"
         icon="pi pi-chevron-left"
         rounded
         text
         severity="secondary"
         aria-label="back to previous page"
         @click="backHome"
+        label="Browse"
       />
-      <h2>Browse</h2>
     </div>
 
     <VImage
@@ -85,6 +102,23 @@ const goToEpisodePage = (show) => {
       :ratio="[1, 1]"
       style="min-height: 144px"
     />
+    <div class="flex justify-content-center align-items-center gap-2 mt-2 mb-4">
+      <Button rounded text plain @click="handleStar">
+        <template #icon> <StarIcon class="w-2rem" /></template>
+      </Button>
+
+      <Button
+        class="w-3rem h-3rem"
+        severity="secondary"
+        rounded
+        @click="togglePlay"
+      >
+        <template #icon> <PlayIcon class="w-1rem h-1rem" /></template>
+      </Button>
+      <Button text plain rounded @click="handleShare">
+        <template #icon> <ShareIcon /></template>
+      </Button>
+    </div>
     <h2 class="text-lg mt-2">{{ tempShowData.title }}</h2>
     <p class="text-sm mt-2">{{ tempShowData.tease }}</p>
     <h2 class="mt-4">Episodes</h2>

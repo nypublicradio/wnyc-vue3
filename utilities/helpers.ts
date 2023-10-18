@@ -311,11 +311,16 @@ export function howLongAgo(date) {
   return null
 }
 
+
 /**
  * to get the desired date format for the header
  */
-export function getDate() {
-  return format(new Date(), 'EEE, MMM do')
+export function getDate(date = null, formatString = 'EEE, MMM do') {
+  if (!date) {
+    return format(new Date(), formatString)
+  } else {
+    return format(new Date(date), 'LLL d, yyyy')
+  }
 }
 
 /**

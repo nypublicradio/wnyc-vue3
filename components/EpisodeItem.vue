@@ -3,6 +3,11 @@ import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 // TEMP fix to make ripple work
 import { usePrimeVue } from 'primevue/config'
 import { getMinutes, getDate } from '~/utilities/helpers'
+import StarIcon from '~/components/icons/StarIcon.vue'
+import DownloadIcon from '~/components/icons/DownloadIcon.vue'
+import ShareIcon from '~/components/icons/ShareIcon.vue'
+import QueueIcon from '~/components/icons/QueueIcon.vue'
+
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -17,6 +22,52 @@ const props = defineProps({
     required: true,
   },
 })
+
+// set the items for the Dot menu
+const getDotMenuItems = (bucketItem) => {
+  return [
+    {
+      label: 'Favorite Episode',
+      customIcon: StarIcon,
+      active: true,
+      title: bucketItem.title,
+      command: () => {
+        handleAddToFavorites(bucketItem)
+      },
+    },
+    {
+      label: 'Download',
+      //icon: 'pi pi-google',
+      customIcon: DownloadIcon,
+      title: bucketItem.title,
+      command: () => {
+        handleDownload(bucketItem)
+      },
+    },
+    {
+      label: 'Share',
+      customIcon: ShareIcon,
+      title: bucketItem.title,
+      command: () => {
+        handleShare(bucketItem)
+      },
+    },
+    {
+      label: 'Add to Queue',
+      active: true,
+      customIcon: QueueIcon,
+      title: bucketItem.title,
+      command: () => {
+        handleAddToQueue(bucketItem)
+      },
+    },
+  ]
+}
+
+// fire the command located in the menuItems data object above when the user clicks on the menu item
+const onMenuChange = (e) => {
+  e.value.command()
+}
 </script>
 
 <template>
@@ -40,7 +91,12 @@ const props = defineProps({
               <p class="text-xs">{{ getMinutes(props.show.duration, 1) }}</p>
             </template>
             <template #right>
-              <p class="text-xs">{{ getDate(props.show.date) }}</p>
+              <div class="flex gap-2 align-items-center">
+                <p class="text-xs">
+                  {{ getDate(props.show.date) }}
+                </p>
+                <DownloadedSmallIcon v-if="props.show.downloaded" />
+              </div>
             </template>
           </PipeData>
           <ProgressBar
@@ -51,16 +107,34 @@ const props = defineProps({
         </div>
       </div>
     </div>
-    <Button
-      class="text-cyan-500 hover:bg-cyan-50"
-      icon="pi pi-ellipsis-v"
-      text
-      rounded
-      aria-label="menu"
-      type="button"
-      aria-haspopup="true"
-      aria-controls="overlay_menu"
-    />
+
+    <DotMenu
+      :menuItems="getDotMenuItems(props.show)"
+      label=""
+      @changeEmit="onMenuChange"
+    >
+      <template #header-bottom>
+        <div>
+          <div class="flex gap-3 px-4 align-items-center">
+            <VImage
+              :src="props.show.image"
+              :alt="`${props.show.title} show image`"
+              :width="60"
+              :height="60"
+              :sizes="[2]"
+              class="show-image-in-menu"
+              :ratio="[1, 1]"
+            />
+
+            <div class="info">
+              <h2>{{ props.show.title }}</h2>
+              <p>{{ props.show.show }}</p>
+            </div>
+          </div>
+          <hr class="mt-5 mb-2 dim" />
+        </div>
+      </template>
+    </DotMenu>
   </div>
 </template>
 
