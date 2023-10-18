@@ -307,9 +307,7 @@ export function howLongAgo(date) {
     })
 
     return res.replace('minutes', 'min').replace('minute', 'min')
-
   }
-
   return null
 }
 
