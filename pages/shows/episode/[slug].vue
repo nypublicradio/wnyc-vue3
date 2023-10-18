@@ -29,6 +29,16 @@ const togglePlay = (media) => {
     'toggle play'
   )
 }
+
+const handleDownload = () => {
+  console.log('handleDownload')
+}
+const handleStar = () => {
+  console.log('handleStar')
+}
+const handleShare = () => {
+  console.log('handleShare')
+}
 </script>
 
 <template>
@@ -81,10 +91,16 @@ const togglePlay = (media) => {
           class=""
         />
         <div class="flex gap-3">
-          <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">
+          <Button class="w-2rem h-2rem" text plain rounded @click="handleStar">
             <template #icon> <StarIcon /></template>
           </Button>
-          <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">
+          <Button
+            class="w-2rem h-2rem"
+            text
+            plain
+            rounded
+            @click="handleDownload"
+          >
             <template #icon> <DownloadIcon /></template>
           </Button>
           <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">
