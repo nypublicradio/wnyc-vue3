@@ -91,7 +91,7 @@ watch(pagedata, () => {
           plain
           rounded
           :label="`&nbsp; ${storyData.comments} comments`"
-          class="commnts-btn pl-2 text-xs font-normal"
+          class="comments-btn pl-2 text-xs font-normal"
           @click="handleComments()"
         >
           <template #icon> <CommentsIcon /></template>
@@ -121,5 +121,8 @@ watch(pagedata, () => {
 }
 
 .story-page .comments-btn {
+  .comments-icon {
+    margin-top: 3px;
+  }
 }
 </style>
