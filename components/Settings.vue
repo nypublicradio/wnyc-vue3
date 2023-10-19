@@ -270,6 +270,8 @@ const clickThisId = (id) => {
           optionLabel="station"
           placeholder="Select a station"
           label="Default stream"
+          width="80%"
+          class="-mr-2"
           @change="onUpdateStation"
         />
       </SBox>
@@ -308,6 +310,8 @@ const clickThisId = (id) => {
           optionLabel="label"
           placeholder="Select a Text Size"
           label="Text Size"
+          width="80%"
+          class="-mr-2"
           @change="onUpdateTextSize"
         />
       </SBox>

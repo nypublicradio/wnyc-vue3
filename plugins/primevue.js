@@ -6,6 +6,7 @@ import Menu from 'primevue/menu'
 import Listbox from 'primevue/listbox'
 import Menubar from 'primevue/menubar'
 import PrimeVue from 'primevue/config'
+import ProgressBar from 'primevue/progressbar'
 import Sidebar from 'primevue/sidebar'
 import Skeleton from 'primevue/skeleton'
 import TabMenu from 'primevue/tabmenu'
@@ -52,6 +53,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Message', Message)
     nuxtApp.vueApp.component('ProgressSpinner', ProgressSpinner)
     nuxtApp.vueApp.component('Dialog', Dialog)
+    nuxtApp.vueApp.component('ProgressBar', ProgressBar)
     // nuxtApp.vueApp.component('Tooltip', Tooltip)
     // nuxtApp.vueApp.directive('tooltip', Tooltip)
 })

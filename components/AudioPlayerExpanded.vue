@@ -316,6 +316,10 @@ const moreFromClick = () => {
         </Button>
         <DotMenu
           :menuItems="getDotMenuItems(currentEpisode)"
+          size="large"
+          width="37px"
+          height="37px"
+          class="-mr-2"
           @changeEmit="onMenuChange"
         >
           <!-- label="Options" -->

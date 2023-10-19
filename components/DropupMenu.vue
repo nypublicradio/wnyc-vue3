@@ -26,6 +26,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  width: {
+    type: String,
+    default: '42px',
+  },
+  height: {
+    type: String,
+    default: '42px',
+  },
 })
 
 const emit = defineEmits(['update:data', 'swipe-down'])
@@ -257,9 +265,8 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .s-dropup {
-  width: 80%;
-  height: 42px;
-  margin-right: -1rem;
+  width: v-bind(width);
+  height: v-bind(height);
   background: transparent;
   border: none;
   text-align: right;
