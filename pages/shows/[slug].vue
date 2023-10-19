@@ -67,7 +67,7 @@ const goToEpisodePage = (show) => {
   navigateTo(`/shows/episode/${route.params.slug}`)
 }
 
-const togglePlay = () => {
+const togglePlayMostRecentEpisode = () => {
   console.log('togglePlay')
 }
 const handleStar = () => {
@@ -111,7 +111,7 @@ const handleShare = () => {
         class="w-3rem h-3rem"
         severity="secondary"
         rounded
-        @click="togglePlay"
+        @click="togglePlayMostRecentEpisode"
       >
         <template #icon> <PlayIcon class="w-1rem h-1rem" /></template>
       </Button>

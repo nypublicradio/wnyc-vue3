@@ -38,7 +38,7 @@ onMounted(() => {
           class="streamfield-block-quote"
         >
           <blockquote>
-            <p v-html="block.value.block_quote" />
+            <p v-html="block.value.blockQuote" />
           </blockquote>
         </div>
 
@@ -83,7 +83,7 @@ onMounted(() => {
         <!-- pull-quote -->
         <streamfield-pull-quote
           v-else-if="block.type === 'pull_quote'"
-          :quote="block.value.pull_quote"
+          :quote="block.value.pullQuote"
           :author="block.value.attribution"
         />
       </section>
@@ -104,5 +104,4 @@ onMounted(() => {
   border-left: 1px solid rgba(234, 234, 234, 1);
   padding-left: 1rem;
 }
-
 </style>

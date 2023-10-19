@@ -46,7 +46,7 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: 'Favorite Episode',
       customIcon: StarIcon,
-      active: true,
+      active: false,
       title: bucketItem.title,
       command: () => {
         handleAddToFavorites(bucketItem)
