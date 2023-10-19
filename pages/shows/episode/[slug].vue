@@ -5,13 +5,14 @@ import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
 import StarIcon from '~/components/icons/StarIcon.vue'
 import DownloadIcon from '~/components/icons/DownloadIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
+import QueueIcon from '~/components/icons/QueueIcon.vue'
 // TO DO - replace dummy data with BFF data
 import episodeData from './episode-data.json'
 
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent('episode', 'episode page', 'back home button')
-  navigateTo(`/shows/${episodeData?.['show-slug']}`)
+  navigateTo(`/shows/${episodeData?.showSlug}`)
 }
 
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -29,15 +30,60 @@ const togglePlay = (media) => {
     'toggle play'
   )
 }
-
-const handleDownload = () => {
-  console.log('handleDownload')
-}
 const handleStar = () => {
   console.log('handleStar')
 }
+const handleDownload = () => {
+  console.log('handleDownload')
+}
 const handleShare = () => {
   console.log('handleShare')
+}
+
+// set the items for the Dot menu
+const getDotMenuItems = (bucketItem) => {
+  return [
+    {
+      label: 'Favorite Episode',
+      customIcon: StarIcon,
+      active: true,
+      title: bucketItem.title,
+      command: () => {
+        handleAddToFavorites(bucketItem)
+      },
+    },
+    {
+      label: 'Download',
+      //icon: 'pi pi-google',
+      customIcon: DownloadIcon,
+      title: bucketItem.title,
+      command: () => {
+        handleDownload(bucketItem)
+      },
+    },
+    {
+      label: 'Share',
+      customIcon: ShareIcon,
+      title: bucketItem.title,
+      command: () => {
+        handleShare(bucketItem)
+      },
+    },
+    {
+      label: 'Add to Queue',
+      active: true,
+      customIcon: QueueIcon,
+      title: bucketItem.title,
+      command: () => {
+        handleAddToQueue(bucketItem)
+      },
+    },
+  ]
+}
+
+// fire the command located in the menuItems data object above when the user clicks on the menu item
+const onMenuChange = (e) => {
+  e.value.command()
 }
 </script>
 
@@ -66,8 +112,8 @@ const handleShare = () => {
         class="episode-page-image mb-2"
       />
       <v-image
-        v-if="episodeData?.['show-logo']"
-        :src="episodeData?.['show-logo']"
+        v-if="episodeData?.showLogo"
+        :src="episodeData?.showLogo"
         :ratio="[1, 1]"
         :alt="episodeData?.show"
         class="episode-page-show-image mb-2"
@@ -106,14 +152,36 @@ const handleShare = () => {
           <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">
             <template #icon> <ShareIcon /></template>
           </Button>
-          <Button
-            text
-            plain
-            rounded
-            icon="pi pi-ellipsis-v"
-            @click="handleShare"
+          <DotMenu
+            :menuItems="getDotMenuItems(episodeData)"
+            label=""
+            @changeEmit="onMenuChange"
+            width="32px"
+            height="32px"
+            class="-mr-1"
           >
-          </Button>
+            <template #header-bottom>
+              <div>
+                <div class="flex gap-3 px-4 align-items-center">
+                  <VImage
+                    :src="episodeData?.image"
+                    :alt="`${episodeData?.title} show image`"
+                    :width="60"
+                    :height="60"
+                    :sizes="[2]"
+                    class="show-image-in-menu"
+                    :ratio="[1, 1]"
+                  />
+
+                  <div class="info">
+                    <h2>{{ episodeData?.title }}</h2>
+                    <p>{{ episodeData?.show }}</p>
+                  </div>
+                </div>
+                <hr class="mt-5 mb-2 dim" />
+              </div>
+            </template>
+          </DotMenu>
         </div>
       </div>
       <div class="episode-page-body" v-html="episodeData?.episodeBody" />

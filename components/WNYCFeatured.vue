@@ -121,6 +121,8 @@ const togglePlay = (item) => {
               label="Options"
               @changeEmit="onMenuChange"
               @click.prevent
+              class="-mr-1"
+              size="large"
             >
               <template #end v-if="item.attributes.embedCode">
                 <div class="p-0">

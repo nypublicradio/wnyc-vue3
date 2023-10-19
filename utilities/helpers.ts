@@ -319,7 +319,7 @@ export function getDate(date = null, formatString = 'EEE, MMM do') {
   if (!date) {
     return format(new Date(), formatString)
   } else {
-    return format(new Date(date), 'LLL d, yyyy')
+    return format(new Date(date), formatString)
   }
 }
 

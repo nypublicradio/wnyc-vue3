@@ -112,6 +112,7 @@ const onMenuChange = (e) => {
       :menuItems="getDotMenuItems(props.show)"
       label=""
       @changeEmit="onMenuChange"
+      class="-mr-2"
     >
       <template #header-bottom>
         <div>
