@@ -16,8 +16,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-console.log(('org', props.show))
 </script>
 
 <template>

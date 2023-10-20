@@ -12,56 +12,6 @@ const router = useRouter()
 const searchFieldValue = ref('')
 const isSearching = ref(false)
 
-console.log('shows= ', shows)
-/* const featuredShows = [
-  {
-    id: '1',
-    isLive: true,
-    image:
-      'https://media.wnyc.org/i/%s/%s/%s/%s/2023/01/52650126647_4bf5e103e0_o.jpg',
-    title: 'The Brian Leher Show',
-    slug: 'the-brian-leher-show',
-    org: 'WNYC',
-    topic: ['Arts & Culture'],
-  },
-  {
-    id: '2',
-    isLive: false,
-    image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2020/06/AllOfIt.png',
-    title: 'All Of It',
-    slug: 'all-of-it',
-    org: 'WNYC',
-    topic: ['Local News'],
-  },
-  {
-    id: '3',
-    isLive: false,
-    image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2019/07/NYPR.DSM_1400.jpg',
-    title: 'Death, Sex & Money',
-    slug: 'death-sex-and-money',
-    org: 'WNYC',
-    topic: ['Arts & Culture'],
-  },
-  {
-    id: '4',
-    isLive: true,
-    image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/bbc-newshour-tile.jpg',
-    title: 'BBC Newshour',
-    slug: 'bbc-newshour',
-    org: 'BBC',
-    topic: ['Tech & Media'],
-  },
-  {
-    id: '5',
-    isLive: false,
-    image: '304978',
-    title: 'Article Title Here',
-    slug: 'article-title-here',
-    org: 'Gothamist',
-    topic: ['Arts & Culture'],
-  },
-] */
-
 const keys = computed(() => {
   return ['title']
 })
@@ -90,7 +40,19 @@ const selectTopic = (topic) => {
 // })
 
 const goToShowPage = (show) => {
-  navigateTo(`shows/${show.slug}`)
+  navigateTo({
+    path: `shows/${show.slug}`,
+    query: {
+      slug: show.slug,
+      type: show.type,
+      image: show.image.template,
+      title: show.title,
+      desc: show.description,
+    },
+    props: {
+      test: 'yay',
+    },
+  })
 }
 
 watch(shows, () => {
@@ -228,7 +190,7 @@ watch(shows, () => {
   .search {
     position: sticky;
     top: 0;
-    background-color: var(--background);
+    background: var(--backgroundSimple);
     z-index: 1;
     .search-field {
       background-color: var(--searchFieldBackground);
@@ -291,19 +253,26 @@ watch(shows, () => {
 .p-tabview {
   .p-tabview-nav {
     border-color: transparent;
+    background: transparent;
     li {
       margin-right: 2rem;
       .p-tabview-nav-link {
         border-color: transparent;
+        background: transparent !important;
         color: var(--text-color);
         padding-left: 0;
         padding-right: 0;
       }
       &.p-highlight .p-tabview-nav-link {
+        background: transparent;
         border-color: var(--link);
         color: var(--text-color);
       }
     }
+  }
+  .p-tabview-panels {
+    padding: 0.5rem 0 0 0;
+    background: transparent;
   }
 }
 </style>

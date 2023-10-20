@@ -23,6 +23,8 @@ const props = defineProps({
   },
 })
 
+console.log('ep = ', props.show)
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -77,28 +79,38 @@ const onMenuChange = (e) => {
     <div class="flex gap-3" @click.prevent="emit('onClick')" v-ripple>
       <VImage
         class="flex-none"
-        :src="props.show.image"
+        :src="props.show.attributes.imageMain.template"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
+        :srcset="[2]"
+        style="
+          min-height: 72px;
+          min-width: 72px;
+          background-color: var(--background2);
+        "
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <h2 class="text-sm line-height-2">{{ props.show.title }}</h2>
-        <p>{{ props.show.org }}</p>
+        <h2 class="text-sm line-height-2">{{ props.show.attributes.title }}</h2>
+        <p>{{ props.show.attributes.org }}</p>
         <div class="article-metadata flex flex-column gap-1">
           <PipeData class="text-xs">
             <template #left>
-              <p class="text-xs">{{ getMinutes(props.show.duration, 1) }}</p>
+              <p class="text-xs">
+                {{ getMinutes(props.show.attributes.estimatedDuration, 1) }}
+              </p>
             </template>
             <template #right>
               <div class="flex gap-2 align-items-center">
                 <p class="text-xs">
-                  {{ getDate(props.show.date) }}
+                  {{ getDate(props.show.attributes.publishAt) }}
                 </p>
-                <DownloadedSmallIcon v-if="props.show.downloaded" />
+                <!-- FROM SUPABASE PROFILER DATA -->
+                <DownloadedSmallIcon v-if="props.show.attributes.downloaded" />
               </div>
             </template>
           </PipeData>
+          <!-- FROM SUPABASE PROFILER DATA -->
           <ProgressBar
             :value="50"
             style="height: 4px"
@@ -109,7 +121,7 @@ const onMenuChange = (e) => {
     </div>
 
     <DotMenu
-      :menuItems="getDotMenuItems(props.show)"
+      :menuItems="getDotMenuItems(props.show.attributes)"
       label=""
       @changeEmit="onMenuChange"
       class="-mr-2"
@@ -118,8 +130,8 @@ const onMenuChange = (e) => {
         <div>
           <div class="flex gap-3 px-4 align-items-center">
             <VImage
-              :src="props.show.image"
-              :alt="`${props.show.title} show image`"
+              :src="props.show.attributes.imageMain.template"
+              :alt="`${props.show.attributes.showTitle} show image`"
               :width="60"
               :height="60"
               :sizes="[2]"
@@ -128,8 +140,8 @@ const onMenuChange = (e) => {
             />
 
             <div class="info">
-              <h2>{{ props.show.title }}</h2>
-              <p>{{ props.show.show }}</p>
+              <h2>{{ props.show.attributes.title }}</h2>
+              <p>{{ props.show.attributes.showTitle }}</p>
             </div>
           </div>
           <hr class="mt-5 mb-2 dim" />
