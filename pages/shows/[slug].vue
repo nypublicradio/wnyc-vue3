@@ -8,19 +8,18 @@ import ShareIcon from '~/components/icons/ShareIcon.vue'
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-console.log('route = ', route)
 
-const { data: show } = await useFetch(
+const { data: show } = useFetch(
   `${config.public.BFF_URL}/api/show/${route.params.slug}`
 )
-const thisShow = ref(show?.value ?? null)
-const pagination = ref(thisShow?.value.episodes.meta ?? null)
-const episodes = ref(thisShow?.value.episodes.data ?? null)
-const showImage = ref(thisShow?.value.show.included[1].attributes.template)
-const showTitle = ref(thisShow?.value.show.data.attributes.title)
-const showTease = ref(thisShow?.value.show.data.attributes.tease)
 
-console.log('thisShow = ', thisShow)
+const pagination = ref(show?.value?.episodes?.meta ?? null)
+const episodes = ref(show?.value?.episodes?.data ?? null)
+const showImage = ref(show?.value?.show?.image?.template ?? null)
+const showTitle = ref(show?.value?.show?.title ?? null)
+const showTease = ref(show?.value?.show?.description ?? null)
+
+console.log('episodes  = ', episodes.value)
 
 // navigate back to home and track it
 const backHome = () => {
@@ -42,7 +41,11 @@ const handleShare = () => {
 }
 
 watch(show, () => {
-  thisShow.value = show.value
+  pagination.value = show.value.episodes?.meta
+  episodes.value = show.value.episodes?.data
+  showImage.value = show.value.show?.image?.template
+  showTitle.value = show.value.show?.title
+  showTease.value = show.value.show?.description
 })
 </script>
 
@@ -62,6 +65,7 @@ watch(show, () => {
     </div>
 
     <VImage
+      v-if="showImage"
       :src="showImage"
       :alt="`${showTitle} show image`"
       :width="144"
@@ -71,6 +75,13 @@ watch(show, () => {
       :srcset="[2]"
       style="min-height: 144px"
     />
+    <Skeleton
+      v-else
+      class="flex-none show-image max-w-9rem m-auto"
+      height="144px"
+      width="144px"
+      borderRadius="0px"
+    ></Skeleton>
     <div class="flex justify-content-center align-items-center gap-2 mt-2 mb-4">
       <Button rounded text plain @click="handleStar">
         <template #icon> <StarIcon class="w-2rem" /></template>
@@ -88,20 +99,47 @@ watch(show, () => {
         <template #icon> <ShareIcon /></template>
       </Button>
     </div>
-    <h2 class="text-lg mt-2">{{ showTitle }}</h2>
-    <div
-      v-if="showTease"
-      class="text-sm mt-2 html-formatting"
-      v-html="showTease"
-    />
+    <div v-if="showTitle && showTease">
+      <h2 class="text-lg mt-2">{{ showTitle }}</h2>
+      <div class="text-sm mt-2 html-formatting" v-html="showTease" />
+    </div>
+    <div v-else>
+      <Skeleton
+        height="16px"
+        width="45%"
+        borderRadius="16px"
+        style="margin-bottom: 9px"
+      ></Skeleton>
+      <Skeleton
+        height="12px"
+        width="95%"
+        borderRadius="16px"
+        style="margin-bottom: 6px"
+      ></Skeleton>
+      <Skeleton
+        height="12px"
+        width="90%"
+        borderRadius="16px"
+        style="margin-bottom: 6px"
+      ></Skeleton>
+      <Skeleton
+        height="12px"
+        width="75%"
+        borderRadius="16px"
+        style="margin-bottom: 6px"
+      ></Skeleton>
+    </div>
     <h2 class="mt-4">Episodes</h2>
     <div class="flex flex-column gap-4 mt-2">
       <EpisodeItem
+        v-if="episodes"
         v-for="ep in episodes"
-        :show="ep"
+        :ep="ep"
         :key="ep.id"
         @onClick="goToEpisodePage(ep)"
+        :fallback-image="showImage"
       />
+      <EpisodeItemSkeleton v-else v-for="show in 10" />
     </div>
   </section>
 </template>

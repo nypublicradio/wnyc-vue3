@@ -28,10 +28,14 @@ const getShow = async (slug: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v4/shows/${slug}/`
+            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
         };
         const res = await axios(option);
-        return humps.camelizeKeys(res.data);
+        const resData = humps.camelizeKeys(res.data).results;
+        // Find the show from the list of shows
+        const show = resData.find((show: any) => show.slug === slug);
+        show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
+        return show;
     } catch (e) {
         //console.log(e);
     }
@@ -46,7 +50,7 @@ export default defineEventHandler(async (event) => {
     if (slug) {
         // Get show details
         const show = await getShow(slug);
-        const episodes = await getEpisodes(slug, show?.data.type, page);
+        const episodes = await getEpisodes(slug, show.type, page);
 
         return {
             show: show,

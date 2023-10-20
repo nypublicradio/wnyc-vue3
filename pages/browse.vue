@@ -42,16 +42,6 @@ const selectTopic = (topic) => {
 const goToShowPage = (show) => {
   navigateTo({
     path: `shows/${show.slug}`,
-    query: {
-      slug: show.slug,
-      type: show.type,
-      image: show.image.template,
-      title: show.title,
-      desc: show.description,
-    },
-    props: {
-      test: 'yay',
-    },
   })
 }
 
