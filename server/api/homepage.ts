@@ -12,7 +12,7 @@ const getLocalNewscast = async () => {
 	try {
 		const options = {
 			method: 'GET',
-			url: config.public.PUBLISHER_BASE_API + '/story/latest-newscast/',
+			url: config.public.PUBLISHER_BASE_API + 'v3/story/latest-newscast/',
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
@@ -39,7 +39,7 @@ const getNationalNewscast = async () => {
 	try {
 		const options = {
 			method: 'GET',
-			url: config.public.PUBLISHER_BASE_API + '/story/npr-newscast',
+			url: config.public.PUBLISHER_BASE_API + 'v3/story/npr-newscast',
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
@@ -65,7 +65,7 @@ const getNavigation = async () => {
 	try {
 		const options = {
 			method: 'GET',
-			url: config.public.PUBLISHER_BASE_API + 'link-roll/navigation-shows-wnyc-app/',
+			url: config.public.PUBLISHER_BASE_API + 'v3/link-roll/navigation-shows-wnyc-app/',
 		};
 		const res = await axios(options);
 		const nav = humps.camelizeKeys(res.data).data.attributes.links.map(linkMapper);
@@ -166,7 +166,7 @@ const getWNYCTopStories = async () => {
 	try {
 		const options = {
 			method: 'GET',
-			url: config.public.PUBLISHER_BASE_API + 'buckets/wnyc-home-top',
+			url: config.public.PUBLISHER_BASE_API + 'v3/buckets/wnyc-home-top',
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);

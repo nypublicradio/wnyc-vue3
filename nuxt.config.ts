@@ -129,6 +129,7 @@ export default defineNuxtConfig({
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? 'https://api.wnyc.org/api/v3/',
       AVIARY_BASE_API: process.env.AVIARY_BASE_API ?? 'https://cms.prod.nypr.digital/api/v2/',
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.prod.nypr.digital/images/',
+      FEATURED_SHOWS: process.env.FEATURED_SHOWS ?? 'https://www.wnyc.org/api/v2/discover/shows/',
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
       BFF_URL: process.env.BFF_URL ?? 'https://demo.wnyc.org',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',

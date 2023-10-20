@@ -2,12 +2,13 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 
-const getSchedule = async (slug: String) => {
+const getSchedule = async (slug: String, schedDate: String) => {
     const options = {
         method: 'GET',
-        url: config.public.PUBLISHER_BASE_API + 'schedule/',
+        url: config.public.PUBLISHER_BASE_API + 'v3/schedule/',
         params: {
             scheduleStation: slug,
+            scheduleDate: schedDate
         }
     };    
     const res = await axios(options);
@@ -26,10 +27,30 @@ const removePastShows = (schedule: any) => {
     return filteredSchedule;
 };
 
+//Write a function that removes schedules > 36 hours from now
+const removeFutureShows = (schedule: any) => {
+    const now = new Date();
+    const filteredSchedule = schedule.filter((show: any) => {
+        const start = new Date(show.attributes.start);
+        const diff = start.getTime() - now.getTime();
+        const diffHours = diff / (1000 * 3600);
+        return diffHours < 24;
+    });
+    return filteredSchedule;
+};
+
 export default defineEventHandler(async (event) => {
-	const slug: String | undefined = event?.context?.params?.stationslug;
-	if (slug) {
-		return getSchedule(slug);
+	const slug = event?.context?.params?.stationslug as string;
+    if (slug) {
+        //Get schedule for today and tomorrow
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0]);
+        const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0]);
+        const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
+        //Combine today and tomorrow's schedule and return
+		return scheduleToday.concat(filteredScheduleTomorrow);
 	}
 	return null;
 });
