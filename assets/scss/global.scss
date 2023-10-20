@@ -384,6 +384,33 @@ a:visited {
   }
 }
 
+.p-tabview {
+  .p-tabview-nav {
+    border-color: transparent;
+    background: transparent;
+    li {
+      margin-right: 2rem;
+      .p-tabview-nav-link {
+        border-color: transparent;
+        background: transparent !important;
+        padding-bottom: 0.5rem;
+        color: var(--text-color);
+        padding-left: 0;
+        padding-right: 0;
+      }
+      &.p-highlight .p-tabview-nav-link {
+        background: transparent;
+        border-color: var(--link);
+        color: var(--text-color);
+      }
+    }
+  }
+  .p-tabview-panels {
+    padding: 0.5rem 0 0 0;
+    background: transparent;
+  }
+}
+
 // image caption button
 .caption {
   .caption-button {
