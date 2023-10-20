@@ -11,6 +11,9 @@ const allShows = async () => {
             url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
         };
         const res = await axios(option);
+        res.data.results.map((show: any) => {
+            show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s')
+        });
         return humps.camelizeKeys(res.data).results;
     } catch (e) {
         //console.log(e);
@@ -18,7 +21,7 @@ const allShows = async () => {
 }
 
 //Fetch featured shows for the app
-const featuredShows = async () => { 
+const featuredShows = async () => {
     try {
         const option = {
             method: 'GET',
@@ -40,7 +43,7 @@ export default defineEventHandler(async (event) => {
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     return {
-            all: allShowsData,
-            featuredShows: featuredShowsData
+        all: allShowsData,
+        featuredShows: featuredShowsData
     }
 });

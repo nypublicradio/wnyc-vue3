@@ -2,12 +2,18 @@
 import { useFuse } from '@vueuse/integrations/useFuse'
 import { useShowTopics } from '~/composables/globals.ts'
 
+const config = useRuntimeConfig()
+const { data: shows } = useFetch(`${config.public.BFF_URL}/api/shows`)
+const featuredShows = ref(shows?.value?.featuredShows ?? null)
+const allShows = ref(shows?.value?.all ?? null)
+
 const showTopics = useShowTopics()
 const router = useRouter()
 const searchFieldValue = ref('')
 const isSearching = ref(false)
 
-const featuredShows = [
+console.log('shows= ', shows)
+/* const featuredShows = [
   {
     id: '1',
     isLive: true,
@@ -54,7 +60,7 @@ const featuredShows = [
     org: 'Gothamist',
     topic: ['Arts & Culture'],
   },
-]
+] */
 
 const keys = computed(() => {
   return ['title']
@@ -66,7 +72,7 @@ const options = computed(() => ({
   },
 }))
 
-const { results } = useFuse(searchFieldValue, featuredShows, options)
+const { results } = useFuse(searchFieldValue, allShows, options)
 
 const clearSearchField = () => {
   searchFieldValue.value = ''
@@ -86,6 +92,11 @@ const selectTopic = (topic) => {
 const goToShowPage = (show) => {
   navigateTo(`shows/${show.slug}`)
 }
+
+watch(shows, () => {
+  allShows.value = shows.value.all
+  featuredShows.value = shows.value.featuredShows
+})
 </script>
 
 <template>
@@ -141,28 +152,25 @@ const goToShowPage = (show) => {
           <TabPanel header="Featured Shows">
             <section class="shows flex flex-column gap-3">
               <BrowseItem
+                v-if="featuredShows"
                 v-for="show in featuredShows"
                 :show="show"
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
+              <BrowseItemSkeleton v-else v-for="show in 6" />
             </section>
           </TabPanel>
           <TabPanel header="All Shows">
             <section class="shows flex flex-column gap-3">
-              <!-- TEMP till we get the fill list -->
               <BrowseItem
-                v-for="show in featuredShows"
+                v-if="allShows"
+                v-for="show in allShows"
                 :show="show"
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
-              <BrowseItem
-                v-for="show in featuredShows"
-                :show="show"
-                :key="show.title"
-                @onClick="goToShowPage(show)"
-              />
+              <BrowseItemSkeleton v-else v-for="show in 6" />
             </section>
           </TabPanel>
         </TabView>
@@ -171,7 +179,7 @@ const goToShowPage = (show) => {
     <div v-else>
       <section class="results">
         <!-- if results show them -->
-        <div class="results-list">
+        <div class="results-list mb-2">
           <h2>Rearch Results</h2>
         </div>
         <div class="shows flex flex-column gap-3">
@@ -217,8 +225,14 @@ const goToShowPage = (show) => {
 
 <style lang="scss" scoped>
 .browse-page {
-  .search-field {
-    background-color: var(--searchFieldBackground);
+  .search {
+    position: sticky;
+    top: 0;
+    background-color: var(--background);
+    z-index: 1;
+    .search-field {
+      background-color: var(--searchFieldBackground);
+    }
   }
   .closer {
     position: absolute;

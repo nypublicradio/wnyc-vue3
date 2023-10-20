@@ -16,6 +16,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+console.log(('org', props.show))
 </script>
 
 <template>
@@ -24,18 +26,25 @@ const props = defineProps({
   >
     <div class="flex gap-3" v-ripple @click.prevent="emit('onClick')">
       <VImage
-        :src="props.show.image"
+        :src="props.show.image.template"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
+        :srcset="[2]"
+        class="flex-none"
+        style="
+          min-height: 72px;
+          min-width: 72px;
+          background-color: var(--background2);
+        "
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <LiveBadge v-if="props.show.isLive" class="mb-1" />
+        <!-- <LiveBadge v-if="props.show.isLive" class="mb-1" /> -->
         <h2>{{ props.show.title }}</h2>
-        <p>{{ props.show.org }}</p>
+        <p v-for="org in props.show?.producingOrganizations">{{ org.name }}</p>
       </div>
     </div>
-    <Button text plain rounded>
+    <Button text plain rounded class="flex-none">
       <template #icon>
         <StarIcon class="h-2rem" :active="false" />
       </template>
