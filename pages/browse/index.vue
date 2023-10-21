@@ -41,7 +41,7 @@ const selectTopic = (topic) => {
 
 const goToShowPage = (show) => {
   navigateTo({
-    path: `shows/${show.slug}`,
+    path: `browse/shows/${show.slug}`,
   })
 }
 

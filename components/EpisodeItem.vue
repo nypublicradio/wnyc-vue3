@@ -27,7 +27,7 @@ const props = defineProps({
   },
 })
 
-console.log('ep = ', props.ep)
+//console.log('ep = ', props.ep)
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {

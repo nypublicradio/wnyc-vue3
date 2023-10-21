@@ -16,14 +16,12 @@ const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
-console.log('episode  = ', episode.value)
-
 const episodeData = ref(episode?.value?.episode ?? null)
 
 // navigate back to home and track it
 const backHome = () => {
-  trackClickEvent('episode', 'episode page', 'back home button')
-  navigateTo(`/shows/${episodeData?.show}`)
+  trackClickEvent('episode', 'episode page', 'back show paeg')
+  navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`)
 }
 
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -98,14 +96,13 @@ const onMenuChange = (e) => {
 }
 
 watch(episode, () => {
-  console.log('watch')
   episodeData.value = episode.value.episode
 })
 </script>
 
 <template>
   <div v-if="episodeData" class="episode-page">
-    <pre class="text-xs">{{ episodeData }}</pre>
+    <!--  <pre class="text-xs">{{ episodeData }}</pre> -->
     <section class="">
       <div class="flex align-items-center">
         <Button
@@ -188,18 +185,18 @@ watch(episode, () => {
               <div>
                 <div class="flex gap-3 px-4 align-items-center">
                   <VImage
-                    :src="episodeData.attributes?.image"
+                    :src="episodeData.attributes.imageMain.template"
                     :alt="`${episodeData.attributes?.title} show image`"
                     :width="60"
                     :height="60"
                     :sizes="[2]"
-                    class="show-image-in-menu"
+                    class="show-image-in-menu flex-none"
                     :ratio="[1, 1]"
                   />
 
                   <div class="info">
                     <h2>{{ episodeData.attributes?.title }}</h2>
-                    <p>{{ episodeData.attributes?.show }}</p>
+                    <p>{{ episodeData.attributes?.showTitle }}</p>
                   </div>
                 </div>
                 <hr class="mt-5 mb-2 dim" />
@@ -209,15 +206,15 @@ watch(episode, () => {
         </div>
       </div>
       <div
-        class="episode-page-body"
-        v-html="episodeData.attributes?.episodeBody"
+        class="episode-page-body html-formatting"
+        v-html="episodeData.attributes?.body"
       />
     </section>
-    <section v-if="episodeData.attributes?.episodeTranscript">
+    <section v-if="episodeData.attributes?.transcript">
       <h3 class="mb-4">Transcript</h3>
       <div
         class="episode-page-transcript html-formatting"
-        v-html="episodeData.attributes?.episodeTranscript"
+        v-html="episodeData.attributes?.transcript"
       />
     </section>
   </div>
