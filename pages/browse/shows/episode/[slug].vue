@@ -56,7 +56,7 @@ const getDotMenuItems = (bucketItem) => {
       label: 'Favorite Episode',
       customIcon: StarIcon,
       active: false,
-      title: bucketItem.title,
+      title: bucketItem?.title,
       command: () => {
         handleAddToFavorites(bucketItem)
       },
@@ -65,7 +65,7 @@ const getDotMenuItems = (bucketItem) => {
       label: 'Download',
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
-      title: bucketItem.title,
+      title: bucketItem?.title,
       command: () => {
         handleDownload(bucketItem)
       },
@@ -73,7 +73,7 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: 'Share',
       customIcon: ShareIcon,
-      title: bucketItem.title,
+      title: bucketItem?.title,
       command: () => {
         handleShare(bucketItem)
       },
@@ -82,7 +82,7 @@ const getDotMenuItems = (bucketItem) => {
       label: 'Add to Queue',
       active: true,
       customIcon: QueueIcon,
-      title: bucketItem.title,
+      title: bucketItem?.title,
       command: () => {
         handleAddToQueue(bucketItem)
       },
@@ -101,7 +101,7 @@ watch(episode, () => {
 </script>
 
 <template>
-  <div v-if="episodeData" class="episode-page">
+  <div class="episode-page">
     <!--  <pre class="text-xs">{{ episodeData }}</pre> -->
     <section class="">
       <div class="flex align-items-center">
@@ -113,24 +113,30 @@ watch(episode, () => {
           severity="secondary"
           aria-label="back to previous page"
           @click="backHome"
-          :label="episodeData.attributes.showTitle"
+          :label="episodeData?.attributes.showTitle"
         />
       </div>
     </section>
     <div class="relative mb-4">
       <v-image
-        v-if="episodeData.attributes.imageMain.template"
-        :src="episodeData.attributes.imageMain.template"
+        v-if="episodeData"
+        :src="episodeData?.attributes.imageMain.template"
         :width="390"
         :height="360"
         :ratio="[3, 2]"
         :srcset="[2]"
-        :alt="episodeData.attributes.imageMain.altText"
+        :alt="episodeData?.attributes.imageMain.altText"
         class="episode-page-image mb-2"
       />
+      <Skeleton
+        v-else
+        borderRadius="0px"
+        height="auto"
+        class="episode-page-image mb-2"
+      ></Skeleton>
       <v-image
-        v-if="episodeData.attributes.headers.brand.logoImage.template"
-        :src="episodeData.attributes.headers.brand.logoImage.template"
+        v-if="episodeData"
+        :src="episodeData?.attributes.headers.brand.logoImage.template"
         :width="70"
         :height="70"
         :srcset="[2]"
@@ -138,84 +144,137 @@ watch(episode, () => {
         :alt="episodeData?.show"
         class="episode-page-show-image mb-2"
       />
+      <Skeleton
+        v-else
+        borderRadius="0px"
+        height="70px"
+        width="70px"
+        class="episode-page-show-image mb-2"
+      ></Skeleton>
     </div>
-    <section>
-      <p class="episode-page-date my-1">
-        {{
-          getDate(
-            episodeData.attributes.updatedDate ??
-              episodeData.attributes.publishAt,
-            'LLL d, yyyy'
-          )
-        }}
-      </p>
-      <h1 class="mb-3 alt">{{ episodeData.attributes?.title }}</h1>
-      <div class="flex align-items-center justify-content-between mb-5">
-        <PlayButton
-          :label="getMinutes(episodeData.attributes?.estimatedDuration, 1)"
-          :episode="episodeData.attributes"
-          @onClick="togglePlay(episodeData.attributes)"
-          class=""
-        />
-        <div class="flex gap-3">
-          <Button class="w-2rem h-2rem" text plain rounded @click="handleStar">
-            <template #icon> <StarIcon /></template>
-          </Button>
-          <Button
-            class="w-2rem h-2rem"
-            text
-            plain
-            rounded
-            @click="handleDownload"
-          >
-            <template #icon> <DownloadIcon /></template>
-          </Button>
-          <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">
-            <template #icon> <ShareIcon /></template>
-          </Button>
-          <DotMenu
-            :menuItems="getDotMenuItems(episodeData.attributes)"
-            label=""
-            @changeEmit="onMenuChange"
-            width="32px"
-            height="32px"
-            class="-mr-1"
-          >
-            <template #header-bottom>
-              <div>
-                <div class="flex gap-3 px-4 align-items-center">
-                  <VImage
-                    :src="episodeData.attributes.imageMain.template"
-                    :alt="`${episodeData.attributes?.title} show image`"
-                    :width="60"
-                    :height="60"
-                    :sizes="[2]"
-                    class="show-image-in-menu flex-none"
-                    :ratio="[1, 1]"
-                  />
+    <div v-if="episodeData">
+      <section>
+        <p class="episode-page-date my-1">
+          {{
+            getDate(
+              episodeData?.attributes.updatedDate ??
+                episodeData?.attributes.publishAt,
+              'LLL d, yyyy'
+            )
+          }}
+        </p>
+        <h1 class="mb-3 alt">{{ episodeData?.attributes?.title }}</h1>
+        <div class="flex align-items-center justify-content-between mb-5">
+          <PlayButton
+            :label="getMinutes(episodeData?.attributes?.estimatedDuration, 1)"
+            :episode="episodeData?.attributes"
+            @onClick="togglePlay(episodeData?.attributes)"
+            class=""
+          />
+          <div class="flex gap-3">
+            <Button
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleStar"
+            >
+              <template #icon> <StarIcon /></template>
+            </Button>
+            <Button
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleDownload"
+            >
+              <template #icon> <DownloadIcon /></template>
+            </Button>
+            <Button
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleShare"
+            >
+              <template #icon> <ShareIcon /></template>
+            </Button>
+            <DotMenu
+              :menuItems="getDotMenuItems(episodeData?.attributes)"
+              label=""
+              @changeEmit="onMenuChange"
+              width="32px"
+              height="32px"
+              class="-mr-1"
+            >
+              <template #header-bottom>
+                <div>
+                  <div class="flex gap-3 px-4 align-items-center">
+                    <VImage
+                      :src="episodeData?.attributes.imageMain.template"
+                      :alt="`${episodeData?.attributes?.title} show image`"
+                      :width="60"
+                      :height="60"
+                      :sizes="[2]"
+                      class="show-image-in-menu flex-none"
+                      :ratio="[1, 1]"
+                    />
 
-                  <div class="info">
-                    <h2>{{ episodeData.attributes?.title }}</h2>
-                    <p>{{ episodeData.attributes?.showTitle }}</p>
+                    <div class="info">
+                      <h2>{{ episodeData?.attributes?.title }}</h2>
+                      <p>{{ episodeData?.attributes?.showTitle }}</p>
+                    </div>
                   </div>
+                  <hr class="mt-5 mb-2 dim" />
                 </div>
-                <hr class="mt-5 mb-2 dim" />
-              </div>
-            </template>
-          </DotMenu>
+              </template>
+            </DotMenu>
+          </div>
+        </div>
+        <div
+          class="episode-page-body html-formatting"
+          v-html="episodeData?.attributes?.body"
+        />
+      </section>
+      <section v-if="episodeData?.attributes?.transcript">
+        <h3 class="mb-4">Transcript</h3>
+        <div
+          class="episode-page-transcript html-formatting"
+          v-html="episodeData?.attributes?.transcript"
+        />
+      </section>
+    </div>
+    <section v-else>
+      <Skeleton
+        height="12px"
+        width="75px"
+        borderRadius="16px"
+        class="mb-2 opacity-50"
+      ></Skeleton>
+      <Skeleton
+        height="1.25rem"
+        width="95%"
+        borderRadius="16px"
+        class="mb-1"
+      ></Skeleton>
+      <Skeleton
+        height="1.25rem"
+        width="75%"
+        borderRadius="16px"
+        class="mb-1"
+      ></Skeleton>
+      <div class="flex justify-content-between mt-4 mb-5">
+        <div>
+          <Skeleton height="29px" width="92px" borderRadius="16px"></Skeleton>
+        </div>
+        <div class="flex gap-3">
+          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
+          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
+          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
+          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
         </div>
       </div>
-      <div
-        class="episode-page-body html-formatting"
-        v-html="episodeData.attributes?.body"
-      />
-    </section>
-    <section v-if="episodeData.attributes?.transcript">
-      <h3 class="mb-4">Transcript</h3>
-      <div
-        class="episode-page-transcript html-formatting"
-        v-html="episodeData.attributes?.transcript"
-      />
+      <SkeletonText :lines="6" class="mt-1" />
     </section>
   </div>
 </template>
@@ -223,6 +282,7 @@ watch(episode, () => {
 <style lang="scss">
 .episode-page .episode-page-image {
   width: 100%;
+  height: auto;
   max-height: 333.33px;
   aspect-ratio: 3/2;
   object-fit: cover;

@@ -4,7 +4,6 @@ import humps from 'humps'
 const config = useRuntimeConfig()
 
 const getEpisode = async (slug: string) => {
-    console.log('wtf')
     try {
         const option = {
             method: 'GET',
