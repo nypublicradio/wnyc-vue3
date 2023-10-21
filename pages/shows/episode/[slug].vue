@@ -9,6 +9,16 @@ import QueueIcon from '~/components/icons/QueueIcon.vue'
 // TO DO - replace dummy data with BFF data
 import episodeData from './episode-data.json'
 
+const config = useRuntimeConfig()
+const route = useRoute()
+const router = useRouter()
+
+const { data: episode } = await useFetch(
+  `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
+)
+
+console.log('episode  = ', episode.value)
+
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent('episode', 'episode page', 'back home button')
