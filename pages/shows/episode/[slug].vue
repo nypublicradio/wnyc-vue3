@@ -7,22 +7,23 @@ import DownloadIcon from '~/components/icons/DownloadIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
 import QueueIcon from '~/components/icons/QueueIcon.vue'
 // TO DO - replace dummy data with BFF data
-import episodeData from './episode-data.json'
+//import episodeData from './episode-data.json'
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-
-const { data: episode } = await useFetch(
+const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
 console.log('episode  = ', episode.value)
 
+const episodeData = ref(episode?.value?.episode ?? null)
+
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent('episode', 'episode page', 'back home button')
-  navigateTo(`/shows/${episodeData?.showSlug}`)
+  navigateTo(`/shows/${episodeData?.show}`)
 }
 
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -95,10 +96,16 @@ const getDotMenuItems = (bucketItem) => {
 const onMenuChange = (e) => {
   e.value.command()
 }
+
+watch(episode, () => {
+  console.log('watch')
+  episodeData.value = episode.value.episode
+})
 </script>
 
 <template>
   <div v-if="episodeData" class="episode-page">
+    <pre class="text-xs">{{ episodeData }}</pre>
     <section class="">
       <div class="flex align-items-center">
         <Button
@@ -109,21 +116,27 @@ const onMenuChange = (e) => {
           severity="secondary"
           aria-label="back to previous page"
           @click="backHome"
-          :label="episodeData?.show"
+          :label="episodeData.attributes.showTitle"
         />
       </div>
     </section>
     <div class="relative mb-4">
       <v-image
-        v-if="episodeData?.image"
-        :src="episodeData?.image"
+        v-if="episodeData.attributes.imageMain.template"
+        :src="episodeData.attributes.imageMain.template"
+        :width="390"
+        :height="360"
         :ratio="[3, 2]"
-        :alt="episodeData?.title"
+        :srcset="[2]"
+        :alt="episodeData.attributes.imageMain.altText"
         class="episode-page-image mb-2"
       />
       <v-image
-        v-if="episodeData?.showLogo"
-        :src="episodeData?.showLogo"
+        v-if="episodeData.attributes.headers.brand.logoImage.template"
+        :src="episodeData.attributes.headers.brand.logoImage.template"
+        :width="70"
+        :height="70"
+        :srcset="[2]"
         :ratio="[1, 1]"
         :alt="episodeData?.show"
         class="episode-page-show-image mb-2"
@@ -133,17 +146,18 @@ const onMenuChange = (e) => {
       <p class="episode-page-date my-1">
         {{
           getDate(
-            episodeData.updatedDate ?? episodeData.publishAt,
+            episodeData.attributes.updatedDate ??
+              episodeData.attributes.publishAt,
             'LLL d, yyyy'
           )
         }}
       </p>
-      <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
+      <h1 class="mb-3 alt">{{ episodeData.attributes?.title }}</h1>
       <div class="flex align-items-center justify-content-between mb-5">
         <PlayButton
-          :label="getMinutes(episodeData?.duration)"
-          :episode="episodeData"
-          @onClick="togglePlay(episodeData)"
+          :label="getMinutes(episodeData.attributes?.estimatedDuration, 1)"
+          :episode="episodeData.attributes"
+          @onClick="togglePlay(episodeData.attributes)"
           class=""
         />
         <div class="flex gap-3">
@@ -163,7 +177,7 @@ const onMenuChange = (e) => {
             <template #icon> <ShareIcon /></template>
           </Button>
           <DotMenu
-            :menuItems="getDotMenuItems(episodeData)"
+            :menuItems="getDotMenuItems(episodeData.attributes)"
             label=""
             @changeEmit="onMenuChange"
             width="32px"
@@ -174,8 +188,8 @@ const onMenuChange = (e) => {
               <div>
                 <div class="flex gap-3 px-4 align-items-center">
                   <VImage
-                    :src="episodeData?.image"
-                    :alt="`${episodeData?.title} show image`"
+                    :src="episodeData.attributes?.image"
+                    :alt="`${episodeData.attributes?.title} show image`"
                     :width="60"
                     :height="60"
                     :sizes="[2]"
@@ -184,8 +198,8 @@ const onMenuChange = (e) => {
                   />
 
                   <div class="info">
-                    <h2>{{ episodeData?.title }}</h2>
-                    <p>{{ episodeData?.show }}</p>
+                    <h2>{{ episodeData.attributes?.title }}</h2>
+                    <p>{{ episodeData.attributes?.show }}</p>
                   </div>
                 </div>
                 <hr class="mt-5 mb-2 dim" />
@@ -194,13 +208,16 @@ const onMenuChange = (e) => {
           </DotMenu>
         </div>
       </div>
-      <div class="episode-page-body" v-html="episodeData?.episodeBody" />
+      <div
+        class="episode-page-body"
+        v-html="episodeData.attributes?.episodeBody"
+      />
     </section>
-    <section v-if="episodeData?.episodeTranscript">
+    <section v-if="episodeData.attributes?.episodeTranscript">
       <h3 class="mb-4">Transcript</h3>
       <div
         class="episode-page-transcript html-formatting"
-        v-html="episodeData?.episodeTranscript"
+        v-html="episodeData.attributes?.episodeTranscript"
       />
     </section>
   </div>
