@@ -1,5 +1,5 @@
 <template>
-  <div class="skeleton-holder flex gap-3 mb-4">
+  <div class="skeleton-holder flex gap-3">
     <Skeleton
       class="flex-none"
       height="72px"
