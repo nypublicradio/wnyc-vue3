@@ -19,15 +19,13 @@ const showImage = ref(show?.value?.show?.image?.template ?? null)
 const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
 
-console.log('episodes  = ', episodes.value)
-
 // navigate back to home and track it
 const backHome = () => {
-  router.go(-1)
+  navigateTo(`/browse`)
 }
 
 const goToEpisodePage = (ep) => {
-  navigateTo(`/shows/episode/${ep.attributes.slug}`)
+  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`)
 }
 
 const togglePlayMostRecentEpisode = () => {

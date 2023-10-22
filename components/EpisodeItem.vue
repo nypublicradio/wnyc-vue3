@@ -27,7 +27,7 @@ const props = defineProps({
   },
 })
 
-console.log('ep = ', props.ep)
+//console.log('ep = ', props.ep)
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -74,8 +74,6 @@ const getDotMenuItems = (bucketItem) => {
 const onMenuChange = (e) => {
   e.value.command()
 }
-
-console.log('props.ep = ', props.ep)
 </script>
 
 <template>

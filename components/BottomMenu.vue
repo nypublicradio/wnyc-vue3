@@ -25,11 +25,11 @@ const menuClick = (e) => {
 
 // if another trigger changes the route, update the bottom menu state
 watch(
-  () => route.name,
+  () => route.path,
   (e) => {
     bottomMenuState.value = { value: null }
     options.value.forEach((item) => {
-      //console.log('item', item.value, 'route', e)
+      //console.log('item =', item.value, 'route =', e)
       if (e.includes(item.value)) bottomMenuState.value = { value: item.value }
       //if (e === 'index') bottomMenuState.value = { value: 'home' }
     })
