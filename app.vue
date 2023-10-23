@@ -3,15 +3,15 @@ import { trackClickEvent, getAndSetUserProfile } from '~/utilities/helpers'
 import {
   NewRelicCapacitorPlugin,
   NREnums,
-  AgentConfiguration,
+  //AgentConfiguration,
 } from '@newrelic/newrelic-capacitor-plugin'
 import { Capacitor } from '@capacitor/core'
-import { App, URLOpenListenerEvent } from '@capacitor/app'
+import { App /* URLOpenListenerEvent */ } from '@capacitor/app'
 import {
-  ActionPerformed,
-  PushNotificationSchema,
+  //ActionPerformed,
+  //PushNotificationSchema,
   PushNotifications,
-  Token,
+  //Token,
 } from '@capacitor/push-notifications'
 import {
   useIsApp,
