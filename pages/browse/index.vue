@@ -49,6 +49,14 @@ watch(shows, () => {
   allShows.value = shows.value.all
   featuredShows.value = shows.value.featuredShows
 })
+
+watch(searchFieldValue, () => {
+  // sets the scroll to the top of the page when search field is updated. This is needed because if the use scrolls down and searches, they do not see the top of the list if it is long.
+  document.body.scrollIntoView({
+    behavior: 'instant',
+    block: 'start',
+  })
+})
 </script>
 
 <template>
