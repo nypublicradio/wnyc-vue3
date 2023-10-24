@@ -43,7 +43,7 @@ const isLive = computed(() => {
 
 <template>
   <div class="play-and-skip-buttons flex gap-3 justify-content-center">
-    <Button :disabled="isLive" severity="secondary" rounded @click="skipBack">
+    <Button v-if="!isLive" severity="secondary" rounded @click="skipBack">
       <template #icon> <Previous10 /></template>
     </Button>
     <Button
@@ -57,7 +57,7 @@ const isLive = computed(() => {
     <Button v-else severity="secondary" rounded @click="togglePlay">
       <template #icon> <PlayIcon /></template>
     </Button>
-    <Button :disabled="isLive" severity="secondary" rounded @click="skipAhead">
+    <Button v-if="!isLive" severity="secondary" rounded @click="skipAhead">
       <template #icon> <Next10 /></template>
     </Button>
   </div>

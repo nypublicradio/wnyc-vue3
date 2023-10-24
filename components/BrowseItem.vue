@@ -22,7 +22,7 @@ const props = defineProps({
   <div
     class="browse-item flex justify-content-between align-items-center p-ripple"
   >
-    <div class="flex gap-3" v-ripple @click.prevent="emit('onClick')">
+    <div class="flex gap-3 w-full" v-ripple @click.prevent="emit('onClick')">
       <VImage
         :src="props.show.image.template"
         :height="72"

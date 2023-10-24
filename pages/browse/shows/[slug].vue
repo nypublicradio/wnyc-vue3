@@ -63,7 +63,7 @@ watch(show, () => {
     </div>
 
     <VImage
-      v-if="showImage"
+      v-if="show"
       :src="showImage"
       :alt="`${showTitle} show image`"
       :width="144"
@@ -79,8 +79,11 @@ watch(show, () => {
       height="144px"
       width="144px"
       borderRadius="0px"
-    ></Skeleton>
-    <div class="flex justify-content-center align-items-center gap-2 mt-2 mb-4">
+    />
+    <div
+      v-if="show"
+      class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
+    >
       <Button rounded text plain @click="handleStar">
         <template #icon> <StarIcon class="w-2rem" /></template>
       </Button>
@@ -97,7 +100,15 @@ watch(show, () => {
         <template #icon> <ShareIcon /></template>
       </Button>
     </div>
-    <div v-if="showTitle && showTease">
+    <div
+      v-else
+      class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
+    >
+      <Skeleton height="37px" width="37px" borderRadius="20px" />
+      <Skeleton height="48px" width="48px" borderRadius="24px" />
+      <Skeleton height="37px" width="37px" borderRadius="20px" />
+    </div>
+    <div v-if="show">
       <h2 class="text-lg mt-2">{{ showTitle }}</h2>
       <div class="text-sm mt-2 html-formatting" v-html="showTease" />
     </div>
@@ -107,30 +118,30 @@ watch(show, () => {
         width="45%"
         borderRadius="16px"
         style="margin-bottom: 9px"
-      ></Skeleton>
+      />
       <Skeleton
         height="12px"
         width="95%"
         borderRadius="16px"
         style="margin-bottom: 6px"
-      ></Skeleton>
+      />
       <Skeleton
         height="12px"
         width="90%"
         borderRadius="16px"
         style="margin-bottom: 6px"
-      ></Skeleton>
+      />
       <Skeleton
         height="12px"
         width="75%"
         borderRadius="16px"
         style="margin-bottom: 6px"
-      ></Skeleton>
+      />
     </div>
     <h2 class="mt-4">Episodes</h2>
     <div class="flex flex-column gap-4 mt-2">
       <EpisodeItem
-        v-if="episodes"
+        v-if="show"
         v-for="ep in episodes"
         :ep="ep"
         :key="ep.id"

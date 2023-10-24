@@ -133,7 +133,7 @@ watch(episode, () => {
         borderRadius="0px"
         height="auto"
         class="episode-page-image mb-2"
-      ></Skeleton>
+      />
       <v-image
         v-if="episodeData"
         :src="episodeData?.attributes.headers.brand.logoImage.template"
@@ -150,7 +150,7 @@ watch(episode, () => {
         height="70px"
         width="70px"
         class="episode-page-show-image mb-2"
-      ></Skeleton>
+      />
     </div>
     <div v-if="episodeData">
       <section>
@@ -250,28 +250,18 @@ watch(episode, () => {
         width="75px"
         borderRadius="16px"
         class="mb-2 opacity-50"
-      ></Skeleton>
-      <Skeleton
-        height="1.25rem"
-        width="95%"
-        borderRadius="16px"
-        class="mb-1"
-      ></Skeleton>
-      <Skeleton
-        height="1.25rem"
-        width="75%"
-        borderRadius="16px"
-        class="mb-1"
-      ></Skeleton>
+      />
+      <Skeleton height="1.25rem" width="95%" borderRadius="16px" class="mb-1" />
+      <Skeleton height="1.25rem" width="75%" borderRadius="16px" class="mb-1" />
       <div class="flex justify-content-between mt-4 mb-5">
         <div>
-          <Skeleton height="29px" width="92px" borderRadius="16px"></Skeleton>
+          <Skeleton height="29px" width="92px" borderRadius="16px" />
         </div>
         <div class="flex gap-3">
-          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
-          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
-          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
-          <Skeleton height="29px" width="29px" borderRadius="16px"></Skeleton>
+          <Skeleton height="29px" width="29px" borderRadius="16px" />
+          <Skeleton height="29px" width="29px" borderRadius="16px" />
+          <Skeleton height="29px" width="29px" borderRadius="16px" />
+          <Skeleton height="29px" width="29px" borderRadius="16px" />
         </div>
       </div>
       <SkeletonText :lines="6" class="mt-1" />

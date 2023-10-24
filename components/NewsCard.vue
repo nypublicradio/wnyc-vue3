@@ -67,17 +67,17 @@ const emit = defineEmits(['on-click'])
     />
   </div>
   <div v-else class="news-card skeleton-holder flex">
-    <Skeleton height="16px" width="91px" borderRadius="0px"></Skeleton>
+    <Skeleton height="16px" width="91px" borderRadius="0px" />
     <div class="w-full">
       <Skeleton
         height="13px"
         width="55%"
         borderRadius="16px"
         style="margin-bottom: 8px"
-      ></Skeleton>
-      <Skeleton height="13px" width="70%" borderRadius="16px"></Skeleton>
+      />
+      <Skeleton height="13px" width="70%" borderRadius="16px" />
     </div>
-    <Skeleton height="28px" width="84px" borderRadius="15px"></Skeleton>
+    <Skeleton height="28px" width="84px" borderRadius="15px" />
   </div>
 </template>
 
