@@ -37,14 +37,13 @@ RUN groupadd www && \
 RUN apt-get update \
     && apt-get install -y \
     curl \
-    netcat \
+    netcat-traditional \
     nginx-extras \
     python3 \
     python3-pip \
-    python-setuptools \
-    unzip
-
-RUN pip3 install supervisor
+    python3-setuptools \
+    unzip \
+    supervisor
 
 COPY --chown=www:www scripts/entrypoint.sh ./scripts/entrypoint.sh
 
