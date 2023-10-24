@@ -86,7 +86,8 @@ platform :ios do
         export_method: "app-store",
       )
       upload_to_testflight(
-        app_identifier: "org.wnyc.iphone"
+        app_identifier: "org.wnyc.iphone",
+        skip_waiting_for_build_processing: true
       )
       slack(
         channel: "#releases",
