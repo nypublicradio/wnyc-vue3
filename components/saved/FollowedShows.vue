@@ -25,7 +25,7 @@
     <div class="up-to-date flex flex-column gap-3 text-center mt-8">
       <h2>You're up to date!</h2>
       <img
-        src="face.svg"
+        src="/face.svg"
         alt="happy face illustration"
         class="w-6rem m-auto my-4"
       />
