@@ -11,7 +11,12 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
         }
         const option = {
             method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v3/story/?${type}=${slug}&page=${page}`
+            url: `${config.public.PUBLISHER_BASE_API}v3/story/`,
+            params: {
+                [type]: slug,
+                ordering: '-newsdate',
+                page,
+            }
         };
         const res = await axios(option);
         //Passing meta and data separately to the client. Meta is to used for pagination
