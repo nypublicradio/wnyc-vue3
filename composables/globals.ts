@@ -31,22 +31,22 @@ export const useShowTopics = () => useState('showTopics', () => [
 export const useSavedMenuItems = () => useState('savedMenuItems', () => [
     {
         label: 'Followed Shows',
-        value: 'followed-shows',
+        value: 'FollowedShows',
         color: 'var(--red)',
     },
     {
         label: 'Favorites',
-        value: 'favorites',
+        value: 'Favorites',
         color: 'var(--red)',
     },
     {
         label: 'Downloads',
-        value: 'downloads',
+        value: 'Downloads',
         color: 'var(--red)',
     },
     {
         label: 'Recently Playes',
-        value: 'recently-played',
+        value: 'RecentlyPlayed',
         color: 'var(--red)',
     },
 ])
