@@ -1,4 +1,4 @@
-FROM node:16.14.2-alpine3.14 as build
+FROM node:18.18.2 as build
 
 ARG SENTRY_DSN
 ARG SENTRY_ENV
@@ -26,7 +26,7 @@ RUN npm install sass
 COPY . .
 RUN npm run build
 
-FROM node:16.14.2-slim as app
+FROM node:18.18.2-slim as app
 
 
 WORKDIR /app
@@ -37,14 +37,13 @@ RUN groupadd www && \
 RUN apt-get update \
     && apt-get install -y \
     curl \
-    netcat \
+    netcat-traditional \
     nginx-extras \
     python3 \
     python3-pip \
-    python-setuptools \
-    unzip
-
-RUN pip3 install supervisor
+    python3-setuptools \
+    unzip \
+    supervisor
 
 COPY --chown=www:www scripts/entrypoint.sh ./scripts/entrypoint.sh
 
