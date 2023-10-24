@@ -145,7 +145,7 @@ const togglePlay = (item) => {
               height="159px"
               width="100%"
               borderRadius="0px"
-            ></Skeleton>
+            />
             <div
               class="flex w-full h-full flex-column justify-content-between p-3 pb-4 gap-3 h-15rem"
             >
@@ -156,13 +156,13 @@ const togglePlay = (item) => {
                     width="95%"
                     borderRadius="16px"
                     style="margin-bottom: 4px; margin-top: 4px"
-                  ></Skeleton>
+                  />
                   <Skeleton
                     height="12px"
                     width="70%"
                     borderRadius="16px"
                     style="margin-bottom: 6px"
-                  ></Skeleton>
+                  />
                 </div>
                 <div class="flex flex-column gap-2">
                   <Skeleton
@@ -170,44 +170,36 @@ const togglePlay = (item) => {
                     height="10.5px"
                     width="97%"
                     borderRadius="16px"
-                  ></Skeleton>
+                  />
                   <Skeleton
                     class=""
                     height="10.5px"
                     width="95%"
                     borderRadius="16px"
-                  ></Skeleton>
+                  />
                   <Skeleton
                     class=""
                     height="10.5px"
                     width="85%"
                     borderRadius="16px"
-                  ></Skeleton>
+                  />
                   <Skeleton
                     class=""
                     height="10.5px"
                     width="100%"
                     borderRadius="16px"
-                  ></Skeleton>
+                  />
                 </div>
                 <Skeleton
                   class="mt-2"
                   height="10px"
                   width="100%"
                   borderRadius="16px"
-                ></Skeleton>
+                />
               </div>
               <div class="flex justify-content-between">
-                <Skeleton
-                  height="28px"
-                  width="84px"
-                  borderRadius="15px"
-                ></Skeleton>
-                <Skeleton
-                  height="28px"
-                  width="10px"
-                  borderRadius="15px"
-                ></Skeleton>
+                <Skeleton height="28px" width="84px" borderRadius="15px" />
+                <Skeleton height="28px" width="10px" borderRadius="15px" />
               </div>
             </div>
           </div>

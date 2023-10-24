@@ -88,7 +88,7 @@ watch(searchFieldValue, () => {
           <h2>Browse By Topic</h2>
         </section>
         <HorizontalScrollFeature class="topics-holder">
-          <div class="flex">
+          <div class="flex gap-3">
             <div
               v-for="topic in showTopics"
               class="station-holder"
@@ -202,10 +202,6 @@ watch(searchFieldValue, () => {
   }
   .topics {
     .topic-btn-holder {
-      margin-left: 1rem;
-      &:first-child {
-        margin-left: 1.25rem;
-      }
       .topic-btn {
         border: 1px solid transparent !important;
         &:hover,
@@ -235,16 +231,6 @@ watch(searchFieldValue, () => {
           bottom: -10px;
         }
       }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-.browse-page {
-  .topics {
-    .horizontal-scroll-feature .scroll {
-      padding-left: 0 !important;
     }
   }
 }

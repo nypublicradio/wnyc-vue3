@@ -99,25 +99,17 @@ const togglePlay = () => {
                 width="6rem"
                 borderRadius="16px"
                 style="margin-bottom: 6px"
-              ></Skeleton>
+              />
               <div class="w-full desc">
                 <Skeleton
                   height="13px"
                   width="85%"
                   borderRadius="16px"
                   style="margin-bottom: 6px"
-                ></Skeleton>
-                <Skeleton
-                  height="13px"
-                  width="90%"
-                  borderRadius="16px"
-                ></Skeleton>
+                />
+                <Skeleton height="13px" width="90%" borderRadius="16px" />
               </div>
-              <Skeleton
-                height="28px"
-                width="9rem"
-                borderRadius="16px"
-              ></Skeleton>
+              <Skeleton height="28px" width="9rem" borderRadius="16px" />
             </div>
           </transition>
         </div>

@@ -3,7 +3,7 @@ export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffff
 //Global vars for the browser top color or Darkmode
 export const useBrowserTopColorDarkMode = () => useState('browserTopColorDarkMode', () => '#1f2741')
 
-//Global vars for the browser top color or Darkmode
+//browse topics
 export const useShowTopics = () => useState('showTopics', () => [
     {
         label: 'Arts & Culture',
@@ -24,6 +24,30 @@ export const useShowTopics = () => useState('showTopics', () => [
         label: 'Storytelling',
         value: 'storytelling',
         color: 'var(--success)',
+    },
+])
+
+//saved menu
+export const useSavedMenuItems = () => useState('savedMenuItems', () => [
+    {
+        label: 'Followed Shows',
+        value: 'FollowedShows',
+        color: 'var(--red)',
+    },
+    {
+        label: 'Favorites',
+        value: 'Favorites',
+        color: 'var(--red)',
+    },
+    {
+        label: 'Downloads',
+        value: 'Downloads',
+        color: 'var(--red)',
+    },
+    {
+        label: 'Recently Played',
+        value: 'RecentlyPlayed',
+        color: 'var(--red)',
     },
 ])
 

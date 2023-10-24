@@ -29,7 +29,7 @@ function rndWidth(min, max) {
     :borderRadius="props.radius"
     class="mb-1"
     v-bind="{ ...$props, ...$attrs }"
-  ></Skeleton>
+  />
 </template>
 
 <style lang="scss" scoped>

@@ -78,7 +78,7 @@ defineExpose({
         height="116px"
         width="116px"
         borderRadius="0px"
-      ></Skeleton>
+      />
       <div class="flex w-full flex-column justify-content-between py-1">
         <div>
           <Skeleton
@@ -86,20 +86,20 @@ defineExpose({
             width="85%"
             borderRadius="16px"
             style="margin-bottom: 6px"
-          ></Skeleton>
+          />
           <Skeleton
             height="12px"
             width="70%"
             borderRadius="16px"
             style="margin-bottom: 6px"
-          ></Skeleton>
+          />
         </div>
         <Skeleton
           class="opacity-50"
           height="12px"
           width="60%"
           borderRadius="16px"
-        ></Skeleton>
+        />
       </div>
     </div>
   </div>
