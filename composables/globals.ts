@@ -45,7 +45,7 @@ export const useSavedMenuItems = () => useState('savedMenuItems', () => [
         color: 'var(--red)',
     },
     {
-        label: 'Recently Playes',
+        label: 'Recently Played',
         value: 'RecentlyPlayed',
         color: 'var(--red)',
     },
