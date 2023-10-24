@@ -70,13 +70,12 @@ const loadComponent = (componentName) => {
         </div>
       </div>
     </HorizontalScrollFeature>
-    <section>
-      <div v-for="item in savedMenuItems" :key="item.value">
-        <div v-if="item.value === selectedMenuItem.value">
-          <component :is="loadComponent(item.value)" />
-        </div>
+
+    <div v-for="item in savedMenuItems" :key="item.value">
+      <div v-if="item.value === selectedMenuItem.value">
+        <component :is="loadComponent(item.value)" />
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
