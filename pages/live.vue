@@ -73,7 +73,7 @@ const toggleFollow = (episode) => {
   trackClickEvent(
     'Click Tracking - Schedule Follow Button',
     'Live Page',
-    `follow show ${episode.name}`
+    `follow ${currentStreamStation.value} - ${episode}`
   )
 }
 
@@ -198,8 +198,8 @@ watch(
         :key="entry.id"
         class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
       >
-        <div class="flex align-items-center">
-          <div class="left" :class="[{ selected: index === 0 }]" />
+        <div class="flex align-items-stretch">
+          <div class="left my-1" :class="[{ selected: index === 0 }]" />
           <div>
             <p class="time">
               {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
@@ -218,7 +218,12 @@ watch(
           plain
           rounded
           class="flex-none"
-          @click="toggleFollow"
+          @click="
+            toggleFollow(
+              entry.attributes.scheduleEventTitle ??
+                entry.attributes.parentTitle
+            )
+          "
         >
           <template #icon>
             <FollowIcon :active="false" />
@@ -285,7 +290,7 @@ watch(
         border: 2px solid transparent;
         border-radius: 8px;
         margin-right: 1rem;
-        height: 27px;
+        //height: 27px;
         &.selected {
           border-color: var(--red);
         }
