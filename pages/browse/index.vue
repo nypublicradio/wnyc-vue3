@@ -19,6 +19,9 @@ const keys = computed(() => {
 const options = computed(() => ({
   fuseOptions: {
     keys: keys.value,
+    location: 0,
+    threshold: 0.35,
+    distance: 80,
   },
 }))
 
