@@ -17,7 +17,6 @@ const getLocalNewscast = async () => {
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
-		//resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/WNYC_news.png';
 		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
 		//Fetch the mp3 Content-Length and calculate the duration in seconds
 		const mp3Res = await axios(resData.attributes.audio);
@@ -201,7 +200,18 @@ const mergeArticles = (articles1: any, articles2: any) => {
 const getMiddleBucket = async () => {
 	try {
 		const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/buckets/wnyc-home-middle`);
-		return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
+		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
+		if (resData) {
+			const articles = resData.map((article: any) => {
+				article.cmsSource = 'publisher';
+				article.SortDate = article.attributes.publishAt;
+				return article;
+
+			});
+			return articles;
+		} else {
+			return [];
+		}
 	} catch (e) {
 		//console.log(e);
 	}
