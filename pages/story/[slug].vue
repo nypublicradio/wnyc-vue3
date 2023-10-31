@@ -86,7 +86,8 @@ watch(storyData, () => {
       v-if="storyData.image"
       :src="String(storyData.image.id)"
       :ratio="[3, 2]"
-      sizes="xs:390 sm:600px md:768px lg:1024px xl:1920px"
+      sizes="xs:390px md:768px lg:1024px xl:1920px"
+      density="x1 x2"
       :alt="storyData.image.alt"
       class="story-page-image"
     >
@@ -124,9 +125,9 @@ watch(storyData, () => {
         </template>
       </PipeData>
       <h1 class="mb-1 alt">{{ storyData.title }}</h1>
-      <p class="story-page-author opacity-70 mb-3 text-xs">
+      <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
         <VByline :authors="storyData.authors" />
-      </p>
+      </div>
       <div class="flex align-items-center gap-2 -ml-2">
         <Button text plain rounded @click="handleStar()">
           <template #icon> <StarIcon /></template>
@@ -149,8 +150,10 @@ watch(storyData, () => {
       </div>
     </section>
 
-    <v-streamfield class="story-page-body" :streamfield="storyData.body" />
-    <section id="comments"><h2>Comments Section</h2></section>
+    <v-streamfield class="story-page-body" :article="storyData" />
+
+    <story-article-footer :article="storyData" />
+
     <section>
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">Top Stories From Gothamist</h2>
@@ -169,6 +172,10 @@ watch(storyData, () => {
 .story-page .star-icon {
   height: 28px;
   width: 28px;
+}
+.story-page .v-byline .flexible-link {
+  color: var(--text-color) !important;
+  text-decoration: none !important;
 }
 
 .story-page .comments-btn {

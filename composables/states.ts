@@ -163,4 +163,6 @@ const textSizeOptionsArr = [
  */
 export const useTextSizeOption = () => useState('textSizeOption', () => textSizeOptionsArr)
 
+// story
+export const useSensitiveContent = () => useState<boolean>('sensitiveContent', () => false)
 

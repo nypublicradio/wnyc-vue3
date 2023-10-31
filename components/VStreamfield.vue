@@ -1,13 +1,15 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
+import { trackClickEvent } from '~/utilities/helpers'
+//import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 const props = defineProps({
-  streamfield: {
-    type: Array,
+  article: {
+    type: Object,
     default: null,
-    required: true,
   },
 })
+
+const streamfield = props.article.body
 
 onMounted(() => {
   // you can't have script tags in v-html
@@ -26,17 +28,21 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
+    <!-- <pre>{{ props.article }}</pre> -->
     <div v-for="(block, index) in streamfield" :key="index">
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"
+        @onClick="
+          trackClickEvent(
+            `story page id ${props.article.id}`,
+            'donate banner',
+            'donate button'
+          )
+        "
       />
-
-      <div v-if="block.type === 'image'" class="streamfield-image">
-        <pre>{{ block.value.image }}</pre>
-        <!-- :width="block.value.image.width"
-          :height="block.value.image.height" -->
-        <!-- sizes="xs:100vw lg:100vw" -->
+      <!-- image -->
+      <div v-if="block.type === 'image'" class="streamfield-image my-4">
         <VImage
           :src="String(block.value.image.id)"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
@@ -44,17 +50,20 @@ onMounted(() => {
           :width="block.value.image.width"
           :height="block.value.image.height"
           sizes="xs:390px md:768px lg:1024px xl:1920px"
-          density="x1 x2 x3"
+          density="x1 x2"
         >
-          <template #caption>
+          <!--           <template #caption>
             <VImageCaption
               v-if="block.value.image.caption"
               :text="block.value.image.caption"
             />
-          </template>
+          </template> -->
           <template #belowImage>
             <div>
-              <p class="text-right mr-3 text-xs">
+              <p class="px-4 text-sm mt-1">
+                {{ block.value.image.caption }}
+              </p>
+              <p class="px-4 text-xs mt-2">
                 {{ block.value.image.credit }}
               </p>
             </div>
@@ -116,6 +125,7 @@ onMounted(() => {
 
 <style lang="scss">
 .streamfield .streamfield-paragraph > * {
+  @include html-formatting();
   margin-bottom: 1rem;
   &:last-child {
     margin-bottom: 0;
