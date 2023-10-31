@@ -148,7 +148,7 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_KEY,
       supabaseAuthSignInRedirectTo: process.env.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
       supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
-      OPENWEB_SPOT_ID: process.env['OPENWEB_SPOT_ID'] ?? 'sp_6X1qAIKA',
+      OPENWEB_SPOT_ID: process.env['OPENWEB_SPOT_ID'] ?? 'sp_U3rk7ZAf',
     }
   },
 })
