@@ -8,6 +8,8 @@ import { useCommentCounts } from '~/composables/comments'
 import StarIcon from '~/components/icons/StarIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
 import CommentsIcon from '~/components/icons/CommentsIcon.vue'
+//import { ArticlePage, GalleryPage } from '~/composables/types/Page'
+import { normalizeGalleryPage } from '~/composables/data/galleryPages'
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
@@ -19,9 +21,12 @@ const { data: storyData } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
 const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
-const topStories = ref(stories?.value?.top_stories ?? null)
-
+const topStories = ref(null)
 const storySource = route.query.src === 'wagtail' ? 'Gothamist' : 'WNYC'
+const gallery = ref(null)
+const topImage = ref(null)
+const topCaption = ref(null)
+const galleryLength = ref(null)
 
 const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
@@ -55,19 +60,32 @@ const handleShare = () => {
 }
 
 watch(stories, () => {
-  //console.log('storyDataRaw.id = ', thisStory.id)
   topStories.value = stories.value.top_stories.filter(
     (item) => item.id !== storyData.value.id
   )
 })
 
-watch(storyData, () => {
+watch(storyData, async () => {
   console.dir(storyData.value)
+  if (storyData.value.leadGallery) {
+    gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
+      ({ data }) => normalizeGalleryPage(data.value)
+    )
+  }
+  topImage.value =
+    storyData.value.leadImage ?? gallery?.slides?.[0]?.image ?? null
+  topCaption.value =
+    storyData.value.leadImageCaption ??
+    topImage?.caption ??
+    gallery.value?.slides?.[0]?.image.caption ??
+    null
+  galleryLength.value = gallery.value?.slides?.length ?? 0
+  console.dir(gallery)
 })
 </script>
 
 <template>
-  <div v-if="storyData" class="story-page">
+  <div class="story-page">
     <section class="">
       <div class="flex align-items-center">
         <Button
@@ -82,78 +100,83 @@ watch(storyData, () => {
         />
       </div>
     </section>
-    <VImage
-      v-if="storyData.image"
-      :src="String(storyData.image.id)"
-      :ratio="[3, 2]"
-      sizes="xs:390px md:768px lg:1024px xl:1920px"
-      density="x1 x2"
-      :alt="storyData.image.alt"
-      class="story-page-image"
-    >
-      <template #caption>
-        <VImageCaption
-          v-if="storyData.image.caption"
-          :text="storyData.image.caption"
-        />
-      </template>
-      <template #gallery>
-        <VImageGallery
-          v-if="storyData.image.gallerySlides"
-          :count="storyData.image.gallerySlides.length"
-          gallery-link="https://www.google.com"
-        />
-      </template>
-      <template #belowImage>
-        <div>
-          <p class="text-right mr-3 text-xs">
-            {{ storyData.image.credit }}
-          </p>
+
+    <div v-if="storyData">
+      <VImage
+        v-if="storyData.image"
+        :src="String(storyData.image.id)"
+        :ratio="[3, 2]"
+        sizes="xs:390px md:768px lg:1024px xl:1920px"
+        density="x1 x2"
+        :alt="storyData.image.alt"
+        class="story-page-image"
+      >
+        <template #caption>
+          <VImageCaption
+            v-if="storyData.image.caption"
+            :text="storyData.image.caption"
+          />
+        </template>
+        <template #gallery>
+          <VImageGallery
+            v-if="gallery?.slides"
+            :count="String(gallery.slides.length)"
+            gallery-link="https://www.google.com"
+          />
+        </template>
+        <template #belowImage>
+          <div>
+            <p class="text-right px-3 mt-1 text-xs">
+              {{ storyData.image.credit }}
+            </p>
+          </div>
+        </template>
+      </VImage>
+
+      <section>
+        <PipeData class="my-2 text-xs opacity-70">
+          <template #left>
+            <span>
+              {{ storySource }}
+            </span>
+          </template>
+          <template #right>
+            <span class="nobreak">{{ whenTime(storyData) }}</span>
+          </template>
+        </PipeData>
+        <h1 class="mb-1 alt">{{ storyData.title }}</h1>
+        <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
+          <VByline :authors="storyData.authors" />
         </div>
-      </template>
-    </VImage>
+        <div class="flex align-items-center gap-2 -ml-2">
+          <Button text plain rounded @click="handleStar()">
+            <template #icon> <StarIcon /></template>
+          </Button>
+          <Button text plain rounded @click="handleShare()">
+            <template #icon> <ShareIcon /></template>
+          </Button>
+          <Button
+            text
+            plain
+            rounded
+            :label="`&nbsp; ${String(commentCount)} ${
+              commentCount === 1 ? 'comment' : 'comments'
+            }`"
+            class="comments-btn pl-2 text-xs font-normal"
+            @click="handleComments()"
+          >
+            <template #icon> <CommentsIcon /></template>
+          </Button>
+        </div>
+      </section>
 
-    <section>
-      <PipeData class="my-2 text-xs opacity-70">
-        <template #left>
-          <span>
-            {{ storySource }}
-          </span>
-        </template>
-        <template #right>
-          <span class="nobreak">{{ whenTime(storyData) }}</span>
-        </template>
-      </PipeData>
-      <h1 class="mb-1 alt">{{ storyData.title }}</h1>
-      <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
-        <VByline :authors="storyData.authors" />
-      </div>
-      <div class="flex align-items-center gap-2 -ml-2">
-        <Button text plain rounded @click="handleStar()">
-          <template #icon> <StarIcon /></template>
-        </Button>
-        <Button text plain rounded @click="handleShare()">
-          <template #icon> <ShareIcon /></template>
-        </Button>
-        <Button
-          text
-          plain
-          rounded
-          :label="`&nbsp; ${String(commentCount)} ${
-            commentCount === 1 ? 'comment' : 'comments'
-          }`"
-          class="comments-btn pl-2 text-xs font-normal"
-          @click="handleComments()"
-        >
-          <template #icon> <CommentsIcon /></template>
-        </Button>
-      </div>
-    </section>
+      <v-streamfield class="story-page-body" :article="storyData" />
 
-    <v-streamfield class="story-page-body" :article="storyData" />
-
-    <story-article-footer :article="storyData" />
-
+      <story-article-footer :article="storyData" />
+    </div>
+    <div v-else>
+      <skeleton-article />
+    </div>
     <section>
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">Top Stories From Gothamist</h2>

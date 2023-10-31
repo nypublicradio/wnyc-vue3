@@ -56,6 +56,11 @@ function normalizeAuthor(author: Record<string, any>): Author {
   }
 }
 
+//placeholder
+export function normalizeArticlePage(article: Record<string, any | undefined>): ArticlePage {
+  normalizeWagtailPage(article)
+}
+
 // Wagtail: Transform page data from the API into a simpler and typed format
 export function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')

@@ -31,7 +31,7 @@ onMounted(() => {
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-for="(block, index) in streamfield" :key="index">
       <!-- 1/2 way through the streamfield, insert the donation block -->
-      <streamfield-donation
+      <!--       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"
         @onClick="
           trackClickEvent(
@@ -40,7 +40,7 @@ onMounted(() => {
             'donate button'
           )
         "
-      />
+      /> -->
       <!-- image -->
       <div v-if="block.type === 'image'" class="streamfield-image my-4">
         <VImage
@@ -119,6 +119,17 @@ onMounted(() => {
           :author="block.value.attribution"
         />
       </section>
+      <!-- 1/2 way through the streamfield, insert the donation block -->
+      <streamfield-donation
+        v-if="index === Math.floor(streamfield.length / 2)"
+        @onClick="
+          trackClickEvent(
+            `story page id ${props.article.id}`,
+            'donate banner',
+            'donate button'
+          )
+        "
+      />
     </div>
   </div>
 </template>
