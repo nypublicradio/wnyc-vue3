@@ -1,12 +1,19 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { normalizeWagtailPage, normalizePublisherPage } from '~/composables/data/articlePages'
+//import { normalizeArticlePage } from '~/composables/data/articlePages'
+
+import { normalizePage } from '~/composables/data/basePages'
 
 const GOTHAMISTDOTCOM = 'https://gothamist.com/'
 
 const linkMapper = (link: any) => {
 	return { title: link.value.title, url: link.value.url }
+}
+
+//Get a relative link to an article in publisher
+function getPublisherArticleLink(articleData): string {
+  return `/story/${articleData.attributes.slug}`
 }
 
 const getLocalNewscast = async () => {
@@ -144,22 +151,6 @@ const normalizeAuthor = (author: any) => {
 	}
 }
 
-const getTopStories = async () => {
-	try {
-		const res = await axios(config.public.STORIES_API);
-		return res.data.items.map((article: any) => {
-			article.authors = article.related_authors.map((author: any) => {
-				return normalizeAuthor(author)
-			});
-			article.link = getArticleLink(article);
-			article.leadImage = getWagtailImageId(article);
-			return article;
-		})
-	} catch (e) {
-		//console.log(e);
-	}
-}
-
 const getGothamistTopStories = async () => {
 	try {
 		const options = {
@@ -185,7 +176,7 @@ const getGothamistTopStories = async () => {
 			article.leadImageMaxWidth = article.leadAsset?.[0]?.value?.image?.width;
 			article.leadImageMaxHeight = article.leadAsset?.[0]?.value?.image?.height;
 			article.cmsSource = 'wagtail';
-			article.SortDate = article.publicationDate;
+			article.sortDate = article.publicationDate;
 			return article;
 		});
 		return articles;
@@ -205,9 +196,52 @@ const getWNYCTopStories = async () => {
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
 		if (resData) {
 			const articles = resData.map((article: any) => {
-				article.cmsSource = 'publisher';
-				article.SortDate = article.attributes.publishAt;
-				return article;
+				//article.cmsSource = 'publisher';
+				//article.sortDate = article.attributes.publishAt;
+				//return article;
+				//console.log(article.attributes.appearances.authors);
+				return Object.assign({}, normalizePage(article), {
+    				description: article.attributes.tease,
+    				image: article.attributes.imageMain,
+    				leadImageCaption: article.attributes.imageCaption,
+    				imageLink: undefined,
+    				type: article.attributes.itemType,
+    				link: getPublisherArticleLink(article),
+					cmsSource: 'publisher',
+					sortDate: article.attributes.publishAt,
+    				leadAsset: article.attributes.slideshow?.[0],
+    				leadImage: article.attributes.slideshow?.[0],
+    				leadGallery: article.attributes.slideshow?.[0],
+					meta: {
+						slug: article.attributes.slug,
+					},
+					title: article.attributes.title,
+    				gallerySlides: article.attributes?.slideshow,
+    				legacyId: article.attributes.id,
+    				authors: article.attributes.appearances?.authors,
+    				contributingOrganizations: article.attributes?.producingOrganizations,
+    				sponsors: undefined,
+    
+    				publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
+    				updatedDate: undefined, //Does this exist in publisher?
+    				showAsFeature: undefined, //Does this exist in publisher?
+    				sensitiveContent: undefined, //Does this exist in publisher?
+    				provocativeContent: undefined, //Does this exist in publisher?
+    				sponsoredContent: undefined, //Does this exist in publisher?
+    				relatedLinks: undefined, //Does this exist in publisher?
+    				tags: article.attributes?.tags, // This may need tweaking
+    				url: article.attributes.url,
+    				section: undefined, //Does this exist in publisher?
+    				body: article.attributes.body,
+
+    				// curated images
+   					listingImage: article.attributes.imageMain, // This may need tweaking
+    				socialImage: article.attributes.imageMain, // This may need tweaking
+
+    				// for comments
+    				disableComments: undefined,
+    				commentId: undefined,
+  				}) 
 			});
 			return articles;
 		} else {
@@ -224,8 +258,8 @@ const getWNYCTopStories = async () => {
 const mergeArticles = (articles1: any, articles2: any) => {
 	const mergedArticles = [...articles1, ...articles2];
 	return mergedArticles.sort((a: any, b: any) => {
-		const aDate = new Date(a.SortDate);
-		const bDate = new Date(b.SortDate);
+		const aDate = new Date(a.sortDate);
+		const bDate = new Date(b.sortDate);
 		return bDate.getTime() - aDate.getTime();
 	});
 }
@@ -237,7 +271,7 @@ const getMiddleBucket = async () => {
 		if (resData) {
 			const articles = resData.map((article: any) => {
 				article.cmsSource = 'publisher';
-				article.SortDate = article.attributes.publishAt;
+				article.sortDate = article.attributes.publishAt;
 				return article;
 
 			});
@@ -255,7 +289,6 @@ const getMiddleBucket = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	const articles = await getTopStories();
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
 	const bucket = await getMiddleBucket();

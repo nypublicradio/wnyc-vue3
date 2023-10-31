@@ -56,11 +56,14 @@ function normalizeAuthor(author: Record<string, any>): Author {
   }
 }
 
-//placeholder
 export function normalizeArticlePage(article: Record<string, any | undefined>): ArticlePage {
-  normalizeWagtailPage(article)
+  if (article.cmsSource === 'wagtail')
+    return normalizeWagtailPage(article)
+  else if (article.cmsSource === 'publisher')
+    return normalizePublisherPage(article)
+  else
+    return null
 }
-
 // Wagtail: Transform page data from the API into a simpler and typed format
 export function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
@@ -117,14 +120,14 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     type: article.attributes.itemType,
     link: getPublisherArticleLink(article),
 
-    leadAsset: article.attributes.slideshow[0],
-    leadImage: article.attributes.slideshow[0],
-    leadGallery: article.attributes.slideshow[0],
+    leadAsset: article.attributes.slideshow?.[0],
+    leadImage: article.attributes.slideshow?.[0],
+    leadGallery: article.attributes.slideshow?.[0],
 
-    gallerySlides: article.attributes.slideshow,
+    gallerySlides: article.attributes?.slideshow,
     legacyId: article.attributes.id,
-    authors: article.attributes.appearances.authors,
-    contributingOrganizations: article.attributes.producingOrganizations,
+    authors: article.attributes.appearances?.authors,
+    contributingOrganizations: article.attributes?.producingOrganizations,
     sponsors: undefined,
 
     publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
@@ -134,7 +137,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     provocativeContent: undefined, //Does this exist in publisher?
     sponsoredContent: undefined, //Does this exist in publisher?
     relatedLinks: undefined, //Does this exist in publisher?
-    tags: article.attributes.tags, // This may need tweaking
+    tags: article.attributes?.tags, // This may need tweaking
     url: article.attributes.url,
     section: undefined, //Does this exist in publisher?
     body: article.attributes.body,
