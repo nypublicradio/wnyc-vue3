@@ -21,7 +21,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="index" class="mb-4">
-      <!-- <pre>{{ article }}</pre> -->
+      <!-- <pre class="text-xs">{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
