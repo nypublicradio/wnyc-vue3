@@ -1,4 +1,5 @@
 <script setup>
+import { useUpdateCommentCounts } from '~/composables/comments'
 //onBeforeMount(async () => {
 const config = useRuntimeConfig()
 const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
@@ -25,6 +26,10 @@ watch(pagedata, () => {
   localNewscast.value = pagedata.value.local_newscast
   nationalNewscast.value = pagedata.value.national_newscast
 })
+
+// onMounted(async () => {
+//   await useUpdateCommentCounts(topStories.value)
+// })
 </script>
 
 <template>
@@ -58,6 +63,7 @@ watch(pagedata, () => {
     </section>
     <section>
       <h2 class="mb-2">Top stories from Gothamist</h2>
+      <!-- <pre>{{ topStories[0] }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
     <section>

@@ -415,8 +415,8 @@ export const isLiveStream = () => {
 export const whenTime = (data) => {
 
   const res = data.updatedDate
-    ? howLongAgo(data.updatedDate)
-    : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
+    ? howLongAgo(data.updatedDate) : data.publicationDate ? howLongAgo(data.publicationDate)
+      : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
   return res ?? null
 }
 

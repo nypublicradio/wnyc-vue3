@@ -1,18 +1,36 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
+import VImageGallery from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
 import { trackClickEvent, whenTime } from '~/utilities/helpers'
+import { useCommentCounts } from '~/composables/comments'
 import StarIcon from '~/components/icons/StarIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
 import CommentsIcon from '~/components/icons/CommentsIcon.vue'
-import humps from 'humps'
 
 // TO DO - replace dummy data with BFF data
-import storyDataRaw from './story-data.json'
-const storyData = humps.camelizeKeys(storyDataRaw)
+//import storyDataRaw from './story-data.json'
+const route = useRoute()
+//console.dir(route)
+//const storyData = humps.camelizeKeys(storyDataRaw)
 const config = useRuntimeConfig()
-const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
-const topStories = ref(pagedata?.value?.top_stories ?? null)
+const { data: storyData } = useFetch(
+  `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
+)
+const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
+const topStories = ref(stories?.value?.top_stories ?? null)
+
+const storySource = route.query.src === 'wagtail' ? 'Gothamist' : 'WNYC'
+
+const commentCounts = ref(useCommentCounts())
+const commentCount = computed(() => {
+  console.log(
+    'commentCounts.value[storyData?.value.commentId] = ',
+    commentCounts.value[storyData?.value.commentId]
+  )
+  return commentCounts.value[storyData?.value.commentId]
+})
 
 // navigate back to home and track it
 const backHome = () => {
@@ -36,8 +54,15 @@ const handleShare = () => {
   console.log('handleShare')
 }
 
-watch(pagedata, () => {
-  topStories.value = pagedata.value.top_stories
+watch(stories, () => {
+  //console.log('storyDataRaw.id = ', thisStory.id)
+  topStories.value = stories.value.top_stories.filter(
+    (item) => item.id !== storyData.value.id
+  )
+})
+
+watch(storyData, () => {
+  console.dir(storyData.value)
 })
 </script>
 
@@ -57,19 +82,42 @@ watch(pagedata, () => {
         />
       </div>
     </section>
-    <v-image
-      v-if="storyData?.image"
-      :src="storyData?.image.url"
+    <VImage
+      v-if="storyData.image"
+      :src="String(storyData.image.id)"
       :ratio="[3, 2]"
-      :alt="storyData?.image.alt"
+      sizes="xs:390 sm:600px md:768px lg:1024px xl:1920px"
+      :alt="storyData.image.alt"
       class="story-page-image"
-    />
-    <section class="py-0">
-      <PipeData class="mt-3 mb-2 text-xs opacity-70">
+    >
+      <template #caption>
+        <VImageCaption
+          v-if="storyData.image.caption"
+          :text="storyData.image.caption"
+        />
+      </template>
+      <template #gallery>
+        <VImageGallery
+          v-if="storyData.image.gallerySlides"
+          :count="storyData.image.gallerySlides.length"
+          gallery-link="https://www.google.com"
+        />
+      </template>
+      <template #belowImage>
+        <div>
+          <p class="text-right mr-3 text-xs">
+            {{ storyData.image.credit }}
+          </p>
+        </div>
+      </template>
+    </VImage>
+
+    <section>
+      <PipeData class="my-2 text-xs opacity-70">
         <template #left>
-          <nuxt-link :to="storyData.source_url" class="no-underline">
-            {{ storyData.source }}
-          </nuxt-link>
+          <span>
+            {{ storySource }}
+          </span>
         </template>
         <template #right>
           <span class="nobreak">{{ whenTime(storyData) }}</span>
@@ -90,7 +138,9 @@ watch(pagedata, () => {
           text
           plain
           rounded
-          :label="`&nbsp; ${storyData.comments} comments`"
+          :label="`&nbsp; ${String(commentCount)} ${
+            commentCount === 1 ? 'comment' : 'comments'
+          }`"
           class="comments-btn pl-2 text-xs font-normal"
           @click="handleComments()"
         >
@@ -98,6 +148,7 @@ watch(pagedata, () => {
         </Button>
       </div>
     </section>
+
     <v-streamfield class="story-page-body" :streamfield="storyData.body" />
     <section id="comments"><h2>Comments Section</h2></section>
     <section>

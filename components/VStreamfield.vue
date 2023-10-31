@@ -1,6 +1,6 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-
+import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 const props = defineProps({
   streamfield: {
     type: Array,
@@ -31,10 +31,49 @@ onMounted(() => {
       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"
       />
+
+      <div v-if="block.type === 'image'" class="streamfield-image">
+        <pre>{{ block.value.image }}</pre>
+        <!-- :width="block.value.image.width"
+          :height="block.value.image.height" -->
+        <!-- sizes="xs:100vw lg:100vw" -->
+        <VImage
+          :src="String(block.value.image.id)"
+          :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
+          :alt="block.value.image.alt"
+          :width="block.value.image.width"
+          :height="block.value.image.height"
+          sizes="xs:390px md:768px lg:1024px xl:1920px"
+          density="x1 x2 x3"
+        >
+          <template #caption>
+            <VImageCaption
+              v-if="block.value.image.caption"
+              :text="block.value.image.caption"
+            />
+          </template>
+          <template #belowImage>
+            <div>
+              <p class="text-right mr-3 text-xs">
+                {{ block.value.image.credit }}
+              </p>
+            </div>
+          </template>
+        </VImage>
+      </div>
+
       <section v-else>
+        <!-- paragraph -->
+        <p
+          v-if="block.type === 'paragraph'"
+          class="streamfield-paragraph"
+          v-html="block.value"
+        />
+        <!-- image -->
+
         <!-- block-quote -->
         <div
-          v-if="block.type === 'block_quote'"
+          v-else-if="block.type === 'block_quote'"
           class="streamfield-block-quote"
         >
           <blockquote>
@@ -62,22 +101,6 @@ onMounted(() => {
           class="streamfield-heading"
           v-html="block.value"
           :aria-label="block.value"
-        />
-
-        <!-- image -->
-        <div v-else-if="block.type === 'image'" class="streamfield-image">
-          <VImage
-            :src="block.value.image.file"
-            :ratio="[1, 1]"
-            :alt="block.value.image.alt"
-          />
-        </div>
-
-        <!-- paragraph -->
-        <p
-          v-else-if="block.type === 'paragraph'"
-          class="streamfield-paragraph"
-          v-html="block.value"
         />
 
         <!-- pull-quote -->
