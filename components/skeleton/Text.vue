@@ -4,6 +4,14 @@ const props = defineProps({
     type: Number,
     default: 10,
   },
+  gapMin: {
+    type: Number,
+    default: 2,
+  },
+  gapMax: {
+    type: Number,
+    default: 6,
+  },
   radius: {
     type: String,
     default: '16px',
@@ -19,13 +27,9 @@ function rndWidth(min, max) {
   max = Math.floor(max)
   return `${Math.floor(Math.random() * (max - min + 1)) + min}%`
 }
-const rndGap = (min = 2, max = 6) => {
+const rndGap = (min = props.gapMin, max = props.gapMax) => {
   min = Math.ceil(min)
   max = Math.floor(max)
-  console.log(
-    'Math.floor(Math.random() * (max - min + 1)) + min  =  ',
-    Math.floor(Math.random() * (max - min + 1)) + min
-  )
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 

@@ -28,6 +28,8 @@ const topImage = ref(null)
 const topCaption = ref(null)
 const galleryLength = ref(null)
 
+const galleryLink = ref(null)
+
 const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
   console.log(
@@ -80,6 +82,8 @@ watch(storyData, async () => {
     gallery.value?.slides?.[0]?.image.caption ??
     null
   galleryLength.value = gallery.value?.slides?.length ?? 0
+  galleryLink.value = String(`photos/${storyData.value.leadGallery.gallery}`)
+  console.log('gallery')
   console.dir(gallery)
 })
 </script>
@@ -121,7 +125,7 @@ watch(storyData, async () => {
           <VImageGallery
             v-if="gallery?.slides"
             :count="String(gallery.slides.length)"
-            gallery-link="https://www.google.com"
+            :gallery-link="galleryLink"
           />
         </template>
         <template #belowImage>
@@ -173,6 +177,18 @@ watch(storyData, async () => {
       <v-streamfield class="story-page-body" :article="storyData" />
 
       <story-article-footer :article="storyData" />
+
+      <div v-if="gallery?.slides">
+        <VImage
+          v-for="img in gallery.slides"
+          :src="String(img.image.id)"
+          :ratio="[3, 2]"
+          sizes="xs:390px md:768px lg:1024px xl:1920px"
+          density="x1 x2"
+          :alt="img.image.alt"
+          class="story-page-image"
+        />
+      </div>
     </div>
     <div v-else>
       <skeleton-article />
