@@ -119,11 +119,16 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     imageLink: undefined,
     type: article.attributes.itemType,
     link: getPublisherArticleLink(article),
-
+    cmsSource: article.cmsSource,
+    sortDate: article.attributes.publishAt,
     leadAsset: article.attributes.slideshow?.[0],
     leadImage: article.attributes.slideshow?.[0],
     leadGallery: article.attributes.slideshow?.[0],
-
+		meta: {
+			firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
+			slug: article.attributes.slug,
+		},
+    title: article.attributes.title,
     gallerySlides: article.attributes?.slideshow,
     legacyId: article.attributes.id,
     authors: article.attributes.appearances?.authors,
