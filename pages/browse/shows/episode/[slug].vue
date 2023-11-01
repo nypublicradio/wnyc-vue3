@@ -97,6 +97,7 @@ const onMenuChange = (e) => {
 
 watch(episode, () => {
   episodeData.value = episode.value.episode
+  console.dir(episodeData.value)
 })
 </script>
 

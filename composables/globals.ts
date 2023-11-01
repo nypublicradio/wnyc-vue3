@@ -1,3 +1,9 @@
+export const mediaTypes = {
+    LIVE: 'live',
+    ARTICLE: 'article',
+    EPISODE: 'episode',
+}
+
 //Global vars for the browser top color
 export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffffff')
 //Global vars for the browser top color or Darkmode

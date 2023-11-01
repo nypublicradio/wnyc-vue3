@@ -9,6 +9,7 @@ import {
 import {
   trackClickEvent,
   templatizePublisherImageUrl,
+  saveRecentlyPlayed,
 } from '~/utilities/helpers'
 
 // TEMP fix to make ripple work
@@ -31,6 +32,7 @@ const togglePlay = () => {
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
   ) {
     currentEpisode.value = currentEpisodeHolder.value
+    saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
   trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')

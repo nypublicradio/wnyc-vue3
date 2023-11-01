@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent, saveRecentlyPlayed } from '~/utilities/helpers'
 import { updateLiveStream } from '~/composables/data/liveStream'
 import {
   useTogglePlayTrigger,
@@ -49,6 +49,7 @@ const togglePlay = () => {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug
     currentEpisode.value = currentEpisodeHolder.value
+    saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
   trackClickEvent(
     'Click Tracking - Toggle Play Button',

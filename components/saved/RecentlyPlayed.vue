@@ -1,4 +1,15 @@
-<script setup></script>
+<script setup>
+import { useCurrentUser } from '~/composables/states'
+const user = useCurrentUser()
+const client = useSupabaseClient()
+if (user.value) {
+  let { data: recently_viewed, error } = await client
+    .from('recently_viewed')
+    .select('*')
+    .eq('uid', user.value.id)
+  console.log('data', recently_viewed)
+}
+</script>
 
 <template>
   <section class="recently-played">
@@ -17,6 +28,7 @@
         @click="navigateTo('/live')"
       />
     </div>
+    <div></div>
   </section>
 </template>
 
