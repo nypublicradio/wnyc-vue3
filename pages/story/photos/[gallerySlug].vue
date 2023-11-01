@@ -109,10 +109,11 @@ const shareTitle = ref(gallery.title)
       </div>
     </section>
     <section class="pt-0 -mt-2">
+      <!-- <pre class="text-xs">{{ gallery.slides[0] }}</pre> -->
       <div v-if="gallery?.slides" class="grid mt-0">
         <VImage
           v-for="(img, index) in gallery.slides"
-          :key="img.image.title"
+          :key="img.image.id"
           :src="String(img.image.id)"
           :ratio="[img.image.width, img.image.height]"
           sizes="xs:390px md:768px lg:1024px xl:1920px"

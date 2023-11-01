@@ -121,7 +121,11 @@ watch(searchFieldValue, () => {
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
-              <skeleton-browse-item v-else v-for="show in 6" />
+              <skeleton-browse-item
+                v-else
+                v-for="(show, index) in 6"
+                :key="`sk1-${index}`"
+              />
             </section>
           </TabPanel>
           <TabPanel header="All Shows">
@@ -133,7 +137,11 @@ watch(searchFieldValue, () => {
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
-              <skeleton-browse-item v-else v-for="show in 6" />
+              <skeleton-browse-item
+                v-else
+                v-for="(show, index) in 6"
+                :key="`sk2-${index}`"
+              />
             </section>
           </TabPanel>
         </TabView>

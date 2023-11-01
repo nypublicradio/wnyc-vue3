@@ -32,10 +32,6 @@ const galleryLink = ref(null)
 
 const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
-  console.log(
-    'commentCounts.value[storyData?.value.commentId] = ',
-    commentCounts.value[storyData?.value.commentId]
-  )
   return commentCounts.value[storyData?.value.commentId]
 })
 
@@ -81,12 +77,14 @@ watch(storyData, async () => {
     topImage?.caption ??
     gallery.value?.slides?.[0]?.image.caption ??
     null
-  galleryLength.value = gallery.value?.slides?.length ?? 0
-  galleryLink.value = String(
-    `photos/${storyData.value.leadGallery.gallery}?article=${storyData.value.id}&src=${route.query.src}`
-  )
-  console.log('gallery')
-  console.dir(gallery)
+  if (storyData.value.leadGallery) {
+    galleryLength.value = gallery.value?.slides?.length ?? 0
+    galleryLink.value = String(
+      `photos/${storyData.value.leadGallery.gallery}?article=${storyData.value.id}&src=${route.query.src}`
+    )
+  }
+  //console.log('gallery')
+  //console.dir(gallery)
 })
 </script>
 

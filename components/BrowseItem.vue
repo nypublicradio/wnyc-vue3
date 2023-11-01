@@ -39,7 +39,9 @@ const props = defineProps({
       <div class="flex gap-1 flex-column align-items-start">
         <!-- <LiveBadge v-if="props.show.isLive" class="mb-1" /> -->
         <h2>{{ props.show.title }}</h2>
-        <p v-for="org in props.show?.producingOrganizations">{{ org.name }}</p>
+        <p v-for="org in props.show?.producingOrganizations" :key="org.name">
+          {{ org.name }}
+        </p>
       </div>
     </div>
     <Button text plain rounded class="flex-none">

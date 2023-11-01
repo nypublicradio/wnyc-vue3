@@ -148,7 +148,11 @@ watch(show, () => {
         @onClick="goToEpisodePage(ep)"
         :fallback-image="showImage"
       />
-      <skeleton-episode-item v-else v-for="show in 10" />
+      <skeleton-episode-item
+        v-else
+        v-for="(show, index) in 10"
+        :key="`sk1-${index}`"
+      />
     </div>
   </section>
 </template>

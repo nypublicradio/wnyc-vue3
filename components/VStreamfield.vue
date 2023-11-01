@@ -29,7 +29,7 @@ onMounted(() => {
 <template>
   <div class="streamfield">
     <!-- <pre>{{ props.article }}</pre> -->
-    <div v-for="(block, index) in streamfield" :key="index">
+    <div v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <!--       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"

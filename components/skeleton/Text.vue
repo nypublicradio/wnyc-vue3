@@ -39,6 +39,7 @@ const gap = rndGap()
 <template>
   <Skeleton
     v-for="(line, index) in props.lines"
+    :key="`sk-text-${index}`"
     :height="props.height"
     :width="rndWidth(75, 100)"
     :borderRadius="props.radius"
