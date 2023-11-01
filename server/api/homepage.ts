@@ -213,8 +213,10 @@ const getWNYCTopStories = async () => {
     				leadImage: article.attributes.slideshow?.[0],
     				leadGallery: article.attributes.slideshow?.[0],
 					meta: {
+						firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
 						slug: article.attributes.slug,
 					},
+					
 					title: article.attributes.title,
     				gallerySlides: article.attributes?.slideshow,
     				legacyId: article.attributes.id,
@@ -307,7 +309,7 @@ export default defineEventHandler(async (event) => {
 	const national_newscast = await getNationalNewscast();
 
 	return {
-		top_stories: topStories,
+		top_stories: aviary,
 		middle_bucket: bucket,
 		local_newscast: local_newscast,
 		national_newscast: national_newscast,
