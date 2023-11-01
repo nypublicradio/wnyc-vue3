@@ -202,7 +202,6 @@ const getWNYCTopStories = async () => {
 		} else {
 			return [];
 		}
-		//return humps.camelizeKeys(res.data).data?.attributes?.bucketItems;
 	} catch (e) {
 		//console.log(e);
 	}
