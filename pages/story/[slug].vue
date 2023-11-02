@@ -65,21 +65,23 @@ watch(stories, () => {
 })
 
 watch(storyData, async () => {
-  console.log('storyData = ', storyData.value)
+  //console.log('storyData = ', storyData.value)
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
       ({ data }) => normalizeGalleryPage(data.value)
     )
   }
   topImage.value =
-    storyData.value?.cmsSources === cmsSources.WAGTAIL
-      ? String(storyData.value?.image.id)
-      : storyData.value?.image.template ?? gallery?.slides?.[0]?.image ?? null
+    storyData.value?.cmsSource === cmsSources.WAGTAIL
+      ? String(storyData.value?.image?.id)
+      : storyData.value?.image?.template ?? gallery?.slides?.[0]?.image ?? null
+
   topCaption.value =
     storyData.value?.leadImageCaption ??
     topImage?.caption ??
     gallery.value?.slides?.[0]?.image.caption ??
     null
+
   if (storyData.value?.leadGallery) {
     galleryLength.value = gallery.value?.slides?.length ?? 0
     galleryLink.value = String(
@@ -108,7 +110,7 @@ watch(storyData, async () => {
 
     <div v-if="storyData">
       <VImage
-        v-if="storyData.image"
+        v-if="topImage"
         :src="topImage"
         :ratio="[3, 2]"
         :width="390"
