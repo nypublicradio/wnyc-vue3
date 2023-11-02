@@ -11,7 +11,7 @@ const linkMapper = (link: any) => {
 
 //Get a relative link to an article in publisher
 function getPublisherArticleLink(articleData): string {
-  return `/story/${articleData.attributes.slug}`
+	return `/story/${articleData.attributes.slug}`
 }
 
 const getLocalNewscast = async () => {
@@ -226,7 +226,7 @@ const getMiddleBucket = async () => {
 			const articles = resData.map((article: any) => {
 				article.cmsSource = 'publisher';
 				article.sortDate = article.attributes.publishAt;
-				return article;
+				return normalizeArticlePage(article);
 
 			});
 			return articles;

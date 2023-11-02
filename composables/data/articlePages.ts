@@ -111,7 +111,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
 export function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-
+  console.log(article.attributes.appearances?.authors.length)
   return Object.assign({}, normalizePage(article), {
     description: article.attributes.tease,
     image: article.attributes.imageMain,
@@ -124,14 +124,14 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     leadAsset: article.attributes.slideshow?.[0],
     leadImage: article.attributes.slideshow?.[0],
     leadGallery: article.attributes.slideshow?.[0],
-		meta: {
-			firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
-			slug: article.attributes.slug,
-		},
+    meta: {
+      firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
+      slug: article.attributes.slug,
+    },
     title: article.attributes.title,
     gallerySlides: article.attributes?.slideshow,
     legacyId: article.attributes.id,
-    authors: article.attributes.appearances?.authors,
+    authors: article.attributes.appearances?.authors.map(normalizeAuthor),
     contributingOrganizations: article.attributes?.producingOrganizations,
     sponsors: undefined,
 

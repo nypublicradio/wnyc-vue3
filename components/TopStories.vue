@@ -21,7 +21,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <!--       <pre class="text-xs">{{ article }}</pre> -->
+      <pre class="text-xs">{{ article.authors }}</pre>
       <VCard
         v-ripple
         class="p-ripple"
@@ -59,7 +59,11 @@ defineExpose({
       >
         <template #belowBlurb>
           <div class="article-metadata pointer-events-none">
-            <PipeData>
+            <PipeData
+              :hidePipe="
+                article.authors?.length == 0 || article.authors == undefined
+              "
+            >
               <template #left>
                 <VByline prefix="" :authors="article.authors" isBlockLinks>
                 </VByline>

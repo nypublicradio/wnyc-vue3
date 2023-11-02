@@ -9,6 +9,7 @@ const props = defineProps({
     default: null,
   },
 })
+console.log('props.item.attributes = ', props.item.attributes)
 </script>
 
 <template>
@@ -26,13 +27,20 @@ const props = defineProps({
           :ratio="[248, 159]"
         />
       </div>
+      {{ props.item.attributes.authors }}
       <div class="bottom flex flex-column gap-2 justify-content-between">
         <div class="flex flex-column gap-2">
           <div class="title text-sm font-bold font-meta line-height-2">
             {{ props.item.attributes.title }}
           </div>
           <div class="desc" v-html="props.item.attributes.tease" />
-          <PipeData class="text-xs">
+          <PipeData
+            :hidePipe="
+              props.item.attributes.authors.length == 0 ||
+              props.item.attributes.authors == undefined
+            "
+            class="text-xs"
+          >
             <template #left>{{ props.item.attributes.showTitle }}</template>
             <template #right>
               <span class="nobreak">{{ whenTime(props.item.attributes) }}</span>
