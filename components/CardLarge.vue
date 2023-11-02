@@ -9,41 +9,38 @@ const props = defineProps({
     default: null,
   },
 })
-console.log('props.item.attributes = ', props.item.attributes)
 </script>
 
 <template>
-  <div>
+  <div v-if="props.item">
     <VFlexibleLink
       raw
-      :to="`story/${props.item.attributes.slug}`"
+      :to="`story/${props.item.id}?src=${props.item.cmsSource}`"
       class="card-large mb-4"
     >
-      <div class="top">
+      <div class="top" v-if="props.item?.image">
         <VImage
-          :src="formatPublisherImage(props.item.attributes)"
+          :src="props.item?.image?.template"
           :width="248"
           :height="159"
           :ratio="[248, 159]"
         />
       </div>
-      {{ props.item.attributes.authors }}
       <div class="bottom flex flex-column gap-2 justify-content-between">
         <div class="flex flex-column gap-2">
           <div class="title text-sm font-bold font-meta line-height-2">
-            {{ props.item.attributes.title }}
+            {{ props.item.title }}
           </div>
-          <div class="desc" v-html="props.item.attributes.tease" />
+          <div class="desc" v-html="props.item.tease" />
           <PipeData
             :hidePipe="
-              props.item.attributes.authors.length == 0 ||
-              props.item.attributes.authors == undefined
+              props.item.authors?.length == 0 || props.item.authors == undefined
             "
             class="text-xs"
           >
-            <template #left>{{ props.item.attributes.showTitle }}</template>
+            <template #left>{{ props.item.showTitle }}</template>
             <template #right>
-              <span class="nobreak">{{ whenTime(props.item.attributes) }}</span>
+              <span class="nobreak">{{ whenTime(props.item) }}</span>
             </template>
           </PipeData>
         </div>

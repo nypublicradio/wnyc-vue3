@@ -1,6 +1,7 @@
 <script setup>
 import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
+import { cmsSources } from '~/composables/globals'
 import { trackClickEvent, whenTime } from '~/utilities/helpers'
 
 const props = defineProps({
@@ -21,11 +22,15 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <pre class="text-xs">{{ article.authors }}</pre>
+      <!-- <pre class="text-xs">{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
-        :src="article.leadImage"
+        :src="
+          article.cmsSource === cmsSources.WAGTAIL
+            ? article.leadImage
+            : article.image?.template
+        "
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
         :maxWidth="article.leadImageMaxWidth"

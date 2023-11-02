@@ -3,26 +3,27 @@ import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 import VImageGallery from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue'
 import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { trackClickEvent, whenTime } from '~/utilities/helpers'
+import { trackClickEvent, whenTime, getMinutes } from '~/utilities/helpers'
 import { useCommentCounts } from '~/composables/comments'
 import StarIcon from '~/components/icons/StarIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
 import CommentsIcon from '~/components/icons/CommentsIcon.vue'
+import { cmsSources } from '~/composables/globals'
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
 import { normalizeGalleryPage } from '~/composables/data/galleryPages'
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
-//console.dir(route)
-//const storyData = humps.camelizeKeys(storyDataRaw)
+
 const config = useRuntimeConfig()
 const { data: storyData } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
+const storySource =
+  route.query.src === cmsSources.WAGTAIL ? 'Gothamist' : 'WNYC'
 const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
 const topStories = ref(null)
-const storySource = route.query.src === 'wagtail' ? 'Gothamist' : 'WNYC'
 const gallery = ref(null)
 const topImage = ref(null)
 const topCaption = ref(null)
@@ -59,32 +60,32 @@ const handleShare = () => {
 
 watch(stories, () => {
   topStories.value = stories.value.top_stories.filter(
-    (item) => item.id !== storyData.value.id
+    (item) => item.id !== storyData.value?.id
   )
 })
 
 watch(storyData, async () => {
-  console.dir(storyData.value)
-  if (storyData.value.leadGallery) {
+  console.log('storyData = ', storyData.value)
+  if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
       ({ data }) => normalizeGalleryPage(data.value)
     )
   }
   topImage.value =
-    storyData.value.leadImage ?? gallery?.slides?.[0]?.image ?? null
+    storyData.value?.cmsSources === cmsSources.WAGTAIL
+      ? String(storyData.value?.image.id)
+      : storyData.value?.image.template ?? gallery?.slides?.[0]?.image ?? null
   topCaption.value =
-    storyData.value.leadImageCaption ??
+    storyData.value?.leadImageCaption ??
     topImage?.caption ??
     gallery.value?.slides?.[0]?.image.caption ??
     null
-  if (storyData.value.leadGallery) {
+  if (storyData.value?.leadGallery) {
     galleryLength.value = gallery.value?.slides?.length ?? 0
     galleryLink.value = String(
-      `photos/${storyData.value.leadGallery.gallery}?article=${storyData.value.id}&src=${route.query.src}`
+      `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
     )
   }
-  //console.log('gallery')
-  //console.dir(gallery)
 })
 </script>
 
@@ -108,10 +109,13 @@ watch(storyData, async () => {
     <div v-if="storyData">
       <VImage
         v-if="storyData.image"
-        :src="String(storyData.image.id)"
+        :src="topImage"
         :ratio="[3, 2]"
+        :width="390"
+        :height="260"
         sizes="xs:390px md:768px lg:1024px xl:1920px"
         density="x1 x2"
+        :srcset="[1, 2]"
         :alt="storyData.image.alt"
         class="story-page-image"
       >
@@ -150,27 +154,37 @@ watch(storyData, async () => {
         </PipeData>
         <h1 class="mb-1 alt">{{ storyData.title }}</h1>
         <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
-          <VByline :authors="storyData.authors" />
+          <VByline
+            v-if="storyData.authors.length > 0"
+            :authors="storyData.authors"
+          />
         </div>
-        <div class="flex align-items-center gap-2 -ml-2">
-          <Button text plain rounded @click="handleStar()">
-            <template #icon> <StarIcon /></template>
-          </Button>
-          <Button text plain rounded @click="handleShare()">
-            <template #icon> <ShareIcon /></template>
-          </Button>
-          <Button
-            text
-            plain
-            rounded
-            :label="`&nbsp; ${String(commentCount)} ${
-              commentCount === 1 ? 'comment' : 'comments'
-            }`"
-            class="comments-btn pl-2 text-xs font-normal"
-            @click="handleComments()"
-          >
-            <template #icon> <CommentsIcon /></template>
-          </Button>
+        <div
+          class="flex align-items-center justify-content-between gap-3 flex-wrap"
+        >
+          <div>
+            <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
+          </div>
+          <div class="flex align-items-center gap-2 -ml-2">
+            <Button text plain rounded @click="handleStar()">
+              <template #icon> <StarIcon /></template>
+            </Button>
+            <Button text plain rounded @click="handleShare()">
+              <template #icon> <ShareIcon /></template>
+            </Button>
+            <Button
+              text
+              plain
+              rounded
+              :label="`&nbsp; ${String(commentCount)} ${
+                commentCount === 1 ? 'comment' : 'comments'
+              }`"
+              class="comments-btn pl-2 text-xs font-normal"
+              @click="handleComments()"
+            >
+              <template #icon> <CommentsIcon /></template>
+            </Button>
+          </div>
         </div>
       </section>
 

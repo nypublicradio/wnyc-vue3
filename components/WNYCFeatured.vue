@@ -12,7 +12,7 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
 const props = defineProps({
-  bucketItems: {
+  articles: {
     type: Object,
     default: null,
   },
@@ -23,7 +23,7 @@ const getDotMenuItems = (bucketItem) => {
   return [
     {
       label: 'Download',
-      title: bucketItem.attributes.title,
+      title: bucketItem.title,
       command: () => {
         toast.add({
           severity: 'info',
@@ -34,16 +34,16 @@ const getDotMenuItems = (bucketItem) => {
         trackClickEvent(
           'Click Tracking - Audio Download',
           'Large Card',
-          bucketItem.attributes.title
+          bucketItem.title
         )
       },
     },
     {
       label: 'Copy embed code',
-      title: bucketItem.attributes.title,
-      embedCode: bucketItem.attributes.embedCode,
+      title: bucketItem.title,
+      embedCode: bucketItem.embedCode,
       command: () => {
-        copyToClipBoard(bucketItem.attributes.embedCode)
+        copyToClipBoard(bucketItem.embedCode)
           ? toast.add({
               severity: 'info',
               summary: 'Embed code copied to clipboard',
@@ -57,7 +57,7 @@ const getDotMenuItems = (bucketItem) => {
         trackClickEvent(
           'Click Tracking - Audio Copy Embed Code',
           'Large Card',
-          bucketItem.attributes.embedCode
+          bucketItem.embedCode
         )
       },
     },
@@ -73,12 +73,12 @@ const onMenuChange = (e) => {
 const normalizedItem = (item) => {
   return {
     ...item,
-    file: item.attributes.audio,
-    title: item.attributes.title,
-    image: resizePublisherImage(item.attributes, 150, 150, 80),
-    duration: item.attributes.estimatedDuration,
-    details: item.attributes.body,
-    first_published_at: item.attributes.publishAt,
+    file: item.audio,
+    title: item.title,
+    image: resizePublisherImage(item.image, 150, 150, 80),
+    duration: item.estimatedDuration,
+    details: item.body,
+    first_published_at: item.publishAt,
   }
 }
 
@@ -88,22 +88,18 @@ const togglePlay = (item) => {
     currentEpisode.value = normalizedItem(item)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent(
-    'Click Tracking - Large Card',
-    item.attributes.title,
-    'toggle play'
-  )
+  trackClickEvent('Click Tracking - Large Card', item.title, 'toggle play')
 }
 </script>
 
 <template>
   <div>
-    <div v-if="bucketItems" class="wnyc-featured">
-      <!-- <pre class="text-sm">{{ bucketItems[0].id }}</pre> -->
+    <div v-if="articles" class="wnyc-featured">
+      <!-- <pre class="text-sm">{{ articles[0].id }}</pre> -->
       <HorizontalScrollFeature>
         <CardLarge
-          v-if="bucketItems"
-          v-for="item in bucketItems"
+          v-if="articles"
+          v-for="item in articles"
           :key="item.label"
           :item="item"
           style="min-width: 248px"
@@ -111,8 +107,8 @@ const togglePlay = (item) => {
         >
           <template #play>
             <PlayButton
-              :label="getMinutes(item.attributes.estimatedDuration, 1)"
-              :file="item.attributes.audio"
+              :label="getMinutes(item.estimatedDuration, 1)"
+              :file="item.audio"
               @onClick="togglePlay(item)"
               @click.prevent
             />
@@ -126,12 +122,12 @@ const togglePlay = (item) => {
               class="-mr-1"
               size="large"
             >
-              <template #end v-if="item.attributes.embedCode">
+              <template #end v-if="item.embedCode">
                 <div class="p-0">
                   <Textarea
                     disabled
                     class="w-full text-xs mt-2"
-                    v-model="item.attributes.embedCode"
+                    v-model="item.embedCode"
                     rows="9"
                   />
                 </div>

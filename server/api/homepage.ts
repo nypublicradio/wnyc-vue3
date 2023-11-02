@@ -1,6 +1,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 
 const GOTHAMISTDOTCOM = 'https://gothamist.com/'
@@ -194,7 +195,7 @@ const getWNYCTopStories = async () => {
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
 		if (resData) {
 			const articles = resData.map((article: any) => {
-				article.cmsSource = 'publisher';
+				article.cmsSource = cmsSources.PUBLISHER;
 				article.sortDate = article.attributes.publishAt;
 				return normalizeArticlePage(article);
 			});
@@ -224,7 +225,7 @@ const getMiddleBucket = async () => {
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
 		if (resData) {
 			const articles = resData.map((article: any) => {
-				article.cmsSource = 'publisher';
+				article.cmsSource = cmsSources.PUBLISHER;
 				article.sortDate = article.attributes.publishAt;
 				return normalizeArticlePage(article);
 

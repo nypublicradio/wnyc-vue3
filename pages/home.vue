@@ -69,7 +69,7 @@ watch(pagedata, () => {
     <section>
       <h2>Featured from WNYC</h2>
     </section>
-    <pre class="text-sm">{{ bucketItems }}</pre>
-    <WNYCFeatured :bucketItems="bucketItems" />
+    <!-- <pre class="text-sm">{{ bucketItems?.[0] }}</pre> -->
+    <WNYCFeatured :articles="bucketItems" />
   </div>
 </template>
