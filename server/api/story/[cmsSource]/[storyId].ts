@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { normalizeWagtailPage, normalizePublisherPage } from '~/composables/data/articlePages'
+import { normalizePublisherPage, normalizeWagtailPage} from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
 
@@ -11,7 +11,7 @@ const getWagtailStoryData = async (id: string) => {
             url: `${config.public.AVIARY_BASE_API}pages/${id}/`,
         };
         const res = await axios(option);
-        //console.log(humps.camelizeKeys(res.data));
+        //return humps.camelizeKeys(res.data);
         return normalizeWagtailPage(humps.camelizeKeys(res.data));
     } catch (e) {
         //console.log(e);

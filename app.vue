@@ -169,51 +169,6 @@ onMounted(async () => {
     //checkAppLaunchUrl()
   }
 
-  //New Relic Instrumentation
-  let appToken
-  if (Capacitor.getPlatform() === 'ios') {
-    appToken = 'AA731b117edcff278d3a204187b46ab3d347a16888-NRMA'
-  } else {
-    appToken = 'AA8cda4e9935230376ef2dad8356c3b9bada1365df-NRMA'
-  }
-
-  // this is giving a lot of warnings in the console
-
-  // let agentConfig: AgentConfiguration = {
-  //   // Android specific option
-  //   // Optional: Enable or disable collection of event data.
-  //   analyticsEventEnabled: true,
-
-  //   // iOS specific option
-  //   // Optional: Enable/Disable automatic instrumentation of WebViews.
-  //   webViewInstrumentation: true,
-
-  //   // Optional: Enable or disable crash reporting.
-  //   crashReportingEnabled: true,
-
-  //   // Optional: Enable or disable interaction tracing. Trace instrumentation still occurs, but no traces are harvested. This will disable default and custom interactions.
-  //   interactionTracingEnabled: true,
-
-  //   // Optional: Enable or disable reporting successful HTTP requests to the MobileRequest event type.
-  //   networkRequestEnabled: true,
-
-  //   // Optional: Enable or disable reporting network and HTTP request errors to the MobileRequestError event type.
-  //   networkErrorRequestEnabled: true,
-
-  //   // Optional: Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
-  //   httpResponseBodyCaptureEnabled: true,
-
-  //   // Optional: Enable or disable agent logging.
-  //   loggingEnabled: true,
-
-  //   // Optional: Specifies the log level. Omit this field for the default log level.
-  //   // Options include: ERROR (least verbose), WARNING, INFO, VERBOSE, AUDIT (most verbose).
-  //   logLevel: NREnums.LogLevel.INFO,
-
-  //   // Optional: Enable or disable sending JS console logs to New Relic.
-  //   sendConsoleEvents: true,
-  // }
-
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {
     if (!document.hidden) {
