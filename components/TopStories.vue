@@ -20,22 +20,28 @@ defineExpose({
 
 <template>
   <div v-if="articles" class="top-stories">
-    <div v-for="(article, index) in articles" :key="index" class="mb-4">
-      <!-- <pre>{{ article }}</pre> -->
+    <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
+      <!--       <pre class="text-xs">{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
         :src="article.leadImage"
         :title="article.title"
         :loading="index > 1 ? 'lazy' : 'eager'"
-        :link="`/story/${article.meta.slug}`"
         :maxWidth="article.leadImageMaxWidth"
         :maxHeight="article.leadImageMaxHeight"
         :sponsored="article.sponsoredContent"
         :width="116"
         :height="116"
         :ratio="[1, 1]"
-        @click="navigateTo(`/story/${article.meta.slug}`)"
+        @click="
+          navigateTo({
+            path: `/story/${article.id}`,
+            query: {
+              src: article.cmsSource,
+            },
+          })
+        "
         @title-click="
           trackClickEvent(
             'Click Tracking - Top Story',
@@ -52,7 +58,7 @@ defineExpose({
         "
       >
         <template #belowBlurb>
-          <div class="article-metadata">
+          <div class="article-metadata pointer-events-none">
             <PipeData>
               <template #left>
                 <VByline prefix="" :authors="article.authors" isBlockLinks>

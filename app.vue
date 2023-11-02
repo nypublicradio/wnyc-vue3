@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { trackClickEvent, getAndSetUserProfile } from '~/utilities/helpers'
-import {
-  NewRelicCapacitorPlugin,
-  NREnums,
-  //AgentConfiguration,
-} from '@newrelic/newrelic-capacitor-plugin'
 import { Capacitor } from '@capacitor/core'
 import { App /* URLOpenListenerEvent */ } from '@capacitor/app'
 import {
@@ -218,11 +213,6 @@ onMounted(async () => {
   //   // Optional: Enable or disable sending JS console logs to New Relic.
   //   sendConsoleEvents: true,
   // }
-
-  // NewRelicCapacitorPlugin.start({
-  //   appKey: appToken,
-  //   agentConfiguration: agentConfig,
-  // })
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener('visibilitychange', (event) => {

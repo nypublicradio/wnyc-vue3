@@ -1,13 +1,15 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-
+import { trackClickEvent } from '~/utilities/helpers'
+//import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 const props = defineProps({
-  streamfield: {
-    type: Array,
+  article: {
+    type: Object,
     default: null,
-    required: true,
   },
 })
+
+const streamfield = props.article.body
 
 onMounted(() => {
   // you can't have script tags in v-html
@@ -26,15 +28,61 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <div v-for="(block, index) in streamfield" :key="index">
+    <!-- <pre>{{ props.article }}</pre> -->
+    <div v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- 1/2 way through the streamfield, insert the donation block -->
-      <streamfield-donation
+      <!--       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"
-      />
+        @onClick="
+          trackClickEvent(
+            `story page id ${props.article.id}`,
+            'donate banner',
+            'donate button'
+          )
+        "
+      /> -->
+      <!-- image -->
+      <div v-if="block.type === 'image'" class="streamfield-image my-4">
+        <VImage
+          :src="String(block.value.image.id)"
+          :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
+          :alt="block.value.image.alt"
+          :width="block.value.image.width"
+          :height="block.value.image.height"
+          sizes="xs:390px md:768px lg:1024px xl:1920px"
+          density="x1 x2"
+        >
+          <!--           <template #caption>
+            <VImageCaption
+              v-if="block.value.image.caption"
+              :text="block.value.image.caption"
+            />
+          </template> -->
+          <template #belowImage>
+            <div>
+              <p class="px-4 text-sm mt-1">
+                {{ block.value.image.caption }}
+              </p>
+              <p class="px-4 text-xs mt-2">
+                {{ block.value.image.credit }}
+              </p>
+            </div>
+          </template>
+        </VImage>
+      </div>
+
       <section v-else>
+        <!-- paragraph -->
+        <p
+          v-if="block.type === 'paragraph'"
+          class="streamfield-paragraph"
+          v-html="block.value"
+        />
+        <!-- image -->
+
         <!-- block-quote -->
         <div
-          v-if="block.type === 'block_quote'"
+          v-else-if="block.type === 'block_quote'"
           class="streamfield-block-quote"
         >
           <blockquote>
@@ -64,22 +112,6 @@ onMounted(() => {
           :aria-label="block.value"
         />
 
-        <!-- image -->
-        <div v-else-if="block.type === 'image'" class="streamfield-image">
-          <VImage
-            :src="block.value.image.file"
-            :ratio="[1, 1]"
-            :alt="block.value.image.alt"
-          />
-        </div>
-
-        <!-- paragraph -->
-        <p
-          v-else-if="block.type === 'paragraph'"
-          class="streamfield-paragraph"
-          v-html="block.value"
-        />
-
         <!-- pull-quote -->
         <streamfield-pull-quote
           v-else-if="block.type === 'pull_quote'"
@@ -87,12 +119,24 @@ onMounted(() => {
           :author="block.value.attribution"
         />
       </section>
+      <!-- 1/2 way through the streamfield, insert the donation block -->
+      <streamfield-donation
+        v-if="index === Math.floor(streamfield.length / 2)"
+        @onClick="
+          trackClickEvent(
+            `story page id ${props.article.id}`,
+            'donate banner',
+            'donate button'
+          )
+        "
+      />
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .streamfield .streamfield-paragraph > * {
+  @include html-formatting();
   margin-bottom: 1rem;
   &:last-child {
     margin-bottom: 0;

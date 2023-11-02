@@ -86,7 +86,7 @@ onMounted(() => {
       <p>Saved files:</p>
       <p>!!Storage limit: {{ used }} of {{ granted }}</p>
       <ul>
-        <li v-for="file in fileSystemLS" :key="file.name">
+        <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
           <Button
             :label="`${file.title} - ${formatFileSize(file.size)}`"
             @click="playStoredMp3(file)"

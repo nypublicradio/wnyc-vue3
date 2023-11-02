@@ -9,8 +9,9 @@ import {
   IOSSettings,
 } from 'capacitor-native-settings'
 import { Browser } from '@capacitor/browser';
-
+//import { mediaTypes } from '~/composables/globals.ts'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
+import { ca } from 'date-fns/locale';
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -415,8 +416,8 @@ export const isLiveStream = () => {
 export const whenTime = (data) => {
 
   const res = data.updatedDate
-    ? howLongAgo(data.updatedDate)
-    : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
+    ? howLongAgo(data.updatedDate) : data.publicationDate ? howLongAgo(data.publicationDate)
+      : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
   return res ?? null
 }
 
@@ -575,3 +576,50 @@ export const getAndSetUserProfile = async () => {
     }
   }
 }
+
+interface RecentlyViewed {
+  uid: string;
+  media_type: string;
+  cms_source: string;
+  media_id: string;
+  media_slug: string;
+}
+
+const isDifferentMedia = (media: object, type: string) => {
+  const currentEpisodeHolder = useCurrentEpisodeHolder()
+  switch (type) {
+    case 'live':
+      return currentEpisodeHolder.value?.slug !== media?.slug
+
+    default:
+      return currentEpisodeHolder.value?.id !== media?.id
+  }
+}
+
+export const saveRecentlyPlayed = async (media: object, type: string) => {
+  console.log('media', media)
+  console.log('type', type)
+  // detect if logged in
+  const user = useCurrentUser()
+  if (user.value) {
+    // detect if the media has changed
+    //if (isDifferentMedia(media, type)) {
+
+    // format the media object to save
+    const uid = user.value?.id
+    const cms_source = media?.cms_source
+    const media_id = media?.id
+    const media_slug = media?.slug
+    const media_type = type
+
+    const recentlyViewed: RecentlyViewed = { uid, media_type, cms_source, media_id, media_slug };
+    console.log('recentlyViewed', recentlyViewed)
+    //save instance to Supabase
+    const client = useSupabaseClient()
+    const { error } = await client
+      .from('recently_viewed')
+      .insert([recentlyViewed])
+    //}
+  }
+
+} 

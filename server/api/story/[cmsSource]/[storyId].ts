@@ -1,24 +1,24 @@
 import axios from 'axios'
 import humps from 'humps'
-import { normalizeWagtailPage , normalizePublisherPage} from '~/composables/data/articlePages'
+import { normalizeWagtailPage, normalizePublisherPage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
 
-const getWagtailStoryData = async (id: string) => { 
+const getWagtailStoryData = async (id: string) => {
     try {
         const option = {
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}pages/${id}/`,
         };
         const res = await axios(option);
-        //return humps.camelizeKeys(res.data);
+        //console.log(humps.camelizeKeys(res.data));
         return normalizeWagtailPage(humps.camelizeKeys(res.data));
     } catch (e) {
         //console.log(e);
     }
 };
 
-const getPublisherStoryData = async (id: string) => { 
+const getPublisherStoryData = async (id: string) => {
     try {
         const option = {
             method: 'GET',
@@ -31,7 +31,7 @@ const getPublisherStoryData = async (id: string) => {
     }
 };
 
-const getStoryData = async (id: string, cmsSource: string) => { 
+const getStoryData = async (id: string, cmsSource: string) => {
     switch (cmsSource) {
         case 'wagtail':
             return await getWagtailStoryData(id);
@@ -40,7 +40,7 @@ const getStoryData = async (id: string, cmsSource: string) => {
         default:
             return null;
     };
-};  
+};
 
 // Get story data from CMS
 

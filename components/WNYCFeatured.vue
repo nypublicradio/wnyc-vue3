@@ -98,7 +98,8 @@ const togglePlay = (item) => {
 
 <template>
   <div>
-    <div class="wnyc-featured">
+    <div v-if="bucketItems" class="wnyc-featured">
+      <!-- <pre class="text-sm">{{ bucketItems[0].id }}</pre> -->
       <HorizontalScrollFeature>
         <CardLarge
           v-if="bucketItems"
@@ -106,6 +107,7 @@ const togglePlay = (item) => {
           :key="item.label"
           :item="item"
           style="min-width: 248px"
+          :class="item.id"
         >
           <template #play>
             <PlayButton
@@ -138,7 +140,7 @@ const togglePlay = (item) => {
           </template>
         </CardLarge>
 
-        <div v-else v-for="item in 5">
+        <div v-else v-for="(item, index) in 5" :key="`sk1-${index}`">
           <div class="skeleton-holder">
             <Skeleton
               class="flex-none"

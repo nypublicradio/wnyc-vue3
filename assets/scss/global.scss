@@ -275,7 +275,7 @@ label {
 // remove sticky hover on mobile
 @media (hover: hover) {
   .p-button:hover {
-    background-color: #ccf6c8;
+    //background-color: #ccf6c8;
   }
 }
 
@@ -422,3 +422,9 @@ a:visited {
     width: 38px;
   }
 }
+/* .v-image {
+
+  .p-progress-spinner {
+    z-index: 99999 !important;
+  }
+} */

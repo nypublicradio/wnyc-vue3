@@ -15,15 +15,25 @@ export default defineNuxtConfig({
   },
   image: {
     dir: 'public',
+    provider: 'wagtail',
+    screens: {
+      xs: 390,
+      sm: 640,
+      md: 767,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+      '2xl': 1920
+    },
     wagtail: {
       baseURL: process.env.IMAGE_BASE_URL,
       screens: {
-        xs: 375,
-        sm: 576,
-        md: 768,
-        lg: 992,
+        xs: 390,
+        sm: 640,
+        md: 767,
+        lg: 1024,
         xl: 1280,
-        xxl: 1366,
+        xxl: 1536,
         '2xl': 1920
       },
     },
@@ -138,6 +148,7 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_KEY,
       supabaseAuthSignInRedirectTo: process.env.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
       supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
+      OPENWEB_SPOT_ID: process.env['OPENWEB_SPOT_ID'] ?? 'sp_U3rk7ZAf',
     }
   },
 })

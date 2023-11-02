@@ -1,4 +1,19 @@
-<script setup></script>
+<script setup>
+import { useCurrentUser } from '~/composables/states'
+const user = useCurrentUser()
+const client = useSupabaseClient()
+
+const list = ref(null)
+
+if (user.value) {
+  let { data: recently_viewed, error } = await client
+    .from('recently_viewed')
+    .select('*')
+    .eq('uid', user.value.id)
+  console.log('data', recently_viewed)
+  list.value = recently_viewed
+}
+</script>
 
 <template>
   <section class="recently-played">
@@ -16,6 +31,9 @@
         size="small"
         @click="navigateTo('/live')"
       />
+    </div>
+    <div v-if="list" v-for="item in list">
+      {{ item.created_at }}
     </div>
   </section>
 </template>

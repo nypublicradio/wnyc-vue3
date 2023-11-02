@@ -97,6 +97,7 @@ const onMenuChange = (e) => {
 
 watch(episode, () => {
   episodeData.value = episode.value.episode
+  console.dir(episodeData.value)
 })
 </script>
 
@@ -264,7 +265,7 @@ watch(episode, () => {
           <Skeleton height="29px" width="29px" borderRadius="16px" />
         </div>
       </div>
-      <SkeletonText :lines="6" class="mt-1" />
+      <skeleton-text :lines="6" class="mt-1" />
     </section>
   </div>
 </template>
