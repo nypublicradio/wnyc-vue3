@@ -33,8 +33,8 @@ export interface ArticlePage extends Page {
   link: string
   leadImageCaption?: string
   imageLink?: string
-  cmsSource: string
-  sortDate: Date
+  cmsSource?: string
+  sortDate?: Date
   leadAsset?: any[]
   leadImage?: Image
   leadGallery?: any
