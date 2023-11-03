@@ -3,6 +3,10 @@ export const mediaTypes = {
     ARTICLE: 'article',
     EPISODE: 'episode',
 }
+export const cmsSources = {
+    PUBLISHER: 'publisher',
+    WAGTAIL: 'wagtail',
+}
 
 //Global vars for the browser top color
 export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffffff')

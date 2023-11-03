@@ -1,6 +1,7 @@
 <script setup>
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 import { trackClickEvent } from '~/utilities/helpers'
+import { cmsSources } from '~/composables/globals'
 //import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 const props = defineProps({
   article: {
@@ -8,6 +9,8 @@ const props = defineProps({
     default: null,
   },
 })
+
+console.log('props.article', props.article)
 
 const streamfield = props.article.body
 
@@ -28,27 +31,23 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
+    <section
+      v-if="props.article.cmsSource === cmsSources.PUBLISHER"
+      v-html="props.article.body"
+      class="html-formatting"
+    />
     <!-- <pre>{{ props.article }}</pre> -->
-    <div v-for="(block, index) in streamfield" :key="`block-${index}`">
-      <!-- 1/2 way through the streamfield, insert the donation block -->
-      <!--       <streamfield-donation
-        v-if="index === Math.floor(streamfield.length / 2)"
-        @onClick="
-          trackClickEvent(
-            `story page id ${props.article.id}`,
-            'donate banner',
-            'donate button'
-          )
-        "
-      /> -->
+    <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <div v-if="block.type === 'image'" class="streamfield-image my-4">
+        <!--     :width="block.value.image.width"
+          :height="block.value.image.height" -->
         <VImage
           :src="String(block.value.image.id)"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
           :alt="block.value.image.alt"
-          :width="block.value.image.width"
-          :height="block.value.image.height"
+          :maxWidth="block.value.image.width"
+          :maxHeight="block.value.image.height"
           sizes="xs:390px md:768px lg:1024px xl:1920px"
           density="x1 x2"
         >

@@ -39,7 +39,7 @@
     "@hypernym/nuxt-gsap": "^2.2.2",
     "@nuxt/image": "^1.0.0",
     "@nuxtjs/supabase": "^1.0.2",
-    "@nypublicradio/nypr-design-system-vue3": "^2.0.83",
+    "@nypublicradio/nypr-design-system-vue3": "^2.0.84",
     "@types/humps": "^2.0.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",

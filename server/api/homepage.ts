@@ -1,6 +1,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 
 const GOTHAMISTDOTCOM = 'https://gothamist.com/'
@@ -11,7 +12,7 @@ const linkMapper = (link: any) => {
 
 //Get a relative link to an article in publisher
 function getPublisherArticleLink(articleData): string {
-  return `/story/${articleData.attributes.slug}`
+	return `/story/${articleData.attributes.slug}`
 }
 
 const getLocalNewscast = async () => {
@@ -165,11 +166,13 @@ const getGothamistTopStories = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).items;
+		//console.log('WAGTAIL RESDATA = ', resData[0]);
 		const articles = resData.map((article: any) => {
 			article.authors = article.relatedAuthors.map((author: any) => {
 				return normalizeAuthor(author);
 			});
 			article.link = getArticleLink(article);
+			article.type = 'story';
 			article.leadImage = getWagtailImageId(article);
 			article.leadImageMaxWidth = article.leadAsset?.[0]?.value?.image?.width;
 			article.leadImageMaxHeight = article.leadAsset?.[0]?.value?.image?.height;
@@ -192,9 +195,10 @@ const getWNYCTopStories = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
+		//console.log('WNYC RESDATA = ', resData[0]);
 		if (resData) {
 			const articles = resData.map((article: any) => {
-				article.cmsSource = 'publisher';
+				article.cmsSource = cmsSources.PUBLISHER;
 				article.sortDate = article.attributes.publishAt;
 				return normalizeArticlePage(article);
 			});
@@ -224,9 +228,9 @@ const getMiddleBucket = async () => {
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
 		if (resData) {
 			const articles = resData.map((article: any) => {
-				article.cmsSource = 'publisher';
+				article.cmsSource = cmsSources.PUBLISHER;
 				article.sortDate = article.attributes.publishAt;
-				return article;
+				return normalizeArticlePage(article);
 
 			});
 			return articles;

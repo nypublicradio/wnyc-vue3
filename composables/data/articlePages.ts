@@ -1,5 +1,6 @@
 import type Author from '../types/Author'
 import type { ArticlePage } from '../types/Page'
+import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
 
 // Get a list of article pages using the Aviary /pages api
@@ -57,9 +58,9 @@ function normalizeAuthor(author: Record<string, any>): Author {
 }
 
 export function normalizeArticlePage(article: Record<string, any | undefined>): ArticlePage {
-  if (article.cmsSource === 'wagtail')
+  if (article.cmsSource === cmsSources.WAGTAIL)
     return normalizeWagtailPage(article)
-  else if (article.cmsSource === 'publisher')
+  else if (article.cmsSource === cmsSources.PUBLISHER)
     return normalizePublisherPage(article)
   else
     return null
@@ -75,7 +76,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     leadImageCaption: article.leadAsset?.[0]?.value?.caption || article.leadAsset?.[0]?.value?.image?.caption,
     imageLink: article.leadAsset?.[0]?.value?.imageLink,
     link: getWagtailArticleLink(article),
-
+    cmsSource: cmsSources.WAGTAIL,
     leadAsset: article.leadAsset?.[0],
     leadImage: article.leadAsset?.[0]?.type === 'lead_image' ? article.leadAsset?.[0]?.value.image : undefined,
     leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined,
@@ -105,33 +106,35 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     // for comments
     disableComments: article.disableComments,
     commentId: String(article.legacyId ?? article.uuid),
+    estimatedDuration: undefined,
   })
 }
 
 export function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-
+  // console.log(article.attributes)
   return Object.assign({}, normalizePage(article), {
     description: article.attributes.tease,
-    image: article.attributes.imageMain,
+    image: article.type === 'show' ? article.attributes.image : article.attributes.imageMain,
     leadImageCaption: article.attributes.imageCaption,
     imageLink: undefined,
-    type: article.attributes.itemType,
+    type: article.type === 'show' ? article.type : article.attributes.itemType,
     link: getPublisherArticleLink(article),
-    cmsSource: article.cmsSource,
+    cmsSource: cmsSources.PUBLISHER,
     sortDate: article.attributes.publishAt,
     leadAsset: article.attributes.slideshow?.[0],
     leadImage: article.attributes.slideshow?.[0],
     leadGallery: article.attributes.slideshow?.[0],
-		meta: {
-			firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
-			slug: article.attributes.slug,
-		},
+    meta: {
+      firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
+      slug: article.attributes.slug,
+    },
     title: article.attributes.title,
+    tease: article.attributes.tease,
     gallerySlides: article.attributes?.slideshow,
     legacyId: article.attributes.id,
-    authors: article.attributes.appearances?.authors,
+    authors: article.attributes.appearances?.authors.map(normalizeAuthor),
     contributingOrganizations: article.attributes?.producingOrganizations,
     sponsors: undefined,
 
@@ -154,6 +157,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     // for comments
     disableComments: undefined,
     commentId: undefined,
+    estimatedDuration: article.attributes.estimatedDuration,
   })
 }
 

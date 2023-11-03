@@ -62,13 +62,14 @@ watch(pagedata, () => {
       />
     </section>
     <section>
-      <h2 class="mb-2">Top stories from Gothamist</h2>
+      <h2 class="mb-2">Top stories</h2>
       <!-- <pre>{{ topStories[0] }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
     <section>
       <h2>Featured from WNYC</h2>
     </section>
-    <WNYCFeatured :bucketItems="bucketItems" />
+    <!-- <pre class="text-sm">{{ bucketItems?.[0] }}</pre> -->
+    <WNYCFeatured :articles="bucketItems" />
   </div>
 </template>

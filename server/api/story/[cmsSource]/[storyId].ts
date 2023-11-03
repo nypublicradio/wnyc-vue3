@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { normalizePublisherPage, normalizeWagtailPage} from '~/composables/data/articlePages'
+import { normalizePublisherPage, normalizeWagtailPage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
 
@@ -12,6 +12,7 @@ const getWagtailStoryData = async (id: string) => {
         };
         const res = await axios(option);
         //return humps.camelizeKeys(res.data);
+
         return normalizeWagtailPage(humps.camelizeKeys(res.data));
     } catch (e) {
         //console.log(e);
@@ -25,6 +26,7 @@ const getPublisherStoryData = async (id: string) => {
             url: `${config.public.PUBLISHER_BASE_API}v3/story-pk/${id}/`,
         };
         const res = await axios(option);
+
         return normalizePublisherPage(humps.camelizeKeys(res.data).data);
     } catch (e) {
         //console.log(e);
@@ -32,6 +34,7 @@ const getPublisherStoryData = async (id: string) => {
 };
 
 const getStoryData = async (id: string, cmsSource: string) => {
+
     switch (cmsSource) {
         case 'wagtail':
             return await getWagtailStoryData(id);
