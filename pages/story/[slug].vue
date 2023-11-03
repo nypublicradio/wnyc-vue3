@@ -65,7 +65,7 @@ watch(stories, () => {
 })
 
 watch(storyData, async () => {
-  //console.log('storyData = ', storyData.value)
+  console.log('storyData = ', storyData.value)
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
       ({ data }) => normalizeGalleryPage(data.value)
@@ -112,12 +112,10 @@ watch(storyData, async () => {
       <VImage
         v-if="topImage"
         :src="topImage"
-        :ratio="[3, 2]"
-        :width="390"
-        :height="260"
+        :maxWidth="storyData.image.width"
+        :maxHeight="storyData.image.height"
         sizes="xs:390px md:768px lg:1024px xl:1920px"
         density="x1 x2"
-        :srcset="[1, 2]"
         :alt="storyData.image.alt"
         class="story-page-image"
       >
