@@ -166,11 +166,13 @@ const getGothamistTopStories = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).items;
+		//console.log('WAGTAIL RESDATA = ', resData[0]);
 		const articles = resData.map((article: any) => {
 			article.authors = article.relatedAuthors.map((author: any) => {
 				return normalizeAuthor(author);
 			});
 			article.link = getArticleLink(article);
+			article.type = 'story';
 			article.leadImage = getWagtailImageId(article);
 			article.leadImageMaxWidth = article.leadAsset?.[0]?.value?.image?.width;
 			article.leadImageMaxHeight = article.leadAsset?.[0]?.value?.image?.height;
@@ -193,6 +195,7 @@ const getWNYCTopStories = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
+		//console.log('WNYC RESDATA = ', resData[0]);
 		if (resData) {
 			const articles = resData.map((article: any) => {
 				article.cmsSource = cmsSources.PUBLISHER;

@@ -1,28 +1,28 @@
 <script setup>
-import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
-import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { cmsSources } from '~/composables/globals'
-import { trackClickEvent, whenTime } from '~/utilities/helpers'
+import VCard from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue";
+import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue";
+import { cmsSources } from "~/composables/globals";
+import { trackClickEvent, whenTime } from "~/utilities/helpers";
+import { usePrimeVue } from "primevue/config";
 
 const props = defineProps({
   articles: {
     type: Array,
     default: null,
   },
-})
+});
 
 // TEMP fix to make ripple work
-import { usePrimeVue } from 'primevue/config'
-const $primevue = usePrimeVue()
+const $primevue = usePrimeVue();
 defineExpose({
   $primevue,
-})
+});
 </script>
 
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <!-- <pre class="text-xs">{{ article }}</pre> -->
+      <!--   <pre class="text-xs">{{ article }}</pre> -->
       <VCard
         v-ripple
         class="p-ripple"
@@ -48,30 +48,19 @@ defineExpose({
           })
         "
         @title-click="
-          trackClickEvent(
-            'Click Tracking - Top Story',
-            'Article Card Headline',
-            $event
-          )
+          trackClickEvent('Click Tracking - Top Story', 'Article Card Headline', $event)
         "
         @image-click="
-          trackClickEvent(
-            'Click Tracking - Top Story',
-            'Article Card Image',
-            $event
-          )
+          trackClickEvent('Click Tracking - Top Story', 'Article Card Image', $event)
         "
       >
         <template #belowBlurb>
           <div class="article-metadata pointer-events-none">
             <PipeData
-              :hidePipe="
-                article.authors?.length == 0 || article.authors == undefined
-              "
+              :hidePipe="article.authors?.length == 0 || article.authors == undefined"
             >
               <template #left>
-                <VByline prefix="" :authors="article.authors" isBlockLinks>
-                </VByline>
+                <VByline prefix="" :authors="article.authors" isBlockLinks> </VByline>
               </template>
               <template #right>
                 <span class="nobreak">{{ whenTime(article.meta) }}</span>
@@ -83,40 +72,11 @@ defineExpose({
     </div>
   </div>
   <div v-else>
-    <div
+    <skeleton-top-story
       class="skeleton-holder flex gap-3 mb-4"
-      v-for="(article, index) in 3"
+      v-for="(article, index) in 6"
       :key="`skeleton-${index}`"
-    >
-      <Skeleton
-        class="flex-none"
-        height="116px"
-        width="116px"
-        borderRadius="0px"
-      />
-      <div class="flex w-full flex-column justify-content-between py-1">
-        <div>
-          <Skeleton
-            height="12px"
-            width="85%"
-            borderRadius="16px"
-            style="margin-bottom: 6px"
-          />
-          <Skeleton
-            height="12px"
-            width="70%"
-            borderRadius="16px"
-            style="margin-bottom: 6px"
-          />
-        </div>
-        <Skeleton
-          class="opacity-50"
-          height="12px"
-          width="60%"
-          borderRadius="16px"
-        />
-      </div>
-    </div>
+    />
   </div>
 </template>
 
