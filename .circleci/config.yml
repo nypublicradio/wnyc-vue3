@@ -299,7 +299,7 @@ commands:
 executors:
   default:
     docker:
-      - image: node:18.18.2-slim
+      - image: node:18.18.2
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASS
