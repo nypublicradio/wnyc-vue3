@@ -12,3 +12,5 @@ dist
 .npm/*
 .DS_Store
 www
+# Sentry Config File
+.env.sentry-build-plugin

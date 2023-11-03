@@ -1,3 +1,5 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
 export default defineNuxtConfig({
 
   modules: [
@@ -82,6 +84,17 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
+    build: {
+      sourcemap: true,
+    },
+    plugins: [
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "nypublicradio",
+        project: "wnyc-vue3",
+        telemetry: false,
+      }),
+    ],
     css: {
       preprocessorOptions: {
         scss: {
@@ -128,7 +141,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      // SENTRY_DSN: process.env['SENTRY_DSN'],
+      SENTRY_DSN: process.env['SENTRY_DSN'],
+      SENTRY_ENV: process.env.SENTRY_ENV ?? 'development',
       ENV: process.env.ENV ?? 'prod',
       HTL_CSS: process.env.HTL_CSS ?? 'https://htlbid.com/stage/v3/wnyc.org/htlbid.css',
       HTL_JS: process.env.HTL_JS ?? 'https://htlbid.com/stage/v3/wnyc.org/htlbid.js',
