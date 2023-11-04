@@ -14,8 +14,7 @@ export default defineNuxtConfig({
     redirect: false,
   },
   image: {
-    dir: 'public',
-    provider: 'wagtail',
+    dir: 'public/',
     screens: {
       xs: 390,
       sm: 640,

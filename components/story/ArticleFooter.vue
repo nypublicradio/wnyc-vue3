@@ -1,4 +1,5 @@
 <script setup>
+import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
 import { trackClickEvent } from '~/utilities/helpers'
 import { ref } from 'vue'
 
@@ -22,6 +23,7 @@ const profileData = isSponsored.value
 //     trackClickEvent(`story page id ${article.id}`, 'Article Tags', tag.name)
 //   }
 // }
+console.log('profileData=- ', profileData)
 </script>
 
 <template>
@@ -38,12 +40,13 @@ const profileData = isSponsored.value
     <div class="grid grid-nogutter">
       <div class="profile-col col-12">
         <section>
-          <story-author-profile
+          <VPerson
             v-for="profile in profileData"
             :key="profile.id"
             :profileData="profile"
-            :sponsored="isSponsored"
-            class="mb-4"
+            :imageSize="60"
+            imageFlexBasis="60px"
+            class="mb-4 text-sm gap-4"
           />
         </section>
         <div class="mx-auto mb-6" style="width: 300px">
