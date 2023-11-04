@@ -162,7 +162,7 @@ watch(storyData, async () => {
         <div
           class="flex align-items-center justify-content-between gap-3 flex-wrap"
         >
-          <div>
+          <div v-if="storyData.estimatedDuration">
             <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">

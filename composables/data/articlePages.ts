@@ -218,6 +218,7 @@ export function normalizeSearchResults(results: Record<string, any | undefined>)
 
 // Transform a list of article page data from the /pages API into a simpler and typed format
 export function normalizeFindArticlePagesResponse(articlesResponse: any): ArticlePage[] {
+  console.log('yay = ', articlesResponse.value?.items)
   return articlesResponse.value?.items?.map(normalizeArticlePage)
 }
 

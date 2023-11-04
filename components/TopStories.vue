@@ -1,22 +1,22 @@
 <script setup>
-import VCard from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue";
-import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue";
-import { cmsSources } from "~/composables/globals";
-import { trackClickEvent, whenTime } from "~/utilities/helpers";
-import { usePrimeVue } from "primevue/config";
+import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
+import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
+import { cmsSources } from '~/composables/globals'
+import { trackClickEvent, whenTime } from '~/utilities/helpers'
+import { usePrimeVue } from 'primevue/config'
 
 const props = defineProps({
   articles: {
     type: Array,
     default: null,
   },
-});
+})
 
 // TEMP fix to make ripple work
-const $primevue = usePrimeVue();
+const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
-});
+})
 </script>
 
 <template>
@@ -48,19 +48,30 @@ defineExpose({
           })
         "
         @title-click="
-          trackClickEvent('Click Tracking - Top Story', 'Article Card Headline', $event)
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Headline',
+            $event
+          )
         "
         @image-click="
-          trackClickEvent('Click Tracking - Top Story', 'Article Card Image', $event)
+          trackClickEvent(
+            'Click Tracking - Top Story',
+            'Article Card Image',
+            $event
+          )
         "
       >
         <template #belowBlurb>
           <div class="article-metadata pointer-events-none">
             <PipeData
-              :hidePipe="article.authors?.length == 0 || article.authors == undefined"
+              :hidePipe="
+                article.authors?.length == 0 || article.authors == undefined
+              "
             >
               <template #left>
-                <VByline prefix="" :authors="article.authors" isBlockLinks> </VByline>
+                <VByline prefix="" :authors="article.authors" isBlockLinks>
+                </VByline>
               </template>
               <template #right>
                 <span class="nobreak">{{ whenTime(article.meta) }}</span>
