@@ -133,26 +133,7 @@ console.log('authorProfileData = ', authorProfileData)
         <div id="articleList" class="grid gutter-x-30">
           <div v-if="articles" class="col staff-articles">
             <div v-for="(article, index) in articles" :key="article?.uuid">
-              <!-- <gothamist-card
-                v-slot="card"
-                :article="article"
-                class="mod-horizontal mb-5"
-                :width="318"
-                :height="212"
-                :trackClicks="true"
-                trackingComponentLocation="Author Page River"
-                trackingComponent="Author Page River"
-                :trackingComponentPosition="index + 1"
-              >
-                <p>
-                  {{ article.description }}
-                </p>
-                <v-card-metadata
-                  :article="article"
-                  @link-click="($event) => card.trackClick($event)"
-                />
-              </gothamist-card> -->
-
+              <Story :article="article" :index="index" />
               <hr class="mb-5" />
             </div>
           </div>
