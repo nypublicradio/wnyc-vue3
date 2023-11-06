@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
-import { trackClickEvent } from '~/utilities/helpers'
+//import { trackClickEvent } from '~/utilities/helpers'
 //import { StaffPage } from '../../composables/types/Page'
 //import { ArticlePage } from '~/composables/types/Page'
 
@@ -86,10 +86,9 @@ useServerHead({
 })
 
 const routeBack = () => {
-  navigateTo('/home')
+  const history = window.history.state.back ?? '/home'
+  navigateTo(history)
 }
-
-console.log('authorProfileData = ', authorProfileData)
 </script>
 
 <template>
