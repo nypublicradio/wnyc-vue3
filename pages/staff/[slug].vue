@@ -16,14 +16,6 @@ const initialStoryCount = ref(12)
 const loadMoreStoryCount = ref(12)
 const loadMoreContainer = ref('#articleList')
 
-// const initialArticles = (await findArticlePages({
-//   author_slug: staffSlug,
-//   limit: initialStoryCount.value,
-//   offset: 0,
-// }).then(({ data }) => ({
-//   articles: normalizeFindArticlePagesResponse(data),
-//   count: data.value && Number(data.value.meta.totalCount),
-// }))) as { articles: ArticlePage[]; count: number }
 const initialArticles = (await findArticlePages({
   author_slug: staffSlug,
   limit: initialStoryCount.value,
