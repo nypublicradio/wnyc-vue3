@@ -1,18 +1,28 @@
 import axios from 'axios'
 import humps from 'humps'
 import type { ArticlePage } from '~~/composables/types/Page'
-import { normalizePublisherPage, normalizeWagtailPage } from '~/composables/data/articlePages'
-
+import { normalizePublisherPage, normalizeWagtailPage, normalizeAuthor, normalizeArticlePage } from '~/composables/data/articlePages'
+const GOTHAMISTDOTCOM = 'https://gothamist.com/'
 const config = useRuntimeConfig();
 
-// {
-//     authorData: {
+const getWagtailImageId = (article: any) => {
+    console.log()
+    const listingImage =
+        article.leadAsset?.[0]?.value?.image ??
+        article.leadAsset?.[0]?.value?.defaultImage
+    if (!listingImage) return ''
+    return String(listingImage.id)
+}
 
-//     },
-//     articles: [{
-
-//     }]
-// }
+// returns the article link
+const getArticleLink = (article: any) => {
+    if (article.ancestry) {
+        return `${GOTHAMISTDOTCOM}${article.ancestry[0].slug}/${article.meta.slug}`
+    } else if (article.path) {
+        return article.path.replace('/home/', GOTHAMISTDOTCOM)
+    }
+    return GOTHAMISTDOTCOM
+}
 
 const getWagtailStaffData = async (staffSlug: string, offset: number) => {
     const options = {
@@ -28,10 +38,27 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
         },
     };
     const res = await axios(options);
-    const author = res.data.items[0].related_authors.map((author: any) => {
-        return author;
+    const resData = humps.camelizeKeys(res.data).items;
+    const author = resData[0].relatedAuthors.map((author: any) => {
+        if (author.slug === staffSlug) {
+            return normalizeAuthor(humps.camelizeKeys(author));
+        }
     });
-    const articles = res.data.items.map((item: ArticlePage) => normalizeWagtailPage(item));
+
+    const articles = resData.map((article: any) => {
+        article.authors = article.relatedAuthors.map((author: any) => {
+            return normalizeAuthor(author);
+        });
+        article.link = getArticleLink(article);
+        article.type = 'story';
+        article.leadImage = getWagtailImageId(article);
+        article.leadImageMaxWidth = article.leadAsset?.[0]?.value?.image?.width;
+        article.leadImageMaxHeight = article.leadAsset?.[0]?.value?.image?.height;
+        article.cmsSource = 'wagtail';
+        article.sortDate = article.publicationDate;
+        return article
+    });
+
     return {
         authorData: author,
         articles,
@@ -47,7 +74,7 @@ const getStaffData = async (staffSlug: string, cmsSource: string, offset: number
 
     switch (cmsSource) {
         case 'wagtail':
-            return await getWagtailStaffData(staffSlug,offset);
+            return await getWagtailStaffData(staffSlug, offset);
         case 'publisher':
             return await getPublisherStaffData(staffSlug);
         default:

@@ -17,6 +17,7 @@ const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
+console.log('home page articles = ', props.articles)
 </script>
 
 <template>

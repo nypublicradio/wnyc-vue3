@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
 //import { trackClickEvent } from '~/utilities/helpers'
 //import { StaffPage } from '../../composables/types/Page'
@@ -7,77 +7,25 @@ import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VP
 const route = useRoute()
 const config = useRuntimeConfig()
 
-const staffSlug = route.params.staffSlug
-// const curatedStaffPage = await findPage(`staff/${staffSlug}`).then(
-//   ({ data }) => data?.value && (normalizeFindPageResponse(data) as StaffPage)
-// )
+const staffSlug = route.params.slug
+
+const { data: pagedata } = await useFetch(
+  `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
+)
+
+//console.log('pagedata = ', pagedata)
+console.log('articles = ', pagedata.value.articles[0])
 
 const initialStoryCount = ref(12)
 const loadMoreStoryCount = ref(12)
 const loadMoreContainer = ref('#articleList')
 
-const initialArticles = (await findArticlePages({
-  author_slug: staffSlug,
-  limit: initialStoryCount.value,
-  offset: 0,
-}).then(({ data }) => ({
-  articles: data,
-  count: data.value && Number(data.value.meta.totalCount),
-}))) as { articles: ArticlePage[]; count: number }
+const loadMoreArticles = async () => {}
 
-console.log('initialArticles = ', initialArticles)
+const authorName = `${pagedata.value.authorData[0]?.firstName} ${pagedata.value.authorData[0]?.lastName}`
 
-const articleTotal = ref(initialArticles.count)
-const articles = ref(initialArticles.articles)
-if (!articleTotal.value) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Page Not Found',
-    fatal: true,
-  })
-}
-
-const loadMoreArticles = async () => {
-  const newArticles = await useLoadMoreArticles({
-    author_slug: staffSlug,
-    limit: loadMoreStoryCount.value,
-    offset: articles.value.length,
-  })
-  articles.value.push(...newArticles)
-  await nextTick()
-  if (newArticles.length) {
-    ;(
-      [
-        ...document.querySelectorAll(
-          `${loadMoreContainer.value} .v-card .card-title-link`
-        ),
-      ].slice(-newArticles.length)[0] as HTMLElement
-    ).focus()
-  }
-}
-
-// find a match of the slug in the articles' authors array and return the matched author's data
-const authorProfileData = articles.value[1]?.authors.find((author) => {
-  return author.slug === staffSlug ? author : false
-})
-
-// formats the name of the author by manipulating the slug. This is used when authorProfileData returns no data
-const getAuthorNameFromSlug = () => {
-  let splitStr =
-    typeof staffSlug === 'string' && staffSlug.toLowerCase().split('-')
-  for (let i = 0; i < splitStr.length; i++) {
-    splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1)
-  }
-  //return splitStr.join(' ')
-  return splitStr
-}
-
-onMounted(() => {
-  //$analytics.sendPageView({ page_type: 'staff_page' })
-})
-
-const authorName = authorProfileData?.name || getAuthorNameFromSlug()
 const pageTitle = `Articles by ${authorName} | Gothamist`
+
 useHead({
   title: pageTitle,
 })
@@ -113,17 +61,21 @@ const routeBack = () => {
           </div>
           <div class="col mb-6">
             <VPerson
-              v-if="authorProfileData"
-              :profileData="authorProfileData"
+              v-if="pagedata.authorData"
+              :profileData="pagedata.authorData[0]"
+              onStaffPage
               class="mb-4"
             />
-            <div class="h5" v-else>{{ getAuthorNameFromSlug() }}</div>
+            <div class="h5" v-else>{{ authorName }}</div>
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
         <div id="articleList" class="grid gutter-x-30">
-          <div v-if="articles" class="col staff-articles">
-            <div v-for="(article, index) in articles" :key="article?.uuid">
+          <div v-if="pagedata.articles.length > 0" class="col staff-articles">
+            <div
+              v-for="(article, index) in pagedata.articles"
+              :key="article?.uuid"
+            >
               <Story :article="article" :index="index" />
               <hr class="mb-5" />
             </div>
@@ -145,7 +97,7 @@ const routeBack = () => {
           /> -->
         </div>
         <Button
-          v-if="articles.length < articleTotal"
+          v-if="pagedata.articles.length < pagedata.count"
           class="p-button-rounded"
           label="Load More"
           @click="loadMoreArticles"

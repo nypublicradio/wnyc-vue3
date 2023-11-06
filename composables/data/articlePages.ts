@@ -38,7 +38,7 @@ function getPublisherArticleLink(articleData): string {
 }
 
 // Transform author data from the API into a simpler and typed format
-function normalizeAuthor(author: Record<string, any>): Author {
+export function normalizeAuthor(author: Record<string, any>): Author {
   return {
     id: author.id,
     firstName: author.firstName,
