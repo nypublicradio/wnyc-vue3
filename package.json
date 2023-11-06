@@ -41,7 +41,6 @@
     "@nuxtjs/supabase": "^1.0.2",
     "@nypublicradio/nypr-design-system-vue3": "^2.0.84",
     "@sentry/tracing": "^7.77.0",
-    "@sentry/vite-plugin": "^2.9.0",
     "@sentry/vue": "^7.77.0",
     "@types/humps": "^2.0.4",
     "@vuelidate/core": "^2.0.3",
@@ -55,7 +54,6 @@
     "humps": "^2.0.1",
     "ionicons": "^6.1.1",
     "jsdom": "^21.1.0",
-    "nuxt-vite": "^0.3.5",
     "primeflex": "^3.3.0",
     "vitest": "0.32.4",
     "vue": "3.3.7"

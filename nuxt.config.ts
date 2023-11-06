@@ -1,5 +1,3 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-
 export default defineNuxtConfig({
 
   modules: [
@@ -84,17 +82,6 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
-    build: {
-      sourcemap: true,
-    },
-    plugins: [
-      sentryVitePlugin({
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: "nypublicradio",
-        project: "wnyc-vue3",
-        telemetry: false,
-      }),
-    ],
     css: {
       preprocessorOptions: {
         scss: {
