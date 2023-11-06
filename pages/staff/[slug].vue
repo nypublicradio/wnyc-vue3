@@ -13,9 +13,6 @@ const { data: pagedata } = await useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
 
-//console.log('pagedata = ', pagedata)
-console.log('articles = ', pagedata.value.articles[0])
-
 const initialStoryCount = ref(12)
 const loadMoreStoryCount = ref(12)
 const loadMoreContainer = ref('#articleList')
@@ -55,16 +52,15 @@ const routeBack = () => {
       <div class="content mt-4">
         <div class="grid gutter-x-30">
           <div class="col-12">
-            <h1 class="sr-only">{{ authorName }}</h1>
-            <h2>Articles by {{ authorName }}</h2>
-            <hr class="black mt-3 md:mt-6 mb-2" />
+            <!-- <h1 class="sr-only">{{ authorName }}</h1>
+            <h2>Articles by {{ authorName }}</h2> -->
+            <!--   <hr class="black mt-3 md:mt-6 mb-2" /> -->
           </div>
           <div class="col mb-6">
             <VPerson
               v-if="pagedata.authorData"
               :profileData="pagedata.authorData[0]"
               onStaffPage
-              class="mb-4"
             />
             <div class="h5" v-else>{{ authorName }}</div>
           </div>

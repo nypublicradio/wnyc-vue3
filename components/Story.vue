@@ -20,7 +20,6 @@ const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
-console.log('article = ', props.article)
 </script>
 <template>
   <VCard
