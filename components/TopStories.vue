@@ -23,7 +23,7 @@ console.log('home page articles = ', props.articles)
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <!--   <pre class="text-xs">{{ article }}</pre> -->
+      <!--  <pre class="text-xs">{{ article }}</pre> -->
       <Story :article="article" :index="index" />
     </div>
   </div>

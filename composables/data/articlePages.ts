@@ -116,7 +116,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
   // console.log(article.attributes)
   return Object.assign({}, normalizePage(article), {
     description: article.attributes.tease,
-    image: article.type === 'show' ? article.attributes.image : article.attributes.imageMain,
+    image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     leadImageCaption: article.attributes.imageCaption,
     imageLink: undefined,
     type: article.type === 'show' ? article.type : article.attributes.itemType,
