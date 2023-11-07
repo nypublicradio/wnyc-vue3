@@ -6,6 +6,6 @@
         </trust-anchors>
     </base-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain>demo.wnyc.org</domain>
+        <domain includeSubdomains="true">demo.wnyc.org</domain>
     </domain-config>
 </network-security-config>
