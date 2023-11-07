@@ -1,8 +1,4 @@
 <script setup>
-import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
-import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { cmsSources } from '~/composables/globals'
-import { trackClickEvent, whenTime } from '~/utilities/helpers'
 import { usePrimeVue } from 'primevue/config'
 
 const props = defineProps({
@@ -17,13 +13,27 @@ const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
-console.log('home page articles = ', props.articles)
+
+// remove any duplicate publisher articles
+const updatedArticles = ref(null)
+watch(
+  () => props.articles,
+  () => {
+    updatedArticles.value = props.articles.filter((obj, index) => {
+      return index === props.articles.findIndex((o) => obj.title === o.title)
+    })
+  }
+)
 </script>
 
 <template>
-  <div v-if="articles" class="top-stories">
-    <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <!--  <pre class="text-xs">{{ article }}</pre> -->
+  <div v-if="updatedArticles" class="top-stories">
+    <div
+      v-for="(article, index) in updatedArticles"
+      :key="article.id"
+      class="mb-4"
+    >
+      <!-- <pre class="text-xs">{{ updatedArticles }}</pre> -->
       <Story :article="article" :index="index" />
     </div>
   </div>
