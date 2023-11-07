@@ -15,7 +15,7 @@ const props = defineProps({
     default: null,
   },
 })
-console.log(props.article)
+//console.log(props.article)
 // TEMP fix to make ripple work
 const $primevue = usePrimeVue()
 defineExpose({

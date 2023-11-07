@@ -21,8 +21,6 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).items;
     const author = resData[0].relatedAuthors.filter((author) => {
-        console.log('author slug = ', author.slug)
-        console.log('staffSlug = ', staffSlug)
         return author.slug === staffSlug;
     }).map(author => normalizeAuthor(author));
 
@@ -61,9 +59,11 @@ export default defineEventHandler(async (event) => {
     const staffSlug: string | undefined = event?.context?.params?.staffSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     // query params
-    const offset: number = event?.context?.query?.offset || 1;
+    //const offset: number = event?.context?.query?.offset || 0;
+    const query: number = getQuery(event) || 0;
+    console.log('offset = ', query.offset);
     if (staffSlug && cmsSource) {
-        const storyData = await getStaffData(staffSlug, cmsSource, offset);
+        const storyData = await getStaffData(staffSlug, cmsSource, query.offset);
         return storyData;
     }
 });

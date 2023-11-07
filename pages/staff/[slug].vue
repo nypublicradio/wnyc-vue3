@@ -8,19 +8,25 @@ const route = useRoute()
 const config = useRuntimeConfig()
 
 const staffSlug = route.params.slug
-
+const newPageData = ref(null)
 const { data: pagedata } = await useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
+newPageData.value = pagedata.value
 
-const initialStoryCount = ref(12)
-const loadMoreStoryCount = ref(12)
-const loadMoreContainer = ref('#articleList')
+let offset = 0
 
 const loadMoreArticles = async () => {
-  pagedata = await useFetch(
-    `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
+  const { data: additionalPageData } = await useFetch(
+    `${
+      config.public.BFF_URL
+    }/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
   )
+
+  newPageData.value.articles = [
+    ...newPageData.value.articles,
+    ...additionalPageData.value.articles,
+  ]
 }
 
 const authorName = `${pagedata.value.authorData[0]?.firstName} ${pagedata.value.authorData[0]?.lastName}`
@@ -72,7 +78,7 @@ const routeBack = () => {
         <div id="articleList" class="grid">
           <div v-if="pagedata.articles.length > 0" class="col staff-articles">
             <div
-              v-for="(article, index) in pagedata.articles"
+              v-for="(article, index) in newPageData.articles"
               :key="article?.uuid"
               class="mb-4"
             >
