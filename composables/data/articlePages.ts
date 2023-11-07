@@ -107,6 +107,9 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     disableComments: article.disableComments,
     commentId: String(article.legacyId ?? article.uuid),
     estimatedDuration: undefined,
+    sortDate: article.sortDate,
+    meta: article.meta,
+    showTitle: article.showTitle,
   })
 }
 
@@ -158,6 +161,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     disableComments: undefined,
     commentId: undefined,
     estimatedDuration: article.attributes.estimatedDuration,
+    showTitle: article.attributes.showTitle,
   })
 }
 

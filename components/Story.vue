@@ -15,7 +15,7 @@ const props = defineProps({
     default: null,
   },
 })
-
+console.log(props.article)
 // TEMP fix to make ripple work
 const $primevue = usePrimeVue()
 defineExpose({
@@ -30,13 +30,21 @@ defineExpose({
       class="p-ripple"
       :src="
         article.cmsSource === cmsSources.WAGTAIL
-          ? article.leadImage
+          ? String(article.image.id)
           : article.image?.template
       "
       :title="article.title"
       :loading="index > 1 ? 'lazy' : 'eager'"
-      :maxWidth="article.leadImageMaxWidth"
-      :maxHeight="article.leadImageMaxHeight"
+      :maxWidth="
+        article.cmsSource === cmsSources.WAGTAIL
+          ? article.image.width
+          : article.image.w
+      "
+      :maxHeight="
+        article.cmsSource === cmsSources.WAGTAIL
+          ? article.image.height
+          : article.image.h
+      "
       :sponsored="article.sponsoredContent"
       :width="116"
       :height="116"
@@ -66,6 +74,7 @@ defineExpose({
     >
       <template #belowBlurb>
         <div class="article-metadata pointer-events-none">
+          <!--    <pre>{{ article.authors }}</pre> -->
           <PipeData
             :hidePipe="
               article.authors?.length == 0 || article.authors == undefined

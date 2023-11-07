@@ -17,7 +17,11 @@ const initialStoryCount = ref(12)
 const loadMoreStoryCount = ref(12)
 const loadMoreContainer = ref('#articleList')
 
-const loadMoreArticles = async () => {}
+const loadMoreArticles = async () => {
+  pagedata = await useFetch(
+    `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
+  )
+}
 
 const authorName = `${pagedata.value.authorData[0]?.firstName} ${pagedata.value.authorData[0]?.lastName}`
 
@@ -49,31 +53,30 @@ const routeBack = () => {
         @click="routeBack"
         label="Back"
       />
-      <div class="content mt-4">
-        <div class="grid gutter-x-30">
+      <div class="content">
+        <div class="grid">
           <div class="col-12">
-            <!-- <h1 class="sr-only">{{ authorName }}</h1>
-            <h2>Articles by {{ authorName }}</h2> -->
-            <!--   <hr class="black mt-3 md:mt-6 mb-2" /> -->
-          </div>
-          <div class="col mb-6">
+            <hr class="my-4" />
+            <!-- <pre>{{ pagedata.authorData }}</pre> -->
             <VPerson
               v-if="pagedata.authorData"
               :profileData="pagedata.authorData[0]"
+              class="text-sm"
               onStaffPage
             />
             <div class="h5" v-else>{{ authorName }}</div>
+            <hr class="my-4" />
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
-        <div id="articleList" class="grid gutter-x-30">
+        <div id="articleList" class="grid">
           <div v-if="pagedata.articles.length > 0" class="col staff-articles">
             <div
               v-for="(article, index) in pagedata.articles"
               :key="article?.uuid"
+              class="mb-4"
             >
               <Story :article="article" :index="index" />
-              <hr class="mb-5" />
             </div>
           </div>
           <p v-else class="col">No articles available</p>
@@ -106,5 +109,8 @@ const routeBack = () => {
 
 <style lang="scss">
 .staff-page {
+  hr {
+    background: var(--text-color);
+  }
 }
 </style>
