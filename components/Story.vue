@@ -4,6 +4,7 @@ import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VB
 import { cmsSources } from '~/composables/globals'
 import { trackClickEvent, whenTime } from '~/utilities/helpers'
 import { usePrimeVue } from 'primevue/config'
+
 const props = defineProps({
   article: {
     type: Object,
@@ -22,69 +23,71 @@ defineExpose({
 })
 </script>
 <template>
-  <VCard
-    v-if="article"
-    v-ripple
-    class="p-ripple story-card"
-    :src="
-      article.cmsSource === cmsSources.WAGTAIL
-        ? article.leadImage
-        : article.image?.template
-    "
-    :title="article.title"
-    :loading="index > 1 ? 'lazy' : 'eager'"
-    :maxWidth="article.leadImageMaxWidth"
-    :maxHeight="article.leadImageMaxHeight"
-    :sponsored="article.sponsoredContent"
-    :width="116"
-    :height="116"
-    :ratio="[1, 1]"
-    @click="
-      navigateTo({
-        path: `/story/${article.id}`,
-        query: {
-          src: article.cmsSource,
-        },
-      })
-    "
-    @title-click="
-      trackClickEvent(
-        'Click Tracking - Top Story',
-        'Article Card Headline',
-        $event
-      )
-    "
-    @image-click="
-      trackClickEvent(
-        'Click Tracking - Top Story',
-        'Article Card Image',
-        $event
-      )
-    "
-  >
-    <template #belowBlurb>
-      <div class="article-metadata pointer-events-none">
-        <PipeData
-          :hidePipe="
-            article.authors?.length == 0 || article.authors == undefined
-          "
-        >
-          <template #left>
-            <VByline prefix="" :authors="article.authors" isBlockLinks>
-            </VByline>
-          </template>
-          <template #right>
-            <span class="nobreak">{{ whenTime(article.meta) }}</span>
-          </template>
-        </PipeData>
-      </div>
-    </template>
-  </VCard>
+  <div class="story-card">
+    <VCard
+      v-if="article"
+      v-ripple
+      class="p-ripple"
+      :src="
+        article.cmsSource === cmsSources.WAGTAIL
+          ? article.leadImage
+          : article.image?.template
+      "
+      :title="article.title"
+      :loading="index > 1 ? 'lazy' : 'eager'"
+      :maxWidth="article.leadImageMaxWidth"
+      :maxHeight="article.leadImageMaxHeight"
+      :sponsored="article.sponsoredContent"
+      :width="116"
+      :height="116"
+      :ratio="[1, 1]"
+      @click="
+        navigateTo({
+          path: `/story/${article.id}`,
+          query: {
+            src: article.cmsSource,
+          },
+        })
+      "
+      @title-click="
+        trackClickEvent(
+          'Click Tracking - Top Story',
+          'Article Card Headline',
+          $event
+        )
+      "
+      @image-click="
+        trackClickEvent(
+          'Click Tracking - Top Story',
+          'Article Card Image',
+          $event
+        )
+      "
+    >
+      <template #belowBlurb>
+        <div class="article-metadata pointer-events-none">
+          <PipeData
+            :hidePipe="
+              article.authors?.length == 0 || article.authors == undefined
+            "
+          >
+            <template #left>
+              <VByline prefix="" :authors="article.authors" isBlockLinks>
+              </VByline>
+            </template>
+            <template #right>
+              <span class="nobreak">{{ whenTime(article.meta) }}</span>
+            </template>
+          </PipeData>
+        </div>
+      </template>
+    </VCard>
+  </div>
 </template>
 
 <style lang="scss">
 .story-card {
-  &.v-card {
+  .v-card {
     cursor: pointer;
     .card-details {
       flex: 1;

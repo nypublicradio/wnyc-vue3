@@ -1,6 +1,6 @@
 <script setup>
 import { usePrimeVue } from 'primevue/config'
-
+const { $gsap } = useNuxtApp()
 const props = defineProps({
   articles: {
     type: Array,
@@ -18,12 +18,15 @@ defineExpose({
 const updatedArticles = ref(null)
 watch(
   () => props.articles,
-  () => {
+  async () => {
     updatedArticles.value = props.articles.filter((obj, index) => {
       return index === props.articles.findIndex((o) => obj.title === o.title)
     })
+    await nextTick()
+    $gsap.from('.story-card', { opacity: 0, duration: 0.5, stagger: 0.1 })
   }
 )
+onMounted(() => {})
 </script>
 
 <template>
