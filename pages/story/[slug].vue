@@ -37,9 +37,10 @@ const commentCount = computed(() => {
 })
 
 // navigate back to home and track it
-const backHome = () => {
-  trackClickEvent('story', 'story page', 'back home button')
-  navigateTo('/home')
+const routeBack = () => {
+  trackClickEvent('story', 'story page', 'route back')
+  const history = window.history.state.back ?? '/home'
+  navigateTo(history)
 }
 
 const handleComments = () => {
@@ -65,7 +66,6 @@ watch(stories, () => {
 })
 
 watch(storyData, async () => {
-  console.log('storyData = ', storyData.value)
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
       ({ data }) => normalizeGalleryPage(data.value)
@@ -102,8 +102,8 @@ watch(storyData, async () => {
           text
           severity="secondary"
           aria-label="back to previous page"
-          @click="backHome"
-          label="Home"
+          @click="routeBack"
+          label="Back"
         />
       </div>
     </section>

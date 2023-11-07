@@ -59,9 +59,8 @@ export default defineEventHandler(async (event) => {
     const staffSlug: string | undefined = event?.context?.params?.staffSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     // query params
-    //const offset: number = event?.context?.query?.offset || 0;
-    const query: number = getQuery(event) || 0;
-    console.log('offset = ', query.offset);
+    const query: { offset: number } = getQuery(event) || { offset: 0 };
+
     if (staffSlug && cmsSource) {
         const storyData = await getStaffData(staffSlug, cmsSource, query.offset);
         return storyData;

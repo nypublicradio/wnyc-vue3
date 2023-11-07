@@ -23,7 +23,6 @@ const profileData = isSponsored.value
 //     trackClickEvent(`story page id ${article.id}`, 'Article Tags', tag.name)
 //   }
 // }
-console.log('profileData=- ', profileData)
 </script>
 
 <template>
