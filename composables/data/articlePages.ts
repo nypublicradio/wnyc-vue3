@@ -38,7 +38,7 @@ function getPublisherArticleLink(articleData): string {
 }
 
 // Transform author data from the API into a simpler and typed format
-function normalizeAuthor(author: Record<string, any>): Author {
+export function normalizeAuthor(author: Record<string, any>): Author {
   return {
     id: author.id,
     firstName: author.firstName,
@@ -107,6 +107,9 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     disableComments: article.disableComments,
     commentId: String(article.legacyId ?? article.uuid),
     estimatedDuration: undefined,
+    sortDate: article.sortDate,
+    meta: article.meta,
+    showTitle: article.showTitle,
   })
 }
 
@@ -116,10 +119,10 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
   // console.log(article.attributes)
   return Object.assign({}, normalizePage(article), {
     description: article.attributes.tease,
-    image: article.type === 'show' ? article.attributes.image : article.attributes.imageMain,
+    image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     leadImageCaption: article.attributes.imageCaption,
     imageLink: undefined,
-    type: article.type === 'show' ? article.type : article.attributes.itemType,
+    type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
     link: getPublisherArticleLink(article),
     cmsSource: cmsSources.PUBLISHER,
     sortDate: article.attributes.publishAt,
@@ -158,6 +161,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     disableComments: undefined,
     commentId: undefined,
     estimatedDuration: article.attributes.estimatedDuration,
+    showTitle: article.attributes.showTitle,
   })
 }
 
@@ -218,6 +222,7 @@ export function normalizeSearchResults(results: Record<string, any | undefined>)
 
 // Transform a list of article page data from the /pages API into a simpler and typed format
 export function normalizeFindArticlePagesResponse(articlesResponse: any): ArticlePage[] {
+  console.log('yay = ', articlesResponse.value?.items)
   return articlesResponse.value?.items?.map(normalizeArticlePage)
 }
 

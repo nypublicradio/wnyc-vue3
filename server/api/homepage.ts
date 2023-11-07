@@ -4,8 +4,6 @@ import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 
-const GOTHAMISTDOTCOM = 'https://gothamist.com/'
-
 const linkMapper = (link: any) => {
 	return { title: link.value.title, url: link.value.url }
 }
@@ -114,42 +112,6 @@ const getNavigation = async () => {
 	}
 }
 
-const getWagtailImageId = (article: any) => {
-	const listingImage =
-		article.leadAsset?.[0]?.value?.image ??
-		article.leadAsset?.[0]?.value?.defaultImage
-	if (!listingImage) return ''
-	return String(listingImage.id)
-}
-
-// returns the article link
-const getArticleLink = (article: any) => {
-	if (article.ancestry) {
-		return `${GOTHAMISTDOTCOM}${article.ancestry[0].slug}/${article.meta.slug}`
-	} else if (article.path) {
-		return article.path.replace('/home/', GOTHAMISTDOTCOM)
-	}
-	return GOTHAMISTDOTCOM
-}
-
-const normalizeAuthor = (author: any) => {
-	return {
-		id: author.id,
-		firstName: author.firstName,
-		lastName: author.lastName,
-		organization: author.contributingOrganization?.name,
-		organizationUrl: author.contributingOrganization?.url,
-		name: `${author.firstName} ${author.lastName}`,
-		photoID: author.photo,
-		jobTitle: author.jobTitle,
-		biography: author.biography,
-		website: author.website,
-		email: author.email,
-		slug: author.slug,
-		url: author.slug && `${GOTHAMISTDOTCOM}staff/${author.slug}`,
-	}
-}
-
 const getGothamistTopStories = async () => {
 	try {
 		const options = {
@@ -168,17 +130,9 @@ const getGothamistTopStories = async () => {
 		const resData = humps.camelizeKeys(res.data).items;
 		//console.log('WAGTAIL RESDATA = ', resData[0]);
 		const articles = resData.map((article: any) => {
-			article.authors = article.relatedAuthors.map((author: any) => {
-				return normalizeAuthor(author);
-			});
-			article.link = getArticleLink(article);
-			article.type = 'story';
-			article.leadImage = getWagtailImageId(article);
-			article.leadImageMaxWidth = article.leadAsset?.[0]?.value?.image?.width;
-			article.leadImageMaxHeight = article.leadAsset?.[0]?.value?.image?.height;
-			article.cmsSource = 'wagtail';
+			article.cmsSource = cmsSources.WAGTAIL;
 			article.sortDate = article.publicationDate;
-			return article;
+			return normalizeArticlePage(article);
 		});
 		return articles;
 	} catch (e) {
@@ -212,20 +166,25 @@ const getWNYCTopStories = async () => {
 
 }
 
-// Write a function that takes in 2 json objects and returns a single array of articles sorted by publication date.
+// Write a function that takes in 2 json objects and returns a single array of articles sorted by publication date and then removes any duplicates by title.
 const mergeArticles = (articles1: any, articles2: any) => {
 	const mergedArticles = [...articles1, ...articles2];
-	return mergedArticles.sort((a: any, b: any) => {
+	const sortedArticles = mergedArticles.sort((a: any, b: any) => {
 		const aDate = new Date(a.sortDate);
 		const bDate = new Date(b.sortDate);
 		return bDate.getTime() - aDate.getTime();
 	});
+	// remove duplicates
+	return sortedArticles.filter((obj, index) => {
+		return index === sortedArticles.findIndex((o) => obj.title === o.title)
+	})
 }
 
 const getMiddleBucket = async () => {
 	try {
 		const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/buckets/wnyc-home-middle`);
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
+		//console.log("resData = ", resData)
 		if (resData) {
 			const articles = resData.map((article: any) => {
 				article.cmsSource = cmsSources.PUBLISHER;

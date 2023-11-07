@@ -31,10 +31,11 @@ const props = defineProps({
           <div class="title text-sm font-bold font-meta line-height-2">
             {{ props.item.title }}
           </div>
+          <!--  <pre>{{ props.item }}</pre> -->
           <div class="desc" v-html="props.item.tease" />
           <PipeData
             :hidePipe="
-              props.item.authors?.length == 0 || props.item.authors == undefined
+              !props.item.showTitle || props.item.showTitle == undefined
             "
             class="text-xs"
           >

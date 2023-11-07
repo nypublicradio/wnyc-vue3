@@ -10,8 +10,6 @@ const props = defineProps({
   },
 })
 
-console.log('props.article', props.article)
-
 const streamfield = props.article.body
 
 onMounted(() => {
