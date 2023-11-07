@@ -6,6 +6,7 @@ import { trackClickEvent } from '~/utilities/helpers'
 //import { ArticlePage } from '~/composables/types/Page'
 
 const route = useRoute()
+const router = useRouter()
 const config = useRuntimeConfig()
 
 const staffSlug = route.params.slug
@@ -43,8 +44,8 @@ useServerHead({
 
 const routeBack = () => {
   trackClickEvent('Staff', 'Staff page', 'route back')
-  const history = window.history.state.back ?? '/home'
-  navigateTo(history)
+  console.log('window.history.state.back = ', window.history.state.back)
+  window.history.state.back ? router.back() : navigateTo('/home')
 }
 </script>
 

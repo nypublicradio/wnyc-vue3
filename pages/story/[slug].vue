@@ -15,6 +15,7 @@ import { normalizeGalleryPage } from '~/composables/data/galleryPages'
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
+const router = useRouter()
 
 const config = useRuntimeConfig()
 const { data: storyData } = useFetch(
@@ -39,8 +40,7 @@ const commentCount = computed(() => {
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent('story', 'story page', 'route back')
-  const history = window.history.state.back ?? '/home'
-  navigateTo(history)
+  window.history.state.back ? router.back() : navigateTo('/home')
 }
 
 const handleComments = () => {
