@@ -212,14 +212,18 @@ const getWNYCTopStories = async () => {
 
 }
 
-// Write a function that takes in 2 json objects and returns a single array of articles sorted by publication date.
+// Write a function that takes in 2 json objects and returns a single array of articles sorted by publication date and then removes any duplicates by title.
 const mergeArticles = (articles1: any, articles2: any) => {
 	const mergedArticles = [...articles1, ...articles2];
-	return mergedArticles.sort((a: any, b: any) => {
+	const sortedArticles = mergedArticles.sort((a: any, b: any) => {
 		const aDate = new Date(a.sortDate);
 		const bDate = new Date(b.sortDate);
 		return bDate.getTime() - aDate.getTime();
 	});
+	// remove duplicates
+	return sortedArticles.filter((obj, index) => {
+		return index === sortedArticles.findIndex((o) => obj.title === o.title)
+	})
 }
 
 const getMiddleBucket = async () => {

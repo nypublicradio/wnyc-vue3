@@ -1,6 +1,6 @@
 <script setup>
 import { usePrimeVue } from 'primevue/config'
-const { $gsap } = useNuxtApp()
+
 const props = defineProps({
   articles: {
     type: Array,
@@ -13,30 +13,12 @@ const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
-
-// remove any duplicate publisher articles
-const updatedArticles = ref(null)
-watch(
-  () => props.articles,
-  async () => {
-    updatedArticles.value = props.articles.filter((obj, index) => {
-      return index === props.articles.findIndex((o) => obj.title === o.title)
-    })
-    await nextTick()
-    $gsap.from('.story-card', { opacity: 0, duration: 0.5, stagger: 0.1 })
-  }
-)
-onMounted(() => {})
 </script>
 
 <template>
-  <div v-if="updatedArticles" class="top-stories">
-    <div
-      v-for="(article, index) in updatedArticles"
-      :key="article.id"
-      class="mb-4"
-    >
-      <!-- <pre class="text-xs">{{ updatedArticles }}</pre> -->
+  <div v-if="articles" class="top-stories">
+    <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
+      <!-- <pre class="text-xs">{{ article }}</pre> -->
       <Story :article="article" :index="index" />
     </div>
   </div>
