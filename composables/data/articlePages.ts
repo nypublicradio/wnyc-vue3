@@ -119,7 +119,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     leadImageCaption: article.attributes.imageCaption,
     imageLink: undefined,
-    type: article.type === 'show' ? article.type : article.attributes.itemType,
+    type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
     link: getPublisherArticleLink(article),
     cmsSource: cmsSources.PUBLISHER,
     sortDate: article.attributes.publishAt,
