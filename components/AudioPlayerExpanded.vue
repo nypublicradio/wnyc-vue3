@@ -44,6 +44,8 @@ onMounted(() => {
 
 const handleAddToFavorites = (bucketItem) => {
   console.log('AudioPlayerExpanded handleAddToFavorites bucketItem', bucketItem)
+  // BONO TO DO - I couldn't figure out how to trigger this one
+  
   // saveFavorite(bucketItem, 'episode')
   // toggle active state
   // update SB and LS with new state
