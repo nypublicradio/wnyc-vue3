@@ -56,7 +56,7 @@ if (user.value) {
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: 'Favorite Episode',
+      label: 'Favorite Episode', // BONO TO DO - we need to hide this option if the user is not logged in?
       customIcon: StarIcon,
       active: isFavorited.value,
       title: bucketItem.title,
