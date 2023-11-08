@@ -8,6 +8,11 @@ import DownloadIcon from '~/components/icons/DownloadIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
 import QueueIcon from '~/components/icons/QueueIcon.vue'
 
+import {
+  deleteFavorite,
+  saveFavorite
+} from '~/utilities/helpers'
+
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -27,6 +32,24 @@ const props = defineProps({
   },
 })
 
+// if user is logged in, check if item is already favorited
+const client = useSupabaseClient()
+const isFavorited = ref(false)
+const user = useCurrentUser()
+if (user.value) {
+  const { data, error } = await client
+    .from('favorited')
+    .select('*')
+    .eq('uid', user.value.id)
+    .eq('media_slug', props.ep?.attributes?.slug)
+    if(data?.length > 0){
+      isFavorited.value = true
+    }
+    if(error){
+      console.log('favorited items error', error)
+    }
+}
+
 //console.log('ep = ', props.ep)
 
 // set the items for the Dot menu
@@ -35,7 +58,7 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: 'Favorite Episode',
       customIcon: StarIcon,
-      active: true,
+      active: isFavorited.value,
       title: bucketItem.title,
       command: () => {
         handleAddToFavorites(bucketItem)
@@ -76,10 +99,18 @@ const onMenuChange = (e) => {
 }
 
 const handleAddToFavorites = (bucketItem) => {
-  console.log('EpisodeItem handleAddToFavorites bucketItem', bucketItem)
-  // saveFavorite(bucketItem, 'episode')
-  // toggle active state
-  // update SB and LS with new state
+  const episode = {
+    cms_source: 'publisher', // BONO TO DO: is this right to hardcode this?
+    id: props.ep?.id,
+    slug: props.ep?.attributes?.slug,
+  }
+  if(isFavorited.value){
+    deleteFavorite(episode, props.ep?.type)
+    isFavorited.value = false
+  } else {
+    saveFavorite(episode, props.ep?.type)
+    isFavorited.value = true
+  }
   toast.add({
     severity: 'info',
     summary: 'Updated your favorites.',
