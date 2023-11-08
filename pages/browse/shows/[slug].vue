@@ -116,7 +116,7 @@ if (user.value) {
       v-if="show"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button rounded text plain @click="handleStar">
+      <Button v-if="user" rounded text plain @click="handleStar">
         <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 
