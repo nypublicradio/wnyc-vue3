@@ -1,12 +1,19 @@
 <script setup>
 import { useUpdateCommentCounts } from '~/composables/comments'
+import { CapacitorHttp } from '@capacitor/core';
+
 //onBeforeMount(async () => {
 const config = useRuntimeConfig()
-const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
-const bucketItems = ref(pagedata?.value?.middle_bucket ?? null)
-const topStories = ref(pagedata?.value?.top_stories ?? null)
-const localNewscast = ref(pagedata?.value?.local_newscast ?? null)
-const nationalNewscast = ref(pagedata?.value?.national_newscast ?? null)
+//const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
+const options = {
+  url: `${config.public.BFF_URL}/api/homepage`,
+};
+const { data: pagedata } = await CapacitorHttp.get(options);
+console.log(pagedata.top_stories);
+const bucketItems = ref(pagedata?.middle_bucket ?? null)
+const topStories = ref(pagedata?.top_stories ?? null)
+const localNewscast = ref(pagedata?.local_newscast ?? null)
+const nationalNewscast = ref(pagedata?.national_newscast ?? null)
 
 definePageMeta({
   layout: 'default',

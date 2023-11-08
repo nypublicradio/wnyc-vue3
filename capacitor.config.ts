@@ -13,6 +13,9 @@ const config: CapacitorConfig = {
     CapacitorCookies: {
       enabled: true,
     },
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       splashBackgroundColor: "#e01e3f",
       iconBackgroundColor: "#e01e3f",
