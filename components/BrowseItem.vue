@@ -2,6 +2,11 @@
 import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
 // TEMP fix to make ripple work
 import { usePrimeVue } from 'primevue/config'
+import {
+  deleteFavorite,
+  saveFavorite
+} from '~/utilities/helpers'
+
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -16,6 +21,36 @@ const props = defineProps({
     required: true,
   },
 })
+
+// if user is logged in, check if item is already favorited
+const client = useSupabaseClient()
+const isFavorited = ref(false)
+const user = useCurrentUser()
+if (user.value) {
+  const { data, error } = await client
+    .from('favorited')
+    .select('*')
+    .eq('uid', user.value.id)
+    .eq('media_slug', props.show.slug)
+    if(data?.length > 0){
+      isFavorited.value = true
+    }
+    if(error){
+      console.log('favorited items error', error)
+    }
+}
+
+// add item to favorites
+const addFavorite = async () => {
+  saveFavorite(props.show, 'show')
+  isFavorited.value = true
+}
+
+// remove item from favorites
+const removeFavorite = async () => {
+  deleteFavorite(props.show, 'show')
+  isFavorited.value = false
+}
 </script>
 
 <template>
@@ -44,9 +79,10 @@ const props = defineProps({
         </p>
       </div>
     </div>
-    <Button text plain rounded class="flex-none">
+    <Button v-if="user" text plain rounded class="flex-none">
       <template #icon>
-        <StarIcon class="h-2rem" :active="false" />
+        <StarIcon v-if="isFavorited" class="h-2rem" :active="true" @click="removeFavorite" />
+        <StarIcon v-else class="h-2rem" :active="false" @click="addFavorite" />
       </template>
     </Button>
   </div>

@@ -1,8 +1,32 @@
-<script setup></script>
+<script setup>
+// if user is logged in, get all their favorited shows
+const client = useSupabaseClient()
+const favoritedShows = ref(null)
+const user = useCurrentUser()
+if (user.value) {
+  const { data, error } = await client
+    .from('favorited')
+    .select('*')
+    .eq('uid', user.value.id)
+    .eq('media_type', 'show')
+    if(data?.length > 0){
+        favoritedShows.value = data
+    }
+    if(error){
+      console.log('favorited items error', error)
+    }
+}
+</script>
 
 <template>
   <section class="followed-shows">
-    <div class="empty flex flex-column gap-3 text-center mt-8">
+    <div v-if="favoritedShows" class="text-center mt-8">
+      <h2 class="mb-4">Followed shows:</h2>
+      <div v-for="(show, index) in favoritedShows" :key="index">
+        {{ show }}
+      </div>
+    </div>
+    <div v-else class="empty flex flex-column gap-3 text-center mt-8">
       <h2>Followed shows will appear here!</h2>
       <div class="max-w-15rem m-auto">
         <p class="line-height-3">

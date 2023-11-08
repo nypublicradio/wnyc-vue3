@@ -9,6 +9,11 @@ import QueueIcon from '~/components/icons/QueueIcon.vue'
 // TO DO - replace dummy data with BFF data
 //import episodeData from './episode-data.json'
 
+import {
+  deleteFavorite,
+  saveFavorite
+} from '~/utilities/helpers'
+
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -18,9 +23,28 @@ const { data: episode } = useFetch(
 
 const episodeData = ref(episode?.value?.episode ?? null)
 
+// if user is logged in, check if item is already favorited
+const client = useSupabaseClient()
+const isFavorited = ref(false)
+const user = useCurrentUser()
+if (user.value) {
+  const { data, error } = await client
+    .from('favorited')
+    .select('*')
+    .eq('uid', user.value.id)
+    .eq('media_id', episodeData.value?.id)
+    .eq('media_slug', episodeData.value?.attributes?.slug)
+    if(data?.length > 0){
+      isFavorited.value = true
+    }
+    if(error){
+      console.log('favorited items error', error)
+    }
+}
+
 // navigate back to home and track it
 const backHome = () => {
-  trackClickEvent('episode', 'episode page', 'back show paeg')
+  trackClickEvent('episode', 'episode page', 'back show page')
   navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`)
 }
 
@@ -40,7 +64,18 @@ const togglePlay = (media) => {
   )
 }
 const handleStar = () => {
-  console.log('handleStar')
+  const episode = {
+    cms_source: 'publisher', // BONO TO DO: is this right to hardcode this?
+    id: episodeData.value?.id,
+    slug: episodeData.value?.attributes?.slug,
+  }
+  if(isFavorited.value){
+    deleteFavorite(episode, episodeData.value?.type)
+    isFavorited.value = false
+  } else {
+    saveFavorite(episode, episodeData.value?.type)
+    isFavorited.value = true
+  }
 }
 const handleDownload = () => {
   console.log('handleDownload')
@@ -55,7 +90,7 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: 'Favorite Episode',
       customIcon: StarIcon,
-      active: false,
+      active: isFavorited.value,
       title: bucketItem?.title,
       command: () => {
         handleAddToFavorites(bucketItem)
@@ -99,6 +134,21 @@ watch(episode, () => {
   episodeData.value = episode.value.episode
   console.dir(episodeData.value)
 })
+
+const handleAddToFavorites = (bucketItem) => {
+  handleStar()
+  // update SB and LS with new state
+  toast.add({
+    severity: 'info',
+    summary: 'Updated your favorites.',
+    life: 3000,
+  })
+  trackClickEvent(
+    'Click Tracking - Add/remove from favorites',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
 </script>
 
 <template>
@@ -174,13 +224,14 @@ watch(episode, () => {
           />
           <div class="flex gap-3">
             <Button
+              v-if="user"
               class="w-2rem h-2rem"
               text
               plain
               rounded
               @click="handleStar"
             >
-              <template #icon> <StarIcon /></template>
+              <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button
               class="w-2rem h-2rem"

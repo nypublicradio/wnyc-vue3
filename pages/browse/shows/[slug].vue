@@ -5,6 +5,11 @@ import StarIcon from '~/components/icons/StarIcon.vue'
 import PlayIcon from '~/components/icons/PlayIcon.vue'
 import ShareIcon from '~/components/icons/ShareIcon.vue'
 
+import {
+  deleteFavorite,
+  saveFavorite
+} from '~/utilities/helpers'
+
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -32,7 +37,16 @@ const togglePlayMostRecentEpisode = () => {
   console.log('togglePlay')
 }
 const handleStar = () => {
-  console.log('handleStar')
+  const show = {
+    slug: route.params.slug,
+  }
+  if(isFavorited.value){
+    deleteFavorite(show, 'show')
+    isFavorited.value = false
+  } else {
+    saveFavorite(show, 'show')
+    isFavorited.value = true
+  }
 }
 const handleShare = () => {
   console.log('handleShare')
@@ -45,6 +59,24 @@ watch(show, () => {
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.description
 })
+
+// if user is logged in, check if item is already favorited
+const client = useSupabaseClient()
+const isFavorited = ref(false)
+const user = useCurrentUser()
+if (user.value) {
+  const { data, error } = await client
+    .from('favorited')
+    .select('*')
+    .eq('uid', user.value.id)
+    .eq('media_slug', route.params.slug)
+    if(data?.length > 0){
+      isFavorited.value = true
+    }
+    if(error){
+      console.log('favorited items error', error)
+    }
+}
 </script>
 
 <template>
@@ -85,7 +117,7 @@ watch(show, () => {
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
       <Button rounded text plain @click="handleStar">
-        <template #icon> <StarIcon class="w-2rem" /></template>
+        <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 
       <Button

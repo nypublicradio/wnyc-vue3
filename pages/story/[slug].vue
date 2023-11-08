@@ -12,6 +12,11 @@ import { cmsSources } from '~/composables/globals'
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
 import { normalizeGalleryPage } from '~/composables/data/galleryPages'
 
+import {
+  deleteFavorite,
+  saveFavorite
+} from '~/utilities/helpers'
+
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
@@ -37,6 +42,25 @@ const commentCount = computed(() => {
   return commentCounts.value[storyData?.value.commentId]
 })
 
+// if user is logged in, check if item is already favorited
+const client = useSupabaseClient()
+const isFavorited = ref(false)
+const user = useCurrentUser()
+if (user.value) {
+  const { data, error } = await client
+    .from('favorited')
+    .select('*')
+    .eq('uid', user.value.id)
+    .eq('media_id', episodeData.value?.id)
+    .eq('media_slug', route.params.slug)
+    if(data?.length > 0){
+      isFavorited.value = true
+    }
+    if(error){
+      console.log('favorited items error', error)
+    }
+}
+
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent('story', 'story page', 'route back')
@@ -53,7 +77,17 @@ const handleComments = () => {
   })
 }
 const handleStar = () => {
-  console.log('handleStar')
+  const story = {
+    cms_source: storySource,
+    id: storyData.value?.id,
+  }
+  if(isFavorited.value){
+    deleteFavorite(story, 'story')
+    isFavorited.value = false
+  } else {
+    saveFavorite(story, 'story')
+    isFavorited.value = true
+  }
 }
 const handleShare = () => {
   console.log('handleShare')
@@ -166,8 +200,8 @@ watch(storyData, async () => {
             <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
-            <Button text plain rounded @click="handleStar()">
-              <template #icon> <StarIcon /></template>
+            <Button v-if="user" text plain rounded @click="handleStar()">
+              <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button text plain rounded @click="handleShare()">
               <template #icon> <ShareIcon /></template>

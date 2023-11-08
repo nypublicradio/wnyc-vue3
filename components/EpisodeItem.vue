@@ -74,6 +74,23 @@ const getDotMenuItems = (bucketItem) => {
 const onMenuChange = (e) => {
   e.value.command()
 }
+
+const handleAddToFavorites = (bucketItem) => {
+  console.log('EpisodeItem handleAddToFavorites bucketItem', bucketItem)
+  // saveFavorite(bucketItem, 'episode')
+  // toggle active state
+  // update SB and LS with new state
+  toast.add({
+    severity: 'info',
+    summary: 'Updated your favorites.',
+    life: 3000,
+  })
+  trackClickEvent(
+    'Click Tracking - Add/remove from favorites',
+    'Expanded Audio Player',
+    bucketItem.title
+  )
+}
 </script>
 
 <template>

@@ -8,6 +8,8 @@ import {
   whenTime,
   shareAPI,
   templatizePublisherImageUrl,
+  deleteFavorite,
+  saveFavorite
 } from '~/utilities/helpers'
 import {
   useCurrentEpisode,
@@ -41,6 +43,8 @@ onMounted(() => {
 })
 
 const handleAddToFavorites = (bucketItem) => {
+  console.log('AudioPlayerExpanded handleAddToFavorites bucketItem', bucketItem)
+  // saveFavorite(bucketItem, 'episode')
   // toggle active state
   // update SB and LS with new state
   toast.add({
