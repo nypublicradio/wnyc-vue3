@@ -4,7 +4,8 @@ import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import { usePrimeVue } from 'primevue/config'
 import {
   deleteFavorite,
-  saveFavorite
+  saveFavorite,
+  checkIsFavorited,
 } from '~/utilities/helpers'
 
 const $primevue = usePrimeVue()
@@ -23,22 +24,8 @@ const props = defineProps({
 })
 
 // if user is logged in, check if item is already favorited
-const client = useSupabaseClient()
-const isFavorited = ref(false)
+const isFavorited = ref(await checkIsFavorited(props.show.slug))
 const user = useCurrentUser()
-if (user.value) {
-  const { data, error } = await client
-    .from('favorited')
-    .select('*')
-    .eq('uid', user.value.id)
-    .eq('media_slug', props.show.slug)
-    if(data?.length > 0){
-      isFavorited.value = true
-    }
-    if(error){
-      console.log('favorited items error', error)
-    }
-}
 
 // add item to favorites
 const addFavorite = async () => {
@@ -81,7 +68,12 @@ const removeFavorite = async () => {
     </div>
     <Button v-if="user" text plain rounded class="flex-none">
       <template #icon>
-        <StarIcon v-if="isFavorited" class="h-2rem" :active="true" @click="removeFavorite" />
+        <StarIcon
+          v-if="isFavorited"
+          class="h-2rem"
+          :active="true"
+          @click="removeFavorite"
+        />
         <StarIcon v-else class="h-2rem" :active="false" @click="addFavorite" />
       </template>
     </Button>

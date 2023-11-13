@@ -620,7 +620,7 @@ export const saveFavorite = async (media: object, type: string) => {
       .from('favorited')
       .insert([itemToSave])
   }
-} 
+}
 
 export const deleteFavorite = async (media: object, type: string) => {
   // detect if logged in
@@ -633,11 +633,30 @@ export const deleteFavorite = async (media: object, type: string) => {
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client
-    .from('favorited')
-    .delete()
-    .eq('uid', uid)
-    .or('media_slug', media_slug)
-    .or('media_id', media_id)
+      .from('favorited')
+      .delete()
+      .eq('uid', uid)
+      .or('media_slug', media_slug)
+      .or('media_id', media_id)
+  }
+}
+
+export const checkIsFavorited = async (media_slug: string) => {
+  const user = useCurrentUser()
+  const client = useSupabaseClient()
+  if (user.value) {
+    const { data, error } = await client
+      .from('favorited')
+      .select('*')
+      .eq('uid', user.value.id)
+      .eq('media_slug', media_slug)
+
+    if (error) {
+      console.log('favorited items error', error)
+    }
+
+    return data?.length > 0
+
   }
 }
 

@@ -12,10 +12,7 @@ import { cmsSources } from '~/composables/globals'
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
 import { normalizeGalleryPage } from '~/composables/data/galleryPages'
 
-import {
-  deleteFavorite,
-  saveFavorite
-} from '~/utilities/helpers'
+import { deleteFavorite, saveFavorite } from '~/utilities/helpers'
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
@@ -43,23 +40,8 @@ const commentCount = computed(() => {
 })
 
 // if user is logged in, check if item is already favorited
-const client = useSupabaseClient()
-const isFavorited = ref(false)
+const isFavorited = ref(await checkIsFavorited(route.params.slug))
 const user = useCurrentUser()
-if (user.value) {
-  const { data, error } = await client
-    .from('favorited')
-    .select('*')
-    .eq('uid', user.value.id)
-    .eq('media_id', episodeData.value?.id)
-    .eq('media_slug', route.params.slug)
-    if(data?.length > 0){
-      isFavorited.value = true
-    }
-    if(error){
-      console.log('favorited items error', error)
-    }
-}
 
 // navigate back to home and track it
 const routeBack = () => {
@@ -81,7 +63,7 @@ const handleStar = () => {
     cms_source: storySource,
     id: storyData.value?.id,
   }
-  if(isFavorited.value){
+  if (isFavorited.value) {
     deleteFavorite(story, 'story')
     isFavorited.value = false
   } else {

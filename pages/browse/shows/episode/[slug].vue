@@ -11,7 +11,8 @@ import QueueIcon from '~/components/icons/QueueIcon.vue'
 
 import {
   deleteFavorite,
-  saveFavorite
+  saveFavorite,
+  checkIsFavorited,
 } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
@@ -24,23 +25,10 @@ const { data: episode } = useFetch(
 const episodeData = ref(episode?.value?.episode ?? null)
 
 // if user is logged in, check if item is already favorited
-const client = useSupabaseClient()
-const isFavorited = ref(false)
+const isFavorited = ref(
+  await checkIsFavorited(episodeData.value?.attributes?.slug)
+)
 const user = useCurrentUser()
-if (user.value) {
-  const { data, error } = await client
-    .from('favorited')
-    .select('*')
-    .eq('uid', user.value.id)
-    .eq('media_id', episodeData.value?.id)
-    .eq('media_slug', episodeData.value?.attributes?.slug)
-    if(data?.length > 0){
-      isFavorited.value = true
-    }
-    if(error){
-      console.log('favorited items error', error)
-    }
-}
 
 // navigate back to home and track it
 const backHome = () => {
@@ -69,7 +57,7 @@ const handleStar = () => {
     id: episodeData.value?.id,
     slug: episodeData.value?.attributes?.slug,
   }
-  if(isFavorited.value){
+  if (isFavorited.value) {
     deleteFavorite(episode, episodeData.value?.type)
     isFavorited.value = false
   } else {

@@ -10,7 +10,8 @@ import QueueIcon from '~/components/icons/QueueIcon.vue'
 
 import {
   deleteFavorite,
-  saveFavorite
+  saveFavorite,
+  checkIsFavorited,
 } from '~/utilities/helpers'
 
 const $primevue = usePrimeVue()
@@ -33,22 +34,7 @@ const props = defineProps({
 })
 
 // if user is logged in, check if item is already favorited
-const client = useSupabaseClient()
-const isFavorited = ref(false)
-const user = useCurrentUser()
-if (user.value) {
-  const { data, error } = await client
-    .from('favorited')
-    .select('*')
-    .eq('uid', user.value.id)
-    .eq('media_slug', props.ep?.attributes?.slug)
-    if(data?.length > 0){
-      isFavorited.value = true
-    }
-    if(error){
-      console.log('favorited items error', error)
-    }
-}
+const isFavorited = ref(await checkIsFavorited(props.ep?.attributes?.slug))
 
 //console.log('ep = ', props.ep)
 
@@ -104,7 +90,7 @@ const handleAddToFavorites = (bucketItem) => {
     id: props.ep?.id,
     slug: props.ep?.attributes?.slug,
   }
-  if(isFavorited.value){
+  if (isFavorited.value) {
     deleteFavorite(episode, props.ep?.type)
     isFavorited.value = false
   } else {
