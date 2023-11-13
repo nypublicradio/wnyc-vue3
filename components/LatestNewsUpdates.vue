@@ -1,13 +1,13 @@
 <script setup>
-import { trackClickEvent, whenTime, getMinutes } from '~/utilities/helpers'
-import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
+import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers";
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states";
 
 // TEMP fix to make ripple work
-import { usePrimeVue } from 'primevue/config'
-const $primevue = usePrimeVue()
+import { usePrimeVue } from "primevue/config";
+const $primevue = usePrimeVue();
 defineExpose({
   $primevue,
-})
+});
 // TEMP fix to make ripple work
 
 const props = defineProps({
@@ -19,36 +19,30 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-})
+});
 
 //console.log('localNewscast', props.localNewscast)
 //console.log('nationalNewscast', props.nationalNewscast)
 
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
+const togglePlayTrigger = useTogglePlayTrigger();
+const currentEpisode = useCurrentEpisode();
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlay = (media) => {
+  //console.log("media  ", media);
   if (currentEpisode.value?.file !== media.file) {
-    currentEpisode.value = media
+    currentEpisode.value = media;
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent(
-    'Click Tracking - Latest News Updates',
-    media.title,
-    'toggle play'
-  )
-}
+  togglePlayTrigger.value = !togglePlayTrigger.value;
+  trackClickEvent("Click Tracking - Latest News Updates", media.title, "toggle play");
+};
 </script>
 
 <template>
   <div>
     <div class="latest-news-updates grid">
       <div class="col-6">
-        <NewsCard
-          :newsData="localNewscast"
-          @onClick="togglePlay(localNewscast)"
-        />
+        <NewsCard :newsData="localNewscast" @onClick="togglePlay(localNewscast)" />
       </div>
 
       <div class="col-6">

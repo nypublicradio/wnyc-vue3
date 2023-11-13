@@ -4,70 +4,70 @@ import {
   resizePublisherImage,
   trackClickEvent,
   copyToClipBoard,
-} from '~/utilities/helpers'
-import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
-import { useToast } from 'primevue/usetoast'
-const toast = useToast()
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
+} from "~/utilities/helpers";
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
+const togglePlayTrigger = useTogglePlayTrigger();
+const currentEpisode = useCurrentEpisode();
 
 const props = defineProps({
   articles: {
     type: Object,
     default: null,
   },
-})
+});
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: 'Download',
+      label: "Download",
       title: bucketItem.title,
       command: () => {
         toast.add({
-          severity: 'info',
-          summary: 'Downloading...',
+          severity: "info",
+          summary: "Downloading...",
           detail: bucketItem.title,
           life: 3000,
-        })
+        });
         trackClickEvent(
-          'Click Tracking - Audio Download',
-          'Large Card',
+          "Click Tracking - Audio Download",
+          "Large Card",
           bucketItem.title
-        )
+        );
       },
     },
     {
-      label: 'Copy embed code',
+      label: "Copy embed code",
       title: bucketItem.title,
       embedCode: bucketItem.embedCode,
       command: () => {
         copyToClipBoard(bucketItem.embedCode)
           ? toast.add({
-              severity: 'info',
-              summary: 'Embed code copied to clipboard',
+              severity: "info",
+              summary: "Embed code copied to clipboard",
               life: 3000,
             })
           : toast.add({
-              severity: 'error',
-              summary: 'Copy to clipboard failed. Try again another time',
+              severity: "error",
+              summary: "Copy to clipboard failed. Try again another time",
               life: 3000,
-            })
+            });
         trackClickEvent(
-          'Click Tracking - Audio Copy Embed Code',
-          'Large Card',
+          "Click Tracking - Audio Copy Embed Code",
+          "Large Card",
           bucketItem.embedCode
-        )
+        );
       },
     },
-  ]
-}
+  ];
+};
 
 // fire the command located in tehe menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
-}
+  e.value.command();
+};
 
 // normalize the bucket item data for the player
 const normalizedItem = (item) => {
@@ -75,27 +75,28 @@ const normalizedItem = (item) => {
     ...item,
     file: item.audio,
     title: item.title,
-    image: resizePublisherImage(item.image, 150, 150, 80),
+    image: item.image.tamplate,
     duration: item.estimatedDuration,
     details: item.body,
     first_published_at: item.publishAt,
-  }
-}
+  };
+};
 
 // handle the play button click
 const togglePlay = (item) => {
   if (currentEpisode.value?.id !== item.id) {
-    currentEpisode.value = normalizedItem(item)
+    currentEpisode.value = normalizedItem(item);
+    //console.log("currentEpisode.value: ", currentEpisode.value);
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent('Click Tracking - Large Card', item.title, 'toggle play')
-}
+  togglePlayTrigger.value = !togglePlayTrigger.value;
+  trackClickEvent("Click Tracking - Large Card", item.title, "toggle play");
+};
 </script>
 
 <template>
   <div>
     <div v-if="articles" class="wnyc-featured">
-      <!-- <pre class="text-sm">{{ articles[0].id }}</pre> -->
+      <pre class="text-xs">{{ articles[0] }}</pre>
       <HorizontalScrollFeature>
         <CardLarge
           v-if="articles"
@@ -107,6 +108,7 @@ const togglePlay = (item) => {
         >
           <template #play>
             <PlayButton
+              v-if="item.audio"
               :label="getMinutes(item.estimatedDuration, 1)"
               :file="item.audio"
               @onClick="togglePlay(item)"
@@ -115,6 +117,7 @@ const togglePlay = (item) => {
           </template>
           <template #menu>
             <DotMenu
+              v-if="item.audio"
               :menuItems="getDotMenuItems(item)"
               label="Options"
               @changeEmit="onMenuChange"
@@ -138,12 +141,7 @@ const togglePlay = (item) => {
 
         <div v-else v-for="(item, index) in 5" :key="`sk1-${index}`">
           <div class="skeleton-holder">
-            <Skeleton
-              class="flex-none"
-              height="159px"
-              width="100%"
-              borderRadius="0px"
-            />
+            <Skeleton class="flex-none" height="159px" width="100%" borderRadius="0px" />
             <div
               class="flex w-full h-full flex-column justify-content-between p-3 pb-4 gap-3 h-15rem"
             >
@@ -163,37 +161,12 @@ const togglePlay = (item) => {
                   />
                 </div>
                 <div class="flex flex-column gap-2">
-                  <Skeleton
-                    class=""
-                    height="10.5px"
-                    width="97%"
-                    borderRadius="16px"
-                  />
-                  <Skeleton
-                    class=""
-                    height="10.5px"
-                    width="95%"
-                    borderRadius="16px"
-                  />
-                  <Skeleton
-                    class=""
-                    height="10.5px"
-                    width="85%"
-                    borderRadius="16px"
-                  />
-                  <Skeleton
-                    class=""
-                    height="10.5px"
-                    width="100%"
-                    borderRadius="16px"
-                  />
+                  <Skeleton class="" height="10.5px" width="97%" borderRadius="16px" />
+                  <Skeleton class="" height="10.5px" width="95%" borderRadius="16px" />
+                  <Skeleton class="" height="10.5px" width="85%" borderRadius="16px" />
+                  <Skeleton class="" height="10.5px" width="100%" borderRadius="16px" />
                 </div>
-                <Skeleton
-                  class="mt-2"
-                  height="10px"
-                  width="100%"
-                  borderRadius="16px"
-                />
+                <Skeleton class="mt-2" height="10px" width="100%" borderRadius="16px" />
               </div>
               <div class="flex justify-content-between">
                 <Skeleton height="28px" width="84px" borderRadius="15px" />

@@ -98,7 +98,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     url: article.url,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     body: article.body,
-
+    audio: null,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -152,6 +152,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     url: article.attributes.url,
     section: undefined, //Does this exist in publisher?
     body: article.attributes.body,
+    audio: article.attributes.audio,
 
     // curated images
     listingImage: article.attributes.imageMain, // This may need tweaking
