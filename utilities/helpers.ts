@@ -80,6 +80,7 @@ export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 8
       finalUrlArr.push(`${w}/${h}/c/${q}`)
     }
   })
+  console.log("finalUrlArr.join('/') = ", finalUrlArr.join('/'))
   return finalUrlArr.join('/')
 }
 // returns a templated image url when provided just the image URL

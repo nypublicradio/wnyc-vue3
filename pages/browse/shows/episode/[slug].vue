@@ -1,104 +1,100 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import { getMinutes, trackClickEvent, getDate } from '~/utilities/helpers'
-import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
-import StarIcon from '~/components/icons/StarIcon.vue'
-import DownloadIcon from '~/components/icons/DownloadIcon.vue'
-import ShareIcon from '~/components/icons/ShareIcon.vue'
-import QueueIcon from '~/components/icons/QueueIcon.vue'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
+import { getMinutes, trackClickEvent, getDate } from "~/utilities/helpers";
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states";
+import StarIcon from "~/components/icons/StarIcon.vue";
+import DownloadIcon from "~/components/icons/DownloadIcon.vue";
+import ShareIcon from "~/components/icons/ShareIcon.vue";
+import QueueIcon from "~/components/icons/QueueIcon.vue";
 // TO DO - replace dummy data with BFF data
 //import episodeData from './episode-data.json'
 
-const config = useRuntimeConfig()
-const route = useRoute()
-const router = useRouter()
+const config = useRuntimeConfig();
+const route = useRoute();
+const router = useRouter();
 const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
-)
+);
 
-const episodeData = ref(episode?.value?.episode ?? null)
+const episodeData = ref(episode?.value?.episode ?? null);
 
 // navigate back to home and track it
 const backHome = () => {
-  trackClickEvent('episode', 'episode page', 'back show paeg')
-  navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`)
-}
+  trackClickEvent("episode", "episode page", "back show paeg");
+  navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`);
+};
 
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
+const togglePlayTrigger = useTogglePlayTrigger();
+const currentEpisode = useCurrentEpisode();
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlay = (media) => {
   if (currentEpisode.value?.file !== media.file) {
-    currentEpisode.value = media
+    currentEpisode.value = media;
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent(
-    'Click Tracking - Episode Details Page',
-    media.title,
-    'toggle play'
-  )
-}
+  togglePlayTrigger.value = !togglePlayTrigger.value;
+  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play");
+};
 const handleStar = () => {
-  console.log('handleStar')
-}
+  console.log("handleStar");
+};
 const handleDownload = () => {
-  console.log('handleDownload')
-}
+  console.log("handleDownload");
+};
 const handleShare = () => {
-  console.log('handleShare')
-}
+  console.log("handleShare");
+};
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: 'Favorite Episode',
+      label: "Favorite Episode",
       customIcon: StarIcon,
       active: false,
       title: bucketItem?.title,
       command: () => {
-        handleAddToFavorites(bucketItem)
+        handleAddToFavorites(bucketItem);
       },
     },
     {
-      label: 'Download',
+      label: "Download",
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
       title: bucketItem?.title,
       command: () => {
-        handleDownload(bucketItem)
+        handleDownload(bucketItem);
       },
     },
     {
-      label: 'Share',
+      label: "Share",
       customIcon: ShareIcon,
       title: bucketItem?.title,
       command: () => {
-        handleShare(bucketItem)
+        handleShare(bucketItem);
       },
     },
     {
-      label: 'Add to Queue',
+      label: "Add to Queue",
       active: true,
       customIcon: QueueIcon,
       title: bucketItem?.title,
       command: () => {
-        handleAddToQueue(bucketItem)
+        handleAddToQueue(bucketItem);
       },
     },
-  ]
-}
+  ];
+};
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
-}
+  e.value.command();
+};
 
 watch(episode, () => {
-  episodeData.value = episode.value.episode
-  console.dir(episodeData.value)
-})
+  episodeData.value = episode.value.episode;
+  console.dir(episodeData.value);
+});
 </script>
 
 <template>
@@ -129,12 +125,7 @@ watch(episode, () => {
         :alt="episodeData?.attributes.imageMain.altText"
         class="episode-page-image mb-2"
       />
-      <Skeleton
-        v-else
-        borderRadius="0px"
-        height="auto"
-        class="episode-page-image mb-2"
-      />
+      <Skeleton v-else borderRadius="0px" height="auto" class="episode-page-image mb-2" />
       <v-image
         v-if="episodeData"
         :src="episodeData?.attributes.headers.brand.logoImage.template"
@@ -158,9 +149,8 @@ watch(episode, () => {
         <p class="episode-page-date my-1">
           {{
             getDate(
-              episodeData?.attributes.updatedDate ??
-                episodeData?.attributes.publishAt,
-              'LLL d, yyyy'
+              episodeData?.attributes.updatedDate ?? episodeData?.attributes.publishAt,
+              "LLL d, yyyy"
             )
           }}
         </p>
@@ -173,31 +163,13 @@ watch(episode, () => {
             class=""
           />
           <div class="flex gap-3">
-            <Button
-              class="w-2rem h-2rem"
-              text
-              plain
-              rounded
-              @click="handleStar"
-            >
+            <Button class="w-2rem h-2rem" text plain rounded @click="handleStar">
               <template #icon> <StarIcon /></template>
             </Button>
-            <Button
-              class="w-2rem h-2rem"
-              text
-              plain
-              rounded
-              @click="handleDownload"
-            >
+            <Button class="w-2rem h-2rem" text plain rounded @click="handleDownload">
               <template #icon> <DownloadIcon /></template>
             </Button>
-            <Button
-              class="w-2rem h-2rem"
-              text
-              plain
-              rounded
-              @click="handleShare"
-            >
+            <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">
               <template #icon> <ShareIcon /></template>
             </Button>
             <DotMenu
@@ -246,12 +218,7 @@ watch(episode, () => {
       </section>
     </div>
     <section v-else>
-      <Skeleton
-        height="12px"
-        width="75px"
-        borderRadius="16px"
-        class="mb-2 opacity-50"
-      />
+      <Skeleton height="12px" width="75px" borderRadius="16px" class="mb-2 opacity-50" />
       <Skeleton height="1.25rem" width="95%" borderRadius="16px" class="mb-1" />
       <Skeleton height="1.25rem" width="75%" borderRadius="16px" class="mb-1" />
       <div class="flex justify-content-between mt-4 mb-5">
