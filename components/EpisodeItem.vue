@@ -38,7 +38,7 @@ const handleAddToFavorites = (bucketItem) => {
     slug: props.ep?.attributes?.slug,
   };
   if (isFavorited.value) {
-    deleteFavorite(episode, props.ep?.type);
+    deleteFavorite(episode);
     isFavorited.value = false;
   } else {
     saveFavorite(episode, props.ep?.type);

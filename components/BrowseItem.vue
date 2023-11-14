@@ -18,19 +18,20 @@ const props = defineProps({
     required: true,
   },
 });
-
+const route = useRoute();
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(await checkIsFavorited(props.show.slug));
 const user = useCurrentUser();
+
+//console.log("props.show = ", props.show);
 // add item to favorites
 const addFavorite = async () => {
-  saveFavorite(props.show, "show");
+  saveFavorite(props.show, props.show?.type);
   isFavorited.value = true;
 };
 // remove item from favorites
 const removeFavorite = async () => {
-  console.log("delete favorited");
-  deleteFavorite(props.show, "show");
+  deleteFavorite(props.show);
   isFavorited.value = false;
 };
 </script>

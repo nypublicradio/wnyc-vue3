@@ -49,15 +49,11 @@ const prepForPlayer = (item, index = null) => {
 
 const togglePlay = (media, index = null) => {
   if (index === null) {
-    console.log("index single", index);
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media);
     }
   } else {
     // segment
-    console.log("index segment", index);
-    console.log("currentEpisode.value?.audio[index]", currentEpisode.value?.audio[index]);
-    console.log("media.audio[index]", media.audio[index]);
     if (currentEpisode.value?.file !== media.audio[index]) {
       currentEpisode.value = prepForPlayer(media, index);
     }
@@ -69,12 +65,12 @@ const togglePlay = (media, index = null) => {
 };
 const handleStar = () => {
   const episode = {
-    cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
+    cms_source: cmsSources.PUBLISHER, // BONO TO DO: is this right to hardcode this?
     id: episodeData.value?.id,
     slug: episodeData.value?.attributes?.slug,
   };
   if (isFavorited.value) {
-    deleteFavorite(episode, episodeData.value?.type);
+    deleteFavorite(episode);
     isFavorited.value = false;
   } else {
     saveFavorite(episode, episodeData.value?.type);
@@ -151,7 +147,7 @@ const handleAddToFavorites = (bucketItem) => {
 
 watch(episode, () => {
   episodeData.value = episode.value.episode;
-  console.log("ep = ", episodeData.value);
+  //console.log("ep = ", episodeData.value);
 });
 </script>
 
@@ -272,18 +268,23 @@ watch(episode, () => {
             </DotMenu>
           </div>
         </div>
+        <!-- SEGMENTS -->
         <div v-if="episodeData?.attributes?.segments" class="flex flex-column gap-3 mt-4">
           <div
             v-for="(segment, index) in episodeData?.attributes?.segments"
             :key="segment.title"
-            class="flex gap-3 align-items-center"
           >
-            <PlayButton
-              :label="segment.audioDurationReadable"
-              :file="episodeData?.attributes.audio[index]"
-              @onClick="togglePlay(episodeData?.attributes, index)"
-            />
-            <p class="truncate t2lines">{{ segment.title }}</p>
+            <div
+              v-if="episodeData?.attributes.audio[index]"
+              class="flex gap-3 align-items-center"
+            >
+              <PlayButton
+                :label="segment.audioDurationReadable"
+                :file="episodeData?.attributes.audio[index]"
+                @onClick="togglePlay(episodeData?.attributes, index)"
+              />
+              <p class="truncate t2lines">{{ segment.title }}</p>
+            </div>
           </div>
         </div>
         <div

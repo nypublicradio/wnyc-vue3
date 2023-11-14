@@ -39,7 +39,7 @@ const handleStar = () => {
     slug: route.params.slug,
   };
   if (isFavorited.value) {
-    deleteFavorite(show, "show");
+    deleteFavorite(show);
     isFavorited.value = false;
   } else {
     saveFavorite(show, "show");

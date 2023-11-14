@@ -608,7 +608,7 @@ export const saveFavorite = async (media: object, type: string) => {
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
-    const cms_source = media?.cms_source
+    const cms_source = media?.cms_source ?? media?.cmsSource
     const media_id = media?.id
     const media_slug = media?.slug
     const media_type = type
@@ -621,7 +621,7 @@ export const saveFavorite = async (media: object, type: string) => {
   }
 }
 
-export const deleteFavorite = async (media: object, type: string) => {
+export const deleteFavorite = async (media: object) => {
   // detect if logged in
   const user = useCurrentUser()
   if (user.value) {
@@ -656,7 +656,6 @@ export const checkIsFavorited = async (media_slug: string) => {
     if (error) {
       console.log('favorited items error', error)
     }
-
     return data?.length > 0
 
   }

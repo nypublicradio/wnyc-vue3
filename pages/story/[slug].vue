@@ -18,6 +18,7 @@ import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/help
 const route = useRoute();
 const router = useRouter();
 
+const user = useCurrentUser();
 const config = useRuntimeConfig();
 const { data: storyData } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
@@ -38,8 +39,13 @@ const commentCount = computed(() => {
 });
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(route.params.slug));
-const user = useCurrentUser();
+const isFavorited = ref(false);
+
+watchEffect(async () => {
+  if (user.value) {
+    isFavorited.value = await checkIsFavorited(route.params.slug);
+  }
+});
 
 // navigate back to home and track it
 const routeBack = () => {
@@ -60,12 +66,13 @@ const handleStar = () => {
   const story = {
     cms_source: storySource,
     id: storyData.value?.id,
+    slug: route.params.slug,
   };
   if (isFavorited.value) {
-    deleteFavorite(story, "story");
+    deleteFavorite(story);
     isFavorited.value = false;
   } else {
-    saveFavorite(story, "story");
+    saveFavorite(story, storyData.value.type);
     isFavorited.value = true;
   }
 };
@@ -80,6 +87,7 @@ watch(stories, () => {
 });
 
 watch(storyData, async () => {
+  //console.log("storyData = ", storyData.value);
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(
       storyData.value.leadGallery.gallery
