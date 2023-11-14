@@ -19,9 +19,17 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
             }
         };
         const res = await axios(option);
+        // removeing episodes with no audio
+        const cleanEpisodes = res.data.data.filter((episode: any) => {
+            if (Array.isArray(episode.attributes.audio)) {
+                return episode.attributes.audio[0] !== null
+            } else {
+                return episode.attributes.audio !== null
+            }
+        })
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {
-            data: humps.camelizeKeys(res.data).data,
+            data: humps.camelizeKeys(cleanEpisodes),
             meta: humps.camelizeKeys(res.data).meta
         };
     } catch (e) {
