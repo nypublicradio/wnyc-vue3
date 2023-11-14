@@ -1,50 +1,62 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
 
-import StarIcon from '~/components/icons/StarIcon.vue'
-import PlayIcon from '~/components/icons/PlayIcon.vue'
-import ShareIcon from '~/components/icons/ShareIcon.vue'
+import StarIcon from "~/components/icons/StarIcon.vue";
+import PlayIcon from "~/components/icons/PlayIcon.vue";
+import ShareIcon from "~/components/icons/ShareIcon.vue";
 
-const config = useRuntimeConfig()
-const route = useRoute()
-const router = useRouter()
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers";
 
-const { data: show } = useFetch(
-  `${config.public.BFF_URL}/api/show/${route.params.slug}`
-)
+const config = useRuntimeConfig();
+const route = useRoute();
 
-const pagination = ref(show?.value?.episodes?.meta ?? null)
-const episodes = ref(show?.value?.episodes?.data ?? null)
-const showImage = ref(show?.value?.show?.image?.template ?? null)
-const showTitle = ref(show?.value?.show?.title ?? null)
-const showTease = ref(show?.value?.show?.description ?? null)
+const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`);
+
+const pagination = ref(show?.value?.episodes?.meta ?? null);
+const episodes = ref(show?.value?.episodes?.data ?? null);
+const showImage = ref(show?.value?.show?.image?.template ?? null);
+const showTitle = ref(show?.value?.show?.title ?? null);
+const showTease = ref(show?.value?.show?.description ?? null);
+
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(await checkIsFavorited(route.params.slug));
+const user = useCurrentUser();
 
 // navigate back to home and track it
 const backHome = () => {
-  navigateTo(`/browse`)
-}
+  navigateTo(`/browse`);
+};
 
 const goToEpisodePage = (ep) => {
-  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`)
-}
+  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`);
+};
 
 const togglePlayMostRecentEpisode = () => {
-  console.log('togglePlay')
-}
+  console.log("togglePlay");
+};
 const handleStar = () => {
-  console.log('handleStar')
-}
+  const show = {
+    slug: route.params.slug,
+  };
+  if (isFavorited.value) {
+    deleteFavorite(show, "show");
+    isFavorited.value = false;
+  } else {
+    saveFavorite(show, "show");
+    isFavorited.value = true;
+  }
+};
 const handleShare = () => {
-  console.log('handleShare')
-}
+  console.log("handleShare");
+};
 
 watch(show, () => {
-  pagination.value = show.value.episodes?.meta
-  episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template
-  showTitle.value = show.value.show?.title
-  showTease.value = show.value.show?.description
-})
+  pagination.value = show.value.episodes?.meta;
+  episodes.value = show.value.episodes?.data;
+  showImage.value = show.value.show?.image?.template;
+  showTitle.value = show.value.show?.title;
+  showTease.value = show.value.show?.description;
+});
 </script>
 
 <template>
@@ -84,8 +96,8 @@ watch(show, () => {
       v-if="show"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button rounded text plain @click="handleStar">
-        <template #icon> <StarIcon class="w-2rem" /></template>
+      <Button v-if="user" rounded text plain @click="handleStar">
+        <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 
       <Button
@@ -100,10 +112,7 @@ watch(show, () => {
         <template #icon> <ShareIcon /></template>
       </Button>
     </div>
-    <div
-      v-else
-      class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
-    >
+    <div v-else class="flex justify-content-center align-items-center gap-2 mt-2 mb-4">
       <Skeleton height="37px" width="37px" borderRadius="20px" />
       <Skeleton height="48px" width="48px" borderRadius="24px" />
       <Skeleton height="37px" width="37px" borderRadius="20px" />
@@ -148,11 +157,7 @@ watch(show, () => {
         @onClick="goToEpisodePage(ep)"
         :fallback-image="showImage"
       />
-      <skeleton-episode-item
-        v-else
-        v-for="(show, index) in 10"
-        :key="`sk1-${index}`"
-      />
+      <skeleton-episode-item v-else v-for="(show, index) in 10" :key="`sk1-${index}`" />
     </div>
   </section>
 </template>

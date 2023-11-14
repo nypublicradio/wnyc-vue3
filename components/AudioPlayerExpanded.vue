@@ -1,73 +1,80 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
-import VTrackInfo from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
+import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue";
+import VTrackInfo from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue";
 import {
   trackClickEvent,
   isLiveStream,
   whenTime,
   shareAPI,
   templatizePublisherImageUrl,
-} from '~/utilities/helpers'
+  deleteFavorite,
+  saveFavorite,
+  checkIsFavorited,
+} from "~/utilities/helpers";
 import {
   useCurrentEpisode,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
-} from '~/composables/states'
-import { useToast } from 'primevue/usetoast'
+} from "~/composables/states";
+import { useToast } from "primevue/usetoast";
 
-import StarIcon from '~/components/icons/StarIcon.vue'
-import DownloadIcon from '~/components/icons/DownloadIcon.vue'
-import ShareIcon from '~/components/icons/ShareIcon.vue'
-import QueueIcon from '~/components/icons/QueueIcon.vue'
-import MoreEpisodesIcon from '~/components/icons/MoreEpisodesIcon.vue'
-import FollowIcon from '~/components/icons/FollowIcon.vue'
-import SleepIcon from '~/components/icons/SleepIcon.vue'
+import StarIcon from "~/components/icons/StarIcon.vue";
+import DownloadIcon from "~/components/icons/DownloadIcon.vue";
+import ShareIcon from "~/components/icons/ShareIcon.vue";
+import QueueIcon from "~/components/icons/QueueIcon.vue";
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue";
+import FollowIcon from "~/components/icons/FollowIcon.vue";
+import SleepIcon from "~/components/icons/SleepIcon.vue";
 
-const toast = useToast()
+const toast = useToast();
 
-const emit = defineEmits(['close-panel'])
+const emit = defineEmits(["close-panel"]);
 
-const currentEpisode = useCurrentEpisode()
-const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
+const currentEpisode = useCurrentEpisode();
+const currentEpisodeDuration = useCurrentEpisodeDuration();
+const currentEpisodeProgress = useCurrentEpisodeProgress();
 
-const expandedFooterRef = ref(null)
-const expandedFooterheight = ref(0)
+const expandedFooterRef = ref(null);
+const expandedFooterheight = ref(0);
 
 onMounted(() => {
   if (expandedFooterheight.value)
-    expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
-})
+    expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`;
+});
 
 const handleAddToFavorites = (bucketItem) => {
+  console.log("AudioPlayerExpanded handleAddToFavorites bucketItem", bucketItem);
+  // BONO TO DO - I couldn't figure out how to trigger this one
+  // saveFavorite(bucketItem, 'episode'
+
   // toggle active state
   // update SB and LS with new state
   toast.add({
-    severity: 'info',
-    summary: 'Updated your favorites.',
+    severity: "info",
+    summary: "Updated your favorites.",
     life: 3000,
-  })
+  });
   trackClickEvent(
-    'Click Tracking - Add/remove from favorites',
-    'Expanded Audio Player',
+    "Click Tracking - Add/remove from favorites",
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const handleDownload = (bucketItem) => {
   // update CapacitorJs filesystem
   toast.add({
-    severity: 'info',
-    summary: 'Downloading...',
+    severity: "info",
+    summary: "Downloading...",
     life: 3000,
-  })
+  });
   trackClickEvent(
-    'Click Tracking - Audio Download',
-    'Expanded Audio Player',
+    "Click Tracking - Audio Download",
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const handleShare = (bucketItem) => {
   // trigger sharing system
@@ -76,56 +83,56 @@ const handleShare = (bucketItem) => {
     title: bucketItem.title,
     text: bucketItem.details,
     url: bucketItem.url,
-  })
+  });
   trackClickEvent(
-    'Click Tracking - Audio share',
-    'Expanded Audio Player',
+    "Click Tracking - Audio share",
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const handleAddToQueue = (bucketItem) => {
   // toggle active state
   // update SB and LS with new state
   trackClickEvent(
-    'Click Tracking - Add to Queue',
-    'Expanded Audio Player',
+    "Click Tracking - Add to Queue",
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const handleMoreEpisodes = (bucketItem) => {
   // navitget to show page
   trackClickEvent(
-    'Click Tracking - More Episodes',
-    'Expanded Audio Player',
+    "Click Tracking - More Episodes",
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const handleFollow = (bucketItem) => {
   // toggle active state
   // update SB and LS with new state
   trackClickEvent(
     `Click Tracking - Follow ${bucketItem.title}`,
-    'Expanded Audio Player',
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const handleSleepTimer = (bucketItem) => {
   // toggle active state
   // show sleep timer interface
   trackClickEvent(
-    'Click Tracking - Sleep Timer',
-    'Expanded Audio Player',
+    "Click Tracking - Sleep Timer",
+    "Expanded Audio Player",
     bucketItem.title
-  )
-}
+  );
+};
 
 const isLive = computed(() => {
-  return isLiveStream()
-})
+  return isLiveStream();
+});
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -138,77 +145,77 @@ const getDotMenuItems = (bucketItem) => {
             active: true,
             title: bucketItem.title,
             command: () => {
-              handleFollow()
+              handleFollow();
             },
           },
           {
-            label: 'Sleep Timer',
+            label: "Sleep Timer",
             customIcon: SleepIcon,
             active: true,
             title: bucketItem.title,
             command: () => {
-              handleSleepTimer()
+              handleSleepTimer();
             },
           },
           {
-            label: 'Share',
+            label: "Share",
             customIcon: ShareIcon,
             title: bucketItem.title,
             command: () => {
-              handleShare(bucketItem)
+              handleShare(bucketItem);
             },
           },
           {
-            label: 'More Episodes',
+            label: "More Episodes",
             customIcon: MoreEpisodesIcon,
             title: bucketItem.title,
             command: () => {
-              handleMoreEpisodes(bucketItem)
+              handleMoreEpisodes(bucketItem);
             },
           },
         ]
       : [
           {
-            label: 'Favorite Episode',
+            label: "Favorite Episode",
             customIcon: StarIcon,
-            active: true,
+            active: isFavorited.value,
             title: bucketItem.title,
             command: () => {
-              handleAddToFavorites(bucketItem)
+              handleAddToFavorites(bucketItem);
             },
           },
           {
-            label: 'Download',
+            label: "Download",
             //icon: 'pi pi-google',
             customIcon: DownloadIcon,
             title: bucketItem.title,
             command: () => {
-              handleDownload(bucketItem)
+              handleDownload(bucketItem);
             },
           },
           {
-            label: 'Share',
+            label: "Share",
             customIcon: ShareIcon,
             title: bucketItem.title,
             command: () => {
-              handleShare(bucketItem)
+              handleShare(bucketItem);
             },
           },
           {
-            label: 'Add to Queue',
+            label: "Add to Queue",
             active: true,
             customIcon: QueueIcon,
             title: bucketItem.title,
             command: () => {
-              handleAddToQueue(bucketItem)
+              handleAddToQueue(bucketItem);
             },
           },
           {
-            label: 'More Episodes',
+            label: "More Episodes",
             customIcon: MoreEpisodesIcon,
             title: bucketItem.title,
             command: () => {
-              handleMoreEpisodes(bucketItem)
+              handleMoreEpisodes(bucketItem);
             },
           },
           {
@@ -217,28 +224,28 @@ const getDotMenuItems = (bucketItem) => {
             active: true,
             title: bucketItem.title,
             command: () => {
-              handleFollow()
+              handleFollow();
             },
           },
         ]),
-  ]
-}
+  ];
+};
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
-}
+  e.value.command();
+};
 
 // handles the click on the bottom fixed footer
 const moreFromClick = () => {
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${currentEpisode.title}`,
-    'Expanded Audio Player',
+    "Expanded Audio Player",
     currentEpisode.title
-  )
-  emit('close-panel')
-  navigateTo(`/shows/${currentEpisode.slug}`)
-}
+  );
+  emit("close-panel");
+  navigateTo(`/shows/${currentEpisode.slug}`);
+};
 
 //console.log('currentEpisode = ', currentEpisode)
 </script>
@@ -306,12 +313,7 @@ const moreFromClick = () => {
         </Button>
       </div>
       <div class="flex gap-1">
-        <Button
-          text
-          severity="secondary"
-          rounded
-          @click="handleShare(currentEpisode)"
-        >
+        <Button text severity="secondary" rounded @click="handleShare(currentEpisode)">
           <template #icon> <ShareIcon /></template>
         </Button>
         <DotMenu
@@ -368,10 +370,7 @@ const moreFromClick = () => {
       class="show-feature-image"
     >
       <template #caption>
-        <VImageCaption
-          :text="currentEpisode.onTodaysShowImageCaption"
-          class="caption"
-        />
+        <VImageCaption :text="currentEpisode.onTodaysShowImageCaption" class="caption" />
       </template>
       <template #belowImage>
         <div class="text-xs mt-2">
@@ -385,9 +384,7 @@ const moreFromClick = () => {
     </VImage>
 
     <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
-      <h2>
-        Author{{ currentEpisode.onTodaysShowHosts.length > 0 ? 's' : '' }}
-      </h2>
+      <h2>Author{{ currentEpisode.onTodaysShowHosts.length > 0 ? "s" : "" }}</h2>
       <div class="flex gap-4 flex-wrap my-3">
         <Author
           v-for="author in currentEpisode.onTodaysShowHosts"
@@ -401,17 +398,10 @@ const moreFromClick = () => {
     </div>
     <div v-if="currentEpisode.episodeTranscript">
       <h2>Transcript</h2>
-      <div
-        v-html="currentEpisode.episodeTranscript"
-        class="html-formatting"
-      ></div>
+      <div v-html="currentEpisode.episodeTranscript" class="html-formatting"></div>
     </div>
 
-    <div
-      ref="expandedFooterRef"
-      v-if="currentEpisode.slug"
-      class="expanded-footer"
-    >
+    <div ref="expandedFooterRef" v-if="currentEpisode.slug" class="expanded-footer">
       <section class="pb-2">
         <hr class="mb-2" />
         <Button
@@ -434,8 +424,7 @@ const moreFromClick = () => {
   .persistent-player {
     .expanded-player {
       padding-bottom: calc(
-        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
-          2rem
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);

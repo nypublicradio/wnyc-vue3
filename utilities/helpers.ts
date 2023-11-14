@@ -576,7 +576,13 @@ export const getAndSetUserProfile = async () => {
     }
   }
 }
-
+interface SavedItem {
+  uid: string;
+  media_type: string;
+  cms_source: string;
+  media_id: string;
+  media_slug: string;
+}
 interface RecentlyViewed {
   uid: string;
   media_type: string;
@@ -596,9 +602,64 @@ const isDifferentMedia = (media: object, type: string) => {
   }
 }
 
+export const saveFavorite = async (media: object, type: string) => {
+  // detect if logged in
+  const user = useCurrentUser()
+  if (user.value) {
+    // format the media object to save
+    const uid = user.value?.id
+    const cms_source = media?.cms_source
+    const media_id = media?.id
+    const media_slug = media?.slug
+    const media_type = type
+    const itemToSave: SavedItem = { uid, media_type, cms_source, media_id, media_slug };
+    //save instance to Supabase
+    const client = useSupabaseClient()
+    const { error } = await client
+      .from('favorited')
+      .insert([itemToSave])
+  }
+}
+
+export const deleteFavorite = async (media: object, type: string) => {
+  // detect if logged in
+  const user = useCurrentUser()
+  if (user.value) {
+    // format the media object to save
+    const uid = user.value?.id
+    const media_slug = media?.slug
+    const media_id = media?.id
+    //save instance to Supabase
+    const client = useSupabaseClient()
+    const { error } = await client
+      .from('favorited')
+      .delete()
+      .eq('uid', uid)
+      .or('media_slug', media_slug)
+      .or('media_id', media_id)
+  }
+}
+
+export const checkIsFavorited = async (media_slug: string) => {
+  const user = useCurrentUser()
+  const client = useSupabaseClient()
+  if (user.value) {
+    const { data, error } = await client
+      .from('favorited')
+      .select('*')
+      .eq('uid', user.value.id)
+      .eq('media_slug', media_slug)
+
+    if (error) {
+      console.log('favorited items error', error)
+    }
+
+    return data?.length > 0
+
+  }
+}
+
 export const saveRecentlyPlayed = async (media: object, type: string) => {
-  console.log('media', media)
-  console.log('type', type)
   // detect if logged in
   const user = useCurrentUser()
   if (user.value) {

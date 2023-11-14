@@ -6,8 +6,7 @@ import StarIcon from "~/components/icons/StarIcon.vue";
 import DownloadIcon from "~/components/icons/DownloadIcon.vue";
 import ShareIcon from "~/components/icons/ShareIcon.vue";
 import QueueIcon from "~/components/icons/QueueIcon.vue";
-// TO DO - replace dummy data with BFF data
-//import episodeData from './episode-data.json'
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers";
 
 const config = useRuntimeConfig();
 const route = useRoute();
@@ -18,9 +17,13 @@ const { data: episode } = useFetch(
 
 const episodeData = ref(episode?.value?.episode ?? null);
 
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(await checkIsFavorited(episodeData.value?.attributes?.slug));
+const user = useCurrentUser();
+
 // navigate back to home and track it
 const backHome = () => {
-  trackClickEvent("episode", "episode page", "back show paeg");
+  trackClickEvent("episode", "episode page", "back show page");
   navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`);
 };
 
@@ -65,7 +68,18 @@ const togglePlay = (media, index = null) => {
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play");
 };
 const handleStar = () => {
-  console.log("handleStar");
+  const episode = {
+    cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
+    id: episodeData.value?.id,
+    slug: episodeData.value?.attributes?.slug,
+  };
+  if (isFavorited.value) {
+    deleteFavorite(episode, episodeData.value?.type);
+    isFavorited.value = false;
+  } else {
+    saveFavorite(episode, episodeData.value?.type);
+    isFavorited.value = true;
+  }
 };
 const handleDownload = () => {
   console.log("handleDownload");
@@ -80,7 +94,7 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: "Favorite Episode",
       customIcon: StarIcon,
-      active: false,
+      active: isFavorited.value,
       title: bucketItem?.title,
       command: () => {
         handleAddToFavorites(bucketItem);
@@ -118,6 +132,21 @@ const getDotMenuItems = (bucketItem) => {
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e.value.command();
+};
+
+const handleAddToFavorites = (bucketItem) => {
+  handleStar();
+  // update SB and LS with new state
+  toast.add({
+    severity: "info",
+    summary: "Updated your favorites.",
+    life: 3000,
+  });
+  trackClickEvent(
+    "Click Tracking - Add/remove from favorites",
+    "Expanded Audio Player",
+    bucketItem.title
+  );
 };
 
 watch(episode, () => {
@@ -195,8 +224,15 @@ watch(episode, () => {
             />
           </div>
           <div class="flex gap-3">
-            <Button class="w-2rem h-2rem" text plain rounded @click="handleStar">
-              <template #icon> <StarIcon /></template>
+            <Button
+              v-if="user"
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleStar"
+            >
+              <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button class="w-2rem h-2rem" text plain rounded @click="handleDownload">
               <template #icon> <DownloadIcon /></template>
