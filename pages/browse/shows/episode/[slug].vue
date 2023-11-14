@@ -28,11 +28,35 @@ const togglePlayTrigger = useTogglePlayTrigger();
 const currentEpisode = useCurrentEpisode();
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
-const togglePlay = (media) => {
-  if (currentEpisode.value?.file !== media.file) {
-    currentEpisode.value = media;
+
+// normalize the bucket item data for the player
+const prepForPlayer = (item, index = false) => {
+  return {
+    ...item,
+    file: index ? item.audio[index] : item.audio,
+    title: index ? item.segments[index].title : item.title,
+    image: item.imageMain.template,
+    //TODO convert to seconds
+    duration: item.estimatedDuration,
+    details: index ? item.segments[index].tease : item.body,
+    first_published_at: index ? item.segments[index].newsdate : item.publishAt,
+  };
+};
+
+const togglePlay = (media, index = false) => {
+  if (!index) {
+    if (currentEpisode.value?.audio !== media.audio) {
+      currentEpisode.value = prepForPlayer(media);
+    }
+  } else {
+    // segment
+    if (currentEpisode.value?.audio !== media.audio[index]) {
+      currentEpisode.value = prepForPlayer(media, index);
+    }
   }
+
   togglePlayTrigger.value = !togglePlayTrigger.value;
+
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play");
 };
 const handleStar = () => {
@@ -156,12 +180,23 @@ watch(episode, () => {
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.attributes?.title }}</h1>
         <div class="flex align-items-center justify-content-between mb-5">
-          <PlayButton
-            :label="getMinutes(episodeData?.attributes?.estimatedDuration, 1)"
-            :episode="episodeData?.attributes"
-            @onClick="togglePlay(episodeData?.attributes)"
-            class=""
-          />
+          <div>
+            <PlayButton
+              v-if="!episodeData?.attributes?.segments"
+              :label="getMinutes(episodeData?.attributes?.estimatedDuration, 1)"
+              :episode="episodeData?.attributes"
+              @onClick="togglePlay(episodeData?.attributes)"
+              class=""
+            />
+            <PlayButton
+              v-else
+              v-for="(segment, index) in episodeData?.attributes?.segments"
+              :label="segment.audioDurationReadable"
+              :episode="episodeData?.attributes"
+              @onClick="togglePlay(episodeData?.attributes, index)"
+              class="mb-3"
+            />
+          </div>
           <div class="flex gap-3">
             <Button class="w-2rem h-2rem" text plain rounded @click="handleStar">
               <template #icon> <StarIcon /></template>

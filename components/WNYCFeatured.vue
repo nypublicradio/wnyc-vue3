@@ -65,7 +65,7 @@ const onMenuChange = (e) => {
 };
 
 // normalize the bucket item data for the player
-const normalizedItem = (item) => {
+const prepForPlayer = (item) => {
   return {
     ...item,
     file: item.audio,
@@ -80,7 +80,7 @@ const normalizedItem = (item) => {
 // handle the play button click
 const togglePlay = (item) => {
   if (currentEpisode.value?.id !== item.id) {
-    currentEpisode.value = normalizedItem(item);
+    currentEpisode.value = prepForPlayer(item);
   }
   togglePlayTrigger.value = !togglePlayTrigger.value;
   trackClickEvent("Click Tracking - Large Card", item.title, "toggle play");
@@ -102,6 +102,7 @@ const togglePlay = (item) => {
         >
           <template #play>
             <PlayButton
+              v-if="item.audio"
               :label="getMinutes(item.estimatedDuration, 1)"
               :file="item.audio"
               @onClick="togglePlay(item)"
@@ -110,6 +111,7 @@ const togglePlay = (item) => {
           </template>
           <template #menu>
             <DotMenu
+              v-if="item.audio"
               :menuItems="getDotMenuItems(item)"
               label="Options"
               @changeEmit="onMenuChange"
