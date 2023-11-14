@@ -30,27 +30,32 @@ const currentEpisode = useCurrentEpisode();
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 
 // normalize the bucket item data for the player
-const prepForPlayer = (item, index = false) => {
+const prepForPlayer = (item, index = null) => {
+  const isSegment = index !== null;
   return {
     ...item,
-    file: index ? item.audio[index] : item.audio,
-    title: index ? item.segments[index].title : item.title,
+    file: isSegment ? item.audio[index] : item.audio,
+    title: isSegment ? item.segments[index].title : item.title,
     image: item.imageMain.template,
     //TODO convert to seconds
     duration: item.estimatedDuration,
-    details: index ? item.segments[index].tease : item.body,
-    first_published_at: index ? item.segments[index].newsdate : item.publishAt,
+    details: isSegment ? item.segments[index].tease : item.body,
+    first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
   };
 };
 
-const togglePlay = (media, index = false) => {
-  if (!index) {
+const togglePlay = (media, index = null) => {
+  if (index === null) {
+    console.log("index single", index);
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media);
     }
   } else {
     // segment
-    if (currentEpisode.value?.audio !== media.audio[index]) {
+    console.log("index segment", index);
+    console.log("currentEpisode.value?.audio[index]", currentEpisode.value?.audio[index]);
+    console.log("media.audio[index]", media.audio[index]);
+    if (currentEpisode.value?.file !== media.audio[index]) {
       currentEpisode.value = prepForPlayer(media, index);
     }
   }
@@ -117,7 +122,7 @@ const onMenuChange = (e) => {
 
 watch(episode, () => {
   episodeData.value = episode.value.episode;
-  console.dir(episodeData.value);
+  console.log(episodeData.value);
 });
 </script>
 
@@ -179,22 +184,14 @@ watch(episode, () => {
           }}
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.attributes?.title }}</h1>
-        <div class="flex align-items-center justify-content-between mb-5">
+        <div class="flex align-items-center justify-content-between">
           <div>
             <PlayButton
               v-if="!episodeData?.attributes?.segments"
               :label="getMinutes(episodeData?.attributes?.estimatedDuration, 1)"
-              :episode="episodeData?.attributes"
+              :file="episodeData?.attributes.audio"
               @onClick="togglePlay(episodeData?.attributes)"
               class=""
-            />
-            <PlayButton
-              v-else
-              v-for="(segment, index) in episodeData?.attributes?.segments"
-              :label="segment.audioDurationReadable"
-              :episode="episodeData?.attributes"
-              @onClick="togglePlay(episodeData?.attributes, index)"
-              class="mb-3"
             />
           </div>
           <div class="flex gap-3">
@@ -239,8 +236,22 @@ watch(episode, () => {
             </DotMenu>
           </div>
         </div>
+        <div v-if="episodeData?.attributes?.segments" class="flex flex-column gap-3 mt-4">
+          <div
+            v-for="(segment, index) in episodeData?.attributes?.segments"
+            :key="segment.title"
+            class="flex gap-3 align-items-center"
+          >
+            <PlayButton
+              :label="segment.audioDurationReadable"
+              :file="episodeData?.attributes.audio[index]"
+              @onClick="togglePlay(episodeData?.attributes, index)"
+            />
+            <p class="truncate t2lines">{{ segment.title }}</p>
+          </div>
+        </div>
         <div
-          class="episode-page-body html-formatting"
+          class="episode-page-body html-formatting mt-5"
           v-html="episodeData?.attributes?.body"
         />
       </section>
