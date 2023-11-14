@@ -247,7 +247,7 @@ const moreFromClick = () => {
   navigateTo(`/shows/${currentEpisode.slug}`);
 };
 
-//console.log('currentEpisode = ', currentEpisode)
+console.log("currentEpisode = ", currentEpisode.value);
 </script>
 
 <template>
@@ -271,6 +271,7 @@ const moreFromClick = () => {
       <h2 class="text-lg">{{ currentEpisode.title }}</h2>
       <h2 class="text-md">{{ currentEpisode.onTodaysShowHeadline }}</h2>
     </div>
+
     <div v-else class="station flex flex-column gap-2">
       <PipeData class="text-xs" :hidePipe="!Boolean(whenTime(currentEpisode))">
         <template #left>
@@ -290,11 +291,9 @@ const moreFromClick = () => {
         :hide-time-on-mobile="false"
         :timeline-interactive="false"
       />
-      <!-- @scrub-timeline-change="scrubTimelineChange"
-        @scrub-timeline-end="scrubTimelineEnd"
-        @timeline-click="timelineClick" -->
     </div>
     <PlayAndSkipButtons />
+
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
         <Button text severity="secondary" rounded>
@@ -312,10 +311,13 @@ const moreFromClick = () => {
           <template #icon> <DownloadIcon /></template>
         </Button>
       </div>
+
       <div class="flex gap-1">
         <Button text severity="secondary" rounded @click="handleShare(currentEpisode)">
           <template #icon> <ShareIcon /></template>
         </Button>
+        <!-- {{ getDotMenuItems(currentEpisode) }} -->
+        <!--
         <DotMenu
           :menuItems="getDotMenuItems(currentEpisode)"
           size="large"
@@ -324,8 +326,7 @@ const moreFromClick = () => {
           class="-mr-2"
           @changeEmit="onMenuChange"
         >
-          <!-- label="Options" -->
-          <template #end v-if="currentEpisode.embedCode">
+           <template #end v-if="currentEpisode.embedCode">
             <div class="p-0">
               <Textarea
                 disabled
@@ -356,10 +357,11 @@ const moreFromClick = () => {
               </div>
               <hr class="mt-5 mb-2 dim" />
             </div>
-          </template>
-        </DotMenu>
+          </template> 
+        </DotMenu>-->
       </div>
     </div>
+
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
