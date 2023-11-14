@@ -2,7 +2,7 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
 
 const linkMapper = (link: any) => {
 	return { title: link.value.title, url: link.value.url }
@@ -98,6 +98,22 @@ const getNYCNowNewscast = async () => {
 	}
 }
 
+const getSectionData = async (slug: string) => {
+    try {
+        const option = {
+            method: 'GET',
+            url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
+        };
+        const res = await axios(option);
+        const resData = res.data.included.map((item: any) => {
+            return normalizePublisherPage(humps.camelizeKeys(item));
+        });
+        return resData;
+    } catch (e) {
+        //console.log(e);
+    }
+};
+
 const getHomeTemplate = async () => {
 	try {
 		const options = {
@@ -106,12 +122,18 @@ const getHomeTemplate = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
-		const homeLayout = resData.attributes?.linkroll?.map((layout: any) => {
+		const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
+			// Regex navSlug to extract if it's horizontal or vertical.
+			// This is used to determine the layout of the home page.
+			const componentType = layout.navSlug.match(/(horizontal)/g);
+			const data = await getSectionData(layout.navSlug);
 			return {
 				title: layout.title,
 				layout: layout.navSlug,
+				componentType: componentType ? componentType[0] : 'default',
+				data: data,
 			}
-		});
+		}));
 		return homeLayout;
 	} catch (e) {
 		//console.log(e);
