@@ -122,7 +122,7 @@ const onMenuChange = (e) => {
 
 watch(episode, () => {
   episodeData.value = episode.value.episode;
-  console.log(episodeData.value);
+  console.log("ep = ", episodeData.value);
 });
 </script>
 

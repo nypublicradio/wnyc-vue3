@@ -8,6 +8,8 @@ export const cmsSources = {
     WAGTAIL: 'wagtail',
 }
 
+export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'
+
 //Global vars for the browser top color
 export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffffff')
 //Global vars for the browser top color or Darkmode
