@@ -98,7 +98,7 @@ const getNYCNowNewscast = async () => {
 	}
 }
 
-const getHomeLayout = async () => {
+const getHomeTemplate = async () => {
 	try {
 		const options = {
 			method: 'GET',
@@ -214,9 +214,10 @@ const getMiddleBucket = async () => {
 export default defineEventHandler(async (event) => {
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
+	//TODO: bucket goes away with homeTemplate usage
 	const bucket = await getMiddleBucket();
 	const topStories = mergeArticles(aviary, publisher);
-	const homeLayout = await getHomeLayout();
+	const homeTemplate = await getHomeTemplate();
 	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
 	// If it is not available, use the local newscast instead.
 	const requestTime = new Date();
@@ -231,7 +232,7 @@ export default defineEventHandler(async (event) => {
 	const national_newscast = await getNationalNewscast();
 
 	return {
-		home_layout: homeLayout,
+		home_template: homeTemplate,
 		top_stories: topStories,
 		middle_bucket: bucket,
 		local_newscast: local_newscast,
