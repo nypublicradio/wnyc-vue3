@@ -635,8 +635,11 @@ export const deleteFavorite = async (media: object, type: string) => {
       .from('favorited')
       .delete()
       .eq('uid', uid)
-      .or('media_slug', media_slug)
-      .or('media_id', media_id)
+      .or(`media_slug.eq.${media_slug}`, `media_id.eq.${media_id}`)
+
+      if(error){
+        console.log('error deleting favorite', error)
+      }
   }
 }
 

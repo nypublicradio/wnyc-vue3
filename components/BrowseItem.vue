@@ -29,6 +29,7 @@ const addFavorite = async () => {
 };
 // remove item from favorites
 const removeFavorite = async () => {
+  console.log("delete favorited");
   deleteFavorite(props.show, "show");
   isFavorited.value = false;
 };
