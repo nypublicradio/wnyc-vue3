@@ -98,15 +98,21 @@ const getNYCNowNewscast = async () => {
 	}
 }
 
-const getNavigation = async () => {
+const getHomeLayout = async () => {
 	try {
 		const options = {
 			method: 'GET',
 			url: `${config.public.PUBLISHER_BASE_API}v3/link-roll/navigation-shows-wnyc-app/`,
 		};
 		const res = await axios(options);
-		const nav = humps.camelizeKeys(res.data).data.attributes.links.map(linkMapper);
-		return nav;
+		const resData = humps.camelizeKeys(res.data).data;
+		const homeLayout = resData.attributes?.linkroll?.map((layout: any) => {
+			return {
+				title: layout.title,
+				layout: layout.navSlug,
+			}
+		});
+		return homeLayout;
 	} catch (e) {
 		//console.log(e);
 	}
@@ -210,6 +216,7 @@ export default defineEventHandler(async (event) => {
 	const publisher = await getWNYCTopStories();
 	const bucket = await getMiddleBucket();
 	const topStories = mergeArticles(aviary, publisher);
+	const homeLayout = await getHomeLayout();
 	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
 	// If it is not available, use the local newscast instead.
 	const requestTime = new Date();
@@ -224,6 +231,7 @@ export default defineEventHandler(async (event) => {
 	const national_newscast = await getNationalNewscast();
 
 	return {
+		home_layout: homeLayout,
 		top_stories: topStories,
 		middle_bucket: bucket,
 		local_newscast: local_newscast,
