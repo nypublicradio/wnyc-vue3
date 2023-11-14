@@ -1,8 +1,8 @@
 <script setup>
-import { ref, watch } from 'vue'
-import PlayIcon from '~/components/icons/PlayIcon.vue'
-import PauseIcon from '~/components/icons/PauseIcon.vue'
-import VPersistentPlayer from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue'
+import { ref, watch } from "vue";
+import PlayIcon from "~/components/icons/PlayIcon.vue";
+import PauseIcon from "~/components/icons/PauseIcon.vue";
+import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue";
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -15,78 +15,78 @@ import {
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
-} from '~/composables/states'
+} from "~/composables/states";
 import {
   trackClickEvent,
   isLiveStream,
   templatizePublisherImageUrl,
-} from '~/utilities/helpers'
+} from "~/utilities/helpers";
 
 // had to install howler.js locally and add this import to stop it from breaking the build
 // skipcq: JS-0128
-import { Howl, Howler } from 'howler'
+import { Howl, Howler } from "howler";
 
-const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isEpisodePlaying = useIsEpisodePlaying()
-const togglePlayTrigger = useTogglePlayTrigger()
-const isPlayerMinimized = useIsPlayerMinimized()
-const isStreamLoading = useIsStreamLoading()
-const skipAheadTrigger = useSkipAheadTrigger()
-const skipBackTrigger = useSkipBackTrigger()
-const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
-const showPlayer = ref(false)
-const playerRef = ref()
-const playerHeight = ref(audioPlayerHeight + 'px')
+const currentEpisode = useCurrentEpisode();
+const currentEpisodeHolder = useCurrentEpisodeHolder();
+const isEpisodePlaying = useIsEpisodePlaying();
+const togglePlayTrigger = useTogglePlayTrigger();
+const isPlayerMinimized = useIsPlayerMinimized();
+const isStreamLoading = useIsStreamLoading();
+const skipAheadTrigger = useSkipAheadTrigger();
+const skipBackTrigger = useSkipBackTrigger();
+const currentEpisodeDuration = useCurrentEpisodeDuration();
+const currentEpisodeProgress = useCurrentEpisodeProgress();
+const showPlayer = ref(false);
+const playerRef = ref();
+const playerHeight = ref(audioPlayerHeight + "px");
 
-const route = useRoute()
+const route = useRoute();
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
   trackClickEvent(
-    'Click Tracking - Audio Player play toggle button',
-    'Audio Player',
+    "Click Tracking - Audio Player play toggle button",
+    "Audio Player",
     `playing = ${e}`
-  )
-  isEpisodePlaying.value = e
-}
+  );
+  isEpisodePlaying.value = e;
+};
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
   trackClickEvent(
-    'Click Tracking - Audio Player minimized',
-    'Audio Player',
+    "Click Tracking - Audio Player minimized",
+    "Audio Player",
     `minimized = ${e}`
-  )
-  isPlayerMinimized.value = e
-}
+  );
+  isPlayerMinimized.value = e;
+};
 
-let delay = 0
+let delay = 0;
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
-  showPlayer.value = false
-  currentEpisodeProgress.value = 0
+  showPlayer.value = false;
+  currentEpisodeProgress.value = 0;
   setTimeout(() => {
-    showPlayer.value = true
-    delay = 1000
-  }, delay)
-}
+    showPlayer.value = true;
+    delay = 1000;
+  }, delay);
+};
 
 watch(currentEpisode, () => {
-  switchEpisode()
-})
+  switchEpisode();
+});
 
 watch(togglePlayTrigger, () => {
-  if (playerRef.value) playerRef.value.togglePlay()
-})
+  if (playerRef.value) playerRef.value.togglePlay();
+});
 
 watch(skipAheadTrigger, () => {
-  if (playerRef.value) playerRef.value.skipAhead()
-})
+  if (playerRef.value) playerRef.value.skipAhead();
+});
 watch(skipBackTrigger, () => {
-  if (playerRef.value) playerRef.value.skipBack()
-})
-let timer = null
-let isInitialPing = true
+  if (playerRef.value) playerRef.value.skipBack();
+});
+let timer = null;
+let isInitialPing = true;
 // const pingEvent = () => {
 //   const station = currentEpisodeData.value?.name
 //     ? currentEpisodeShow.value.name
@@ -103,27 +103,27 @@ let isInitialPing = true
 watch(isEpisodePlaying, (e) => {
   if (isInitialPing) {
     //pingEvent()
-    isInitialPing = false
+    isInitialPing = false;
   }
   if (e) {
     timer = setInterval(() => {
       //pingEvent()
-    }, 60000)
+    }, 60000);
   } else {
-    clearInterval(timer)
-    timer = null
+    clearInterval(timer);
+    timer = null;
   }
-})
+});
 
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
   () => route.name,
   (e) => {
     if (playerRef.value && !isPlayerMinimized.value) {
-      playerRef.value.toggleExpanded()
+      playerRef.value.toggleExpanded();
     }
   }
-)
+);
 </script>
 
 <template>
@@ -145,9 +145,7 @@ watch(
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
-      :description="
-        currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details
-      "
+      :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details"
       :image="templatizePublisherImageUrl(currentEpisode.image)"
       :file="currentEpisode.file"
       :skipAheadTime="10"
@@ -176,7 +174,7 @@ watch(
 
 <style lang="scss">
 html.style-mode-dark .persistent-player {
-  background-color: map-get($colors-dark-mode, 'background4') !important;
+  background-color: map-get($colors-dark-mode, "background4") !important;
 
   .expanded-view .header,
   .expanded-view .expanded-footer {
