@@ -2,6 +2,8 @@
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
 import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue";
 import VTrackInfo from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue";
+import VProgressScrubber from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue";
+import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue";
 import {
   trackClickEvent,
   isLiveStream,
@@ -45,8 +47,11 @@ onMounted(() => {
     expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`;
 });
 
-const handleAddToFavorites = (bucketItem) => {
-  console.log("AudioPlayerExpanded handleAddToFavorites bucketItem", bucketItem);
+const handleAddToFavorites = () => {
+  console.log(
+    "AudioPlayerExpanded handleAddToFavorites currentEpisode",
+    currentEpisode.value
+  );
   // BONO TO DO - I couldn't figure out how to trigger this one
 
   // const episode = {
@@ -55,10 +60,10 @@ const handleAddToFavorites = (bucketItem) => {
   //   slug: props.ep?.attributes?.slug,
   // };
   if (isFavorited.value) {
-    deleteFavorite(bucketItem);
+    deleteFavorite(currentEpisode.value);
     isFavorited.value = false;
   } else {
-    saveFavorite(bucketItem, bucketItem?.type);
+    saveFavorite(currentEpisode.value, currentEpisode.value.type);
     isFavorited.value = true;
   }
 
@@ -72,11 +77,11 @@ const handleAddToFavorites = (bucketItem) => {
   trackClickEvent(
     "Click Tracking - Add/remove from favorites",
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
-const handleDownload = (bucketItem) => {
+const handleDownload = () => {
   // update CapacitorJs filesystem
   toast.add({
     severity: "info",
@@ -86,61 +91,60 @@ const handleDownload = (bucketItem) => {
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
-const handleShare = (bucketItem) => {
+const handleShare = () => {
   // trigger sharing system
-  //console.log('bucketItem = ', bucketItem)
   shareAPI({
-    title: bucketItem.title,
-    text: bucketItem.details,
-    url: bucketItem.url,
+    title: currentEpisode.value.title,
+    text: currentEpisode.value.details,
+    url: currentEpisode.value.url,
   });
   trackClickEvent(
     "Click Tracking - Audio share",
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
-const handleAddToQueue = (bucketItem) => {
+const handleAddToQueue = () => {
   // toggle active state
   // update SB and LS with new state
   trackClickEvent(
     "Click Tracking - Add to Queue",
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
-const handleMoreEpisodes = (bucketItem) => {
+const handleMoreEpisodes = () => {
   // navitget to show page
   trackClickEvent(
     "Click Tracking - More Episodes",
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
-const handleFollow = (bucketItem) => {
+const handleFollow = () => {
   // toggle active state
   // update SB and LS with new state
   trackClickEvent(
-    `Click Tracking - Follow ${bucketItem.title}`,
+    `Click Tracking - Follow ${currentEpisode.value.title}`,
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
-const handleSleepTimer = (bucketItem) => {
+const handleSleepTimer = () => {
   // toggle active state
   // show sleep timer interface
   trackClickEvent(
     "Click Tracking - Sleep Timer",
     "Expanded Audio Player",
-    bucketItem.title
+    currentEpisode.value.title
   );
 };
 
@@ -149,17 +153,15 @@ const isLive = computed(() => {
 });
 
 // set the items for the Dot menu
-const getDotMenuItems = (bucketItem) => {
-  //console.log(" why is calling this bucketItem = ", bucketItem);
-
+const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
           {
-            label: `Follow ${bucketItem.title}`,
+            label: `Follow ${currentEpisode.value.title}`,
             customIcon: FollowIcon,
             active: true,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
               handleFollow();
             },
@@ -168,7 +170,7 @@ const getDotMenuItems = (bucketItem) => {
             label: "Sleep Timer",
             customIcon: SleepIcon,
             active: true,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
               handleSleepTimer();
             },
@@ -176,17 +178,17 @@ const getDotMenuItems = (bucketItem) => {
           {
             label: "Share",
             customIcon: ShareIcon,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleShare(bucketItem);
+              handleShare();
             },
           },
           {
             label: "More Episodes",
             customIcon: MoreEpisodesIcon,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleMoreEpisodes(bucketItem);
+              handleMoreEpisodes();
             },
           },
         ]
@@ -195,50 +197,50 @@ const getDotMenuItems = (bucketItem) => {
             label: "Favorite Episode",
             customIcon: StarIcon,
             active: isFavorited.value,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleAddToFavorites(bucketItem);
+              handleAddToFavorites();
             },
           },
           {
             label: "Download",
             //icon: 'pi pi-google',
             customIcon: DownloadIcon,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleDownload(bucketItem);
+              handleDownload();
             },
           },
           {
             label: "Share",
             customIcon: ShareIcon,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleShare(bucketItem);
+              handleShare();
             },
           },
           {
             label: "Add to Queue",
             active: true,
             customIcon: QueueIcon,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleAddToQueue(bucketItem);
+              handleAddToQueue();
             },
           },
           {
             label: "More Episodes",
             customIcon: MoreEpisodesIcon,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
-              handleMoreEpisodes(bucketItem);
+              handleMoreEpisodes();
             },
           },
           {
-            label: `Follow ${bucketItem.title}`,
+            label: `Follow ${currentEpisode.value.title}`,
             customIcon: FollowIcon,
             active: true,
-            title: bucketItem.title,
+            title: currentEpisode.value.title,
             command: () => {
               handleFollow();
             },
@@ -262,6 +264,28 @@ const moreFromClick = () => {
   emit("close-panel");
   navigateTo(`/shows/${currentEpisode.slug}`);
 };
+const percentComplete = computed(() => {
+  return (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100;
+});
+
+const progressRef = ref(percentComplete.value);
+
+const onSlideEnd = () => {
+  console.log("end");
+  //progressRef.value = props.progress;
+};
+const onChange = (e) => {
+  console.log("change");
+  progressRef.value = e;
+};
+const onClick = () => {
+  console.log("click");
+  //progressRef.value = props.progress;
+};
+
+watch(percentComplete, (e) => {
+  progressRef.value = e;
+});
 
 console.log("currentEpisode = ", currentEpisode.value);
 </script>
@@ -300,46 +324,41 @@ console.log("currentEpisode = ", currentEpisode.value);
       <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
     </div>
 
-    <div v-if="!isLive" class="progress-holder">
-      <VTrackInfo
-        :current-seconds="currentEpisodeProgress"
-        :duration-seconds="currentEpisodeDuration"
-        :hide-time-on-mobile="false"
-        :timeline-interactive="false"
+    <div v-if="!isLive" class="progress-holder" :class="[{ live: isLive }]">
+      <VProgressScrubber
+        :progress="progressRef"
+        @scrub-timeline-change="onChange"
+        @scrub-timeline-end="onSlideEnd"
+        @timeline-click="onClick"
       />
     </div>
     <PlayAndSkipButtons />
 
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
-        <Button text severity="secondary" rounded>
+        <Button text severity="secondary" rounded @click="handleFollow">
           <template #icon> <FollowIcon /></template>
         </Button>
-        <Button text severity="secondary" rounded>
+        <Button text severity="secondary" rounded @click="handleSleepTimer">
           <template #icon> <SleepIcon /></template>
         </Button>
       </div>
       <div v-else class="flex gap-3">
-        <Button
-          text
-          severity="secondary"
-          rounded
-          @click="handleAddToFavorites(currentEpisode)"
-        >
+        <Button text severity="secondary" rounded @click="handleAddToFavorites">
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
-        <Button text severity="secondary" rounded>
+        <Button text severity="secondary" rounded @click="handleDownload">
           <template #icon> <DownloadIcon /></template>
         </Button>
       </div>
 
       <div class="flex gap-1">
-        <Button text severity="secondary" rounded @click="handleShare(currentEpisode)">
+        <Button text severity="secondary" rounded @click="handleShare">
           <template #icon> <ShareIcon /></template>
         </Button>
 
         <DotMenu
-          :menuItems="getDotMenuItems(currentEpisode)"
+          :menuItems="getDotMenuItems()"
           size="large"
           width="37px"
           height="37px"
@@ -470,15 +489,18 @@ console.log("currentEpisode = ", currentEpisode.value);
             height: 0.286rem;
           }
         }
-        // .p-slider-handle {
-        //   display: block !important;
-        // }
+        .p-slider-handle {
+          display: block !important;
+        }
         .track-info-time {
           display: flex !important;
           justify-content: space-between;
           .track-info-time-separator {
             display: none;
           }
+        }
+        .persistent-player {
+          position: relative;
         }
       }
       .tools {
