@@ -1,9 +1,7 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
 import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue";
-import VTrackInfo from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VTrackInfo.vue";
-import VProgressScrubber from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue";
-import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue";
+
 import {
   trackClickEvent,
   isLiveStream,
@@ -14,11 +12,7 @@ import {
   saveFavorite,
   checkIsFavorited,
 } from "~/utilities/helpers";
-import {
-  useCurrentEpisode,
-  useCurrentEpisodeDuration,
-  useCurrentEpisodeProgress,
-} from "~/composables/states";
+import { useCurrentEpisode } from "~/composables/states";
 import { useToast } from "primevue/usetoast";
 
 import StarIcon from "~/components/icons/StarIcon.vue";
@@ -34,8 +28,6 @@ const toast = useToast();
 const emit = defineEmits(["close-panel"]);
 
 const currentEpisode = useCurrentEpisode();
-const currentEpisodeDuration = useCurrentEpisodeDuration();
-const currentEpisodeProgress = useCurrentEpisodeProgress();
 
 const expandedFooterRef = ref(null);
 const expandedFooterheight = ref(0);
@@ -52,13 +44,7 @@ const handleAddToFavorites = () => {
     "AudioPlayerExpanded handleAddToFavorites currentEpisode",
     currentEpisode.value
   );
-  // BONO TO DO - I couldn't figure out how to trigger this one
 
-  // const episode = {
-  //   cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
-  //   id: props.ep?.id,
-  //   slug: props.ep?.attributes?.slug,
-  // };
   if (isFavorited.value) {
     deleteFavorite(currentEpisode.value);
     isFavorited.value = false;
@@ -67,8 +53,6 @@ const handleAddToFavorites = () => {
     isFavorited.value = true;
   }
 
-  // toggle active state
-  // update SB and LS with new state
   toast.add({
     severity: "info",
     summary: "Updated your favorites.",
@@ -264,28 +248,6 @@ const moreFromClick = () => {
   emit("close-panel");
   navigateTo(`/shows/${currentEpisode.slug}`);
 };
-const percentComplete = computed(() => {
-  return (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100;
-});
-
-const progressRef = ref(percentComplete.value);
-
-const onSlideEnd = () => {
-  console.log("end");
-  //progressRef.value = props.progress;
-};
-const onChange = (e) => {
-  console.log("change");
-  progressRef.value = e;
-};
-const onClick = () => {
-  console.log("click");
-  //progressRef.value = props.progress;
-};
-
-watch(percentComplete, (e) => {
-  progressRef.value = e;
-});
 
 console.log("currentEpisode = ", currentEpisode.value);
 </script>
@@ -324,13 +286,8 @@ console.log("currentEpisode = ", currentEpisode.value);
       <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
     </div>
 
-    <div v-if="!isLive" class="progress-holder" :class="[{ live: isLive }]">
-      <VProgressScrubber
-        :progress="progressRef"
-        @scrub-timeline-change="onChange"
-        @scrub-timeline-end="onSlideEnd"
-        @timeline-click="onClick"
-      />
+    <div v-if="!isLive" class="progress-holder">
+      <AudioScrubber />
     </div>
     <PlayAndSkipButtons />
 
@@ -479,30 +436,7 @@ console.log("currentEpisode = ", currentEpisode.value);
         transition: bottom $transitionDuration;
         -webkit-transition: bottom $transitionDuration;
       }
-      .progress-holder {
-        .progress-control {
-          position: relative;
-          left: unset;
-          padding-bottom: 0.75rem;
-          width: 100%;
-          .p-slider-horizontal .p-slider-range {
-            height: 0.286rem;
-          }
-        }
-        .p-slider-handle {
-          display: block !important;
-        }
-        .track-info-time {
-          display: flex !important;
-          justify-content: space-between;
-          .track-info-time-separator {
-            display: none;
-          }
-        }
-        .persistent-player {
-          position: relative;
-        }
-      }
+
       .tools {
       }
     }

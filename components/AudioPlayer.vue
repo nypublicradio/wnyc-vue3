@@ -15,6 +15,7 @@ import {
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
+  usePlayerSeek,
 } from "~/composables/states";
 import {
   trackClickEvent,
@@ -34,6 +35,7 @@ const isPlayerMinimized = useIsPlayerMinimized();
 const isStreamLoading = useIsStreamLoading();
 const skipAheadTrigger = useSkipAheadTrigger();
 const skipBackTrigger = useSkipBackTrigger();
+const playerSeek = usePlayerSeek();
 const currentEpisodeDuration = useCurrentEpisodeDuration();
 const currentEpisodeProgress = useCurrentEpisodeProgress();
 const showPlayer = ref(false);
@@ -85,6 +87,16 @@ watch(skipAheadTrigger, () => {
 watch(skipBackTrigger, () => {
   if (playerRef.value) playerRef.value.skipBack();
 });
+watch(
+  playerSeek,
+  (e) => {
+    console.log("seek e.time = ", e.time);
+    if (playerRef.value) {
+      playerRef.value.scrubTimelineEnd(e.time);
+    }
+  },
+  { deep: true }
+);
 let timer = null;
 let isInitialPing = true;
 // const pingEvent = () => {
@@ -128,7 +140,12 @@ watch(
 
 <template>
   <!-- <div class="audio-player"> -->
-
+  <!-- <Button
+    :label="playerSeek.time"
+    @click="playerSeek.bool = playerSeek.bool ? false : true"
+    class="absolute"
+    style="top: 200px; z-index: 672397862938679"
+  /> -->
   <transition name="player">
     <VPersistentPlayer
       v-if="showPlayer"
