@@ -234,6 +234,7 @@ const getMiddleBucket = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
+	let res = event?.node?.res;
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
 	//TODO: bucket goes away with homeTemplate usage
@@ -252,7 +253,7 @@ export default defineEventHandler(async (event) => {
 		local_newscast = await getLocalNewscast();
 	}
 	const national_newscast = await getNationalNewscast();
-
+	res.setHeader('Cache-Control', 'maxage=900, stale-while-revalidate');
 	return {
 		home_template: homeTemplate,
 		top_stories: topStories,
