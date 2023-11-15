@@ -51,7 +51,7 @@ const handleAddToFavorites = (bucketItem) => {
   });
   trackClickEvent(
     "Click Tracking - Add/remove from favorites",
-    "Expanded Audio Player",
+    "Episode Item",
     bucketItem.title
   );
 };

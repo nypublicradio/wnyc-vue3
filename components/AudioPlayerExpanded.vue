@@ -38,6 +38,8 @@ const currentEpisodeProgress = useCurrentEpisodeProgress();
 const expandedFooterRef = ref(null);
 const expandedFooterheight = ref(0);
 
+const isFavorited = ref(await checkIsFavorited(currentEpisode.value.slug));
+
 onMounted(() => {
   if (expandedFooterheight.value)
     expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`;
@@ -46,7 +48,19 @@ onMounted(() => {
 const handleAddToFavorites = (bucketItem) => {
   console.log("AudioPlayerExpanded handleAddToFavorites bucketItem", bucketItem);
   // BONO TO DO - I couldn't figure out how to trigger this one
-  // saveFavorite(bucketItem, 'episode'
+
+  // const episode = {
+  //   cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
+  //   id: props.ep?.id,
+  //   slug: props.ep?.attributes?.slug,
+  // };
+  if (isFavorited.value) {
+    deleteFavorite(bucketItem);
+    isFavorited.value = false;
+  } else {
+    saveFavorite(bucketItem, bucketItem?.type);
+    isFavorited.value = true;
+  }
 
   // toggle active state
   // update SB and LS with new state
@@ -136,6 +150,8 @@ const isLive = computed(() => {
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
+  //console.log(" why is calling this bucketItem = ", bucketItem);
+
   return [
     ...(isLive.value
       ? [
@@ -304,8 +320,13 @@ console.log("currentEpisode = ", currentEpisode.value);
         </Button>
       </div>
       <div v-else class="flex gap-3">
-        <Button text severity="secondary" rounded>
-          <template #icon> <StarIcon /></template>
+        <Button
+          text
+          severity="secondary"
+          rounded
+          @click="handleAddToFavorites(currentEpisode)"
+        >
+          <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
         <Button text severity="secondary" rounded>
           <template #icon> <DownloadIcon /></template>
@@ -316,8 +337,7 @@ console.log("currentEpisode = ", currentEpisode.value);
         <Button text severity="secondary" rounded @click="handleShare(currentEpisode)">
           <template #icon> <ShareIcon /></template>
         </Button>
-        <!-- {{ getDotMenuItems(currentEpisode) }} -->
-        <!--
+
         <DotMenu
           :menuItems="getDotMenuItems(currentEpisode)"
           size="large"
@@ -326,7 +346,7 @@ console.log("currentEpisode = ", currentEpisode.value);
           class="-mr-2"
           @changeEmit="onMenuChange"
         >
-           <template #end v-if="currentEpisode.embedCode">
+          <template #end v-if="currentEpisode.embedCode">
             <div class="p-0">
               <Textarea
                 disabled
@@ -357,8 +377,8 @@ console.log("currentEpisode = ", currentEpisode.value);
               </div>
               <hr class="mt-5 mb-2 dim" />
             </div>
-          </template> 
-        </DotMenu>-->
+          </template>
+        </DotMenu>
       </div>
     </div>
 
