@@ -45,6 +45,7 @@ const featuredShows = async () => {
 
 
 export default defineEventHandler(async (event) => {
+    let res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     featuredShowsData.map((show: any) => {
@@ -54,6 +55,7 @@ export default defineEventHandler(async (event) => {
             show.id = match.id;
         }
     });
+    res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     return {
         all: allShowsData,
         featuredShows: featuredShowsData

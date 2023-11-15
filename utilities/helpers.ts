@@ -66,7 +66,7 @@ export const fetchDuration = async (url: string) => {
     // The bitrate is 128kps according to vlc and the file size is in bytes.
     //Multiplying the file size by 8 and dividing by 128000 gives the same 
     //duration as dividing by 16000 and not multiplying the file size by 8.
-    const duration: number = Math.round(mp3Size / 16000) * 1000;
+    const duration: number = Math.round(mp3Size / 16000);
     return duration
   } catch (e) {
     //console.log(e);
