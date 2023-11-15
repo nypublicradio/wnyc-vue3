@@ -4,25 +4,6 @@ import { fetchDuration } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
 
-/* const fetchDuration = async (url: string) => {
-    try{
-        const options = {
-            method: 'HEAD',
-            url: url,
-        };
-        const mp3Res = await axios(options);
-        const mp3Size = mp3Res.headers['content-length'];
-        // Calculate the duration in seconds not converting size into bits. 
-        // The bitrate is 128kps according to vlc and the file size is in bytes.
-        //Multiplying the file size by 8 and dividing by 128000 gives the same 
-        //duration as dividing by 16000 and not multiplying the file size by 8.
-        const duration: number = Math.round(mp3Size / 16000) * 1000;
-        return duration
-    } catch (e) {
-        //console.log(e);
-    }
-  } */
-
 const getEpisodes = async (slug: string, type: string, page?: string) => {
     try {
         // If page is not defined, set it to 1
