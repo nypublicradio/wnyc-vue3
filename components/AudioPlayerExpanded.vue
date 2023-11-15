@@ -241,12 +241,14 @@ const onMenuChange = (e) => {
 // handles the click on the bottom fixed footer
 const moreFromClick = () => {
   trackClickEvent(
-    `Click Tracking - Expanded Audio Player More from ${currentEpisode.title}`,
+    `Click Tracking - Expanded Audio Player More from ${
+      currentEpisode.value.showTitle || currentEpisode.value.title
+    }`,
     "Expanded Audio Player",
     currentEpisode.title
   );
   emit("close-panel");
-  navigateTo(`/shows/${currentEpisode.slug}`);
+  navigateTo(`/browse/shows/${currentEpisode.value.show}`);
 };
 
 console.log("currentEpisode = ", currentEpisode.value);
@@ -405,7 +407,7 @@ console.log("currentEpisode = ", currentEpisode.value);
         <Button
           text
           severity="secondary"
-          :label="`More from ${currentEpisode.title}`"
+          :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
           icon="pi pi-chevron-right"
           iconPos="right"
           class="flex m-auto"

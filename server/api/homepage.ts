@@ -33,6 +33,7 @@ const getLocalNewscast = async () => {
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'Latest Headlines';
+		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
 		resData.attributes.cmsSource = cmsSources.PUBLISHER;
@@ -64,6 +65,7 @@ const getNationalNewscast = async () => {
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'NPR Newscast';
+		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
 		resData.attributes.cmsSource = cmsSources.PUBLISHER;
@@ -99,6 +101,7 @@ const getNYCNowNewscast = async () => {
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'Latest Headlines';
+		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
 		resData.attributes.cmsSource = cmsSources.PUBLISHER;

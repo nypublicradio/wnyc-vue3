@@ -90,7 +90,6 @@ watch(skipBackTrigger, () => {
 watch(
   playerSeek,
   (e) => {
-    console.log("seek e.time = ", e.time);
     if (playerRef.value) {
       playerRef.value.scrubTimelineEnd(e.time);
     }
