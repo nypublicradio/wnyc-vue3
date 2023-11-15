@@ -1,5 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
+import { cmsSources } from '~/composables/globals'
 
 const config = useRuntimeConfig()
 
@@ -12,6 +13,7 @@ const allShows = async () => {
         };
         const res = await axios(option);
         res.data.results.map((show: any) => {
+            show.cmsSource = cmsSources.PUBLISHER;
             show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s')
         });
         return humps.camelizeKeys(res.data).results;
@@ -32,6 +34,9 @@ const featuredShows = async () => {
             }
         };
         const res = await axios(option);
+        res.data.map((show: any) => {
+            show.cmsSource = cmsSources.PUBLISHER;
+        });
         return humps.camelizeKeys(res.data);
     } catch (e) {
         //console.log(e);
@@ -40,8 +45,17 @@ const featuredShows = async () => {
 
 
 export default defineEventHandler(async (event) => {
+    let res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
+    featuredShowsData.map((show: any) => {
+        //Get the id from the allShowsData
+        const match = allShowsData.find((item: any) => item.slug === show.slug);
+        if (match) {
+            show.id = match.id;
+        }
+    });
+    res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     return {
         all: allShowsData,
         featuredShows: featuredShowsData

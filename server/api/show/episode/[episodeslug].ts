@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { FALLBACKIMAGE } from '~/composables/globals';
+import { fetchDuration } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
 
@@ -14,7 +15,13 @@ const getEpisode = async (slug: string) => {
         const resData = humps.camelizeKeys(res.data).data;
         
         // fallback image to show image when no image is available
-        resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : {template: FALLBACKIMAGE}; 
+        resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : {template: FALLBACKIMAGE};
+        
+        // Fetch the mp3 Content-Length and calculate the duration in seconds
+        if (!resData.attributes.estimatedDuration) {
+            const url: string = resData.attributes.audio
+            resData.attributes.estimatedDuration = await fetchDuration(url)
+        }
 
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {

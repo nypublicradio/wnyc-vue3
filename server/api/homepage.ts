@@ -2,7 +2,7 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
 
 const linkMapper = (link: any) => {
 	return { title: link.value.title, url: link.value.url }
@@ -111,15 +111,43 @@ const getNYCNowNewscast = async () => {
 	}
 }
 
-const getNavigation = async () => {
+const getSectionData = async (slug: string) => {
+    try {
+        const option = {
+            method: 'GET',
+            url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
+        };
+        const res = await axios(option);
+        const resData = res.data.included.map((item: any) => {
+            return normalizePublisherPage(humps.camelizeKeys(item));
+        });
+        return resData;
+    } catch (e) {
+        //console.log(e);
+    }
+};
+
+const getHomeTemplate = async () => {
 	try {
 		const options = {
 			method: 'GET',
 			url: `${config.public.PUBLISHER_BASE_API}v3/link-roll/navigation-shows-wnyc-app/`,
 		};
 		const res = await axios(options);
-		const nav = humps.camelizeKeys(res.data).data.attributes.links.map(linkMapper);
-		return nav;
+		const resData = humps.camelizeKeys(res.data).data;
+		const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
+			// Regex navSlug to extract if it's horizontal or vertical.
+			// This is used to determine the layout of the home page.
+			const componentType = layout.navSlug.match(/(horizontal)/g);
+			const data = await getSectionData(layout.navSlug);
+			return {
+				title: layout.title,
+				layout: layout.navSlug,
+				componentType: componentType ? componentType[0] : 'default',
+				data: data,
+			}
+		}));
+		return homeLayout;
 	} catch (e) {
 		//console.log(e);
 	}
@@ -219,10 +247,13 @@ const getMiddleBucket = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
+	let res = event?.node?.res;
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
+	//TODO: bucket goes away with homeTemplate usage
 	const bucket = await getMiddleBucket();
 	const topStories = mergeArticles(aviary, publisher);
+	const homeTemplate = await getHomeTemplate();
 	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
 	// If it is not available, use the local newscast instead.
 	const requestTime = new Date();
@@ -235,8 +266,9 @@ export default defineEventHandler(async (event) => {
 		local_newscast = await getLocalNewscast();
 	}
 	const national_newscast = await getNationalNewscast();
-
+	res.setHeader('Cache-Control', 'maxage=900, stale-while-revalidate');
 	return {
+		home_template: homeTemplate,
 		top_stories: topStories,
 		middle_bucket: bucket,
 		local_newscast: local_newscast,

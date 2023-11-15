@@ -12,6 +12,7 @@ import { Browser } from '@capacitor/browser';
 //import { mediaTypes } from '~/composables/globals.ts'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 import { ca } from 'date-fns/locale';
+import axios from 'axios';
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -45,6 +46,30 @@ interface ImageAttributes {
   }
   image?: {
     template: string
+  }
+}
+
+/**
+ *  Function to fetch duration from an mp3 file
+ * @param {string} url - url of the mp3 file
+ * @returns {number} - duration of the mp3 file in seconds
+ */
+export const fetchDuration = async (url: string) => {
+  try {
+    const options = {
+      method: 'HEAD',
+      url: url,
+    };
+    const mp3Res = await axios(options);
+    const mp3Size = mp3Res.headers['content-length'];
+    // Calculate the duration in seconds not converting size into bits. 
+    // The bitrate is 128kps according to vlc and the file size is in bytes.
+    //Multiplying the file size by 8 and dividing by 128000 gives the same 
+    //duration as dividing by 16000 and not multiplying the file size by 8.
+    const duration: number = Math.round(mp3Size / 16000);
+    return duration
+  } catch (e) {
+    //console.log(e);
   }
 }
 
