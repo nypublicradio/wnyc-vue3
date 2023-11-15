@@ -1,62 +1,62 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 
-import StarIcon from "~/components/icons/StarIcon.vue";
-import PlayIcon from "~/components/icons/PlayIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
+import StarIcon from "~/components/icons/StarIcon.vue"
+import PlayIcon from "~/components/icons/PlayIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
 
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers";
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
 
-const config = useRuntimeConfig();
-const route = useRoute();
+const config = useRuntimeConfig()
+const route = useRoute()
 
-const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`);
+const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`)
 
-const pagination = ref(show?.value?.episodes?.meta ?? null);
-const episodes = ref(show?.value?.episodes?.data ?? null);
-const showImage = ref(show?.value?.show?.image?.template ?? null);
-const showTitle = ref(show?.value?.show?.title ?? null);
-const showTease = ref(show?.value?.show?.description ?? null);
+const pagination = ref(show?.value?.episodes?.meta ?? null)
+const episodes = ref(show?.value?.episodes?.data ?? null)
+const showImage = ref(show?.value?.show?.image?.template ?? null)
+const showTitle = ref(show?.value?.show?.title ?? null)
+const showTease = ref(show?.value?.show?.description ?? null)
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(route.params.slug));
-const user = useCurrentUser();
+const isFavorited = ref(await checkIsFavorited(route.params.slug))
+const user = useCurrentUser()
 
 // navigate back to home and track it
 const backHome = () => {
-  navigateTo(`/browse`);
-};
+  navigateTo(`/browse`)
+}
 
 const goToEpisodePage = (ep) => {
-  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`);
-};
+  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`)
+}
 
 const togglePlayMostRecentEpisode = () => {
-  console.log("togglePlay");
-};
+  console.log("togglePlay")
+}
 const handleStar = () => {
   const show = {
     slug: route.params.slug,
-  };
-  if (isFavorited.value) {
-    deleteFavorite(show);
-    isFavorited.value = false;
-  } else {
-    saveFavorite(show, "show");
-    isFavorited.value = true;
   }
-};
+  if (isFavorited.value) {
+    deleteFavorite(show)
+    isFavorited.value = false
+  } else {
+    saveFavorite(show, "show")
+    isFavorited.value = true
+  }
+}
 const handleShare = () => {
-  console.log("handleShare");
-};
+  console.log("handleShare")
+}
 
 watch(show, () => {
-  pagination.value = show.value.episodes?.meta;
-  episodes.value = show.value.episodes?.data;
-  showImage.value = show.value.show?.image?.template;
-  showTitle.value = show.value.show?.title;
-  showTease.value = show.value.show?.description;
-});
+  pagination.value = show.value.episodes?.meta
+  episodes.value = show.value.episodes?.data
+  showImage.value = show.value.show?.image?.template
+  showTitle.value = show.value.show?.title
+  showTease.value = show.value.show?.description
+})
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
-import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue";
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
 
 import {
   trackClickEvent,
@@ -11,59 +11,59 @@ import {
   deleteFavorite,
   saveFavorite,
   checkIsFavorited,
-} from "~/utilities/helpers";
-import { useCurrentEpisode } from "~/composables/states";
-import { useToast } from "primevue/usetoast";
+} from "~/utilities/helpers"
+import { useCurrentEpisode } from "~/composables/states"
+import { useToast } from "primevue/usetoast"
 
-import StarIcon from "~/components/icons/StarIcon.vue";
-import DownloadIcon from "~/components/icons/DownloadIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import QueueIcon from "~/components/icons/QueueIcon.vue";
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue";
-import FollowIcon from "~/components/icons/FollowIcon.vue";
-import SleepIcon from "~/components/icons/SleepIcon.vue";
+import StarIcon from "~/components/icons/StarIcon.vue"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import QueueIcon from "~/components/icons/QueueIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+import FollowIcon from "~/components/icons/FollowIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
 
-const toast = useToast();
+const toast = useToast()
 
-const emit = defineEmits(["close-panel"]);
+const emit = defineEmits(["close-panel"])
 
-const currentEpisode = useCurrentEpisode();
+const currentEpisode = useCurrentEpisode()
 
-const expandedFooterRef = ref(null);
-const expandedFooterheight = ref(0);
+const expandedFooterRef = ref(null)
+const expandedFooterheight = ref(0)
 
-const isFavorited = ref(await checkIsFavorited(currentEpisode.value.slug));
+const isFavorited = ref(await checkIsFavorited(currentEpisode.value.slug))
 
 onMounted(() => {
   if (expandedFooterheight.value)
-    expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`;
-});
+    expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
+})
 
 const handleAddToFavorites = () => {
   console.log(
     "AudioPlayerExpanded handleAddToFavorites currentEpisode",
     currentEpisode.value
-  );
+  )
 
   if (isFavorited.value) {
-    deleteFavorite(currentEpisode.value);
-    isFavorited.value = false;
+    deleteFavorite(currentEpisode.value)
+    isFavorited.value = false
   } else {
-    saveFavorite(currentEpisode.value, currentEpisode.value.type);
-    isFavorited.value = true;
+    saveFavorite(currentEpisode.value, currentEpisode.value.type)
+    isFavorited.value = true
   }
 
   toast.add({
     severity: "info",
     summary: "Updated your favorites.",
     life: 3000,
-  });
+  })
   trackClickEvent(
     "Click Tracking - Add/remove from favorites",
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const handleDownload = () => {
   // update CapacitorJs filesystem
@@ -71,13 +71,13 @@ const handleDownload = () => {
     severity: "info",
     summary: "Downloading...",
     life: 3000,
-  });
+  })
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const handleShare = () => {
   // trigger sharing system
@@ -85,13 +85,13 @@ const handleShare = () => {
     title: currentEpisode.value.title,
     text: currentEpisode.value.details,
     url: currentEpisode.value.url,
-  });
+  })
   trackClickEvent(
     "Click Tracking - Audio share",
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const handleAddToQueue = () => {
   // toggle active state
@@ -100,8 +100,8 @@ const handleAddToQueue = () => {
     "Click Tracking - Add to Queue",
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const handleMoreEpisodes = () => {
   // navitget to show page
@@ -109,8 +109,8 @@ const handleMoreEpisodes = () => {
     "Click Tracking - More Episodes",
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const handleFollow = () => {
   // toggle active state
@@ -119,8 +119,8 @@ const handleFollow = () => {
     `Click Tracking - Follow ${currentEpisode.value.title}`,
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const handleSleepTimer = () => {
   // toggle active state
@@ -129,12 +129,12 @@ const handleSleepTimer = () => {
     "Click Tracking - Sleep Timer",
     "Expanded Audio Player",
     currentEpisode.value.title
-  );
-};
+  )
+}
 
 const isLive = computed(() => {
-  return isLiveStream();
-});
+  return isLiveStream()
+})
 
 // set the items for the Dot menu
 const getDotMenuItems = () => {
@@ -147,7 +147,7 @@ const getDotMenuItems = () => {
             active: true,
             title: currentEpisode.value.title,
             command: () => {
-              handleFollow();
+              handleFollow()
             },
           },
           {
@@ -156,7 +156,7 @@ const getDotMenuItems = () => {
             active: true,
             title: currentEpisode.value.title,
             command: () => {
-              handleSleepTimer();
+              handleSleepTimer()
             },
           },
           {
@@ -164,7 +164,7 @@ const getDotMenuItems = () => {
             customIcon: ShareIcon,
             title: currentEpisode.value.title,
             command: () => {
-              handleShare();
+              handleShare()
             },
           },
           {
@@ -172,7 +172,7 @@ const getDotMenuItems = () => {
             customIcon: MoreEpisodesIcon,
             title: currentEpisode.value.title,
             command: () => {
-              handleMoreEpisodes();
+              handleMoreEpisodes()
             },
           },
         ]
@@ -183,7 +183,7 @@ const getDotMenuItems = () => {
             active: isFavorited.value,
             title: currentEpisode.value.title,
             command: () => {
-              handleAddToFavorites();
+              handleAddToFavorites()
             },
           },
           {
@@ -192,7 +192,7 @@ const getDotMenuItems = () => {
             customIcon: DownloadIcon,
             title: currentEpisode.value.title,
             command: () => {
-              handleDownload();
+              handleDownload()
             },
           },
           {
@@ -200,7 +200,7 @@ const getDotMenuItems = () => {
             customIcon: ShareIcon,
             title: currentEpisode.value.title,
             command: () => {
-              handleShare();
+              handleShare()
             },
           },
           {
@@ -209,7 +209,7 @@ const getDotMenuItems = () => {
             customIcon: QueueIcon,
             title: currentEpisode.value.title,
             command: () => {
-              handleAddToQueue();
+              handleAddToQueue()
             },
           },
           {
@@ -217,7 +217,7 @@ const getDotMenuItems = () => {
             customIcon: MoreEpisodesIcon,
             title: currentEpisode.value.title,
             command: () => {
-              handleMoreEpisodes();
+              handleMoreEpisodes()
             },
           },
           {
@@ -226,17 +226,17 @@ const getDotMenuItems = () => {
             active: true,
             title: currentEpisode.value.title,
             command: () => {
-              handleFollow();
+              handleFollow()
             },
           },
         ]),
-  ];
-};
+  ]
+}
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command();
-};
+  e.value.command()
+}
 
 // handles the click on the bottom fixed footer
 const moreFromClick = () => {
@@ -246,12 +246,12 @@ const moreFromClick = () => {
     }`,
     "Expanded Audio Player",
     currentEpisode.title
-  );
-  emit("close-panel");
-  navigateTo(`/browse/shows/${currentEpisode.value.show}`);
-};
+  )
+  emit("close-panel")
+  navigateTo(`/browse/shows/${currentEpisode.value.show}`)
+}
 
-console.log("currentEpisode = ", currentEpisode.value);
+console.log("currentEpisode = ", currentEpisode.value)
 </script>
 
 <template>

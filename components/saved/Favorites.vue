@@ -1,19 +1,19 @@
 <script setup>
 // if user is logged in, get all their favorites
-const client = useSupabaseClient();
-const favorites = ref(null);
-const user = useCurrentUser();
+const client = useSupabaseClient()
+const favorites = ref(null)
+const user = useCurrentUser()
 if (user.value) {
   const { data, error } = await client
     .from("favorited")
     .select("*")
     .eq("uid", user.value.id)
-    .neq("media_type", "show");
+    .neq("media_type", "show")
   if (data?.length > 0) {
-    favorites.value = data;
+    favorites.value = data
   }
   if (error) {
-    console.log("favorited items error", error);
+    console.log("favorited items error", error)
   }
 }
 </script>

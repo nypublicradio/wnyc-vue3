@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PlayIcon from '~/components/icons/PlayIcon.vue'
-import PauseIcon from '~/components/icons/PauseIcon.vue'
+import PlayIcon from "~/components/icons/PlayIcon.vue"
+import PauseIcon from "~/components/icons/PauseIcon.vue"
 
 import {
   useCurrentEpisode,
@@ -8,7 +8,7 @@ import {
   useIsEpisodePlaying,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
-} from '~/composables/states'
+} from "~/composables/states"
 
 const isEpisodePlaying = useIsEpisodePlaying()
 const currentEpisode = useCurrentEpisode()
@@ -19,7 +19,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const props = defineProps({
   label: {
     type: String,
-    default: 'Play',
+    default: "Play",
   },
   live: {
     type: Boolean,
@@ -30,17 +30,17 @@ const props = defineProps({
     default: 0,
   },
   file: {
-    default: '',
+    default: "",
     type: String,
   },
 })
 
-const emit = defineEmits(['on-click'])
+const emit = defineEmits(["on-click"])
 
 // handles the click event
 const togglePlay = () => {
   if (!isStreamLoading.value) {
-    emit('on-click')
+    emit("on-click")
   }
 }
 
@@ -63,9 +63,7 @@ const checkEpisodeMatch = computed(() => {
 })
 
 const getProgress = computed(() => {
-  return Math.ceil(
-    (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
-  )
+  return Math.ceil((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
 })
 </script>
 
@@ -75,10 +73,7 @@ const getProgress = computed(() => {
       severity="secondary"
       @click.prevent="togglePlay"
       :aria-disabled="isStreamLoading"
-      :class="[
-        { active: checkEpisodeMatch },
-        { anim: checkEpisodeMatchAndPlaying },
-      ]"
+      :class="[{ active: checkEpisodeMatch }, { anim: checkEpisodeMatchAndPlaying }]"
     >
       <slot name="icon">
         <div

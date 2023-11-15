@@ -1,20 +1,20 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config";
-import { getMinutes, getDate } from "~/utilities/helpers";
-import StarIcon from "~/components/icons/StarIcon.vue";
-import DownloadIcon from "~/components/icons/DownloadIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import QueueIcon from "~/components/icons/QueueIcon.vue";
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers";
+import { usePrimeVue } from "primevue/config"
+import { getMinutes, getDate } from "~/utilities/helpers"
+import StarIcon from "~/components/icons/StarIcon.vue"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import QueueIcon from "~/components/icons/QueueIcon.vue"
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
 
-const $primevue = usePrimeVue();
+const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
-});
+})
 
-const emit = defineEmits(["onClick"]);
+const emit = defineEmits(["onClick"])
 
 const props = defineProps({
   ep: {
@@ -26,35 +26,35 @@ const props = defineProps({
     type: String,
     default: "./logo.png",
   },
-});
+})
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(props.ep?.attributes?.slug));
+const isFavorited = ref(await checkIsFavorited(props.ep?.attributes?.slug))
 
 const handleAddToFavorites = (bucketItem) => {
   const episode = {
     cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
     id: props.ep?.id,
     slug: props.ep?.attributes?.slug,
-  };
+  }
   if (isFavorited.value) {
-    deleteFavorite(episode);
-    isFavorited.value = false;
+    deleteFavorite(episode)
+    isFavorited.value = false
   } else {
-    saveFavorite(episode, props.ep?.type);
-    isFavorited.value = true;
+    saveFavorite(episode, props.ep?.type)
+    isFavorited.value = true
   }
   toast.add({
     severity: "info",
     summary: "Updated your favorites.",
     life: 3000,
-  });
+  })
   trackClickEvent(
     "Click Tracking - Add/remove from favorites",
     "Episode Item",
     bucketItem.title
-  );
-};
+  )
+}
 //console.log('ep = ', props.ep)
 
 // set the items for the Dot menu
@@ -66,7 +66,7 @@ const getDotMenuItems = (bucketItem) => {
       active: isFavorited.value,
       title: bucketItem.title,
       command: () => {
-        handleAddToFavorites(bucketItem);
+        handleAddToFavorites(bucketItem)
       },
     },
     {
@@ -75,7 +75,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: DownloadIcon,
       title: bucketItem.title,
       command: () => {
-        handleDownload(bucketItem);
+        handleDownload(bucketItem)
       },
     },
     {
@@ -83,7 +83,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem.title,
       command: () => {
-        handleShare(bucketItem);
+        handleShare(bucketItem)
       },
     },
     {
@@ -92,16 +92,16 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: QueueIcon,
       title: bucketItem.title,
       command: () => {
-        handleAddToQueue(bucketItem);
+        handleAddToQueue(bucketItem)
       },
     },
-  ];
-};
+  ]
+}
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command();
-};
+  e.value.command()
+}
 </script>
 
 <template>

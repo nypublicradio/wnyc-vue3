@@ -1,39 +1,39 @@
 <script setup>
-import VProgressScrubber from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue";
+import VProgressScrubber from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VProgressScrubber.vue"
 import {
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
   usePlayerSeek,
-} from "~/composables/states";
+} from "~/composables/states"
 
-const playerSeek = usePlayerSeek();
-const currentEpisodeDuration = useCurrentEpisodeDuration();
-const currentEpisodeProgress = useCurrentEpisodeProgress();
+const playerSeek = usePlayerSeek()
+const currentEpisodeDuration = useCurrentEpisodeDuration()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
 
 const percentComplete = computed(() => {
-  return (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100;
-});
+  return (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
+})
 
-const progressRef = ref(percentComplete.value);
-let scrubbing = false;
+const progressRef = ref(percentComplete.value)
+let scrubbing = false
 
 const onSlideEnd = (e) => {
-  scrubbing = false;
-  playerSeek.value.time = Math.round(e);
-  playerSeek.value.bool = playerSeek.value.bool ? false : true;
-};
+  scrubbing = false
+  playerSeek.value.time = Math.round(e)
+  playerSeek.value.bool = playerSeek.value.bool ? false : true
+}
 const onChange = (e) => {
-  scrubbing = true;
-  progressRef.value = e;
-};
+  scrubbing = true
+  progressRef.value = e
+}
 const onClick = (e) => {
-  playerSeek.value.time = Math.round(e);
-  playerSeek.value.bool = playerSeek.value.bool ? false : true;
-};
+  playerSeek.value.time = Math.round(e)
+  playerSeek.value.bool = playerSeek.value.bool ? false : true
+}
 
 watch(percentComplete, (e) => {
-  if (!scrubbing) progressRef.value = e;
-});
+  if (!scrubbing) progressRef.value = e
+})
 </script>
 
 <template>

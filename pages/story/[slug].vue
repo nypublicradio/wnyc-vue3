@@ -1,117 +1,117 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
-import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue";
-import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue";
-import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue";
-import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers";
-import { useCommentCounts } from "~/composables/comments";
-import StarIcon from "~/components/icons/StarIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import CommentsIcon from "~/components/icons/CommentsIcon.vue";
-import { cmsSources } from "~/composables/globals";
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
+import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
+import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
+import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers"
+import { useCommentCounts } from "~/composables/comments"
+import StarIcon from "~/components/icons/StarIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import CommentsIcon from "~/components/icons/CommentsIcon.vue"
+import { cmsSources } from "~/composables/globals"
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
-import { normalizeGalleryPage } from "~/composables/data/galleryPages";
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers";
+import { normalizeGalleryPage } from "~/composables/data/galleryPages"
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
-const user = useCurrentUser();
-const config = useRuntimeConfig();
+const user = useCurrentUser()
+const config = useRuntimeConfig()
 const { data: storyData } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
-);
+)
 const storySource =
-  route.query.src === cmsSources.WAGTAIL ? cmsSources.WAGTAIL : cmsSources.PUBLISHER;
-const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`);
-const topStories = ref(null);
-const gallery = ref(null);
-const topImage = ref(null);
-const topCaption = ref(null);
-const galleryLength = ref(null);
+  route.query.src === cmsSources.WAGTAIL ? cmsSources.WAGTAIL : cmsSources.PUBLISHER
+const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
+const topStories = ref(null)
+const gallery = ref(null)
+const topImage = ref(null)
+const topCaption = ref(null)
+const galleryLength = ref(null)
 
-const galleryLink = ref(null);
+const galleryLink = ref(null)
 
-const commentCounts = ref(useCommentCounts());
+const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
-  return commentCounts.value[storyData?.value.commentId];
-});
+  return commentCounts.value[storyData?.value.commentId]
+})
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(false);
+const isFavorited = ref(false)
 
 watchEffect(async () => {
   if (user.value) {
-    isFavorited.value = await checkIsFavorited(route.params.slug);
+    isFavorited.value = await checkIsFavorited(route.params.slug)
   }
-});
+})
 
 // navigate back to home and track it
 const routeBack = () => {
-  trackClickEvent("story", "story page", "route back");
-  window.history.state.back ? router.back() : navigateTo("/home");
-};
+  trackClickEvent("story", "story page", "route back")
+  window.history.state.back ? router.back() : navigateTo("/home")
+}
 
 const handleComments = () => {
-  console.log("handleComments");
-  const activeStation = document.getElementById("comments");
+  console.log("handleComments")
+  const activeStation = document.getElementById("comments")
   activeStation.scrollIntoView({
     behavior: "smooth",
     block: "center",
     inline: "start",
-  });
-};
+  })
+}
 const handleStar = () => {
   const story = {
     cms_source: storySource,
     id: storyData.value?.id,
     slug: route.params.slug,
-  };
-  if (isFavorited.value) {
-    deleteFavorite(story);
-    isFavorited.value = false;
-  } else {
-    saveFavorite(story, storyData.value.type);
-    isFavorited.value = true;
   }
-};
+  if (isFavorited.value) {
+    deleteFavorite(story)
+    isFavorited.value = false
+  } else {
+    saveFavorite(story, storyData.value.type)
+    isFavorited.value = true
+  }
+}
 const handleShare = () => {
-  console.log("handleShare");
-};
+  console.log("handleShare")
+}
 
 watch(stories, () => {
   topStories.value = stories.value.top_stories.filter(
     (item) => item.id !== storyData.value?.id
-  );
-});
+  )
+})
 
 watch(storyData, async () => {
   //console.log("storyData = ", storyData.value);
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(
       storyData.value.leadGallery.gallery
-    ).then(({ data }) => normalizeGalleryPage(data.value));
+    ).then(({ data }) => normalizeGalleryPage(data.value))
   }
   topImage.value =
     storyData.value?.cmsSource === cmsSources.WAGTAIL
       ? String(storyData.value?.image?.id)
-      : storyData.value?.image?.template ?? gallery?.slides?.[0]?.image ?? null;
+      : storyData.value?.image?.template ?? gallery?.slides?.[0]?.image ?? null
 
   topCaption.value =
     storyData.value?.leadImageCaption ??
     topImage?.caption ??
     gallery.value?.slides?.[0]?.image.caption ??
-    null;
+    null
 
   if (storyData.value?.leadGallery) {
-    galleryLength.value = gallery.value?.slides?.length ?? 0;
+    galleryLength.value = gallery.value?.slides?.length ?? 0
     galleryLink.value = String(
       `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
-    );
+    )
   }
-});
+})
 </script>
 
 <template>

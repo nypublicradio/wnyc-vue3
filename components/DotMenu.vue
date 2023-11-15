@@ -21,9 +21,9 @@ const props = defineProps({
     type: String,
     default: "42px",
   },
-});
-const dataRef = ref(props.label);
-const emit = defineEmits(["changeEmit"]);
+})
+const dataRef = ref(props.label)
+const emit = defineEmits(["changeEmit"])
 </script>
 <template>
   <DropupMenu

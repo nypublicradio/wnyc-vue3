@@ -1,16 +1,16 @@
 <script setup>
-import { useCurrentUser } from "~/composables/states";
-const user = useCurrentUser();
-const client = useSupabaseClient();
+import { useCurrentUser } from "~/composables/states"
+const user = useCurrentUser()
+const client = useSupabaseClient()
 
-const list = ref(null);
+const list = ref(null)
 
 if (user.value) {
   let { data: recently_viewed, error } = await client
     .from("recently_viewed")
     .select("*")
-    .eq("uid", user.value.id);
-  list.value = recently_viewed;
+    .eq("uid", user.value.id)
+  list.value = recently_viewed
 }
 </script>
 
