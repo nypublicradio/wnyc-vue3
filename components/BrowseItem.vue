@@ -59,12 +59,10 @@ const removeFavorite = async () => {
     <Button v-if="user" text plain rounded class="flex-none">
       <template #icon>
         <StarIcon
-          v-if="isFavorited"
           class="h-2rem"
-          :active="true"
-          @click="removeFavorite"
+          :active="isFavorited"
+          @click="isFavorited ? removeFavorite() : addFavorite()"
         />
-        <StarIcon v-else class="h-2rem" :active="false" @click="addFavorite" />
       </template>
     </Button>
   </div>
