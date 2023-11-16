@@ -1,5 +1,6 @@
 <script setup>
 // if user is logged in, get all their favorited shows
+const config = useRuntimeConfig()
 const client = useSupabaseClient()
 const favoritedShows = ref(null)
 const user = useCurrentUser()
@@ -24,6 +25,14 @@ watch(
   { immediate: true }
 )
 
+const loadData = async (show) => {
+  console.log("show = ", show)
+  const { data: res } = await useFetch(
+    `${config.public.BFF_URL}/api/show/${show.media_slug}`
+  )
+  console.log("res = ", res)
+  return res.value.show
+}
 const loadComponent = (show) => {
   const componentName = computed(() => {
     switch (show.media_type) {
@@ -52,7 +61,7 @@ const loadComponent = (show) => {
       <!-- <h2 class="mb-4">Followed shows:</h2> -->
       <div v-for="(show, index) in favoritedShows" :key="index">
         <pre class="text-xs">{{ show }}</pre>
-        <component :is="loadComponent(show)" :show="show" />
+        <component :is="loadComponent(show)" :data="loadData(show)" />
       </div>
     </div>
     <div v-else class="empty flex flex-column gap-3 text-center mt-8">

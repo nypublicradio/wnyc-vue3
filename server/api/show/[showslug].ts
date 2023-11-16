@@ -29,7 +29,6 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
             }
         })
         for (let i = 0; i < cleanEpisodes.length; i++) {
-            console.log('cleanEpisodes[i].attributes.estimatedDuration = ', cleanEpisodes[i].attributes['estimated-duration'])
             if (!cleanEpisodes[i].attributes['estimated-duration']) {
                 const url: string = cleanEpisodes[i].attributes.audio
                 cleanEpisodes[i].attributes['estimated-duration'] = await fetchDuration(url)

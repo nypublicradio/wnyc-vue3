@@ -38,6 +38,7 @@ const removeFavorite = async () => {
   deleteFavorite(props.data)
   isFavorited.value = false
 }
+console.log("loaded =", props.data)
 </script>
 
 <template>
