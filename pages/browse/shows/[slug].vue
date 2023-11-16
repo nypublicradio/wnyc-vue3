@@ -54,6 +54,7 @@ const handleShare = () => {
 }
 
 watch(show, () => {
+  //console.log("show  = ", show.value)
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template
@@ -155,7 +156,7 @@ watch(show, () => {
       <EpisodeItem
         v-if="show"
         v-for="ep in episodes"
-        :ep="ep"
+        :data="ep"
         :key="ep.id"
         @onClick="goToEpisodePage(ep)"
         :fallback-image="showImage"

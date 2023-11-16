@@ -1,6 +1,6 @@
 <script setup>
-import { useFuse } from '@vueuse/integrations/useFuse'
-import { useShowTopics } from '~/composables/globals.ts'
+import { useFuse } from "@vueuse/integrations/useFuse"
+import { useShowTopics } from "~/composables/globals.ts"
 
 const config = useRuntimeConfig()
 const { data: shows } = useFetch(`${config.public.BFF_URL}/api/shows`)
@@ -9,11 +9,11 @@ const allShows = ref(shows?.value?.all ?? null)
 
 const showTopics = useShowTopics()
 const router = useRouter()
-const searchFieldValue = ref('')
+const searchFieldValue = ref("")
 const isSearching = ref(false)
 
 const keys = computed(() => {
-  return ['title']
+  return ["title"]
 })
 
 const options = computed(() => ({
@@ -28,12 +28,12 @@ const options = computed(() => ({
 const { results } = useFuse(searchFieldValue, allShows, options)
 
 const clearSearchField = () => {
-  searchFieldValue.value = ''
+  searchFieldValue.value = ""
 }
 
 const selectTopic = (topic) => {
   router.push({
-    name: 'browse-topic',
+    name: "browse-topic",
     query: { topic: topic.label },
   })
 }
@@ -56,8 +56,8 @@ watch(shows, () => {
 watch(searchFieldValue, () => {
   // sets the scroll to the top of the page when search field is updated. This is needed because if the use scrolls down and searches, they do not see the top of the list if it is long.
   document.body.scrollIntoView({
-    behavior: 'instant',
-    block: 'start',
+    behavior: "instant",
+    block: "start",
   })
 })
 </script>
@@ -92,11 +92,7 @@ watch(searchFieldValue, () => {
         </section>
         <HorizontalScrollFeature class="topics-holder">
           <div class="flex gap-3">
-            <div
-              v-for="topic in showTopics"
-              class="station-holder"
-              :key="topic.label"
-            >
+            <div v-for="topic in showTopics" class="station-holder" :key="topic.label">
               <div class="relative topic-btn-holder">
                 <Button
                   class="topic-btn text-sm white-space-nowrap font-meta"
@@ -117,13 +113,13 @@ watch(searchFieldValue, () => {
               <BrowseItem
                 v-if="featuredShows"
                 v-for="show in featuredShows"
-                :show="show"
+                :data="show"
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
               <skeleton-browse-item
                 v-else
-                v-for="(show, index) in 6"
+                v-for="(show, index) in 27"
                 :key="`sk1-${index}`"
               />
             </section>
@@ -133,13 +129,13 @@ watch(searchFieldValue, () => {
               <BrowseItem
                 v-if="allShows"
                 v-for="show in allShows"
-                :show="show"
+                :data="show"
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
               <skeleton-browse-item
                 v-else
-                v-for="(show, index) in 6"
+                v-for="(show, index) in 27"
                 :key="`sk2-${index}`"
               />
             </section>
@@ -156,22 +152,15 @@ watch(searchFieldValue, () => {
         <div class="shows flex flex-column gap-3">
           <BrowseItem
             v-for="show in results"
-            :show="show.item"
+            :data="show.item"
             :key="show.item.title"
             @onClick="goToShowPage(show.item)"
           />
         </div>
         <!-- if no results show this -->
-        <div
-          v-if="results.length === 0"
-          class="text-center flex flex-column gap-4 mt-8"
-        >
+        <div v-if="results.length === 0" class="text-center flex flex-column gap-4 mt-8">
           <h2>No results for {{ searchFieldValue }}</h2>
-          <img
-            src="/noResults.svg"
-            class="max-w-6rem m-auto"
-            alt="No Results"
-          />
+          <img src="/noResults.svg" class="max-w-6rem m-auto" alt="No Results" />
           <div>
             <!-- <p class="mb-2">
               Did you mean:

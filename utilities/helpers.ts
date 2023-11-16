@@ -55,6 +55,7 @@ interface ImageAttributes {
  * @returns {number} - duration of the mp3 file in seconds
  */
 export const fetchDuration = async (url: string) => {
+
   try {
     const options = {
       method: 'HEAD',
@@ -634,7 +635,7 @@ export const saveFavorite = async (media: object, type: string) => {
   const user = useCurrentUser()
   const source = media?.cms_source ?? media?.cmsSource
   const slug = media?.slug ?? media?.id
-  const href = type === 'show' ? `/show/${route.href}/${slug}` : route.href
+  const href = type === 'show' ? `/show${route.href}/${slug}` : route.href
 
   if (user.value) {
     // format the media object to save

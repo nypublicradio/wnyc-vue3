@@ -1,12 +1,12 @@
 <script setup>
-import VCard from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue'
-import VByline from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue'
-import { cmsSources } from '~/composables/globals'
-import { trackClickEvent, whenTime } from '~/utilities/helpers'
-import { usePrimeVue } from 'primevue/config'
+import VCard from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue"
+import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
+import { cmsSources } from "~/composables/globals"
+import { trackClickEvent, whenTime } from "~/utilities/helpers"
+import { usePrimeVue } from "primevue/config"
 
 const props = defineProps({
-  article: {
+  data: {
     type: Object,
     default: null,
   },
@@ -25,67 +25,56 @@ defineExpose({
 <template>
   <div class="story-card">
     <VCard
-      v-if="article"
+      v-if="props.data"
       v-ripple
       class="p-ripple"
       :src="
-        article.cmsSource === cmsSources.WAGTAIL
-          ? String(article.image.id)
-          : article.image?.template
+        props.data.cmsSource === cmsSources.WAGTAIL
+          ? String(props.data.image.id)
+          : props.data.image?.template
       "
-      :title="article.title"
+      :title="props.data.title"
       :loading="index > 1 ? 'lazy' : 'eager'"
       :maxWidth="
-        article.cmsSource === cmsSources.WAGTAIL
-          ? article.image.width
-          : article.image.w
+        props.data.cmsSource === cmsSources.WAGTAIL
+          ? props.data.image.width
+          : props.data.image.w
       "
       :maxHeight="
-        article.cmsSource === cmsSources.WAGTAIL
-          ? article.image.height
-          : article.image.h
+        props.data.cmsSource === cmsSources.WAGTAIL
+          ? props.data.image.height
+          : props.data.image.h
       "
-      :sponsored="article.sponsoredContent"
+      :sponsored="props.data.sponsoredContent"
       :width="116"
       :height="116"
       :ratio="[1, 1]"
       @click="
         navigateTo({
-          path: `/story/${article.id}`,
+          path: `/story/${props.data.id}`,
           query: {
-            src: article.cmsSource,
+            src: props.data.cmsSource,
           },
         })
       "
       @title-click="
-        trackClickEvent(
-          'Click Tracking - Top Story',
-          'Article Card Headline',
-          $event
-        )
+        trackClickEvent('Click Tracking - Top Story', 'Article Card Headline', $event)
       "
       @image-click="
-        trackClickEvent(
-          'Click Tracking - Top Story',
-          'Article Card Image',
-          $event
-        )
+        trackClickEvent('Click Tracking - Top Story', 'Article Card Image', $event)
       "
     >
       <template #belowBlurb>
         <div class="article-metadata pointer-events-none">
-          <!--    <pre>{{ article.authors }}</pre> -->
+          <!--    <pre>{{ props.data.authors }}</pre> -->
           <PipeData
-            :hidePipe="
-              article.authors?.length == 0 || article.authors == undefined
-            "
+            :hidePipe="props.data.authors?.length == 0 || props.data.authors == undefined"
           >
             <template #left>
-              <VByline prefix="" :authors="article.authors" isBlockLinks>
-              </VByline>
+              <VByline prefix="" :authors="props.data.authors" isBlockLinks> </VByline>
             </template>
             <template #right>
-              <span class="nobreak">{{ whenTime(article.meta) }}</span>
+              <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
             </template>
           </PipeData>
         </div>

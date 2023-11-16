@@ -1,5 +1,5 @@
 <script setup>
-import { usePrimeVue } from 'primevue/config'
+import { usePrimeVue } from "primevue/config"
 
 const props = defineProps({
   articles: {
@@ -19,7 +19,7 @@ defineExpose({
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
       <!-- <pre class="text-xs">{{ article }}</pre> -->
-      <Story :article="article" :index="index" />
+      <StoryItem :data="article" :index="index" />
     </div>
   </div>
   <div v-else>

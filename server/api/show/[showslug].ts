@@ -26,12 +26,13 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
                 return episode.attributes.audio[0] !== null
             } else {
                 return episode.attributes.audio !== null
-            }                       
+            }
         })
         for (let i = 0; i < cleanEpisodes.length; i++) {
-            if (!cleanEpisodes[i].attributes.estimatedDuration) {
+            console.log('cleanEpisodes[i].attributes.estimatedDuration = ', cleanEpisodes[i].attributes['estimated-duration'])
+            if (!cleanEpisodes[i].attributes['estimated-duration']) {
                 const url: string = cleanEpisodes[i].attributes.audio
-                cleanEpisodes[i].attributes.estimatedDuration = await fetchDuration(url)
+                cleanEpisodes[i].attributes['estimated-duration'] = await fetchDuration(url)
             }
         }
         //Passing meta and data separately to the client. Meta is to used for pagination

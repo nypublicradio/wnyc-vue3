@@ -12,7 +12,7 @@ defineExpose({
 const emit = defineEmits(["onClick"])
 
 const props = defineProps({
-  show: {
+  data: {
     type: Object,
     default: {},
     required: true,
@@ -22,20 +22,20 @@ const route = useRoute()
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.show.slug)
+  isFavorited.value = await checkIsFavorited(props.data.slug)
 })
 
 const user = useCurrentUser()
 
-//console.log("props.show = ", props.show);
+//console.log("props.data = ", props.data);
 // add item to favorites
 const addFavorite = async () => {
-  saveFavorite(props.show, props.show?.type)
+  saveFavorite(props.data, props.data?.type)
   isFavorited.value = true
 }
 // remove item from favorites
 const removeFavorite = async () => {
-  deleteFavorite(props.show)
+  deleteFavorite(props.data)
   isFavorited.value = false
 }
 </script>
@@ -44,7 +44,7 @@ const removeFavorite = async () => {
   <div class="browse-item flex justify-content-between align-items-center p-ripple">
     <div class="flex gap-3 w-full" v-ripple @click.prevent="emit('onClick')">
       <VImage
-        :src="props.show.image.template"
+        :src="props.data.image.template"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
@@ -53,9 +53,9 @@ const removeFavorite = async () => {
         style="min-height: 72px; min-width: 72px; background-color: var(--background2)"
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <!-- <LiveBadge v-if="props.show.isLive" class="mb-1" /> -->
-        <h2>{{ props.show.title }}</h2>
-        <p v-for="org in props.show?.producingOrganizations" :key="org.name">
+        <!-- <LiveBadge v-if="props.data.isLive" class="mb-1" /> -->
+        <h2>{{ props.data.title }}</h2>
+        <p v-for="org in props.data?.producingOrganizations" :key="org.name">
           {{ org.name }}
         </p>
       </div>
