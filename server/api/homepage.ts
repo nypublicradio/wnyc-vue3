@@ -33,6 +33,10 @@ const getLocalNewscast = async () => {
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'Latest Headlines';
+		resData.attributes.showTitle = resData.attributes.channelTitle;
+		resData.attributes.type = resData.type;
+		resData.attributes.id = resData.id;
+		resData.attributes.cmsSource = cmsSources.PUBLISHER;
 		return resData.attributes;
 	} catch (e) {
 		////console.log(e);
@@ -47,6 +51,7 @@ const getNationalNewscast = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
+		console.log('resData = ', resData);
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
 		//Fetch the mp3 last modified date
@@ -60,6 +65,10 @@ const getNationalNewscast = async () => {
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'NPR Newscast';
+		resData.attributes.showTitle = resData.attributes.channelTitle;
+		resData.attributes.type = resData.type;
+		resData.attributes.id = resData.id;
+		resData.attributes.cmsSource = cmsSources.PUBLISHER;
 		return resData.attributes;
 	} catch (e) {
 		////console.log(e);
@@ -92,6 +101,10 @@ const getNYCNowNewscast = async () => {
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'Latest Headlines';
+		resData.attributes.showTitle = resData.attributes.channelTitle;
+		resData.attributes.type = resData.type;
+		resData.attributes.id = resData.id;
+		resData.attributes.cmsSource = cmsSources.PUBLISHER;
 		return resData.attributes;
 	} catch (e) {
 		//console.log(e);
@@ -99,19 +112,19 @@ const getNYCNowNewscast = async () => {
 }
 
 const getSectionData = async (slug: string) => {
-    try {
-        const option = {
-            method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
-        };
-        const res = await axios(option);
-        const resData = res.data.included.map((item: any) => {
-            return normalizePublisherPage(humps.camelizeKeys(item));
-        });
-        return resData;
-    } catch (e) {
-        //console.log(e);
-    }
+	try {
+		const option = {
+			method: 'GET',
+			url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
+		};
+		const res = await axios(option);
+		const resData = res.data.included.map((item: any) => {
+			return normalizePublisherPage(humps.camelizeKeys(item));
+		});
+		return resData;
+	} catch (e) {
+		//console.log(e);
+	}
 };
 
 const getHomeTemplate = async () => {

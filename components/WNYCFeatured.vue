@@ -1,17 +1,17 @@
 <script async setup>
-import { getMinutes, trackClickEvent, copyToClipBoard } from "~/utilities/helpers";
-import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states";
-import { useToast } from "primevue/usetoast";
-const toast = useToast();
-const togglePlayTrigger = useTogglePlayTrigger();
-const currentEpisode = useCurrentEpisode();
+import { getMinutes, trackClickEvent, copyToClipBoard } from "~/utilities/helpers"
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
+import { useToast } from "primevue/usetoast"
+const toast = useToast()
+const togglePlayTrigger = useTogglePlayTrigger()
+const currentEpisode = useCurrentEpisode()
 
 const props = defineProps({
   articles: {
     type: Object,
     default: null,
   },
-});
+})
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -25,12 +25,8 @@ const getDotMenuItems = (bucketItem) => {
           summary: "Downloading...",
           detail: bucketItem.title,
           life: 3000,
-        });
-        trackClickEvent(
-          "Click Tracking - Audio Download",
-          "Large Card",
-          bucketItem.title
-        );
+        })
+        trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
       },
     },
     {
@@ -48,21 +44,21 @@ const getDotMenuItems = (bucketItem) => {
               severity: "error",
               summary: "Copy to clipboard failed. Try again another time",
               life: 3000,
-            });
+            })
         trackClickEvent(
           "Click Tracking - Audio Copy Embed Code",
           "Large Card",
           bucketItem.embedCode
-        );
+        )
       },
     },
-  ];
-};
+  ]
+}
 
 // fire the command located in tehe menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command();
-};
+  e.value.command()
+}
 
 // normalize the bucket item data for the player
 const prepForPlayer = (item) => {
@@ -74,17 +70,17 @@ const prepForPlayer = (item) => {
     duration: item.estimatedDuration,
     details: item.body,
     first_published_at: item.publishAt,
-  };
-};
+  }
+}
 
 // handle the play button click
 const togglePlay = (item) => {
   if (currentEpisode.value?.id !== item.id) {
-    currentEpisode.value = prepForPlayer(item);
+    currentEpisode.value = prepForPlayer(item)
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value;
-  trackClickEvent("Click Tracking - Large Card", item.title, "toggle play");
-};
+  togglePlayTrigger.value = !togglePlayTrigger.value
+  trackClickEvent("Click Tracking - Large Card", item.title, "toggle play")
+}
 </script>
 
 <template>

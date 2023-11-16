@@ -1,19 +1,19 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
-} from '~/composables/states'
+} from "~/composables/states"
 import {
   trackClickEvent,
   templatizePublisherImageUrl,
   saveRecentlyPlayed,
-} from '~/utilities/helpers'
+} from "~/utilities/helpers"
 
 // TEMP fix to make ripple work
-import { usePrimeVue } from 'primevue/config'
+import { usePrimeVue } from "primevue/config"
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -35,19 +35,14 @@ const togglePlay = () => {
     saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent('Click Tracking - Live Feature', 'Home Page', 'toggle play')
+  trackClickEvent("Click Tracking - Live Feature", "Home Page", "toggle play")
 }
 </script>
 
 <template>
   <div class="live-feature">
     <div class="inner">
-      <VFlexibleLink
-        raw
-        to="/live"
-        class="flex align-items-center p-ripple"
-        v-ripple
-      >
+      <VFlexibleLink raw to="/live" class="flex align-items-center p-ripple" v-ripple>
         <div class="image-holder">
           <transition name="fade">
             <VImage
@@ -59,13 +54,7 @@ const togglePlay = () => {
               alt="show poster image"
               class="image"
             />
-            <WnycLoader
-              v-else
-              class="image-loader-anim"
-              size="2rem"
-              bg
-              spinner
-            />
+            <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
             <!-- <div v-else class="image-loader-anim">
           <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
         </div> -->
@@ -133,7 +122,7 @@ const togglePlay = () => {
 </style>
 
 <style lang="scss" scoped>
-$container-breakpoint-xs: useBreakpointOrFallback('xs', 375px);
+$container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
 .live-feature {
   .inner {
     container-type: inline-size;

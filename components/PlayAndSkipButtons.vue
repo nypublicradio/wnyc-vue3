@@ -1,38 +1,34 @@
 <script setup>
-import { isLiveStream } from '~/utilities/helpers'
+import { isLiveStream } from "~/utilities/helpers"
 import {
   useIsEpisodePlaying,
   useTogglePlayTrigger,
   useSkipAheadTrigger,
   useSkipBackTrigger,
-} from '~/composables/states'
+} from "~/composables/states"
 
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 
-const emit = defineEmits([
-  'beforeTogglePlay',
-  'beforeSkipAhead',
-  'beforeSkipBack',
-])
+const emit = defineEmits(["beforeTogglePlay", "beforeSkipAhead", "beforeSkipBack"])
 
 // handles the click on the play button to toggle play
 const togglePlay = () => {
-  emit('beforeTogglePlay')
+  emit("beforeTogglePlay")
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 // handles the click on the skip ahead button
 const skipAhead = () => {
-  emit('beforeSkipAhead')
+  emit("beforeSkipAhead")
   skipAheadTrigger.value = !skipAheadTrigger.value
 }
 
 // handles the click on the skip back button
 const skipBack = () => {
-  emit('beforeSkipBack')
+  emit("beforeSkipBack")
   skipBackTrigger.value = !skipBackTrigger.value
 }
 
@@ -46,12 +42,7 @@ const isLive = computed(() => {
     <Button v-if="!isLive" severity="secondary" rounded @click="skipBack">
       <template #icon> <Previous10 /></template>
     </Button>
-    <Button
-      v-if="isEpisodePlaying"
-      severity="secondary"
-      rounded
-      @click="togglePlay"
-    >
+    <Button v-if="isEpisodePlaying" severity="secondary" rounded @click="togglePlay">
       <template #icon> <PauseIcon /></template>
     </Button>
     <Button v-else severity="secondary" rounded @click="togglePlay">

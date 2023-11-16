@@ -107,6 +107,13 @@ const skipBackTrigger = false
  */
 export const useSkipBackTrigger = () => useState('useSkipBackTrigger', () => skipBackTrigger)
 
+
+const playerSeek = {bool:false, time:20}
+/**
+ * Global state to trigger the skip back.
+ */
+export const usePlayerSeek = () => useState('usePlayerSeek', (bool,time) => playerSeek)
+
 /**
  * Global var for the height of the audio player
  */

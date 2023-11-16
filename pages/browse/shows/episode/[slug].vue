@@ -1,37 +1,40 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
-import { getMinutes, trackClickEvent, getDate } from "~/utilities/helpers";
-import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states";
-import StarIcon from "~/components/icons/StarIcon.vue";
-import DownloadIcon from "~/components/icons/DownloadIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import QueueIcon from "~/components/icons/QueueIcon.vue";
-// TO DO - replace dummy data with BFF data
-//import episodeData from './episode-data.json'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import { getMinutes, trackClickEvent, getDate } from "~/utilities/helpers"
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
+import StarIcon from "~/components/icons/StarIcon.vue"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import QueueIcon from "~/components/icons/QueueIcon.vue"
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
 
-const config = useRuntimeConfig();
-const route = useRoute();
-const router = useRouter();
+const config = useRuntimeConfig()
+const route = useRoute()
+const router = useRouter()
 const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
-);
+)
 
-const episodeData = ref(episode?.value?.episode ?? null);
+const episodeData = ref(episode?.value?.episode ?? null)
+
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(await checkIsFavorited(episodeData.value?.attributes?.slug))
+const user = useCurrentUser()
 
 // navigate back to home and track it
 const backHome = () => {
-  trackClickEvent("episode", "episode page", "back show paeg");
-  navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`);
-};
+  trackClickEvent("episode", "episode page", "back show page")
+  navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`)
+}
 
-const togglePlayTrigger = useTogglePlayTrigger();
-const currentEpisode = useCurrentEpisode();
+const togglePlayTrigger = useTogglePlayTrigger()
+const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 
 // normalize the bucket item data for the player
 const prepForPlayer = (item, index = null) => {
-  const isSegment = index !== null;
+  const isSegment = index !== null
   return {
     ...item,
     file: isSegment ? item.audio[index] : item.audio,
@@ -41,38 +44,45 @@ const prepForPlayer = (item, index = null) => {
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
-  };
-};
+  }
+}
 
 const togglePlay = (media, index = null) => {
   if (index === null) {
-    console.log("index single", index);
     if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = prepForPlayer(media);
+      currentEpisode.value = prepForPlayer(media)
     }
   } else {
     // segment
-    console.log("index segment", index);
-    console.log("currentEpisode.value?.audio[index]", currentEpisode.value?.audio[index]);
-    console.log("media.audio[index]", media.audio[index]);
     if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = prepForPlayer(media, index);
+      currentEpisode.value = prepForPlayer(media, index)
     }
   }
 
-  togglePlayTrigger.value = !togglePlayTrigger.value;
+  togglePlayTrigger.value = !togglePlayTrigger.value
 
-  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play");
-};
+  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
+}
 const handleStar = () => {
-  console.log("handleStar");
-};
+  const episode = {
+    cms_source: cmsSources.PUBLISHER, // BONO TO DO: is this right to hardcode this?
+    id: episodeData.value?.id,
+    slug: episodeData.value?.attributes?.slug,
+  }
+  if (isFavorited.value) {
+    deleteFavorite(episode)
+    isFavorited.value = false
+  } else {
+    saveFavorite(episode, episodeData.value?.type)
+    isFavorited.value = true
+  }
+}
 const handleDownload = () => {
-  console.log("handleDownload");
-};
+  console.log("handleDownload")
+}
 const handleShare = () => {
-  console.log("handleShare");
-};
+  console.log("handleShare")
+}
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -80,10 +90,10 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: "Favorite Episode",
       customIcon: StarIcon,
-      active: false,
+      active: isFavorited.value,
       title: bucketItem?.title,
       command: () => {
-        handleAddToFavorites(bucketItem);
+        handleAddToFavorites(bucketItem)
       },
     },
     {
@@ -92,7 +102,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: DownloadIcon,
       title: bucketItem?.title,
       command: () => {
-        handleDownload(bucketItem);
+        handleDownload(bucketItem)
       },
     },
     {
@@ -100,7 +110,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem?.title,
       command: () => {
-        handleShare(bucketItem);
+        handleShare(bucketItem)
       },
     },
     {
@@ -109,21 +119,36 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: QueueIcon,
       title: bucketItem?.title,
       command: () => {
-        handleAddToQueue(bucketItem);
+        handleAddToQueue(bucketItem)
       },
     },
-  ];
-};
+  ]
+}
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command();
-};
+  e.value.command()
+}
+
+const handleAddToFavorites = (bucketItem) => {
+  handleStar()
+  // update SB and LS with new state
+  toast.add({
+    severity: "info",
+    summary: "Updated your favorites.",
+    life: 3000,
+  })
+  trackClickEvent(
+    "Click Tracking - Add/remove from favorites",
+    "Expanded Audio Player",
+    bucketItem.title
+  )
+}
 
 watch(episode, () => {
-  episodeData.value = episode.value.episode;
-  console.log("ep = ", episodeData.value);
-});
+  episodeData.value = episode.value.episode
+  //console.log("ep = ", episodeData.value);
+})
 </script>
 
 <template>
@@ -195,8 +220,15 @@ watch(episode, () => {
             />
           </div>
           <div class="flex gap-3">
-            <Button class="w-2rem h-2rem" text plain rounded @click="handleStar">
-              <template #icon> <StarIcon /></template>
+            <Button
+              v-if="user"
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleStar"
+            >
+              <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button class="w-2rem h-2rem" text plain rounded @click="handleDownload">
               <template #icon> <DownloadIcon /></template>
@@ -236,18 +268,23 @@ watch(episode, () => {
             </DotMenu>
           </div>
         </div>
+        <!-- SEGMENTS -->
         <div v-if="episodeData?.attributes?.segments" class="flex flex-column gap-3 mt-4">
           <div
             v-for="(segment, index) in episodeData?.attributes?.segments"
             :key="segment.title"
-            class="flex gap-3 align-items-center"
           >
-            <PlayButton
-              :label="segment.audioDurationReadable"
-              :file="episodeData?.attributes.audio[index]"
-              @onClick="togglePlay(episodeData?.attributes, index)"
-            />
-            <p class="truncate t2lines">{{ segment.title }}</p>
+            <div
+              v-if="episodeData?.attributes.audio[index]"
+              class="flex gap-3 align-items-center"
+            >
+              <PlayButton
+                :label="segment.audioDurationReadable"
+                :file="episodeData?.attributes.audio[index]"
+                @onClick="togglePlay(episodeData?.attributes, index)"
+              />
+              <p class="truncate t2lines">{{ segment.title }}</p>
+            </div>
           </div>
         </div>
         <div

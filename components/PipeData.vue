@@ -9,9 +9,11 @@ const props = defineProps({
 
 <template>
   <div class="pipe-data flex row-gap-0 flex-wrap align-items-center">
-    <slot name="left" />
+    <div class="mr-2">
+      <slot name="left" />
+    </div>
     <div class="flex align-items-center">
-      <div class="pipe mx-1" v-if="!props.hidePipe">|</div>
+      <div class="pipe mr-2" v-if="!props.hidePipe" />
       <slot name="right" />
     </div>
   </div>
@@ -21,6 +23,8 @@ const props = defineProps({
 .pipe-data {
   .pipe {
     line-height: 0rem;
+    border-left: 1px solid var(--text-color);
+    height: 0.75rem;
   }
 }
 </style>
