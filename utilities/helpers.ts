@@ -607,6 +607,7 @@ interface SavedItem {
   cms_source: string;
   media_id: string;
   media_slug: string;
+  route_href: string;
 }
 interface RecentlyViewed {
   uid: string;
@@ -614,6 +615,7 @@ interface RecentlyViewed {
   cms_source: string;
   media_id: string;
   media_slug: string;
+  route_href: string;
 }
 
 const isDifferentMedia = (media: object, type: string) => {
@@ -628,16 +630,21 @@ const isDifferentMedia = (media: object, type: string) => {
 }
 
 export const saveFavorite = async (media: object, type: string) => {
-  // detect if logged in
+  const route = useRoute()
   const user = useCurrentUser()
+  const source = media?.cms_source ?? media?.cmsSource
+  const slug = media?.slug ?? media?.id
+  const href = type === 'show' ? `/show/${route.href}/${slug}` : route.href
+
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
-    const cms_source = media?.cms_source ?? media?.cmsSource
+    const cms_source = source
     const media_id = media?.id
-    const media_slug = media?.slug
+    const media_slug = slug
     const media_type = type
-    const itemToSave: SavedItem = { uid, media_type, cms_source, media_id, media_slug };
+    const route_href = href
+    const itemToSave: SavedItem = { uid, media_type, cms_source, media_id, media_slug, route_href };
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client
@@ -662,16 +669,16 @@ export const deleteFavorite = async (media: object) => {
       .eq('uid', uid)
       .or(`media_slug.eq.${media_slug}`, `media_id.eq.${media_id}`)
 
-      if(error){
-        console.log('error deleting favorite', error)
-      }
+    if (error) {
+      console.log('error deleting favorite', error)
+    }
   }
 }
 
 export const checkIsFavorited = async (media_slug: string) => {
   const user = useCurrentUser()
-  const client = useSupabaseClient()
   if (user.value) {
+    const client = useSupabaseClient()
     const { data, error } = await client
       .from('favorited')
       .select('*')
@@ -687,6 +694,7 @@ export const checkIsFavorited = async (media_slug: string) => {
 }
 
 export const saveRecentlyPlayed = async (media: object, type: string) => {
+  const route = useRoute()
   // detect if logged in
   const user = useCurrentUser()
   if (user.value) {
@@ -697,10 +705,11 @@ export const saveRecentlyPlayed = async (media: object, type: string) => {
     const uid = user.value?.id
     const cms_source = media?.cms_source
     const media_id = media?.id
-    const media_slug = media?.slug
+    const media_slug = media?.slug ?? media?.meta.slug
     const media_type = type
+    const route_href = route.href
 
-    const recentlyViewed: RecentlyViewed = { uid, media_type, cms_source, media_id, media_slug };
+    const recentlyViewed: RecentlyViewed = { uid, media_type, cms_source, media_id, media_slug, route_href };
     console.log('recentlyViewed', recentlyViewed)
     //save instance to Supabase
     const client = useSupabaseClient()

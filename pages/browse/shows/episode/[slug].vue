@@ -18,7 +18,11 @@ const { data: episode } = useFetch(
 const episodeData = ref(episode?.value?.episode ?? null)
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(episodeData.value?.attributes?.slug))
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
+
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -73,7 +77,7 @@ const handleStar = () => {
     deleteFavorite(episode)
     isFavorited.value = false
   } else {
-    saveFavorite(episode, episodeData.value?.type)
+    saveFavorite(episode, "episode")
     isFavorited.value = true
   }
 }

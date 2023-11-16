@@ -19,7 +19,10 @@ const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(route.params.slug))
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
 const user = useCurrentUser()
 
 // navigate back to home and track it

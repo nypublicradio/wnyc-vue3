@@ -32,7 +32,10 @@ const currentEpisode = useCurrentEpisode()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
 
-const isFavorited = ref(await checkIsFavorited(currentEpisode.value.slug))
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(currentEpisode.value.slug)
+})
 
 onMounted(() => {
   if (expandedFooterheight.value)

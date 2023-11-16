@@ -42,9 +42,7 @@ const commentCount = computed(() => {
 const isFavorited = ref(false)
 
 watchEffect(async () => {
-  if (user.value) {
-    isFavorited.value = await checkIsFavorited(route.params.slug)
-  }
+  isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
 // navigate back to home and track it
@@ -63,16 +61,11 @@ const handleComments = () => {
   })
 }
 const handleStar = () => {
-  const story = {
-    cms_source: storySource,
-    id: storyData.value?.id,
-    slug: route.params.slug,
-  }
   if (isFavorited.value) {
-    deleteFavorite(story)
+    deleteFavorite(storyData.value)
     isFavorited.value = false
   } else {
-    saveFavorite(story, storyData.value.type)
+    saveFavorite(storyData.value, storyData.value.type)
     isFavorited.value = true
   }
 }
@@ -87,7 +80,7 @@ watch(stories, () => {
 })
 
 watch(storyData, async () => {
-  //console.log("storyData = ", storyData.value);
+  //console.log("storyData = ", storyData.value)
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(
       storyData.value.leadGallery.gallery

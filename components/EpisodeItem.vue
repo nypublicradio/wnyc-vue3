@@ -28,8 +28,11 @@ const props = defineProps({
   },
 })
 
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(props.ep?.attributes?.slug))
+// check if item is already favorited
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(props.ep?.attributes?.slug)
+})
 
 const handleAddToFavorites = (bucketItem) => {
   const episode = {

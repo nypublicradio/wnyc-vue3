@@ -1,15 +1,15 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue";
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config";
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers";
+import { usePrimeVue } from "primevue/config"
+import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
 
-const $primevue = usePrimeVue();
+const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
-});
+})
 
-const emit = defineEmits(["onClick"]);
+const emit = defineEmits(["onClick"])
 
 const props = defineProps({
   show: {
@@ -17,23 +17,27 @@ const props = defineProps({
     default: {},
     required: true,
   },
-});
-const route = useRoute();
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(props.show.slug));
-const user = useCurrentUser();
+})
+const route = useRoute()
+// check if item is already favorited
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(props.show.slug)
+})
+
+const user = useCurrentUser()
 
 //console.log("props.show = ", props.show);
 // add item to favorites
 const addFavorite = async () => {
-  saveFavorite(props.show, props.show?.type);
-  isFavorited.value = true;
-};
+  saveFavorite(props.show, props.show?.type)
+  isFavorited.value = true
+}
 // remove item from favorites
 const removeFavorite = async () => {
-  deleteFavorite(props.show);
-  isFavorited.value = false;
-};
+  deleteFavorite(props.show)
+  isFavorited.value = false
+}
 </script>
 
 <template>
