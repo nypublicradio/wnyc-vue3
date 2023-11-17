@@ -1,39 +1,55 @@
 <script setup>
+import BrowseItem from "~/components/BrowseItem.vue"
+import { deleteFavorite } from "~/utilities/helpers"
 // if user is logged in, get all their favorited shows
 const config = useRuntimeConfig()
 const client = useSupabaseClient()
 const favoritedShows = ref(null)
 const user = useCurrentUser()
 
-watch(
-  user,
-  async () => {
-    if (user.value) {
-      const { data, error } = await client
-        .from("favorited")
-        .select("*")
-        .eq("uid", user.value.id)
-        .eq("media_type", "show")
-      if (data?.length > 0) {
-        favoritedShows.value = data
-      }
-      if (error) {
-        console.log("favorited items error", error)
-      }
-    }
-  },
-  { immediate: true }
-)
-
 const loadData = async (show) => {
   console.log("show = ", show)
   const { data: res } = await useFetch(
     `${config.public.BFF_URL}/api/show/${show.media_slug}`
   )
-  console.log("res = ", res)
   return res.value.show
 }
-const loadComponent = (show) => {
+
+const getData = async () => {
+  if (user.value) {
+    const { data, error } = await client
+      .from("favorited")
+      .select("*")
+      .eq("uid", user.value.id)
+      .eq("media_type", "show")
+    if (data?.length > 0) {
+      console.log("getting data")
+      favoritedShows.value = await Promise.all(
+        data.map(async (show) => {
+          const component = await loadComponent(show)
+          const showData = await loadData(show)
+          favoritedShows.value = null
+          return { ...show, data: showData, component }
+        })
+      )
+    } else {
+      favoritedShows.value = null
+    }
+    if (error) {
+      console.log("favorited items error", error)
+    }
+  }
+}
+
+watch(
+  user,
+  async () => {
+    getData()
+  },
+  { immediate: true }
+)
+
+const loadComponent = async (show) => {
   const componentName = computed(() => {
     switch (show.media_type) {
       case "show":
@@ -46,23 +62,31 @@ const loadComponent = (show) => {
         return "BrowseItem"
     }
   })
-  return defineAsyncComponent({
+
+  return await defineAsyncComponent({
     loader: () => import(`~/components/${componentName.value}.vue`),
     onError: (err) => {
       console.error(`Failed to load component ${componentName.value}: ${err.message}`)
     },
   })
 }
+
+const onDeleteFavorite = async () => {
+  getData()
+}
 </script>
 
 <template>
   <section class="followed-shows">
-    <div v-if="favoritedShows">
-      <!-- <h2 class="mb-4">Followed shows:</h2> -->
-      <div v-for="(show, index) in favoritedShows" :key="index">
-        <pre class="text-xs">{{ show }}</pre>
-        <component :is="loadComponent(show)" :data="loadData(show)" />
-      </div>
+    <div v-if="favoritedShows" class="flex flex-column gap-4">
+      <component
+        v-for="(show, index) in favoritedShows"
+        :key="index"
+        :is="show.component"
+        :data="show.data"
+        @onDeleteFavorite="onDeleteFavorite"
+        @onClick="navigateTo(show.route_href)"
+      />
     </div>
     <div v-else class="empty flex flex-column gap-3 text-center mt-8">
       <h2>Followed shows will appear here!</h2>

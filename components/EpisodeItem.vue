@@ -14,13 +14,12 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["onClick"])
+const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
 
 const props = defineProps({
   data: {
     type: Object,
     default: {},
-    required: true,
   },
   fallbackImage: {
     type: String,
@@ -34,18 +33,20 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data?.attributes?.slug)
 })
 
-const handleAddToFavorites = (bucketItem) => {
+const handleAddToFavorites = async (bucketItem) => {
   const episode = {
     cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
     id: props.data?.id,
     slug: props.data?.attributes?.slug,
   }
   if (isFavorited.value) {
-    deleteFavorite(episode)
     isFavorited.value = false
+    await deleteFavorite(episode)
+    emit("onDeleteFavorite")
   } else {
-    saveFavorite(episode, props.data?.type)
     isFavorited.value = true
+    saveFavorite(episode, props.data?.type)
+    emit("onSaveFavorite")
   }
   toast.add({
     severity: "info",
@@ -118,7 +119,7 @@ const onMenuChange = (e) => {
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 72px; min-width: 72px; background-color: var(--background2)"
+        style="min-height: 72px; min-width: 72px"
       />
       <VImage
         v-else
@@ -128,7 +129,7 @@ const onMenuChange = (e) => {
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 72px; min-width: 72px; background-color: var(--background2)"
+        style="min-height: 72px; min-width: 72px"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <h2 class="text-sm line-height-2">{{ props.data.attributes.title }}</h2>

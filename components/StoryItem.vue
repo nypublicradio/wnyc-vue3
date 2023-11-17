@@ -15,12 +15,25 @@ const props = defineProps({
     default: null,
   },
 })
+
+const emit = defineEmits(["onClick"])
+
 //console.log(props.article)
 // TEMP fix to make ripple work
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
+
+const onCardClick = () => {
+  emit("onClick")
+  navigateTo({
+    path: `/story/${props.data.id}`,
+    query: {
+      src: props.data.cmsSource,
+    },
+  })
+}
 </script>
 <template>
   <div class="story-card">
@@ -49,14 +62,7 @@ defineExpose({
       :width="116"
       :height="116"
       :ratio="[1, 1]"
-      @click="
-        navigateTo({
-          path: `/story/${props.data.id}`,
-          query: {
-            src: props.data.cmsSource,
-          },
-        })
-      "
+      @click.prevent="onCardClick"
       @title-click="
         trackClickEvent('Click Tracking - Top Story', 'Article Card Headline', $event)
       "

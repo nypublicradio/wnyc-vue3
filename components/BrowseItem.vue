@@ -9,13 +9,12 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["onClick"])
+const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
 
 const props = defineProps({
   data: {
     type: Object,
     default: {},
-    required: true,
   },
 })
 const route = useRoute()
@@ -30,15 +29,17 @@ const user = useCurrentUser()
 //console.log("props.data = ", props.data);
 // add item to favorites
 const addFavorite = async () => {
-  saveFavorite(props.data, props.data?.type)
   isFavorited.value = true
+  await saveFavorite(props.data, props.data?.type)
+  emit("onSaveFavorite")
 }
 // remove item from favorites
 const removeFavorite = async () => {
-  deleteFavorite(props.data)
   isFavorited.value = false
+  await deleteFavorite(props.data)
+  emit("onDeleteFavorite")
 }
-console.log("loaded =", props.data)
+//console.log("loaded =", props.data)
 </script>
 
 <template>

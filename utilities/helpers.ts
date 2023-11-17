@@ -9,7 +9,7 @@ import {
   IOSSettings,
 } from 'capacitor-native-settings'
 import { Browser } from '@capacitor/browser';
-//import { mediaTypes } from '~/composables/globals.ts'
+import { mediaTypeRoutes } from '~/composables/globals.ts'
 import { updateAllLiveStreams } from '~/composables/data/liveStream'
 import { ca } from 'date-fns/locale';
 import axios from 'axios';
@@ -635,7 +635,7 @@ export const saveFavorite = async (media: object, type: string) => {
   const user = useCurrentUser()
   const source = media?.cms_source ?? media?.cmsSource
   const slug = media?.slug ?? media?.id
-  const href = type === 'show' ? `/show${route.href}/${slug}` : route.href
+  const href = `${mediaTypeRoutes[type]}${media.slug}`
 
   if (user.value) {
     // format the media object to save
