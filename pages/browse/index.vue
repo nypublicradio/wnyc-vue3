@@ -110,7 +110,7 @@ watch(searchFieldValue, () => {
         <TabView>
           <TabPanel header="Featured Shows">
             <section class="shows flex flex-column gap-3">
-              <BrowseItem
+              <ShowItem
                 v-if="featuredShows"
                 v-for="show in featuredShows"
                 :data="show"
@@ -126,7 +126,7 @@ watch(searchFieldValue, () => {
           </TabPanel>
           <TabPanel header="All Shows">
             <section class="shows flex flex-column gap-3">
-              <BrowseItem
+              <ShowItem
                 v-if="allShows"
                 v-for="show in allShows"
                 :data="show"
@@ -150,7 +150,7 @@ watch(searchFieldValue, () => {
           <h2>Rearch Results</h2>
         </div>
         <div class="shows flex flex-column gap-3">
-          <BrowseItem
+          <ShowItem
             v-for="show in results"
             :data="show.item"
             :key="show.item.title"
