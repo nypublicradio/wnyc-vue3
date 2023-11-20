@@ -28,12 +28,14 @@ defineExpose({
 const onCardClick = () => {
   emit("onClick")
   navigateTo({
-    path: `/story/${props.data.id}`,
+    path: `/story/${props.data.id || props.data.media_id}`,
     query: {
       src: props.data.cmsSource,
     },
   })
 }
+
+console.log("StoryItem =", props.data)
 </script>
 <template>
   <div class="story-card">
@@ -58,7 +60,6 @@ const onCardClick = () => {
           ? props.data.image.height
           : props.data.image.h
       "
-      :sponsored="props.data.sponsoredContent"
       :width="116"
       :height="116"
       :ratio="[1, 1]"

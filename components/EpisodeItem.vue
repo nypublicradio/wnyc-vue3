@@ -1,4 +1,5 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -8,6 +9,8 @@ import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
 import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
+
+const toast = useToast()
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -30,14 +33,15 @@ const props = defineProps({
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.data?.attributes?.slug)
+  isFavorited.value = await checkIsFavorited(props.data?.slug)
 })
 
 const handleAddToFavorites = async (bucketItem) => {
+  console.log("favorite buketItem =", bucketItem)
   const episode = {
-    cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
+    cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
     id: props.data?.id,
-    slug: props.data?.attributes?.slug,
+    slug: props.data?.slug,
   }
   if (isFavorited.value) {
     isFavorited.value = false
@@ -59,7 +63,6 @@ const handleAddToFavorites = async (bucketItem) => {
     bucketItem.title
   )
 }
-//console.log('ep = ', props.data)
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -106,15 +109,17 @@ const getDotMenuItems = (bucketItem) => {
 const onMenuChange = (e) => {
   e.value.command()
 }
+
+console.log("EpisodeItem =", props.data)
 </script>
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
     <div class="flex gap-3" @click.prevent="emit('onClick')" v-ripple>
       <VImage
-        v-if="props.data?.attributes?.imageMain?.template"
+        v-if="props.data?.imageMain?.template"
         class="flex-none"
-        :src="props.data?.attributes?.imageMain?.template"
+        :src="props.data?.imageMain?.template"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
@@ -132,22 +137,22 @@ const onMenuChange = (e) => {
         style="min-height: 72px; min-width: 72px"
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <h2 class="text-sm line-height-2">{{ props.data.attributes.title }}</h2>
-        <p>{{ props.data.attributes.org }}</p>
+        <h2 class="text-sm line-height-2">{{ props.data.title }}</h2>
+        <p>{{ props.data.org }}</p>
         <div class="article-metadata flex flex-column gap-1">
           <PipeData class="text-xs">
             <template #left>
               <p class="text-xs">
-                {{ getMinutes(props.data.attributes.estimatedDuration, 1) }}
+                {{ getMinutes(props.data.estimatedDuration, 1) }}
               </p>
             </template>
             <template #right>
               <div class="flex gap-2 align-items-center">
                 <p class="text-xs">
-                  {{ getDate(props.data.attributes.publishAt) }}
+                  {{ getDate(props.data.publishAt) }}
                 </p>
                 <!-- FROM SUPABASE PROFILER DATA -->
-                <DownloadedSmallIcon v-if="props.data.attributes.downloaded" />
+                <DownloadedSmallIcon v-if="props.data.downloaded" />
               </div>
             </template>
           </PipeData>
@@ -158,7 +163,7 @@ const onMenuChange = (e) => {
     </div>
 
     <DotMenu
-      :menuItems="getDotMenuItems(props.data.attributes)"
+      :menuItems="getDotMenuItems(props.data)"
       label=""
       @changeEmit="onMenuChange"
       class="-mr-2"
@@ -167,8 +172,8 @@ const onMenuChange = (e) => {
         <div>
           <div class="flex gap-3 px-4 align-items-center">
             <VImage
-              :src="props.data?.attributes?.imageMain?.template || props.fallbackImage"
-              :alt="`${props.data.attributes.showTitle} show image`"
+              :src="props.data?.imageMain?.template || props.fallbackImage"
+              :alt="`${props.data.showTitle} show image`"
               :width="60"
               :height="60"
               :sizes="[2]"
@@ -182,8 +187,8 @@ const onMenuChange = (e) => {
             />
 
             <div class="info">
-              <h2>{{ props.data.attributes.title }}</h2>
-              <p>{{ props.data.attributes.showTitle }}</p>
+              <h2>{{ props.data.title }}</h2>
+              <p>{{ props.data.showTitle }}</p>
             </div>
           </div>
           <hr class="mt-5 mb-2 dim" />

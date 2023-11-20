@@ -33,6 +33,11 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
                 const url: string = cleanEpisodes[i].attributes.audio
                 cleanEpisodes[i].attributes['estimated-duration'] = await fetchDuration(url)
             }
+
+            // flatten the attributes to the root and remove the attributes key
+            cleanEpisodes[i] = { ...cleanEpisodes[i], ...cleanEpisodes[i].attributes }
+            //delete cleanEpisodes[i].attributes;
+
         }
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {

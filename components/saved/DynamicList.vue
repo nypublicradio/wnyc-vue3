@@ -19,7 +19,7 @@ const user = useCurrentUser()
 const loadData = async (item) => {
   console.log("item = ", item)
   const { data: res } = await useFetch(
-    `${config.public.BFF_URL}/api/show/${item.media_slug}`
+    `${config.public.BFF_URL}/api/show/${item.slug}`
   )
   return res.value.show
 }
@@ -30,7 +30,7 @@ const getItemsData = async () => {
       .from(props.table)
       .select("*")
       .eq("uid", user.value.id)
-      .or(`media_type.eq.${props.type}`)
+      .or(`type.eq.${props.type}`)
 
     if (data?.length > 0) {
       savedItems.value = await Promise.all(
@@ -60,7 +60,7 @@ watch(
 
 const loadComponent = async (item) => {
   const componentName = computed(() => {
-    switch (item.media_type) {
+    switch (item.type) {
       case "show":
         return "ShowItem"
       case "episode":

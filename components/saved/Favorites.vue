@@ -8,7 +8,7 @@ if (user.value) {
     .from("favorited")
     .select("*")
     .eq("uid", user.value.id)
-    .neq("media_type", "show")
+    .neq("type", "show")
   if (data?.length > 0) {
     favorites.value = data
   }

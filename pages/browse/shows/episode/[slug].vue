@@ -69,7 +69,7 @@ const togglePlay = (media, index = null) => {
 }
 const handleStar = () => {
   const episode = {
-    cms_source: cmsSources.PUBLISHER, // BONO TO DO: is this right to hardcode this?
+    cmsSource: cmsSources.PUBLISHER, // BONO TO DO: is this right to hardcode this?
     id: episodeData.value?.id,
     slug: episodeData.value?.attributes?.slug,
   }

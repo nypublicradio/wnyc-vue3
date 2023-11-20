@@ -39,7 +39,7 @@ const removeFavorite = async () => {
   await deleteFavorite(props.data)
   emit("onDeleteFavorite")
 }
-//console.log("loaded =", props.data)
+//console.log("showItem =", props.data)
 </script>
 
 <template>

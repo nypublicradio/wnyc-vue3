@@ -117,7 +117,7 @@ watch(searchFieldValue, () => {
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
-              <skeleton-browse-item
+              <skeleton-show-item
                 v-else
                 v-for="(show, index) in 27"
                 :key="`sk1-${index}`"
@@ -133,7 +133,7 @@ watch(searchFieldValue, () => {
                 :key="show.title"
                 @onClick="goToShowPage(show)"
               />
-              <skeleton-browse-item
+              <skeleton-show-item
                 v-else
                 v-for="(show, index) in 27"
                 :key="`sk2-${index}`"
