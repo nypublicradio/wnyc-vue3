@@ -1,6 +1,6 @@
 <script setup>
-import { trackClickEvent, saveRecentlyPlayed } from '~/utilities/helpers'
-import { updateLiveStream } from '~/composables/data/liveStream'
+import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
+import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
   useCurrentEpisode,
@@ -9,8 +9,8 @@ import {
   useAllCurrentStations,
   useIsEpisodePlaying,
   useIsStreamLoading,
-} from '~/composables/states'
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
+} from "~/composables/states"
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -37,8 +37,8 @@ const switchStation = async (station) => {
       //}
 
       trackClickEvent(
-        'Click Tracking - Station Button',
-        'Live Page',
+        "Click Tracking - Station Button",
+        "Live Page",
         `switch station ${currentEpisodeHolder.value.name}`
       )
     }
@@ -52,43 +52,43 @@ const togglePlay = () => {
     saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
   trackClickEvent(
-    'Click Tracking - Toggle Play Button',
-    'Live Page',
+    "Click Tracking - Toggle Play Button",
+    "Live Page",
     `play pause station ${currentEpisodeHolder.value.name}`
   )
 }
 
 const scrollToActiveStation = () => {
-  const activeStation = document.getElementsByClassName('activestation')
+  const activeStation = document.getElementsByClassName("activestation")
   if (activeStation[0]) {
     //console.log('scrolling')
     activeStation[0].scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'start',
+      behavior: "smooth",
+      block: "center",
+      inline: "start",
     })
   }
 }
 
 const toggleFollow = (episode) => {
   trackClickEvent(
-    'Click Tracking - Schedule Follow Button',
-    'Live Page',
+    "Click Tracking - Schedule Follow Button",
+    "Live Page",
     `follow ${currentStreamStation.value} - ${episode}`
   )
 }
 
 const getTime = (startArg, endArg, index) => {
   const start = new Date(startArg)
-  const startTime = start.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
+  const startTime = start.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
     hour12: true,
   })
   const end = new Date(endArg)
-  const endTime = end.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
+  const endTime = end.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
     hour12: true,
   })
   return index === 0 ? `Now Until ${endTime}` : startTime
@@ -150,10 +150,7 @@ watch(
               >
                 <template #icon>
                   <div v-if="currentEpisode?.station === station.station">
-                    <i
-                      v-if="isStreamLoading"
-                      class="pi pi-spin pi-spinner mr-2"
-                    ></i>
+                    <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
                     <SoundWave
                       v-else
                       class="mr-2"
@@ -198,22 +195,21 @@ watch(
         v-for="(entry, index) in scheduleRef"
         :key="entry.id"
         class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
+        :class="[{ selected: index === 0 }]"
       >
         <div class="flex align-items-stretch">
-          <div class="left my-1" :class="[{ selected: index === 0 }]" />
+          <div class="left my-1" />
           <div>
             <p class="time">
               {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
             </p>
             <h2 class="title">
-              {{
-                entry.attributes.scheduleEventTitle ??
-                entry.attributes.parentTitle
-              }}
+              {{ entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle }}
             </h2>
           </div>
         </div>
         <Button
+          v-if="index > 0"
           severity="secondary"
           text
           plain
@@ -221,8 +217,7 @@ watch(
           class="flex-none"
           @click="
             toggleFollow(
-              entry.attributes.scheduleEventTitle ??
-                entry.attributes.parentTitle
+              entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
             )
           "
         >
@@ -235,6 +230,29 @@ watch(
   </div>
 </template>
 
+<style lang="scss">
+html {
+  &.style-mode-dark {
+    .live-page {
+      .top {
+        background-color: transparent;
+      }
+      .schedule {
+        .schedule-entry {
+          &.selected {
+            background-color: #ffffff1a;
+            padding: 0.75rem 0.5rem 0.75rem 0;
+            border-radius: 8px;
+            .left {
+              border: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .live-page {
   .top {
@@ -247,9 +265,9 @@ watch(
       :after {
         transition: bottom 0.5s;
         -webkit-transition: bottom 0.5s;
-        content: '';
+        content: "";
         position: absolute;
-        bottom: 0px;
+        bottom: 2px;
         right: 0;
         left: 1.25rem;
         margin: auto;
@@ -262,15 +280,14 @@ watch(
       }
       &.activestation {
         :after {
-          bottom: -10px;
+          bottom: -9px;
         }
       }
       .station-btn {
         &:hover,
         &:focus,
         &:active {
-          background: var(--red);
-          border: 1px solid transparent;
+          // nothing looks best
         }
         margin-left: 1rem;
         &:first-child {
@@ -291,8 +308,9 @@ watch(
         border: 2px solid transparent;
         border-radius: 8px;
         margin-right: 1rem;
-        //height: 27px;
-        &.selected {
+      }
+      &.selected {
+        .left {
           border-color: var(--red);
         }
       }

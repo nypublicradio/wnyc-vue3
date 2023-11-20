@@ -1,25 +1,25 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { useBottomMenuState } from '~/composables/states'
-import HomeIcon from './icons/HomeIcon.vue'
-import LiveIcon from './icons/LiveIcon.vue'
-import BrowseIcon from './icons/BrowseIcon.vue'
-import StarIcon from './icons/StarIcon.vue'
-import { trackClickEvent, capitalizeFirstLetter } from '~/utilities/helpers'
+import { ref, watch } from "vue"
+import { useBottomMenuState } from "~/composables/states"
+import HomeIcon from "./icons/HomeIcon.vue"
+import LiveIcon from "./icons/LiveIcon.vue"
+import BrowseIcon from "./icons/BrowseIcon.vue"
+import StarIcon from "./icons/StarIcon.vue"
+import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
 
 const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
 const options = ref([
-  { icon: markRaw(HomeIcon), value: 'home', slug: '/home' },
-  { icon: markRaw(LiveIcon), value: 'live', slug: '/live' },
-  { icon: markRaw(BrowseIcon), value: 'browse', slug: '/browse' },
-  { icon: markRaw(StarIcon), value: 'saved', slug: '/saved' },
+  { icon: markRaw(HomeIcon), value: "home", slug: "/home" },
+  { icon: markRaw(LiveIcon), value: "live", slug: "/live" },
+  { icon: markRaw(BrowseIcon), value: "browse", slug: "/browse" },
+  { icon: markRaw(StarIcon), value: "saved", slug: "/saved" },
 ])
 
 // handle bottom menu click to navigate to the route
 const menuClick = (e) => {
-  trackClickEvent('Click Tracking - Bottom Menu', 'Bottom Menu', e.value.slug)
+  trackClickEvent("Click Tracking - Bottom Menu", "Bottom Menu", e.value.slug)
   navigateTo(e.value.slug)
 }
 
@@ -98,6 +98,7 @@ watch(
         opacity: 1;
         background: rgba(0, 0, 0, 0);
         border-color: unset;
+        pointer-events: none;
       }
       .o-icon {
         flex: none;

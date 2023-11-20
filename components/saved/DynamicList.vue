@@ -30,7 +30,8 @@ const getItemsData = async () => {
       .from(props.table)
       .select("*")
       .eq("uid", user.value.id)
-      .eq("media_type", props.type)
+      .or(`media_type.eq.${props.type}`)
+
     if (data?.length > 0) {
       savedItems.value = await Promise.all(
         data.map(async (item) => {
