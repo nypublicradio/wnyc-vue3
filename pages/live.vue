@@ -168,7 +168,7 @@ watch(
         </div>
       </HorizontalScrollFeature>
       <section class="current-station-info">
-        <LiveItem :episode="currentEpisodeHolder" :size="100" />
+        <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
       <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
     </div>

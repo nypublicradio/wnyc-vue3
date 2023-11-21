@@ -3,7 +3,7 @@ import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helper
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 
 const props = defineProps({
-  episode: {
+  data: {
     type: Object,
     default: null,
   },
@@ -13,20 +13,22 @@ const props = defineProps({
   },
 })
 
+const size = ref(props.size)
+
 //const emit = defineEmits(["change", "click"]);
 
 // lifecycle hooks
 onMounted(() => {})
-console.log("props.episode = ", props.episode)
+console.log("props.episode = ", props.data)
 </script>
 
 <template>
   <div class="live-item flex gap-3">
     <VImage
-      v-if="props.episode?.image"
-      :src="templatizePublisherImageUrl(props.episode?.image)"
-      :width="props.size"
-      :height="props.size"
+      v-if="props.data?.image"
+      :src="props.data?.image?.template ?? templatizePublisherImageUrl(props.data?.image)"
+      :width="size"
+      :height="size"
       :ratio="[1, 1]"
       alt="show poster image"
       class="image"
@@ -34,10 +36,10 @@ console.log("props.episode = ", props.episode)
     <div class="info flex gap-3">
       <div class="content flex flex-column gap-1 justify-content-start">
         <LiveBadge class="align-self-start" />
-        <h2>{{ props.episode?.title }}</h2>
+        <h2>{{ props.data?.title }}</h2>
         <p
           class="blurb truncate t3lines"
-          v-html="props.episode?.onTodaysShowHeadline ?? props.episode?.details"
+          v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
         />
       </div>
     </div>
@@ -48,7 +50,7 @@ console.log("props.episode = ", props.episode)
 .live-item {
   .v-image-publisher.image {
     flex: none;
-    width: 100px;
+    width: v-bind(size);
   }
 }
 </style>
