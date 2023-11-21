@@ -167,29 +167,8 @@ watch(
           </div>
         </div>
       </HorizontalScrollFeature>
-      <section class="current-station-info flex gap-3">
-        <VImage
-          v-if="currentEpisodeHolder?.image"
-          :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
-          :width="100"
-          :height="100"
-          :ratio="[1, 1]"
-          alt="show poster image"
-          class="image"
-        />
-        <div class="info flex gap-3">
-          <div class="content flex flex-column gap-1 justify-content-start">
-            <LiveBadge class="align-self-start" />
-            <h2>{{ currentEpisodeHolder?.title }}</h2>
-            <p
-              class="blurb truncate t3lines"
-              v-html="
-                currentEpisodeHolder?.onTodaysShowHeadline ??
-                currentEpisodeHolder?.details
-              "
-            />
-          </div>
-        </div>
+      <section class="current-station-info">
+        <LiveItem :episode="currentEpisodeHolder" :size="100" />
       </section>
       <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
     </div>
@@ -297,12 +276,6 @@ html {
         &:first-child {
           margin-left: 1.25rem;
         }
-      }
-    }
-    .current-station-info {
-      .v-image-publisher.image {
-        flex: none;
-        width: 100px;
       }
     }
   }

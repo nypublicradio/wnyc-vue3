@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <section class="followed-shows">
     <saved-dynamic-list typeFilter="show" table="favorited">
