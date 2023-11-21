@@ -1,5 +1,9 @@
 <script setup>
-import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  saveRecentlyPlayed,
+  templatizePublisherImageUrl,
+} from "~/utilities/helpers"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
@@ -166,7 +170,7 @@ watch(
       <section class="current-station-info flex gap-3">
         <VImage
           v-if="currentEpisodeHolder?.image"
-          :src="currentEpisodeHolder?.image"
+          :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
           :width="100"
           :height="100"
           :ratio="[1, 1]"
@@ -177,7 +181,7 @@ watch(
           <div class="content flex flex-column gap-1 justify-content-start">
             <LiveBadge class="align-self-start" />
             <h2>{{ currentEpisodeHolder?.title }}</h2>
-            <div
+            <p
               class="blurb truncate t3lines"
               v-html="
                 currentEpisodeHolder?.onTodaysShowHeadline ??

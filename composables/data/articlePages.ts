@@ -117,7 +117,6 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
 export function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-  // console.log(article.attributes)
   return Object.assign({}, normalizePage(article), {
     description: article.attributes.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
@@ -163,7 +162,11 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     disableComments: undefined,
     commentId: undefined,
     estimatedDuration: article.attributes.estimatedDuration,
+    show: article.attributes.show,
     showTitle: article.attributes.showTitle,
+    headers: article.attributes.headers,
+    segments: article.attributes.segments,
+    transcript: article.attributes.transcript,
   })
 }
 

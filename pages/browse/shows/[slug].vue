@@ -31,7 +31,7 @@ const backHome = () => {
 }
 
 const goToEpisodePage = (ep) => {
-  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`)
+  navigateTo(`/browse/shows/episode/${ep.meta.slug}`)
 }
 
 const togglePlayMostRecentEpisode = () => {

@@ -20,9 +20,9 @@ if (user.value) {
 
 <template>
   <section class="favorites">
-    <div v-if="favorites" class="text-center mt-8">
+    <div v-if="favorites" class="mt-8">
       <h2 class="mb-4">Favorites:</h2>
-      <div v-for="(show, index) in favorites" :key="index">
+      <div v-for="(show, index) in favorites" :key="index" class="mb-4">
         {{ show }}
       </div>
     </div>

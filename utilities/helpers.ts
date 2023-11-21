@@ -657,14 +657,11 @@ interface SavedItem {
   media_id: string
   slug: string
   route_href: string
-}
-interface RecentlyViewed {
-  uid: string
-  type: string
-  cmsSource: string
-  media_id: string
-  slug: string
-  route_href: string
+  title: string
+  image: any
+  producingOrganizations: any
+  authors: any
+  meta: any
 }
 
 const isDifferentMedia = (media: object, type: string) => {
@@ -678,12 +675,12 @@ const isDifferentMedia = (media: object, type: string) => {
   }
 }
 
-export const saveFavorite = async (media: object, typeArg: string) => {
+export const saveFavorite = async (media: object, typeArg: string, tableArg: string = "favorited") => {
   const route = useRoute()
   const user = useCurrentUser()
   const source = media?.cmsSource ?? media?.cmsSource
-  const thisSlug = media?.slug ?? media?.id
-  const href = `${mediaTypeRoutes[typeArg]}${media.slug}`
+  const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
+  const href = `/${mediaTypeRoutes[typeArg]}${media.meta.slug}`
 
   if (user.value) {
     // format the media object to save
@@ -693,6 +690,11 @@ export const saveFavorite = async (media: object, typeArg: string) => {
     const slug = thisSlug
     const type = typeArg
     const route_href = href
+    const image = media?.image
+    const title = media?.title
+    const producingOrganizations = media?.producingOrganizations
+    const authors = media?.authors
+    const meta = media?.meta
     const itemToSave: SavedItem = {
       uid,
       type,
@@ -700,10 +702,15 @@ export const saveFavorite = async (media: object, typeArg: string) => {
       media_id,
       slug,
       route_href,
+      image,
+      title,
+      authors,
+      producingOrganizations,
+      meta,
     }
     //save instance to Supabase
     const client = useSupabaseClient()
-    const { error } = await client.from("favorited").insert([itemToSave])
+    const { error } = await client.from(tableArg).insert([itemToSave])
   }
 }
 
@@ -713,7 +720,7 @@ export const deleteFavorite = async (media: object) => {
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
-    const slug = media?.slug
+    const slug = media?.slug ?? media?.meta.slug
     const media_id = media?.id
     //save instance to Supabase
     const client = useSupabaseClient()
@@ -746,34 +753,6 @@ export const checkIsFavorited = async (slug: string) => {
   }
 }
 
-export const saveRecentlyPlayed = async (media: object, type: string) => {
-  const route = useRoute()
-  // detect if logged in
-  const user = useCurrentUser()
-  if (user.value) {
-    // detect if the media has changed
-    //if (isDifferentMedia(media, type)) {
-
-    // format the media object to save
-    const uid = user.value?.id
-    const cmsSource = media?.cmsSource
-    const media_id = media?.id
-    const slug = media?.slug ?? media?.meta.slug
-    const type = type
-    const route_href = route.href
-
-    const recentlyViewed: RecentlyViewed = {
-      uid,
-      type,
-      cmsSource,
-      media_id,
-      slug,
-      route_href,
-    }
-    console.log("recentlyViewed", recentlyViewed)
-    //save instance to Supabase
-    const client = useSupabaseClient()
-    const { error } = await client.from("recently_viewed").insert([recentlyViewed])
-    //}
-  }
+export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
+  saveFavorite(media, typeArg, "recently_viewed")
 }

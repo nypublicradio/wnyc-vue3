@@ -16,9 +16,9 @@ if (user.value) {
 
 <template>
   <section class="recently-played">
-    <div v-if="list" class="text-center mt-8">
+    <div v-if="list" class="mt-8">
       <h2 class="mb-4">Recently Played:</h2>
-      <div v-for="(item, index) in list" :key="index">
+      <div v-for="(item, index) in list" :key="index" class="mb-4">
         {{ item }}
       </div>
     </div>

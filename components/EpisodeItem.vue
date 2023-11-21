@@ -33,7 +33,7 @@ const props = defineProps({
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.data?.slug)
+  isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
 })
 
 const handleAddToFavorites = async (bucketItem) => {
@@ -41,7 +41,7 @@ const handleAddToFavorites = async (bucketItem) => {
   const episode = {
     cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
     id: props.data?.id,
-    slug: props.data?.slug,
+    slug: props.data?.meta.slug,
   }
   if (isFavorited.value) {
     isFavorited.value = false
@@ -110,16 +110,23 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
-console.log("EpisodeItem =", props.data)
+const hasAudio = computed(() => {
+  return (
+    (props.data.audio && typeof props.data.audio === "string") ||
+    (Array.isArray(props.data.audio) && props.data.audio.length === 0)
+  )
+})
+
+//console.log("EpisodeItem =", props.data)
 </script>
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
     <div class="flex gap-3" @click.prevent="emit('onClick')" v-ripple>
       <VImage
-        v-if="props.data?.imageMain?.template"
+        v-if="props.data?.image?.template"
         class="flex-none"
-        :src="props.data?.imageMain?.template"
+        :src="props.data?.image?.template"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
@@ -140,25 +147,30 @@ console.log("EpisodeItem =", props.data)
         <h2 class="text-sm line-height-2">{{ props.data.title }}</h2>
         <p>{{ props.data.org }}</p>
         <div class="article-metadata flex flex-column gap-1">
-          <PipeData class="text-xs">
+          <PipeData class="text-xs" :hide-pipe="!hasAudio">
             <template #left>
-              <p class="text-xs">
+              <p class="text-xs" v-if="hasAudio">
                 {{ getMinutes(props.data.estimatedDuration, 1) }}
               </p>
             </template>
             <template #right>
               <div class="flex gap-2 align-items-center">
                 <p class="text-xs">
-                  {{ getDate(props.data.publishAt) }}
+                  {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
                 <!-- FROM SUPABASE PROFILER DATA -->
                 <DownloadedSmallIcon v-if="props.data.downloaded" />
               </div>
             </template>
           </PipeData>
-          <!-- FROM SUPABASE PROFILER DATA -->
-          <ProgressBar :value="50" style="height: 4px" :showValue="false"></ProgressBar>
         </div>
+        <!-- FROM SUPABASE PROFILER DATA -->
+        <ProgressBar
+          :value="50"
+          style="height: 4px"
+          class="w-full"
+          :showValue="false"
+        ></ProgressBar>
       </div>
     </div>
 
@@ -172,7 +184,7 @@ console.log("EpisodeItem =", props.data)
         <div>
           <div class="flex gap-3 px-4 align-items-center">
             <VImage
-              :src="props.data?.imageMain?.template || props.fallbackImage"
+              :src="props.data?.image?.template || props.fallbackImage"
               :alt="`${props.data.showTitle} show image`"
               :width="60"
               :height="60"
