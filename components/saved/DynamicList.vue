@@ -31,12 +31,14 @@ const loadComponent = async (item) => {
     }
   })
 
-  return await defineAsyncComponent({
-    loader: () => import(`~/components/${componentName.value}.vue`),
-    onError: (err) => {
-      console.error(`Failed to load component ${componentName.value}: ${err.message}`)
-    },
-  })
+  return markRaw(
+    await defineAsyncComponent({
+      loader: () => import(`~/components/${componentName.value}.vue`),
+      onError: (err) => {
+        console.error(`Failed to load component ${componentName.value}: ${err.message}`)
+      },
+    })
+  )
 }
 
 const getItemsData = async () => {
