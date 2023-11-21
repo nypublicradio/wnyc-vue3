@@ -4,9 +4,9 @@ const props = defineProps({
     type: String,
     default: "favorited",
   },
-  type: {
+  typeFilter: {
     type: String,
-    default: "show",
+    default: null,
   },
 })
 
@@ -41,11 +41,13 @@ const loadComponent = async (item) => {
 
 const getItemsData = async () => {
   if (user.value) {
-    const { data, error } = await client
-      .from(props.table)
-      .select("*")
-      .eq("uid", user.value.id)
-      .or(`type.eq.${props.type}`)
+    const { data, error } = props.typeFilter
+      ? await client
+          .from(props.table)
+          .select("*")
+          .eq("uid", user.value.id)
+          .or(`type.eq.${props.typeFilter}`)
+      : await client.from(props.table).select("*").eq("uid", user.value.id)
 
     if (data?.length > 0) {
       savedItems.value = await Promise.all(

@@ -2,7 +2,7 @@
 
 <template>
   <section class="followed-shows">
-    <saved-dynamic-list>
+    <saved-dynamic-list typeFilter="show" table="favorited">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>Followed shows will appear here!</h2>
         <div class="max-w-15rem m-auto">
