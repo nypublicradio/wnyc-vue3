@@ -51,6 +51,7 @@ const goToShowPage = (show) => {
 watch(shows, () => {
   allShows.value = shows.value.all
   featuredShows.value = shows.value.featuredShows
+  //console.log("featuredShows = ", featuredShows.value[0])
 })
 
 watch(searchFieldValue, () => {

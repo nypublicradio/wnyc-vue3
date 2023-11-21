@@ -11,17 +11,32 @@ const props = defineProps({
 })
 
 // if user is logged in, get all their favorited shows
-const config = useRuntimeConfig()
 const client = useSupabaseClient()
 const savedItems = ref(null)
 const user = useCurrentUser()
 
-const loadData = async (item) => {
-  console.log("item = ", item)
-  const { data: res } = await useFetch(
-    `${config.public.BFF_URL}/api/show/${item.slug}`
-  )
-  return res.value.show
+const loadComponent = async (item) => {
+  const componentName = computed(() => {
+    switch (item.type) {
+      case "show":
+        return "ShowItem"
+      case "episode":
+        return "EpisodeItem"
+      case "story":
+        return "StoryItem"
+      case "live":
+        return "LiveItem"
+      default:
+        return "ShowItem"
+    }
+  })
+
+  return await defineAsyncComponent({
+    loader: () => import(`~/components/${componentName.value}.vue`),
+    onError: (err) => {
+      console.error(`Failed to load component ${componentName.value}: ${err.message}`)
+    },
+  })
 }
 
 const getItemsData = async () => {
@@ -36,9 +51,8 @@ const getItemsData = async () => {
       savedItems.value = await Promise.all(
         data.map(async (item) => {
           const component = await loadComponent(item)
-          const itemData = await loadData(item)
           savedItems.value = null
-          return { ...item, data: itemData, component }
+          return { ...item, data: item, component }
         })
       )
     } else {
@@ -57,28 +71,6 @@ watch(
   },
   { immediate: true }
 )
-
-const loadComponent = async (item) => {
-  const componentName = computed(() => {
-    switch (item.type) {
-      case "show":
-        return "ShowItem"
-      case "episode":
-        return "EpisodeItem"
-      case "story":
-        return "StoryItem"
-      default:
-        return "ShowItem"
-    }
-  })
-
-  return await defineAsyncComponent({
-    loader: () => import(`~/components/${componentName.value}.vue`),
-    onError: (err) => {
-      console.error(`Failed to load component ${componentName.value}: ${err.message}`)
-    },
-  })
-}
 </script>
 
 <template>

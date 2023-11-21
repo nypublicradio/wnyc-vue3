@@ -676,11 +676,11 @@ const isDifferentMedia = (media: object, type: string) => {
 }
 
 export const saveFavorite = async (media: object, typeArg: string, tableArg: string = "favorited") => {
-  const route = useRoute()
   const user = useCurrentUser()
   const source = media?.cmsSource ?? media?.cmsSource
   const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
-  const href = `/${mediaTypeRoutes[typeArg]}${media.meta.slug}`
+  console.log('media = ', media)
+  const href = `/${mediaTypeRoutes[typeArg]}${media.meta?.slug}`
 
   if (user.value) {
     // format the media object to save
@@ -708,6 +708,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg: str
       producingOrganizations,
       meta,
     }
+    console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client.from(tableArg).insert([itemToSave])
