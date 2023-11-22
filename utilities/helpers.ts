@@ -679,8 +679,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg: str
   const user = useCurrentUser()
   const source = media?.cmsSource ?? media?.cmsSource
   const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
-  console.log('media = ', media)
-  const href = `/${mediaTypeRoutes[typeArg]}${media.meta?.slug}`
+  const href = `${mediaTypeRoutes[typeArg]}${thisSlug}`
 
   if (user.value) {
     // format the media object to save
@@ -741,6 +740,7 @@ export const checkIsFavorited = async (slug: string) => {
   const user = useCurrentUser()
   if (user.value) {
     const client = useSupabaseClient()
+    console.log('checking if favorited')
     const { data, error } = await client
       .from("favorited")
       .select("*")

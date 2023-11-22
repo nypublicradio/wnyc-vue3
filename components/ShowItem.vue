@@ -16,6 +16,10 @@ const props = defineProps({
     type: Object,
     default: {},
   },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
 })
 const route = useRoute()
 // check if item is already favorited

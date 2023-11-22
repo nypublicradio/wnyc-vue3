@@ -14,7 +14,7 @@ export const mediaTypes = {
 export const mediaTypeRoutes = {
     [mediaTypes.LIVE]: '/live/',
     [mediaTypes.SHOW]: '/browse/shows/',
-    [mediaTypes.EPISODE]: 'browse/shows/episode/',
+    [mediaTypes.EPISODE]: '/browse/shows/episode/',
     [mediaTypes.STORY]: '/story/',
     [mediaTypes.ARTICLE_PAGE]: '/story/',
 }

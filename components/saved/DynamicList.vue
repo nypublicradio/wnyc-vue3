@@ -49,7 +49,12 @@ const getItemsData = async () => {
           .select("*")
           .eq("uid", user.value.id)
           .or(`type.eq.${props.typeFilter}`)
-      : await client.from(props.table).select("*").eq("uid", user.value.id)
+          .order("created_at", { ascending: false })
+      : await client
+          .from(props.table)
+          .select("*")
+          .eq("uid", user.value.id)
+          .order("created_at", { ascending: false })
 
     if (data?.length > 0) {
       savedItems.value = await Promise.all(
@@ -84,6 +89,7 @@ watch(
       :key="index"
       :is="item.component"
       :data="item.data"
+      :saved="true"
       @onDeleteFavorite="getItemsData"
       @onClick="navigateTo(item.route_href)"
     />

@@ -14,6 +14,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(["onClick"])

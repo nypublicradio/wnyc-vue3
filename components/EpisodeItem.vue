@@ -3,7 +3,7 @@ import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import { getMinutes, getDate } from "~/utilities/helpers"
+import { getMinutes, getDate, fetchDuration } from "~/utilities/helpers"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -28,6 +28,10 @@ const props = defineProps({
     type: String,
     default: "./logo.png",
   },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 // check if item is already favorited
@@ -35,6 +39,19 @@ const isFavorited = ref(false)
 watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
 })
+
+const estimatedDuration = ref(props.data.estimatedDuration)
+
+watch(
+  estimatedDuration,
+  async () => {
+    estimatedDuration.value =
+      estimatedDuration.value === 0 || estimatedDuration.value === undefined
+        ? await fetchDuration(props.data.audio)
+        : estimatedDuration.value
+  },
+  { immediate: true }
+)
 
 const handleAddToFavorites = async (bucketItem) => {
   console.log("favorite buketItem =", bucketItem)
@@ -149,9 +166,12 @@ const hasAudio = computed(() => {
         <div class="article-metadata flex flex-column gap-1">
           <PipeData class="text-xs" :hide-pipe="!hasAudio">
             <template #left>
-              <p class="text-xs" v-if="hasAudio">
-                {{ getMinutes(props.data.estimatedDuration, 1) }}
-              </p>
+              <span v-if="hasAudio">
+                <p class="text-xs" v-if="estimatedDuration">
+                  {{ getMinutes(estimatedDuration, 1) }}
+                </p>
+                <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
+              </span>
             </template>
             <template #right>
               <div class="flex gap-2 align-items-center">

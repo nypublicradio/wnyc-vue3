@@ -24,10 +24,10 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
         const res = await axios(option);
         const resData = res.data.data
         for (let i = 0; i < resData.length; i++) {
-            if (!resData[i].attributes['estimated-duration']) {
-                const url: string = resData[i].attributes.audio
-                resData[i].attributes['estimated-duration'] = await fetchDuration(url)
-            }
+            // if (!resData[i].attributes['estimated-duration']) {
+            //     const url: string = resData[i].attributes.audio
+            //     resData[i].attributes['estimated-duration'] = await fetchDuration(url)
+            // }
 
             resData[i].cmsSource = cmsSources.PUBLISHER
             resData[i] = normalizeArticlePage(humps.camelizeKeys(resData[i]))
