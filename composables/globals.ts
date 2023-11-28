@@ -1,11 +1,22 @@
-export const mediaTypes = {
-    LIVE: 'live',
-    ARTICLE: 'article',
-    EPISODE: 'episode',
-}
 export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
+}
+
+export const mediaTypes = {
+    LIVE: 'live',
+    SHOW: 'show',
+    EPISODE: 'episode',
+    STORY: 'story',
+    ARTICLE_PAGE: 'article_page',
+}
+
+export const mediaTypeRoutes = {
+    [mediaTypes.LIVE]: '/live/',
+    [mediaTypes.SHOW]: '/browse/shows/',
+    [mediaTypes.EPISODE]: '/browse/shows/episode/',
+    [mediaTypes.STORY]: '/story/',
+    [mediaTypes.ARTICLE_PAGE]: '/story/',
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'

@@ -1,48 +1,73 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import { getMinutes, getDate } from "~/utilities/helpers"
+import { getMinutes, getDate, fetchDuration } from "~/utilities/helpers"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
 import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
 
+const toast = useToast()
+
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["onClick"])
+const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
 
 const props = defineProps({
-  ep: {
+  data: {
     type: Object,
     default: {},
-    required: true,
   },
   fallbackImage: {
     type: String,
     default: "./logo.png",
   },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(props.ep?.attributes?.slug))
+// check if item is already favorited
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
+})
 
-const handleAddToFavorites = (bucketItem) => {
+const estimatedDuration = ref(props.data.estimatedDuration)
+
+watch(
+  estimatedDuration,
+  async () => {
+    estimatedDuration.value =
+      estimatedDuration.value === 0 || estimatedDuration.value === undefined
+        ? await fetchDuration(props.data.audio)
+        : estimatedDuration.value
+  },
+  { immediate: true }
+)
+
+const handleAddToFavorites = async (bucketItem) => {
+  console.log("favorite buketItem =", bucketItem)
   const episode = {
-    cms_source: "publisher", // BONO TO DO: is this right to hardcode this?
-    id: props.ep?.id,
-    slug: props.ep?.attributes?.slug,
+    cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
+    id: props.data?.id,
+    slug: props.data?.meta.slug,
   }
   if (isFavorited.value) {
-    deleteFavorite(episode)
     isFavorited.value = false
+    await deleteFavorite(episode)
+    emit("onDeleteFavorite")
   } else {
-    saveFavorite(episode, props.ep?.type)
     isFavorited.value = true
+    saveFavorite(episode, props.data?.type)
+    emit("onSaveFavorite")
   }
   toast.add({
     severity: "info",
@@ -55,7 +80,6 @@ const handleAddToFavorites = (bucketItem) => {
     bucketItem.title
   )
 }
-//console.log('ep = ', props.ep)
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -102,20 +126,29 @@ const getDotMenuItems = (bucketItem) => {
 const onMenuChange = (e) => {
   e.value.command()
 }
+
+const hasAudio = computed(() => {
+  return (
+    (props.data.audio && typeof props.data.audio === "string") ||
+    (Array.isArray(props.data.audio) && props.data.audio.length === 0)
+  )
+})
+
+//console.log("EpisodeItem =", props.data)
 </script>
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
     <div class="flex gap-3" @click.prevent="emit('onClick')" v-ripple>
       <VImage
-        v-if="props.ep?.attributes?.imageMain?.template"
+        v-if="props.data?.image?.template"
         class="flex-none"
-        :src="props.ep?.attributes?.imageMain?.template"
+        :src="props.data?.image?.template"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 72px; min-width: 72px; background-color: var(--background2)"
+        style="min-height: 72px; min-width: 72px"
       />
       <VImage
         v-else
@@ -125,36 +158,44 @@ const onMenuChange = (e) => {
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 72px; min-width: 72px; background-color: var(--background2)"
+        style="min-height: 72px; min-width: 72px"
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <h2 class="text-sm line-height-2">{{ props.ep.attributes.title }}</h2>
-        <p>{{ props.ep.attributes.org }}</p>
+        <h2 class="text-sm line-height-2">{{ props.data.title }}</h2>
+        <p>{{ props.data.org }}</p>
         <div class="article-metadata flex flex-column gap-1">
-          <PipeData class="text-xs">
+          <PipeData class="text-xs" :hide-pipe="!hasAudio">
             <template #left>
-              <p class="text-xs">
-                {{ getMinutes(props.ep.attributes.estimatedDuration, 1) }}
-              </p>
+              <span v-if="hasAudio">
+                <p class="text-xs" v-if="estimatedDuration">
+                  {{ getMinutes(estimatedDuration, 1) }}
+                </p>
+                <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
+              </span>
             </template>
             <template #right>
               <div class="flex gap-2 align-items-center">
                 <p class="text-xs">
-                  {{ getDate(props.ep.attributes.publishAt) }}
+                  {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
                 <!-- FROM SUPABASE PROFILER DATA -->
-                <DownloadedSmallIcon v-if="props.ep.attributes.downloaded" />
+                <DownloadedSmallIcon v-if="props.data.downloaded" />
               </div>
             </template>
           </PipeData>
-          <!-- FROM SUPABASE PROFILER DATA -->
-          <ProgressBar :value="50" style="height: 4px" :showValue="false"></ProgressBar>
         </div>
+        <!-- FROM SUPABASE PROFILER DATA -->
+        <ProgressBar
+          :value="50"
+          style="height: 4px"
+          class="w-full"
+          :showValue="false"
+        ></ProgressBar>
       </div>
     </div>
 
     <DotMenu
-      :menuItems="getDotMenuItems(props.ep.attributes)"
+      :menuItems="getDotMenuItems(props.data)"
       label=""
       @changeEmit="onMenuChange"
       class="-mr-2"
@@ -163,8 +204,8 @@ const onMenuChange = (e) => {
         <div>
           <div class="flex gap-3 px-4 align-items-center">
             <VImage
-              :src="props.ep?.attributes?.imageMain?.template || props.fallbackImage"
-              :alt="`${props.ep.attributes.showTitle} show image`"
+              :src="props.data?.image?.template || props.fallbackImage"
+              :alt="`${props.data.showTitle} show image`"
               :width="60"
               :height="60"
               :sizes="[2]"
@@ -178,8 +219,8 @@ const onMenuChange = (e) => {
             />
 
             <div class="info">
-              <h2>{{ props.ep.attributes.title }}</h2>
-              <p>{{ props.ep.attributes.showTitle }}</p>
+              <h2>{{ props.data.title }}</h2>
+              <p>{{ props.data.showTitle }}</p>
             </div>
           </div>
           <hr class="mt-5 mb-2 dim" />

@@ -1,6 +1,6 @@
 <script setup>
-import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
-import { trackClickEvent } from '~/utilities/helpers'
+import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
+import { trackClickEvent } from "~/utilities/helpers"
 //import { trackClickEvent } from '~/utilities/helpers'
 //import { StaffPage } from '../../composables/types/Page'
 //import { ArticlePage } from '~/composables/types/Page'
@@ -20,9 +20,7 @@ let offset = 0
 
 const loadMoreArticles = async () => {
   const { data: additionalPageData } = await useFetch(
-    `${
-      config.public.BFF_URL
-    }/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
+    `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
   )
 
   newPageData.value.articles = [
@@ -39,13 +37,13 @@ useHead({
   title: pageTitle,
 })
 useServerHead({
-  meta: [{ property: 'og:title', content: pageTitle }],
+  meta: [{ property: "og:title", content: pageTitle }],
 })
 
 const routeBack = () => {
-  trackClickEvent('Staff', 'Staff page', 'route back')
-  console.log('window.history.state.back = ', window.history.state.back)
-  window.history.state.back ? router.back() : navigateTo('/home')
+  trackClickEvent("Staff", "Staff page", "route back")
+  console.log("window.history.state.back = ", window.history.state.back)
+  window.history.state.back ? router.back() : navigateTo("/home")
 }
 </script>
 
@@ -85,7 +83,7 @@ const routeBack = () => {
               :key="article?.uuid"
               class="mb-4"
             >
-              <Story :article="article" :index="index" />
+              <StoryItem :data="article" :index="index" />
             </div>
           </div>
           <p v-else class="col">No articles available</p>

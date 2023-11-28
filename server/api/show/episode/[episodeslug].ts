@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
-import { FALLBACKIMAGE } from '~/composables/globals';
+import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { cmsSources, FALLBACKIMAGE } from '~/composables/globals';
 import { fetchDuration } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
@@ -12,16 +13,20 @@ const getEpisode = async (slug: string) => {
             url: `${config.public.PUBLISHER_BASE_API}v3/story/${slug}`
         };
         const res = await axios(option);
-        const resData = humps.camelizeKeys(res.data).data;
-        
+        let resData = humps.camelizeKeys(res.data).data;
+
         // fallback image to show image when no image is available
-        resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : {template: FALLBACKIMAGE};
-        
+        resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGE };
+
         // Fetch the mp3 Content-Length and calculate the duration in seconds
         if (!resData.attributes.estimatedDuration) {
             const url: string = resData.attributes.audio
             resData.attributes.estimatedDuration = await fetchDuration(url)
         }
+
+        resData.cmsSource = cmsSources.PUBLISHER
+
+        resData = normalizeArticlePage(resData)
 
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {
@@ -40,9 +45,8 @@ export default defineEventHandler(async (event) => {
         // Get show details
         const episode = await getEpisode(slug);
 
-        return {
-            episode: episode.data
-        }
+        return episode.data
+
     }
     return null;
 });

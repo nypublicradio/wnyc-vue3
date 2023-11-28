@@ -1,18 +1,23 @@
-import { format, formatDistanceToNowStrict } from 'date-fns'
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { useFileSystem, useAppDirectory, useCurrentEpisode, useTextSizeOption, useIsApp, useCurrentUser, useCurrentUserProfile, useLocalUserProfileDefault } from '~/composables/states'
-import { Preferences } from '@capacitor/preferences';
+import { format, formatDistanceToNowStrict } from "date-fns"
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
+import { StatusBar, Style } from "@capacitor/status-bar"
 import {
-  NativeSettings,
-  AndroidSettings,
-  IOSSettings,
-} from 'capacitor-native-settings'
-import { Browser } from '@capacitor/browser';
-//import { mediaTypes } from '~/composables/globals.ts'
-import { updateAllLiveStreams } from '~/composables/data/liveStream'
-import { ca } from 'date-fns/locale';
-import axios from 'axios';
+  useFileSystem,
+  useAppDirectory,
+  useCurrentEpisode,
+  useTextSizeOption,
+  useIsApp,
+  useCurrentUser,
+  useCurrentUserProfile,
+  useLocalUserProfileDefault,
+} from "~/composables/states"
+import { Preferences } from "@capacitor/preferences"
+import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
+import { Browser } from "@capacitor/browser"
+import { mediaTypeRoutes } from "~/composables/globals.ts"
+import { updateAllLiveStreams } from "~/composables/data/liveStream"
+import { ca } from "date-fns/locale"
+import axios from "axios"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -21,7 +26,7 @@ const directoryToSaveTo = Directory.External
 export function formatTime(date: any) {
   if (date) {
     const dateObject = new Date(date)
-    return format(dateObject, 'h:mm a')
+    return format(dateObject, "h:mm a")
   }
   return null
 }
@@ -29,7 +34,9 @@ export function formatTime(date: any) {
 /*
 formats the url of a publisher image so it works with our design system image components
 */
-export const formatPublisherImageUrl = (url) => { return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%") }
+export const formatPublisherImageUrl = (url) => {
+  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
+}
 
 /*
 finds the image first then formats the url of a publisher image so it works with our design system image components
@@ -57,16 +64,16 @@ interface ImageAttributes {
 export const fetchDuration = async (url: string) => {
   try {
     const options = {
-      method: 'HEAD',
+      method: "HEAD",
       url: url,
-    };
-    const mp3Res = await axios(options);
-    const mp3Size = mp3Res.headers['content-length'];
-    // Calculate the duration in seconds not converting size into bits. 
+    }
+    const mp3Res = await axios(options)
+    const mp3Size = mp3Res.headers["content-length"]
+    // Calculate the duration in seconds not converting size into bits.
     // The bitrate is 128kps according to vlc and the file size is in bytes.
-    //Multiplying the file size by 8 and dividing by 128000 gives the same 
+    //Multiplying the file size by 8 and dividing by 128000 gives the same
     //duration as dividing by 16000 and not multiplying the file size by 8.
-    const duration: number = Math.round(mp3Size / 16000);
+    const duration: number = Math.round(mp3Size / 16000)
     return duration
   } catch (e) {
     //console.log(e);
@@ -74,11 +81,16 @@ export const fetchDuration = async (url: string) => {
 }
 
 // returns a resized image url when provided the entire image object
-export const resizePublisherImage = (attributes: ImageAttributes, w: number, h: number, q = 80): string => {
+export const resizePublisherImage = (
+  attributes: ImageAttributes,
+  w: number,
+  h: number,
+  q = 80
+): string => {
   const img = attributes.imageMain ?? attributes.image
   const url = img.template
 
-  const pieces = url.split('/')
+  const pieces = url.split("/")
   const finalUrlArr: string[] = []
 
   pieces.forEach((piece: string, index: number) => {
@@ -89,12 +101,17 @@ export const resizePublisherImage = (attributes: ImageAttributes, w: number, h: 
       finalUrlArr.push(`${w}/${h}/c/${q}`)
     }
   })
-  return finalUrlArr.join('/')
+  return finalUrlArr.join("/")
 }
 
 // returns a resized image url when provided just the image URL
-export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 80): string => {
-  const pieces = url.split('/')
+export const resizePublisherImageUrl = (
+  url: string,
+  w: number,
+  h: number,
+  q = 80
+): string => {
+  const pieces = url.split("/")
   const finalUrlArr: string[] = []
 
   pieces.forEach((piece: string, index: number) => {
@@ -105,12 +122,12 @@ export const resizePublisherImageUrl = (url: string, w: number, h: number, q = 8
       finalUrlArr.push(`${w}/${h}/c/${q}`)
     }
   })
-  console.log("finalUrlArr.join('/') = ", finalUrlArr.join('/'))
-  return finalUrlArr.join('/')
+  console.log("finalUrlArr.join('/') = ", finalUrlArr.join("/"))
+  return finalUrlArr.join("/")
 }
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
-  const pieces = url.split('/')
+  const pieces = url.split("/")
   const finalUrlArr: string[] = []
 
   pieces.forEach((piece: string, index: number) => {
@@ -121,32 +138,20 @@ export const templatizePublisherImageUrl = (url: string): string => {
       finalUrlArr.push(`%s/%s/%s/%s`)
     }
   })
-  return finalUrlArr.join('/')
+  return finalUrlArr.join("/")
 }
 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
-  $analytics.sendEvent('click_tracking', {
+  $analytics.sendEvent("click_tracking", {
     event_category: category,
     component: component,
     event_label: label,
   })
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 export const fileNameFromURL = (url: string) => {
-  return url.substring(url.lastIndexOf('/') + 1);
+  return url.substring(url.lastIndexOf("/") + 1)
 }
 
 export const readStoreDir = async () => {
@@ -159,133 +164,180 @@ export const readStoreDir = async () => {
   fileSystem.value = await Filesystem.readdir({
     path: `${appDirectory.value}/`,
     directory: directoryToSaveTo,
-  }).then((val) => {
-    return val
-  }).catch((e) => {
-    console.error('Unable to read dir', e);
   })
-
-
+    .then((val) => {
+      return val
+    })
+    .catch((e) => {
+      console.error("Unable to read dir", e)
+    })
 }
 
 const createAppDirectory = async () => {
   // initial check to see if the appDirectory exists and if not, create it
   const appDirectory = useAppDirectory()
   const appDirectories = await Filesystem.readdir({
-    path: '',
+    path: "",
     directory: directoryToSaveTo,
   })
 
-  const result = appDirectories.files.filter(entry => entry.type === 'directory' && entry.name === appDirectory.value);
+  const result = appDirectories.files.filter(
+    (entry) => entry.type === "directory" && entry.name === appDirectory.value
+  )
 
   if (result.length === 0) {
     await Filesystem.mkdir({
       path: `${appDirectory.value}`,
-      directory: directoryToSaveTo
-    }).then(() => {
-
-    }).catch((e) => {
-      console.error('Unable to create directory', e);
+      directory: directoryToSaveTo,
     })
+      .then(() => { })
+      .catch((e) => {
+        console.error("Unable to create directory", e)
+      })
   }
 }
 
-export const fetchAndStoreMp3 = async (file: { file: string; title: string; details: string; image: string; }) => {
-
+export const fetchAndStoreMp3 = async (file: {
+  file: string
+  title: string
+  details: string
+  image: string
+}) => {
   const appDirectory = useAppDirectory()
   const fileSystem = useFileSystem()
   const fileSystemLS = useFileSystemLS()
 
   // Fetch the MP3 file as a Blob
-  const response = await fetch(file.file);
-  const mp3Blob = await response.blob();
+  const response = await fetch(file.file)
+  const mp3Blob = await response.blob()
 
   // Read the Blob as a data URL using FileReader
-  const reader = new FileReader();
+  const reader = new FileReader()
   reader.onload = async function () {
-    const base64DataUrl: any = this.result;
+    const base64DataUrl: any = this.result
     await Filesystem.writeFile({
       path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
       data: base64DataUrl,
       directory: directoryToSaveTo,
-    }).then(() => {
-      //create a parralel browser local storage for this data, and bes to add it to the delete function.
-      setTimeout(async () => {
-
-        // slight delay is needed for the fileSystem to update
-        const thisFileSystemEntry = fileSystem.value?.files.find((entry: any) => entry.name === fileNameFromURL(file.file))
-        const filesArr: any = [...fileSystemLS.value, { title: file.title, file: file.file, details: file.details, image: file.image, name: fileNameFromURL(file.file), uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(file.file)}`, size: thisFileSystemEntry.size, ctime: thisFileSystemEntry.ctime, mtime: thisFileSystemEntry.mtime }]
-
-        fileSystemLS.value = filesArr
-        await Preferences.set({ key: 'files', value: JSON.stringify(filesArr) });
-      }, 500)
-      readStoreDir()
-    }).catch((e) => {
-      console.error('Unable to write file', e);
     })
-  };
-  reader.readAsDataURL(mp3Blob);
+      .then(() => {
+        //create a parralel browser local storage for this data, and bes to add it to the delete function.
+        setTimeout(async () => {
+          // slight delay is needed for the fileSystem to update
+          const thisFileSystemEntry = fileSystem.value?.files.find(
+            (entry: any) => entry.name === fileNameFromURL(file.file)
+          )
+          const filesArr: any = [
+            ...fileSystemLS.value,
+            {
+              title: file.title,
+              file: file.file,
+              details: file.details,
+              image: file.image,
+              name: fileNameFromURL(file.file),
+              uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(
+                file.file
+              )}`,
+              size: thisFileSystemEntry.size,
+              ctime: thisFileSystemEntry.ctime,
+              mtime: thisFileSystemEntry.mtime,
+            },
+          ]
+
+          fileSystemLS.value = filesArr
+          await Preferences.set({ key: "files", value: JSON.stringify(filesArr) })
+        }, 500)
+        readStoreDir()
+      })
+      .catch((e) => {
+        console.error("Unable to write file", e)
+      })
+  }
+  reader.readAsDataURL(mp3Blob)
 }
 
-export const playMp3 = async (file: { file: string; title: string; details: string; image: string }) => {
+export const playMp3 = async (file: {
+  file: string
+  title: string
+  details: string
+  image: string
+}) => {
   const currentEpisode = useCurrentEpisode()
   currentEpisode.value = file
 }
 
-export const playStoredMp3 = async (file: { name: string; uri: string, file: string; title: string; details: string; image: string }) => {
+export const playStoredMp3 = async (file: {
+  name: string
+  uri: string
+  file: string
+  title: string
+  details: string
+  image: string
+}) => {
   const currentEpisode = useCurrentEpisode()
   const appDirectory = useAppDirectory()
 
   await Filesystem.readFile({
     path: `${appDirectory.value}/${file.name}`,
     directory: directoryToSaveTo,
-  }).then((b64Content) => {
-    // eventually we will set a Type for the current episdode
-    currentEpisode.value = {
-      title: file.title,
-      file: `data:audio/mpeg;base64,${b64Content.data}`,
-      details: file.details,
-      image: file.image,
-    }
-
-  }).catch((e) => {
-    console.error('Unable to read file', e);
   })
-
+    .then((b64Content) => {
+      // eventually we will set a Type for the current episdode
+      currentEpisode.value = {
+        title: file.title,
+        file: `data:audio/mpeg;base64,${b64Content.data}`,
+        details: file.details,
+        image: file.image,
+      }
+    })
+    .catch((e) => {
+      console.error("Unable to read file", e)
+    })
 }
 
-export const deleteStoredMp3 = async (file: { file: string; title: string; details: string; image: string; name: string; uri: string }) => {
+export const deleteStoredMp3 = async (file: {
+  file: string
+  title: string
+  details: string
+  image: string
+  name: string
+  uri: string
+}) => {
   const appDirectory = useAppDirectory()
   const fileSystemLS = useFileSystemLS()
 
   Filesystem.deleteFile({
     path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
     directory: directoryToSaveTo,
-  }).then(async () => {
-    // also delete from the fileSystemLS state and local storage
-    const updatedFileSystemLS = fileSystemLS.value.filter((entry: any) => entry.name !== (file.name || fileNameFromURL(file.file)))
-
-    fileSystemLS.value = updatedFileSystemLS
-    await Preferences.set({ key: 'files', value: JSON.stringify(updatedFileSystemLS) });
-
-    setTimeout(() => {
-      readStoreDir()
-    }, 100)
-  }).catch((e) => {
-    console.error(`Unable to delete file}`, e);
   })
+    .then(async () => {
+      // also delete from the fileSystemLS state and local storage
+      const updatedFileSystemLS = fileSystemLS.value.filter(
+        (entry: any) => entry.name !== (file.name || fileNameFromURL(file.file))
+      )
+
+      fileSystemLS.value = updatedFileSystemLS
+      await Preferences.set({ key: "files", value: JSON.stringify(updatedFileSystemLS) })
+
+      setTimeout(() => {
+        readStoreDir()
+      }, 100)
+    })
+    .catch((e) => {
+      console.error(`Unable to delete file}`, e)
+    })
 }
 
 export const formatFileSize = (bytes: number, decimals: number = 2) => {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return "0 B"
 
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
 
 // initial pull of the preferencce plugin files data
@@ -293,10 +345,8 @@ export const formatFileSize = (bytes: number, decimals: number = 2) => {
 export const initReadOfPreferences = async () => {
   let val = null
   try {
-    val = await Preferences.get({ key: 'files' })
-  } catch (error) {
-
-  }
+    val = await Preferences.get({ key: "files" })
+  } catch (error) { }
   return JSON.parse(val.value)
 }
 
@@ -304,18 +354,18 @@ export const initReadOfPreferences = async () => {
  * code to calculate the correct suffix to use in the date number
  */
 function getOrdinalSuffix(i) {
-  const j = i % 10;
-  const k = i % 100;
+  const j = i % 10
+  const k = i % 100
   if (j === 1 && k !== 11) {
-    return `${i}st`;
+    return `${i}st`
   }
   if (j === 2 && k !== 12) {
-    return `${i}nd`;
+    return `${i}nd`
   }
   if (j === 3 && k !== 13) {
-    return `${i}rd`;
+    return `${i}rd`
   }
-  return `${i}th`;
+  return `${i}th`
 }
 
 /**
@@ -323,26 +373,24 @@ function getOrdinalSuffix(i) {
  */
 export function howLongAgo(date) {
   if (date) {
-
     // check if unix tiumestamp
     if (Number.isInteger(date)) {
-      date = new Date(date * 1000);
+      date = new Date(date * 1000)
     }
 
     const res = formatDistanceToNowStrict(new Date(date), {
       addSuffix: true,
     })
 
-    return res.replace('minutes', 'min').replace('minute', 'min')
+    return res.replace("minutes", "min").replace("minute", "min")
   }
   return null
 }
 
-
 /**
  * to get the desired date format for the header
  */
-export function getDate(date = null, formatString = 'EEE, MMM do') {
+export function getDate(date = null, formatString = "EEE, MMM do") {
   if (!date) {
     return format(new Date(), formatString)
   } else {
@@ -351,61 +399,62 @@ export function getDate(date = null, formatString = 'EEE, MMM do') {
 }
 
 /**
- * to get the yaer for the footer in the settings 
+ * to get the yaer for the footer in the settings
  */
 export function getYear() {
-  return new Date().getFullYear();
+  return new Date().getFullYear()
 }
 
 /**
  * helper function to capitalize the first letter of a string
  */
 export function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**
  * helper function to change the global font size
  */
 export function setFontSize(size: string) {
-  document.documentElement.style.fontSize = size;
+  document.documentElement.style.fontSize = size
 }
-
 
 /**
  * helper function to toggle darkmode of the status bar
  */
 export async function setStatusDarkMode(bool: boolean) {
-
   if (useIsApp().value) {
-    bool ? await StatusBar.setStyle({ style: Style.Dark }) : await StatusBar.setStyle({ style: Style.Light });
+    bool
+      ? await StatusBar.setStyle({ style: Style.Dark })
+      : await StatusBar.setStyle({ style: Style.Light })
   }
 }
 /**
  * helper function to toggle darkmode
  */
 export async function setDarkMode(bool: boolean) {
-  bool ? document.documentElement.classList.add('style-mode-dark') : document.documentElement.classList.remove('style-mode-dark');
+  bool
+    ? document.documentElement.classList.add("style-mode-dark")
+    : document.documentElement.classList.remove("style-mode-dark")
   await setStatusDarkMode(bool)
 }
 
 // helper function to get the pixel size from thr label
 export const getTextSizePixel = (label) => {
-  if (typeof label === 'string') {
+  if (typeof label === "string") {
     const textSizeOptions = useTextSizeOption()
-    return textSizeOptions.value.find(
-      (item) => item.label === label
-    ).pixel
+    return textSizeOptions.value.find((item) => item.label === label).pixel
   } else {
     return label.pixel
   }
 }
 
-// detect system theme preference 
+// detect system theme preference
 export const detectSystemDarkMode = () => {
-  return Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  return Boolean(
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+  )
 }
-
 
 // set the display settings in one place
 export const setDisplaySettings = async (data) => {
@@ -426,23 +475,26 @@ export const toSystemSettings = () => {
   })
 }
 
-
 // helper function to open a link in the browser IN the app
 export async function openLinkInAppBrowser(url: string) {
-  await Browser.open({ url });
+  await Browser.open({ url })
 }
 
 // helper function to determine if the file url is a live stream or .mp3 file
 export const isLiveStream = () => {
   const currentEpisode = useCurrentEpisode()
-  return !currentEpisode.value?.file.includes('.mp3')
+  return !currentEpisode.value?.file.includes(".mp3")
 }
 
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
   const res = data.updatedDate
-    ? howLongAgo(data.updatedDate) : data.publicationDate ? howLongAgo(data.publicationDate)
-      : data.publishAt ? howLongAgo(data.publishAt) : howLongAgo(data.firstPublishedAt)
+    ? howLongAgo(data.updatedDate)
+    : data.publicationDate
+      ? howLongAgo(data.publicationDate)
+      : data.publishAt
+        ? howLongAgo(data.publishAt)
+        : howLongAgo(data.firstPublishedAt)
   return res
 }
 
@@ -458,7 +510,8 @@ export const getMinutes = (ms, mult = 1000) => {
 // global funcrtion for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
   if (!navigator.clipboard) return false
-  await navigator.clipboard.writeText(content)
+  await navigator.clipboard
+    .writeText(content)
     .then(() => {
       return true
     })
@@ -470,10 +523,11 @@ export const copyToClipBoard = async (content: string) => {
 
 /*basic function that detects if the site is running in a mobile browser*/
 function isMobileBrowser() {
-  return (typeof window.orientation !== "undefined")
-    || (navigator.userAgent.indexOf('IEMobile') !== -1
-    )
-};
+  return (
+    typeof window.orientation !== "undefined" ||
+    navigator.userAgent.indexOf("IEMobile") !== -1
+  )
+}
 
 // share API
 export const shareAPI = async (content: object) => {
@@ -488,9 +542,8 @@ export const shareAPI = async (content: object) => {
 // time converter
 export const convertTime = (val) => {
   const hhmmss = new Date(val * 1000).toISOString().substring(11, 19)
-  return hhmmss.startsWith('00:') ? hhmmss.substring(3) : hhmmss
+  return hhmmss.startsWith("00:") ? hhmmss.substring(3) : hhmmss
 }
-
 
 export const getAndSetUserProfile = async () => {
   const currentUser = useCurrentUser()
@@ -502,20 +555,17 @@ export const getAndSetUserProfile = async () => {
 
   // function that gets a user profile
   const getProfile = async () => {
-    const {
-      data,
-      error
-    } = await client
-      .from('profiles')
-      .select('*')
-      .eq('id', currentUser.value.id)
+    const { data, error } = await client
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.value.id)
       .single()
     if (error) {
       console.error(error)
     } else if (data) {
       if (data.initial) {
         // if first time logging in with new profile
-        const lsSTRING = await Preferences.get({ key: 'localUserProfile' })
+        const lsSTRING = await Preferences.get({ key: "localUserProfile" })
         const ls = JSON.parse(lsSTRING.value)
         data.initial = false
         data.autodownload = ls.autodownload
@@ -527,7 +577,7 @@ export const getAndSetUserProfile = async () => {
         // update supabase profile data
         // set the supabase prferences with what is currently set in the local storage
         await client
-          .from('profiles')
+          .from("profiles")
           .update({
             initial: false,
             autodownload: ls.autodownload,
@@ -548,7 +598,9 @@ export const getAndSetUserProfile = async () => {
 
   // check local storage for the auth token
   if (process.client) {
-    const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
+    const supabaseAuthToken = await Preferences.get({
+      key: config.public.supabaseAuthTokenName,
+    })
 
     if (supabaseAuthToken.value) {
       currentUser.value = JSON.stringify(supabaseAuthToken.user)
@@ -559,23 +611,22 @@ export const getAndSetUserProfile = async () => {
       currentUser.value = user?.data?.session?.user
     }
 
-
     if (!currentUser.value) {
       // initially set default user profile settings or use the local storage settings
 
       // does local storage settings exist?
-      const isLocalUserProfile = await Preferences.get({ key: 'localUserProfile' })
+      const isLocalUserProfile = await Preferences.get({ key: "localUserProfile" })
       if (!isLocalUserProfile.value) {
         // no, set defaults from localUserProfileDefault state
         const defaults = localUserProfileDefault.value
 
-        //get the system's current theme and apply it to the initial defaults              
+        //get the system's current theme and apply it to the initial defaults
         defaults.dark_mode = detectSystemDarkMode()
 
         const defaultsSTRING = JSON.stringify(defaults)
         await Preferences.set({
-          key: 'localUserProfile',
-          value: defaultsSTRING
+          key: "localUserProfile",
+          value: defaultsSTRING,
         })
         currentUserProfile.value = {}
         currentUserProfile.value = localUserProfileDefault.value
@@ -584,7 +635,7 @@ export const getAndSetUserProfile = async () => {
         //set display settings
         setDisplaySettings(localUserProfileDefault.value)
       } else {
-        // local storage is set, so set currentUserProfile to the local storage settings                
+        // local storage is set, so set currentUserProfile to the local storage settings
         currentUserProfile.value = {}
         currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
 
@@ -593,33 +644,30 @@ export const getAndSetUserProfile = async () => {
         setDisplaySettings(currentUserProfile.value)
       }
       //navigateTo('/home')
-
     } else {
       // if they are a user, get their profile data
       getProfile()
-
     }
   }
 }
 interface SavedItem {
-  uid: string;
-  media_type: string;
-  cms_source: string;
-  media_id: string;
-  media_slug: string;
-}
-interface RecentlyViewed {
-  uid: string;
-  media_type: string;
-  cms_source: string;
-  media_id: string;
-  media_slug: string;
+  uid: string
+  type: string
+  cmsSource: string
+  media_id: string
+  slug: string
+  route_href: string
+  title: string
+  image: any
+  producingOrganizations: any
+  authors: any
+  meta: any
 }
 
 const isDifferentMedia = (media: object, type: string) => {
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   switch (type) {
-    case 'live':
+    case "live":
       return currentEpisodeHolder.value?.slug !== media?.slug
 
     default:
@@ -627,22 +675,42 @@ const isDifferentMedia = (media: object, type: string) => {
   }
 }
 
-export const saveFavorite = async (media: object, type: string) => {
-  // detect if logged in
+export const saveFavorite = async (media: object, typeArg: string, tableArg: string = "favorited") => {
   const user = useCurrentUser()
+  const source = media?.cmsSource ?? media?.cmsSource
+  const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
+  const href = `${mediaTypeRoutes[typeArg]}${thisSlug}`
+
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
-    const cms_source = media?.cms_source ?? media?.cmsSource
+    const cmsSource = source
     const media_id = media?.id
-    const media_slug = media?.slug
-    const media_type = type
-    const itemToSave: SavedItem = { uid, media_type, cms_source, media_id, media_slug };
+    const slug = thisSlug
+    const type = typeArg
+    const route_href = href
+    const image = media?.image
+    const title = media?.title
+    const producingOrganizations = media?.producingOrganizations
+    const authors = media?.authors
+    const meta = media?.meta
+    const itemToSave: SavedItem = {
+      uid,
+      type,
+      cmsSource,
+      media_id,
+      slug,
+      route_href,
+      image,
+      title,
+      authors,
+      producingOrganizations,
+      meta,
+    }
+    console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
     const client = useSupabaseClient()
-    const { error } = await client
-      .from('favorited')
-      .insert([itemToSave])
+    const { error } = await client.from(tableArg).insert([itemToSave])
   }
 }
 
@@ -652,62 +720,40 @@ export const deleteFavorite = async (media: object) => {
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
-    const media_slug = media?.slug
+    const slug = media?.slug ?? media?.meta.slug
     const media_id = media?.id
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client
-      .from('favorited')
+      .from("favorited")
       .delete()
-      .eq('uid', uid)
-      .or(`media_slug.eq.${media_slug}`, `media_id.eq.${media_id}`)
-
-      if(error){
-        console.log('error deleting favorite', error)
-      }
-  }
-}
-
-export const checkIsFavorited = async (media_slug: string) => {
-  const user = useCurrentUser()
-  const client = useSupabaseClient()
-  if (user.value) {
-    const { data, error } = await client
-      .from('favorited')
-      .select('*')
-      .eq('uid', user.value.id)
-      .eq('media_slug', media_slug)
+      .eq("uid", uid)
+      .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
 
     if (error) {
-      console.log('favorited items error', error)
+      console.log("error deleting favorite", error)
     }
-    return data?.length > 0
-
   }
 }
 
-export const saveRecentlyPlayed = async (media: object, type: string) => {
-  // detect if logged in
+export const checkIsFavorited = async (slug: string) => {
   const user = useCurrentUser()
   if (user.value) {
-    // detect if the media has changed
-    //if (isDifferentMedia(media, type)) {
-
-    // format the media object to save
-    const uid = user.value?.id
-    const cms_source = media?.cms_source
-    const media_id = media?.id
-    const media_slug = media?.slug
-    const media_type = type
-
-    const recentlyViewed: RecentlyViewed = { uid, media_type, cms_source, media_id, media_slug };
-    console.log('recentlyViewed', recentlyViewed)
-    //save instance to Supabase
     const client = useSupabaseClient()
-    const { error } = await client
-      .from('recently_viewed')
-      .insert([recentlyViewed])
-    //}
-  }
+    console.log('checking if favorited')
+    const { data, error } = await client
+      .from("favorited")
+      .select("*")
+      .eq("uid", user.value.id)
+      .eq("slug", slug)
 
-} 
+    if (error) {
+      console.log("favorited items error", error)
+    }
+    return data?.length > 0
+  }
+}
+
+export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
+  saveFavorite(media, typeArg, "recently_viewed")
+}

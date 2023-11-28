@@ -43,6 +43,8 @@ export interface ArticlePage extends Page {
   publicationDate: Date
   updatedDate: Date | null
   showAsFeature: boolean
+  show?: string
+  showTitle?: string
   sensitiveContent: boolean
   provocativeContent: boolean
   sponsoredContent: boolean
@@ -61,6 +63,9 @@ export interface ArticlePage extends Page {
 
   disableComments?: string
   commentId: string
+  headers?: any
+  segments?: any
+  transcript?: string
 }
 
 export interface InformationPage extends Page {

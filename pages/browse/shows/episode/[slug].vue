@@ -1,12 +1,18 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import { getMinutes, trackClickEvent, getDate } from "~/utilities/helpers"
+import {
+  getMinutes,
+  trackClickEvent,
+  getDate,
+  saveRecentlyPlayed,
+} from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
 import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
+import { mediaTypes } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -15,16 +21,20 @@ const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
-const episodeData = ref(episode?.value?.episode ?? null)
+const episodeData = ref(episode?.value ?? null)
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(episodeData.value?.attributes?.slug))
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
+
 const user = useCurrentUser()
 
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
-  navigateTo(`/browse/shows/${episodeData?.value.attributes.show}`)
+  navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -39,7 +49,7 @@ const prepForPlayer = (item, index = null) => {
     ...item,
     file: isSegment ? item.audio[index] : item.audio,
     title: isSegment ? item.segments[index].title : item.title,
-    image: item.imageMain.template,
+    image: item.image.template,
     //TODO convert to seconds
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
@@ -51,11 +61,13 @@ const togglePlay = (media, index = null) => {
   if (index === null) {
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media)
+      saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   } else {
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
       currentEpisode.value = prepForPlayer(media, index)
+      saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }
 
@@ -64,16 +76,11 @@ const togglePlay = (media, index = null) => {
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
 const handleStar = () => {
-  const episode = {
-    cms_source: cmsSources.PUBLISHER, // BONO TO DO: is this right to hardcode this?
-    id: episodeData.value?.id,
-    slug: episodeData.value?.attributes?.slug,
-  }
   if (isFavorited.value) {
-    deleteFavorite(episode)
+    deleteFavorite(episodeData.value)
     isFavorited.value = false
   } else {
-    saveFavorite(episode, episodeData.value?.type)
+    saveFavorite(episodeData.value, mediaTypes.EPISODE)
     isFavorited.value = true
   }
 }
@@ -146,8 +153,8 @@ const handleAddToFavorites = (bucketItem) => {
 }
 
 watch(episode, () => {
-  episodeData.value = episode.value.episode
-  //console.log("ep = ", episodeData.value);
+  episodeData.value = episode.value
+  console.log("episode = ", episodeData.value)
 })
 </script>
 
@@ -164,25 +171,25 @@ watch(episode, () => {
           severity="secondary"
           aria-label="back to previous page"
           @click="backHome"
-          :label="episodeData?.attributes.showTitle"
+          :label="episodeData?.showTitle"
         />
       </div>
     </section>
     <div class="relative mb-4">
       <v-image
         v-if="episodeData"
-        :src="episodeData?.attributes.imageMain.template"
+        :src="episodeData?.image.template"
         :width="390"
         :height="360"
         :ratio="[3, 2]"
         :srcset="[2]"
-        :alt="episodeData?.attributes.imageMain.altText"
+        :alt="episodeData?.image.altText"
         class="episode-page-image mb-2"
       />
       <Skeleton v-else borderRadius="0px" height="auto" class="episode-page-image mb-2" />
       <v-image
         v-if="episodeData"
-        :src="episodeData?.attributes.headers.brand.logoImage.template"
+        :src="episodeData?.headers.brand.logoImage.template"
         :width="70"
         :height="70"
         :srcset="[2]"
@@ -203,19 +210,19 @@ watch(episode, () => {
         <p class="episode-page-date my-1">
           {{
             getDate(
-              episodeData?.attributes.updatedDate ?? episodeData?.attributes.publishAt,
+              episodeData?.updatedDate ?? episodeData?.publicationDate,
               "LLL d, yyyy"
             )
           }}
         </p>
-        <h1 class="mb-3 alt">{{ episodeData?.attributes?.title }}</h1>
+        <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
         <div class="flex align-items-center justify-content-between">
           <div>
             <PlayButton
-              v-if="!episodeData?.attributes?.segments"
-              :label="getMinutes(episodeData?.attributes?.estimatedDuration, 1)"
-              :file="episodeData?.attributes.audio"
-              @onClick="togglePlay(episodeData?.attributes)"
+              v-if="!episodeData?.segments"
+              :label="getMinutes(episodeData?.estimatedDuration, 1)"
+              :file="episodeData?.audio"
+              @onClick="togglePlay(episodeData)"
               class=""
             />
           </div>
@@ -237,7 +244,7 @@ watch(episode, () => {
               <template #icon> <ShareIcon /></template>
             </Button>
             <DotMenu
-              :menuItems="getDotMenuItems(episodeData?.attributes)"
+              :menuItems="getDotMenuItems(episodeData)"
               label=""
               @changeEmit="onMenuChange"
               width="32px"
@@ -248,8 +255,8 @@ watch(episode, () => {
                 <div>
                   <div class="flex gap-3 px-4 align-items-center">
                     <VImage
-                      :src="episodeData?.attributes.imageMain.template"
-                      :alt="`${episodeData?.attributes?.title} show image`"
+                      :src="episodeData?.image.template"
+                      :alt="`${episodeData?.title} show image`"
                       :width="60"
                       :height="60"
                       :sizes="[2]"
@@ -258,8 +265,8 @@ watch(episode, () => {
                     />
 
                     <div class="info">
-                      <h2>{{ episodeData?.attributes?.title }}</h2>
-                      <p>{{ episodeData?.attributes?.showTitle }}</p>
+                      <h2>{{ episodeData?.title }}</h2>
+                      <p>{{ episodeData?.showTitle }}</p>
                     </div>
                   </div>
                   <hr class="mt-5 mb-2 dim" />
@@ -269,34 +276,25 @@ watch(episode, () => {
           </div>
         </div>
         <!-- SEGMENTS -->
-        <div v-if="episodeData?.attributes?.segments" class="flex flex-column gap-3 mt-4">
-          <div
-            v-for="(segment, index) in episodeData?.attributes?.segments"
-            :key="segment.title"
-          >
-            <div
-              v-if="episodeData?.attributes.audio[index]"
-              class="flex gap-3 align-items-center"
-            >
+        <div v-if="episodeData.segments" class="flex flex-column gap-3 mt-4">
+          <div v-for="(segment, index) in episodeData?.segments" :key="segment.title">
+            <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton
                 :label="segment.audioDurationReadable"
-                :file="episodeData?.attributes.audio[index]"
-                @onClick="togglePlay(episodeData?.attributes, index)"
+                :file="episodeData?.audio[index]"
+                @onClick="togglePlay(episodeData, index)"
               />
               <p class="truncate t2lines">{{ segment.title }}</p>
             </div>
           </div>
         </div>
-        <div
-          class="episode-page-body html-formatting mt-5"
-          v-html="episodeData?.attributes?.body"
-        />
+        <div class="episode-page-body html-formatting mt-5" v-html="episodeData?.body" />
       </section>
-      <section v-if="episodeData?.attributes?.transcript">
+      <section v-if="episodeData?.transcript">
         <h3 class="mb-4">Transcript</h3>
         <div
           class="episode-page-transcript html-formatting"
-          v-html="episodeData?.attributes?.transcript"
+          v-html="episodeData?.transcript"
         />
       </section>
     </div>

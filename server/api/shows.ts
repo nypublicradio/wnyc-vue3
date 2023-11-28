@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources } from '~/composables/globals'
+import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { cmsSources } from '~/composables/globals';
 
 const config = useRuntimeConfig()
 
@@ -34,10 +35,13 @@ const featuredShows = async () => {
             }
         };
         const res = await axios(option);
-        res.data.map((show: any) => {
+
+        const resData = res.data.map((show: any) => {
             show.cmsSource = cmsSources.PUBLISHER;
+            const humped = humps.camelizeKeys(show);
+            return humped;
         });
-        return humps.camelizeKeys(res.data);
+        return resData;
     } catch (e) {
         //console.log(e);
     }

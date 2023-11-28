@@ -19,7 +19,11 @@ const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(await checkIsFavorited(route.params.slug))
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
+
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -28,7 +32,7 @@ const backHome = () => {
 }
 
 const goToEpisodePage = (ep) => {
-  navigateTo(`/browse/shows/episode/${ep.attributes.slug}`)
+  navigateTo(`/browse/shows/episode/${ep.meta.slug}`)
 }
 
 const togglePlayMostRecentEpisode = () => {
@@ -51,6 +55,7 @@ const handleShare = () => {
 }
 
 watch(show, () => {
+  //console.log("show  = ", show.value)
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template
@@ -152,7 +157,7 @@ watch(show, () => {
       <EpisodeItem
         v-if="show"
         v-for="ep in episodes"
-        :ep="ep"
+        :data="ep"
         :key="ep.id"
         @onClick="goToEpisodePage(ep)"
         :fallback-image="showImage"

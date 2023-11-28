@@ -1,6 +1,8 @@
 import axios from 'axios'
 import humps from 'humps'
 import { fetchDuration } from '~/utilities/helpers'
+import { cmsSources } from '~/composables/globals'
+import { normalizeArticlePage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig()
 
@@ -20,23 +22,20 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
             }
         };
         const res = await axios(option);
-        const cleanEpisodes = res.data.data.filter((episode: any) => {
-            // removing episodes with no audio
-            if (Array.isArray(episode.attributes.audio)) {
-                return episode.attributes.audio[0] !== null
-            } else {
-                return episode.attributes.audio !== null
-            }                       
-        })
-        for (let i = 0; i < cleanEpisodes.length; i++) {
-            if (!cleanEpisodes[i].attributes.estimatedDuration) {
-                const url: string = cleanEpisodes[i].attributes.audio
-                cleanEpisodes[i].attributes.estimatedDuration = await fetchDuration(url)
-            }
+        const resData = res.data.data
+        for (let i = 0; i < resData.length; i++) {
+            // if (!resData[i].attributes['estimated-duration']) {
+            //     const url: string = resData[i].attributes.audio
+            //     resData[i].attributes['estimated-duration'] = await fetchDuration(url)
+            // }
+
+            resData[i].cmsSource = cmsSources.PUBLISHER
+            resData[i] = normalizeArticlePage(humps.camelizeKeys(resData[i]))
         }
+        //console.log(resData[0])
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {
-            data: humps.camelizeKeys(cleanEpisodes),
+            data: resData,
             meta: humps.camelizeKeys(res.data).meta
         };
     } catch (e) {
