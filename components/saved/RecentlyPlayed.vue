@@ -1,5 +1,8 @@
+<script setup>
+  const user = useCurrentUser()
+</script>
 <template>
-  <section class="recently-played">
+  <section v-if="user" class="recently-played">
     <saved-dynamic-list table="recently_viewed">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>You haven't listened to anything...yet!</h2>
@@ -17,6 +20,9 @@
         />
       </div>
     </saved-dynamic-list>
+  </section>
+  <section v-else class="recently-played">
+    You must be logged in to see your recently played.
   </section>
 </template>
 

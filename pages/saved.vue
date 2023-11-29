@@ -1,11 +1,14 @@
 <script setup>
 import { useSavedMenuItems } from '~/composables/globals.ts'
+import { useCurrentUserFavorites } from '~/composables/states.ts'
+
 // import FollowedShows from '~/components/saved/FollowedShows.vue'
 // import Favorites from '~/components/saved/Favorites.vue'
 // import Downloads from '~/components/saved/Downloads.vue'
 // import RecentlyPlayed from '~/components/saved/Favorites.vue'
 
 const savedMenuItems = useSavedMenuItems()
+const favorites = useCurrentUserFavorites()
 
 const selectedMenuItem = ref(savedMenuItems.value[0])
 

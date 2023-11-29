@@ -10,6 +10,7 @@ import {
   useCurrentUser,
   useCurrentUserProfile,
   useLocalUserProfileDefault,
+  useCurrentUserFavorites,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
@@ -596,6 +597,8 @@ export const getAndSetUserProfile = async () => {
     }
   }
 
+  //
+
   // check local storage for the auth token
   if (process.client) {
     const supabaseAuthToken = await Preferences.get({
@@ -647,6 +650,7 @@ export const getAndSetUserProfile = async () => {
     } else {
       // if they are a user, get their profile data
       getProfile()
+      getFavoritedItems()
     }
   }
 }
@@ -736,22 +740,33 @@ export const deleteFavorite = async (media: object) => {
   }
 }
 
-export const checkIsFavorited = async (slug: string) => {
+export const getFavoritedItems = async () => {
+  const favorites = useCurrentUserFavorites()
   const user = useCurrentUser()
   if (user.value) {
     const client = useSupabaseClient()
-    console.log('checking if favorited')
     const { data, error } = await client
       .from("favorited")
       .select("*")
       .eq("uid", user.value.id)
-      .eq("slug", slug)
 
     if (error) {
       console.log("favorited items error", error)
     }
-    return data?.length > 0
+    favorites.value = data
   }
+}
+
+export const checkIsFavorited = async (slug: string) => {
+  const user = useCurrentUser()
+  if (user.value) {
+    const favorites = useCurrentUserFavorites()
+    if (favorites.value) {
+      const result = favorites.value.find((item) => item.slug === slug)
+      return result ? true : false
+    }
+  }
+  return false
 }
 
 export const saveRecentlyPlayed = async (media: object, typeArg: string) => {

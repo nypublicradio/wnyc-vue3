@@ -19,7 +19,13 @@ const currentUser = null
 // global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
 
+const currentUserFavorites = null
+
+// global state for the current authorized user's profile
+export const useCurrentUserFavorites = () => useState('useCurrentUserFavorites', () => currentUserFavorites)
+
 const currentUserProfile = null
+
 // global state for the current authorized user's profile
 export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () => currentUserProfile)
 

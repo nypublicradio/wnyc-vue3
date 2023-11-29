@@ -5,7 +5,7 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
+import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -45,9 +45,11 @@ const handleStar = () => {
   if (isFavorited.value) {
     deleteFavorite(show)
     isFavorited.value = false
+    getFavoritedItems()
   } else {
     saveFavorite(show, "show")
     isFavorited.value = true
+    getFavoritedItems()
   }
 }
 const handleShare = () => {

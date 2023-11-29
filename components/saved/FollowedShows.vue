@@ -1,5 +1,8 @@
+<script setup>
+  const user = useCurrentUser()
+</script>
 <template>
-  <section class="followed-shows">
+  <section v-if="user" class="followed-shows">
     <saved-dynamic-list typeFilter="show" table="favorited">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>Followed shows will appear here!</h2>
@@ -38,6 +41,9 @@
         @click="navigateTo('/live')"
       />
     </div>
+  </section>
+  <section v-else class="followed-shows">
+  You must be logged in to see your followed shows.
   </section>
 </template>
 

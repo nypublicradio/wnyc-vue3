@@ -2,7 +2,7 @@
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
+import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -35,11 +35,13 @@ const user = useCurrentUser()
 const addFavorite = async () => {
   isFavorited.value = true
   await saveFavorite(props.data, props.data?.type)
+  getFavoritedItems()
   emit("onSaveFavorite")
 }
 // remove item from favorites
 const removeFavorite = async () => {
   isFavorited.value = false
+  getFavoritedItems()
   await deleteFavorite(props.data)
   emit("onDeleteFavorite")
 }

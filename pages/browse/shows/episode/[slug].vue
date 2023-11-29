@@ -11,7 +11,7 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
+import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
 
 const config = useRuntimeConfig()
@@ -79,9 +79,11 @@ const handleStar = () => {
   if (isFavorited.value) {
     deleteFavorite(episodeData.value)
     isFavorited.value = false
+    getFavoritedItems()
   } else {
     saveFavorite(episodeData.value, mediaTypes.EPISODE)
     isFavorited.value = true
+    getFavoritedItems()
   }
 }
 const handleDownload = () => {

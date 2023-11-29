@@ -1,5 +1,8 @@
+<script setup>
+  const user = useCurrentUser()
+</script>
 <template>
-  <section class="favorites">
+  <section v-if="user" class="favorites">
     <saved-dynamic-list table="favorited">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>Favorites will appear here!</h2>
@@ -22,6 +25,9 @@
         />
       </div>
     </saved-dynamic-list>
+  </section>
+  <section v-else class="favorites"> 
+    You must be logged in to see your favorites.
   </section>
 </template>
 
