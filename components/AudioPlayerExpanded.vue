@@ -11,6 +11,7 @@ import {
   deleteFavorite,
   saveFavorite,
   checkIsFavorited,
+  getFavoritedItems,
 } from "~/utilities/helpers"
 import { useCurrentEpisode } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
@@ -51,9 +52,11 @@ const handleAddToFavorites = () => {
   if (isFavorited.value) {
     deleteFavorite(currentEpisode.value)
     isFavorited.value = false
+    getFavoritedItems()
   } else {
     saveFavorite(currentEpisode.value, currentEpisode.value.type)
     isFavorited.value = true
+    getFavoritedItems()
   }
 
   toast.add({

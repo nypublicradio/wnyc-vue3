@@ -8,7 +8,8 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { deleteFavorite, saveFavorite, checkIsFavorited } from "~/utilities/helpers"
+import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
+
 
 const toast = useToast()
 
@@ -62,10 +63,12 @@ const handleAddToFavorites = async (bucketItem) => {
   }
   if (isFavorited.value) {
     isFavorited.value = false
+    getFavoritedItems()
     await deleteFavorite(episode)
     emit("onDeleteFavorite")
   } else {
     isFavorited.value = true
+    getFavoritedItems()
     saveFavorite(episode, props.data?.type)
     emit("onSaveFavorite")
   }
