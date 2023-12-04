@@ -24,6 +24,8 @@ const loadComponent = async (item) => {
         return "EpisodeItem"
       case "story":
         return "StoryItem"
+      case "article_page":
+        return "StoryItem"
       case "live":
         return "LiveItem"
       default:

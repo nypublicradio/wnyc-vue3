@@ -22,7 +22,7 @@ const props = defineProps({
 
 const emit = defineEmits(["onClick"])
 
-//console.log(props.article)
+console.log("data = ", props.data)
 // TEMP fix to make ripple work
 const $primevue = usePrimeVue()
 defineExpose({
@@ -50,7 +50,7 @@ console.log("StoryItem =", props.data)
       :src="
         props.data.cmsSource === cmsSources.WAGTAIL
           ? String(props.data.image.id)
-          : props.data.image?.template
+          : props.data.image?.template ?? props.data.image
       "
       :title="props.data.title"
       :loading="index > 1 ? 'lazy' : 'eager'"
@@ -64,8 +64,8 @@ console.log("StoryItem =", props.data)
           ? props.data.image.height
           : props.data.image.h
       "
-      :width="116"
-      :height="116"
+      :width="props.saved ? 72 : 116"
+      :height="props.saved ? 72 : 116"
       :ratio="[1, 1]"
       @click.prevent="onCardClick"
       @title-click="
