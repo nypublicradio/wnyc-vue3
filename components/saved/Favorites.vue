@@ -3,9 +3,10 @@ const user = useCurrentUser()
 const filterOptions = ref([
   { label: "All", value: null },
   { label: "Episodes", value: mediaTypes.EPISODE },
-  { label: "Articles", value: mediaTypes.ARTICLE_PAGE },
-  { label: "Story", value: mediaTypes.STORY },
-  { label: "Segment", value: mediaTypes.SEGMENT },
+  {
+    label: "Articles",
+    value: [mediaTypes.ARTICLE_PAGE, mediaTypes.STORY, mediaTypes.SEGMENT],
+  },
   { label: "Shows", value: mediaTypes.SHOW },
 ])
 const selectedFilterOption = ref(filterOptions.value[0])
@@ -17,7 +18,7 @@ const selectedFilterOption = ref(filterOptions.value[0])
       :options="filterOptions"
       optionLabel="label"
       placeholder="Select a filter"
-      class="w-full mb-3"
+      class="mb-2 -ml-3"
     />
     <saved-dynamic-list table="favorited" :typeFilter="selectedFilterOption.value">
       <div class="empty flex flex-column gap-3 text-center mt-8">
@@ -47,5 +48,17 @@ const selectedFilterOption = ref(filterOptions.value[0])
 
 <style lang="scss" scoped>
 .favorites {
+  .p-dropdown {
+    border: none;
+  }
+}
+</style>
+<style lang="scss">
+.favorites {
+  .p-dropdown {
+    .p-dropdown-label {
+      padding-right: 0 !important;
+    }
+  }
 }
 </style>
