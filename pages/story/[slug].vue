@@ -65,7 +65,7 @@ const handleComments = () => {
     inline: "start",
   })
 }
-const handleStar = async () => {
+const handleAddToFavorites = async () => {
   if (isFavorited.value) {
     await deleteFavorite(storyData.value)
     getFavoritedItems()
@@ -75,6 +75,16 @@ const handleStar = async () => {
     getFavoritedItems()
     isFavorited.value = true
   }
+  toast.add({
+    severity: "info",
+    summary: "Updated your favorites.",
+    life: 3000,
+  })
+  trackClickEvent(
+    "Click Tracking - Add/remove from favorites",
+    "Story Page",
+    storyData.value.title
+  )
 }
 const handleShare = () => {
   console.log("handleShare")
@@ -182,7 +192,7 @@ watch(storyData, async () => {
             <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
-            <Button v-if="user" text plain rounded @click="handleStar()">
+            <Button v-if="user" text plain rounded @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button text plain rounded @click="handleShare()">

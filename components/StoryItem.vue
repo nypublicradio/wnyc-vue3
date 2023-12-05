@@ -56,8 +56,7 @@ const onCardClick = () => {
   })
 }
 
-const handleAddToFavorites = async (bucketItem) => {
-  console.log("favorite buketItem =", bucketItem)
+const handleAddToFavorites = async () => {
   const episode = {
     cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
     id: props.data?.id,
@@ -81,8 +80,8 @@ const handleAddToFavorites = async (bucketItem) => {
   })
   trackClickEvent(
     "Click Tracking - Add/remove from favorites",
-    "Episode Item",
-    bucketItem.title
+    "Story Item",
+    props.data?.title
   )
 }
 
@@ -140,11 +139,7 @@ const handleAddToFavorites = async (bucketItem) => {
     </VCard>
     <Button v-if="saved" text plain rounded class="flex-none">
       <template #icon>
-        <StarIcon
-          class="h-2rem"
-          :active="isFavorited"
-          @click="handleAddToFavorites(bucketItem)"
-        />
+        <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>
     </Button>
   </div>

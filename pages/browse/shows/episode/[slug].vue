@@ -1,4 +1,5 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import {
   getMinutes,
@@ -22,6 +23,7 @@ import { mediaTypes } from "~/composables/globals"
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
@@ -80,17 +82,7 @@ const togglePlay = (media, index = null) => {
 
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
-const handleStar = async () => {
-  if (isFavorited.value) {
-    await deleteFavorite(episodeData.value)
-    getFavoritedItems()
-    isFavorited.value = false
-  } else {
-    await saveFavorite(episodeData.value, mediaTypes.EPISODE)
-    getFavoritedItems()
-    isFavorited.value = true
-  }
-}
+
 const handleDownload = () => {
   console.log("handleDownload")
 }
@@ -144,9 +136,17 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
-const handleAddToFavorites = (bucketItem) => {
-  handleStar()
-  // update SB and LS with new state
+const handleAddToFavorites = async (bucketItem) => {
+  if (isFavorited.value) {
+    await deleteFavorite(bucketItem)
+    getFavoritedItems()
+    isFavorited.value = false
+  } else {
+    await saveFavorite(bucketItem, mediaTypes.EPISODE)
+    getFavoritedItems()
+    isFavorited.value = true
+  }
+
   toast.add({
     severity: "info",
     summary: "Updated your favorites.",
@@ -154,7 +154,7 @@ const handleAddToFavorites = (bucketItem) => {
   })
   trackClickEvent(
     "Click Tracking - Add/remove from favorites",
-    "Expanded Audio Player",
+    "Episode Page",
     bucketItem.title
   )
 }
@@ -235,12 +235,11 @@ watch(episode, () => {
           </div>
           <div class="flex gap-3">
             <Button
-              v-if="user"
               class="w-2rem h-2rem"
               text
               plain
               rounded
-              @click="handleStar"
+              @click="handleAddToFavorites(episodeData)"
             >
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>

@@ -1,4 +1,5 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -14,7 +15,7 @@ import {
 
 const config = useRuntimeConfig()
 const route = useRoute()
-
+const toast = useToast()
 const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`)
 
 const pagination = ref(show?.value?.episodes?.meta ?? null)
@@ -43,7 +44,7 @@ const goToEpisodePage = (ep) => {
 const togglePlayMostRecentEpisode = () => {
   console.log("togglePlay")
 }
-const handleStar = async () => {
+const handleAddToFavorites = async () => {
   const show = {
     slug: route.params.slug,
   }
@@ -56,6 +57,16 @@ const handleStar = async () => {
     getFavoritedItems()
     isFavorited.value = true
   }
+  toast.add({
+    severity: "info",
+    summary: "Updated your favorites.",
+    life: 3000,
+  })
+  trackClickEvent(
+    "Click Tracking - Add/remove from favorites",
+    "Shows Page",
+    props.data?.title
+  )
 }
 const handleShare = () => {
   console.log("handleShare")
@@ -108,7 +119,7 @@ watch(show, () => {
       v-if="show"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button v-if="user" rounded text plain @click="handleStar">
+      <Button v-if="user" rounded text plain @click="handleAddToFavorites">
         <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 
