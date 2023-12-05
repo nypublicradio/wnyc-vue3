@@ -1,6 +1,6 @@
 import humps from 'humps'
 
-export function transformResponseData(data: Record<string, any>): Record<string, any> {
+function transformResponseData(data: Record<string, any>): Record<string, any> {
   return humps.camelizeKeys(data)
 }
 

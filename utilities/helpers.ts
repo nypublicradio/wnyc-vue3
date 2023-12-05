@@ -760,12 +760,9 @@ export const getFavoritedItems = async () => {
 export const checkIsFavorited = async (slug: string) => {
   const user = useCurrentUser()
   if (user.value) {
-    console.log('user = ', user)
     const favorites = useCurrentUserFavorites()
     if (favorites.value) {
-      console.log('favorites.value = ', favorites.value)
       const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
-      console.log('result = ', result)
       return result ? true : false
     }
   }

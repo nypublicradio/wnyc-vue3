@@ -1,7 +1,7 @@
 <script setup>
-import { trackClickEvent, getMinutes, howLongAgo } from '~/utilities/helpers'
+import { trackClickEvent, getMinutes, howLongAgo } from "~/utilities/helpers"
 // TEMP fix to make ripple work
-import { usePrimeVue } from 'primevue/config'
+import { usePrimeVue } from "primevue/config"
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -15,34 +15,29 @@ const props = defineProps({
   },
   source: {
     type: String,
-    default: 'WNYC',
+    default: "WNYC",
   },
   badgeLabel: {
     type: String,
-    default: 'Local NYC News',
+    default: "Local NYC News",
   },
   bagdeColor: {
     type: String,
-    default: 'var(--night-500)',
+    default: "var(--night-500)",
   },
   badgeBgColor: {
     type: String,
-    default: 'var(--yellow)',
+    default: "var(--yellow)",
   },
 })
 
-const emit = defineEmits(['on-click'])
+const emit = defineEmits(["on-click"])
 
 //console.log('newsData' + props.source, props.newsData)
 </script>
 
 <template>
-  <div
-    v-if="newsData"
-    class="news-card p-ripple"
-    @click="emit('on-click')"
-    v-ripple
-  >
+  <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
     <div>
       <Badge
         :label="props.badgeLabel"
@@ -54,9 +49,7 @@ const emit = defineEmits(['on-click'])
         <PipeData>
           <template #left>{{ props.source }}</template>
           <template #right>
-            <span class="nobreak">{{
-              howLongAgo(props.newsData?.newsdate)
-            }}</span>
+            <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
           </template>
         </PipeData>
       </div>

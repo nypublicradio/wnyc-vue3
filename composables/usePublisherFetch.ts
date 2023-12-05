@@ -1,7 +1,7 @@
 import humps from 'humps'
 
 // transform response data to camelCase
-export function transformResponseData(data) {
+function transformResponseData(data) {
     return humps.camelizeKeys(data)
 }
 
