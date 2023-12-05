@@ -29,7 +29,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["onClick"])
+const emit = defineEmits(["onClick, onSaveFavorite, onDeleteFavorite"])
 
 const toast = useToast()
 
