@@ -75,15 +75,15 @@ const togglePlay = (media, index = null) => {
 
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
-const handleStar = () => {
+const handleStar = await() => {
   if (isFavorited.value) {
-    deleteFavorite(episodeData.value)
+    await deleteFavorite(episodeData.value)
+    getFavoritedItems()
     isFavorited.value = false
-    getFavoritedItems()
   } else {
-    saveFavorite(episodeData.value, mediaTypes.EPISODE)
-    isFavorited.value = true
+    await saveFavorite(episodeData.value, mediaTypes.EPISODE)
     getFavoritedItems()
+    isFavorited.value = true
   }
 }
 const handleDownload = () => {

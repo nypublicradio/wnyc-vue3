@@ -66,14 +66,14 @@ const handleAddToFavorites = async (bucketItem) => {
     slug: props.data?.meta.slug,
   }
   if (isFavorited.value) {
-    isFavorited.value = false
-    getFavoritedItems()
     await deleteFavorite(episode)
+    getFavoritedItems()
+    isFavorited.value = false
     emit("onDeleteFavorite")
   } else {
-    isFavorited.value = true
+    await saveFavorite(episode, props.data?.type)
     getFavoritedItems()
-    saveFavorite(episode, props.data?.type)
+    isFavorited.value = true
     emit("onSaveFavorite")
   }
   toast.add({

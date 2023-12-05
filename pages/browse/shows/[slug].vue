@@ -5,7 +5,12 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 
-import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
+import {
+  deleteFavorite,
+  saveFavorite,
+  checkIsFavorited,
+  getFavoritedItems,
+} from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -38,18 +43,18 @@ const goToEpisodePage = (ep) => {
 const togglePlayMostRecentEpisode = () => {
   console.log("togglePlay")
 }
-const handleStar = () => {
+const handleStar = async () => {
   const show = {
     slug: route.params.slug,
   }
   if (isFavorited.value) {
-    deleteFavorite(show)
+    await deleteFavorite(show)
+    getFavoritedItems()
     isFavorited.value = false
-    getFavoritedItems()
   } else {
-    saveFavorite(show, "show")
-    isFavorited.value = true
+    await saveFavorite(show, "show")
     getFavoritedItems()
+    isFavorited.value = true
   }
 }
 const handleShare = () => {
