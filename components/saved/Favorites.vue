@@ -1,11 +1,12 @@
 <script setup>
 const user = useCurrentUser()
 const filterOptions = ref([
-  { label: "All", value: "all" },
-  { label: "Episodes", value: "episodes" },
-  { label: "Articles", value: "articles" },
-  { label: "Shows", value: "shows" },
-  { label: "Topics", value: "topics" },
+  { label: "All", value: null },
+  { label: "Episodes", value: mediaTypes.EPISODE },
+  { label: "Articles", value: mediaTypes.ARTICLE_PAGE },
+  { label: "Story", value: mediaTypes.STORY },
+  { label: "Segment", value: mediaTypes.SEGMENT },
+  { label: "Shows", value: mediaTypes.SHOW },
 ])
 const selectedFilterOption = ref(filterOptions.value[0])
 </script>
@@ -18,8 +19,7 @@ const selectedFilterOption = ref(filterOptions.value[0])
       placeholder="Select a filter"
       class="w-full mb-3"
     />
-
-    <saved-dynamic-list table="favorited">
+    <saved-dynamic-list table="favorited" :typeFilter="selectedFilterOption.value">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>Favorites will appear here!</h2>
         <div class="max-w-15rem m-auto">

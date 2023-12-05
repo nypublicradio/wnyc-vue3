@@ -44,6 +44,7 @@ const loadComponent = async (item) => {
 }
 
 const getItemsData = async () => {
+  console.log("getting items data")
   if (user.value) {
     const { data, error } = props.typeFilter
       ? await client
@@ -81,6 +82,13 @@ watch(
     getItemsData()
   },
   { immediate: true }
+)
+watch(
+  () => props.typeFilter,
+  () => {
+    console.log("updated filter")
+    getItemsData()
+  }
 )
 </script>
 
