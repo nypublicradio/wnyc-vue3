@@ -125,7 +125,7 @@ watch(show, () => {
       v-if="show"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button v-if="user" rounded text plain @click="handleAddToFavorites">
+      <Button rounded text plain @click="handleAddToFavorites">
         <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 

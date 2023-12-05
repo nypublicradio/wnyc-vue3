@@ -199,7 +199,7 @@ watch(storyData, async () => {
             <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
-            <Button v-if="user" text plain rounded @click="handleAddToFavorites">
+            <Button text plain rounded @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button text plain rounded @click="handleShare()">
