@@ -4,7 +4,7 @@ import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers"
-import { useCommentCounts } from "~/composables/comments"
+import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import CommentsIcon from "~/components/icons/CommentsIcon.vue"
@@ -110,6 +110,8 @@ watch(storyData, async () => {
       `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
     )
   }
+  // get comment count
+  useUpdateCommentCounts([storyData.value])
 })
 </script>
 

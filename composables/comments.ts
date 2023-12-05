@@ -35,8 +35,9 @@ const fetchCommentCounts = async function (commentIds: string[]): Promise<Record
 
 // get comment counts for a list of articles and update the state
 export const useUpdateCommentCounts = async function (articles: ArticlePage[]) {
+    console.log('articles', articles)
     const commentCounts = useCommentCounts()
-    const commentIds = articles.map(article => String(article.legacyId || article.uuid))
+    const commentIds = articles.map(article => String(article?.legacyId || article.uuid))
     const commentCountData = await fetchCommentCounts(commentIds)
     Object.entries(commentCountData).forEach(([key, value]) => {
         commentCounts.value[key] = value
