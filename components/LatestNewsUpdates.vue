@@ -1,9 +1,9 @@
 <script setup>
-import { trackClickEvent, whenTime, getMinutes } from '~/utilities/helpers'
-import { useTogglePlayTrigger, useCurrentEpisode } from '~/composables/states'
+import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers"
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 
 // TEMP fix to make ripple work
-import { usePrimeVue } from 'primevue/config'
+import { usePrimeVue } from "primevue/config"
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -33,11 +33,7 @@ const togglePlay = (media) => {
     currentEpisode.value = media
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent(
-    'Click Tracking - Latest News Updates',
-    media.title,
-    'toggle play'
-  )
+  trackClickEvent("Click Tracking - Latest News Updates", media.title, "toggle play")
 }
 </script>
 
@@ -45,10 +41,7 @@ const togglePlay = (media) => {
   <div>
     <div class="latest-news-updates grid">
       <div class="col-6">
-        <NewsCard
-          :newsData="localNewscast"
-          @onClick="togglePlay(localNewscast)"
-        />
+        <NewsCard :newsData="localNewscast" @onClick="togglePlay(localNewscast)" />
       </div>
 
       <div class="col-6">

@@ -11,7 +11,12 @@ import CommentsIcon from "~/components/icons/CommentsIcon.vue"
 import { cmsSources } from "~/composables/globals"
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
 import { normalizeGalleryPage } from "~/composables/data/galleryPages"
-import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
+import {
+  deleteFavorite,
+  saveFavorite,
+  checkIsFavorited,
+  getFavoritedItems,
+} from "~/utilities/helpers"
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
@@ -60,13 +65,13 @@ const handleComments = () => {
     inline: "start",
   })
 }
-const handleStar = () => {
+const handleStar = async () => {
   if (isFavorited.value) {
-    deleteFavorite(storyData.value)
-    isFavorited.value = false
+    await deleteFavorite(storyData.value)
     getFavoritedItems()
+    isFavorited.value = false
   } else {
-    saveFavorite(storyData.value, storyData.value.type)
+    await saveFavorite(storyData.value, storyData.value.type)
     getFavoritedItems()
     isFavorited.value = true
   }

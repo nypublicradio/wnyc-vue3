@@ -43,20 +43,20 @@ onMounted(() => {
     expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
 })
 
-const handleAddToFavorites = () => {
+const handleAddToFavorites = async () => {
   console.log(
     "AudioPlayerExpanded handleAddToFavorites currentEpisode",
     currentEpisode.value
   )
 
   if (isFavorited.value) {
-    deleteFavorite(currentEpisode.value)
+    await deleteFavorite(currentEpisode.value)
+    getFavoritedItems()
     isFavorited.value = false
-    getFavoritedItems()
   } else {
-    saveFavorite(currentEpisode.value, currentEpisode.value.type)
-    isFavorited.value = true
+    await saveFavorite(currentEpisode.value, currentEpisode.value.type)
     getFavoritedItems()
+    isFavorited.value = true
   }
 
   toast.add({
@@ -183,18 +183,21 @@ const getDotMenuItems = () => {
           },
         ]
       : [
-          {
-            label: "Favorite Episode",
-            customIcon: StarIcon,
-            active: isFavorited.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleAddToFavorites()
-            },
-          },
+          ...(!currentEpisode.value.hideFavorite
+            ? [
+                {
+                  label: "Favorite Episode",
+                  customIcon: StarIcon,
+                  active: isFavorited.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleAddToFavorites()
+                  },
+                },
+              ]
+            : []),
           {
             label: "Download",
-            //icon: 'pi pi-google',
             customIcon: DownloadIcon,
             title: currentEpisode.value.title,
             command: () => {
@@ -309,7 +312,13 @@ console.log("currentEpisode = ", currentEpisode.value)
         </Button>
       </div>
       <div v-else class="flex gap-3">
-        <Button text severity="secondary" rounded @click="handleAddToFavorites">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          @click="handleAddToFavorites"
+          v-if="!currentEpisode.hideFavorite"
+        >
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
         <Button text severity="secondary" rounded @click="handleDownload">

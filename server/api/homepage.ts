@@ -37,6 +37,7 @@ const getLocalNewscast = async () => {
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
 		resData.attributes.cmsSource = cmsSources.PUBLISHER;
+		resData.attributes.hideFavorite = true;
 		return resData.attributes;
 	} catch (e) {
 		////console.log(e);
@@ -51,7 +52,7 @@ const getNationalNewscast = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
-		console.log('resData = ', resData);
+		//console.log('resData = ', resData);
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
 		//Fetch the mp3 last modified date
@@ -69,6 +70,7 @@ const getNationalNewscast = async () => {
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
 		resData.attributes.cmsSource = cmsSources.PUBLISHER;
+		resData.attributes.hideFavorite = true;
 		return resData.attributes;
 	} catch (e) {
 		////console.log(e);
@@ -105,6 +107,7 @@ const getNYCNowNewscast = async () => {
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
 		resData.attributes.cmsSource = cmsSources.PUBLISHER;
+		resData.attributes.hideFavorite = true;
 		return resData.attributes;
 	} catch (e) {
 		//console.log(e);

@@ -1,9 +1,26 @@
 <script setup>
-  const user = useCurrentUser()
+const user = useCurrentUser()
+const filterOptions = ref([
+  { label: "All", value: null },
+  { label: "Episodes", value: mediaTypes.EPISODE },
+  {
+    label: "Articles",
+    value: [mediaTypes.ARTICLE_PAGE, mediaTypes.STORY, mediaTypes.SEGMENT],
+  },
+  { label: "Shows", value: mediaTypes.SHOW },
+])
+const selectedFilterOption = ref(filterOptions.value[0])
 </script>
 <template>
   <section v-if="user" class="favorites">
-    <saved-dynamic-list table="favorited">
+    <Dropdown
+      v-model="selectedFilterOption"
+      :options="filterOptions"
+      optionLabel="label"
+      placeholder="Select a filter"
+      class="mb-2 -ml-3"
+    />
+    <saved-dynamic-list table="favorited" :typeFilter="selectedFilterOption.value">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>Favorites will appear here!</h2>
         <div class="max-w-15rem m-auto">
@@ -26,12 +43,22 @@
       </div>
     </saved-dynamic-list>
   </section>
-  <section v-else class="favorites"> 
-    You must be logged in to see your favorites.
-  </section>
+  <section v-else class="favorites">You must be logged in to see your favorites.</section>
 </template>
 
 <style lang="scss" scoped>
 .favorites {
+  .p-dropdown {
+    border: none;
+  }
+}
+</style>
+<style lang="scss">
+.favorites {
+  .p-dropdown {
+    .p-dropdown-label {
+      padding-right: 0 !important;
+    }
+  }
 }
 </style>

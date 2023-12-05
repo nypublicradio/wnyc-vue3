@@ -11,7 +11,12 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
+import {
+  deleteFavorite,
+  saveFavorite,
+  checkIsFavorited,
+  getFavoritedItems,
+} from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
 
 const config = useRuntimeConfig()
@@ -75,15 +80,15 @@ const togglePlay = (media, index = null) => {
 
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
-const handleStar = () => {
+const handleStar = async () => {
   if (isFavorited.value) {
-    deleteFavorite(episodeData.value)
+    await deleteFavorite(episodeData.value)
+    getFavoritedItems()
     isFavorited.value = false
-    getFavoritedItems()
   } else {
-    saveFavorite(episodeData.value, mediaTypes.EPISODE)
-    isFavorited.value = true
+    await saveFavorite(episodeData.value, mediaTypes.EPISODE)
     getFavoritedItems()
+    isFavorited.value = true
   }
 }
 const handleDownload = () => {

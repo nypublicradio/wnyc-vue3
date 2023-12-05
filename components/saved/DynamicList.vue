@@ -5,7 +5,7 @@ const props = defineProps({
     default: "favorited",
   },
   typeFilter: {
-    type: String,
+    type: [String, Array],
     default: null,
   },
 })
@@ -24,6 +24,10 @@ const loadComponent = async (item) => {
         return "EpisodeItem"
       case "story":
         return "StoryItem"
+      case "article_page":
+        return "StoryItem"
+      case "segment":
+        return "StoryItem"
       case "live":
         return "LiveItem"
       default:
@@ -41,15 +45,28 @@ const loadComponent = async (item) => {
   )
 }
 
+const getFilteredItemsData = computed(() => {
+  let typeFilterCondition = ""
+  if (Array.isArray(props.typeFilter)) {
+    typeFilterCondition = props.typeFilter.map((filter) => `type.eq.${filter}`).join(",")
+  } else {
+    typeFilterCondition = `type.eq.${props.typeFilter}`
+  }
+
+  let query = client
+    .from(props.table)
+    .select("*")
+    .eq("uid", user.value.id)
+    .or(typeFilterCondition)
+    .order("created_at", { ascending: false })
+
+  return query
+})
+
 const getItemsData = async () => {
   if (user.value) {
     const { data, error } = props.typeFilter
-      ? await client
-          .from(props.table)
-          .select("*")
-          .eq("uid", user.value.id)
-          .or(`type.eq.${props.typeFilter}`)
-          .order("created_at", { ascending: false })
+      ? await getFilteredItemsData.value
       : await client
           .from(props.table)
           .select("*")
@@ -79,6 +96,12 @@ watch(
     getItemsData()
   },
   { immediate: true }
+)
+watch(
+  () => props.typeFilter,
+  () => {
+    getItemsData()
+  }
 )
 </script>
 

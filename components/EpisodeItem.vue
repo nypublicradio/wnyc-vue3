@@ -8,8 +8,12 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { deleteFavorite, saveFavorite, checkIsFavorited, getFavoritedItems } from "~/utilities/helpers"
-
+import {
+  deleteFavorite,
+  saveFavorite,
+  checkIsFavorited,
+  getFavoritedItems,
+} from "~/utilities/helpers"
 
 const toast = useToast()
 
@@ -62,14 +66,14 @@ const handleAddToFavorites = async (bucketItem) => {
     slug: props.data?.meta.slug,
   }
   if (isFavorited.value) {
-    isFavorited.value = false
-    getFavoritedItems()
     await deleteFavorite(episode)
+    getFavoritedItems()
+    isFavorited.value = false
     emit("onDeleteFavorite")
   } else {
-    isFavorited.value = true
+    await saveFavorite(episode, props.data?.type)
     getFavoritedItems()
-    saveFavorite(episode, props.data?.type)
+    isFavorited.value = true
     emit("onSaveFavorite")
   }
   toast.add({
@@ -137,7 +141,7 @@ const hasAudio = computed(() => {
   )
 })
 
-//console.log("EpisodeItem =", props.data)
+console.log("EpisodeItem =", props.data)
 </script>
 
 <template>
@@ -198,6 +202,7 @@ const hasAudio = computed(() => {
     </div>
 
     <DotMenu
+      v-if="!props.saved"
       :menuItems="getDotMenuItems(props.data)"
       label=""
       @changeEmit="onMenuChange"
@@ -230,6 +235,15 @@ const hasAudio = computed(() => {
         </div>
       </template>
     </DotMenu>
+    <Button v-else text plain rounded class="flex-none">
+      <template #icon>
+        <StarIcon
+          class="h-2rem"
+          :active="isFavorited"
+          @click="handleAddToFavorites(bucketItem)"
+        />
+      </template>
+    </Button>
   </div>
 </template>
 

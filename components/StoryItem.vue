@@ -1,8 +1,17 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VCard from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue"
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 import { cmsSources } from "~/composables/globals"
-import { trackClickEvent, whenTime } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  whenTime,
+  deleteFavorite,
+  saveFavorite,
+  getFavoritedItems,
+  checkIsFavorited,
+} from "~/utilities/helpers"
+
 import { usePrimeVue } from "primevue/config"
 
 const props = defineProps({
@@ -22,11 +31,19 @@ const props = defineProps({
 
 const emit = defineEmits(["onClick"])
 
-//console.log(props.article)
+const toast = useToast()
+
+//console.log("data = ", props.data)
 // TEMP fix to make ripple work
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
+})
+
+// check if item is already favorited
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(props.data?.slug)
 })
 
 const onCardClick = () => {
@@ -39,18 +56,48 @@ const onCardClick = () => {
   })
 }
 
-console.log("StoryItem =", props.data)
+const handleAddToFavorites = async (bucketItem) => {
+  console.log("favorite buketItem =", bucketItem)
+  const episode = {
+    cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
+    id: props.data?.id,
+    slug: props.data?.meta.slug,
+  }
+  if (isFavorited.value) {
+    await deleteFavorite(episode)
+    getFavoritedItems()
+    isFavorited.value = false
+    emit("onDeleteFavorite")
+  } else {
+    await saveFavorite(episode, props.data?.type)
+    getFavoritedItems()
+    isFavorited.value = true
+    emit("onSaveFavorite")
+  }
+  toast.add({
+    severity: "info",
+    summary: "Updated your favorites.",
+    life: 3000,
+  })
+  trackClickEvent(
+    "Click Tracking - Add/remove from favorites",
+    "Episode Item",
+    bucketItem.title
+  )
+}
+
+//console.log("StoryItem =", props.data)
 </script>
 <template>
-  <div class="story-card">
+  <div class="story-card flex">
     <VCard
       v-if="props.data"
       v-ripple
-      class="p-ripple"
+      class="p-ripple w-full"
       :src="
         props.data.cmsSource === cmsSources.WAGTAIL
           ? String(props.data.image.id)
-          : props.data.image?.template
+          : props.data.image?.template ?? props.data.image
       "
       :title="props.data.title"
       :loading="index > 1 ? 'lazy' : 'eager'"
@@ -64,8 +111,8 @@ console.log("StoryItem =", props.data)
           ? props.data.image.height
           : props.data.image.h
       "
-      :width="116"
-      :height="116"
+      :width="props.saved ? 72 : 116"
+      :height="props.saved ? 72 : 116"
       :ratio="[1, 1]"
       @click.prevent="onCardClick"
       @title-click="
@@ -91,6 +138,15 @@ console.log("StoryItem =", props.data)
         </div>
       </template>
     </VCard>
+    <Button v-if="saved" text plain rounded class="flex-none">
+      <template #icon>
+        <StarIcon
+          class="h-2rem"
+          :active="isFavorited"
+          @click="handleAddToFavorites(bucketItem)"
+        />
+      </template>
+    </Button>
   </div>
 </template>
 

@@ -762,7 +762,7 @@ export const checkIsFavorited = async (slug: string) => {
   if (user.value) {
     const favorites = useCurrentUserFavorites()
     if (favorites.value) {
-      const result = favorites.value.find((item) => item.slug === slug)
+      const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
       return result ? true : false
     }
   }
