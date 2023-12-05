@@ -44,6 +44,9 @@ export const useForgotPasswordSideBar = () => useState('useForgotPasswordSideBar
 // edit profile sidebar state
 export const useEditProfileSideBar = () => useState('useEditProfileSideBar', () => false)
 
+// create an account or log in bottom sidebar state
+export const useAccountPromptSideBar = () => useState('useAccountPromptSideBar', () => false)
+
 
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
@@ -114,11 +117,11 @@ const skipBackTrigger = false
 export const useSkipBackTrigger = () => useState('useSkipBackTrigger', () => skipBackTrigger)
 
 
-const playerSeek = {bool:false, time:20}
+const playerSeek = { bool: false, time: 20 }
 /**
  * Global state to trigger the skip back.
  */
-export const usePlayerSeek = () => useState('usePlayerSeek', (bool,time) => playerSeek)
+export const usePlayerSeek = () => useState('usePlayerSeek', (bool, time) => playerSeek)
 
 /**
  * Global var for the height of the audio player

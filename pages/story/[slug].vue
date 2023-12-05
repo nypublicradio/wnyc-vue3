@@ -18,11 +18,14 @@ import {
   getFavoritedItems,
 } from "~/utilities/helpers"
 
+import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
 const router = useRouter()
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 const { data: storyData } = useFetch(
@@ -66,25 +69,29 @@ const handleComments = () => {
   })
 }
 const handleAddToFavorites = async () => {
-  if (isFavorited.value) {
-    await deleteFavorite(storyData.value)
-    getFavoritedItems()
-    isFavorited.value = false
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(storyData.value)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(storyData.value, storyData.value.type)
+      getFavoritedItems()
+      isFavorited.value = true
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Story Page",
+      storyData.value.title
+    )
   } else {
-    await saveFavorite(storyData.value, storyData.value.type)
-    getFavoritedItems()
-    isFavorited.value = true
+    accountPromptSideBar.value = true
   }
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Story Page",
-    storyData.value.title
-  )
 }
 const handleShare = () => {
   console.log("handleShare")

@@ -12,6 +12,7 @@ import {
   checkIsFavorited,
   getFavoritedItems,
 } from "~/utilities/helpers"
+import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -30,6 +31,7 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -45,28 +47,32 @@ const togglePlayMostRecentEpisode = () => {
   console.log("togglePlay")
 }
 const handleAddToFavorites = async () => {
-  const show = {
-    slug: route.params.slug,
-  }
-  if (isFavorited.value) {
-    await deleteFavorite(show)
-    getFavoritedItems()
-    isFavorited.value = false
+  if (user.value) {
+    const show = {
+      slug: route.params.slug,
+    }
+    if (isFavorited.value) {
+      await deleteFavorite(show)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(show, "show")
+      getFavoritedItems()
+      isFavorited.value = true
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Shows Page",
+      props.data?.title
+    )
   } else {
-    await saveFavorite(show, "show")
-    getFavoritedItems()
-    isFavorited.value = true
+    accountPromptSideBar.value = true
   }
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Shows Page",
-    props.data?.title
-  )
 }
 const handleShare = () => {
   console.log("handleShare")

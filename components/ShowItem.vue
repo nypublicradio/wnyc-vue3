@@ -10,6 +10,8 @@ import {
   getFavoritedItems,
 } from "~/utilities/helpers"
 
+import { useAccountPromptSideBar } from "~/composables/states"
+
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -18,7 +20,7 @@ defineExpose({
 const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
 
 const toast = useToast()
-
+const accountPromptSideBar = useAccountPromptSideBar()
 const props = defineProps({
   data: {
     type: Object,
@@ -41,27 +43,31 @@ const user = useCurrentUser()
 //console.log("props.data = ", props.data);
 // add item to favorites
 const handleAddToFavorites = async () => {
-  if (isFavorited.value) {
-    await deleteFavorite(props.data)
-    getFavoritedItems()
-    isFavorited.value = false
-    emit("onDeleteFavorite")
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(props.data)
+      getFavoritedItems()
+      isFavorited.value = false
+      emit("onDeleteFavorite")
+    } else {
+      await saveFavorite(props.data, props.data?.type)
+      getFavoritedItems()
+      isFavorited.value = true
+      emit("onSaveFavorite")
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Show Item",
+      props.data?.title
+    )
   } else {
-    await saveFavorite(props.data, props.data?.type)
-    getFavoritedItems()
-    isFavorited.value = true
-    emit("onSaveFavorite")
+    accountPromptSideBar.value = true
   }
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Show Item",
-    props.data?.title
-  )
 }
 </script>
 

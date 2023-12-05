@@ -13,7 +13,11 @@ import {
   checkIsFavorited,
   getFavoritedItems,
 } from "~/utilities/helpers"
-import { useCurrentEpisode } from "~/composables/states"
+import {
+  useCurrentEpisode,
+  useCurrentUser,
+  useAccountPromptSideBar,
+} from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -29,7 +33,9 @@ const toast = useToast()
 const emit = defineEmits(["close-panel"])
 
 const currentEpisode = useCurrentEpisode()
+const user = useCurrentUser()
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
 
@@ -44,31 +50,30 @@ onMounted(() => {
 })
 
 const handleAddToFavorites = async () => {
-  console.log(
-    "AudioPlayerExpanded handleAddToFavorites currentEpisode",
-    currentEpisode.value
-  )
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(currentEpisode.value)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(currentEpisode.value, currentEpisode.value.type)
+      getFavoritedItems()
+      isFavorited.value = true
+    }
 
-  if (isFavorited.value) {
-    await deleteFavorite(currentEpisode.value)
-    getFavoritedItems()
-    isFavorited.value = false
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Expanded Audio Player",
+      currentEpisode.value.title
+    )
   } else {
-    await saveFavorite(currentEpisode.value, currentEpisode.value.type)
-    getFavoritedItems()
-    isFavorited.value = true
+    accountPromptSideBar.value = true
   }
-
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
 }
 
 const handleDownload = () => {

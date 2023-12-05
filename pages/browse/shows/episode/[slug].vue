@@ -7,7 +7,12 @@ import {
   getDate,
   saveRecentlyPlayed,
 } from "~/utilities/helpers"
-import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
+import {
+  useTogglePlayTrigger,
+  useCurrentEpisode,
+  useCurrentUser,
+  useAccountPromptSideBar,
+} from "~/composables/states"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -36,6 +41,7 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -90,6 +96,33 @@ const handleShare = () => {
   console.log("handleShare")
 }
 
+const handleAddToFavorites = async (bucketItem) => {
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(bucketItem)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(bucketItem, mediaTypes.EPISODE)
+      getFavoritedItems()
+      isFavorited.value = true
+    }
+
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Episode Page",
+      bucketItem.title
+    )
+  } else {
+    accountPromptSideBar.value = true
+  }
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -134,29 +167,6 @@ const getDotMenuItems = (bucketItem) => {
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e.value.command()
-}
-
-const handleAddToFavorites = async (bucketItem) => {
-  if (isFavorited.value) {
-    await deleteFavorite(bucketItem)
-    getFavoritedItems()
-    isFavorited.value = false
-  } else {
-    await saveFavorite(bucketItem, mediaTypes.EPISODE)
-    getFavoritedItems()
-    isFavorited.value = true
-  }
-
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Episode Page",
-    bucketItem.title
-  )
 }
 
 watch(episode, () => {

@@ -1,18 +1,20 @@
 <script setup>
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent } from "~/utilities/helpers"
 import {
   useSettingSideBar,
   useLoginSideBar,
   useSignupSideBar,
   useForgotPasswordSideBar,
   useEditProfileSideBar,
-} from '~/composables/states'
+  useAccountPromptSideBar,
+} from "~/composables/states"
 
 const settingsSideBar = useSettingSideBar()
 const loginSideBar = useLoginSideBar()
 const signinSideBar = useSignupSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
 const editProfileSideBar = useEditProfileSideBar()
+const accountPromptSideBar = useAccountPromptSideBar()
 </script>
 
 <template>
@@ -114,6 +116,25 @@ const editProfileSideBar = useEditProfileSideBar()
       "
     >
       <EditProfile />
+    </Sidebar>
+    <Sidebar
+      v-model:visible="accountPromptSideBar"
+      :baseZIndex="10003"
+      position="bottom"
+      class="w-full hideX h-auto"
+      blockScroll
+      id="account-prompt-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Account Prompt Sidebar Close Button',
+            'Account Prompt Sidebar',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <AccountPromptSideBar />
     </Sidebar>
   </div>
 </template>
