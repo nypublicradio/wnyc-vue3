@@ -18,11 +18,14 @@ import {
   getFavoritedItems,
 } from "~/utilities/helpers"
 
+import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
 const router = useRouter()
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 const { data: storyData } = useFetch(
@@ -65,15 +68,29 @@ const handleComments = () => {
     inline: "start",
   })
 }
-const handleStar = async () => {
-  if (isFavorited.value) {
-    await deleteFavorite(storyData.value)
-    getFavoritedItems()
-    isFavorited.value = false
+const handleAddToFavorites = async () => {
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(storyData.value)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(storyData.value, storyData.value.type)
+      getFavoritedItems()
+      isFavorited.value = true
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Story Page",
+      storyData.value.title
+    )
   } else {
-    await saveFavorite(storyData.value, storyData.value.type)
-    getFavoritedItems()
-    isFavorited.value = true
+    accountPromptSideBar.value = true
   }
 }
 const handleShare = () => {
@@ -182,7 +199,7 @@ watch(storyData, async () => {
             <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
-            <Button v-if="user" text plain rounded @click="handleStar()">
+            <Button text plain rounded @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button text plain rounded @click="handleShare()">

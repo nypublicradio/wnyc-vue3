@@ -1,4 +1,5 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import {
   getMinutes,
@@ -6,7 +7,12 @@ import {
   getDate,
   saveRecentlyPlayed,
 } from "~/utilities/helpers"
-import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
+import {
+  useTogglePlayTrigger,
+  useCurrentEpisode,
+  useCurrentUser,
+  useAccountPromptSideBar,
+} from "~/composables/states"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -22,6 +28,7 @@ import { mediaTypes } from "~/composables/globals"
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
@@ -34,6 +41,7 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -80,22 +88,39 @@ const togglePlay = (media, index = null) => {
 
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
-const handleStar = async () => {
-  if (isFavorited.value) {
-    await deleteFavorite(episodeData.value)
-    getFavoritedItems()
-    isFavorited.value = false
-  } else {
-    await saveFavorite(episodeData.value, mediaTypes.EPISODE)
-    getFavoritedItems()
-    isFavorited.value = true
-  }
-}
+
 const handleDownload = () => {
   console.log("handleDownload")
 }
 const handleShare = () => {
   console.log("handleShare")
+}
+
+const handleAddToFavorites = async (bucketItem) => {
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(bucketItem)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(bucketItem, mediaTypes.EPISODE)
+      getFavoritedItems()
+      isFavorited.value = true
+    }
+
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Episode Page",
+      bucketItem.title
+    )
+  } else {
+    accountPromptSideBar.value = true
+  }
 }
 
 // set the items for the Dot menu
@@ -142,21 +167,6 @@ const getDotMenuItems = (bucketItem) => {
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e.value.command()
-}
-
-const handleAddToFavorites = (bucketItem) => {
-  handleStar()
-  // update SB and LS with new state
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Expanded Audio Player",
-    bucketItem.title
-  )
 }
 
 watch(episode, () => {
@@ -235,12 +245,11 @@ watch(episode, () => {
           </div>
           <div class="flex gap-3">
             <Button
-              v-if="user"
               class="w-2rem h-2rem"
               text
               plain
               rounded
-              @click="handleStar"
+              @click="handleAddToFavorites(episodeData)"
             >
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>

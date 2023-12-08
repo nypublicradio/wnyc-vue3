@@ -12,6 +12,8 @@ import {
   checkIsFavorited,
 } from "~/utilities/helpers"
 
+import { useAccountPromptSideBar } from "~/composables/states"
+
 import { usePrimeVue } from "primevue/config"
 
 const props = defineProps({
@@ -29,10 +31,11 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["onClick"])
+const emit = defineEmits(["onClick, onSaveFavorite, onDeleteFavorite"])
 
 const toast = useToast()
 
+const accountPromptSideBar = useAccountPromptSideBar()
 //console.log("data = ", props.data)
 // TEMP fix to make ripple work
 const $primevue = usePrimeVue()
@@ -56,34 +59,37 @@ const onCardClick = () => {
   })
 }
 
-const handleAddToFavorites = async (bucketItem) => {
-  console.log("favorite buketItem =", bucketItem)
-  const episode = {
-    cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
-    id: props.data?.id,
-    slug: props.data?.meta.slug,
-  }
-  if (isFavorited.value) {
-    await deleteFavorite(episode)
-    getFavoritedItems()
-    isFavorited.value = false
-    emit("onDeleteFavorite")
+const handleAddToFavorites = async () => {
+  if (user.value) {
+    const episode = {
+      cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
+      id: props.data?.id,
+      slug: props.data?.meta.slug,
+    }
+    if (isFavorited.value) {
+      await deleteFavorite(episode)
+      getFavoritedItems()
+      isFavorited.value = false
+      emit("onDeleteFavorite")
+    } else {
+      await saveFavorite(episode, props.data?.type)
+      getFavoritedItems()
+      isFavorited.value = true
+      emit("onSaveFavorite")
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Story Item",
+      props.data?.title
+    )
   } else {
-    await saveFavorite(episode, props.data?.type)
-    getFavoritedItems()
-    isFavorited.value = true
-    emit("onSaveFavorite")
+    accountPromptSideBar.value = true
   }
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Episode Item",
-    bucketItem.title
-  )
 }
 
 //console.log("StoryItem =", props.data)
@@ -140,11 +146,7 @@ const handleAddToFavorites = async (bucketItem) => {
     </VCard>
     <Button v-if="saved" text plain rounded class="flex-none">
       <template #icon>
-        <StarIcon
-          class="h-2rem"
-          :active="isFavorited"
-          @click="handleAddToFavorites(bucketItem)"
-        />
+        <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>
     </Button>
   </div>

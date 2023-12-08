@@ -1,4 +1,5 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -11,10 +12,11 @@ import {
   checkIsFavorited,
   getFavoritedItems,
 } from "~/utilities/helpers"
+import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-
+const toast = useToast()
 const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`)
 
 const pagination = ref(show?.value?.episodes?.meta ?? null)
@@ -29,6 +31,7 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
+const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -43,18 +46,32 @@ const goToEpisodePage = (ep) => {
 const togglePlayMostRecentEpisode = () => {
   console.log("togglePlay")
 }
-const handleStar = async () => {
-  const show = {
-    slug: route.params.slug,
-  }
-  if (isFavorited.value) {
-    await deleteFavorite(show)
-    getFavoritedItems()
-    isFavorited.value = false
+const handleAddToFavorites = async () => {
+  if (user.value) {
+    const show = {
+      slug: route.params.slug,
+    }
+    if (isFavorited.value) {
+      await deleteFavorite(show)
+      getFavoritedItems()
+      isFavorited.value = false
+    } else {
+      await saveFavorite(show, "show")
+      getFavoritedItems()
+      isFavorited.value = true
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Shows Page",
+      props.data?.title
+    )
   } else {
-    await saveFavorite(show, "show")
-    getFavoritedItems()
-    isFavorited.value = true
+    accountPromptSideBar.value = true
   }
 }
 const handleShare = () => {
@@ -108,7 +125,7 @@ watch(show, () => {
       v-if="show"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button v-if="user" rounded text plain @click="handleStar">
+      <Button rounded text plain @click="handleAddToFavorites">
         <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 

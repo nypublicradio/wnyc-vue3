@@ -1,4 +1,5 @@
 <script setup>
+import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -9,6 +10,8 @@ import {
   getFavoritedItems,
 } from "~/utilities/helpers"
 
+import { useAccountPromptSideBar } from "~/composables/states"
+
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
@@ -16,6 +19,8 @@ defineExpose({
 
 const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
 
+const toast = useToast()
+const accountPromptSideBar = useAccountPromptSideBar()
 const props = defineProps({
   data: {
     type: Object,
@@ -26,7 +31,7 @@ const props = defineProps({
     default: false,
   },
 })
-const route = useRoute()
+
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -37,20 +42,33 @@ const user = useCurrentUser()
 
 //console.log("props.data = ", props.data);
 // add item to favorites
-const addFavorite = async () => {
-  await saveFavorite(props.data, props.data?.type)
-  getFavoritedItems()
-  isFavorited.value = true
-  emit("onSaveFavorite")
+const handleAddToFavorites = async () => {
+  if (user.value) {
+    if (isFavorited.value) {
+      await deleteFavorite(props.data)
+      getFavoritedItems()
+      isFavorited.value = false
+      emit("onDeleteFavorite")
+    } else {
+      await saveFavorite(props.data, props.data?.type)
+      getFavoritedItems()
+      isFavorited.value = true
+      emit("onSaveFavorite")
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Show Item",
+      props.data?.title
+    )
+  } else {
+    accountPromptSideBar.value = true
+  }
 }
-// remove item from favorites
-const removeFavorite = async () => {
-  await deleteFavorite(props.data)
-  getFavoritedItems()
-  isFavorited.value = false
-  emit("onDeleteFavorite")
-}
-//console.log("showItem =", props.data)
 </script>
 
 <template>
@@ -73,13 +91,9 @@ const removeFavorite = async () => {
         </p>
       </div>
     </div>
-    <Button v-if="user" text plain rounded class="flex-none">
+    <Button text plain rounded class="flex-none">
       <template #icon>
-        <StarIcon
-          class="h-2rem"
-          :active="isFavorited"
-          @click="isFavorited ? removeFavorite() : addFavorite()"
-        />
+        <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>
     </Button>
   </div>

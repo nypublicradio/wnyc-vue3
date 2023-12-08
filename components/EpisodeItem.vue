@@ -13,7 +13,13 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  trackClickEvent,
 } from "~/utilities/helpers"
+import {
+  useCurrentEpisode,
+  useCurrentUser,
+  useAccountPromptSideBar,
+} from "~/composables/states"
 
 const toast = useToast()
 
@@ -38,6 +44,8 @@ const props = defineProps({
     default: false,
   },
 })
+const accountPromptSideBar = useAccountPromptSideBar()
+const user = useCurrentUser()
 
 // check if item is already favorited
 const isFavorited = ref(false)
@@ -59,33 +67,36 @@ watch(
 )
 
 const handleAddToFavorites = async (bucketItem) => {
-  console.log("favorite buketItem =", bucketItem)
-  const episode = {
-    cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
-    id: props.data?.id,
-    slug: props.data?.meta.slug,
-  }
-  if (isFavorited.value) {
-    await deleteFavorite(episode)
-    getFavoritedItems()
-    isFavorited.value = false
-    emit("onDeleteFavorite")
+  if (user.value) {
+    const episode = {
+      cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
+      id: props.data?.id,
+      slug: props.data?.meta.slug,
+    }
+    if (isFavorited.value) {
+      await deleteFavorite(episode)
+      getFavoritedItems()
+      isFavorited.value = false
+      emit("onDeleteFavorite")
+    } else {
+      await saveFavorite(episode, props.data?.type)
+      getFavoritedItems()
+      isFavorited.value = true
+      emit("onSaveFavorite")
+    }
+    toast.add({
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    })
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Episode Item",
+      bucketItem.title
+    )
   } else {
-    await saveFavorite(episode, props.data?.type)
-    getFavoritedItems()
-    isFavorited.value = true
-    emit("onSaveFavorite")
+    accountPromptSideBar.value = true
   }
-  toast.add({
-    severity: "info",
-    summary: "Updated your favorites.",
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Add/remove from favorites",
-    "Episode Item",
-    bucketItem.title
-  )
 }
 
 // set the items for the Dot menu
