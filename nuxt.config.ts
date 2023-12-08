@@ -125,6 +125,7 @@ export default defineNuxtConfig({
     '~/plugins/primevue.js'
   ],
 
+
   runtimeConfig: {
     public: {
       SENTRY_DSN: process.env['SENTRY_DSN'],
