@@ -40,17 +40,17 @@ onUnmounted(() => {
         <h1>{{ topic }}</h1>
       </div>
     </section>
+    <section class="shows flex flex-column gap-3">
+      <ShowItem
+        v-if="categoryData"
+        v-for="show in categoryData"
+        :data="show"
+        :key="show.title"
+        @onClick="goToShowPage(show)"
+      />
+      <skeleton-show-item v-else v-for="(show, index) in 27" :key="`sk1-${index}`" />
+    </section>
   </div>
-  <section class="shows flex flex-column gap-3">
-    <ShowItem
-      v-if="categoryData"
-      v-for="show in categoryData"
-      :data="show"
-      :key="show.title"
-      @onClick="goToShowPage(show)"
-    />
-    <skeleton-show-item v-else v-for="(show, index) in 27" :key="`sk1-${index}`" />
-  </section>
 </template>
 
 <style lang="scss">
