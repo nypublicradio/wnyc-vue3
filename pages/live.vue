@@ -245,7 +245,8 @@ html {
       padding-left: 0 !important;
     }
     .station-holder {
-      :after {
+      position: relative;
+      &:after {
         transition: bottom 0.5s;
         -webkit-transition: bottom 0.5s;
         content: "";
@@ -262,8 +263,8 @@ html {
         z-index: -1;
       }
       &.activestation {
-        :after {
-          bottom: -9px;
+        &:after {
+          bottom: -8px;
         }
       }
       .station-btn {
