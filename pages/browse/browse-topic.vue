@@ -18,7 +18,11 @@ const goToShowPage = (show) => {
   })
 }
 
-//console.log("categoryData = ", categoryData)
+onUnmounted(() => {
+  console.log("unmounted")
+  categoryData.value = null
+  //console.log("categoryData = ", categoryData)
+})
 </script>
 <template>
   <div class="browse-topic-page">
