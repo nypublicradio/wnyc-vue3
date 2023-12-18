@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     const req = event.req
     const url = new URL(req.headers.referer)
     const params = url.searchParams
-    console.log('params: ', params)
+    //console.log('params: ', params)
     try {
         const options = {
             method: 'GET',
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         }
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-        console.log('resData: ', resData)
+        //console.log('resData: ', resData)
         return resData
     } catch (error) {
         console.error('An error occurred:', error.message)
