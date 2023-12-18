@@ -62,7 +62,7 @@ export const useShowTopics = () => useState('showTopics', () => [
     {
         label: 'Science',
         value: 'science',
-        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-science&api_key=ato',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-science&api_key=atom',
         color: 'var(--spanish-orange)',
     },
     {
