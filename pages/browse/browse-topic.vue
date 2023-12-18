@@ -19,9 +19,7 @@ const goToShowPage = (show) => {
 }
 
 onUnmounted(() => {
-  console.log("unmounted")
   categoryData.value = null
-  //console.log("categoryData = ", categoryData)
 })
 </script>
 <template>
