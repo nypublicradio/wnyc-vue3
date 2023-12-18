@@ -33,8 +33,8 @@ const clearSearchField = () => {
 
 const selectTopic = (topic) => {
   router.push({
-    name: "browse-topic",
-    query: { topic: topic.label },
+    path: "browse/browse-topic",
+    query: { topic: topic.label, url: topic.url },
   })
 }
 

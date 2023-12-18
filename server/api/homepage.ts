@@ -3,7 +3,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
-
 const linkMapper = (link: any) => {
 	return { title: link.value.title, url: link.value.url }
 }
@@ -270,6 +269,7 @@ export default defineEventHandler(async (event) => {
 	}
 	const national_newscast = await getNationalNewscast();
 	res.setHeader('Cache-Control', 'maxage=900, stale-while-revalidate');
+
 	return {
 		home_template: homeTemplate,
 		top_stories: topStories,
@@ -278,3 +278,5 @@ export default defineEventHandler(async (event) => {
 		national_newscast: national_newscast,
 	}
 })
+
+

@@ -32,22 +32,44 @@ export const useShowTopics = () => useState('showTopics', () => [
     {
         label: 'Arts & Culture',
         value: 'arts-and-culture',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-arts&api_key=culture',
+        color: 'var(--teal-lake)',
+    },
+    {
+        label: 'News',
+        value: 'news',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-news&api_key=atc',
         color: 'var(--red)',
+    },
+    {
+        label: 'Politics',
+        value: 'politics',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-politics&api_key=poli',
+        color: 'var(--electric-violet)',
     },
     {
         label: 'Tech & Media',
         value: 'tech-and-media',
-        color: 'var(--info)',
-    },
-    {
-        label: 'Local News',
-        value: 'local-news',
-        color: 'var(--purple)',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-techmedia&api_key=otm',
+        color: 'var(--honolulu-blue)',
     },
     {
         label: 'Storytelling',
         value: 'storytelling',
-        color: 'var(--success)',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-storytelling&api_key=story',
+        color: 'var(--berry)',
+    },
+    {
+        label: 'Science',
+        value: 'science',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-science&api_key=atom',
+        color: 'var(--spanish-orange)',
+    },
+    {
+        label: 'Music',
+        value: 'music',
+        url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-music&api_key=csharp',
+        color: 'var(--sea-green',
     },
 ])
 
