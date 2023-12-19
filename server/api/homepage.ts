@@ -223,27 +223,6 @@ const mergeArticles = (articles1: any, articles2: any) => {
 	})
 }
 
-const getMiddleBucket = async () => {
-	try {
-		const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/buckets/wnyc-home-middle`);
-		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
-		//console.log("resData = ", resData)
-		if (resData) {
-			const articles = resData.map((article: any) => {
-				article.cmsSource = cmsSources.PUBLISHER;
-				article.sortDate = article.attributes.publishAt;
-				return normalizeArticlePage(article);
-
-			});
-			return articles;
-		} else {
-			return [];
-		}
-	} catch (e) {
-		//console.log(e);
-	}
-}
-
 /**
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
@@ -252,8 +231,6 @@ export default defineEventHandler(async (event) => {
 	let res = event?.node?.res;
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
-	//TODO: bucket goes away with homeTemplate usage
-	const bucket = await getMiddleBucket();
 	const topStories = mergeArticles(aviary, publisher);
 	const homeTemplate = await getHomeTemplate();
 	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
@@ -273,7 +250,6 @@ export default defineEventHandler(async (event) => {
 	return {
 		home_template: homeTemplate,
 		top_stories: topStories,
-		middle_bucket: bucket,
 		local_newscast: local_newscast,
 		national_newscast: national_newscast,
 	}

@@ -1,27 +1,27 @@
 <script setup>
-import { useUpdateCommentCounts } from '~/composables/comments'
-//onBeforeMount(async () => {
+//import { useUpdateCommentCounts } from "~/composables/comments"
+
 const config = useRuntimeConfig()
 const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
-const bucketItems = ref(pagedata?.value?.middle_bucket ?? null)
+const homeTemplate = ref(pagedata?.value?.home_template ?? null)
 const topStories = ref(pagedata?.value?.top_stories ?? null)
 const localNewscast = ref(pagedata?.value?.local_newscast ?? null)
 const nationalNewscast = ref(pagedata?.value?.national_newscast ?? null)
 
 definePageMeta({
-  layout: 'default',
+  layout: "default",
   layoutTransition: {
-    name: 'login',
+    name: "login",
   },
 })
 useHead({
   bodyAttrs: {
-    class: 'show-header',
+    class: "show-header",
   },
 })
 
 watch(pagedata, () => {
-  bucketItems.value = pagedata.value.middle_bucket
+  homeTemplate.value = pagedata.value.home_template
   topStories.value = pagedata.value.top_stories
   localNewscast.value = pagedata.value.local_newscast
   nationalNewscast.value = pagedata.value.national_newscast
@@ -66,10 +66,14 @@ watch(pagedata, () => {
       <!-- <pre>{{ topStories[0] }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
-    <section>
-      <h2>Featured from WNYC</h2>
-    </section>
-    <!-- <pre class="text-sm">{{ bucketItems?.[0] }}</pre> -->
-    <WNYCFeatured :articles="bucketItems" />
+    <div v-for="section in homeTemplate">
+      <div v-if="section.data.length">
+        <section>
+          <h2>{{ section.title }}</h2>
+        </section>
+        <TopStories v-if="section.componentType === 'default'" :articles="section.data" />
+        <WNYCFeatured else :articles="section.data" />
+      </div>
+    </div>
   </div>
 </template>
