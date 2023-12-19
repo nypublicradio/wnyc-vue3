@@ -5,7 +5,7 @@ $headerHeight: 88px;
 $bottomMenuHeight: 60px;
 $playerHeight: 100px;
 $toolsBreakPoint: 472px;
-$padding: 1.25rem;
+$padding: 1.5rem;
 
 // DS UPDATE
 $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
@@ -20,6 +20,9 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 
     --v-input-switch-slider-size: 1.15rem;
     //--v-input-switch-padding-buffer: 8px;
+
+    --v-caption-bg-color: 17, 17, 17; //#111111
+    --v-caption-bg-color-opacity: 0.9;
 }
 
 // component cssvar theme control and base component overrides

@@ -172,7 +172,7 @@ watch(storyData, async () => {
         </template>
         <template #belowImage>
           <div>
-            <p class="text-right px-3 mt-1 text-xs">
+            <p class="text-left px-4 mt-1 text-xs">
               {{ storyData.image.credit }}
             </p>
           </div>
