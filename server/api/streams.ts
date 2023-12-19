@@ -24,7 +24,7 @@ const getLivestreams = async () => {
         }));
         return humps.camelizeKeys(resData);
     } catch (e) {
-        //console.log(e);
+        console.log(e);
     }
 }
 
@@ -33,6 +33,8 @@ const getLivestreams = async () => {
  * Reachable /api/streams
  */
 export default defineEventHandler(async (event) => {
+    let res = event?.node?.res;
+    res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     const streams = await getLivestreams();
     return streams
 })
