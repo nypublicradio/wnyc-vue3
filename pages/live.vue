@@ -1,9 +1,5 @@
 <script setup>
-import {
-  trackClickEvent,
-  saveRecentlyPlayed,
-  templatizePublisherImageUrl,
-} from "~/utilities/helpers"
+import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
@@ -14,7 +10,7 @@ import {
   useIsEpisodePlaying,
   useIsStreamLoading,
 } from "~/composables/states"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
