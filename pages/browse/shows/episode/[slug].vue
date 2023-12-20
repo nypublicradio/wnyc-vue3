@@ -1,18 +1,8 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import {
-  getMinutes,
-  trackClickEvent,
-  getDate,
-  saveRecentlyPlayed,
-} from "~/utilities/helpers"
-import {
-  useTogglePlayTrigger,
-  useCurrentEpisode,
-  useCurrentUser,
-  useAccountPromptSideBar,
-} from "~/composables/states"
+import { getMinutes, trackClickEvent, getDate, togglePlay } from "~/utilities/helpers"
+import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -27,7 +17,6 @@ import { mediaTypes } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const router = useRouter()
 const toast = useToast()
 const { data: episode } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
@@ -48,45 +37,6 @@ const user = useCurrentUser()
 const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
-}
-
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
-
-// handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
-
-// normalize the bucket item data for the player
-const prepForPlayer = (item, index = null) => {
-  const isSegment = index !== null
-  return {
-    ...item,
-    file: isSegment ? item.audio[index] : item.audio,
-    title: isSegment ? item.segments[index].title : item.title,
-    image: item.image.template,
-    //TODO convert to seconds
-    duration: item.estimatedDuration,
-    details: isSegment ? item.segments[index].tease : item.body,
-    first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
-  }
-}
-
-const togglePlay = (media, index = null) => {
-  if (index === null) {
-    if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = prepForPlayer(media)
-      saveRecentlyPlayed(media, mediaTypes.EPISODE)
-    }
-  } else {
-    // segment
-    if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = prepForPlayer(media, index)
-      saveRecentlyPlayed(media, mediaTypes.EPISODE)
-    }
-  }
-
-  togglePlayTrigger.value = !togglePlayTrigger.value
-
-  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
 
 const handleDownload = () => {

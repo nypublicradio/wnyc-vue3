@@ -50,9 +50,7 @@ const goToEpisodePage = (ep) => {
 }
 
 const togglePlayMostRecentEpisode = () => {
-  console.log("togglePlay", episodes.value[0])
   togglePlay(episodes.value[0])
-  //goToEpisodePage(episodes.value[0])
 }
 const handleAddToFavorites = async () => {
   if (user.value) {

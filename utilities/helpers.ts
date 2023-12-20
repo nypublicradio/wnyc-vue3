@@ -790,6 +790,7 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 export const togglePlay = (media, index = 0) => {
+  console.log('toggle play')
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
 
