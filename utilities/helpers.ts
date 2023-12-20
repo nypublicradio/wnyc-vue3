@@ -544,7 +544,7 @@ export const removeHTMLTags = (str) => {
 // share API
 export const shareAPI = async (content: object) => {
   // get image
-  const img = resizePublisherImageUrl(content.image, 100, 100, 70)
+  const img = resizePublisherImageUrl(content.image, 144, 144, 70)
   const response = await fetch(img);
   const blob = await response.blob();
   const filesArray = [
