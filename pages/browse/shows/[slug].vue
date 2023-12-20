@@ -11,8 +11,13 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  togglePlay,
 } from "~/utilities/helpers"
-import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import {
+  useCurrentUser,
+  useAccountPromptSideBar,
+  useIsEpisodePlaying,
+} from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -33,6 +38,7 @@ watchEffect(async () => {
 
 const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
+const isEpisodePlaying = useIsEpisodePlaying()
 
 // navigate back to home and track it
 const backHome = () => {
@@ -45,7 +51,8 @@ const goToEpisodePage = (ep) => {
 
 const togglePlayMostRecentEpisode = () => {
   console.log("togglePlay", episodes.value[0])
-  goToEpisodePage(episodes.value[0])
+  togglePlay(episodes.value[0])
+  //goToEpisodePage(episodes.value[0])
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
@@ -136,8 +143,12 @@ watch(show, () => {
         rounded
         @click="togglePlayMostRecentEpisode"
       >
-        <template #icon> <PlayIcon /></template>
+        <template #icon>
+          <PauseIcon v-if="isEpisodePlaying" />
+          <PlayIcon v-else />
+        </template>
       </Button>
+
       <Button text plain rounded @click="handleShare">
         <template #icon> <ShareIcon /></template>
       </Button>

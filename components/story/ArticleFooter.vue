@@ -53,7 +53,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article.
             fineprint="Gothamist is funded by sponsors and member donations"
           />
         </div>
-        <div v-if="!isDisableComments" id="comments" class="mb-4 bg-white">
+        <div v-if="!isDisableComments" id="comments" class="mb-4">
           <hr class="black mb-4" />
           <section>
             <story-comments-section :article="props.article" />

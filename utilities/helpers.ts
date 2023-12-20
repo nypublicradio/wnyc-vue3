@@ -11,6 +11,7 @@ import {
   useCurrentUserProfile,
   useLocalUserProfileDefault,
   useCurrentUserFavorites,
+  useTogglePlayTrigger,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
@@ -771,4 +772,41 @@ export const checkIsFavorited = async (slug: string) => {
 
 export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
   saveFavorite(media, typeArg, "recently_viewed")
+}
+
+// normalize the bucket item data for the player
+export const prepForPlayer = (item, index = null) => {
+  const isSegment = index !== null
+  return {
+    ...item,
+    file: isSegment ? item.audio[index] : item.audio,
+    title: isSegment ? item.segments[index].title : item.title,
+    image: item.image.template,
+    //TODO convert to seconds
+    duration: item.estimatedDuration,
+    details: isSegment ? item.segments[index].tease : item.body,
+    first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
+  }
+}
+
+export const togglePlay = (media, index = 0) => {
+  const currentEpisode = useCurrentEpisode()
+  const togglePlayTrigger = useTogglePlayTrigger()
+
+  if (typeof media.audio === "string") {
+    if (currentEpisode.value?.audio !== media.audio) {
+      currentEpisode.value = prepForPlayer(media)
+      saveRecentlyPlayed(media, mediaTypes.EPISODE)
+    }
+  } else {
+    // segment
+    if (currentEpisode.value?.file !== media.audio[index]) {
+      currentEpisode.value = prepForPlayer(media, index)
+      saveRecentlyPlayed(media, mediaTypes.EPISODE)
+    }
+  }
+
+  togglePlayTrigger.value = !togglePlayTrigger.value
+
+  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }

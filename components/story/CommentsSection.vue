@@ -1,4 +1,5 @@
 <script setup>
+import { useCurrentUserProfile } from "~/composables/states"
 const config = useRuntimeConfig()
 
 const props = defineProps({
@@ -7,10 +8,13 @@ const props = defineProps({
     default: null,
   },
 })
+
+const currentUserProfile = useCurrentUserProfile()
+
 // return the tags as a comma separated string for openWeb comments data-article-tags
 const getArticleTagsString = () => {
   const tags = props.article.tags || []
-  return tags.map((tag) => tag.name).join(', ')
+  return tags.map((tag) => tag.name).join(", ")
 }
 const getArticleUrl = () => {
   const url = props.article.url
@@ -20,7 +24,7 @@ useHead({
   script: [
     {
       src: `https://launcher.spot.im/spot/${config.public.OPENWEB_SPOT_ID}`,
-      'data-spotim-module': 'spotim-launcher',
+      "data-spotim-module": "spotim-launcher",
       body: true,
     },
   ],
@@ -30,6 +34,7 @@ useHead({
 <template>
   <div class="comments-section">
     <div
+      :data-theme="currentUserProfile.dark_mode ? 'dark' : 'light'"
       data-spotim-module="conversation"
       :data-post-url="getArticleUrl()"
       :data-article-tags="getArticleTagsString()"
