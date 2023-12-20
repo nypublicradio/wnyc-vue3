@@ -1,7 +1,7 @@
 <script setup>
-import VPerson from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue'
-import { trackClickEvent } from '~/utilities/helpers'
-import { ref } from 'vue'
+import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
+import { trackClickEvent } from "~/utilities/helpers"
+import { ref } from "vue"
 
 const props = defineProps({
   article: {
@@ -13,9 +13,7 @@ const props = defineProps({
 const tags = ref(props.article.tags)
 const isSponsored = ref(props.article?.sponsoredContent || false)
 const isDisableComments = ref(props.article?.disableComments || false)
-const profileData = isSponsored.value
-  ? props.article?.sponsors
-  : props.article.authors
+const profileData = isSponsored.value ? props.article?.sponsors : props.article.authors
 
 // function attached to the emit of the article-tags when clicked
 // const onTagClick = (tag) => {
@@ -55,7 +53,7 @@ const profileData = isSponsored.value
             fineprint="Gothamist is funded by sponsors and member donations"
           />
         </div>
-        <div v-if="!isDisableComments" id="comments" class="mb-4">
+        <div v-if="!isDisableComments" id="comments" class="mb-4 bg-white">
           <hr class="black mb-4" />
           <section>
             <story-comments-section :article="props.article" />
@@ -71,7 +69,7 @@ const profileData = isSponsored.value
   .profile-col {
     flex-grow: 1;
     flex-basis: 0;
-    @include media('<lg') {
+    @include media("<lg") {
       flex: 0 0 auto;
       width: 100%;
     }
