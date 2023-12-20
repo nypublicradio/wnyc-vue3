@@ -44,7 +44,8 @@ const goToEpisodePage = (ep) => {
 }
 
 const togglePlayMostRecentEpisode = () => {
-  console.log("togglePlay")
+  console.log("togglePlay", episodes.value[0])
+  goToEpisodePage(episodes.value[0])
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
@@ -130,12 +131,12 @@ watch(show, () => {
       </Button>
 
       <Button
-        class="w-3rem h-3rem"
+        class="play-btn flex-none"
         severity="secondary"
         rounded
         @click="togglePlayMostRecentEpisode"
       >
-        <template #icon> <PlayIcon class="w-1rem h-1rem" /></template>
+        <template #icon> <PlayIcon /></template>
       </Button>
       <Button text plain rounded @click="handleShare">
         <template #icon> <ShareIcon /></template>
@@ -193,5 +194,14 @@ watch(show, () => {
 
 <style lang="scss">
 .shows-page {
+  .play-btn {
+    width: 50px !important;
+    height: 50px !important;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-left: 5px;
+    }
+  }
 }
 </style>
