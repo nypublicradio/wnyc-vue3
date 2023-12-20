@@ -20,6 +20,7 @@ import { mediaTypeRoutes } from "~/composables/globals.ts"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { ca } from "date-fns/locale"
 import axios from "axios"
+import { remove } from "ionicons/icons"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -531,10 +532,40 @@ function isMobileBrowser() {
   )
 }
 
+export const removeHTMLTags = (str) => {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = str;
+  return tempElement.textContent || tempElement.innerText || '';
+
+  //const doc = new DOMParser().parseFromString(str, 'text/html');
+  //return = doc.body.textContent || '';
+
+}
 // share API
 export const shareAPI = async (content: object) => {
-  if (navigator.canShare(content) && isMobileBrowser()) {
-    await navigator.share(content)
+  // get image
+  const img = resizePublisherImageUrl(content.image, 100, 100, 70)
+  const response = await fetch(img);
+  const blob = await response.blob();
+  const filesArray = [
+    new File(
+      [blob],
+      `${content.id}.jpg`,
+      {
+        type: "image/jpeg",
+        lastModified: new Date().getTime()
+      }
+    )
+  ];
+
+  const shareContent = {
+    title: removeHTMLTags(content.title),
+    text: removeHTMLTags(content.details),
+    url: content.url,
+    files: filesArray,
+  }
+  if (navigator.canShare(shareContent) && isMobileBrowser()) {
+    await navigator.share(shareContent)
     return true
   } else {
     return false
