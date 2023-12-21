@@ -543,27 +543,13 @@ export const removeHTMLTags = (str) => {
 }
 // share API
 export const shareAPI = async (content: object) => {
-  // get image
-  const img = resizePublisherImageUrl(content.image, 144, 144, 70)
-  const response = await fetch(img);
-  const blob = await response.blob();
-  const filesArray = [
-    new File(
-      [blob],
-      `${content.id}.jpg`,
-      {
-        type: "image/jpeg",
-        lastModified: new Date().getTime()
-      }
-    )
-  ];
 
   const shareContent = {
     title: removeHTMLTags(content.title),
     text: removeHTMLTags(content.details),
     url: content.url,
-    files: filesArray,
   }
+  console.log('shareContent = ', shareContent)
   if (navigator.canShare(shareContent) && isMobileBrowser()) {
     await navigator.share(shareContent)
     return true
