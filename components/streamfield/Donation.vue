@@ -1,24 +1,24 @@
 <script setup>
-const emit = defineEmits(['onClick'])
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+const emit = defineEmits(["onClick"])
 </script>
 <template>
   <div class="streamfield-donation p-4 pb-5 my-2">
     <h2 class="mb-3">We rely on your support</h2>
     <p class="mb-3">
-      Donations from listeners are the largest source of WNYC's funding for all
-      the reporting and programs that keep you informed, engaged, and
-      entertained.
+      Donations from listeners are the largest source of WNYC's funding for all the
+      reporting and programs that keep you informed, engaged, and entertained.
     </p>
     <div class="text-center">
       <!-- maybe consider opening in a in app browser -->
-      <nuxt-link
+      <VFlexibleLink
         raw
         to="https://pledge.wnyc.org/support/wnyc?utm_source=wnyc_app&utm_medium=wnyc&utm_campaign=story-donate-button"
         target="_blank"
         @click="emit('onClick')"
       >
         <Button label="Donate" />
-      </nuxt-link>
+      </VFlexibleLink>
     </div>
   </div>
 </template>
