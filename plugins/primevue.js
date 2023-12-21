@@ -25,6 +25,7 @@ import Divider from 'primevue/divider'
 import Message from 'primevue/message'
 import ProgressSpinner from 'primevue/progressspinner'
 import Ripple from 'primevue/ripple'
+import ScrollTop from 'primevue/scrolltop'
 import Slider from 'primevue/slider'
 //import Tooltip from 'primevue/tooltip'
 
@@ -55,6 +56,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('ProgressSpinner', ProgressSpinner)
     nuxtApp.vueApp.component('Dialog', Dialog)
     nuxtApp.vueApp.component('ProgressBar', ProgressBar)
+    nuxtApp.vueApp.component('ScrollTop', ScrollTop)
     nuxtApp.vueApp.component('Slider', Slider)
     // nuxtApp.vueApp.component('Tooltip', Tooltip)
     // nuxtApp.vueApp.directive('tooltip', Tooltip)
