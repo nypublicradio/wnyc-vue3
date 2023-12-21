@@ -542,13 +542,22 @@ export const removeHTMLTags = (str) => {
 
 }
 // share API
-export const shareAPI = async (content: object) => {
+export const shareAPI = async (content: object, componentOfOrigin: string = 'Component of origin not specified') => {
+
+  // DESKTOP sharing is not supported yet
 
   const shareContent = {
     title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details),
+    text: removeHTMLTags(content.details || content.description),
     url: content.url,
   }
+
+  trackClickEvent(
+    "Click Tracking - Share",
+    componentOfOrigin,
+    shareContent.title
+  )
+
   console.log('shareContent = ', shareContent)
   if (navigator.canShare(shareContent) && isMobileBrowser()) {
     await navigator.share(shareContent)

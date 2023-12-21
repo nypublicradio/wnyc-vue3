@@ -91,14 +91,7 @@ const handleDownload = () => {
 }
 
 const handleShare = () => {
-  //console.log("currentEpisode.value = ", currentEpisode.value)
-  // trigger sharing system
-  shareAPI(currentEpisode.value)
-  trackClickEvent(
-    "Click Tracking - Audio share",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
+  shareAPI(currentEpisode.value, "Expanded Audio Player")
 }
 
 const handleAddToQueue = () => {

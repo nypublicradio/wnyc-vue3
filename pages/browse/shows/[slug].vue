@@ -12,6 +12,7 @@ import {
   checkIsFavorited,
   getFavoritedItems,
   togglePlay,
+  shareAPI,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -81,7 +82,7 @@ const handleAddToFavorites = async () => {
   }
 }
 const handleShare = () => {
-  console.log("handleShare")
+  shareAPI(show.value.show, "shows slug")
 }
 
 watch(show, () => {

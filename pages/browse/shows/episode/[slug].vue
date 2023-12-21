@@ -12,6 +12,7 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  shareAPI,
 } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
 
@@ -43,7 +44,7 @@ const handleDownload = () => {
   console.log("handleDownload")
 }
 const handleShare = () => {
-  console.log("handleShare")
+  shareAPI(episodeData.value, "episode slug")
 }
 
 const handleAddToFavorites = async (bucketItem) => {
@@ -99,7 +100,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem?.title,
       command: () => {
-        handleShare(bucketItem)
+        handleShare()
       },
     },
     {
