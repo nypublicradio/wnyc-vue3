@@ -11,6 +11,7 @@ import {
   useCurrentUserProfile,
   useLocalUserProfileDefault,
   useCurrentUserFavorites,
+  useTogglePlayTrigger,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
@@ -19,6 +20,7 @@ import { mediaTypeRoutes } from "~/composables/globals.ts"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { ca } from "date-fns/locale"
 import axios from "axios"
+import { remove } from "ionicons/icons"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -530,10 +532,35 @@ function isMobileBrowser() {
   )
 }
 
+export const removeHTMLTags = (str) => {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = str;
+  return tempElement.textContent || tempElement.innerText || '';
+
+  //const doc = new DOMParser().parseFromString(str, 'text/html');
+  //return = doc.body.textContent || '';
+
+}
 // share API
-export const shareAPI = async (content: object) => {
-  if (navigator.canShare(content) && isMobileBrowser()) {
-    await navigator.share(content)
+export const shareAPI = async (content: object, componentOfOrigin: string = 'Component of origin not specified') => {
+
+  // DESKTOP sharing is not supported yet
+
+  const shareContent = {
+    title: removeHTMLTags(content.title),
+    text: removeHTMLTags(content.details || content.description),
+    url: content.url,
+  }
+
+  trackClickEvent(
+    "Click Tracking - Share",
+    componentOfOrigin,
+    shareContent.title
+  )
+
+  console.log('shareContent = ', shareContent)
+  if (navigator.canShare(shareContent) && isMobileBrowser()) {
+    await navigator.share(shareContent)
     return true
   } else {
     return false
@@ -771,4 +798,41 @@ export const checkIsFavorited = async (slug: string) => {
 
 export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
   saveFavorite(media, typeArg, "recently_viewed")
+}
+
+// normalize the bucket item data for the player
+export const prepForPlayer = (item, index = null) => {
+  const isSegment = index !== null
+  return {
+    ...item,
+    file: isSegment ? item.audio[index] : item.audio,
+    title: isSegment ? item.segments[index].title : item.title,
+    image: item.image.template,
+    //TODO convert to seconds
+    duration: item.estimatedDuration,
+    details: isSegment ? item.segments[index].tease : item.body,
+    first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
+  }
+}
+
+export const togglePlay = (media, index = 0) => {
+  const currentEpisode = useCurrentEpisode()
+  const togglePlayTrigger = useTogglePlayTrigger()
+
+  if (typeof media.audio === "string") {
+    if (currentEpisode.value?.audio !== media.audio) {
+      currentEpisode.value = prepForPlayer(media)
+      saveRecentlyPlayed(media, mediaTypes.EPISODE)
+    }
+  } else {
+    // segment
+    if (currentEpisode.value?.file !== media.audio[index]) {
+      currentEpisode.value = prepForPlayer(media, index)
+      saveRecentlyPlayed(media, mediaTypes.EPISODE)
+    }
+  }
+
+  togglePlayTrigger.value = !togglePlayTrigger.value
+
+  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }

@@ -11,8 +11,14 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  togglePlay,
+  shareAPI,
 } from "~/utilities/helpers"
-import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import {
+  useCurrentUser,
+  useAccountPromptSideBar,
+  useIsEpisodePlaying,
+} from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -33,6 +39,7 @@ watchEffect(async () => {
 
 const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
+const isEpisodePlaying = useIsEpisodePlaying()
 
 // navigate back to home and track it
 const backHome = () => {
@@ -44,7 +51,7 @@ const goToEpisodePage = (ep) => {
 }
 
 const togglePlayMostRecentEpisode = () => {
-  console.log("togglePlay")
+  togglePlay(episodes.value[0])
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
@@ -75,7 +82,7 @@ const handleAddToFavorites = async () => {
   }
 }
 const handleShare = () => {
-  console.log("handleShare")
+  shareAPI(show.value.show, "shows slug")
 }
 
 watch(show, () => {
@@ -130,13 +137,17 @@ watch(show, () => {
       </Button>
 
       <Button
-        class="w-3rem h-3rem"
+        class="play-btn flex-none"
         severity="secondary"
         rounded
         @click="togglePlayMostRecentEpisode"
       >
-        <template #icon> <PlayIcon class="w-1rem h-1rem" /></template>
+        <template #icon>
+          <PauseIcon v-if="isEpisodePlaying" />
+          <PlayIcon v-else />
+        </template>
       </Button>
+
       <Button text plain rounded @click="handleShare">
         <template #icon> <ShareIcon /></template>
       </Button>
@@ -193,5 +204,14 @@ watch(show, () => {
 
 <style lang="scss">
 .shows-page {
+  .play-btn {
+    width: 50px !important;
+    height: 50px !important;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-left: 5px;
+    }
+  }
 }
 </style>

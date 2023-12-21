@@ -16,6 +16,7 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  shareAPI,
 } from "~/utilities/helpers"
 
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
@@ -94,7 +95,7 @@ const handleAddToFavorites = async () => {
   }
 }
 const handleShare = () => {
-  console.log("handleShare")
+  shareAPI(storyData.value, "story slug")
 }
 
 watch(stories, () => {
@@ -202,7 +203,7 @@ watch(storyData, async () => {
             <Button text plain rounded @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
-            <Button text plain rounded @click="handleShare()">
+            <Button text plain rounded @click="handleShare">
               <template #icon> <ShareIcon /></template>
             </Button>
             <Button

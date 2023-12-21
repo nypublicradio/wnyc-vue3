@@ -14,6 +14,7 @@ import {
   checkIsFavorited,
   getFavoritedItems,
   trackClickEvent,
+  shareAPI,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,
@@ -125,7 +126,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem.title,
       command: () => {
-        handleShare(bucketItem)
+        shareAPI(bucketItem, "Episode Item")
       },
     },
     {
@@ -152,7 +153,7 @@ const hasAudio = computed(() => {
   )
 })
 
-console.log("EpisodeItem =", props.data)
+//console.log("EpisodeItem =", props.data)
 </script>
 
 <template>
