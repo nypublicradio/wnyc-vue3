@@ -180,7 +180,7 @@ const hasAudio = computed(() => {
         style="min-height: 72px; min-width: 72px"
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <h2 class="text-sm line-height-2">{{ props.data.title }}</h2>
+        <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
         <p>{{ props.data.org }}</p>
         <div class="article-metadata flex flex-column gap-1">
           <PipeData class="text-xs" :hide-pipe="!hasAudio">

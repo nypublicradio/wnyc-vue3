@@ -154,7 +154,12 @@ watch(episode, () => {
         :alt="episodeData?.image.altText"
         class="episode-page-image mb-2"
       />
-      <Skeleton v-else borderRadius="0px" height="auto" class="episode-page-image mb-2" />
+      <Skeleton
+        v-else
+        borderRadius="0px"
+        height="auto"
+        class="episode-page-image mb-2 opacity-60"
+      />
       <v-image
         v-if="episodeData"
         :src="episodeData?.headers.brand.logoImage.template"
@@ -170,7 +175,7 @@ watch(episode, () => {
         borderRadius="0px"
         height="70px"
         width="70px"
-        class="episode-page-show-image mb-2"
+        class="episode-page-show-image mb-2 absolute"
       />
     </div>
     <div v-if="episodeData">
@@ -187,12 +192,15 @@ watch(episode, () => {
         <div class="flex align-items-center justify-content-between">
           <div>
             <PlayButton
-              v-if="!episodeData?.segments"
+              v-if="!episodeData?.segments && episodeData?.audio"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :file="episodeData?.audio"
               @onClick="togglePlay(episodeData)"
               class=""
             />
+            <div v-else class="font-bold text-red-500">
+              <i class="pi pi-exclamation-triangle mr-1"></i>No Audio
+            </div>
           </div>
           <div class="flex gap-3">
             <Button
@@ -282,6 +290,9 @@ watch(episode, () => {
       </div>
       <skeleton-text :lines="6" class="mt-1" />
     </section>
+    <Transition name="fade">
+      <ScrollTop :threshold="600" />
+    </Transition>
   </div>
 </template>
 
