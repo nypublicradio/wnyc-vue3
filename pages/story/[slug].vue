@@ -234,9 +234,7 @@ watch(storyData, async () => {
       <h2 class="mb-3">Top Stories From Gothamist</h2>
       <TopStories :articles="topStories" />
     </section>
-    <Transition name="fade">
-      <ScrollTop :threshold="600" />
-    </Transition>
+    <BackToTopButton />
   </div>
 </template>
 

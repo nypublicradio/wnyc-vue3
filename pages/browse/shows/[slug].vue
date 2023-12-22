@@ -199,9 +199,7 @@ watch(show, () => {
       />
       <skeleton-episode-item v-else v-for="(show, index) in 10" :key="`sk1-${index}`" />
     </div>
-    <Transition name="fade">
-      <ScrollTop :threshold="600" />
-    </Transition>
+    <BackToTopButton />
   </section>
 </template>
 

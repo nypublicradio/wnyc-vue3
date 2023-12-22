@@ -290,9 +290,8 @@ watch(episode, () => {
       </div>
       <skeleton-text :lines="6" class="mt-1" />
     </section>
-    <Transition name="fade">
-      <ScrollTop :threshold="600" />
-    </Transition>
+
+    <BackToTopButton />
   </div>
 </template>
 

@@ -111,9 +111,7 @@ const routeBack = () => {
         </Button>
       </div>
     </div>
-    <Transition name="fade">
-      <ScrollTop :threshold="600" />
-    </Transition>
+    <BackToTopButton />
   </section>
 </template>
 

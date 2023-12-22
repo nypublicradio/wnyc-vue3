@@ -1,4 +1,4 @@
-@import 'cssvars.scss';
+@import 'vars.scss';
 @import 'transitions.scss';
 
 * {
@@ -429,9 +429,4 @@ a:visited {
     background: #111111b3;
     border: transparent;
   }
-}
-
-.p-scrolltop {
-  margin-bottom: $bottomMenuHeight;
-  border-radius: 50%;
 }

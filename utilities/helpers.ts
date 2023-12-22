@@ -836,3 +836,14 @@ export const togglePlay = (media, index = 0) => {
 
   trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
+
+
+export const getCssVar = (name: string, px: boolean = false) => {
+
+  const val = getComputedStyle(document.documentElement).getPropertyValue(
+    name
+  )
+
+  return px ? val : Number(parseInt(val))
+
+}
