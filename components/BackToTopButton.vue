@@ -14,11 +14,15 @@ const playerHeight: number | string = getCssVar("--player-height")
 
 const bottomBuffer = ref(`${bottomMenuHeight}px`)
 
-watch(currentEpisode, () => {
-  currentEpisode.value
-    ? (bottomBuffer.value = `${Number(bottomMenuHeight) + Number(playerHeight)}px`)
-    : `${bottomMenuHeight}px`
-})
+watch(
+  currentEpisode,
+  () => {
+    currentEpisode.value
+      ? (bottomBuffer.value = `${Number(bottomMenuHeight) + Number(playerHeight)}px`)
+      : `${bottomMenuHeight}px`
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
