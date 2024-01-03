@@ -75,6 +75,7 @@ const switchEpisode = () => {
 }
 
 watch(currentEpisode, () => {
+  console.log("currentEpisode.value changed = ", currentEpisode.value)
   switchEpisode()
 })
 
@@ -148,7 +149,7 @@ watch(
   /> -->
   <transition name="player">
     <VNewPersistentPlayer
-      v-if="showPlayer"
+      v-show="showPlayer"
       ref="playerRef"
       data-style-mode="dark"
       :auto-play="true"

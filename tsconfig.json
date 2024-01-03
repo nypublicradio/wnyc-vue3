@@ -12,7 +12,8 @@
     "resolveJsonModule": true,
     "types": [
       "node",
-      "vitest/globals"
+      "vitest/globals",
+      "vidstack/vue"
     ]
   }
 }
