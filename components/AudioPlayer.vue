@@ -12,17 +12,14 @@ import {
   useIsPlayerMinimized,
   audioPlayerHeight,
   useIsStreamLoading,
+  useIsLiveStream,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
   usePlayerSeek,
 } from "~/composables/states"
-import {
-  trackClickEvent,
-  isLiveStream,
-  templatizePublisherImageUrl,
-} from "~/utilities/helpers"
+import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
 
 // had to install howler.js locally and add this import to stop it from breaking the build
 // skipcq: JS-0128
@@ -31,6 +28,7 @@ import { Howl, Howler } from "howler"
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
+const isLiveStream = useIsLiveStream()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
@@ -174,7 +172,8 @@ watch(
       :skipBackTime="10"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
-      @is-loading="isStreamLoading = !$event"
+      @is-loading="isStreamLoading = $event"
+      @is-live="isLiveStream = $event"
       @duration="currentEpisodeDuration = $event"
       @current-duration="currentEpisodeProgress = $event"
       can-click-anywhere
