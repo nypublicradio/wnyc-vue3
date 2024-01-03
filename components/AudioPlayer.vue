@@ -66,18 +66,23 @@ const updateUseIsPlayerMinimized = (e) => {
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
-  showPlayer.value = false
-  currentEpisodeProgress.value = 0
+  //showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    delay = 1000
+    delay = 250
   }, delay)
 }
 
-watch(currentEpisode, () => {
-  console.log("currentEpisode.value changed = ", currentEpisode.value)
-  switchEpisode()
-})
+watch(
+  currentEpisode,
+  () => {
+    console.log("currentEpisode.value changed = ", currentEpisode.value)
+    switchEpisode()
+  },
+  {
+    deep: true,
+  }
+)
 
 watch(togglePlayTrigger, () => {
   if (playerRef.value) playerRef.value.togglePlay()
@@ -169,7 +174,7 @@ watch(
       :skipBackTime="10"
       @togglePlay="updateUseIsEpisodePlaying"
       @is-minimized="updateUseIsPlayerMinimized"
-      @is-loading="isStreamLoading = $event"
+      @is-loading="isStreamLoading = !$event"
       @duration="currentEpisodeDuration = $event"
       @current-duration="currentEpisodeProgress = $event"
       can-click-anywhere
@@ -284,11 +289,11 @@ html.style-mode-dark .persistent-player {
 
 <style lang="scss" scoped>
 .player-enter-active {
-  transition: transform calc(var(--transition-duration) * 2) ease-out;
+  transition: transform calc(var(--transition-duration)) ease-out;
 }
 
 .player-leave-active {
-  transition: transform calc(var(--transition-duration) * 2) ease-in;
+  transition: transform calc(var(--transition-duration) / 20) ease-in;
 }
 
 .player-enter-from,
