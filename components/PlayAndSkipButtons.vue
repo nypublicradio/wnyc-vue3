@@ -1,16 +1,17 @@
 <script setup>
-import { isLiveStream } from "~/utilities/helpers"
 import {
   useIsEpisodePlaying,
   useTogglePlayTrigger,
   useSkipAheadTrigger,
   useSkipBackTrigger,
+  useIsLiveStream,
 } from "~/composables/states"
 
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
+const isLiveStream = useIsLiveStream()
 
 const emit = defineEmits(["beforeTogglePlay", "beforeSkipAhead", "beforeSkipBack"])
 
@@ -33,7 +34,7 @@ const skipBack = () => {
 }
 
 const isLive = computed(() => {
-  return isLiveStream()
+  return isLiveStream.value
 })
 </script>
 

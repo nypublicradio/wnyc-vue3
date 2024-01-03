@@ -483,12 +483,6 @@ export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url })
 }
 
-// helper function to determine if the file url is a live stream or .mp3 file
-export const isLiveStream = () => {
-  const currentEpisode = useCurrentEpisode()
-  return !currentEpisode.value?.file.includes(".mp3")
-}
-
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
   const res = data.updatedDate

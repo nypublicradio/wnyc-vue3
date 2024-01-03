@@ -4,7 +4,6 @@ import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 
 import {
   trackClickEvent,
-  isLiveStream,
   whenTime,
   shareAPI,
   templatizePublisherImageUrl,
@@ -17,6 +16,7 @@ import {
   useCurrentEpisode,
   useCurrentUser,
   useAccountPromptSideBar,
+  useIsLiveStream,
 } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 
@@ -34,6 +34,7 @@ const emit = defineEmits(["close-panel"])
 
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
+const isLiveStream = useIsLiveStream()
 
 const accountPromptSideBar = useAccountPromptSideBar()
 const expandedFooterRef = ref(null)
@@ -134,7 +135,7 @@ const handleSleepTimer = () => {
 }
 
 const isLive = computed(() => {
-  return isLiveStream()
+  return isLiveStream.value
 })
 
 // set the items for the Dot menu
