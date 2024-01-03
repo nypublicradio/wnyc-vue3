@@ -3,6 +3,7 @@ import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue"
+import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -146,7 +147,7 @@ watch(
     style="top: 200px; z-index: 672397862938679"
   /> -->
   <transition name="player">
-    <VPersistentPlayer
+    <VNewPersistentPlayer
       v-if="showPlayer"
       ref="playerRef"
       data-style-mode="dark"
@@ -157,7 +158,6 @@ watch(
       :show-download="false"
       :hide-download-mobile="true"
       :show-skip="false"
-      :livestream="isLiveStream()"
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
@@ -183,7 +183,7 @@ watch(
       <template #expanded-content>
         <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
       </template>
-    </VPersistentPlayer>
+    </VNewPersistentPlayer>
   </transition>
   <!-- </div> -->
 </template>
