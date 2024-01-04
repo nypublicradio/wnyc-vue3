@@ -97,6 +97,11 @@ export const useIsStreamLoading = () => useState('useIsStreamLoading', () => isS
  */
 export const useIsLiveStream = () => useState('useIsLiveStream', () => null)
 
+/**
+ * Global state for the player expanded.
+ */
+export const useIsPlayerExpanded = () => useState('useIsPlayerExpanded', () => false)
+
 const isPlayerMinimized = false
 /**
  * Global state for the audio player minimize.

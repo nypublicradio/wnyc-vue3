@@ -262,42 +262,6 @@ console.log("currentEpisode = ", currentEpisode.value)
 <template>
   <section class="expanded-player flex flex-column gap-3">
     <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
-    <VImage
-      :src="templatizePublisherImageUrl(currentEpisode.image)"
-      :alt="`${currentEpisode.title} show image`"
-      :width="144"
-      :height="144"
-      class="show-image max-w-9rem m-auto"
-      :ratio="[1, 1]"
-      style="min-height: 144px"
-    />
-
-    <div v-if="isLive" class="station flex flex-column gap-2">
-      <div class="live flex gap-2">
-        <LiveBadge />
-        <p>{{ currentEpisode.station }}</p>
-      </div>
-      <h2 class="text-lg">{{ currentEpisode.title }}</h2>
-      <h2 class="text-md">{{ currentEpisode.onTodaysShowHeadline }}</h2>
-    </div>
-
-    <div v-else class="station flex flex-column gap-2">
-      <PipeData class="text-xs" :hidePipe="!Boolean(whenTime(currentEpisode))">
-        <template #left>
-          <p>{{ currentEpisode.title }}</p>
-        </template>
-        <template #right>
-          <p class="nobreak">{{ whenTime(currentEpisode) }}</p>
-        </template>
-      </PipeData>
-      <h2 class="title">{{ currentEpisode.onTodaysShowHeadline }}</h2>
-    </div>
-
-    <div v-if="!isLive" class="progress-holder">
-      <AudioScrubber />
-    </div>
-    <PlayAndSkipButtons />
-
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
         <Button text severity="secondary" rounded @click="handleFollow">

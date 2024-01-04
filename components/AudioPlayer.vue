@@ -13,6 +13,7 @@ import {
   audioPlayerHeight,
   useIsStreamLoading,
   useIsLiveStream,
+  useIsPlayerExpanded,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
@@ -29,6 +30,7 @@ const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
+const isPlayerExpanded = useIsPlayerExpanded()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
@@ -101,35 +103,6 @@ watch(
   },
   { deep: true }
 )
-let timer = null
-let isInitialPing = true
-// const pingEvent = () => {
-//   const station = currentEpisodeData.value?.name
-//     ? currentEpisodeShow.value.name
-//     : null
-//   const title = currentEpisodeShow.value?.title
-//     ? currentEpisodeShow.value.title
-//     : null
-//   // $analytics.sendEvent('event_tracking', {
-//   //   event_category: 'Ping',
-//   //   component: 'Audio Player',
-//   //   event_label: `${station} - ${title}`,
-//   // })
-// }
-watch(isEpisodePlaying, (e) => {
-  if (isInitialPing) {
-    //pingEvent()
-    isInitialPing = false
-  }
-  if (e) {
-    timer = setInterval(() => {
-      //pingEvent()
-    }, 60000)
-  } else {
-    clearInterval(timer)
-    timer = null
-  }
-})
 
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
@@ -161,7 +134,7 @@ watch(
       :can-unexpand-with-swipe="true"
       :show-download="false"
       :hide-download-mobile="true"
-      :show-skip="false"
+      :show-skip="isPlayerExpanded"
       :title="currentEpisode.title"
       :title-link="currentEpisode.url"
       :station="currentEpisode.name"
@@ -174,6 +147,7 @@ watch(
       @is-minimized="updateUseIsPlayerMinimized"
       @is-loading="isStreamLoading = $event"
       @is-live="isLiveStream = $event"
+      @is-expanded="isPlayerExpanded = $event"
       @duration="currentEpisodeDuration = $event"
       @current-duration="currentEpisodeProgress = $event"
       can-click-anywhere
@@ -186,7 +160,80 @@ watch(
         <PauseIcon />
       </template>
       <template #expanded-content>
-        <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
+        <!-- <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" /> -->
+        <div class="p-3">
+          {{}} this is where we would put anything in the expanded view
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          this is wherewe would oput anything in the expanded view
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+        <div class="expandedFooter">This is fixed to the bottom</div>
       </template>
     </VNewPersistentPlayer>
   </transition>
@@ -283,6 +330,11 @@ html.style-mode-dark .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
   }
+  // .expanded-view {
+  //   display: block !important;
+  //   height: 700px;
+  //   position: inherit;
+  // }
 }
 </style>
 
