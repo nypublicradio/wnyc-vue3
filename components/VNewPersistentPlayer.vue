@@ -440,15 +440,15 @@ const toggleExpanded = async (e) => {
   console.log("toggle expanded event = ", e)
   isExpanded.value = e
 
-  // // hack for the teleported audio player to not pause when the player is teleported
-  // await nextTick()
-  // if (isPlaying.value) {
-  //   setTimeout(() => {
-  //     $mediaPlayerRef.value?.play()
-  //   }, 1)
-  // } else {
-  //   $mediaPlayerRef.value?.pause()
-  // }
+  // hack for the teleported audio player to not pause when the player is teleported
+  await nextTick()
+  if (isPlaying.value) {
+    setTimeout(() => {
+      $mediaPlayerRef.value?.play()
+    }, 1)
+  } else {
+    $mediaPlayerRef.value?.pause()
+  }
 }
 
 // exposed method to handle the skip ahead
@@ -803,7 +803,7 @@ defineExpose({
             <div class="flex flex-column">
               <slot name="header-content"></slot>
 
-              <div class="expanded-player flex flex-column gap-3">
+              <div class="flex flex-column gap-3">
                 <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
                 <VImage
                   :src="props.image"
@@ -865,7 +865,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   &.expanded {
-    bottom: 0;
+    bottom: 0 !important;
     height: 100%;
   }
 

@@ -123,6 +123,7 @@ watch(
     class="absolute"
     style="top: 200px; z-index: 672397862938679"
   /> -->
+
   <div v-if="currentEpisode">
     <transition name="player">
       <VNewPersistentPlayer
@@ -161,81 +162,7 @@ watch(
           <PauseIcon />
         </template>
         <template #expanded-content>
-          <!-- <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" /> -->
-          <div class="p-3">
-            {{ isPlayerExpanded }} this is where we would put anything in the expanded
-            view
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            this is wherewe would oput anything in the expanded view
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-          </div>
-          <div class="expandedFooter">This is fixed to the bottom</div>
+          <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
       </VNewPersistentPlayer>
     </transition>
