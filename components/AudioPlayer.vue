@@ -4,8 +4,7 @@ import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
 import Next10 from "~/components/icons/Next10.vue"
-//import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue"
-//import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -23,10 +22,6 @@ import {
   usePlayerSeek,
 } from "~/composables/states"
 import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
-
-// had to install howler.js locally and add this import to stop it from breaking the build
-// skipcq: JS-0128
-import { Howl, Howler } from "howler"
 
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -137,6 +132,7 @@ watch(
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
         :show-download="false"
+        :show-volume="false"
         :hide-download-mobile="true"
         :show-skip="isPlayerExpanded"
         :title="currentEpisode?.title"
@@ -241,7 +237,7 @@ html.style-mode-dark .persistent-player {
       .expanded-content-holder {
         .header {
           z-index: 1;
-          padding: 1rem 0.5rem;
+          padding: 1rem;
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
         }
@@ -259,6 +255,7 @@ html.style-mode-dark .persistent-player {
   }
   .expanded-view {
     #expandedControls {
+      min-height: 85px;
       .play-icon {
         width: 13px;
         height: 17px;

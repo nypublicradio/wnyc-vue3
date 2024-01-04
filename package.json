@@ -17,7 +17,6 @@
     "@nuxtjs/ionic": "0.12.1",
     "@vueuse/nuxt": "^10.5.0",
     "date-fns": "^2.30.0",
-    "howler": "^2.2.3",
     "nuxt": "^3.9.0",
     "sass": "1.69.5"
   },
@@ -39,7 +38,7 @@
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@nuxt/image": "^1.0.0",
     "@nuxtjs/supabase": "^1.0.2",
-    "@nypublicradio/nypr-design-system-vue3": "^2.0.93",
+    "@nypublicradio/nypr-design-system-vue3": "^2.0.95",
     "@sentry/tracing": "^7.77.0",
     "@sentry/vue": "^7.77.0",
     "@types/humps": "^2.0.4",
