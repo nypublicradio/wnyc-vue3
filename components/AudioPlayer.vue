@@ -2,6 +2,8 @@
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
+import Previous10 from "~/components/icons/Previous10.vue"
+import Next10 from "~/components/icons/Next10.vue"
 //import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue"
 //import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
@@ -155,11 +157,17 @@ watch(
         can-click-anywhere
         marquee
       >
+        <template #skipBack>
+          <Previous10 />
+        </template>
         <template #play>
           <PlayIcon />
         </template>
         <template #pause>
           <PauseIcon />
+        </template>
+        <template #skipAhead>
+          <Next10 />
         </template>
         <template #expanded-content>
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
@@ -190,6 +198,10 @@ html.style-mode-dark .persistent-player {
 
   .persistent-player {
     bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+
+    &.expanded {
+      bottom: 0;
+    }
     .track-info {
       //position: relative;
     }
@@ -214,22 +226,6 @@ html.style-mode-dark .persistent-player {
     }
     .track-info-livestream {
       display: none !important;
-    }
-    .progress-control {
-      position: absolute;
-      bottom: 0px;
-      width: calc(100% - 60px);
-      left: 60px;
-      height: 2px;
-      .p-slider-range {
-        background: #000000;
-      }
-      .p-slider-handle {
-        display: none;
-      }
-      .p-slider {
-        //position: initial;
-      }
     }
     .track-info-time {
       display: none !important;
@@ -261,11 +257,20 @@ html.style-mode-dark .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
   }
-  // .expanded-view {
-  //   display: block !important;
-  //   height: 700px;
-  //   position: inherit;
-  // }
+  .expanded-view {
+    #expandedControls {
+      .play-icon {
+        width: 13px;
+        height: 17px;
+        margin-left: 1px;
+      }
+      .next-10-icon,
+      .previous-10-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 }
 </style>
 
