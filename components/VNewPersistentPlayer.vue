@@ -305,6 +305,7 @@ const playerError = ref("")
 
 const isMinimized = ref(false)
 const isExpanded = ref(false)
+const isMounted = ref(false)
 
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
@@ -393,6 +394,7 @@ if (supportSwipe) {
 }
 // initially set touchmove prevent default on the playerRef
 onMounted(() => {
+  isMounted.value = true
   if (supportSwipe) {
     playerRef.value.addEventListener("touchmove", preventScrollOnTouch, {
       passive: false,
@@ -437,7 +439,6 @@ const scrollToggle = (e) => {
 const toggleExpanded = async (e) => {
   scrollToggle(e)
   emit("is-expanded", e)
-  console.log("toggle expanded event = ", e)
   isExpanded.value = e
 
   // hack for the teleported audio player to not pause when the player is teleported
@@ -597,7 +598,7 @@ defineExpose({
 
     <Transition name="expand">
       <div v-show="!isExpanded" class="player-controls">
-        <Teleport :disabled="!isExpanded" to="#expandedViewPlayer">
+        <Teleport :disabled="!isExpanded" v-if="isMounted" to="#expandedViewPlayer">
           <media-player
             ref="$mediaPlayerRef"
             class="media-player"
@@ -865,7 +866,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   &.expanded {
-    bottom: 0 !important;
+    bottom: 0;
     height: 100%;
   }
 

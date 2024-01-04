@@ -167,6 +167,7 @@ watch(
       </VNewPersistentPlayer>
     </transition>
   </div>
+
   <!-- </div> -->
 </template>
 
