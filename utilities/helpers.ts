@@ -130,18 +130,20 @@ export const resizePublisherImageUrl = (
 }
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
-  const pieces = url.split("/")
-  const finalUrlArr: string[] = []
+  if (url) {
+    const pieces = url.split("/")
+    const finalUrlArr: string[] = []
 
-  pieces.forEach((piece: string, index: number) => {
-    if (index < 4 || index > 7) {
-      finalUrlArr.push(piece)
-    }
-    if (index === 4) {
-      finalUrlArr.push(`%s/%s/%s/%s`)
-    }
-  })
-  return finalUrlArr.join("/")
+    pieces.forEach((piece: string, index: number) => {
+      if (index < 4 || index > 7) {
+        finalUrlArr.push(piece)
+      }
+      if (index === 4) {
+        finalUrlArr.push(`%s/%s/%s/%s`)
+      }
+    })
+    return finalUrlArr.join("/")
+  }
 }
 
 export const trackClickEvent = (category, component, label) => {

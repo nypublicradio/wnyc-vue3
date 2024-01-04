@@ -2,8 +2,8 @@
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
-import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue"
-import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+//import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue"
+//import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -123,120 +123,123 @@ watch(
     class="absolute"
     style="top: 200px; z-index: 672397862938679"
   /> -->
-  <transition name="player">
-    <VNewPersistentPlayer
-      v-show="showPlayer"
-      ref="playerRef"
-      data-style-mode="dark"
-      :auto-play="true"
-      :can-expand="true"
-      :can-expand-with-swipe="true"
-      :can-unexpand-with-swipe="true"
-      :show-download="false"
-      :hide-download-mobile="true"
-      :show-skip="isPlayerExpanded"
-      :title="currentEpisode.title"
-      :title-link="currentEpisode.url"
-      :station="currentEpisode.name"
-      :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details"
-      :image="templatizePublisherImageUrl(currentEpisode.image)"
-      :file="currentEpisode.file"
-      :skipAheadTime="10"
-      :skipBackTime="10"
-      @togglePlay="updateUseIsEpisodePlaying"
-      @is-minimized="updateUseIsPlayerMinimized"
-      @is-loading="isStreamLoading = $event"
-      @is-live="isLiveStream = $event"
-      @is-expanded="isPlayerExpanded = $event"
-      @duration="currentEpisodeDuration = $event"
-      @current-duration="currentEpisodeProgress = $event"
-      can-click-anywhere
-      marquee
-    >
-      <template #play>
-        <PlayIcon />
-      </template>
-      <template #pause>
-        <PauseIcon />
-      </template>
-      <template #expanded-content>
-        <!-- <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" /> -->
-        <div class="p-3">
-          {{}} this is where we would put anything in the expanded view
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          this is wherewe would oput anything in the expanded view
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-        </div>
-        <div class="expandedFooter">This is fixed to the bottom</div>
-      </template>
-    </VNewPersistentPlayer>
-  </transition>
+  <div v-if="currentEpisode">
+    <transition name="player">
+      <VNewPersistentPlayer
+        v-show="showPlayer"
+        ref="playerRef"
+        data-style-mode="dark"
+        :auto-play="true"
+        :can-expand="true"
+        :can-expand-with-swipe="true"
+        :can-unexpand-with-swipe="true"
+        :show-download="false"
+        :hide-download-mobile="true"
+        :show-skip="isPlayerExpanded"
+        :title="currentEpisode?.title"
+        :title-link="currentEpisode?.url"
+        :station="currentEpisode?.name"
+        :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
+        :image="templatizePublisherImageUrl(currentEpisode?.image)"
+        :file="currentEpisode?.file"
+        :skipAheadTime="10"
+        :skipBackTime="10"
+        @togglePlay="updateUseIsEpisodePlaying"
+        @is-minimized="updateUseIsPlayerMinimized"
+        @is-loading="isStreamLoading = $event"
+        @is-live="isLiveStream = $event"
+        @is-expanded="isPlayerExpanded = $event"
+        @duration="currentEpisodeDuration = $event"
+        @current-duration="currentEpisodeProgress = $event"
+        can-click-anywhere
+        marquee
+      >
+        <template #play>
+          <PlayIcon />
+        </template>
+        <template #pause>
+          <PauseIcon />
+        </template>
+        <template #expanded-content>
+          <!-- <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" /> -->
+          <div class="p-3">
+            {{ isPlayerExpanded }} this is where we would put anything in the expanded
+            view
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            this is wherewe would oput anything in the expanded view
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+          </div>
+          <div class="expandedFooter">This is fixed to the bottom</div>
+        </template>
+      </VNewPersistentPlayer>
+    </transition>
+  </div>
   <!-- </div> -->
 </template>
 
