@@ -140,7 +140,7 @@ watch(
         :station="currentEpisode?.name"
         :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
         :image="templatizePublisherImageUrl(currentEpisode?.image)"
-        :file="currentEpisode?.file"
+        :file="currentEpisode?.hls ?? currentEpisode?.file"
         :skipAheadTime="10"
         :skipBackTime="10"
         @togglePlay="updateUseIsEpisodePlaying"
