@@ -136,7 +136,6 @@ watch(
         :hide-download-mobile="true"
         :show-skip="isPlayerExpanded"
         :title="currentEpisode?.title"
-        :title-link="currentEpisode?.url"
         :station="currentEpisode?.name"
         :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
         :image="templatizePublisherImageUrl(currentEpisode?.image)"
