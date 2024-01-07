@@ -82,15 +82,25 @@ export const useAllCurrentStations = () => useState('useAllCurrentStations', () 
 
 const isEpisodePlaying = false
 /**
- * Global state for the current Howler sound playing.
+ * Global state for the current audio sound playing.
  */
 export const useIsEpisodePlaying = () => useState('useIsEpisodePlaying', () => isEpisodePlaying)
 
 const isStreamLoading = false
 /**
- * Global state for the current Howler stream loading.
+ * Global state for the current audio stream loading.
  */
 export const useIsStreamLoading = () => useState('useIsStreamLoading', () => isStreamLoading)
+
+/**
+ * Global state for the current audio file is a live stream or not.
+ */
+export const useIsLiveStream = () => useState('useIsLiveStream', () => null)
+
+/**
+ * Global state for the player expanded.
+ */
+export const useIsPlayerExpanded = () => useState('useIsPlayerExpanded', () => false)
 
 const isPlayerMinimized = false
 /**

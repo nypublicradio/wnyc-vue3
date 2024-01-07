@@ -2,7 +2,9 @@
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
-import VPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPersistentPlayer.vue"
+import Previous10 from "~/components/icons/Previous10.vue"
+import Next10 from "~/components/icons/Next10.vue"
+import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -11,25 +13,21 @@ import {
   useIsPlayerMinimized,
   audioPlayerHeight,
   useIsStreamLoading,
+  useIsLiveStream,
+  useIsPlayerExpanded,
   useCurrentEpisodeDuration,
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
   usePlayerSeek,
 } from "~/composables/states"
-import {
-  trackClickEvent,
-  isLiveStream,
-  templatizePublisherImageUrl,
-} from "~/utilities/helpers"
-
-// had to install howler.js locally and add this import to stop it from breaking the build
-// skipcq: JS-0128
-import { Howl, Howler } from "howler"
+import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
 
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
+const isLiveStream = useIsLiveStream()
+const isPlayerExpanded = useIsPlayerExpanded()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
@@ -65,17 +63,23 @@ const updateUseIsPlayerMinimized = (e) => {
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
-  showPlayer.value = false
-  currentEpisodeProgress.value = 0
+  //showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    delay = 1000
+    delay = 250
   }, delay)
 }
 
-watch(currentEpisode, () => {
-  switchEpisode()
-})
+watch(
+  currentEpisode,
+  () => {
+    console.log("currentEpisode.value changed = ", currentEpisode.value)
+    switchEpisode()
+  },
+  {
+    deep: true,
+  }
+)
 
 watch(togglePlayTrigger, () => {
   if (playerRef.value) playerRef.value.togglePlay()
@@ -96,35 +100,6 @@ watch(
   },
   { deep: true }
 )
-let timer = null
-let isInitialPing = true
-// const pingEvent = () => {
-//   const station = currentEpisodeData.value?.name
-//     ? currentEpisodeShow.value.name
-//     : null
-//   const title = currentEpisodeShow.value?.title
-//     ? currentEpisodeShow.value.title
-//     : null
-//   // $analytics.sendEvent('event_tracking', {
-//   //   event_category: 'Ping',
-//   //   component: 'Audio Player',
-//   //   event_label: `${station} - ${title}`,
-//   // })
-// }
-watch(isEpisodePlaying, (e) => {
-  if (isInitialPing) {
-    //pingEvent()
-    isInitialPing = false
-  }
-  if (e) {
-    timer = setInterval(() => {
-      //pingEvent()
-    }, 60000)
-  } else {
-    clearInterval(timer)
-    timer = null
-  }
-})
 
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
@@ -145,46 +120,57 @@ watch(
     class="absolute"
     style="top: 200px; z-index: 672397862938679"
   /> -->
-  <transition name="player">
-    <VPersistentPlayer
-      v-if="showPlayer"
-      ref="playerRef"
-      data-style-mode="dark"
-      :auto-play="true"
-      :can-expand="true"
-      :can-expand-with-swipe="true"
-      :can-unexpand-with-swipe="true"
-      :show-download="false"
-      :hide-download-mobile="true"
-      :show-skip="false"
-      :livestream="isLiveStream()"
-      :title="currentEpisode.title"
-      :title-link="currentEpisode.url"
-      :station="currentEpisode.name"
-      :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode.details"
-      :image="templatizePublisherImageUrl(currentEpisode.image)"
-      :file="currentEpisode.file"
-      :skipAheadTime="10"
-      :skipBackTime="10"
-      @togglePlay="updateUseIsEpisodePlaying"
-      @is-minimized="updateUseIsPlayerMinimized"
-      @is-loading="isStreamLoading = $event"
-      @duration="currentEpisodeDuration = $event"
-      @current-duration="currentEpisodeProgress = $event"
-      can-click-anywhere
-      marquee
-    >
-      <template #play>
-        <PlayIcon />
-      </template>
-      <template #pause>
-        <PauseIcon />
-      </template>
-      <template #expanded-content>
-        <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
-      </template>
-    </VPersistentPlayer>
-  </transition>
+
+  <div v-if="currentEpisode">
+    <transition name="player">
+      <VNewPersistentPlayer
+        v-show="showPlayer"
+        ref="playerRef"
+        data-style-mode="dark"
+        :auto-play="true"
+        :can-expand="true"
+        :can-expand-with-swipe="true"
+        :can-unexpand-with-swipe="true"
+        :show-download="false"
+        :show-volume="false"
+        :hide-download-mobile="true"
+        :show-skip="isPlayerExpanded"
+        :title="currentEpisode?.title"
+        :station="currentEpisode?.name"
+        :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
+        :image="templatizePublisherImageUrl(currentEpisode?.image)"
+        :file="currentEpisode?.hls ?? currentEpisode?.file"
+        :skipAheadTime="10"
+        :skipBackTime="10"
+        @togglePlay="updateUseIsEpisodePlaying"
+        @is-minimized="updateUseIsPlayerMinimized"
+        @is-loading="isStreamLoading = $event"
+        @is-live="isLiveStream = $event"
+        @is-expanded="isPlayerExpanded = $event"
+        @duration="currentEpisodeDuration = $event"
+        @current-duration="currentEpisodeProgress = $event"
+        can-click-anywhere
+        marquee
+      >
+        <template #skipBack>
+          <Previous10 />
+        </template>
+        <template #play>
+          <PlayIcon />
+        </template>
+        <template #pause>
+          <PauseIcon />
+        </template>
+        <template #skipAhead>
+          <Next10 />
+        </template>
+        <template #expanded-content>
+          <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
+        </template>
+      </VNewPersistentPlayer>
+    </transition>
+  </div>
+
   <!-- </div> -->
 </template>
 
@@ -207,6 +193,10 @@ html.style-mode-dark .persistent-player {
 
   .persistent-player {
     bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+
+    &.expanded {
+      bottom: 0;
+    }
     .track-info {
       //position: relative;
     }
@@ -232,22 +222,6 @@ html.style-mode-dark .persistent-player {
     .track-info-livestream {
       display: none !important;
     }
-    .progress-control {
-      position: absolute;
-      bottom: 0px;
-      width: calc(100% - 60px);
-      left: 60px;
-      height: 2px;
-      .p-slider-range {
-        background: #000000;
-      }
-      .p-slider-handle {
-        display: none;
-      }
-      .p-slider {
-        //position: initial;
-      }
-    }
     .track-info-time {
       display: none !important;
     }
@@ -262,7 +236,7 @@ html.style-mode-dark .persistent-player {
       .expanded-content-holder {
         .header {
           z-index: 1;
-          padding: 1rem 0.5rem;
+          padding: 1rem;
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
         }
@@ -278,16 +252,31 @@ html.style-mode-dark .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
   }
+  .expanded-view {
+    #expandedControls {
+      min-height: 85px;
+      .play-icon {
+        width: 13px;
+        height: 17px;
+        margin-left: 1px;
+      }
+      .next-10-icon,
+      .previous-10-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 }
 </style>
 
 <style lang="scss" scoped>
 .player-enter-active {
-  transition: transform calc(var(--transition-duration) * 2) ease-out;
+  transition: transform calc(var(--transition-duration)) ease-out;
 }
 
 .player-leave-active {
-  transition: transform calc(var(--transition-duration) * 2) ease-in;
+  transition: transform calc(var(--transition-duration) / 20) ease-in;
 }
 
 .player-enter-from,

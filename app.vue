@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import { trackClickEvent, getAndSetUserProfile } from '~/utilities/helpers'
-import { Capacitor } from '@capacitor/core'
-import { App /* URLOpenListenerEvent */ } from '@capacitor/app'
+import { trackClickEvent, getAndSetUserProfile } from "~/utilities/helpers"
+import { Capacitor } from "@capacitor/core"
+import { App /* URLOpenListenerEvent */ } from "@capacitor/app"
 import {
   //ActionPerformed,
   //PushNotificationSchema,
   PushNotifications,
   //Token,
-} from '@capacitor/push-notifications'
+} from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
   //useHomepageData,
-} from '~/composables/states'
-import {
-  useBrowserTopColor,
-  useBrowserTopColorDarkMode,
-} from '~/composables/globals.ts'
-import { LocalNotifications } from '@capacitor/local-notifications'
+} from "~/composables/states"
+import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals.ts"
+import { LocalNotifications } from "@capacitor/local-notifications"
 
 const { isDesktop } = useDevice()
 const route = useRoute()
@@ -32,11 +29,11 @@ const acceptNotifications = shallowRef(false)
 
 const isApp = useIsApp()
 
-const fcmToken = ref('')
+const fcmToken = ref("")
 //const nNotification = ref(null)
 // const appLaunchUrl = ref(null)
 
-isApp.value = Capacitor.getPlatform() !== 'web'
+isApp.value = Capacitor.getPlatform() !== "web"
 
 // const homepageData = useHomepageData()
 // const { data: homepageFetchData } = await useFetch(
@@ -46,7 +43,7 @@ isApp.value = Capacitor.getPlatform() !== 'web'
 
 useHead({
   htmlAttrs: {
-    lang: 'en',
+    lang: "en",
   },
   script: [
     {
@@ -74,7 +71,7 @@ const checkNotificationPermisstions = async () => {
     // Android will just grant without prompting
     await PushNotifications.requestPermissions().then((result) => {
       //alert('push request' + JSON.stringify(result))
-      if (result.receive === 'granted') {
+      if (result.receive === "granted") {
         // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register()
         acceptNotifications.value = true
@@ -85,10 +82,10 @@ const checkNotificationPermisstions = async () => {
     })
 
     //Check permission to use push notifications for ANDROID ONLY
-    if (Capacitor.getPlatform() === 'android') {
+    if (Capacitor.getPlatform() === "android") {
       await LocalNotifications.requestPermissions().then((result) => {
         //alert('local request = ' + JSON.stringify(result))
-        if (result.display === 'granted') {
+        if (result.display === "granted") {
           PushNotifications.register()
           acceptNotifications.value = true
         } else {
@@ -104,19 +101,19 @@ const addListeners = async () => {
   await checkNotificationPermisstions()
 
   // On success, we should be able to receive notifications
-  await PushNotifications.addListener('registration', (token: Token) => {
+  await PushNotifications.addListener("registration", (token: Token) => {
     fcmToken.value = token.value
     //alert('Push registration success, token: ' + token.value)
   })
 
   // Some issue with our setup and push will not work
-  await PushNotifications.addListener('registrationError', (error: any) => {
+  await PushNotifications.addListener("registrationError", (error: any) => {
     //alert('Error on registration: ' + JSON.stringify(error))
   })
 
   // Show us the notification payload if the app is open on our device
   await PushNotifications.addListener(
-    'pushNotificationReceived',
+    "pushNotificationReceived",
     (notification: PushNotificationSchema) => {
       //nNotification.value = notification
       //alert('Push received: ' + JSON.stringify(notification))
@@ -125,7 +122,7 @@ const addListeners = async () => {
 
   // Method called when tapping on a notification
   await PushNotifications.addListener(
-    'pushNotificationActionPerformed',
+    "pushNotificationActionPerformed",
     (notification: ActionPerformed) => {
       //nNotification.value = notification
       //alert('Push action performed: ' + JSON.stringify(notification))
@@ -136,19 +133,19 @@ const addListeners = async () => {
     }
   )
   // fired when the app becomes active
-  await App.addListener('appStateChange', ({ isActive }) => {
+  await App.addListener("appStateChange", ({ isActive }) => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
 
   // this is for deep links
   const client = useSupabaseClient()
-  await App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
+  await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
     //when redirected to the app from a deep link, we need to exchange the url parame code for a session
 
-    const code = event.url.split('=')[1]
+    const code = event.url.split("=")[1]
     if (code) {
       client.auth.exchangeCodeForSession(code)
-      await navigateTo('/home')
+      await navigateTo("/home")
     }
   })
 }
@@ -170,7 +167,7 @@ onMounted(async () => {
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
-  document.addEventListener('visibilitychange', (event) => {
+  document.addEventListener("visibilitychange", (event) => {
     if (!document.hidden) {
       checkNotificationPermisstions()
       isRefreshing.value = true
@@ -181,7 +178,7 @@ onMounted(async () => {
   })
   //refresh data every time the cursor enters the window on desktop only
   if (isDesktop) {
-    document.addEventListener('pointerenter', () => {
+    document.addEventListener("pointerenter", () => {
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false
@@ -193,11 +190,11 @@ onMounted(async () => {
   window.htlbid = window.htlbid || {}
   htlbid.cmd = htlbid.cmd || []
   htlbid.cmd.push(() => {
-    htlbid.layout('universal') // Leave as 'universal' or add custom layout
-    htlbid.setTargeting('is_testing', config.public.HTL_IS_TESTING) // Set to "no" for production
-    htlbid.setTargeting('is_home', route.name === 'index' ? 'yes' : 'no') // Set to "yes" on the homepage
-    htlbid.setTargeting('category', route.name) // dynamically pass page category into this function
-    htlbid.setTargeting('post_id', route.name) // dynamically pass unique post/page id into this function
+    htlbid.layout("universal") // Leave as 'universal' or add custom layout
+    htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING) // Set to "no" for production
+    htlbid.setTargeting("is_home", route.name === "index" ? "yes" : "no") // Set to "yes" on the homepage
+    htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
+    htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
   })
 })
 
@@ -216,9 +213,7 @@ useHead({
     <Head>
       <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
       <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title>
-        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
-      </Title>
+      <Title> WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News </Title>
       <Meta
         name="description"
         content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
@@ -263,17 +258,13 @@ useHead({
       <Meta
         name="theme-color"
         :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
+          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
         "
       />
       <Meta
         name="msapplication-TileColor"
         :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
+          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
         "
       />
     </Head>
