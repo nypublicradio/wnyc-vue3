@@ -12,24 +12,24 @@
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
   },
   "devDependencies": {
-    "@capacitor/cli": "5.5.1",
+    "@capacitor/cli": "5.6.0",
     "@nuxtjs/device": "^3.1.0",
     "@nuxtjs/ionic": "0.12.1",
     "@vueuse/nuxt": "^10.5.0",
     "date-fns": "^2.30.0",
-    "nuxt": "^3.9.0",
-    "sass": "1.69.5"
+    "nuxt": "3.9.1",
+    "sass": "1.69.7"
   },
   "dependencies": {
-    "@capacitor/android": "5.3.0",
+    "@capacitor/android": "5.6.0",
     "@capacitor/app": "5.0.6",
     "@capacitor/assets": "^2.0.4",
     "@capacitor/browser": "^5.0.6",
-    "@capacitor/core": "5.5.1",
-    "@capacitor/filesystem": "5.1.4",
+    "@capacitor/core": "5.6.0",
+    "@capacitor/filesystem": "5.2.0",
     "@capacitor/haptics": "5.0.6",
-    "@capacitor/ios": "5.5.1",
-    "@capacitor/keyboard": "5.0.6",
+    "@capacitor/ios": "5.6.0",
+    "@capacitor/keyboard": "5.0.7",
     "@capacitor/local-notifications": "5.0.6",
     "@capacitor/preferences": "5.0.6",
     "@capacitor/push-notifications": "5.1.0",
@@ -39,14 +39,14 @@
     "@nuxt/image": "^1.1.0",
     "@nuxtjs/supabase": "^1.0.2",
     "@nypublicradio/nypr-design-system-vue3": "^2.1.0",
-    "@sentry/tracing": "^7.77.0",
-    "@sentry/vue": "^7.77.0",
+    "@sentry/tracing": "7.92.0",
+    "@sentry/vue": "7.92.0",
     "@types/humps": "^2.0.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
     "@vueuse/core": "^10.5.0",
     "@vueuse/integrations": "^10.5.0",
-    "axios": "1.6.0",
+    "axios": "1.6.5",
     "capacitor-native-settings": "^5.0.0",
     "firebase": "^9.17.1",
     "fuse.js": "^6.6.2",
@@ -55,6 +55,6 @@
     "jsdom": "^21.1.0",
     "primeflex": "^3.3.0",
     "vitest": "0.32.4",
-    "vue": "^3.4.5"
+    "vue": "3.4.6"
   }
 }
