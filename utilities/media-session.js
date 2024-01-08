@@ -57,13 +57,13 @@ export const initMediaSession = async (currentEpisode, skipTime) => {
 
     MediaSession.setActionHandler({ action: 'seekforward' }, (details) => {
         console.log('seekforward', details)
-        const seekOffset = details.seekOffset ?? 30
+        const seekOffset = skipTime
         audioElement.currentTime = audioElement.currentTime + seekOffset
     })
 
     MediaSession.setActionHandler({ action: 'seekbackward' }, (details) => {
-        const seekOffset = details.seekOffset ?? 30
-        audioElement.currentTime = audioElement.currentTime - 30
+        const seekOffset = skipTime
+        audioElement.currentTime = audioElement.currentTime - seekOffset
     })
 
     MediaSession.setActionHandler({ action: 'stop' }, () => {
