@@ -23,6 +23,15 @@ import {
 } from "~/composables/states"
 import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
 
+import { initMediaSession } from "~/utilities/media-session.js"
+
+// if (process.client) {
+//   import("~/utilities/media-session.js").then((module) => {
+//     // Use your module here
+//     console.log("after load")
+//   })
+// }
+
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -66,6 +75,9 @@ const switchEpisode = () => {
   //showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
+    // initiallizes the media session in ~/utilities/media-session.js
+
+    initMediaSession(currentEpisode.value)
     delay = 250
   }, delay)
 }
