@@ -48,6 +48,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + "px")
+const skipTime = 10
 
 const route = useRoute()
 /*function that updated the global useIsEpisodePlaying */
@@ -77,21 +78,15 @@ const switchEpisode = () => {
     showPlayer.value = true
     // initiallizes the media session in ~/utilities/media-session.js
 
-    initMediaSession(currentEpisode.value)
+    initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
 }
 
-watch(
-  currentEpisode,
-  () => {
-    console.log("currentEpisode.value changed = ", currentEpisode.value)
-    switchEpisode()
-  },
-  {
-    deep: true,
-  }
-)
+watch(currentEpisode, () => {
+  console.log("currentEpisode.value changed = ", currentEpisode.value)
+  switchEpisode()
+})
 
 watch(togglePlayTrigger, () => {
   if (playerRef.value) playerRef.value.togglePlay()
@@ -152,8 +147,8 @@ watch(
         :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
         :image="templatizePublisherImageUrl(currentEpisode?.image)"
         :file="currentEpisode?.hls ?? currentEpisode?.file"
-        :skipAheadTime="10"
-        :skipBackTime="10"
+        :skipAheadTime="skipTime"
+        :skipBackTime="skipTime"
         @togglePlay="updateUseIsEpisodePlaying"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"

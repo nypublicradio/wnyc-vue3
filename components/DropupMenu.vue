@@ -186,6 +186,7 @@ onUnmounted(() => {
     @hide="unsetPanel"
     :panelClass="`p-dropup-panel ${props.customButton ? 'is-customButton' : ''}`"
     :panelProps="{ id: 'p-dropup-panel' }"
+    @click.prevent
   >
     <template #value="slotProps">
       <div ref="sDropDownRef" class="ans">
