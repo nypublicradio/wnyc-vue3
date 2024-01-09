@@ -27,7 +27,7 @@ console.log("props.episode = ", props.data)
 </script>
 
 <template>
-  <div class="live-item flex gap-3">
+  <div v-if="props.data" class="live-item flex gap-3">
     <VImage
       v-if="props.data?.image"
       :src="props.data?.image?.template ?? templatizePublisherImageUrl(props.data?.image)"
@@ -48,6 +48,25 @@ console.log("props.episode = ", props.data)
       </div>
     </div>
   </div>
+
+  <div v-else class="skeleton-holder flex gap-3">
+    <div>
+      <Skeleton
+        :width="`${props.size}px`"
+        :height="`${props.size}px`"
+        borderRadius="0px"
+      />
+    </div>
+    <div class="flex flex-column justify-content-center w-full gap-1">
+      <Skeleton height="16px" width="50px" borderRadius="2px" />
+      <Skeleton height="16px" width="150px" borderRadius="16px" />
+      <div class="w-full flex flex-column gap-2 mt-1">
+        <Skeleton height="13px" width="98%" borderRadius="16px" />
+        <Skeleton height="13px" width="90%" borderRadius="16px" />
+        <Skeleton height="13px" width="93%" borderRadius="16px" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -56,5 +75,7 @@ console.log("props.episode = ", props.data)
     flex: none;
     width: v-bind(size);
   }
+}
+.skeleton {
 }
 </style>

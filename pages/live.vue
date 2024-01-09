@@ -123,7 +123,7 @@ watch(
 <template>
   <div class="live-page">
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature class="live-stations-holder">
+      <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
             v-for="station in allCurrentStations"
@@ -163,14 +163,45 @@ watch(
           </div>
         </div>
       </HorizontalScrollFeature>
+      <div v-else class="flex overflow-hidden mb-3">
+        <Skeleton
+          class="flex-none"
+          height="37px"
+          width="127px"
+          borderRadius="20px"
+          style="margin-left: 1.25rem"
+        />
+        <Skeleton
+          class="flex-none"
+          height="37px"
+          width="127px"
+          borderRadius="20px"
+          style="margin-left: 1.25rem"
+        />
+        <Skeleton
+          class="flex-none"
+          height="37px"
+          width="127px"
+          borderRadius="20px"
+          style="margin-left: 1.25rem"
+        />
+        <Skeleton
+          class="flex-none"
+          height="37px"
+          width="127px"
+          borderRadius="20px"
+          style="margin-left: 1.25rem"
+        />
+      </div>
       <section class="current-station-info">
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
       <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
     </div>
-    <section class="schedule" v-if="scheduleRef">
+    <section class="schedule">
       <h2>Schedule</h2>
       <div
+        v-if="scheduleRef"
         v-for="(entry, index) in scheduleRef"
         :key="entry.id"
         class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
@@ -204,6 +235,37 @@ watch(
             <FollowIcon :active="false" />
           </template>
         </Button>
+      </div>
+      <div v-else class="skeleton mt-5">
+        <div
+          v-for="(article, index) in 10"
+          :key="`schedule-skeleton-${index}`"
+          class="flex align-items-center justify-content-between pr-2 mb-5"
+        >
+          <div class="flex gap-3">
+            <Skeleton
+              height="30px"
+              width="4px"
+              borderRadius="2px"
+              :class="[{ 'opacity-0': index > 0 }]"
+            />
+            <div class="flex flex-column gap-1">
+              <Skeleton
+                class="opacity-50"
+                height="12px"
+                width="64px"
+                borderRadius="4px"
+              />
+              <Skeleton height="14px" width="174px" borderRadius="4px" />
+            </div>
+          </div>
+          <Skeleton
+            :class="[{ 'opacity-0': index < 1 }]"
+            height="26px"
+            width="26px"
+            borderRadius="15px"
+          />
+        </div>
       </div>
     </section>
   </div>
