@@ -102,6 +102,7 @@ const togglePlay = (item) => {
               :label="getMinutes(item.estimatedDuration, 1)"
               :file="item.audio"
               @onClick="togglePlay(item)"
+              class="z-2"
               @click.prevent
             />
           </template>
@@ -111,8 +112,7 @@ const togglePlay = (item) => {
               :menuItems="getDotMenuItems(item)"
               label="Options"
               @changeEmit="onMenuChange"
-              @click.prevent
-              class="-mr-1"
+              class="-mr-1 z-2"
               size="large"
             >
               <template #end v-if="item.embedCode">

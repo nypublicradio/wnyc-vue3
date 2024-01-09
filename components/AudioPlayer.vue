@@ -23,6 +23,15 @@ import {
 } from "~/composables/states"
 import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
 
+import { initMediaSession } from "~/utilities/media-session.js"
+
+// if (process.client) {
+//   import("~/utilities/media-session.js").then((module) => {
+//     // Use your module here
+//     console.log("after load")
+//   })
+// }
+
 const currentEpisode = useCurrentEpisode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -39,6 +48,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const showPlayer = ref(false)
 const playerRef = ref()
 const playerHeight = ref(audioPlayerHeight + "px")
+const skipTime = 10
 
 const route = useRoute()
 /*function that updated the global useIsEpisodePlaying */
@@ -63,23 +73,20 @@ const updateUseIsPlayerMinimized = (e) => {
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
-  //showPlayer.value = false
+  showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
+
     delay = 250
   }, delay)
 }
 
-watch(
-  currentEpisode,
-  () => {
-    console.log("currentEpisode.value changed = ", currentEpisode.value)
-    switchEpisode()
-  },
-  {
-    deep: true,
-  }
-)
+watch(currentEpisode, () => {
+  console.log("currentEpisode.value changed = ", currentEpisode.value)
+  // initiallizes the media session in ~/utilities/media-session.js
+  initMediaSession(currentEpisode.value, skipTime)
+  switchEpisode()
+})
 
 watch(togglePlayTrigger, () => {
   if (playerRef.value) playerRef.value.togglePlay()
@@ -140,8 +147,8 @@ watch(
         :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
         :image="templatizePublisherImageUrl(currentEpisode?.image)"
         :file="currentEpisode?.hls ?? currentEpisode?.file"
-        :skipAheadTime="10"
-        :skipBackTime="10"
+        :skipAheadTime="skipTime"
+        :skipBackTime="skipTime"
         @togglePlay="updateUseIsEpisodePlaying"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
@@ -276,7 +283,9 @@ html.style-mode-dark .persistent-player {
 }
 
 .player-leave-active {
-  transition: transform calc(var(--transition-duration) / 20) ease-in;
+  // making it instant for now
+  transition: none;
+  //transition: transform calc(var(--transition-duration) / 2) ease-in;
 }
 
 .player-enter-from,
