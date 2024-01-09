@@ -73,18 +73,18 @@ const updateUseIsPlayerMinimized = (e) => {
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
-  //showPlayer.value = false
+  showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
 
-    initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
 }
 
 watch(currentEpisode, () => {
   console.log("currentEpisode.value changed = ", currentEpisode.value)
+  // initiallizes the media session in ~/utilities/media-session.js
+  initMediaSession(currentEpisode.value, skipTime)
   switchEpisode()
 })
 
@@ -283,7 +283,9 @@ html.style-mode-dark .persistent-player {
 }
 
 .player-leave-active {
-  transition: transform calc(var(--transition-duration) / 20) ease-in;
+  // making it instant for now
+  transition: none;
+  //transition: transform calc(var(--transition-duration) / 2) ease-in;
 }
 
 .player-enter-from,

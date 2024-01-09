@@ -20,16 +20,21 @@ const updatePositionState = () => {
     })
 }
 
-export const initMediaSession = async (episode, skipTime) => {
-    console.log('initMediaSession', currentEpisode)
-    currentEpisode = episode
+async function getImageType(url) {
+    const response = await fetch(url, { method: 'HEAD' })
+    return response.headers.get('Content-Type')
+}
 
+export const initMediaSession = async (episode, skipTime) => {
+    currentEpisode = episode
+    const type = await getImageType(resizePublisherImageUrl(currentEpisode.image, 512, 512))
+    console.log('type', type)
     MediaSession.setMetadata({
         title: currentEpisode.title,
         artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
         album: currentEpisode.showTitle,
         artwork: [
-            { src: resizePublisherImageUrl(currentEpisode.image, 512, 512), type: 'image/jpg', sizes: '512x512' }
+            { src: resizePublisherImageUrl(currentEpisode.image, 512, 512), type: type, sizes: '512x512' }
         ]
     })
 
