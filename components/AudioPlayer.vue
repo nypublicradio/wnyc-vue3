@@ -76,7 +76,7 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js, needs to be on this slight delay to work it seems
+    // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
