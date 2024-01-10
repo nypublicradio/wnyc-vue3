@@ -267,14 +267,14 @@ html.style-mode-dark .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
   }
+  .play-icon {
+    width: 13px;
+    height: 17px;
+    margin-left: 1px;
+  }
   .expanded-view {
     #expandedControls {
       min-height: 85px;
-      .play-icon {
-        width: 13px;
-        height: 17px;
-        margin-left: 1px;
-      }
       .next-10-icon,
       .previous-10-icon {
         width: 20px;
