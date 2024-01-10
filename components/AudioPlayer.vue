@@ -69,6 +69,10 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
+/*function that fires when the episode has ended/completed */
+const episodeEnded = (e) => {
+  trackClickEvent("Event - Audio file ended", "Audio Player", currentEpisode.value.title)
+}
 
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
@@ -156,6 +160,7 @@ watch(
         @is-expanded="isPlayerExpanded = $event"
         @duration="currentEpisodeDuration = $event"
         @current-duration="currentEpisodeProgress = $event"
+        @ended="episodeEnded"
         can-click-anywhere
         marquee
       >
