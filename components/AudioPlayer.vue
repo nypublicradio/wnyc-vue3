@@ -247,6 +247,9 @@ html.style-mode-dark .persistent-player {
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
         }
+        .header-top {
+          padding: 0 1.5rem;
+        }
         .expanded-footer {
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
