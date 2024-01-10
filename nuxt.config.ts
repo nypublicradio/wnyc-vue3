@@ -1,3 +1,5 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin'
+
 export default defineNuxtConfig({
 
   modules: [
@@ -103,14 +105,21 @@ export default defineNuxtConfig({
         ]
       }
     },
-    // added for VidStack players
-    vue: {
-      template: {
-        compilerOptions: {
-          isCustomElement: tag => tag.startsWith('media-'),
-        },
-      },
-    },
+    plugins: [
+      process.env.SENTRY_ENV === 'development'
+        ? null
+        : sentryVitePlugin({
+          include: '.nuxt/dist',
+          ignore: ['node_modules', 'nuxt.config.ts'],
+          org: 'nypublicradio',
+          project: 'wnyc-vue3',
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+        }),
+    ],
+  },
+  sourcemap: {
+    client: true,
+    server: true,
   },
   components: [
     '~/components',
