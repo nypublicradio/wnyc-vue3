@@ -33,10 +33,11 @@ export const initMediaSession = async (episode, skipTime) => {
     })
 
     if (!initFlag) {
-        console.log('once')
+        //console.log('once')
         initFlag = true
 
-        audioElement = document.querySelector('audio')
+        let mediaProvider = document.querySelector('media-provider')
+        audioElement = mediaProvider.querySelector('audio, video')
 
         audioElement.addEventListener('durationchange', updatePositionState)
         audioElement.addEventListener('seeked', updatePositionState)
