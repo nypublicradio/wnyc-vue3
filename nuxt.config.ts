@@ -105,6 +105,14 @@ export default defineNuxtConfig({
         ]
       }
     },
+    // added for VidStack players
+    vue: {
+      template: {
+        compilerOptions: {
+          isCustomElement: tag => tag.startsWith('media-'),
+        },
+      },
+    },
     plugins: [
       process.env.SENTRY_ENV === 'development'
         ? null

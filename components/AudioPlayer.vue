@@ -76,7 +76,7 @@ const episodeEnded = (e) => {
 
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
-const switchEpisode = () => {
+const switchEpisode = async () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
