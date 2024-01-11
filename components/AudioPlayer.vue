@@ -69,10 +69,14 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
+/*function that fires when the episode has ended/completed */
+const episodeEnded = (e) => {
+  trackClickEvent("Event - Audio file ended", "Audio Player", currentEpisode.value.title)
+}
 
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
-const switchEpisode = () => {
+const switchEpisode = async () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
@@ -156,6 +160,7 @@ watch(
         @is-expanded="isPlayerExpanded = $event"
         @duration="currentEpisodeDuration = $event"
         @current-duration="currentEpisodeProgress = $event"
+        @ended="episodeEnded"
         can-click-anywhere
         marquee
       >
@@ -247,6 +252,9 @@ html.style-mode-dark .persistent-player {
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
         }
+        .header-top {
+          padding: 0 1.5rem;
+        }
         .expanded-footer {
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
@@ -259,14 +267,14 @@ html.style-mode-dark .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
   }
+  .play-icon {
+    width: 13px;
+    height: 17px;
+    margin-left: 1px;
+  }
   .expanded-view {
     #expandedControls {
       min-height: 85px;
-      .play-icon {
-        width: 13px;
-        height: 17px;
-        margin-left: 1px;
-      }
       .next-10-icon,
       .previous-10-icon {
         width: 20px;

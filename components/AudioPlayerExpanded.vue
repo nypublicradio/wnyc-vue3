@@ -359,13 +359,13 @@ console.log("currentEpisode = ", currentEpisode.value)
     </VImage>
 
     <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
-      <h2>Author{{ currentEpisode.onTodaysShowHosts.length > 0 ? "s" : "" }}</h2>
+      <h2>Author{{ currentEpisode.onTodaysShowHosts.length > 1 ? "s" : "" }}</h2>
       <div class="flex gap-4 flex-wrap my-3">
         <Author
           v-for="author in currentEpisode.onTodaysShowHosts"
           :key="author.url"
           :imgSrc="author.image"
-          :name="`${author['first-name']} ${author['last-name']}`"
+          :name="`${author.firstName} ${author.lastName}`"
           :to="author.url"
           @onClick="emit('close-panel')"
         />
