@@ -5,6 +5,7 @@ import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
 import Next10 from "~/components/icons/Next10.vue"
 import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+import HLS from "hls.js"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -230,12 +231,6 @@ html.style-mode-dark .persistent-player {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    .track-info-livestream {
-      display: none !important;
-    }
-    .track-info-time {
-      //display: none !important;
     }
     .play-button,
     .p-buttonset > .play-button,
