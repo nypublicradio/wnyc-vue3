@@ -58,6 +58,13 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --donation-text: var(--night-500) !important;
     --searchFieldBackground: var(--s-box-background-color) !important;
     --backgroundSimple: var(--background2) !important;
+
+    --persistent-player-slider-progress: var(--indigo);
+    --persistent-player-slider-thumb-border: var(--indigo);
+    --persistent-player-slider-thumb-shadow: var(--indigo);
+    --persistent-player-slider-thumb-bg: var(--white);
+    --persistent-player-slider-bg: var(--white);
+    --persistent-player-slider-buffer: var(--secondary);
 }
 
 // :root {

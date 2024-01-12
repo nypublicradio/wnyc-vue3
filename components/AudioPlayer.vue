@@ -231,12 +231,6 @@ html.style-mode-dark .persistent-player {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .track-info-livestream {
-      display: none !important;
-    }
-    .track-info-time {
-      display: none !important;
-    }
     .play-button,
     .p-buttonset > .play-button,
     .p-splitbutton.p-button-secondary > .play-button {
@@ -261,16 +255,16 @@ html.style-mode-dark .persistent-player {
         }
       }
     }
+    .play-icon {
+      width: 13px;
+      height: 17px;
+      margin-left: 1px;
+    }
   }
   .template-blank {
     .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
-  }
-  .play-icon {
-    width: 13px;
-    height: 17px;
-    margin-left: 1px;
   }
   .expanded-view {
     #expandedControls {
