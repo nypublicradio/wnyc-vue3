@@ -235,7 +235,7 @@ html.style-mode-dark .persistent-player {
       display: none !important;
     }
     .track-info-time {
-      display: none !important;
+      //display: none !important;
     }
     .play-button,
     .p-buttonset > .play-button,
