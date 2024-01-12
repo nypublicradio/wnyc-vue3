@@ -261,16 +261,16 @@ html.style-mode-dark .persistent-player {
         }
       }
     }
+    .play-icon {
+      width: 13px;
+      height: 17px;
+      margin-left: 1px;
+    }
   }
   .template-blank {
     .persistent-player {
       bottom: env(safe-area-inset-bottom);
     }
-  }
-  .play-icon {
-    width: 13px;
-    height: 17px;
-    margin-left: 1px;
   }
   .expanded-view {
     #expandedControls {
