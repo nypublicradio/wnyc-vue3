@@ -5,7 +5,6 @@ export const useCommentCounts = () => useState<Record<string, number>>('commentC
 
 // Gets comment counts for a list of comment ids
 const fetchCommentCounts = async function (commentIds: string[]): Promise<Record<string, number>> {
-    console.log('counting')
     const config = useRuntimeConfig()
     const baseURL = 'https://open-api.spot.im'
     const path = '/v1/messages-count'
@@ -35,7 +34,6 @@ const fetchCommentCounts = async function (commentIds: string[]): Promise<Record
 
 // get comment counts for a list of articles and update the state
 export const useUpdateCommentCounts = async function (articles: ArticlePage[]) {
-    console.log('articles', articles)
     const commentCounts = useCommentCounts()
     const commentIds = articles.map(article => String(article?.legacyId || article.uuid))
     const commentCountData = await fetchCommentCounts(commentIds)

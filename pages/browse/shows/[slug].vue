@@ -43,7 +43,7 @@ const isEpisodePlaying = useIsEpisodePlaying()
 
 // navigate back to home and track it
 const backHome = () => {
-  navigateTo(`/browse`)
+  navigateTo("/browse")
 }
 
 const goToEpisodePage = (ep) => {

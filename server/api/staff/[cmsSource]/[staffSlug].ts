@@ -46,7 +46,7 @@ const getStaffData = async (staffSlug: string, cmsSource: string, offset: number
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
             return await getWagtailStaffData(staffSlug, offset);
-        case cmsSources.WAGTAIL:
+        case cmsSources.PUBLISHER:
             return await getPublisherStaffData(staffSlug);
         default:
             return null;

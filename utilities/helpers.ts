@@ -138,7 +138,7 @@ export const templatizePublisherImageUrl = (url: string): string => {
         finalUrlArr.push(piece)
       }
       if (index === 4) {
-        finalUrlArr.push(`%s/%s/%s/%s`)
+        finalUrlArr.push("%s/%s/%s/%s")
       }
     })
     return finalUrlArr.join("/")
@@ -328,7 +328,7 @@ export const deleteStoredMp3 = async (file: {
       }, 100)
     })
     .catch((e) => {
-      console.error(`Unable to delete file}`, e)
+      console.error("Unable to delete file", e)
     })
 }
 
@@ -553,7 +553,7 @@ export const shareAPI = async (content: object, componentOfOrigin: string = 'Com
     shareContent.title
   )
 
-  console.log('shareContent = ', shareContent)
+  //console.log('shareContent = ', shareContent)
   if (navigator.canShare(shareContent) && isMobileBrowser()) {
     await navigator.share(shareContent)
     return true
@@ -733,7 +733,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg: str
       producingOrganizations,
       meta,
     }
-    console.log('itemToSave = ', itemToSave)
+    //console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client.from(tableArg).insert([itemToSave])

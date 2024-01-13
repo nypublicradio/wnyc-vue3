@@ -42,7 +42,6 @@ useServerHead({
 
 const routeBack = () => {
   trackClickEvent("Staff", "Staff page", "route back")
-  console.log("window.history.state.back = ", window.history.state.back)
   window.history.state.back ? router.back() : navigateTo("/home")
 }
 </script>

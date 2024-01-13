@@ -61,7 +61,6 @@ const routeBack = () => {
 }
 
 const handleComments = () => {
-  console.log("handleComments")
   const activeStation = document.getElementById("comments")
   activeStation.scrollIntoView({
     behavior: "smooth",

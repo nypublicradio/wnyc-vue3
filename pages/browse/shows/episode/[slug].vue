@@ -41,7 +41,7 @@ const backHome = () => {
 }
 
 const handleDownload = () => {
-  console.log("handleDownload")
+  //console.log("handleDownload")
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
@@ -122,7 +122,7 @@ const onMenuChange = (e) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
-  console.log("episode = ", episodeData.value)
+  //console.log("episode = ", episodeData.value)
 })
 </script>
 

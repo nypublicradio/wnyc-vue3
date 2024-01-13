@@ -255,8 +255,6 @@ const moreFromClick = () => {
   emit("close-panel")
   navigateTo(`/browse/shows/${currentEpisode.value.show}`)
 }
-
-console.log("currentEpisode = ", currentEpisode.value)
 </script>
 
 <template>
