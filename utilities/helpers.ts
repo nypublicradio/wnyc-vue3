@@ -332,7 +332,7 @@ export const deleteStoredMp3 = async (file: {
     })
 }
 
-export const formatFileSize = (bytes: number, decimals: number = 2) => {
+export const formatFileSize = (bytes: number, decimals = 2) => {
   if (bytes === 0) return "0 B"
 
   const k = 1024
@@ -537,7 +537,7 @@ export const removeHTMLTags = (str) => {
 
 }
 // share API
-export const shareAPI = async (content: object, componentOfOrigin: string = 'Component of origin not specified') => {
+export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
 
   // DESKTOP sharing is not supported yet
 
@@ -701,7 +701,7 @@ const isDifferentMedia = (media: object, type: string) => {
   }
 }
 
-export const saveFavorite = async (media: object, typeArg: string, tableArg: string = "favorited") => {
+export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
   const source = media?.cmsSource ?? media?.cmsSource
   const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
@@ -833,7 +833,7 @@ export const togglePlay = (media, index = 0) => {
 }
 
 
-export const getCssVar = (name: string, px: boolean = false) => {
+export const getCssVar = (name: string, px = false) => {
 
   const val = getComputedStyle(document.documentElement).getPropertyValue(
     name

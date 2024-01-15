@@ -3,7 +3,6 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
 import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
-import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers"
 import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -17,6 +16,9 @@ import {
   checkIsFavorited,
   getFavoritedItems,
   shareAPI,
+  trackClickEvent,
+  whenTime,
+  getMinutes,
 } from "~/utilities/helpers"
 
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"

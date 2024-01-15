@@ -1,11 +1,9 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-
 import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-
 import {
   deleteFavorite,
   saveFavorite,
@@ -13,6 +11,7 @@ import {
   getFavoritedItems,
   togglePlay,
   shareAPI,
+  trackClickEvent,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
