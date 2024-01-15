@@ -54,15 +54,12 @@ const togglePlayMostRecentEpisode = () => {
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
-    const show = {
-      slug: route.params.slug,
-    }
     if (isFavorited.value) {
-      await deleteFavorite(show)
+      await deleteFavorite(show.value.show)
       getFavoritedItems()
       isFavorited.value = false
     } else {
-      await saveFavorite(show, "show")
+      await saveFavorite(show.value.show, "show")
       getFavoritedItems()
       isFavorited.value = true
     }
@@ -74,7 +71,7 @@ const handleAddToFavorites = async () => {
     trackClickEvent(
       "Click Tracking - Add/remove from favorites",
       "Shows Page",
-      props.data?.title
+      show.value.show.title
     )
   } else {
     accountPromptSideBar.value = true
@@ -85,7 +82,7 @@ const handleShare = () => {
 }
 
 watch(show, () => {
-  //console.log("show  = ", show.value)
+  console.log("show  = ", show.value)
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template
