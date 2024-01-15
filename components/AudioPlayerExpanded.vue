@@ -4,7 +4,6 @@ import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 
 import {
   trackClickEvent,
-  whenTime,
   shareAPI,
   templatizePublisherImageUrl,
   deleteFavorite,

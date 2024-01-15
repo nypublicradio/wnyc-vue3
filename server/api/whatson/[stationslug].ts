@@ -28,15 +28,13 @@ const formatShowData = (apiResponse: any) => {
 	const formattedSegments: any = []
 	if (apiResponse.included) {
 		if (segmentData !== null) {
-			segmentData.forEach(function (value: any) {
-				formattedSegments.push(
-					{
-						title: value.attributes.title,
-						url: 'https://www.wnyc.org/story/' + value.attributes.slug,
-						newWindow: true
-					}
-				)
-			})
+			segmentData.forEach((value: any) => {
+				formattedSegments.push({
+					title: value.attributes.title,
+					url: 'https://www.wnyc.org/story/' + value.attributes.slug,
+					newWindow: true
+				});
+			});
 		}
 	}
 	let title = showData ? showData.attributes.title : null
