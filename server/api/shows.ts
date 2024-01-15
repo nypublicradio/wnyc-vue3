@@ -21,6 +21,7 @@ const allShows = async () => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 }
 
 //Fetch featured shows for the app
@@ -45,6 +46,7 @@ const featuredShows = async () => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 }
 
 

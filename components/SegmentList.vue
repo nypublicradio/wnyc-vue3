@@ -1,4 +1,3 @@
-<script setup></script>
 <template>
   <div class="segment-list">
     <p class="segment-list-title">Segments</p>

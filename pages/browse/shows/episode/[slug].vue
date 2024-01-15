@@ -40,8 +40,8 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
-const handleDownload = () => {
-  //console.log("handleDownload")
+const handleDownload = (episodeData) => {
+  //console.log("handleDownload", episodeData)
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
@@ -212,7 +212,13 @@ watch(episode, () => {
             >
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
-            <Button class="w-2rem h-2rem" text plain rounded @click="handleDownload">
+            <Button
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleDownload(episodeData)"
+            >
               <template #icon> <DownloadIcon /></template>
             </Button>
             <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">

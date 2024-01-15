@@ -26,6 +26,7 @@ const getLivestreams = async () => {
     } catch (e) {
         console.log(e);
     }
+    return null
 }
 
 /**

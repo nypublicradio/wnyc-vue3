@@ -81,6 +81,7 @@ export const fetchDuration = async (url: string) => {
   } catch (e) {
     //console.log(e);
   }
+  return null
 }
 
 // returns a resized image url when provided the entire image object
@@ -142,6 +143,8 @@ export const templatizePublisherImageUrl = (url: string): string => {
       }
     })
     return finalUrlArr.join("/")
+  } else {
+    return null
   }
 }
 

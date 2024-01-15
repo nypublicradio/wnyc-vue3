@@ -41,6 +41,7 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 }
 
 const getShow = async (slug: string) => {
@@ -58,6 +59,7 @@ const getShow = async (slug: string) => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 }
 
 export default defineEventHandler(async (event) => {
@@ -76,6 +78,7 @@ export default defineEventHandler(async (event) => {
             show: show,
             episodes: episodes
         }
+    } else {
+        return null;
     }
-    return null;
 })

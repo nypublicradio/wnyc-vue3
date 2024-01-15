@@ -64,5 +64,7 @@ export default defineEventHandler(async (event) => {
     if (staffSlug && cmsSource) {
         const storyData = await getStaffData(staffSlug, cmsSource, query.offset);
         return storyData;
+    } else {
+        return null
     }
 });

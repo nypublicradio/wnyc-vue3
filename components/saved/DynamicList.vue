@@ -119,5 +119,3 @@ watch(
   </div>
   <slot v-else />
 </template>
-
-<style lanf="scss" scoped></style>

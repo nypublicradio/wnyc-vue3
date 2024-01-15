@@ -41,6 +41,7 @@ const getLocalNewscast = async () => {
 	} catch (e) {
 		////console.log(e);
 	}
+	return null
 }
 
 const getNationalNewscast = async () => {
@@ -74,6 +75,7 @@ const getNationalNewscast = async () => {
 	} catch (e) {
 		////console.log(e);
 	}
+	return null
 }
 
 // Get NYC-NOW newscast from the WNYC API
@@ -111,6 +113,7 @@ const getNYCNowNewscast = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 }
 
 const getSectionData = async (slug: string) => {
@@ -127,6 +130,7 @@ const getSectionData = async (slug: string) => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 };
 
 const getHomeTemplate = async () => {
@@ -153,6 +157,7 @@ const getHomeTemplate = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 }
 
 const getGothamistTopStories = async () => {
@@ -181,6 +186,7 @@ const getGothamistTopStories = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 }
 
 //Gets the top stories from the WNYC API and 
@@ -206,6 +212,7 @@ const getWNYCTopStories = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 
 }
 
