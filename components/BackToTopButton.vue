@@ -17,8 +17,8 @@ const bottomBuffer = ref(`${bottomMenuHeight}px`)
 watch(
   currentEpisode,
   () => {
-    currentEpisode.value
-      ? (bottomBuffer.value = `${Number(bottomMenuHeight) + Number(playerHeight)}px`)
+    bottomBuffer.value = currentEpisode.value
+      ? `${Number(bottomMenuHeight) + Number(playerHeight)}px`
       : `${bottomMenuHeight}px`
   },
   { immediate: true }

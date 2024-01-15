@@ -531,13 +531,9 @@ function isMobileBrowser() {
 }
 
 export const removeHTMLTags = (str) => {
-  const tempElement = document.createElement('div');
-  tempElement.innerHTML = str;
-  return tempElement.textContent || tempElement.innerText || '';
-
-  //const doc = new DOMParser().parseFromString(str, 'text/html');
-  //return = doc.body.textContent || '';
-
+  const parser = new DOMParser();
+  const parsedHTML = parser.parseFromString(str, 'text/html');
+  return parsedHTML.body.textContent || '';
 }
 // share API
 export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
