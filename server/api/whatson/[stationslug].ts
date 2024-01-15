@@ -3,28 +3,19 @@ import humps from 'humps'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
-const getLivestream = async (slug: String) => {
+const getLivestream = async (slug: string) => {
 	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
 	return humps.camelizeKeys(formatShowData(res.data))
 }
 
 const formatShowData = (apiResponse: any) => {
-	const showData = apiResponse?.included?.find((obj: any) =>
-		obj.type === 'show'
-	)
-	const scheduleData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'show-schedule'
-	})
-	const imageData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'image'
-	})
-	const episodeData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'episode'
-	})
-	const airingData = apiResponse?.included?.find((obj: any) => {
-		return obj.type === 'airing'
-	})
+	const showData = apiResponse?.included?.find((obj: any) => obj.type === 'show')
+	const scheduleData = apiResponse?.included?.find((obj: any) => obj.type === 'show-schedule')
+	const imageData = apiResponse?.included?.find((obj: any) => obj.type === 'image')
+	const episodeData = apiResponse?.included?.find((obj: any) => obj.type === 'episode')
+	const airingData = apiResponse?.included?.find((obj: any) => obj.type === 'airing')
 	const segmentData = apiResponse?.included?.filter((item: any) => item.type === 'segment')
+
 	const formattedSegments: any = []
 	if (apiResponse.included) {
 		if (segmentData !== null) {
@@ -50,7 +41,7 @@ const formatShowData = (apiResponse: any) => {
 		title = apiResponse.data[0].attributes.name
 		details = apiResponse.data[0].attributes['short-description']
 	}
-	const formattedData = {
+	return {
 		details,
 		detailsLink: showData ? showData.attributes.url : null,
 		episodeTitle: episodeData ? episodeData.attributes.title : null,
@@ -84,13 +75,12 @@ const formatShowData = (apiResponse: any) => {
 		onTodaysShowSocial: showData ? showData.attributes.about.social : null,
 		showSchedule: scheduleData ? scheduleData.attributes : null
 	}
-	return formattedData
 };
 
 
 
 export default defineEventHandler(async (event) => {
-	const slug: String | undefined = event?.context?.params?.stationslug;
+	const slug: string | undefined = event?.context?.params?.stationslug;
 	if (slug) {
 		return getLivestream(slug);
 	}

@@ -1,5 +1,5 @@
 <script setup>
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 
 const props = defineProps({
   newWindow: {
@@ -15,6 +15,8 @@ const props = defineProps({
     type: String,
   },
 })
+
+const emit = defineEmits(["onClick"])
 </script>
 <template>
   <VFlexibleLink
@@ -23,7 +25,7 @@ const props = defineProps({
     :to="url"
     :target="newWindow && '_blank'"
     class="segment-list-item"
-    @click="$emit('click-emit', { url, title })"
+    @click="emit('onClick', { url, title })"
   >
     <div class="segment-list-item-title">
       {{ title }}
@@ -42,7 +44,7 @@ const props = defineProps({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(map-get($colors, 'background'), 0.2) !important;
+  border-bottom: 1px solid rgba(map-get($colors, "background"), 0.2) !important;
   text-decoration: none;
   padding-top: 8px;
   padding-bottom: 8px;

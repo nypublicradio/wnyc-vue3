@@ -13,11 +13,11 @@ const allShows = async () => {
             url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
         };
         const res = await axios(option);
-        res.data.results.map((show: any) => {
+        const resData = res.data.results.map((show: any) => {
             show.cmsSource = cmsSources.PUBLISHER;
             show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s')
         });
-        return humps.camelizeKeys(res.data).results;
+        return humps.camelizeKeys(resData).results;
     } catch (e) {
         //console.log(e);
     }
@@ -54,7 +54,7 @@ export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
-    featuredShowsData.map((show: any) => {
+    const updatedFeaturedShowsData = featuredShowsData.map((show: any) => {
         //Get the id from the allShowsData
         const match = allShowsData.find((item: any) => item.slug === show.slug);
         if (match) {
@@ -64,6 +64,6 @@ export default defineEventHandler(async (event) => {
     res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     return {
         all: allShowsData,
-        featuredShows: featuredShowsData
+        featuredShows: updatedFeaturedShowsData
     }
 });

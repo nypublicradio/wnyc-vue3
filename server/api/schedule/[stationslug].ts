@@ -2,7 +2,7 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 
-const getSchedule = async (slug: String, schedDate: String) => {
+const getSchedule = async (slug: string, schedDate: string) => {
     const options = {
         method: 'GET',
         url: config.public.PUBLISHER_BASE_API + 'v3/schedule/',
@@ -10,9 +10,9 @@ const getSchedule = async (slug: String, schedDate: String) => {
             scheduleStation: slug,
             scheduleDate: schedDate
         }
-    };    
+    };
     const res = await axios(options);
-    const resData =  humps.camelizeKeys(res.data).data;
+    const resData = humps.camelizeKeys(res.data).data;
     const filteredSchedule = removePastShows(resData);
     return filteredSchedule;
 };
@@ -40,7 +40,7 @@ const removeFutureShows = (schedule: any) => {
 };
 
 export default defineEventHandler(async (event) => {
-	const slug = event?.context?.params?.stationslug as string;
+    const slug = event?.context?.params?.stationslug as string;
     if (slug) {
         //Get schedule for today and tomorrow
         const today = new Date();
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
         const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0]);
         const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
         //Combine today and tomorrow's schedule and return
-		return scheduleToday.concat(filteredScheduleTomorrow);
-	}
-	return null;
+        return scheduleToday.concat(filteredScheduleTomorrow);
+    }
+    return null;
 });

@@ -656,7 +656,6 @@ export const getAndSetUserProfile = async () => {
           key: "localUserProfile",
           value: defaultsSTRING,
         })
-        currentUserProfile.value = {}
         currentUserProfile.value = localUserProfileDefault.value
 
         updateAllLiveStreams()
@@ -664,7 +663,6 @@ export const getAndSetUserProfile = async () => {
         setDisplaySettings(localUserProfileDefault.value)
       } else {
         // local storage is set, so set currentUserProfile to the local storage settings
-        currentUserProfile.value = {}
         currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
 
         updateAllLiveStreams()
