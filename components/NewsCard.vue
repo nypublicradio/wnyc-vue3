@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, getMinutes, howLongAgo } from "~/utilities/helpers"
+import { getMinutes, howLongAgo } from "~/utilities/helpers"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 const $primevue = usePrimeVue()

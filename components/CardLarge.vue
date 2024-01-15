@@ -1,5 +1,5 @@
 <script setup>
-import { formatPublisherImage, getMinutes, whenTime } from "~/utilities/helpers"
+import { whenTime } from "~/utilities/helpers"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage"
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 

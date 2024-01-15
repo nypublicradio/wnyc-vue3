@@ -7,7 +7,6 @@ import Next10 from "~/components/icons/Next10.vue"
 import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
   useCurrentEpisode,
-  useCurrentEpisodeHolder,
   useIsEpisodePlaying,
   useTogglePlayTrigger,
   useIsPlayerMinimized,
@@ -33,7 +32,6 @@ import { initMediaSession } from "~/utilities/media-session.js"
 // }
 
 const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
 const isPlayerExpanded = useIsPlayerExpanded()
@@ -70,7 +68,7 @@ const updateUseIsPlayerMinimized = (e) => {
   isPlayerMinimized.value = e
 }
 /*function that fires when the episode has ended/completed */
-const episodeEnded = (e) => {
+const episodeEnded = () => {
   trackClickEvent("Event - Audio file ended", "Audio Player", currentEpisode.value.title)
 }
 
@@ -114,7 +112,7 @@ watch(
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
   () => route.name,
-  (e) => {
+  () => {
     if (playerRef.value && !isPlayerMinimized.value) {
       playerRef.value.toggleExpanded()
     }

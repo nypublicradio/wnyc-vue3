@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, whenTime, getMinutes } from "~/utilities/helpers"
+import { trackClickEvent } from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 
 // TEMP fix to make ripple work
@@ -21,9 +21,6 @@ const props = defineProps({
   },
 })
 
-//console.log('localNewscast', props.localNewscast)
-//console.log('nationalNewscast', props.nationalNewscast)
-
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
@@ -41,17 +38,20 @@ const togglePlay = (media) => {
   <div>
     <div class="latest-news-updates grid">
       <div class="col-6">
-        <NewsCard :newsData="localNewscast" @onClick="togglePlay(localNewscast)" />
+        <NewsCard
+          :newsData="props.localNewscast"
+          @onClick="togglePlay(props.localNewscast)"
+        />
       </div>
 
       <div class="col-6">
         <NewsCard
-          :newsData="nationalNewscast"
+          :newsData="props.nationalNewscast"
           source="NPR"
           badgeLabel="National News"
           bagdeColor="var(--background-500)"
           badgeBgColor="var(--indigo-500)"
-          @onClick="togglePlay(nationalNewscast)"
+          @onClick="togglePlay(props.nationalNewscast)"
         />
       </div>
     </div>

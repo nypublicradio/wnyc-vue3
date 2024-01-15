@@ -6,8 +6,8 @@ import {
   playMp3,
   formatFileSize,
   initReadOfPreferences,
-} from '~/utilities/helpers'
-import { useFileSystem, useFileSystemLS } from '~/composables/states'
+} from "~/utilities/helpers"
+import { useFileSystem, useFileSystemLS } from "~/composables/states"
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
 fileSystemLS.value = await initReadOfPreferences()
@@ -15,7 +15,7 @@ fileSystemLS.value = await initReadOfPreferences()
 const used = ref(0)
 const granted = ref(0)
 
-watch(fileSystem, (value) => {
+watch(fileSystem, (/* value */) => {
   //console.log('fileSystem', value)
 
   navigator.webkitPersistentStorage.queryUsageAndQuota(
@@ -23,45 +23,45 @@ watch(fileSystem, (value) => {
       //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
       used.value = usedBytes
       granted.value = grantedBytes
-    },
-    function (e) {
-      //console.log('Error', e)
     }
+    // function (e) {
+    //   console.log('Error', e)
+    // }
   )
 })
 
 const files = ref([
   {
-    title: 'Large: Colors',
-    file: 'https://waaa.wnyc.org/radiolab/radiolab040210.mp3',
-    details: '<p>This is a Radiolab sample description for this audio file</p>',
+    title: "Large: Colors",
+    file: "https://waaa.wnyc.org/radiolab/radiolab040210.mp3",
+    details: "<p>This is a Radiolab sample description for this audio file</p>",
     image:
-      'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',
+      "https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg",
   },
   {
-    title: 'Small: Colors',
-    file: 'https://waaa.wnyc.org/bl/bl122721dpod.mp3',
-    details: '<p>This is a Radiolab sample description for this audio file</p>',
+    title: "Small: Colors",
+    file: "https://waaa.wnyc.org/bl/bl122721dpod.mp3",
+    details: "<p>This is a Radiolab sample description for this audio file</p>",
     image:
-      'https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg',
+      "https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg",
   },
   {
-    title: 'snap',
-    file: '/episodes/snap.mp3',
-    details: '<p>This is a sample description for this audio file</p>',
-    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
+    title: "snap",
+    file: "/episodes/snap.mp3",
+    details: "<p>This is a sample description for this audio file</p>",
+    image: "https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg",
   },
   {
-    title: 'warm',
-    file: '/episodes/warm.mp3',
-    details: '<p>This is a sample description for this audio file</p>',
-    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
+    title: "warm",
+    file: "/episodes/warm.mp3",
+    details: "<p>This is a sample description for this audio file</p>",
+    image: "https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg",
   },
   {
-    title: 'sample',
-    file: '/episodes/sample.mp3',
-    details: '<p>This is a sample description for this audio file</p>',
-    image: 'https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg',
+    title: "sample",
+    file: "/episodes/sample.mp3",
+    details: "<p>This is a sample description for this audio file</p>",
+    image: "https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg",
   },
 ])
 

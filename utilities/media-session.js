@@ -33,7 +33,6 @@ export const initMediaSession = async (episode, skipTime) => {
     })
 
     if (!initFlag) {
-        //console.log('once')
         initFlag = true
 
         let mediaProvider = document.querySelector('media-provider')
@@ -64,12 +63,12 @@ export const initMediaSession = async (episode, skipTime) => {
             audioElement.currentTime = details.seekTime
         })
 
-        MediaSession.setActionHandler({ action: 'seekforward' }, (details) => {
+        MediaSession.setActionHandler({ action: 'seekforward' }, () => {
             const seekOffset = skipTime
             audioElement.currentTime = audioElement.currentTime + seekOffset
         })
 
-        MediaSession.setActionHandler({ action: 'seekbackward' }, (details) => {
+        MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
             const seekOffset = skipTime
             audioElement.currentTime = audioElement.currentTime - seekOffset
         })

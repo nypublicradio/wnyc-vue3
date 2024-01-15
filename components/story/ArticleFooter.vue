@@ -1,6 +1,6 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent } from "~/utilities/helpers"
+//import { trackClickEvent } from "~/utilities/helpers"
 import { ref } from "vue"
 
 const props = defineProps({
@@ -10,7 +10,7 @@ const props = defineProps({
   },
 })
 
-const tags = ref(props.article.tags)
+//const tags = ref(props.article.tags)
 const isSponsored = ref(props.article?.sponsoredContent || false)
 const isDisableComments = ref(props.article?.disableComments || false)
 const profileData = isSponsored.value ? props.article?.sponsors : props.article.authors

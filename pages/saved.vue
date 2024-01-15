@@ -1,25 +1,16 @@
 <script setup>
-import { useSavedMenuItems } from '~/composables/globals.ts'
-import { useCurrentUserFavorites } from '~/composables/states.ts'
-
-// import FollowedShows from '~/components/saved/FollowedShows.vue'
-// import Favorites from '~/components/saved/Favorites.vue'
-// import Downloads from '~/components/saved/Downloads.vue'
-// import RecentlyPlayed from '~/components/saved/Favorites.vue'
+import { useSavedMenuItems } from "~/composables/globals.ts"
 
 const savedMenuItems = useSavedMenuItems()
-const favorites = useCurrentUserFavorites()
-
 const selectedMenuItem = ref(savedMenuItems.value[0])
 
 const scrollToActiveItem = () => {
-  const selectedItem = document.getElementsByClassName('selected')
+  const selectedItem = document.getElementsByClassName("selected")
   if (selectedItem[0]) {
-    //console.log('scrolling')
     selectedItem[0].scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'start',
+      behavior: "smooth",
+      block: "center",
+      inline: "start",
     })
   }
 }

@@ -85,12 +85,12 @@ const togglePlay = (item) => {
 
 <template>
   <div>
-    <div v-if="articles" class="wnyc-featured">
-      <!-- <pre class="text-sm">{{ articles[0].id }}</pre> -->
+    <div v-if="props.articles" class="wnyc-featured">
+      <!-- <pre class="text-sm">{{ props.articles[0].id }}</pre> -->
       <HorizontalScrollFeature>
         <CardLarge
-          v-if="articles"
-          v-for="item in articles"
+          v-if="props.articles"
+          v-for="item in props.articles"
           :key="item.label"
           :item="item"
           style="min-width: 248px"
