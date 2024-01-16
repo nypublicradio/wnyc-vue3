@@ -18,12 +18,6 @@ const props = defineProps({
 })
 
 const size = ref(props.size)
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-onMounted(() => {})
-console.log("props.episode = ", props.data)
 </script>
 
 <template>

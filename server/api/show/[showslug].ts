@@ -1,6 +1,5 @@
 import axios from 'axios'
 import humps from 'humps'
-import { fetchDuration } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 

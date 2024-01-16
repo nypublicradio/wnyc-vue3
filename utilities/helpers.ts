@@ -1,5 +1,5 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
+import { Filesystem, Directory, /* Encoding */ } from "@capacitor/filesystem"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useFileSystem,
@@ -18,9 +18,7 @@ import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-s
 import { Browser } from "@capacitor/browser"
 import { mediaTypeRoutes } from "~/composables/globals.ts"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
-import { ca } from "date-fns/locale"
 import axios from "axios"
-import { remove } from "ionicons/icons"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -197,7 +195,7 @@ const createAppDirectory = async () => {
       path: `${appDirectory.value}`,
       directory: directoryToSaveTo,
     })
-      .then(() => { })
+      //.then(() => { })
       .catch((e) => {
         console.error("Unable to create directory", e)
       })
@@ -355,24 +353,6 @@ export const initReadOfPreferences = async () => {
     val = await Preferences.get({ key: "files" })
   } catch (error) { }
   return JSON.parse(val.value)
-}
-
-/**
- * code to calculate the correct suffix to use in the date number
- */
-function getOrdinalSuffix(i) {
-  const j = i % 10
-  const k = i % 100
-  if (j === 1 && k !== 11) {
-    return `${i}st`
-  }
-  if (j === 2 && k !== 12) {
-    return `${i}nd`
-  }
-  if (j === 3 && k !== 13) {
-    return `${i}rd`
-  }
-  return `${i}th`
 }
 
 /**
@@ -687,16 +667,16 @@ interface SavedItem {
   meta: any
 }
 
-const isDifferentMedia = (media: object, type: string) => {
-  const currentEpisodeHolder = useCurrentEpisodeHolder()
-  switch (type) {
-    case "live":
-      return currentEpisodeHolder.value?.slug !== media?.slug
+// const isDifferentMedia = (media: object, type: string) => {
+//   const currentEpisodeHolder = useCurrentEpisodeHolder()
+//   switch (type) {
+//     case "live":
+//       return currentEpisodeHolder.value?.slug !== media?.slug
 
-    default:
-      return currentEpisodeHolder.value?.id !== media?.id
-  }
-}
+//     default:
+//       return currentEpisodeHolder.value?.id !== media?.id
+//   }
+// }
 
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
@@ -734,6 +714,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client.from(tableArg).insert([itemToSave])
+    console.log('error = ', error)
   }
 }
 

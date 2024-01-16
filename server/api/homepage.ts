@@ -3,14 +3,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
-const linkMapper = (link: any) => {
-	return { title: link.value.title, url: link.value.url }
-}
-
-//Get a relative link to an article in publisher
-function getPublisherArticleLink(articleData): string {
-	return `/story/${articleData.attributes.slug}`
-}
 
 const getLocalNewscast = async () => {
 	try {

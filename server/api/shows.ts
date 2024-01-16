@@ -1,6 +1,5 @@
 import axios from 'axios'
 import humps from 'humps'
-import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { cmsSources } from '~/composables/globals';
 
 const config = useRuntimeConfig()
