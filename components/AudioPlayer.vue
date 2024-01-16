@@ -221,12 +221,9 @@ html.style-mode-dark .persistent-player {
       font-weight: 500;
       line-height: 18px;
     }
-    .track-info-description {
-      font-size: 11px;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    // because the desc is v-html and injecting a <p> tag that is overwriting the description styles
+    .track-info-description * {
+      font-size: var(--persistent-player-desc-size);
     }
     .play-button,
     .p-buttonset > .play-button,

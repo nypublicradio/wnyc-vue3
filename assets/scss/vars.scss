@@ -43,6 +43,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --donation-text: var(--text-color-on-dark) !important;
     --searchFieldBackground: var(--background2) !important;
     --backgroundSimple: var(--background) !important;
+    --persistent-player-desc-size: 0.75rem;
 }
 [data-style-mode='dark'],
 .style-mode-dark {

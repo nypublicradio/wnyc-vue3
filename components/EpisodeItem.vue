@@ -42,6 +42,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
 })
 const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
@@ -156,50 +160,43 @@ const hasAudio = computed(() => {
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3" @click.prevent="emit('onClick')" v-ripple>
+    <div class="flex gap-3 w-full" @click.prevent="emit('onClick')" v-ripple>
       <VImage
-        v-if="props.data?.image?.template"
         class="flex-none"
-        :src="props.data?.image?.template"
+        :src="props.data?.image?.template ?? props.fallbackImage"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
         style="min-height: 72px; min-width: 72px"
       />
-      <VImage
-        v-else
-        class="flex-none"
-        :src="props.fallbackImage"
-        :height="72"
-        :width="72"
-        :ratio="[1, 1]"
-        :srcset="[2]"
-        style="min-height: 72px; min-width: 72px"
-      />
-      <div class="flex gap-1 flex-column align-items-start">
-        <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
-        <p>{{ props.data.org }}</p>
-        <div class="article-metadata flex flex-column gap-1">
-          <PipeData class="text-xs" :hide-pipe="!hasAudio">
-            <template #left>
-              <span v-if="hasAudio">
-                <p class="text-xs" v-if="estimatedDuration">
-                  {{ getMinutes(estimatedDuration, 1) }}
-                </p>
-                <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-              </span>
-            </template>
-            <template #right>
-              <div class="flex gap-2 align-items-center">
-                <p class="text-xs">
-                  {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
-                </p>
-                <!-- FROM SUPABASE PROFILER DATA -->
-                <DownloadedSmallIcon v-if="props.data.downloaded" />
-              </div>
-            </template>
-          </PipeData>
+      <div class="flex gap-1 flex-column justify-content-between w-full">
+        <div class="flex gap-0 flex-column align-items-start">
+          <p v-if="props.showTitle" class="text-xs line-height-1">
+            {{ props.data.org ?? props.data.showTitle }}
+          </p>
+          <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+          <div class="article-metadata flex flex-column gap-1">
+            <PipeData class="text-xs" :hide-pipe="!hasAudio">
+              <template #left>
+                <span v-if="hasAudio">
+                  <p class="text-xs" v-if="estimatedDuration">
+                    {{ getMinutes(estimatedDuration, 1) }}
+                  </p>
+                  <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
+                </span>
+              </template>
+              <template #right>
+                <div class="flex gap-2 align-items-center">
+                  <p class="text-xs">
+                    {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
+                  </p>
+                  <!-- FROM SUPABASE PROFILER DATA -->
+                  <DownloadedSmallIcon v-if="props.data.downloaded" />
+                </div>
+              </template>
+            </PipeData>
+          </div>
         </div>
         <!-- FROM SUPABASE PROFILER DATA -->
         <ProgressBar
@@ -222,7 +219,7 @@ const hasAudio = computed(() => {
         <div>
           <div class="flex gap-3 px-4 align-items-center">
             <VImage
-              :src="props.data?.image?.template || props.fallbackImage"
+              :src="props.data?.image?.template ?? props.fallbackImage"
               :alt="`${props.data.showTitle} show image`"
               :width="60"
               :height="60"
