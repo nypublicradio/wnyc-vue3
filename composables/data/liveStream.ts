@@ -31,6 +31,8 @@ export async function updateAllLiveStreams() {
             if (currentUserProfile.value) {
                 const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
                 return option.station === profile
+            } else {
+                return null
             }
         }
     )

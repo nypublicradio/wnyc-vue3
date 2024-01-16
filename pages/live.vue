@@ -200,46 +200,47 @@ watch(
     </div>
     <section class="schedule">
       <h2>Schedule</h2>
-      <div
-        v-if="scheduleRef"
-        v-for="(entry, index) in scheduleRef"
-        :key="entry.id"
-        class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
-        :class="[{ selected: index === 0 }]"
-      >
-        <div class="flex align-items-stretch">
-          <div class="left my-1" />
-          <div>
-            <p class="time">
-              {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
-            </p>
-            <h2 class="title">
-              {{ entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle }}
-            </h2>
-          </div>
-        </div>
-        <Button
-          v-if="index > 0"
-          severity="secondary"
-          text
-          plain
-          rounded
-          class="flex-none"
-          @click="
-            toggleFollow(
-              entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
-            )
-          "
+      <div v-if="scheduleRef">
+        <div
+          v-for="(entry, index) in scheduleRef"
+          :key="entry.id"
+          class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
+          :class="[{ selected: index === 0 }]"
         >
-          <template #icon>
-            <FollowIcon :active="false" />
-          </template>
-        </Button>
+          <div class="flex align-items-stretch">
+            <div class="left my-1" />
+            <div>
+              <p class="time">
+                {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
+              </p>
+              <h2 class="title">
+                {{ entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle }}
+              </h2>
+            </div>
+          </div>
+          <Button
+            v-if="index > 0"
+            severity="secondary"
+            text
+            plain
+            rounded
+            class="flex-none"
+            @click="
+              toggleFollow(
+                entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
+              )
+            "
+          >
+            <template #icon>
+              <FollowIcon :active="false" />
+            </template>
+          </Button>
+        </div>
       </div>
       <div v-else class="skeleton mt-5">
         <div
-          v-for="(article, index) in 10"
-          :key="`schedule-skeleton-${index}`"
+          v-for="i in 10"
+          :key="`schedule-skeleton-${i}`"
           class="flex align-items-center justify-content-between pr-2 mb-5"
         >
           <div class="flex gap-3">
@@ -247,7 +248,7 @@ watch(
               height="30px"
               width="4px"
               borderRadius="2px"
-              :class="[{ 'opacity-0': index > 0 }]"
+              :class="[{ 'opacity-0': i > 0 }]"
             />
             <div class="flex flex-column gap-1">
               <Skeleton
@@ -260,7 +261,7 @@ watch(
             </div>
           </div>
           <Skeleton
-            :class="[{ 'opacity-0': index < 1 }]"
+            :class="[{ 'opacity-0': i < 1 }]"
             height="26px"
             width="26px"
             borderRadius="15px"

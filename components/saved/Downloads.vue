@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <section class="downloads">
     <div class="empty flex flex-column gap-3 text-center mt-8">
@@ -23,8 +21,3 @@
     </div>
   </section>
 </template>
-
-<style lang="scss" scoped>
-.downloads {
-}
-</style>

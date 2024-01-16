@@ -39,13 +39,14 @@ onUnmounted(() => {
       </div>
     </section>
     <section class="shows flex flex-column gap-3">
-      <ShowItem
-        v-if="categoryData"
-        v-for="show in categoryData"
-        :data="show"
-        :key="show.title"
-        @onClick="goToShowPage(show)"
-      />
+      <template v-if="categoryData">
+        <ShowItem
+          v-for="show in categoryData"
+          :data="show"
+          :key="show.title"
+          @onClick="goToShowPage(show)"
+        />
+      </template>
       <skeleton-show-item v-else v-for="(show, index) in 27" :key="`sk1-${index}`" />
     </section>
   </div>

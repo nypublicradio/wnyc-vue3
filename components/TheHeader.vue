@@ -1,7 +1,7 @@
 <script setup>
-import { trackClickEvent, getDate } from '~/utilities/helpers'
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import { useSettingSideBar } from '~/composables/states.ts'
+import { trackClickEvent, getDate } from "~/utilities/helpers"
+//import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import { useSettingSideBar } from "~/composables/states.ts"
 
 const settingsSideBar = useSettingSideBar()
 </script>
@@ -11,16 +11,8 @@ const settingsSideBar = useSettingSideBar()
     <section class="full-width">
       <div class="flex justify-content-between align-items-center">
         <div class="flex align-items-center">
-          <!--  <VFlexibleLink
-            raw
-            to="/home"
-            class="mr-3"
-            @flexible-link-click="
-              trackClickEvent('Click Tracking - WNYC Logo', 'WNYC Logo', '/')
-            "
-          > -->
           <WnycLogo class="w-5rem mr-3" />
-          <!-- </VFlexibleLink> -->
+
           <span class="font-meta">{{ getDate() }}</span>
         </div>
         <div class="flex">

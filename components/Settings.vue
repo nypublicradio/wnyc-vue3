@@ -1,11 +1,6 @@
 <script setup>
-import { onMounted } from 'vue'
-import {
-  trackClickEvent,
-  getYear,
-  setFontSize,
-  setDarkMode,
-} from '~/utilities/helpers'
+import { onMounted } from "vue"
+import { trackClickEvent, getYear, setFontSize, setDarkMode } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
   useTextSizeOption,
@@ -15,10 +10,10 @@ import {
   useCurrentEpisodeHolder,
   useIsEpisodePlaying,
   useEditProfileSideBar,
-} from '~/composables/states.ts'
-import VInputSwitch from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue'
-import { updateLiveStream } from '~/composables/data/liveStream'
-import { Preferences } from '@capacitor/preferences'
+} from "~/composables/states.ts"
+import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
+import { updateLiveStream } from "~/composables/data/liveStream"
+import { Preferences } from "@capacitor/preferences"
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -32,22 +27,19 @@ const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
-const isApple = currentUser.value?.app_metadata?.provider === 'apple'
-const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
-const isEmail = currentUser.value?.app_metadata?.provider === 'email'
+//const isApple = currentUser.value?.app_metadata?.provider === 'apple'
+//const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
+const isEmail = currentUser.value?.app_metadata?.provider === "email"
 const isDisabled = computed(() => {
   return !isEmail
 })
 
 const isMessage = shallowRef(false)
-const severity = shallowRef('success')
-const theMessage = shallowRef('Settings updated')
+const severity = shallowRef("success")
+const theMessage = shallowRef("Settings updated")
 
 // main function to update the message component
-const showMessage = async (
-  mySverity = 'success',
-  myMessage = 'Settings updated.'
-) => {
+const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
   isMessage.value = false
   await nextTick()
   isMessage.value = true
@@ -79,15 +71,14 @@ const updateProfile = async () => {
 
   if (currentUser.value) {
     const { error } = await client
-      .from('profiles')
+      .from("profiles")
       .upsert({
         id: currentUser.value.id,
         updated_at: new Date().toISOString(),
         name: currentUserProfile.value.name,
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
-        default_live_stream:
-          currentUserProfile.value.default_live_stream.station,
+        default_live_stream: currentUserProfile.value.default_live_stream.station,
         dark_mode: currentUserProfile.value.dark_mode,
         receive_general_notifications:
           currentUserProfile.value.receive_general_notifications,
@@ -96,14 +87,14 @@ const updateProfile = async () => {
       })
       .match({ id: currentUser.value.id })
     if (error) {
-      showMessage('error', 'Settings update failed.')
+      showMessage("error", "Settings update failed.")
     } else {
       showMessage()
     }
   } else {
     const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
     await Preferences.set({
-      key: 'localUserProfile',
+      key: "localUserProfile",
       value: currentUserProfileSTRING,
     })
     setTimeout(() => {
@@ -112,44 +103,7 @@ const updateProfile = async () => {
   }
 }
 
-const tempPassword = shallowRef('')
 const tempEmail = shallowRef(currentUser.value?.email)
-
-// update the user's email with a message to confirm the change in an email
-const updateUserEmail = async () => {
-  const { error } = await client.auth.updateUser({
-    email: tempEmail.value,
-  })
-
-  if (error) {
-    showMessage('error', `Email update failed: ${error}`)
-  } else {
-    showMessage('success', 'A confirmation email has been sent to your inbox.')
-    trackClickEvent(
-      'Click Tracking - Email',
-      'Settings Sidebar - Account',
-      'Email confirmation sent'
-    )
-  }
-}
-
-// update the user's password
-const updateUserPassword = async () => {
-  const { error } = await client.auth.updateUser({
-    password: tempPassword.value,
-  })
-
-  if (error) {
-    showMessage('error', `Password update failed: ${error}`)
-  } else {
-    showMessage('success', 'Password updated.')
-    trackClickEvent(
-      'Click Tracking - Password',
-      'Settings Sidebar - Account',
-      'Password updated'
-    )
-  }
-}
 
 onMounted(async () => {
   await initializeStationList(allCurrentStations.value)
@@ -164,8 +118,8 @@ const onUpdateTextSize = () => {
   setFontSize(currentUserProfile.value.text_size.pixel)
 
   trackClickEvent(
-    'Click Tracking - Test size',
-    'Settings Sidebar - Display',
+    "Click Tracking - Test size",
+    "Settings Sidebar - Display",
     currentUserProfile.value.text_size.label
   )
 }
@@ -181,8 +135,8 @@ const onUpdateStation = async (event) => {
   }
 
   trackClickEvent(
-    'Click Tracking - Default stream',
-    'Settings Sidebar - Listening Preferences',
+    "Click Tracking - Default stream",
+    "Settings Sidebar - Listening Preferences",
     currentUserProfile.value.default_live_stream.station
   )
 }
@@ -191,16 +145,16 @@ const onUpdateStation = async (event) => {
 
 const accountHeader = computed(() => {
   switch (currentUser.value?.app_metadata?.provider) {
-    case 'google':
+    case "google":
       return {
-        label: 'Google Account',
-        icon: 'mr-2 pi pi-google',
-        type: 'google',
+        label: "Google Account",
+        icon: "mr-2 pi pi-google",
+        type: "google",
       }
-    case 'apple':
-      return { label: 'Apple Account', icon: 'mr-2 pi pi-apple', type: 'apple' }
+    case "apple":
+      return { label: "Apple Account", icon: "mr-2 pi pi-apple", type: "apple" }
     default:
-      return { label: 'Account', icon: '', type: null }
+      return { label: "Account", icon: "", type: null }
   }
 })
 
@@ -208,6 +162,11 @@ const accountHeader = computed(() => {
 const editField = (field) => {
   if (!isDisabled.value) {
     editProfileSideBar.value = true
+    trackClickEvent(
+      "Click Tracking - edit user profile",
+      "Settings Sidebar - Account",
+      `${field} field clicked`
+    )
   }
 }
 
@@ -382,11 +341,7 @@ const clickThisId = (id) => {
         link="https://pledge.wnyc.org/support/wnyc?utm_medium=redirect&utm_source=wnyc&utm_campaign=default&"
         @linkClick="
           (link) => {
-            trackClickEvent(
-              'Click Tracking - Donate',
-              'Settings Sidebar - links',
-              link
-            )
+            trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
           }
         "
       ></SBox>

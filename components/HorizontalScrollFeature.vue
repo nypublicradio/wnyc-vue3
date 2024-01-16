@@ -30,7 +30,7 @@
       rgba(0, 0, 0, 0) 100%
     );
     .card-large {
-      height: 100%;
+      //height: 100%;
     }
   }
 }

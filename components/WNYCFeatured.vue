@@ -85,12 +85,11 @@ const togglePlay = (item) => {
 
 <template>
   <div>
-    <div v-if="articles" class="wnyc-featured">
-      <!-- <pre class="text-sm">{{ articles[0].id }}</pre> -->
+    <div class="wnyc-featured">
+      <!--  <pre class="text-sm">{{ props.articles[0].id }}</pre> -->
       <HorizontalScrollFeature>
         <CardLarge
-          v-if="articles"
-          v-for="item in articles"
+          v-for="item in props.articles"
           :key="item.label"
           :item="item"
           style="min-width: 248px"
@@ -129,7 +128,7 @@ const togglePlay = (item) => {
           </template>
         </CardLarge>
 
-        <div v-else v-for="(item, index) in 5" :key="`sk1-${index}`">
+        <!-- <div v-for="(item, index) in 5" :key="`sk1-${index}`">
           <div class="skeleton-holder">
             <Skeleton class="flex-none" height="159px" width="100%" borderRadius="0px" />
             <div
@@ -164,7 +163,7 @@ const togglePlay = (item) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </HorizontalScrollFeature>
     </div>
   </div>

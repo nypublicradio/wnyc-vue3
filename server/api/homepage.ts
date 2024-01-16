@@ -3,14 +3,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
-const linkMapper = (link: any) => {
-	return { title: link.value.title, url: link.value.url }
-}
-
-//Get a relative link to an article in publisher
-function getPublisherArticleLink(articleData): string {
-	return `/story/${articleData.attributes.slug}`
-}
 
 const getLocalNewscast = async () => {
 	try {
@@ -41,6 +33,7 @@ const getLocalNewscast = async () => {
 	} catch (e) {
 		////console.log(e);
 	}
+	return null
 }
 
 const getNationalNewscast = async () => {
@@ -74,6 +67,7 @@ const getNationalNewscast = async () => {
 	} catch (e) {
 		////console.log(e);
 	}
+	return null
 }
 
 // Get NYC-NOW newscast from the WNYC API
@@ -111,6 +105,7 @@ const getNYCNowNewscast = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 }
 
 const getSectionData = async (slug: string) => {
@@ -127,6 +122,7 @@ const getSectionData = async (slug: string) => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 };
 
 const getHomeTemplate = async () => {
@@ -153,6 +149,7 @@ const getHomeTemplate = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 }
 
 const getGothamistTopStories = async () => {
@@ -181,6 +178,7 @@ const getGothamistTopStories = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 }
 
 //Gets the top stories from the WNYC API and 
@@ -206,6 +204,7 @@ const getWNYCTopStories = async () => {
 	} catch (e) {
 		//console.log(e);
 	}
+	return null
 
 }
 

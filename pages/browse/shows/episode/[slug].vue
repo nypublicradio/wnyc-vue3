@@ -40,8 +40,9 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
-const handleDownload = () => {
-  console.log("handleDownload")
+const handleDownload = (epD) => {
+  //console.log("handleDownload", epD)
+  console.error(`handle download to come ${epD.title}`)
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
@@ -122,7 +123,7 @@ const onMenuChange = (e) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
-  console.log("episode = ", episodeData.value)
+  //console.log("episode = ", episodeData.value)
 })
 </script>
 
@@ -212,7 +213,13 @@ watch(episode, () => {
             >
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
-            <Button class="w-2rem h-2rem" text plain rounded @click="handleDownload">
+            <Button
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              @click="handleDownload(episodeData)"
+            >
               <template #icon> <DownloadIcon /></template>
             </Button>
             <Button class="w-2rem h-2rem" text plain rounded @click="handleShare">

@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
+import { templatizePublisherImageUrl } from "~/utilities/helpers"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 
 const props = defineProps({
@@ -18,12 +18,6 @@ const props = defineProps({
 })
 
 const size = ref(props.size)
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-onMounted(() => {})
-console.log("props.episode = ", props.data)
 </script>
 
 <template>

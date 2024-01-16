@@ -35,6 +35,7 @@ const getEpisode = async (slug: string) => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 }
 
 export default defineEventHandler(async (event) => {

@@ -1,5 +1,5 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
+import { Filesystem, Directory, /* Encoding */ } from "@capacitor/filesystem"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useFileSystem,
@@ -18,9 +18,7 @@ import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-s
 import { Browser } from "@capacitor/browser"
 import { mediaTypeRoutes } from "~/composables/globals.ts"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
-import { ca } from "date-fns/locale"
 import axios from "axios"
-import { remove } from "ionicons/icons"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 const directoryToSaveTo = Directory.External
@@ -81,6 +79,7 @@ export const fetchDuration = async (url: string) => {
   } catch (e) {
     //console.log(e);
   }
+  return null
 }
 
 // returns a resized image url when provided the entire image object
@@ -138,10 +137,12 @@ export const templatizePublisherImageUrl = (url: string): string => {
         finalUrlArr.push(piece)
       }
       if (index === 4) {
-        finalUrlArr.push(`%s/%s/%s/%s`)
+        finalUrlArr.push("%s/%s/%s/%s")
       }
     })
     return finalUrlArr.join("/")
+  } else {
+    return null
   }
 }
 
@@ -194,7 +195,7 @@ const createAppDirectory = async () => {
       path: `${appDirectory.value}`,
       directory: directoryToSaveTo,
     })
-      .then(() => { })
+      //.then(() => { })
       .catch((e) => {
         console.error("Unable to create directory", e)
       })
@@ -328,11 +329,11 @@ export const deleteStoredMp3 = async (file: {
       }, 100)
     })
     .catch((e) => {
-      console.error(`Unable to delete file}`, e)
+      console.error("Unable to delete file", e)
     })
 }
 
-export const formatFileSize = (bytes: number, decimals: number = 2) => {
+export const formatFileSize = (bytes: number, decimals = 2) => {
   if (bytes === 0) return "0 B"
 
   const k = 1024
@@ -350,26 +351,10 @@ export const initReadOfPreferences = async () => {
   let val = null
   try {
     val = await Preferences.get({ key: "files" })
-  } catch (error) { }
+  } catch (error) {
+    console.log("preference read error = ", error)
+  }
   return JSON.parse(val.value)
-}
-
-/**
- * code to calculate the correct suffix to use in the date number
- */
-function getOrdinalSuffix(i) {
-  const j = i % 10
-  const k = i % 100
-  if (j === 1 && k !== 11) {
-    return `${i}st`
-  }
-  if (j === 2 && k !== 12) {
-    return `${i}nd`
-  }
-  if (j === 3 && k !== 13) {
-    return `${i}rd`
-  }
-  return `${i}th`
 }
 
 /**
@@ -528,16 +513,12 @@ function isMobileBrowser() {
 }
 
 export const removeHTMLTags = (str) => {
-  const tempElement = document.createElement('div');
-  tempElement.innerHTML = str;
-  return tempElement.textContent || tempElement.innerText || '';
-
-  //const doc = new DOMParser().parseFromString(str, 'text/html');
-  //return = doc.body.textContent || '';
-
+  const parser = new DOMParser();
+  const parsedHTML = parser.parseFromString(str, 'text/html');
+  return parsedHTML.body.textContent ?? '';
 }
 // share API
-export const shareAPI = async (content: object, componentOfOrigin: string = 'Component of origin not specified') => {
+export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
 
   // DESKTOP sharing is not supported yet
 
@@ -553,7 +534,7 @@ export const shareAPI = async (content: object, componentOfOrigin: string = 'Com
     shareContent.title
   )
 
-  console.log('shareContent = ', shareContent)
+  //console.log('shareContent = ', shareContent)
   if (navigator.canShare(shareContent) && isMobileBrowser()) {
     await navigator.share(shareContent)
     return true
@@ -653,7 +634,6 @@ export const getAndSetUserProfile = async () => {
           key: "localUserProfile",
           value: defaultsSTRING,
         })
-        currentUserProfile.value = {}
         currentUserProfile.value = localUserProfileDefault.value
 
         updateAllLiveStreams()
@@ -661,7 +641,6 @@ export const getAndSetUserProfile = async () => {
         setDisplaySettings(localUserProfileDefault.value)
       } else {
         // local storage is set, so set currentUserProfile to the local storage settings
-        currentUserProfile.value = {}
         currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
 
         updateAllLiveStreams()
@@ -690,18 +669,18 @@ interface SavedItem {
   meta: any
 }
 
-const isDifferentMedia = (media: object, type: string) => {
-  const currentEpisodeHolder = useCurrentEpisodeHolder()
-  switch (type) {
-    case "live":
-      return currentEpisodeHolder.value?.slug !== media?.slug
+// const isDifferentMedia = (media: object, type: string) => {
+//   const currentEpisodeHolder = useCurrentEpisodeHolder()
+//   switch (type) {
+//     case "live":
+//       return currentEpisodeHolder.value?.slug !== media?.slug
 
-    default:
-      return currentEpisodeHolder.value?.id !== media?.id
-  }
-}
+//     default:
+//       return currentEpisodeHolder.value?.id !== media?.id
+//   }
+// }
 
-export const saveFavorite = async (media: object, typeArg: string, tableArg: string = "favorited") => {
+export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
   const source = media?.cmsSource ?? media?.cmsSource
   const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
@@ -733,10 +712,11 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg: str
       producingOrganizations,
       meta,
     }
-    console.log('itemToSave = ', itemToSave)
+    //console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client.from(tableArg).insert([itemToSave])
+    console.error('error = ', error)
   }
 }
 
@@ -757,7 +737,7 @@ export const deleteFavorite = async (media: object) => {
       .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
 
     if (error) {
-      console.log("error deleting favorite", error)
+      console.error("error deleting favorite", error)
     }
   }
 }
@@ -773,7 +753,7 @@ export const getFavoritedItems = async () => {
       .eq("uid", user.value.id)
 
     if (error) {
-      console.log("favorited items error", error)
+      console.error("favorited items error", error)
     }
     favorites.value = data
   }
@@ -833,7 +813,7 @@ export const togglePlay = (media, index = 0) => {
 }
 
 
-export const getCssVar = (name: string, px: boolean = false) => {
+export const getCssVar = (name: string, px = false) => {
 
   const val = getComputedStyle(document.documentElement).getPropertyValue(
     name

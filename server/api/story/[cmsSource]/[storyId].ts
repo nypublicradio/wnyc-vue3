@@ -17,6 +17,7 @@ const getWagtailStoryData = async (id: string) => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 };
 
 const getPublisherStoryData = async (id: string) => {
@@ -31,6 +32,7 @@ const getPublisherStoryData = async (id: string) => {
     } catch (e) {
         //console.log(e);
     }
+    return null
 };
 
 const getStoryData = async (id: string, cmsSource: string) => {
@@ -54,4 +56,5 @@ export default defineEventHandler(async (event) => {
         const storyData = await getStoryData(id, cmsSource);
         return storyData;
     }
+    return null
 });

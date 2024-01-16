@@ -1,6 +1,6 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent } from "~/utilities/helpers"
+//import { trackClickEvent } from "~/utilities/helpers"
 import { ref } from "vue"
 
 const props = defineProps({
@@ -10,9 +10,9 @@ const props = defineProps({
   },
 })
 
-const tags = ref(props.article.tags)
-const isSponsored = ref(props.article?.sponsoredContent || false)
-const isDisableComments = ref(props.article?.disableComments || false)
+//const tags = ref(props.article.tags)
+const isSponsored = ref(props.article?.sponsoredContent ?? false)
+const isDisableComments = ref(props.article?.disableComments ?? false)
 const profileData = isSponsored.value ? props.article?.sponsors : props.article.authors
 
 // function attached to the emit of the article-tags when clicked
@@ -49,7 +49,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article.
         <div class="mx-auto mb-6" style="width: 300px">
           <story-htlAd
             layout="rectangle"
-            slot="htlad-wnyc_rectangle"
+            slotClass="htlad-wnyc_rectangle"
             fineprint="Gothamist is funded by sponsors and member donations"
           />
         </div>

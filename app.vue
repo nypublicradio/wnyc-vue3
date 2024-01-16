@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trackClickEvent, getAndSetUserProfile } from "~/utilities/helpers"
+import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
 import { Capacitor } from "@capacitor/core"
 import { App /* URLOpenListenerEvent */ } from "@capacitor/app"
 import {
@@ -107,14 +107,14 @@ const addListeners = async () => {
   })
 
   // Some issue with our setup and push will not work
-  await PushNotifications.addListener("registrationError", (error: any) => {
+  await PushNotifications.addListener("registrationError", (/* error: any */) => {
     //alert('Error on registration: ' + JSON.stringify(error))
   })
 
   // Show us the notification payload if the app is open on our device
   await PushNotifications.addListener(
     "pushNotificationReceived",
-    (notification: PushNotificationSchema) => {
+    (/* notification: PushNotificationSchema */) => {
       //nNotification.value = notification
       //alert('Push received: ' + JSON.stringify(notification))
     }
@@ -133,7 +133,7 @@ const addListeners = async () => {
     }
   )
   // fired when the app becomes active
-  await App.addListener("appStateChange", ({ isActive }) => {
+  await App.addListener("appStateChange", (/* { isActive } */) => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
 
@@ -167,7 +167,7 @@ onMounted(async () => {
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
-  document.addEventListener("visibilitychange", (event) => {
+  document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       checkNotificationPermisstions()
       isRefreshing.value = true

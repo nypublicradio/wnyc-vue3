@@ -1,5 +1,4 @@
 <script setup>
-import { useSwipe } from '@vueuse/core'
 const props = defineProps({
   options: {
     type: Array,
@@ -8,7 +7,7 @@ const props = defineProps({
   },
   optionLabel: {
     type: String,
-    default: 'label',
+    default: "label",
   },
   data: {
     type: [String, Object],
@@ -20,7 +19,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Select',
+    default: "Select",
   },
 })
 </script>

@@ -1,14 +1,10 @@
 <script setup>
-import { useFileSystem } from '~/composables/states'
-import {
-  fetchAndStoreMp3,
-  deleteStoredMp3,
-  fileNameFromURL,
-} from '~/utilities/helpers'
+import { useFileSystem } from "~/composables/states"
+import { fetchAndStoreMp3, deleteStoredMp3, fileNameFromURL } from "~/utilities/helpers"
 const props = defineProps({
   file: {
     type: Object,
-    default: () => {},
+    default: {},
     required: true,
   },
 })
@@ -19,11 +15,7 @@ const pending = ref(false)
 
 watch(fileSystem, (value) => {
   // when the file system changes, check if THIS file is stored, then updatre the pending state
-  if (
-    value.files?.find(
-      (entry) => entry.name === fileNameFromURL(props.file.file)
-    )
-  ) {
+  if (value.files?.find((entry) => entry.name === fileNameFromURL(props.file.file))) {
     pending.value = false
   }
 })
@@ -31,11 +23,7 @@ watch(fileSystem, (value) => {
 
 <template>
   <Button
-    v-if="
-      fileSystem.files?.find(
-        (fsFile) => fsFile.name === fileNameFromURL(file.file)
-      )
-    "
+    v-if="fileSystem.files?.find((fsFile) => fsFile.name === fileNameFromURL(file.file))"
     icon="pi pi-trash"
     @click="
       () => {

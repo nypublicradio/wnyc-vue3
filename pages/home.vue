@@ -66,12 +66,17 @@ watch(pagedata, () => {
       <!-- <pre>{{ topStories[0] }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
-    <div v-for="section in homeTemplate">
+    <div v-for="section in homeTemplate" :key="section.title">
       <div v-if="section.data.length">
         <section>
           <h2>{{ section.title }}</h2>
         </section>
-        <TopStories v-if="section.componentType === 'default'" :articles="section.data" />
+        <section>
+          <TopStories
+            v-if="section.componentType === 'default'"
+            :articles="section.data"
+          />
+        </section>
         <WNYCFeatured else :articles="section.data" />
       </div>
     </div>

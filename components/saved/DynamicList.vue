@@ -53,7 +53,7 @@ const getFilteredItemsData = computed(() => {
     typeFilterCondition = `type.eq.${props.typeFilter}`
   }
 
-  let query = client
+  const query = client
     .from(props.table)
     .select("*")
     .eq("uid", user.value.id)
@@ -85,7 +85,7 @@ const getItemsData = async () => {
       savedItems.value = null
     }
     if (error) {
-      console.log("favorited items error", error)
+      console.error("favorited items error", error)
     }
   }
 }
@@ -119,5 +119,3 @@ watch(
   </div>
   <slot v-else />
 </template>
-
-<style lanf="scss" scoped></style>

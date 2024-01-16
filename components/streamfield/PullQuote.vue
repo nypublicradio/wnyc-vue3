@@ -16,10 +16,10 @@ const props = defineProps({
 <template>
   <blockquote class="streamfield-pull-quote py-4">
     <h1>
-      {{ quote }}
+      {{ props.quote }}
     </h1>
-    <p class="streamfield-pull-quote-author mt-3" v-if="author">
-      {{ author }}
+    <p class="streamfield-pull-quote-author mt-3" v-if="props.author">
+      {{ props.author }}
     </p>
   </blockquote>
 </template>

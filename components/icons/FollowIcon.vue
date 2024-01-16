@@ -16,7 +16,7 @@ const props = defineProps({
   >
     <title>Follow</title>
 
-    <g v-if="!active">
+    <g v-if="!props.active">
       <path
         d="M13 7.76001V11.52C13 12.28 13.43 12.97 14.11 13.31L17 14.76"
         fill="currentColor"

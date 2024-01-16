@@ -1,22 +1,16 @@
 <script setup>
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import VUploadImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue'
-import UserIcon from '~/components/icons/UserIcon.vue'
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+import VUploadImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue"
+import UserIcon from "~/components/icons/UserIcon.vue"
 import {
   useSettingSideBar,
   useLoginSideBar,
   useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
-  useLocalUserProfileDefault,
-} from '~/composables/states.ts'
-import {
-  trackClickEvent,
-  setDisplaySettings,
-  getAndSetUserProfile,
-} from '~/utilities/helpers'
-import { useToast } from 'primevue/usetoast'
-import { Preferences } from '@capacitor/preferences'
+} from "~/composables/states.ts"
+import { trackClickEvent, getAndSetUserProfile } from "~/utilities/helpers"
+import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
 
@@ -31,7 +25,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:data', 'onDisabled'])
+const emit = defineEmits(["update:data", "onDisabled"])
 
 const settingsSideBar = useSettingSideBar()
 const loginSideBar = useLoginSideBar()
@@ -39,7 +33,6 @@ const signupSideBar = useSignupSideBar()
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-const localUserProfileDefault = useLocalUserProfileDefault()
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
 const imageUploadModal = shallowRef(false)
@@ -47,11 +40,7 @@ const imageUploadModal = shallowRef(false)
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
   loginSideBar.value = true
-  trackClickEvent(
-    'Click Tracking - login button',
-    'Settings Sidebar - user section',
-    ''
-  )
+  trackClickEvent("Click Tracking - login button", "Settings Sidebar - user section", "")
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
@@ -71,38 +60,34 @@ const onLogOut = async () => {
 
   //GTM
   trackClickEvent(
-    'Click Tracking - logout button',
-    'Settings Sidebar - user section',
-    'logged out'
+    "Click Tracking - logout button",
+    "Settings Sidebar - user section",
+    "logged out"
   )
 
   // show toast
   toast.add({
-    severity: 'success',
-    summary: 'You have logged out.',
+    severity: "success",
+    summary: "You have logged out.",
     life: 3000,
   })
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
   signupSideBar.value = true
-  trackClickEvent(
-    'Click Tracking - sign up link',
-    'Settings Sidebar - user section',
-    ''
-  )
+  trackClickEvent("Click Tracking - sign up link", "Settings Sidebar - user section", "")
 }
 // handles the modal on avatar image when clicked
 const handleModal = () => {
   if (!props.disabled) {
     imageUploadModal.value = true
     trackClickEvent(
-      'Click Tracking - Avatar Image link',
-      'Settings Sidebar - user section',
-      'request to upload image'
+      "Click Tracking - Avatar Image link",
+      "Settings Sidebar - user section",
+      "request to upload image"
     )
   } else {
-    emit('onDisabled')
+    emit("onDisabled")
   }
 }
 </script>
@@ -158,9 +143,7 @@ const handleModal = () => {
     </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
       <h2>Hi, {{ currentUserProfile.name }}</h2>
-      <VFlexibleLink to="/home" class="p1" @click="onLogOut"
-        >Log out</VFlexibleLink
-      >
+      <VFlexibleLink to="/home" class="p1" @click="onLogOut">Log out</VFlexibleLink>
     </div>
     <div v-else class="info flex flex-column gap-3 mt-2">
       <h2>You are logged out.</h2>

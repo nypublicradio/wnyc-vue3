@@ -3,7 +3,6 @@ import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import { getMinutes, getDate, fetchDuration } from "~/utilities/helpers"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -15,12 +14,11 @@ import {
   getFavoritedItems,
   trackClickEvent,
   shareAPI,
+  getMinutes,
+  getDate,
+  fetchDuration,
 } from "~/utilities/helpers"
-import {
-  useCurrentEpisode,
-  useCurrentUser,
-  useAccountPromptSideBar,
-} from "~/composables/states"
+import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 
 const toast = useToast()
 

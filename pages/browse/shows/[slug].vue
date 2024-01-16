@@ -1,11 +1,9 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-
 import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-
 import {
   deleteFavorite,
   saveFavorite,
@@ -13,6 +11,7 @@ import {
   getFavoritedItems,
   togglePlay,
   shareAPI,
+  trackClickEvent,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -43,7 +42,7 @@ const isEpisodePlaying = useIsEpisodePlaying()
 
 // navigate back to home and track it
 const backHome = () => {
-  navigateTo(`/browse`)
+  navigateTo("/browse")
 }
 
 const goToEpisodePage = (ep) => {
@@ -55,15 +54,12 @@ const togglePlayMostRecentEpisode = () => {
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
-    const show = {
-      slug: route.params.slug,
-    }
     if (isFavorited.value) {
-      await deleteFavorite(show)
+      await deleteFavorite(show.value.show)
       getFavoritedItems()
       isFavorited.value = false
     } else {
-      await saveFavorite(show, "show")
+      await saveFavorite(show.value.show, "show")
       getFavoritedItems()
       isFavorited.value = true
     }
@@ -75,7 +71,7 @@ const handleAddToFavorites = async () => {
     trackClickEvent(
       "Click Tracking - Add/remove from favorites",
       "Shows Page",
-      props.data?.title
+      show.value.show.title
     )
   } else {
     accountPromptSideBar.value = true
@@ -189,15 +185,16 @@ watch(show, () => {
     </div>
     <h2 class="mt-4">Episodes</h2>
     <div class="flex flex-column gap-4 mt-2">
-      <EpisodeItem
-        v-if="show"
-        v-for="ep in episodes"
-        :data="ep"
-        :key="ep.id"
-        @onClick="goToEpisodePage(ep)"
-        :fallback-image="showImage"
-      />
-      <skeleton-episode-item v-else v-for="(show, index) in 10" :key="`sk1-${index}`" />
+      <template v-if="show">
+        <EpisodeItem
+          v-for="ep in episodes"
+          :data="ep"
+          :key="ep.id"
+          @onClick="goToEpisodePage(ep)"
+          :fallback-image="showImage"
+        />
+      </template>
+      <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
     </div>
     <BackToTopButton />
   </section>

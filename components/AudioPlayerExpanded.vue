@@ -4,7 +4,6 @@ import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 
 import {
   trackClickEvent,
-  whenTime,
   shareAPI,
   templatizePublisherImageUrl,
   deleteFavorite,
@@ -255,8 +254,6 @@ const moreFromClick = () => {
   emit("close-panel")
   navigateTo(`/browse/shows/${currentEpisode.value.show}`)
 }
-
-console.log("currentEpisode = ", currentEpisode.value)
 </script>
 
 <template>

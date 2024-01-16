@@ -32,4 +32,5 @@ export default defineEventHandler(async (event) => {
         }
         console.error('Config:', error.config)
     }
+    return null
 })
