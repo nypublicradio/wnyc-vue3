@@ -9,12 +9,12 @@ const getLivestream = async (slug: string) => {
 }
 
 const formatShowData = (apiResponse: any) => {
-	const showData = apiResponse?.included?.find((obj: any) => obj.type === 'show')
-	const scheduleData = apiResponse?.included?.find((obj: any) => obj.type === 'show-schedule')
-	const imageData = apiResponse?.included?.find((obj: any) => obj.type === 'image')
-	const episodeData = apiResponse?.included?.find((obj: any) => obj.type === 'episode')
-	const airingData = apiResponse?.included?.find((obj: any) => obj.type === 'airing')
-	const segmentData = apiResponse?.included?.filter((item: any) => item.type === 'segment')
+	const showData = apiResponse?.included?.find((obj) => obj.type === 'show')
+	const scheduleData = apiResponse?.included?.find((obj) => obj.type === 'show-schedule')
+	const imageData = apiResponse?.included?.find((obj) => obj.type === 'image')
+	const episodeData = apiResponse?.included?.find((obj) => obj.type === 'episode')
+	const airingData = apiResponse?.included?.find((obj) => obj.type === 'airing')
+	const segmentData = apiResponse?.included?.filter((item) => item.type === 'segment')
 
 	const formattedSegments: any = []
 	if (apiResponse.included) {

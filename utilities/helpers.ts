@@ -716,7 +716,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client.from(tableArg).insert([itemToSave])
-    console.log('error = ', error)
+    console.error('error = ', error)
   }
 }
 

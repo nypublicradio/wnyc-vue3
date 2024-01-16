@@ -42,7 +42,7 @@ const backHome = () => {
 
 const handleDownload = (epD) => {
   //console.log("handleDownload", epD)
-  alert("handle download to come")
+  console.error(`handle download to come ${epD.title}`)
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")

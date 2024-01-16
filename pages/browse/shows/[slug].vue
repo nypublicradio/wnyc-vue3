@@ -82,7 +82,7 @@ const handleShare = () => {
 }
 
 watch(show, () => {
-  console.log("show  = ", show.value)
+  //console.log("show  = ", show.value)
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template
