@@ -133,16 +133,9 @@ const addListeners = async () => {
     }
   )
   // fired when the app becomes active
-  await App.addListener(
-    "appStateChange",
-    (
-      {
-        /* isActive */
-      }
-    ) => {
-      //alert('App state changed. Is active?', JSON.stringify(isActive))
-    }
-  )
+  await App.addListener("appStateChange", (/* { isActive } */) => {
+    //alert('App state changed. Is active?', JSON.stringify(isActive))
+  })
 
   // this is for deep links
   const client = useSupabaseClient()

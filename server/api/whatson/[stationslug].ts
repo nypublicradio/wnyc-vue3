@@ -19,10 +19,10 @@ const formatShowData = (apiResponse: any) => {
 	const formattedSegments: any = []
 	if (apiResponse.included) {
 		if (segmentData !== null) {
-			segmentData.forEach((value: any) => {
+			segmentData.forEach((value: { attributes: { title: string, slug: string } }) => {
 				formattedSegments.push({
 					title: value.attributes.title,
-					url: 'https://www.wnyc.org/story/' + value.attributes.slug,
+					url: `https://www.wnyc.org/story/${value.attributes.slug}`,
 					newWindow: true
 				});
 			});
@@ -63,14 +63,14 @@ const formatShowData = (apiResponse: any) => {
 		onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,
 		onTodaysShowHeadlineLink: episodeData ? episodeData.attributes.url : null,
 		onTodaysShowHosts: showData ? showData.attributes.about.roles.host : null,
-		onTodaysShowImage: episodeData?.attributes['image-main']?.url || null,
-		onTodaysShowImageMaxWidth: episodeData?.attributes['image-main']?.w || null,
-		onTodaysShowImageMaxHeight: episodeData?.attributes['image-main']?.h || null,
+		onTodaysShowImage: episodeData?.attributes['image-main']?.url ?? null,
+		onTodaysShowImageMaxWidth: episodeData?.attributes['image-main']?.w ?? null,
+		onTodaysShowImageMaxHeight: episodeData?.attributes['image-main']?.h ?? null,
 		onTodaysShowImageTemplate: episodeData?.attributes['image-main'] ? formatPublisherImageUrl(episodeData.attributes['image-main'].template) : null,
-		onTodaysShowImageAltText: episodeData?.attributes['image-main']?.['alt-text'] || null,
-		onTodaysShowImageCaption: episodeData?.attributes['image-main']?.caption || null,
-		onTodaysShowImageCredits: episodeData?.attributes['image-main']?.['credits-name'] || null,
-		onTodaysShowImageCreditsUrl: episodeData?.attributes['image-main']?.['credits-url'] || null,
+		onTodaysShowImageAltText: episodeData?.attributes['image-main']?.['alt-text'] ?? null,
+		onTodaysShowImageCaption: episodeData?.attributes['image-main']?.caption ?? null,
+		onTodaysShowImageCredits: episodeData?.attributes['image-main']?.['credits-name'] ?? null,
+		onTodaysShowImageCreditsUrl: episodeData?.attributes['image-main']?.['credits-url'] ?? null,
 		onTodaysShowSegments: segmentData?.length > 0 ? formattedSegments : null,
 		onTodaysShowSocial: showData ? showData.attributes.about.social : null,
 		showSchedule: scheduleData ? scheduleData.attributes : null

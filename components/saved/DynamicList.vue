@@ -85,7 +85,7 @@ const getItemsData = async () => {
       savedItems.value = null
     }
     if (error) {
-      console.log("favorited items error", error)
+      console.error("favorited items error", error)
     }
   }
 }

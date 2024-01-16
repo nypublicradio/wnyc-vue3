@@ -515,7 +515,7 @@ function isMobileBrowser() {
 export const removeHTMLTags = (str) => {
   const parser = new DOMParser();
   const parsedHTML = parser.parseFromString(str, 'text/html');
-  return parsedHTML.body.textContent || '';
+  return parsedHTML.body.textContent ?? '';
 }
 // share API
 export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
@@ -737,7 +737,7 @@ export const deleteFavorite = async (media: object) => {
       .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
 
     if (error) {
-      console.log("error deleting favorite", error)
+      console.error("error deleting favorite", error)
     }
   }
 }
@@ -753,7 +753,7 @@ export const getFavoritedItems = async () => {
       .eq("uid", user.value.id)
 
     if (error) {
-      console.log("favorited items error", error)
+      console.error("favorited items error", error)
     }
     favorites.value = data
   }

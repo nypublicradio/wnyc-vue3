@@ -20,7 +20,7 @@ const updatePositionState = () => {
     })
 }
 
-export const initMediaSession = async (episode, skipTime) => {
+export const initMediaSession = (episode, skipTime) => {
     currentEpisode = episode
 
     MediaSession.setMetadata({

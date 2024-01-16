@@ -40,8 +40,9 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
-const handleDownload = (episodeData) => {
-  //console.log("handleDownload", episodeData)
+const handleDownload = (epD) => {
+  //console.log("handleDownload", epD)
+  alert("handle download to come")
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
