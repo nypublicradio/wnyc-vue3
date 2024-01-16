@@ -71,7 +71,12 @@ watch(pagedata, () => {
         <section>
           <h2>{{ section.title }}</h2>
         </section>
-        <TopStories v-if="section.componentType === 'default'" :articles="section.data" />
+        <section>
+          <TopStories
+            v-if="section.componentType === 'default'"
+            :articles="section.data"
+          />
+        </section>
         <WNYCFeatured else :articles="section.data" />
       </div>
     </div>

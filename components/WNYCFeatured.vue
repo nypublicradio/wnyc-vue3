@@ -85,51 +85,50 @@ const togglePlay = (item) => {
 
 <template>
   <div>
-    <div v-if="props.articles" class="wnyc-featured">
-      <!-- <pre class="text-sm">{{ props.articles[0].id }}</pre> -->
+    <div class="wnyc-featured">
+      <!--  <pre class="text-sm">{{ props.articles[0].id }}</pre> -->
       <HorizontalScrollFeature>
-        <div v-if="props.articles">
-          <CardLarge
-            v-for="item in props.articles"
-            :key="item.label"
-            :item="item"
-            style="min-width: 248px"
-            :class="item.id"
-          >
-            <template #play>
-              <PlayButton
-                v-if="item.audio"
-                :label="getMinutes(item.estimatedDuration, 1)"
-                :file="item.audio"
-                @onClick="togglePlay(item)"
-                class="z-2"
-                @click.prevent
-              />
-            </template>
-            <template #menu>
-              <DotMenu
-                v-if="item.audio"
-                :menuItems="getDotMenuItems(item)"
-                label="Options"
-                @changeEmit="onMenuChange"
-                class="-mr-1 z-2"
-                size="large"
-              >
-                <template #end v-if="item.embedCode">
-                  <div class="p-0">
-                    <Textarea
-                      disabled
-                      class="w-full text-xs mt-2"
-                      v-model="item.embedCode"
-                      rows="9"
-                    />
-                  </div>
-                </template>
-              </DotMenu>
-            </template>
-          </CardLarge>
-        </div>
-        <div v-else v-for="(item, index) in 5" :key="`sk1-${index}`">
+        <CardLarge
+          v-for="item in props.articles"
+          :key="item.label"
+          :item="item"
+          style="min-width: 248px"
+          :class="item.id"
+        >
+          <template #play>
+            <PlayButton
+              v-if="item.audio"
+              :label="getMinutes(item.estimatedDuration, 1)"
+              :file="item.audio"
+              @onClick="togglePlay(item)"
+              class="z-2"
+              @click.prevent
+            />
+          </template>
+          <template #menu>
+            <DotMenu
+              v-if="item.audio"
+              :menuItems="getDotMenuItems(item)"
+              label="Options"
+              @changeEmit="onMenuChange"
+              class="-mr-1 z-2"
+              size="large"
+            >
+              <template #end v-if="item.embedCode">
+                <div class="p-0">
+                  <Textarea
+                    disabled
+                    class="w-full text-xs mt-2"
+                    v-model="item.embedCode"
+                    rows="9"
+                  />
+                </div>
+              </template>
+            </DotMenu>
+          </template>
+        </CardLarge>
+
+        <!-- <div v-for="(item, index) in 5" :key="`sk1-${index}`">
           <div class="skeleton-holder">
             <Skeleton class="flex-none" height="159px" width="100%" borderRadius="0px" />
             <div
@@ -164,7 +163,7 @@ const togglePlay = (item) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </HorizontalScrollFeature>
     </div>
   </div>
