@@ -351,7 +351,9 @@ export const initReadOfPreferences = async () => {
   let val = null
   try {
     val = await Preferences.get({ key: "files" })
-  } catch (error) { }
+  } catch (error) {
+    console.log("preference read error = ", error)
+  }
   return JSON.parse(val.value)
 }
 

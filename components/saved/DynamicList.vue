@@ -53,7 +53,7 @@ const getFilteredItemsData = computed(() => {
     typeFilterCondition = `type.eq.${props.typeFilter}`
   }
 
-  let query = client
+  const query = client
     .from(props.table)
     .select("*")
     .eq("uid", user.value.id)

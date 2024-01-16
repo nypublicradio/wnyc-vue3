@@ -35,7 +35,7 @@ export const initMediaSession = async (episode, skipTime) => {
     if (!initFlag) {
         initFlag = true
 
-        let mediaProvider = document.querySelector('media-provider')
+        const mediaProvider = document.querySelector('media-provider')
         audioElement = mediaProvider.querySelector('audio, video')
 
         audioElement.addEventListener('durationchange', updatePositionState)
