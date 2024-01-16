@@ -110,14 +110,14 @@ watch(searchFieldValue, () => {
         <TabView>
           <TabPanel header="Featured Shows">
             <section class="shows flex flex-column gap-3">
-              <div v-if="featuredShows">
+              <template v-if="featuredShows">
                 <ShowItem
                   v-for="show in featuredShows"
                   :data="show"
                   :key="show.title"
                   @onClick="goToShowPage(show)"
                 />
-              </div>
+              </template>
               <skeleton-show-item
                 v-else
                 v-for="(show, index) in 27"

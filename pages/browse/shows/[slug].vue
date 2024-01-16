@@ -185,7 +185,7 @@ watch(show, () => {
     </div>
     <h2 class="mt-4">Episodes</h2>
     <div class="flex flex-column gap-4 mt-2">
-      <div v-if="show">
+      <template v-if="show">
         <EpisodeItem
           v-for="ep in episodes"
           :data="ep"
@@ -193,7 +193,7 @@ watch(show, () => {
           @onClick="goToEpisodePage(ep)"
           :fallback-image="showImage"
         />
-      </div>
+      </template>
       <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
     </div>
     <BackToTopButton />
