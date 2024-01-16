@@ -12,6 +12,7 @@ import {
   togglePlay,
   shareAPI,
   trackClickEvent,
+  goToEpisodePage,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -43,10 +44,6 @@ const isEpisodePlaying = useIsEpisodePlaying()
 // navigate back to home and track it
 const backHome = () => {
   navigateTo("/browse")
-}
-
-const goToEpisodePage = (ep) => {
-  navigateTo(`/browse/shows/episode/${ep.meta.slug}`)
 }
 
 const togglePlayMostRecentEpisode = () => {

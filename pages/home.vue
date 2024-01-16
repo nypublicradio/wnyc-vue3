@@ -1,4 +1,5 @@
 <script setup>
+import { goToEpisodePage } from "~/utilities/helpers"
 //import { useUpdateCommentCounts } from "~/composables/comments"
 
 const config = useRuntimeConfig()
@@ -70,14 +71,21 @@ watch(pagedata, () => {
       <div v-if="section.data.length">
         <section>
           <h2>{{ section.title }}</h2>
+          <!-- <pre class="text-xs">{{ section }}</pre> -->
         </section>
-        <section>
-          <TopStories
-            v-if="section.componentType === 'default'"
-            :articles="section.data"
-          />
+        <section v-if="section.componentType === 'default'">
+          <div class="flex flex-column gap-4">
+            <EpisodeItem
+              v-for="ep in section.data"
+              :data="ep"
+              :key="ep.id"
+              @onClick="goToEpisodePage(ep)"
+              showTitle
+              :fallback-image="ep.headers.brand.logoImage.template"
+            />
+          </div>
         </section>
-        <WNYCFeatured else :articles="section.data" />
+        <WNYCFeatured v-else :articles="section.data" />
       </div>
     </div>
   </div>

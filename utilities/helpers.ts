@@ -822,3 +822,7 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 
 }
+
+export const goToEpisodePage = (ep) => {
+  navigateTo(`/browse/shows/episode/${ep.meta.slug}`)
+}

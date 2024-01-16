@@ -137,6 +137,7 @@ const getHomeTemplate = async () => {
 			// Regex navSlug to extract if it's horizontal or vertical.
 			// This is used to determine the layout of the home page.
 			const componentType = layout.navSlug.match(/(horizontal)/g);
+			console.log('layout = ', layout)
 			const data = await getSectionData(layout.navSlug);
 			return {
 				title: layout.title,
