@@ -17,6 +17,7 @@ const sensitiveContent = useSensitiveContent()
     <p
       v-if="fineprint && !sensitiveContent"
       :class="`type-fineprint ${fineprintClass || ''}`"
+      class="mt-3"
     >
       {{ fineprint }}
     </p>
