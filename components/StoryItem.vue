@@ -2,7 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import VCard from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VCard.vue"
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
-import { cmsSources } from "~/composables/globals"
+import { cmsSources, FALLBACKIMAGE } from "~/composables/globals"
 import {
   trackClickEvent,
   whenTime,
@@ -101,9 +101,11 @@ const handleAddToFavorites = async () => {
       v-ripple
       class="p-ripple w-full"
       :src="
-        props.data.cmsSource === cmsSources.WAGTAIL
-          ? String(props.data.image.id)
-          : props.data.image?.template ?? props.data.image
+        props.data.image
+          ? props.data.cmsSource === cmsSources.WAGTAIL
+            ? String(props.data.image.id)
+            : props.data.image?.template ?? props.data.image
+          : FALLBACKIMAGE
       "
       :title="props.data.title"
       :loading="index > 1 ? 'lazy' : 'eager'"
