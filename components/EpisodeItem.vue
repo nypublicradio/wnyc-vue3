@@ -176,35 +176,36 @@ const hasAudio = computed(() => {
             {{ props.data.org ?? props.data.showTitle }}
           </p>
           <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
-          <div class="article-metadata flex flex-column gap-1">
-            <PipeData class="text-xs" :hide-pipe="!hasAudio">
-              <template #left>
-                <span v-if="hasAudio">
-                  <p class="text-xs" v-if="estimatedDuration">
-                    {{ getMinutes(estimatedDuration, 1) }}
-                  </p>
-                  <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-                </span>
-              </template>
-              <template #right>
-                <div class="flex gap-2 align-items-center">
-                  <p class="text-xs">
-                    {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
-                  </p>
-                  <!-- FROM SUPABASE PROFILER DATA -->
-                  <DownloadedSmallIcon v-if="props.data.downloaded" />
-                </div>
-              </template>
-            </PipeData>
-          </div>
+        </div>
+        <div class="article-metadata -mb-1">
+          <PipeData class="text-xs" :hide-pipe="!hasAudio">
+            <template #left>
+              <span v-if="hasAudio">
+                <p class="text-xs" v-if="estimatedDuration">
+                  {{ getMinutes(estimatedDuration, 1) }}
+                </p>
+                <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
+              </span>
+            </template>
+            <template #right>
+              <div class="flex gap-2 align-items-center">
+                <p class="text-xs">
+                  {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
+                </p>
+                <!-- FROM SUPABASE PROFILER DATA -->
+                <DownloadedSmallIcon v-if="props.data.downloaded" />
+              </div>
+            </template>
+          </PipeData>
         </div>
         <!-- FROM SUPABASE PROFILER DATA -->
-        <ProgressBar
+        <!-- Has to have started playing to show -->
+        <!-- <ProgressBar
           :value="50"
           style="height: 4px"
           class="w-full"
           :showValue="false"
-        ></ProgressBar>
+        ></ProgressBar> -->
       </div>
     </div>
 
