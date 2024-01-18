@@ -1,12 +1,9 @@
 <script setup async>
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
-import { setStatusDarkMode } from "~/utilities/helpers"
+import { setStatusDarkMode, trackClickEvent } from "~/utilities/helpers"
 import { useCurrentUserProfile } from "~/composables/states.ts"
 import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
-
 import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
-
-import { trackClickEvent } from "~/utilities/helpers"
 
 useHead({
   bodyAttrs: {
@@ -26,6 +23,7 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
 const isLoading = shallowRef(true)
 
+/* adding tracking to the skip this button */
 const onSkipThis = () => {
   trackClickEvent("Click Tracking - Skip This button", "index page", "Skip Login")
 }
