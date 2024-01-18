@@ -1,20 +1,22 @@
 <script setup async>
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import { setStatusDarkMode } from '~/utilities/helpers'
-import { useCurrentUserProfile } from '~/composables/states.ts'
-import { useBrowserTopColorDarkMode } from '~/composables/globals.ts'
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+import { setStatusDarkMode } from "~/utilities/helpers"
+import { useCurrentUserProfile } from "~/composables/states.ts"
+import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
 
-import { useSignupSideBar, useLoginSideBar } from '~/composables/states'
+import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
+
+import { trackClickEvent } from "~/utilities/helpers"
 
 useHead({
   bodyAttrs: {
-    class: 'no-bottom-padding hide-bottom-menu background-gradient',
+    class: "no-bottom-padding hide-bottom-menu background-gradient",
   },
 })
 
 definePageMeta({
-  layout: 'default',
-  middleware: ['check-auth-provider'],
+  layout: "default",
+  middleware: ["check-auth-provider"],
 })
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
@@ -23,6 +25,11 @@ const currentUserProfile = useCurrentUserProfile()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
 const isLoading = shallowRef(true)
+
+const onSkipThis = () => {
+  trackClickEvent("Click Tracking - Skip This button", "index page", "Skip Login")
+}
+
 onBeforeMount(() => {
   // this page has the body class "style-mode-dark", so we need to force the status bar to be dark as well
   setStatusDarkMode(true)
@@ -44,10 +51,7 @@ onUnmounted(() => {
       <!-- force browser top color dark -->
       <Head>
         <Meta name="theme-color" :content="browserTopColorDarkMode" />
-        <Meta
-          name="msapplication-TileColor"
-          :content="browserTopColorDarkMode"
-        />
+        <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
       </Head>
     </Html>
     <div class="page style-mode-dark" :class="[`${String(route.name)}`]">
@@ -95,8 +99,8 @@ onUnmounted(() => {
                 "
               />
               <p>
-                <VFlexibleLink to="/home">Skip this</VFlexibleLink>, I'll create
-                an account later.
+                <VFlexibleLink to="/home" @click="onSkipThis">Skip this</VFlexibleLink>,
+                I'll create an account later.
               </p>
             </div>
           </section>
