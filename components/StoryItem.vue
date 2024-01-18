@@ -109,13 +109,13 @@ const handleAddToFavorites = async () => {
       :loading="index > 1 ? 'lazy' : 'eager'"
       :maxWidth="
         props.data.cmsSource === cmsSources.WAGTAIL
-          ? props.data.image.width
-          : props.data.image.w
+          ? props.data.image?.width
+          : props.data.image?.w
       "
       :maxHeight="
         props.data.cmsSource === cmsSources.WAGTAIL
-          ? props.data.image.height
-          : props.data.image.h
+          ? props.data.image?.height
+          : props.data.image?.h
       "
       :width="props.saved ? 72 : 116"
       :height="props.saved ? 72 : 116"
