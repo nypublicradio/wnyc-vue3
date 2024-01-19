@@ -54,7 +54,7 @@ const getShow = async (slug: string) => {
         const res = await axios(option);
         const resData = humps.camelizeKeys(res.data).results;
         // Find the show from the list of shows
-        const show = resData.find((s: any) => {
+        const show = resData.find((s) => {
             return s.slug === slug
         });
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');

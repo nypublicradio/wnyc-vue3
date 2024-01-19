@@ -47,12 +47,15 @@ const backHome = () => {
   navigateTo("/browse")
 }
 
+// finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
   return episodes.value.find((ep) => {
     if (Array.isArray(ep.audio) && ep.audio[0] !== null) {
       return ep
     } else if (typeof ep.audio === "string") {
       return ep
+    } else {
+      return null
     }
   })
 }
