@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources } from '~/composables/globals';
+import { cmsSources, FALLBACKIMAGE } from '~/composables/globals';
 
 const config = useRuntimeConfig()
 
@@ -14,13 +14,14 @@ const allShows = async () => {
         const res = await axios(option);
         res.data.results.forEach((show) => {
             show.cmsSource = cmsSources.PUBLISHER;
-            show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s')
+            show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGE
+            console.log('show = ', show)
         });
         return humps.camelizeKeys(res.data).results;
     } catch (e) {
-        //console.log(e);
+        console.log('error = ', e);
+        return null
     }
-    return null
 }
 
 //Fetch featured shows for the app
@@ -43,15 +44,16 @@ const featuredShows = async () => {
         });
         return resData;
     } catch (e) {
-        //console.log(e);
+        console.log('error = ', e);
+        return null
     }
-    return null
 }
 
 
 export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
     const allShowsData = await allShows();
+    console.log('allShowsData = ', allShowsData)
     const featuredShowsData = await featuredShows();
     featuredShowsData.map((show) => {
         //Get the id from the allShowsData
