@@ -18,7 +18,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <pre class="text-xs">{{ article.id }}</pre>
+      <!--       <pre class="text-xs">{{ article.id }}</pre> -->
       <StoryItem :data="article" :index="index" />
     </div>
   </div>
