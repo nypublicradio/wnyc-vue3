@@ -197,13 +197,12 @@ const getWNYCTopStories = async () => {
 				article.sortDate = article.attributes.publishAt;
 				return normalizeArticlePage(article);
 			});
-			console.log('WNYC articles = ', articles[2]);
 			return articles;
 		} else {
 			return [];
 		}
 	} catch (e) {
-		//console.log(e);
+		console.log('getWNYCTopStories error =, 'e);
 	}
 	return null
 
