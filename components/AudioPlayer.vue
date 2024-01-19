@@ -20,7 +20,12 @@ import {
   useSkipBackTrigger,
   usePlayerSeek,
 } from "~/composables/states"
-import { trackClickEvent, templatizePublisherImageUrl } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  templatizePublisherImageUrl,
+  getDate,
+  getMinutes,
+} from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
 
@@ -118,6 +123,34 @@ watch(
     }
   }
 )
+
+const getTitle = computed(() => {
+  //if (!isStreamLoading.value) {
+  console.log("currentEpisode?.value? =   ", currentEpisode?.value)
+  console.log("title = ", currentEpisode?.value?.showTitle ?? "")
+  if (isLiveStream.value) {
+    return currentEpisode?.value?.title
+  } else {
+    return currentEpisode?.value?.title
+  }
+  //}
+})
+const getDescription = computed(() => {
+  if (!isStreamLoading.value) {
+    console.log("isLiveStream.value = ", isLiveStream.value)
+    console.log("isStreamLoading.value = ", isStreamLoading.value)
+    console.log("desc = ", currentEpisode?.value?.title ?? "")
+    if (isLiveStream.value) {
+      return currentEpisode?.value?.episodeTitle
+    } else {
+      return currentEpisode?.value?.showTitle
+      //currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details
+    }
+  } else {
+    return "..."
+  }
+})
+console.log("currentEpisode.value = ", currentEpisode.value)
 </script>
 
 <template>
@@ -143,9 +176,9 @@ watch(
         :show-volume="false"
         :hide-download-mobile="true"
         :show-skip="isPlayerExpanded"
-        :title="currentEpisode?.title"
+        :title="getTitle"
         :station="currentEpisode?.name"
-        :description="currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details"
+        :description="getDescription"
         :image="templatizePublisherImageUrl(currentEpisode?.image)"
         :file="currentEpisode?.hls ?? currentEpisode?.file"
         :skipAheadTime="skipTime"
@@ -159,8 +192,29 @@ watch(
         @current-duration="currentEpisodeProgress = $event"
         @ended="episodeEnded"
         can-click-anywhere
-        marquee
+        :marquee="false"
       >
+        <template #expanded-player-title>
+          <PipeData class="text-xs">
+            <template #left>
+              <span>
+                <p class="text-xs">
+                  {{ currentEpisode.showTitle ?? currentEpisode.station }}
+                </p>
+              </span>
+            </template>
+            <template #right>
+              <div class="flex gap-2 align-items-center">
+                <p class="text-xs">
+                  {{
+                    getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate)
+                  }}
+                </p>
+              </div>
+            </template>
+          </PipeData>
+          <div class="expanded-title">{{ currentEpisode.title }}</div>
+        </template>
         <template #skipBack>
           <Previous10 />
         </template>
@@ -197,17 +251,34 @@ html.style-mode-dark .persistent-player {
   --persistent-player-padding: 0px 1rem 0 0 !important;
   --persistent-player-height: 60px !important;
   --persistent-player-title-size: 1rem !important;
+  --persistent-player-title-weight: 500;
+  --persistent-player-desc-size: 11px;
   --persistent-player-play-button-height: 38px;
   --persistent-player-play-button-width: 38px;
 
-  .persistent-player {
+  .persistent-player:not(.expanded) {
     bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
 
-    &.expanded {
-      bottom: 0;
+    // no live icon
+    .track-info-livestream {
+      display: none !important;
     }
+    // no time
+    .media-time,
+    .media-time-divider {
+      display: none !important;
+    }
+
+    // no seek buttons
+    media-seek-button {
+      display: none !important;
+    }
+
     .track-info {
-      //position: relative;
+      margin-left: 6px;
+    }
+    media-play-button {
+      margin-right: 6px;
     }
     .track-info-image {
       width: 60px;
@@ -215,15 +286,14 @@ html.style-mode-dark .persistent-player {
       height: 60px;
     }
     .track-info .track-info-details .track-info-title .title div {
-      font-size: 16px;
-      font-style: normal;
       font-family: var(--font-family-header);
-      font-weight: 500;
       line-height: 18px;
     }
     // because the desc is v-html and injecting a <p> tag that is overwriting the description styles
     .track-info-description * {
-      font-size: var(--persistent-player-desc-size);
+      text-decoration: none;
+      color: inherit;
+      pointer-events: none;
     }
     .play-button,
     .p-buttonset > .play-button,
@@ -232,6 +302,18 @@ html.style-mode-dark .persistent-player {
       background: #ffffff;
       border: 1px solid var(--background2--500);
     }
+  }
+
+  .persistent-player {
+    .play-icon {
+      width: 13px;
+      height: 17px;
+      margin-left: 1px;
+    }
+    &.expanded {
+      bottom: 0;
+    }
+
     .expanded-view {
       .expanded-content-holder {
         .header {
@@ -242,32 +324,35 @@ html.style-mode-dark .persistent-player {
         }
         .header-top {
           padding: 0 1.5rem;
+          #expandedViewPlayer {
+            margin-top: 1rem;
+          }
+        }
+        .expanded-title {
+          font-size: 18px;
+          font-family: var(--font-family-header);
+          line-height: 26.78px;
+          font-weight: 600;
         }
         .expanded-footer {
           background-color: var(--persistent-player-bg-transparent);
           backdrop-filter: blur(4px);
         }
       }
-    }
-    .play-icon {
-      width: 13px;
-      height: 17px;
-      margin-left: 1px;
+      #expandedControls {
+        min-height: 85px;
+        .next-10-icon,
+        .previous-10-icon {
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
   }
+
   .template-blank {
     .persistent-player {
       bottom: env(safe-area-inset-bottom);
-    }
-  }
-  .expanded-view {
-    #expandedControls {
-      min-height: 85px;
-      .next-10-icon,
-      .previous-10-icon {
-        width: 20px;
-        height: 20px;
-      }
     }
   }
 }

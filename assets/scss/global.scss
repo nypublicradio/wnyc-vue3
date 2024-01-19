@@ -424,9 +424,10 @@ a:visited {
 }
 .v-image {
   .p-button {
-    width: 2.357rem;
-    height: 2.357rem;
-    background: #111111b3;
-    border: transparent;
+    background-color: #ffffff;
+    border: none;
+    color: var(--night-500);
+    height: 38px;
+    width: 38px;
   }
 }

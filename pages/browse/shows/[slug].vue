@@ -19,6 +19,7 @@ import {
   useAccountPromptSideBar,
   useIsEpisodePlaying,
 } from "~/composables/states"
+import { FALLBACKIMAGE } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -46,8 +47,18 @@ const backHome = () => {
   navigateTo("/browse")
 }
 
+const firstEpisodeWithAudio = () => {
+  return episodes.value.find((ep) => {
+    if (Array.isArray(ep.audio) && ep.audio[0] !== null) {
+      return ep
+    } else if (typeof ep.audio === "string") {
+      return ep
+    }
+  })
+}
+
 const togglePlayMostRecentEpisode = () => {
-  togglePlay(episodes.value[0])
+  togglePlay(firstEpisodeWithAudio())
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
@@ -79,17 +90,17 @@ const handleShare = () => {
 }
 
 watch(show, () => {
-  //console.log("show  = ", show.value)
+  console.log("show  = ", show.value)
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template
+  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGE
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.description
 })
 </script>
 
 <template>
-  <section class="shows-page">
+  <section class="shows-page pb-7">
     <div class="flex align-items-center">
       <Button
         class="back-btn text-color -ml-4"
@@ -104,7 +115,7 @@ watch(show, () => {
     </div>
 
     <VImage
-      v-if="show"
+      v-if="showImage"
       :src="showImage"
       :alt="`${showTitle} show image`"
       :width="144"

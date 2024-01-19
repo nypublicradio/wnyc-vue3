@@ -155,7 +155,7 @@ const hasAudio = computed(() => {
   )
 })
 
-//console.log("EpisodeItem =", props.data)
+console.log("EpisodeItem =", props.data)
 </script>
 
 <template>

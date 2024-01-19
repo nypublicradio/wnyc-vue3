@@ -21,16 +21,22 @@ const getWagtailStoryData = async (id: string) => {
 };
 
 const getPublisherStoryData = async (id: string) => {
+    console.log('getPublisherStoryData id = ', id)
     try {
         const option = {
             method: 'GET',
             url: `${config.public.PUBLISHER_BASE_API}v3/story-pk/${id}/`,
         };
         const res = await axios(option);
-
+        console.log('getPublisherStoryData res = ', res)
         return normalizePublisherPage(humps.camelizeKeys(res.data).data);
     } catch (e) {
-        //console.log(e);
+
+        if (e.response && e.response.status === 404) {
+            console.log('404')
+        } else {
+            console.log(e);
+        }
     }
     return null
 };
@@ -53,7 +59,9 @@ export default defineEventHandler(async (event) => {
     const id: string | undefined = event?.context?.params?.storyId;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (id && cmsSource) {
+        console.log('cmsSource = ', cmsSource)
         const storyData = await getStoryData(id, cmsSource);
+        console.log('storyData = ', storyData)
         return storyData;
     }
     return null

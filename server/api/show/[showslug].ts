@@ -5,7 +5,7 @@ import { normalizeArticlePage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig()
 
-const getEpisodes = async (slug: string, type: string, page?: string) => {
+const getEpisodes = async (slug: string, showImage: string, type?: string, page?: string) => {
     try {
         // If page is not defined, set it to 1
         if (!page) {
@@ -29,6 +29,7 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
             // }
 
             resData[i].cmsSource = cmsSources.PUBLISHER
+            resData[i].showImage = showImage
             resData[i] = normalizeArticlePage(humps.camelizeKeys(resData[i]))
         }
         //console.log(resData[0])
@@ -38,12 +39,13 @@ const getEpisodes = async (slug: string, type: string, page?: string) => {
             meta: humps.camelizeKeys(res.data).meta
         };
     } catch (e) {
-        //console.log(e);
+        console.log('getEpisodes error = ', e);
     }
     return null
 }
 
 const getShow = async (slug: string) => {
+    console.log('get Show')
     try {
         const option = {
             method: 'GET',
@@ -52,11 +54,13 @@ const getShow = async (slug: string) => {
         const res = await axios(option);
         const resData = humps.camelizeKeys(res.data).results;
         // Find the show from the list of shows
-        const show = resData.find((show: any) => show.slug === slug);
+        const show = resData.find((s: any) => {
+            return s.slug === slug
+        });
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
         return show;
     } catch (e) {
-        //console.log(e);
+        console.log('getShow error = ', e);
     }
     return null
 }
@@ -65,13 +69,14 @@ export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug;
+
     //Fetching query params
     const query = getQuery(event);
     const page: string | undefined = Array.isArray(query.page) ? query.page[0] : query.page;
     if (slug) {
         // Get show details
         const show = await getShow(slug);
-        const episodes = await getEpisodes(slug, show.type, page);
+        const episodes = await getEpisodes(slug, show?.image?.template, show?.type, page);
         res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
         return {
             show: show,
