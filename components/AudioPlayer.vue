@@ -124,21 +124,10 @@ watch(
 )
 
 const getTitle = computed(() => {
-  //if (!isStreamLoading.value) {
-  console.log("currentEpisode?.value? =   ", currentEpisode?.value)
-  console.log("title = ", currentEpisode?.value?.showTitle ?? "")
-  if (isLiveStream.value) {
-    return currentEpisode?.value?.title
-  } else {
-    return currentEpisode?.value?.title
-  }
-  //}
+  return currentEpisode?.value?.title
 })
 const getDescription = computed(() => {
   if (!isStreamLoading.value) {
-    console.log("isLiveStream.value = ", isLiveStream.value)
-    console.log("isStreamLoading.value = ", isStreamLoading.value)
-    console.log("desc = ", currentEpisode?.value?.title ?? "")
     if (isLiveStream.value) {
       return currentEpisode?.value?.episodeTitle
     } else {
@@ -149,7 +138,6 @@ const getDescription = computed(() => {
     return "..."
   }
 })
-console.log("currentEpisode.value = ", currentEpisode.value)
 </script>
 
 <template>

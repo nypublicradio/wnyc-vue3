@@ -154,8 +154,6 @@ const hasAudio = computed(() => {
     (Array.isArray(props.data.audio) && props.data.audio.length === 0)
   )
 })
-
-console.log("EpisodeItem =", props.data)
 </script>
 
 <template>

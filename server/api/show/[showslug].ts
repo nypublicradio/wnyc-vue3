@@ -39,13 +39,12 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, page?
             meta: humps.camelizeKeys(res.data).meta
         };
     } catch (e) {
-        console.log('getEpisodes error = ', e);
+        console.error('getEpisodes error = ', e);
     }
     return null
 }
 
 const getShow = async (slug: string) => {
-    console.log('get Show')
     try {
         const option = {
             method: 'GET',
@@ -60,7 +59,7 @@ const getShow = async (slug: string) => {
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
         return show;
     } catch (e) {
-        console.log('getShow error = ', e);
+        console.error('getShow error = ', e);
     }
     return null
 }

@@ -352,7 +352,7 @@ export const initReadOfPreferences = async () => {
   try {
     val = await Preferences.get({ key: "files" })
   } catch (error) {
-    console.log("preference read error = ", error)
+    console.error("preference read error = ", error)
   }
   return JSON.parse(val.value)
 }
@@ -778,7 +778,6 @@ export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
   const isSegment = index !== null
-  console.log('item = ', item)
   return {
     ...item,
     file: isSegment ? item.audio[index] : item.audio,

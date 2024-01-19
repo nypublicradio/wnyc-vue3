@@ -18,7 +18,7 @@ const allShows = async () => {
         });
         return humps.camelizeKeys(res.data).results;
     } catch (e) {
-        console.log('error = ', e);
+        console.error('error = ', e);
         return null
     }
 }
@@ -43,7 +43,7 @@ const featuredShows = async () => {
         });
         return resData;
     } catch (e) {
-        console.log('error = ', e);
+        console.error('error = ', e);
         return null
     }
 }

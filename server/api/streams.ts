@@ -24,7 +24,7 @@ const getLivestreams = async () => {
         }));
         return humps.camelizeKeys(resData);
     } catch (e) {
-        console.log(e);
+        console.error(e);
     }
     return null
 }

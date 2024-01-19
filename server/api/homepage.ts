@@ -190,7 +190,6 @@ const getWNYCTopStories = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
-		//console.log('WNYC RESDATA = ', resData);
 		if (resData) {
 			const articles = resData.map((article: any) => {
 				article.cmsSource = cmsSources.PUBLISHER;
@@ -202,7 +201,7 @@ const getWNYCTopStories = async () => {
 			return [];
 		}
 	} catch (e) {
-		console.log('getWNYCTopStories error = ', e);
+		console.error('getWNYCTopStories error = ', e);
 	}
 	return null
 
