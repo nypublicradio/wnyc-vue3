@@ -46,6 +46,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article.
             class="mb-4 text-sm gap-4"
           />
         </section>
+        <hr class="black mb-6" />
         <div class="mx-auto mb-6" style="width: 300px">
           <story-htlAd
             layout="rectangle"
