@@ -202,7 +202,7 @@ const getWNYCTopStories = async () => {
 			return [];
 		}
 	} catch (e) {
-		console.log('getWNYCTopStories error =, 'e);
+		console.log('getWNYCTopStories error = ', e);
 	}
 	return null
 
