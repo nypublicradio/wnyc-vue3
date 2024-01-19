@@ -35,7 +35,6 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --s-box-background-color: var(--background) !important;
     --s-box-stroke-color: var(--background) !important;
     --header-background: #ffffffe6 !important;
-    --persistent-player-bg-transparent: #2f2f2fcc !important;
     --expandedHeaderBackgroundTransparent: #2f2f2fe6 !important;
     --live-feature-background: var(--background2) !important;
     --horzScrollGradient: var(--background);
@@ -43,7 +42,8 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --donation-text: var(--text-color-on-dark) !important;
     --searchFieldBackground: var(--background2) !important;
     --backgroundSimple: var(--background) !important;
-    --persistent-player-desc-size: 0.75rem;
+
+    --persistent-player-bg-transparent: #2f2f2fcc !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -60,12 +60,18 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --searchFieldBackground: var(--s-box-background-color) !important;
     --backgroundSimple: var(--background2) !important;
 
-    --persistent-player-slider-progress: var(--indigo);
-    --persistent-player-slider-thumb-border: var(--indigo);
-    --persistent-player-slider-thumb-shadow: var(--indigo);
-    --persistent-player-slider-thumb-bg: var(--white);
-    --persistent-player-slider-bg: var(--white);
-    --persistent-player-slider-buffer: var(--secondary);
+    --persistent-player-slider-progress: #000;
+}
+html.style-mode-dark {
+    [data-style-mode='dark'],
+    .style-mode-dark {
+        --persistent-player-slider-progress: var(--indigo);
+        --persistent-player-slider-thumb-border: var(--indigo);
+        --persistent-player-slider-thumb-shadow: var(--indigo);
+        --persistent-player-slider-thumb-bg: var(--white);
+        --persistent-player-slider-bg: var(--white);
+        --persistent-player-slider-buffer: var(--secondary);
+    }
 }
 
 // :root {

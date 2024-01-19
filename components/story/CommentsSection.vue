@@ -34,7 +34,7 @@ useHead({
 <template>
   <div class="comments-section">
     <div
-      :data-theme="currentUserProfile.dark_mode ? 'dark' : 'light'"
+      :data-theme="currentUserProfile?.dark_mode ? 'dark' : 'light'"
       data-spotim-module="conversation"
       :data-post-url="getArticleUrl()"
       :data-article-tags="getArticleTagsString()"

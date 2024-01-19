@@ -27,10 +27,14 @@ const getPublisherStoryData = async (id: string) => {
             url: `${config.public.PUBLISHER_BASE_API}v3/story-pk/${id}/`,
         };
         const res = await axios(option);
-
         return normalizePublisherPage(humps.camelizeKeys(res.data).data);
     } catch (e) {
-        //console.log(e);
+
+        if (e.response && e.response.status === 404) {
+            console.error('404 = ', e)
+        } else {
+            console.error(e);
+        }
     }
     return null
 };

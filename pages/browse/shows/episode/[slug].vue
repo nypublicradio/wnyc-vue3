@@ -199,9 +199,9 @@ watch(episode, () => {
               @onClick="togglePlay(episodeData)"
               class=""
             />
-            <div v-else class="font-bold text-red-500">
+            <!--             <div v-else class="font-bold text-red-500">
               <i class="pi pi-exclamation-triangle mr-1"></i>No Audio
-            </div>
+            </div> -->
           </div>
           <div class="flex gap-3">
             <Button

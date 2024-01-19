@@ -19,6 +19,7 @@ import {
   trackClickEvent,
   whenTime,
   getMinutes,
+  togglePlay,
 } from "~/utilities/helpers"
 
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
@@ -198,7 +199,11 @@ watch(storyData, async () => {
         </div>
         <div class="flex align-items-center justify-content-between gap-3 flex-wrap">
           <div v-if="storyData.estimatedDuration">
-            <PlayButton :label="getMinutes(storyData.estimatedDuration, 1)" />
+            <PlayButton
+              :label="getMinutes(storyData.estimatedDuration, 1)"
+              @click="togglePlay(storyData)"
+              :file="storyData.audio"
+            />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
             <Button text plain rounded @click="handleAddToFavorites">

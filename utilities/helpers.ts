@@ -352,7 +352,7 @@ export const initReadOfPreferences = async () => {
   try {
     val = await Preferences.get({ key: "files" })
   } catch (error) {
-    console.log("preference read error = ", error)
+    console.error("preference read error = ", error)
   }
   return JSON.parse(val.value)
 }
@@ -782,7 +782,7 @@ export const prepForPlayer = (item, index = null) => {
     ...item,
     file: isSegment ? item.audio[index] : item.audio,
     title: isSegment ? item.segments[index].title : item.title,
-    image: item.image.template,
+    image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage,
     //TODO convert to seconds
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
@@ -793,7 +793,6 @@ export const prepForPlayer = (item, index = null) => {
 export const togglePlay = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
-
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media)

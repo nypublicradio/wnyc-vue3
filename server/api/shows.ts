@@ -15,11 +15,10 @@ const allShows = async () => {
         res.data.results.forEach((show) => {
             show.cmsSource = cmsSources.PUBLISHER;
             show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGE
-            console.log('show = ', show)
         });
         return humps.camelizeKeys(res.data).results;
     } catch (e) {
-        console.log('error = ', e);
+        console.error('error = ', e);
         return null
     }
 }
@@ -44,7 +43,7 @@ const featuredShows = async () => {
         });
         return resData;
     } catch (e) {
-        console.log('error = ', e);
+        console.error('error = ', e);
         return null
     }
 }
@@ -53,7 +52,6 @@ const featuredShows = async () => {
 export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
     const allShowsData = await allShows();
-    console.log('allShowsData = ', allShowsData)
     const featuredShowsData = await featuredShows();
     featuredShowsData.map((show) => {
         //Get the id from the allShowsData
