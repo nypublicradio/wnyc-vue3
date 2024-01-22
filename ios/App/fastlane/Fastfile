@@ -95,9 +95,9 @@ platform :ios do
       #   default_payloads: [:lane, :test_result],
       #   success: true
       # )
-    rescue => exception
-      on_error(exception)
-    end
+    # rescue => exception
+    #   on_error(exception)
+    # end
   end
 
   desc "Release a new version of the app to the App Store"
