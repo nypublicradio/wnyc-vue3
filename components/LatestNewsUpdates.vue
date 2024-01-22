@@ -37,10 +37,13 @@ const togglePlayHere = (media) => {
 
 <template>
   <div>
+    <!-- <pre class="text-xs">{{ props.localNewscast }}</pre> -->
     <div class="latest-news-updates grid">
       <div class="col-6">
         <NewsCard
           :newsData="props.localNewscast"
+          sourceLabel="WNYC"
+          badgeLabel="Local News"
           @onClick="togglePlayHere(props.localNewscast)"
         />
       </div>
@@ -48,7 +51,7 @@ const togglePlayHere = (media) => {
       <div class="col-6">
         <NewsCard
           :newsData="props.nationalNewscast"
-          source="NPR"
+          sourceLabel="NPR"
           badgeLabel="National News"
           bagdeColor="var(--background-500)"
           badgeBgColor="var(--indigo-500)"
