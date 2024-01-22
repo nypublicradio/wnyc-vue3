@@ -9,7 +9,7 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
-  togglePlay,
+  togglePlayEpisode,
   shareAPI,
   trackClickEvent,
   goToEpisodePage,
@@ -61,7 +61,9 @@ const firstEpisodeWithAudio = () => {
 }
 
 const togglePlayMostRecentEpisode = () => {
-  togglePlay(firstEpisodeWithAudio())
+  const ep = firstEpisodeWithAudio()
+  togglePlayEpisode(ep)
+  trackClickEvent("Click Tracking - Show Page", ep.title, "toggle play")
 }
 const handleAddToFavorites = async () => {
   if (user.value) {

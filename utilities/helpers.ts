@@ -790,7 +790,7 @@ export const prepForPlayer = (item, index = null) => {
   }
 }
 
-export const togglePlay = (media, index = 0) => {
+export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   if (typeof media.audio === "string") {
@@ -808,7 +808,7 @@ export const togglePlay = (media, index = 0) => {
 
   togglePlayTrigger.value = !togglePlayTrigger.value
 
-  trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
+  //trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
 
 

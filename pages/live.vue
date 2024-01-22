@@ -44,7 +44,7 @@ const switchStation = async (station) => {
     }
   }
 }
-const togglePlay = () => {
+const togglePlayHere = () => {
   if (currentEpisode.value !== currentEpisodeHolder.value) {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug
@@ -196,7 +196,7 @@ watch(
       <section class="current-station-info">
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
-      <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
+      <PlayAndSkipButtons :hideSkip="true" @beforeTogglePlay="togglePlayHere" />
     </div>
     <section class="schedule">
       <h2>Schedule</h2>

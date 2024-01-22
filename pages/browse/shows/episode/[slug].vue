@@ -1,13 +1,16 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import { getMinutes, trackClickEvent, getDate, togglePlay } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
+  getMinutes,
+  trackClickEvent,
+  getDate,
+  togglePlayEpisode,
   deleteFavorite,
   saveFavorite,
   checkIsFavorited,
@@ -121,6 +124,15 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
+const togglePlayHere = (episodeData, index = 0) => {
+  togglePlayEpisode(episodeData, index)
+  trackClickEvent(
+    "Click Tracking - Episode Details Page",
+    episodeData.title,
+    "toggle play"
+  )
+}
+
 watch(episode, () => {
   episodeData.value = episode.value
   //console.log("episode = ", episodeData.value)
@@ -196,7 +208,7 @@ watch(episode, () => {
               v-if="!episodeData?.segments && episodeData?.audio"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :file="episodeData?.audio"
-              @onClick="togglePlay(episodeData)"
+              @onClick="togglePlayHere(episodeData)"
               class=""
             />
             <!--             <div v-else class="font-bold text-red-500">
@@ -264,7 +276,7 @@ watch(episode, () => {
               <PlayButton
                 :label="segment.audioDurationReadable"
                 :file="episodeData?.audio[index]"
-                @onClick="togglePlay(episodeData, index)"
+                @onClick="togglePlayHere(episodeData, index)"
               />
               <p class="truncate t2lines">{{ segment.title }}</p>
             </div>

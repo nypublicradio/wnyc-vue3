@@ -26,7 +26,7 @@ const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 
-const togglePlay = () => {
+const togglePlayHere = () => {
   if (
     currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
@@ -78,7 +78,7 @@ const togglePlay = () => {
                 :label="currentEpisodeHolder?.station"
                 live
                 :file="currentEpisodeHolder?.file"
-                @onClick="togglePlay"
+                @onClick="togglePlayHere"
               />
             </div>
             <div
