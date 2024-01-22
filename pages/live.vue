@@ -126,14 +126,14 @@ watch(
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
-            v-for="station in allCurrentStations"
+            v-for="(station, index) in allCurrentStations"
             class="station-holder"
             :class="{
               activestation:
                 currentEpisodeHolder?.station === station.station ||
                 currentEpisode?.station === station.station,
             }"
-            :key="station.station"
+            :key="`${station.station}-${index}`"
           >
             <div class="relative">
               <Button
@@ -203,7 +203,7 @@ watch(
       <div v-if="scheduleRef">
         <div
           v-for="(entry, index) in scheduleRef"
-          :key="entry.id"
+          :key="`${entry.id}-${index}`"
           class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
           :class="[{ selected: index === 0 }]"
         >

@@ -807,8 +807,6 @@ export const togglePlayEpisode = (media, index = 0) => {
   }
 
   togglePlayTrigger.value = !togglePlayTrigger.value
-
-  //trackClickEvent("Click Tracking - Episode Details Page", media.title, "toggle play")
 }
 
 

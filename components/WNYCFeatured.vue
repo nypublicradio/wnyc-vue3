@@ -1,5 +1,10 @@
 <script async setup>
-import { getMinutes, trackClickEvent, copyToClipBoard } from "~/utilities/helpers"
+import {
+  getMinutes,
+  trackClickEvent,
+  copyToClipBoard,
+  saveRecentlyPlayed,
+} from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 const toast = useToast()
