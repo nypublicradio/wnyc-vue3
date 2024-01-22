@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
 import { Capacitor } from "@capacitor/core"
-import { App /* URLOpenListenerEvent */ } from "@capacitor/app"
+import { App } from "@capacitor/app"
+import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
-  //ActionPerformed,
   //PushNotificationSchema,
   PushNotifications,
-  //Token,
 } from "@capacitor/push-notifications"
+import type { ActionPerformed, Token } from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
@@ -31,7 +31,7 @@ const isApp = useIsApp()
 
 const fcmToken = ref("")
 //const nNotification = ref(null)
-// const appLaunchUrl = ref(null)
+const appLaunchUrl = ref(null)
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -143,19 +143,22 @@ const addListeners = async () => {
     //when redirected to the app from a deep link, we need to exchange the url parame code for a session
 
     const code = event.url.split("=")[1]
+    alert("code = " + code)
     if (code) {
-      client.auth.exchangeCodeForSession(code)
-      await navigateTo("/home")
+      await client.auth.exchangeCodeForSession(code)
+
+      navigateTo("/")
+      window.location.reload()
     }
   })
 }
 
-// const checkAppLaunchUrl = async () => {
-//   const url = await App.getLaunchUrl()
-//   appLaunchUrl.value = url
-//   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-//   alert('App opened with URL: ' + JSON.stringify(url))
-// }
+const checkAppLaunchUrl = async () => {
+  const url = await App.getLaunchUrl()
+  appLaunchUrl.value = url
+  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
+  alert("App opened with URL: " + JSON.stringify(url))
+}
 
 onMounted(async () => {
   await getAndSetUserProfile()
@@ -163,7 +166,7 @@ onMounted(async () => {
   // if APP then add listeners
   if (isApp.value) {
     addListeners()
-    //checkAppLaunchUrl()
+    checkAppLaunchUrl()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
