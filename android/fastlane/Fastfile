@@ -37,12 +37,12 @@ platform :android do
         release_status: 'draft',
         package_name: 'org.wnyc.android'
       ) # upload to Google Play Store
-      slack(
-        channel: "#releases",
-        message: "New WNYC Build uploaded to Google Play Store :tada:",
-        default_payloads: [:lane, :test_result],
-        success: true
-      )
+      # slack(
+      #   channel: "#releases",
+      #   message: "New WNYC Build uploaded to Google Play Store :tada:",
+      #   default_payloads: [:lane, :test_result],
+      #   success: true
+      # )
     rescue => exception
       on_error(exception)
     end

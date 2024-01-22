@@ -89,12 +89,12 @@ platform :ios do
         app_identifier: "org.wnyc.iphone",
         skip_waiting_for_build_processing: true
       )
-      slack(
-        channel: "#releases",
-        message: "New WNYC Beta Build uploaded to TestFlight :tada:",
-        default_payloads: [:lane, :test_result],
-        success: true
-      )
+      # slack(
+      #   channel: "#releases",
+      #   message: "New WNYC Beta Build uploaded to TestFlight :tada:",
+      #   default_payloads: [:lane, :test_result],
+      #   success: true
+      # )
     rescue => exception
       on_error(exception)
     end
