@@ -141,13 +141,16 @@ const addListeners = async () => {
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
     //when redirected to the app from a deep link, we need to exchange the url parame code for a session
-
+    alert("event = " + JSON.stringify(event))
+    console.log("event = ", event)
     const code = event.url.split("=")[1]
-    alert("code = " + code)
+    console.log("code = ", code)
+    alert("code = " + JSON.stringify(code))
     if (code) {
       await client.auth.exchangeCodeForSession(code)
-
+      alert("route")
       navigateTo("/")
+      alert("refresh")
       window.location.reload()
     }
   })
