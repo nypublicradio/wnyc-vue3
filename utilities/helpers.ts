@@ -790,6 +790,7 @@ export const prepForPlayer = (item, index = null) => {
   }
 }
 
+// handles playing episodes and segments
 export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()

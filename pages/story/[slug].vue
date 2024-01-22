@@ -134,9 +134,10 @@ watch(storyData, async () => {
   useUpdateCommentCounts([storyData.value])
 })
 
-const togglePlayHere = (storyData, index = 0) => {
-  togglePlayEpisode(storyData, index)
-  trackClickEvent("Click Tracking - Story Page", storyData.title, "toggle play")
+// handle the toggle play button and tracking
+const togglePlayHere = (story, index = 0) => {
+  togglePlayEpisode(story, index)
+  trackClickEvent("Click Tracking - Story Page", story.title, "toggle play")
 }
 </script>
 

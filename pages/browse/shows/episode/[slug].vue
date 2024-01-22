@@ -124,13 +124,10 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
-const togglePlayHere = (episodeData, index = 0) => {
-  togglePlayEpisode(episodeData, index)
-  trackClickEvent(
-    "Click Tracking - Episode Details Page",
-    episodeData.title,
-    "toggle play"
-  )
+// handle the toggle play button and tracking
+const togglePlayHere = (epData, index = 0) => {
+  togglePlayEpisode(epData, index)
+  trackClickEvent("Click Tracking - Episode Details Page", epData.title, "toggle play")
 }
 
 watch(episode, () => {

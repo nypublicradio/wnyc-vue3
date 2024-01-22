@@ -44,6 +44,7 @@ const switchStation = async (station) => {
     }
   }
 }
+// handle the toggle play button and tracking
 const togglePlayHere = () => {
   if (currentEpisode.value !== currentEpisodeHolder.value) {
     //update slug
