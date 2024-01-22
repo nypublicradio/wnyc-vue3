@@ -44,7 +44,8 @@ const switchStation = async (station) => {
     }
   }
 }
-const togglePlay = () => {
+// handle the toggle play button and tracking
+const togglePlayHere = () => {
   if (currentEpisode.value !== currentEpisodeHolder.value) {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug
@@ -126,14 +127,14 @@ watch(
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
-            v-for="station in allCurrentStations"
+            v-for="(station, index) in allCurrentStations"
             class="station-holder"
             :class="{
               activestation:
                 currentEpisodeHolder?.station === station.station ||
                 currentEpisode?.station === station.station,
             }"
-            :key="station.station"
+            :key="`${station.station}-${index}`"
           >
             <div class="relative">
               <Button
@@ -196,14 +197,14 @@ watch(
       <section class="current-station-info">
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
-      <PlayAndSkipButtons @beforeTogglePlay="togglePlay" />
+      <PlayAndSkipButtons :hideSkip="true" @beforeTogglePlay="togglePlayHere" />
     </div>
     <section class="schedule">
       <h2>Schedule</h2>
       <div v-if="scheduleRef">
         <div
           v-for="(entry, index) in scheduleRef"
-          :key="entry.id"
+          :key="`${entry.id}-${index}`"
           class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
           :class="[{ selected: index === 0 }]"
         >

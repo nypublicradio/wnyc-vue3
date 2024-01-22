@@ -7,6 +7,16 @@ import {
   useIsLiveStream,
 } from "~/composables/states"
 
+const props = defineProps({
+  /**
+   * hide skip buttons
+   */
+  hideSkip: {
+    default: false,
+    type: Boolean,
+  },
+})
+
 const isEpisodePlaying = useIsEpisodePlaying()
 const togglePlayTrigger = useTogglePlayTrigger()
 const skipAheadTrigger = useSkipAheadTrigger()
@@ -40,18 +50,22 @@ const isLive = computed(() => {
 
 <template>
   <div class="play-and-skip-buttons flex gap-3 justify-content-center">
-    <Button v-if="!isLive" severity="secondary" rounded @click="skipBack">
-      <template #icon> <Previous10 /></template>
-    </Button>
+    <template v-if="!props.hideSkip">
+      <Button v-if="!isLive" severity="secondary" rounded @click="skipBack">
+        <template #icon> <Previous10 /></template>
+      </Button>
+    </template>
     <Button v-if="isEpisodePlaying" severity="secondary" rounded @click="togglePlay">
       <template #icon> <PauseIcon /></template>
     </Button>
     <Button v-else severity="secondary" rounded @click="togglePlay">
       <template #icon> <PlayIcon /></template>
     </Button>
-    <Button v-if="!isLive" severity="secondary" rounded @click="skipAhead">
-      <template #icon> <Next10 /></template>
-    </Button>
+    <template v-if="!props.hideSkip">
+      <Button v-if="!isLive" severity="secondary" rounded @click="skipAhead">
+        <template #icon> <Next10 /></template>
+      </Button>
+    </template>
   </div>
 </template>
 

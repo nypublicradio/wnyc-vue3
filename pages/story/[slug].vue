@@ -19,7 +19,7 @@ import {
   trackClickEvent,
   whenTime,
   getMinutes,
-  togglePlay,
+  togglePlayEpisode,
 } from "~/utilities/helpers"
 
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
@@ -133,6 +133,12 @@ watch(storyData, async () => {
   // get comment count
   useUpdateCommentCounts([storyData.value])
 })
+
+// handle the toggle play button and tracking
+const togglePlayHere = (story, index = 0) => {
+  togglePlayEpisode(story, index)
+  trackClickEvent("Click Tracking - Story Page", story.title, "toggle play")
+}
 </script>
 
 <template>
@@ -201,7 +207,7 @@ watch(storyData, async () => {
           <div v-if="storyData.estimatedDuration">
             <PlayButton
               :label="getMinutes(storyData.estimatedDuration, 1)"
-              @click="togglePlay(storyData)"
+              @click="togglePlayHere(storyData)"
               :file="storyData.audio"
             />
           </div>

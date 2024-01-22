@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 
 // TEMP fix to make ripple work
@@ -25,9 +25,10 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
-const togglePlay = (media) => {
+const togglePlayHere = (media) => {
   if (currentEpisode.value?.file !== media.file) {
     currentEpisode.value = media
+    saveRecentlyPlayed(media, mediaTypes.EPISODE)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
   trackClickEvent("Click Tracking - Latest News Updates", media.title, "toggle play")
@@ -40,7 +41,7 @@ const togglePlay = (media) => {
       <div class="col-6">
         <NewsCard
           :newsData="props.localNewscast"
-          @onClick="togglePlay(props.localNewscast)"
+          @onClick="togglePlayHere(props.localNewscast)"
         />
       </div>
 
@@ -51,7 +52,7 @@ const togglePlay = (media) => {
           badgeLabel="National News"
           bagdeColor="var(--background-500)"
           badgeBgColor="var(--indigo-500)"
-          @onClick="togglePlay(props.nationalNewscast)"
+          @onClick="togglePlayHere(props.nationalNewscast)"
         />
       </div>
     </div>

@@ -1,5 +1,10 @@
 <script async setup>
-import { getMinutes, trackClickEvent, copyToClipBoard } from "~/utilities/helpers"
+import {
+  getMinutes,
+  trackClickEvent,
+  copyToClipBoard,
+  saveRecentlyPlayed,
+} from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 const toast = useToast()
@@ -74,12 +79,13 @@ const prepForPlayer = (item) => {
 }
 
 // handle the play button click
-const togglePlay = (item) => {
+const togglePlayHere = (item) => {
   if (currentEpisode.value?.id !== item.id) {
     currentEpisode.value = prepForPlayer(item)
+    saveRecentlyPlayed(item, mediaTypes.SEGMENT)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent("Click Tracking - Large Card", item.title, "toggle play")
+  trackClickEvent("Click Tracking - Horizontal Large Card", item.title, "toggle play")
 }
 </script>
 
@@ -100,7 +106,7 @@ const togglePlay = (item) => {
               v-if="item.audio"
               :label="getMinutes(item.estimatedDuration, 1)"
               :file="item.audio"
-              @onClick="togglePlay(item)"
+              @onClick="togglePlayHere(item)"
               class="z-2"
               @click.prevent
             />

@@ -9,7 +9,7 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
-  togglePlay,
+  togglePlayEpisode,
   shareAPI,
   trackClickEvent,
   goToEpisodePage,
@@ -59,9 +59,11 @@ const firstEpisodeWithAudio = () => {
     }
   })
 }
-
+// handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  togglePlay(firstEpisodeWithAudio())
+  const ep = firstEpisodeWithAudio()
+  togglePlayEpisode(ep)
+  trackClickEvent("Click Tracking - Show Page", ep.title, "toggle play")
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
