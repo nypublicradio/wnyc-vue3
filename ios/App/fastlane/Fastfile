@@ -71,34 +71,25 @@ platform :ios do
   
   desc "Submits a new WNYC Beta Build to Apple TestFlight"
   lane :beta do
-    begin
-      clear_derived_data # this step required to clear "exit status: 65" errors during testing
-      match(type: "appstore")
-      app_store_connect_api_key
-      increment_build_number(
-        build_number: "$CIRCLE_BUILD_NUM"
-      )
-      build_app(
-        workspace: "App.xcworkspace",
-        scheme: "App",
-        clean: true,
-        output_name: "WNYC.ipa",
-        export_method: "app-store",
-      )
-      upload_to_testflight(
-        app_identifier: "org.wnyc.iphone",
-        skip_waiting_for_build_processing: true
-      )
-      # slack(
-      #   channel: "#releases",
-      #   message: "New WNYC Beta Build uploaded to TestFlight :tada:",
-      #   default_payloads: [:lane, :test_result],
-      #   success: true
-      # )
-    # rescue => exception
-    #   on_error(exception)
-    # end
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    match(type: "appstore")
+    app_store_connect_api_key
+    increment_build_number(
+      build_number: "$CIRCLE_BUILD_NUM"
+    )
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      clean: true,
+      output_name: "WNYC.ipa",
+      export_method: "app-store",
+    )
+    upload_to_testflight(
+      app_identifier: "org.wnyc.iphone",
+      skip_waiting_for_build_processing: true
+    )
   end
+
 
   desc "Release a new version of the app to the App Store"
   lane :release do
@@ -131,32 +122,28 @@ platform :ios do
   end
 
   lane :aws_device_run_ios do
-    begin
-      ENV['AWS_REGION']            = 'us-west-2'
-      #Build For Testing
-      clear_derived_data # this step required to clear "exit status: 65" errors during testing
-      match(type: "appstore")
-      xcodebuild(
-        scheme: "App",
-        destination: "generic/platform=iOS",
-        configuration: "Release",
-        derivedDataPath: "aws",
-      )
-      # Transform .app into AWS compatible IPA
-      aws_device_farm_package(
-        derrived_data_path: "aws",
-        configuration: "Release"
-      )
-      # RUN tests on AWS Device Farm
-      aws_device_farm(
-        name: "first ios app test project",
-        device_pool: "iOS test deploy",
-        run_name: ENV['CIRCLE_BUILD_NUM'],
-        wait_for_completion: false
-      )
-    rescue => exception
-      on_error(exception)
-    end      
+    ENV['AWS_REGION']            = 'us-west-2'
+    #Build For Testing
+    clear_derived_data # this step required to clear "exit status: 65" errors during testing
+    match(type: "appstore")
+    xcodebuild(
+      scheme: "App",
+      destination: "generic/platform=iOS",
+      configuration: "Release",
+      derivedDataPath: "aws",
+    )
+    # Transform .app into AWS compatible IPA
+    aws_device_farm_package(
+      derrived_data_path: "aws",
+      configuration: "Release"
+    )
+    # RUN tests on AWS Device Farm
+    aws_device_farm(
+      name: "first ios app test project",
+      device_pool: "iOS test deploy",
+      run_name: ENV['CIRCLE_BUILD_NUM'],
+      wait_for_completion: false
+    )     
   end
   
   def build_and_test_lane
