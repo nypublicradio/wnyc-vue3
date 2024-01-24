@@ -169,6 +169,7 @@ const addListeners = async () => {
   })
 }
 
+// get the URL the app was loaded from (if any)
 const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
   appLaunchUrl.value = url
