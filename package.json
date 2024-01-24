@@ -18,7 +18,7 @@
     "@sentry/vite-plugin": "^2.10.2",
     "@vueuse/nuxt": "^10.5.0",
     "date-fns": "^2.30.0",
-    "nuxt": "3.9.1",
+    "nuxt": "^3.9.3",
     "sass": "1.69.7"
   },
   "dependencies": {
@@ -40,7 +40,7 @@
     "@jofr/capacitor-media-session": "^3.0.1",
     "@nuxt/image": "^1.1.0",
     "@nuxtjs/supabase": "^1.0.2",
-    "@nypublicradio/nypr-design-system-vue3": "^2.1.7",
+    "@nypublicradio/nypr-design-system-vue3": "^2.1.10",
     "@sentry/integrations": "^7.93.0",
     "@sentry/tracing": "^7.93.0",
     "@sentry/vue": "^7.93.0",

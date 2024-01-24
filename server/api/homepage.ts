@@ -23,7 +23,7 @@ const getLocalNewscast = async () => {
 		//duration as dividing by 16000 and not multiplying the file size by 8.
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
-		resData.attributes.cardTitle = 'Latest Headlines';
+		resData.attributes.cardTitle = 'NYC Headlines';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
@@ -57,7 +57,7 @@ const getNationalNewscast = async () => {
 		//duration as dividing by 16000 and not multiplying the file size by 8.
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
-		resData.attributes.cardTitle = 'NPR Newscast';
+		resData.attributes.cardTitle = 'NPR News Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
@@ -95,7 +95,7 @@ const getNYCNowNewscast = async () => {
 		//duration as dividing by 16000 and not multiplying the file
 		const duration = Math.round(mp3Size / 16000) * 1000;
 		resData.attributes.duration = duration;
-		resData.attributes.cardTitle = 'Latest Headlines';
+		resData.attributes.cardTitle = 'NYC Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
 		resData.attributes.id = resData.id;
