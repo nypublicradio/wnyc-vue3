@@ -16,6 +16,9 @@ import {
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals.ts"
 import { LocalNotifications } from "@capacitor/local-notifications"
 
+import { useToast } from "primevue/usetoast"
+const toast = useToast()
+
 const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
@@ -141,19 +144,26 @@ const addListeners = async () => {
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
     //when redirected to the app from a deep link, we need to exchange the url parame code for a session
-    alert("event = " + JSON.stringify(event))
+    //alert("event = " + JSON.stringify(event))
     //console.log("event = ", event)
     const code = event.url.split("=")[1]
-    alert("code = " + JSON.stringify(code))
+    //alert("code = " + JSON.stringify(code))
+    // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
     const cleanCode = code.replace("#", "")
     //console.log("code = ", code)
     if (cleanCode) {
-      alert("cleanCode = " + JSON.stringify(cleanCode))
+      //alert("cleanCode = " + JSON.stringify(cleanCode))
       await client.auth.exchangeCodeForSession(cleanCode)
-      alert("route")
+      //alert("route")
       navigateTo("/")
-      alert("refresh")
+      //alert("refresh")
       window.location.reload()
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "Authentication failed",
+        life: 6000,
+      })
     }
   })
 }
@@ -162,7 +172,7 @@ const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
   appLaunchUrl.value = url
   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-  alert("App opened with URL: " + JSON.stringify(url))
+  //alert("App opened with URL: " + JSON.stringify(url))
 }
 
 onMounted(async () => {
