@@ -146,6 +146,7 @@ export const templatizePublisherImageUrl = (url: string): string => {
   }
 }
 
+// function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
   const { $analytics } = useNuxtApp()
   $analytics.sendEvent(eventName, {
@@ -155,6 +156,7 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
   })
 }
 
+// function that tracks click events to google analytics
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   $analytics.sendEvent("click_tracking", {
