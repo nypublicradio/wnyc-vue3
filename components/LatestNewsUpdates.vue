@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
+import { trackAudioEvent, saveRecentlyPlayed } from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 
 // TEMP fix to make ripple work
@@ -30,8 +30,8 @@ const togglePlayHere = (media) => {
     currentEpisode.value = media
     saveRecentlyPlayed(media, mediaTypes.EPISODE)
   }
+  trackAudioEvent(togglePlayTrigger.value ? "pause" : "play", "on_demand", media.title, "Latest News Updates")
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent("Click Tracking - Latest News Updates", media.title, "toggle play")
 }
 </script>
 

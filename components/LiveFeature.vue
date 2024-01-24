@@ -7,7 +7,7 @@ import {
   useCurrentEpisodeHolder,
 } from "~/composables/states"
 import {
-  trackClickEvent,
+  trackAudioEvent,
   templatizePublisherImageUrl,
   saveRecentlyPlayed,
 } from "~/utilities/helpers"
@@ -34,8 +34,8 @@ const togglePlayHere = () => {
     currentEpisode.value = currentEpisodeHolder.value
     saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
+  trackAudioEvent(togglePlayTrigger.value ? "pause" : "play", "live", media.title, "Live Feature")
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent("Click Tracking - Live Feature", "Home Page", "toggle play")
 }
 </script>
 

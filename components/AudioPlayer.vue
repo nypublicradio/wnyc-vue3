@@ -21,6 +21,7 @@ import {
   usePlayerSeek,
 } from "~/composables/states"
 import {
+  trackAudioEvent,
   trackClickEvent,
   templatizePublisherImageUrl,
   getDate,
@@ -55,12 +56,8 @@ const skipTime = 10
 const route = useRoute()
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
-  trackClickEvent(
-    "Click Tracking - Audio Player play toggle button",
-    "Audio Player",
-    `playing = ${e}`
-  )
   isEpisodePlaying.value = e
+  trackAudioEvent(isEpisodePlaying.value ? "play" : "pause", isLiveStream.value ? "live" : "on_demand", currentEpisode.value?.title, currentEpisode.value?.showTitle)
 }
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
@@ -73,7 +70,7 @@ const updateUseIsPlayerMinimized = (e) => {
 }
 /*function that fires when the episode has ended/completed */
 const episodeEnded = () => {
-  trackClickEvent("Event - Audio file ended", "Audio Player", currentEpisode.value.title)
+  trackAudioEvent("ended", isLiveStream.value ? "live" : "on_demand", currentEpisode.value?.title, currentEpisode.value?.showTitle)
 }
 
 let delay = 0
