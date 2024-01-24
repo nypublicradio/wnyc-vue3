@@ -159,6 +159,7 @@ const addListeners = async () => {
       //alert("refresh")
       window.location.reload()
     } else {
+      // show toast error
       toast.add({
         severity: "error",
         summary: "Authentication failed",
