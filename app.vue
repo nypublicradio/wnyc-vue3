@@ -144,10 +144,12 @@ const addListeners = async () => {
     alert("event = " + JSON.stringify(event))
     //console.log("event = ", event)
     const code = event.url.split("=")[1]
-    //console.log("code = ", code)
     alert("code = " + JSON.stringify(code))
-    if (code) {
-      await client.auth.exchangeCodeForSession(code)
+    const cleanCode = code.replace("#", "")
+    //console.log("code = ", code)
+    if (cleanCode) {
+      alert("cleanCode = " + JSON.stringify(cleanCode))
+      await client.auth.exchangeCodeForSession(cleanCode)
       alert("route")
       navigateTo("/")
       alert("refresh")
