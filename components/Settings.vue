@@ -6,20 +6,13 @@ import {
   useTextSizeOption,
   useCurrentUser,
   useCurrentUserProfile,
-  useCurrentEpisode,
-  useCurrentEpisodeHolder,
-  useIsEpisodePlaying,
   useEditProfileSideBar,
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
-import { updateLiveStream } from "~/composables/data/liveStream"
 import { Preferences } from "@capacitor/preferences"
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isEpisodePlaying = useIsEpisodePlaying()
 const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
 
@@ -124,24 +117,14 @@ const onUpdateTextSize = () => {
   )
 }
 
-//let initialNoPlayToggleFlag = false
 // handles tracking the station change event
-const onUpdateStation = async (event) => {
-  // await updateLiveStream(event.value.slug)
-
-  // if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
-  //   initialNoPlayToggleFlag = true
-  //   currentEpisode.value = currentEpisodeHolder.value
-  // }
-
+const onUpdateStation = () => {
   trackClickEvent(
     "Click Tracking - Default stream",
     "Settings Sidebar - Listening Preferences",
     currentUserProfile.value.default_live_stream.station
   )
 }
-
-//console.log('currentUser = ', currentUser.value)
 
 const accountHeader = computed(() => {
   switch (currentUser.value?.app_metadata?.provider) {
