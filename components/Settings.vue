@@ -124,15 +124,15 @@ const onUpdateTextSize = () => {
   )
 }
 
-let initialNoPlayToggleFlag = false
+//let initialNoPlayToggleFlag = false
 // handles tracking the station change event
 const onUpdateStation = async (event) => {
-  await updateLiveStream(event.value.slug)
+  // await updateLiveStream(event.value.slug)
 
-  if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
-    initialNoPlayToggleFlag = true
-    currentEpisode.value = currentEpisodeHolder.value
-  }
+  // if (isEpisodePlaying.value || initialNoPlayToggleFlag) {
+  //   initialNoPlayToggleFlag = true
+  //   currentEpisode.value = currentEpisodeHolder.value
+  // }
 
   trackClickEvent(
     "Click Tracking - Default stream",
