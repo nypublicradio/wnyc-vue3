@@ -170,6 +170,7 @@ const getDescription = computed(() => {
         :file="currentEpisode?.hls ?? currentEpisode?.file"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
+        :nativeHLS="true"
         @togglePlay="updateUseIsEpisodePlaying"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
@@ -180,6 +181,7 @@ const getDescription = computed(() => {
         @ended="episodeEnded"
         can-click-anywhere
         :marquee="false"
+        streamType="unknown"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
