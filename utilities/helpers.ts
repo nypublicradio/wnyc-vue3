@@ -288,11 +288,13 @@ export const playStoredMp3 = async (file: {
   })
     .then((b64Content) => {
       // eventually we will set a Type for the current episdode
+      //file.audio = `data:audio/mpeg;base64,${b64Content.data}`
+      //currentEpisode.value = prepForPlayer(file)
       currentEpisode.value = {
         title: file.title,
         file: `data:audio/mpeg;base64,${b64Content.data}`,
         details: file.details,
-        image: file.image,
+        image: file.image ?? null,
       }
     })
     .catch((e) => {

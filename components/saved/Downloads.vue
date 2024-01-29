@@ -1,6 +1,8 @@
 <template>
   <section class="downloads">
     <div class="empty flex flex-column gap-3 text-center mt-8">
+      <FileSystem />
+
       <h2>Downloads will appear here!</h2>
       <div class="max-w-15rem m-auto">
         <p class="line-height-3">

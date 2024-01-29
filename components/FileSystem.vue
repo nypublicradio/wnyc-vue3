@@ -89,7 +89,7 @@ onMounted(() => {
           <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
         </li>
       </ul>
-      <!-- <ul>
+      <ul>
         <li v-for="file in fileSystem.files" :key="file.name">
           <Button
             :label="`${file.name} - ${formatFileSize(file.size)}`"
@@ -97,10 +97,10 @@ onMounted(() => {
           />
           <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
         </li>
-      </ul> -->
+      </ul>
       <div class="grid">
-        <pre class="col-6">FileSystem = {{ fileSystem.files }}</pre>
-        <pre class="col-6">FileSystemLS = {{ fileSystemLS }}</pre>
+        <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre>
+        <pre class="col-6 text-left">FileSystemLS = {{ fileSystemLS }}</pre>
       </div>
     </div>
   </div>
