@@ -26,11 +26,17 @@ const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlayHere = (media) => {
+  let isNewEpisode = false
   if (currentEpisode.value?.file !== media.file) {
     currentEpisode.value = media
     saveRecentlyPlayed(media, mediaTypes.EPISODE)
+    isNewEpisode = true
   }
-  trackAudioEvent(togglePlayTrigger.value ? "pause" : "play", "on_demand", media.title, "Latest News Updates")
+  let eventType = togglePlayTrigger.value ? "pause" : "resume"
+  if(isNewEpisode) {
+    eventType = "play"
+  }
+  trackAudioEvent(eventType, "on_demand", media.title, "Latest News Updates")
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 </script>

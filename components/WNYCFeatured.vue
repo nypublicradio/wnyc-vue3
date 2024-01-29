@@ -1,6 +1,7 @@
 <script async setup>
 import {
   getMinutes,
+  trackAudioEvent,
   trackClickEvent,
   copyToClipBoard,
   saveRecentlyPlayed,
@@ -79,13 +80,19 @@ const prepForPlayer = (item) => {
 }
 
 // handle the play button click
-const togglePlayHere = (item) => {
+const togglePlayHere = ( item ) => {
+  let isNewEpisode = false
   if (currentEpisode.value?.id !== item.id) {
     currentEpisode.value = prepForPlayer(item)
-    saveRecentlyPlayed(item, mediaTypes.SEGMENT)
+    saveRecentlyPlayed( item, mediaTypes.SEGMENT )
+    isNewEpisode = true
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent("Click Tracking - Horizontal Large Card", item.title, "toggle play")
+  let eventType = togglePlayTrigger.value ? "pause" : "resume"
+  if(isNewEpisode) {
+    eventType = "play"
+  }
+  trackAudioEvent(eventType, "live", media.title, "Live Feature")
 }
 </script>
 
@@ -108,7 +115,6 @@ const togglePlayHere = (item) => {
               :file="item.audio"
               @onClick="togglePlayHere(item)"
               class="z-2"
-              @click.prevent
             />
           </template>
           <template #menu>

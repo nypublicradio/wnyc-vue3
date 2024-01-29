@@ -803,21 +803,28 @@ export const prepForPlayer = (item, index = null) => {
 
 // handles playing episodes and segments
 export const togglePlayEpisode = (media, index = 0) => {
+  let isNewEpisode = false
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
+      isNewEpisode = true
     }
   } else {
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
       currentEpisode.value = prepForPlayer(media, index)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
+      isNewEpisode = true
     }
   }
-
+  let eventType = togglePlayTrigger.value ? "pause" : "resume"
+  if(isNewEpisode) {
+    eventType = "play"
+  }
+  trackAudioEvent(eventType, "on_demand", media.title, media.showTitle)
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 

@@ -63,7 +63,6 @@ const firstEpisodeWithAudio = () => {
 const togglePlayMostRecentEpisode = () => {
   const ep = firstEpisodeWithAudio()
   togglePlayEpisode(ep)
-  trackClickEvent("Click Tracking - Show Page", ep.title, "toggle play")
 }
 const handleAddToFavorites = async () => {
   if (user.value) {
