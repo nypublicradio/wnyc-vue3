@@ -148,7 +148,6 @@ export const templatizePublisherImageUrl = (url: string): string => {
 
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
-  console.log("kim trackAudioEvent")
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   $analytics.sendEvent(eventName, {

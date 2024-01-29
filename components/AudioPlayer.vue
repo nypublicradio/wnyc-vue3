@@ -21,7 +21,6 @@ import {
   usePlayerSeek,
 } from "~/composables/states"
 import {
-  trackAudioEvent,
   trackClickEvent,
   templatizePublisherImageUrl,
   getDate,
