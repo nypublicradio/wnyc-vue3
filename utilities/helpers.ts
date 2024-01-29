@@ -148,21 +148,26 @@ export const templatizePublisherImageUrl = (url: string): string => {
 
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
+  console.log("kim trackAudioEvent")
   const { $analytics } = useNuxtApp()
+  const currentUser = useCurrentUser()
   $analytics.sendEvent(eventName, {
     audio_type: audioType,
     audio_title: audioTitle,
-    audio_show: audioShow
+    audio_show: audioShow,
+    client_id: currentUser.value?.id
   })
 }
 
 // function that tracks click events to google analytics
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
+  const currentUser = useCurrentUser()
   $analytics.sendEvent("click_tracking", {
     event_category: category,
     component: component,
     event_label: label,
+    client_id: currentUser.value?.id
   })
 }
 
