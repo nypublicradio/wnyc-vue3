@@ -10,6 +10,8 @@ import {
   useSettingSideBar,
 } from '~/composables/states'
 
+import { trackClickEvent } from "~/utilities/helpers"
+
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
@@ -21,6 +23,7 @@ const config = useRuntimeConfig()
 const onLoginClick = () => {
   loginSideBar.value = true
   signUpSideBar.value = false
+  trackClickEvent("Click Tracking - log in", "Sign Up Sidebar - user section", "log in link")
 }
 
 // close all sidebars
@@ -28,6 +31,11 @@ const closeAll = () => {
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
+}
+
+// actions to be taken with the signup link is clicked
+const onSignup = (provider) => {
+  trackClickEvent("Click Tracking - sign up", "Sign Up Sidebar - user section", provider)
 }
 </script>
 
@@ -48,6 +56,7 @@ const closeAll = () => {
         label="Sign up with Google"
         severity="secondary"
         class="center my-3"
+        @click="onSignup('google')"
       />
       <VLoginWithProvider
         :client="client"
@@ -56,6 +65,7 @@ const closeAll = () => {
         severity="secondary"
         class="center"
         label="Sign up with Apple"
+        @click="onSignup('apple')"
       />
       <Divider class="my-4" align="center">
         <b>or</b>
@@ -66,6 +76,7 @@ const closeAll = () => {
         label="Sign up"
         slug="/home"
         @login-success="closeAll"
+        @click="onSignup('email')"
       >
         <template #aboveSubmit>
           <p class="mb-3">

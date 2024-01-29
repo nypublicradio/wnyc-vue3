@@ -40,7 +40,7 @@ const imageUploadModal = shallowRef(false)
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
   loginSideBar.value = true
-  trackClickEvent("Click Tracking - login button", "Settings Sidebar - user section", "")
+  trackClickEvent("Click Tracking - login button", "Settings Sidebar - user section", "login button")
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
@@ -62,7 +62,7 @@ const onLogOut = async () => {
   trackClickEvent(
     "Click Tracking - logout button",
     "Settings Sidebar - user section",
-    "logged out"
+    "logout button"
   )
 
   // show toast
@@ -75,7 +75,7 @@ const onLogOut = async () => {
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
   signupSideBar.value = true
-  trackClickEvent("Click Tracking - sign up link", "Settings Sidebar - user section", "")
+  trackClickEvent("Click Tracking - sign up link", "Settings Sidebar - user section", "sign up link")
 }
 // handles the modal on avatar image when clicked
 const handleModal = () => {
