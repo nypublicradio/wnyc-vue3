@@ -13,13 +13,13 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  source: {
+  sourceLabel: {
     type: String,
     default: "WNYC",
   },
   badgeLabel: {
     type: String,
-    default: "Local NYC News",
+    default: "Local News",
   },
   bagdeColor: {
     type: String,
@@ -33,7 +33,7 @@ const props = defineProps({
 
 const emit = defineEmits(["on-click"])
 
-//console.log('newsData' + props.source, props.newsData)
+//console.log("newsData" + props.sourceLabel, props.newsData)
 </script>
 
 <template>
@@ -47,7 +47,7 @@ const emit = defineEmits(["on-click"])
       <div class="news-title mt-2">
         <div class="font-bold">{{ props.newsData?.cardTitle }}</div>
         <PipeData>
-          <template #left>{{ props.source }}</template>
+          <template #left>{{ props.sourceLabel }}</template>
           <template #right>
             <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
           </template>

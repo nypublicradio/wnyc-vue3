@@ -166,6 +166,7 @@ const getDescription = computed(() => {
         :file="currentEpisode?.hls ?? currentEpisode?.file"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
+        :nativeHLS="true"
         @togglePlay="updateUseIsEpisodePlaying"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
@@ -176,6 +177,7 @@ const getDescription = computed(() => {
         @ended="episodeEnded"
         can-click-anywhere
         :marquee="false"
+        streamType="unknown"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
@@ -289,9 +291,12 @@ html.style-mode-dark .persistent-player {
 
   .persistent-player {
     .play-icon {
-      width: 13px;
-      height: 17px;
-      margin-left: 1px;
+      .play-icon {
+        width: 17px;
+        height: 17px;
+        margin-top: 5px;
+        margin-left: 2px;
+      }
     }
     &.expanded {
       bottom: 0;
