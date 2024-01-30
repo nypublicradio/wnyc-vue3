@@ -28,6 +28,9 @@ export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffff
 //Global vars for the browser top color or Darkmode
 export const useBrowserTopColorDarkMode = () => useState('browserTopColorDarkMode', () => '#1f2741')
 
+// directory to save to in the CapacitorJS FileSystem
+export const appDirectory = "wnyc-downloads"
+
 //browse topics
 export const useShowTopics = () => useState('showTopics', () => [
     {
@@ -97,6 +100,7 @@ export const useSavedMenuItems = () => useState('savedMenuItems', () => [
         color: 'var(--red)',
     },
 ])
+
 
 
 // const imageShape = {

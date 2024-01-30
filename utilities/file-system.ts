@@ -1,9 +1,13 @@
 import { Filesystem, Directory, /* Encoding */ } from "@capacitor/filesystem"
 import {
     useFileSystem,
+    useFileSystemLS,
     useAppDirectory,
     useCurrentEpisode,
 } from "~/composables/states"
+import {
+    appDirectory,
+} from "~/composables/globals"
 import {
     prepForPlayer,
 } from "~/utilities/helpers"
@@ -15,19 +19,18 @@ export const fileNameFromURL = (url: string) => {
     return url.substring(url.lastIndexOf("/") + 1)
 }
 
-export const readStoreDir = async () => {
-    const appDirectory = useAppDirectory()
+export const updateFileSystem = async () => {
     const fileSystem = useFileSystem()
 
     //initial check to see if the appDirectory exists and if not, create it
     await createAppDirectory()
 
     fileSystem.value = await Filesystem.readdir({
-        path: `${appDirectory.value}/`,
+        path: `${appDirectory}/`,
         directory: directoryToSaveTo,
     })
         .then((val) => {
-            return val
+            return val ? val : []
         })
         .catch((e) => {
             console.error("Unable to read dir", e)
@@ -36,19 +39,18 @@ export const readStoreDir = async () => {
 
 const createAppDirectory = async () => {
     // initial check to see if the appDirectory exists and if not, create it
-    const appDirectory = useAppDirectory()
     const appDirectories = await Filesystem.readdir({
         path: "",
         directory: directoryToSaveTo,
     })
 
     const result = appDirectories.files.filter(
-        (entry) => entry.type === "directory" && entry.name === appDirectory.value
+        (entry) => entry.type === "directory" && entry.name === appDirectory
     )
 
     if (result.length === 0) {
         await Filesystem.mkdir({
-            path: `${appDirectory.value}`,
+            path: `${appDirectory}`,
             directory: directoryToSaveTo,
         })
             //.then(() => { })
@@ -64,9 +66,8 @@ export const fetchAndStoreMp3 = async (file: {
     details: string
     image: string
 }) => {
-    const appDirectory = useAppDirectory()
     const fileSystem = useFileSystem()
-    //const fileSystemLS = useFileSystemLS()
+    const fileSystemLS = useFileSystemLS()
 
     // Fetch the MP3 file as a Blob
     const response = await fetch(file.file)
@@ -78,11 +79,13 @@ export const fetchAndStoreMp3 = async (file: {
         const base64DataUrl: any = this.result
         const nameFromUrl = fileNameFromURL(file.file)
         await Filesystem.writeFile({
-            path: `${appDirectory.value}/${nameFromUrl}`,
+            path: `${appDirectory}/${nameFromUrl}`,
             data: base64DataUrl,
             directory: directoryToSaveTo,
         })
-            .then(() => {
+            .then(async () => {
+
+
                 //create a parralel browser local storage for this data, and bes to add it to the delete function.
                 setTimeout(async () => {
                     // slight delay is needed for the fileSystem to update
@@ -90,24 +93,24 @@ export const fetchAndStoreMp3 = async (file: {
                         (entry: any) => entry.name === nameFromUrl
                     )
                     const filesArr: any =
-                    //...fileSystem.value.files,
                     {
+                        //...fileSystemLS.value,
                         title: file.title,
                         file: file.file,
                         details: file.details,
                         image: file.image,
                         name: nameFromUrl,
-                        uri: `${directoryToSaveTo}/${appDirectory.value}/${nameFromUrl}`,
+                        uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
                         size: thisFileSystemEntry.size,
                         ctime: thisFileSystemEntry.ctime,
                         mtime: thisFileSystemEntry.mtime,
                     }
 
 
-                    fileSystem.value.files.push(filesArr)
-                    //await Preferences.set({ key: "files", value: JSON.stringify(filesArr) })
-                }, 500)
-                readStoreDir()
+                    fileSystemLS.value.push(filesArr)
+                    await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
+                }, 100)
+                updateFileSystem()
             })
             .catch((e) => {
                 console.error("Unable to write file", e)
@@ -135,10 +138,9 @@ export const playStoredMp3 = async (file: {
     image: string
 }) => {
     const currentEpisode = useCurrentEpisode()
-    const appDirectory = useAppDirectory()
 
     await Filesystem.readFile({
-        path: `${appDirectory.value}/${file.name}`,
+        path: `${appDirectory}/${file.name}`,
         directory: directoryToSaveTo,
     })
         .then((b64Content) => {
@@ -163,11 +165,10 @@ export const deleteStoredMp3 = async (file: {
     name: string
     uri: string
 }) => {
-    const appDirectory = useAppDirectory()
     const fileSystem = useFileSystem()
-    console.log('fileSystem = ', fileSystem.value)
+    const fileSystemLS = useFileSystemLS()
     Filesystem.deleteFile({
-        path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
+        path: `${appDirectory}/${file.name || fileNameFromURL(file.file)}`,
         directory: directoryToSaveTo,
     })
         .then(async () => {
@@ -177,10 +178,11 @@ export const deleteStoredMp3 = async (file: {
             )
 
             fileSystem.value.files = updatedFileSystem
-            //await Preferences.set({ key: "files", value: JSON.stringify(updatedFileSystem) })
+            fileSystemLS.value = updatedFileSystem
+            await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(updatedFileSystem) })
 
             setTimeout(() => {
-                readStoreDir()
+                updateFileSystem()
             }, 100)
         })
         .catch((e) => {
@@ -203,11 +205,16 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
 // initial pull of the preferencce plugin files data
 
 export const initReadOfPreferences = async () => {
-    let val = null
+    let val: any = []
     try {
-        val = await Preferences.get({ key: "files" })
+        const { value } = await Preferences.get({ key: 'fileSystemLS' })
+        val = value ?? "[]"
+        // const val = await Preferences.get({ key: "fileSystemLS" })
+        console.log("val = ", JSON.parse(val))
     } catch (error) {
         console.error("preference read error = ", error)
     }
-    return JSON.parse(val.value)
+    return JSON.parse(val ?? '[]')
+
+
 }

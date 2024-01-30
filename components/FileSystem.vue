@@ -2,15 +2,15 @@
 import {
   playStoredMp3,
   deleteStoredMp3,
-  readStoreDir,
+  updateFileSystem,
   playMp3,
   formatFileSize,
-  //initReadOfPreferences,
+  initReadOfPreferences,
 } from "~/utilities/file-system"
 import { useFileSystem /* useFileSystemLS */ } from "~/composables/states"
 const fileSystem = useFileSystem()
-//const fileSystemLS = useFileSystemLS()
-//fileSystemLS.value = await initReadOfPreferences()
+const fileSystemLS = useFileSystemLS()
+fileSystemLS.value = await initReadOfPreferences()
 
 const used = ref(0)
 const granted = ref(0)
@@ -61,8 +61,8 @@ const files = ref([
 ])
 
 onMounted(() => {
-  // initial read of the stored directory
-  readStoreDir()
+  // initial read the CapacitorJS FileSystme and update the fileSystem state
+  updateFileSystem()
 })
 </script>
 
@@ -80,27 +80,29 @@ onMounted(() => {
       </ul>
       <p>Saved files:</p>
       <p>!!Storage limit: {{ used }} of {{ granted }}</p>
-      <!-- <ul>
-        <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
-          <Button
-            :label="`${file.title} - ${formatFileSize(file.size)}`"
-            @click="playStoredMp3(file)"
-          />
-          <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
-        </li>
-      </ul> -->
-      <ul>
-        <li v-for="file in fileSystem.files" :key="file.name">
-          <Button
-            :label="`${file.name} - ${formatFileSize(file.size)}`"
-            @click="playStoredMp3(file)"
-          />
-          <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
-        </li>
-      </ul>
+      <div class="grid">
+        <ul class="col-6">
+          <li v-for="file in fileSystem.files" :key="file.name">
+            <Button
+              :label="`${file.name} - ${formatFileSize(file.size)}`"
+              @click="playStoredMp3(file)"
+            />
+            <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
+          </li>
+        </ul>
+        <ul class="col-6">
+          <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
+            <Button
+              :label="`${file.name} - ${formatFileSize(file.size)}`"
+              @click="playStoredMp3(file)"
+            />
+            <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
+          </li>
+        </ul>
+      </div>
       <div class="grid">
         <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre>
-        <!-- <pre class="col-6 text-left">FileSystemLS = {{ fileSystemLS }}</pre> -->
+        <pre class="col-6 text-left">FileSystemLS = {{ fileSystemLS }}</pre>
       </div>
     </div>
   </div>
