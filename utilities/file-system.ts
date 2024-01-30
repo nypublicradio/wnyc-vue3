@@ -4,6 +4,9 @@ import {
     useAppDirectory,
     useCurrentEpisode,
 } from "~/composables/states"
+import {
+    prepForPlayer,
+} from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 
 const directoryToSaveTo = Directory.External
