@@ -27,6 +27,7 @@ const onSignupClick = () => {
 
 // close all sidebars
 const closeAll = () => {
+  onLogin('email')
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
@@ -61,7 +62,7 @@ const onLogin = (provider) => {
         label="Log in with Google"
         severity="secondary"
         class="center my-3"
-        @click="onLogin('google')"
+        @submit-success="onLogin('google')"
       />
       <VLoginWithProvider
         :client="client"
@@ -70,7 +71,7 @@ const onLogin = (provider) => {
         label="Log in with Apple"
         severity="secondary"
         class="center"
-        @click="onLogin('apple')"
+        @submit-success="onLogin('apple')"
       />
       <Divider class="my-4" align="center">
         <b>or</b>
@@ -81,7 +82,6 @@ const onLogin = (provider) => {
         :config="config"
         slug="/confirm"
         @submit-success="closeAll"
-        @click="onLogin('email')"
       >
         <template #belowSubmit>
           <div class="mt-4 relative">
