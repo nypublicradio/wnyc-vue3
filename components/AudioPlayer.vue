@@ -21,6 +21,7 @@ import {
   usePlayerSeek,
 } from "~/composables/states"
 import {
+  trackAudioEvent,
   trackClickEvent,
   templatizePublisherImageUrl,
   getDate,
@@ -38,6 +39,7 @@ import { initMediaSession } from "~/utilities/media-session.js"
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
+const isNewEpisode = ref(false)
 const isPlayerExpanded = useIsPlayerExpanded()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
@@ -53,10 +55,26 @@ const playerHeight = ref(audioPlayerHeight + "px")
 const skipTime = 10
 
 const route = useRoute()
+
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
   isEpisodePlaying.value = e
 }
+
+// handle the toggle play button and tracking
+const togglePlayHere = ( e ) => {
+  // prevent the player from toggling twice
+  if (isEpisodePlaying.value === e) return
+  console.log("AudioPlayer togglePlayHere")
+  updateUseIsEpisodePlaying( e )
+  let eventType = isEpisodePlaying.value ? "resume" : "pause"
+  if (isNewEpisode.value) {
+    eventType = "play"
+  }
+  trackAudioEvent( eventType, isLiveStream.value ? "live" : "on_demand", getTitle.value, getDescription.value )
+  isNewEpisode.value = false
+}
+
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
   trackClickEvent(
@@ -66,31 +84,33 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
+
 /*function that fires when the episode has ended/completed */
 const episodeEnded = () => {
   // TO DO
-  // trackAudioEvent("ended", isLiveStream.value ? "live" : "on_demand", currentEpisode.value?.title, currentEpisode.value?.showTitle)
+  // trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async () => {
+  isNewEpisode.value = true
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
+    // initializes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
 }
 
 watch(currentEpisode, () => {
-  //console.log("currentEpisode.value changed = ", currentEpisode.value)
+  // console.log("currentEpisode.value changed = ", currentEpisode.value)
   switchEpisode()
 })
 
-watch(togglePlayTrigger, () => {
-  if (playerRef.value) playerRef.value.togglePlay()
+watch( togglePlayTrigger, () => {
+  if ( playerRef.value ) playerRef.value.togglePlay()
 })
 
 watch(skipAheadTrigger, () => {
@@ -167,7 +187,7 @@ const getDescription = computed(() => {
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
         :nativeHLS="true"
-        @togglePlay="updateUseIsEpisodePlaying"
+        @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
         @is-live="isLiveStream = $event"

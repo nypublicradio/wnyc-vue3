@@ -1,5 +1,5 @@
 <script setup>
-import { trackAudioEvent, saveRecentlyPlayed } from "~/utilities/helpers"
+import { saveRecentlyPlayed } from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 
 // TEMP fix to make ripple work
@@ -26,17 +26,10 @@ const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlayHere = (media) => {
-  let isNewEpisode = false
   if (currentEpisode.value?.file !== media.file) {
     currentEpisode.value = media
     saveRecentlyPlayed(media, mediaTypes.EPISODE)
-    isNewEpisode = true
   }
-  let eventType = togglePlayTrigger.value ? "pause" : "resume"
-  if(isNewEpisode) {
-    eventType = "play"
-  }
-  trackAudioEvent(eventType, "on_demand", media.title, "Latest News Updates")
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 </script>

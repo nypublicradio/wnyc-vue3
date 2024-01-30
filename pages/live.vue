@@ -1,5 +1,5 @@
 <script setup>
-import { trackAudioEvent, trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
+import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
@@ -46,20 +46,13 @@ const switchStation = async (station) => {
 }
 // handle the toggle play button and tracking
 const togglePlayHere = () => {
-  let isNewEpisode = false
   if (currentEpisode.value !== currentEpisodeHolder.value) {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug
     currentEpisode.value = currentEpisodeHolder.value
     saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
-    isNewEpisode = true
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  let eventType = togglePlayTrigger.value ? "pause" : "resume"
-  if(isNewEpisode) {
-    eventType = "play"
-  }
-  trackAudioEvent(eventType, "live", currentEpisode.value?.station, currentEpisode.value?.title)
 }
 
 const scrollToActiveStation = () => {

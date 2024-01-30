@@ -7,7 +7,6 @@ import {
   useCurrentEpisodeHolder,
 } from "~/composables/states"
 import {
-  trackAudioEvent,
   templatizePublisherImageUrl,
   saveRecentlyPlayed,
 } from "~/utilities/helpers"
@@ -25,22 +24,14 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
-
 const togglePlayHere = () => {
-  let isNewEpisode = false
   if (
     currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
   ) {
     currentEpisode.value = currentEpisodeHolder.value
     saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
-    isNewEpisode = true
   }
-  let eventType = togglePlayTrigger.value ? "pause" : "resume"
-  if(isNewEpisode) {
-    eventType = "play"
-  }
-  trackAudioEvent(eventType, "live", currentEpisode.value?.station, currentEpisode.value?.title)
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 </script>
