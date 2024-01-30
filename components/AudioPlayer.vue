@@ -65,7 +65,6 @@ const updateUseIsEpisodePlaying = (e) => {
 const togglePlayHere = ( e ) => {
   // prevent the player from toggling twice
   if (isEpisodePlaying.value === e) return
-  console.log("AudioPlayer togglePlayHere")
   updateUseIsEpisodePlaying( e )
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
   if (isNewEpisode.value) {
@@ -93,7 +92,7 @@ const episodeEnded = () => {
 
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
-const switchEpisode = async () => {
+const switchEpisode = () => {
   isNewEpisode.value = true
   showPlayer.value = false
   setTimeout(() => {

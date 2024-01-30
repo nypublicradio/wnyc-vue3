@@ -26,17 +26,17 @@ const onLoginClick = () => {
   trackClickEvent("Click Tracking - log in", "Sign Up Sidebar - user section", "log in link")
 }
 
+// actions to be taken with the signup link is clicked
+const onSignup = (provider) => {
+  trackClickEvent("Click Tracking - sign up", "Sign Up Sidebar - user section", provider)
+}
+
 // close all sidebars
 const closeAll = () => {
   onSignup('email')
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
-}
-
-// actions to be taken with the signup link is clicked
-const onSignup = (provider) => {
-  trackClickEvent("Click Tracking - sign up", "Sign Up Sidebar - user section", provider)
 }
 </script>
 

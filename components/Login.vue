@@ -25,6 +25,11 @@ const onSignupClick = () => {
   signUpSideBar.value = true
 }
 
+// actions to be taken with the login link is clicked
+const onLogin = (provider) => {
+  trackClickEvent("Click Tracking - log in", "Log In Sidebar - user section", provider)
+}
+
 // close all sidebars
 const closeAll = () => {
   onLogin('email')
@@ -37,11 +42,6 @@ const closeAll = () => {
 const openForgotPassword = () => {
   loginSideBar.value = false
   forgotPasswordSideBar.value = true
-}
-
-// actions to be taken with the login link is clicked
-const onLogin = (provider) => {
-  trackClickEvent("Click Tracking - log in", "Log In Sidebar - user section", provider)
 }
 </script>
 
