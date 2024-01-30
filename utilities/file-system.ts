@@ -1,0 +1,210 @@
+import { Filesystem, Directory, /* Encoding */ } from "@capacitor/filesystem"
+import {
+    useFileSystem,
+    useAppDirectory,
+    useCurrentEpisode,
+} from "~/composables/states"
+import { Preferences } from "@capacitor/preferences"
+
+const directoryToSaveTo = Directory.External
+
+export const fileNameFromURL = (url: string) => {
+    return url.substring(url.lastIndexOf("/") + 1)
+}
+
+export const readStoreDir = async () => {
+    const appDirectory = useAppDirectory()
+    const fileSystem = useFileSystem()
+
+    //initial check to see if the appDirectory exists and if not, create it
+    await createAppDirectory()
+
+    fileSystem.value = await Filesystem.readdir({
+        path: `${appDirectory.value}/`,
+        directory: directoryToSaveTo,
+    })
+        .then((val) => {
+            return val
+        })
+        .catch((e) => {
+            console.error("Unable to read dir", e)
+        })
+}
+
+const createAppDirectory = async () => {
+    // initial check to see if the appDirectory exists and if not, create it
+    const appDirectory = useAppDirectory()
+    const appDirectories = await Filesystem.readdir({
+        path: "",
+        directory: directoryToSaveTo,
+    })
+
+    const result = appDirectories.files.filter(
+        (entry) => entry.type === "directory" && entry.name === appDirectory.value
+    )
+
+    if (result.length === 0) {
+        await Filesystem.mkdir({
+            path: `${appDirectory.value}`,
+            directory: directoryToSaveTo,
+        })
+            //.then(() => { })
+            .catch((e) => {
+                console.error("Unable to create directory", e)
+            })
+    }
+}
+
+export const fetchAndStoreMp3 = async (file: {
+    file: string
+    title: string
+    details: string
+    image: string
+}) => {
+    const appDirectory = useAppDirectory()
+    const fileSystem = useFileSystem()
+    //const fileSystemLS = useFileSystemLS()
+
+    // Fetch the MP3 file as a Blob
+    const response = await fetch(file.file)
+    const mp3Blob = await response.blob()
+
+    // Read the Blob as a data URL using FileReader
+    const reader = new FileReader()
+    reader.onload = async function () {
+        const base64DataUrl: any = this.result
+        const nameFromUrl = fileNameFromURL(file.file)
+        await Filesystem.writeFile({
+            path: `${appDirectory.value}/${nameFromUrl}`,
+            data: base64DataUrl,
+            directory: directoryToSaveTo,
+        })
+            .then(() => {
+                //create a parralel browser local storage for this data, and bes to add it to the delete function.
+                setTimeout(async () => {
+                    // slight delay is needed for the fileSystem to update
+                    const thisFileSystemEntry = fileSystem.value?.files.find(
+                        (entry: any) => entry.name === nameFromUrl
+                    )
+                    const filesArr: any =
+                    //...fileSystem.value.files,
+                    {
+                        title: file.title,
+                        file: file.file,
+                        details: file.details,
+                        image: file.image,
+                        name: nameFromUrl,
+                        uri: `${directoryToSaveTo}/${appDirectory.value}/${nameFromUrl}`,
+                        size: thisFileSystemEntry.size,
+                        ctime: thisFileSystemEntry.ctime,
+                        mtime: thisFileSystemEntry.mtime,
+                    }
+
+
+                    fileSystem.value.files.push(filesArr)
+                    //await Preferences.set({ key: "files", value: JSON.stringify(filesArr) })
+                }, 500)
+                readStoreDir()
+            })
+            .catch((e) => {
+                console.error("Unable to write file", e)
+            })
+    }
+    reader.readAsDataURL(mp3Blob)
+}
+
+export const playMp3 = async (file: {
+    file: string
+    title: string
+    details: string
+    image: string
+}) => {
+    const currentEpisode = useCurrentEpisode()
+    currentEpisode.value = file
+}
+
+export const playStoredMp3 = async (file: {
+    name: string
+    uri: string
+    file: string
+    title: string
+    details: string
+    image: string
+}) => {
+    const currentEpisode = useCurrentEpisode()
+    const appDirectory = useAppDirectory()
+
+    await Filesystem.readFile({
+        path: `${appDirectory.value}/${file.name}`,
+        directory: directoryToSaveTo,
+    })
+        .then((b64Content) => {
+            // eventually we will set a Type for the current episdode
+            currentEpisode.value = {
+                title: file.title,
+                file: `data:audio/mpeg;base64,${b64Content.data}`,
+                details: file.details,
+                image: file.image,
+            }
+        })
+        .catch((e) => {
+            console.error("Unable to read file", e)
+        })
+}
+
+export const deleteStoredMp3 = async (file: {
+    file: string
+    title: string
+    details: string
+    image: string
+    name: string
+    uri: string
+}) => {
+    const appDirectory = useAppDirectory()
+    const fileSystem = useFileSystem()
+    console.log('fileSystem = ', fileSystem.value)
+    Filesystem.deleteFile({
+        path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
+        directory: directoryToSaveTo,
+    })
+        .then(async () => {
+            // also delete from the fileSystemLS state and local storage
+            const updatedFileSystem = fileSystem.value.files.filter(
+                (entry: any) => entry.name !== (file.name || fileNameFromURL(file.file))
+            )
+
+            fileSystem.value.files = updatedFileSystem
+            //await Preferences.set({ key: "files", value: JSON.stringify(updatedFileSystem) })
+
+            setTimeout(() => {
+                readStoreDir()
+            }, 100)
+        })
+        .catch((e) => {
+            console.error("Unable to delete file", e)
+        })
+}
+
+export const formatFileSize = (bytes: number, decimals = 2) => {
+    if (bytes === 0) return "0 B"
+
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+}
+
+// initial pull of the preferencce plugin files data
+
+export const initReadOfPreferences = async () => {
+    let val = null
+    try {
+        val = await Preferences.get({ key: "files" })
+    } catch (error) {
+        console.error("preference read error = ", error)
+    }
+    return JSON.parse(val.value)
+}

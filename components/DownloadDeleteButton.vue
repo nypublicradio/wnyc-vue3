@@ -1,6 +1,10 @@
 <script setup>
 import { useFileSystem } from "~/composables/states"
-import { fetchAndStoreMp3, deleteStoredMp3, fileNameFromURL } from "~/utilities/helpers"
+import {
+  fetchAndStoreMp3,
+  deleteStoredMp3,
+  fileNameFromURL,
+} from "~/utilities/file-system"
 const props = defineProps({
   file: {
     type: Object,
