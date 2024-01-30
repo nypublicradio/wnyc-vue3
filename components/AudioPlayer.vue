@@ -61,19 +61,6 @@ const updateUseIsEpisodePlaying = (e) => {
   isEpisodePlaying.value = e
 }
 
-// handle the toggle play button and tracking
-const togglePlayHere = ( e ) => {
-  // prevent the player from toggling twice
-  if (isEpisodePlaying.value === e) return
-  updateUseIsEpisodePlaying( e )
-  let eventType = isEpisodePlaying.value ? "resume" : "pause"
-  if (isNewEpisode.value) {
-    eventType = "play"
-  }
-  trackAudioEvent( eventType, isLiveStream.value ? "live" : "on_demand", getTitle.value, getDescription.value )
-  isNewEpisode.value = false
-}
-
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
   trackClickEvent(
@@ -140,7 +127,8 @@ watch(
 
 const getTitle = computed(() => {
   return currentEpisode?.value?.title
-})
+} )
+
 const getDescription = computed(() => {
   if (!isStreamLoading.value) {
     if (isLiveStream.value) {
@@ -152,7 +140,20 @@ const getDescription = computed(() => {
   } else {
     return "..."
   }
-})
+} )
+
+// handle the toggle play button and tracking
+const togglePlayHere = ( e ) => {
+  // prevent the player from toggling twice
+  if (isEpisodePlaying.value === e) return
+  updateUseIsEpisodePlaying( e )
+  let eventType = isEpisodePlaying.value ? "resume" : "pause"
+  if (isNewEpisode.value) {
+    eventType = "play"
+  }
+  trackAudioEvent( eventType, isLiveStream.value ? "live" : "on_demand", getTitle.value, getDescription.value )
+  isNewEpisode.value = false
+}
 </script>
 
 <template>
