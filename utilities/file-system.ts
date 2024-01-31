@@ -67,75 +67,83 @@ const createAppDirectory = async () => {
 }
 
 export const fetchAndStoreMp3 = async (file) => {
-    const fileSystem = useFileSystem()
-    const fileSystemLS = useFileSystemLS()
+    if (Boolean(isAlreadyDownloaded(file))) {
+        globalToast.value = {
+            severity: "info",
+            summary: "Already downloaded",
+            life: 6000,
+        }
+    } else {
+        const fileSystem = useFileSystem()
+        const fileSystemLS = useFileSystemLS()
 
-    // check if already downloaded
+        // check if already downloaded
 
-    // Fetch the MP3 file as a Blob
-    const response = await fetch(file.audio)
-    const mp3Blob = await response.blob()
+        // Fetch the MP3 file as a Blob
+        const response = await fetch(file.audio)
+        const mp3Blob = await response.blob()
 
-    // Read the Blob as a data URL using FileReader
-    const reader = new FileReader()
-    reader.onload = async function () {
-        const base64DataUrl: any = this.result
-        const nameFromUrl = fileNameFromURL(file.audio)
-        await Filesystem.writeFile({
-            path: `${appDirectory}/${nameFromUrl}`,
-            data: base64DataUrl,
-            directory: directoryToSaveTo,
-        })
-            .then((fileURI) => {
-
-
-                //create a parralel browser local storage for this data, and bes to add it to the delete function.
-                setTimeout(async () => {
-                    // slight delay is needed for the fileSystem to update
-                    const thisFileSystemEntry = fileSystem.value?.files.find(
-                        (entry: any) => entry.uri === fileURI.uri ? entry : null
-                    )
-                    console.log('thisFileSystemEntry = ', thisFileSystemEntry)
-                    const filesArr: any =
-                    {
-                        ...file,
-                        file: file.file,
-                        name: nameFromUrl,
-                        uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
-                        image: file.image.template,
-                        size: thisFileSystemEntry?.size ?? null,
-                        ctime: thisFileSystemEntry?.ctime ?? null,
-                        mtime: thisFileSystemEntry?.mtime ?? null,
-                    }
-
-
-                    fileSystemLS.value.push(filesArr)
-                    await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
-
-                    globalToast.value = {
-                        severity: "success",
-                        summary: "Download Complete",
-                        life: 3000,
-                    }
-                }, 500)
-                updateFileSystem()
+        // Read the Blob as a data URL using FileReader
+        const reader = new FileReader()
+        reader.onload = async function () {
+            const base64DataUrl: any = this.result
+            const nameFromUrl = fileNameFromURL(file.audio)
+            await Filesystem.writeFile({
+                path: `${appDirectory}/${nameFromUrl}`,
+                data: base64DataUrl,
+                directory: directoryToSaveTo,
             })
-            .catch((e) => {
-                console.error("Unable to write file", e)
-            })
+                .then((fileURI) => {
+
+
+                    //create a parralel browser local storage for this data, and bes to add it to the delete function.
+                    setTimeout(async () => {
+                        // slight delay is needed for the fileSystem to update
+                        const thisFileSystemEntry = fileSystem.value?.files.find(
+                            (entry: any) => entry.uri === fileURI.uri ? entry : null
+                        )
+                        console.log('thisFileSystemEntry = ', thisFileSystemEntry)
+                        const filesArr: any =
+                        {
+                            ...file,
+                            file: file.file,
+                            name: nameFromUrl,
+                            uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
+                            image: file.image.template,
+                            size: thisFileSystemEntry?.size ?? null,
+                            ctime: thisFileSystemEntry?.ctime ?? null,
+                            mtime: thisFileSystemEntry?.mtime ?? null,
+                        }
+
+
+                        fileSystemLS.value.push(filesArr)
+                        await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
+
+                        globalToast.value = {
+                            severity: "success",
+                            summary: "Download Complete",
+                            life: 3000,
+                        }
+                    }, 500)
+                    updateFileSystem()
+                })
+                .catch((e) => {
+                    console.error("Unable to write file", e)
+                })
+        }
+        reader.readAsDataURL(mp3Blob)
     }
-    reader.readAsDataURL(mp3Blob)
 }
 
-export const playMp3 = async (file: {
-    file: string
-    title: string
-    details: string
-    image: string
-}) => {
-    const currentEpisode = useCurrentEpisode()
-    currentEpisode.value = file
-}
+// export const playMp3 = async (file: {
+//     file: string
+//     title: string
+//     details: string
+//     image: string
+// }) => {
+//     const currentEpisode = useCurrentEpisode()
+//     currentEpisode.value = file
+// }
 
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
@@ -206,17 +214,27 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
 
 // initial pull of the preferencce plugin files data
 
-export const initReadOfPreferences = async () => {
-    let val: any = []
-    try {
-        const { value } = await Preferences.get({ key: 'fileSystemLS' })
-        val = value ?? "[]"
-        // const val = await Preferences.get({ key: "fileSystemLS" })
-        console.log("val = ", JSON.parse(val))
-    } catch (error) {
-        console.error("preference read error = ", error)
-    }
-    return JSON.parse(val ?? '[]')
+// export const initReadOfPreferences = async () => {
+//     let val: any = []
+//     try {
+//         const { value } = await Preferences.get({ key: 'fileSystemLS' })
+//         val = value ?? "[]"
+//         // const val = await Preferences.get({ key: "fileSystemLS" })
+//         console.log("val = ", JSON.parse(val))
+//     } catch (error) {
+//         console.error("preference read error = ", error)
+//     }
+//     return JSON.parse(val ?? '[]')
+// }
 
-
+export const isAlreadyDownloaded = async (file) => {
+    console.log('file = ', file)
+    const fileSystemLS = useFileSystemLS()
+    console.log('fileSystemLS.value = ', fileSystemLS.value)
+    const check = fileSystemLS.value.find(
+        (entry) => entry.id === file.id
+    )
+    const alreadyDownloaded = check === undefined ? false : true
+    console.log('alreadyDownloaded = ', alreadyDownloaded)
+    return alreadyDownloaded
 }

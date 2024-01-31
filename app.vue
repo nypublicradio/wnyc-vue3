@@ -3,6 +3,7 @@ import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
+import { Preferences } from "@capacitor/preferences"
 import {
   //PushNotificationSchema,
   PushNotifications,
@@ -12,12 +13,14 @@ import {
   useIsApp,
   useCurrentUserProfile,
   useGlobalToast,
+  useFileSystemLS,
   //useHomepageData,
 } from "~/composables/states"
-import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals.ts"
+import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
 
 import { useToast } from "primevue/usetoast"
+
 const toast = useToast()
 
 const { isDesktop } = useDevice()
@@ -28,6 +31,7 @@ const currentUserProfile = useCurrentUserProfile()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
+const fileSystemLS = useFileSystemLS()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
@@ -234,7 +238,21 @@ watch(globalToast, (optionsObj) => {
     toast.add(optionsObj)
   }
 })
-watch
+
+// initial pull of the preferencce plugin files data
+const initReadOfPreferences = async () => {
+  let val: any = []
+  try {
+    const { value } = await Preferences.get({ key: "fileSystemLS" })
+    val = value ?? "[]"
+  } catch (error) {
+    console.error("preference read error = ", error)
+  }
+  return JSON.parse(val ?? "[]")
+}
+
+// init downloads for the app
+fileSystemLS.value = await initReadOfPreferences()
 </script>
 
 <template>

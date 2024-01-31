@@ -3,14 +3,11 @@ import {
   playStoredMp3,
   deleteStoredMp3,
   updateFileSystem,
-  playMp3,
   formatFileSize,
-  initReadOfPreferences,
 } from "~/utilities/file-system"
 import { useFileSystem /* useFileSystemLS */ } from "~/composables/states"
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
-fileSystemLS.value = await initReadOfPreferences()
 
 const used = ref(0)
 const granted = ref(0)
@@ -54,18 +51,17 @@ onMounted(() => {
             />
             <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
           </li>
-          <EpisodeItem
-            v-for="file in fileSystemLS"
-            :data="file"
-            :key="file.id"
-            @onClick="goToEpisodePage(file)"
-            :fallback-image="showImage"
-          />
         </ul>
+        <EpisodeItem
+          v-for="file in fileSystemLS"
+          :data="file"
+          :key="file.id"
+          @onClick="goToEpisodePage(file)"
+        />
       </div>
       <div class="grid">
         <!-- <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre> -->
-        <pre class="col-6 text-left">FileSystemLS = {{ fileSystemLS }}</pre>
+        <pre class="col-6 text-left">fileSystemLS = {{ fileSystemLS }}</pre>
       </div>
     </div>
   </div>
