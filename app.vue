@@ -11,6 +11,7 @@ import type { ActionPerformed, Token } from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
+  useGlobalToast,
   //useHomepageData,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals.ts"
@@ -26,6 +27,7 @@ const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
+const globalToast = useGlobalToast()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
@@ -226,6 +228,13 @@ useHead({
     },
   ],
 })
+
+watch(globalToast, (optionsObj) => {
+  if (optionsObj) {
+    toast.add(optionsObj)
+  }
+})
+watch
 </script>
 
 <template>

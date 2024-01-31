@@ -191,3 +191,7 @@ export const useTextSizeOption = () => useState('textSizeOption', () => textSize
 
 // story
 export const useSensitiveContent = () => useState<boolean>('sensitiveContent', () => false)
+
+
+// global toast
+export const useGlobalToast = () => useState<object>('globalToast', () => null)

@@ -4,6 +4,7 @@ import {
     useFileSystemLS,
     useAppDirectory,
     useCurrentEpisode,
+    useGlobalToast,
 } from "~/composables/states"
 import {
     appDirectory,
@@ -12,6 +13,7 @@ import {
     prepForPlayer,
 } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
+const globalToast = useGlobalToast()
 
 const directoryToSaveTo = Directory.External
 
@@ -83,15 +85,16 @@ export const fetchAndStoreMp3 = async (file: {
             data: base64DataUrl,
             directory: directoryToSaveTo,
         })
-            .then(async () => {
+            .then((fileURI) => {
 
 
                 //create a parralel browser local storage for this data, and bes to add it to the delete function.
                 setTimeout(async () => {
                     // slight delay is needed for the fileSystem to update
                     const thisFileSystemEntry = fileSystem.value?.files.find(
-                        (entry: any) => entry.name === nameFromUrl
+                        (entry: any) => entry.uri === fileURI.uri ? entry : null
                     )
+                    console.log('thisFileSystemEntry = ', thisFileSystemEntry)
                     const filesArr: any =
                     {
                         //...fileSystemLS.value,
@@ -101,15 +104,21 @@ export const fetchAndStoreMp3 = async (file: {
                         image: file.image,
                         name: nameFromUrl,
                         uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
-                        size: thisFileSystemEntry.size,
-                        ctime: thisFileSystemEntry.ctime,
-                        mtime: thisFileSystemEntry.mtime,
+                        size: thisFileSystemEntry?.size ?? null,
+                        ctime: thisFileSystemEntry?.ctime ?? null,
+                        mtime: thisFileSystemEntry?.mtime ?? null,
                     }
 
 
                     fileSystemLS.value.push(filesArr)
                     await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
-                }, 100)
+
+                    globalToast.value = {
+                        severity: "success",
+                        summary: "Download Complete",
+                        life: 3000,
+                    }
+                }, 500)
                 updateFileSystem()
             })
             .catch((e) => {
