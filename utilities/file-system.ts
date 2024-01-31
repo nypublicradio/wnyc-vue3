@@ -176,21 +176,27 @@ export const deleteStoredMp3 = async (file: {
 }) => {
     const fileSystem = useFileSystem()
     const fileSystemLS = useFileSystemLS()
+    const nameFromUrl = fileNameFromURL(file.file)
     Filesystem.deleteFile({
-        path: `${appDirectory}/${file.name || fileNameFromURL(file.file)}`,
+        path: `${appDirectory}/${file.name || nameFromUrl}`,
         directory: directoryToSaveTo,
     })
-        .then(async () => {
+        .then(() => {
             // also delete from the fileSystemLS state and local storage
-            const updatedFileSystem = fileSystem.value.files.filter(
-                (entry: any) => entry.name !== (file.name || fileNameFromURL(file.file))
-            )
+            setTimeout(async () => {
+                const updatedFileSystem = fileSystem.value.files.filter(
+                    (entry: any) => entry.name !== (file.name || nameFromUrl)
+                )
 
-            fileSystem.value.files = updatedFileSystem
-            fileSystemLS.value = updatedFileSystem
-            await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(updatedFileSystem) })
+                fileSystem.value.files = updatedFileSystem
 
-            setTimeout(() => {
+                const updatedFileSystemLS = fileSystemLS.value.filter(
+                    (entry: any) => entry.name !== (file.name || nameFromUrl)
+                )
+                fileSystemLS.value = updatedFileSystemLS
+
+                await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(updatedFileSystem) })
+
                 updateFileSystem()
             }, 100)
         })
