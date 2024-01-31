@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
+import { updateFileSystem } from "~/utilities/file-system"
 
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -252,11 +253,10 @@ const initReadOfPreferences = async () => {
   return JSON.parse(val ?? "[]")
 }
 
-// init downloads for the app
-fileSystemLS.value = await initReadOfPreferences()
-
-onMounted(() => {
-  //updateFileSystem()
+onMounted(async () => {
+  // init downloads for the app
+  fileSystemLS.value = await initReadOfPreferences()
+  updateFileSystem()
 })
 </script>
 
