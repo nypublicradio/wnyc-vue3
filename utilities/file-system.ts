@@ -18,7 +18,11 @@ const globalToast = useGlobalToast()
 const directoryToSaveTo = Directory.External
 
 export const fileNameFromURL = (url: string) => {
-    return url.substring(url.lastIndexOf("/") + 1)
+    let urlWithoutParams = url;
+    if (url.includes('?')) {
+        urlWithoutParams = url.split("?")[0];
+    }
+    return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1);
 }
 
 export const updateFileSystem = async () => {
@@ -62,24 +66,21 @@ const createAppDirectory = async () => {
     }
 }
 
-export const fetchAndStoreMp3 = async (file: {
-    file: string
-    title: string
-    details: string
-    image: string
-}) => {
+export const fetchAndStoreMp3 = async (file) => {
     const fileSystem = useFileSystem()
     const fileSystemLS = useFileSystemLS()
 
+    // check if already downloaded
+
     // Fetch the MP3 file as a Blob
-    const response = await fetch(file.file)
+    const response = await fetch(file.audio)
     const mp3Blob = await response.blob()
 
     // Read the Blob as a data URL using FileReader
     const reader = new FileReader()
     reader.onload = async function () {
         const base64DataUrl: any = this.result
-        const nameFromUrl = fileNameFromURL(file.file)
+        const nameFromUrl = fileNameFromURL(file.audio)
         await Filesystem.writeFile({
             path: `${appDirectory}/${nameFromUrl}`,
             data: base64DataUrl,
@@ -97,13 +98,11 @@ export const fetchAndStoreMp3 = async (file: {
                     console.log('thisFileSystemEntry = ', thisFileSystemEntry)
                     const filesArr: any =
                     {
-                        //...fileSystemLS.value,
-                        title: file.title,
+                        ...file,
                         file: file.file,
-                        details: file.details,
-                        image: file.image,
                         name: nameFromUrl,
                         uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
+                        image: file.image.template,
                         size: thisFileSystemEntry?.size ?? null,
                         ctime: thisFileSystemEntry?.ctime ?? null,
                         mtime: thisFileSystemEntry?.mtime ?? null,
@@ -138,14 +137,7 @@ export const playMp3 = async (file: {
     currentEpisode.value = file
 }
 
-export const playStoredMp3 = async (file: {
-    name: string
-    uri: string
-    file: string
-    title: string
-    details: string
-    image: string
-}) => {
+export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
 
     await Filesystem.readFile({
@@ -153,30 +145,25 @@ export const playStoredMp3 = async (file: {
         directory: directoryToSaveTo,
     })
         .then((b64Content) => {
+            console.log('file = ', file)
             // eventually we will set a Type for the current episdode
             currentEpisode.value = {
-                title: file.title,
-                file: `data:audio/mpeg;base64,${b64Content.data}`,
-                details: file.details,
+                ...file,
                 image: file.image,
+                audio: `data:audio/mpeg;base64,${b64Content.data}`,
+                file: `data:audio/mpeg;base64,${b64Content.data}`,
             }
+
         })
         .catch((e) => {
             console.error("Unable to read file", e)
         })
 }
 
-export const deleteStoredMp3 = async (file: {
-    file: string
-    title: string
-    details: string
-    image: string
-    name: string
-    uri: string
-}) => {
+export const deleteStoredMp3 = async (file) => {
     const fileSystem = useFileSystem()
     const fileSystemLS = useFileSystemLS()
-    const nameFromUrl = fileNameFromURL(file.file)
+    const nameFromUrl = fileNameFromURL(file.name)
     Filesystem.deleteFile({
         path: `${appDirectory}/${file.name || nameFromUrl}`,
         directory: directoryToSaveTo,

@@ -19,7 +19,7 @@ const pending = ref(false)
 
 watch(fileSystem, (value) => {
   // when the file system changes, check if THIS file is stored, then updatre the pending state
-  if (value.files?.find((entry) => entry.name === fileNameFromURL(props.file.file))) {
+  if (value.files?.find((entry) => entry.name === fileNameFromURL(props.file.audio))) {
     pending.value = false
   }
 })
@@ -27,7 +27,11 @@ watch(fileSystem, (value) => {
 
 <template>
   <Button
-    v-if="fileSystem.files?.find((fsFile) => fsFile.name === fileNameFromURL(file.file))"
+    v-if="
+      fileSystem.files?.find(
+        (fsFile) => fsFile.name === fileNameFromURL(props.file.audio)
+      )
+    "
     icon="pi pi-trash"
     @click="
       () => {

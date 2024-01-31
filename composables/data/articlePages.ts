@@ -111,6 +111,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,
+    embedCode: article.embedCode,
   })
 }
 
@@ -167,6 +168,8 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     headers: article.attributes.headers,
     segments: article.attributes.segments,
     transcript: article.attributes.transcript,
+
+    embedCode: article.attributes.embedCode,
   })
 }
 
@@ -204,6 +207,7 @@ export function normalizeSearchResults(results: Record<string, any | undefined>)
     uuid: results.result.uuid,
     section: { name: results.result.ancestry?.[0].title, slug: results.result.ancestry?.[0].slug },
     body: results.result.body,
+    embedCode: results.result.embedCode,
 
     // for listing pages
     listingImage: results.result.listingImage || results.result.leadAsset?.[0]?.value?.image || results.result.leadAsset?.[0]?.value?.defaultImage,

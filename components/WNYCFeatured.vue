@@ -5,8 +5,13 @@ import {
   copyToClipBoard,
   saveRecentlyPlayed,
 } from "~/utilities/helpers"
-import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
+import {
+  useTogglePlayTrigger,
+  useCurrentEpisode,
+  useFileSystem,
+} from "~/composables/states"
 import { useToast } from "primevue/usetoast"
+import { deleteStoredMp3, fetchAndStoreMp3 } from "~/utilities/file-system"
 const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -18,6 +23,17 @@ const props = defineProps({
   },
 })
 
+const handleDownload = (bucketItem) => {
+  fetchAndStoreMp3(bucketItem)
+  toast.add({
+    severity: "info",
+    summary: "Download started",
+    detail: bucketItem.title,
+    life: 3000,
+  })
+  trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -25,13 +41,7 @@ const getDotMenuItems = (bucketItem) => {
       label: "Download",
       title: bucketItem.title,
       command: () => {
-        toast.add({
-          severity: "info",
-          summary: "Downloading...",
-          detail: bucketItem.title,
-          life: 3000,
-        })
-        trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
+        handleDownload(bucketItem)
       },
     },
     {
@@ -39,6 +49,7 @@ const getDotMenuItems = (bucketItem) => {
       title: bucketItem.title,
       embedCode: bucketItem.embedCode,
       command: () => {
+        console.log("bucketItem", bucketItem)
         copyToClipBoard(bucketItem.embedCode)
           ? toast.add({
               severity: "info",
@@ -92,7 +103,7 @@ const togglePlayHere = (item) => {
 <template>
   <div>
     <div class="wnyc-featured">
-      <!--  <pre class="text-sm">{{ props.articles[0].id }}</pre> -->
+      <pre class="text-sm">{{ props.articles[0] }}</pre>
       <HorizontalScrollFeature>
         <CardLarge
           v-for="item in props.articles"

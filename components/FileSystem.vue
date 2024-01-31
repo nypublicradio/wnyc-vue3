@@ -28,35 +28,33 @@ watch(fileSystem, (/* value */) => {
 const files = ref([
   {
     title: "Large: Colors",
-    file: "https://waaa.wnyc.org/radiolab/radiolab040210.mp3",
+    audio: "https://waaa.wnyc.org/radiolab/radiolab040210.mp3",
     details: "<p>This is a Radiolab sample description for this audio file</p>",
-    image:
-      "https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg",
+    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
   },
   {
     title: "Small: Colors",
-    file: "https://waaa.wnyc.org/bl/bl122721dpod.mp3",
+    audio: "https://waaa.wnyc.org/bl/bl122721dpod.mp3",
     details: "<p>This is a Radiolab sample description for this audio file</p>",
-    image:
-      "https://media.wnyc.org/i/200/200/c/70/photologue/photos/RL_Colors_620_no_title.jpg",
+    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
   },
   {
     title: "snap",
-    file: "/episodes/snap.mp3",
+    audio: "/episodes/snap.mp3",
     details: "<p>This is a sample description for this audio file</p>",
-    image: "https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg",
+    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
   },
   {
     title: "warm",
-    file: "/episodes/warm.mp3",
+    audio: "/episodes/warm.mp3",
     details: "<p>This is a sample description for this audio file</p>",
-    image: "https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg",
+    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
   },
   {
     title: "sample",
-    file: "/episodes/sample.mp3",
+    audio: "/episodes/sample.mp3",
     details: "<p>This is a sample description for this audio file</p>",
-    image: "https://media.wnyc.org/i/448/448/l/80/2020/10/atc.jpg",
+    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
   },
 ])
 

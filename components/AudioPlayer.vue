@@ -83,13 +83,13 @@ const switchEpisode = async () => {
   setTimeout(() => {
     showPlayer.value = true
     // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
+    //initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
 }
 
 watch(currentEpisode, () => {
-  //console.log("currentEpisode.value changed = ", currentEpisode.value)
+  console.log("currentEpisode.value changed = ", currentEpisode.value)
   switchEpisode()
 })
 
