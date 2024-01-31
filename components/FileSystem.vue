@@ -43,7 +43,7 @@ onMounted(() => {
             <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
           </li>
         </ul> -->
-        <ul class="">
+        <!-- <ul class="">
           <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
             <Button
               :label="`${file.name} - ${formatFileSize(file.size)}`"
@@ -51,17 +51,19 @@ onMounted(() => {
             />
             <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
           </li>
-        </ul>
-        <EpisodeItem
-          v-for="file in fileSystemLS"
-          :data="file"
-          :key="file.id"
-          @onClick="goToEpisodePage(file)"
-        />
+        </ul> -->
+        <div class="flex flex-column gap-4 mt-2">
+          <EpisodeItem
+            v-for="file in fileSystemLS"
+            :data="file"
+            :key="file.id"
+            @onClick="goToEpisodePage(file)"
+          />
+        </div>
       </div>
       <div class="grid">
         <!-- <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre> -->
-        <pre class="col-6 text-left">fileSystemLS = {{ fileSystemLS }}</pre>
+        <!--  <pre class="col-6 text-left">fileSystemLS = {{ fileSystemLS }}</pre> -->
       </div>
     </div>
   </div>

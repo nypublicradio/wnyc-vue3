@@ -25,6 +25,17 @@ export const fileNameFromURL = (url: string) => {
     return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1);
 }
 
+export const isAlreadyDownloaded = async (file) => {
+    const fileSystemLS = useFileSystemLS()
+    const check = fileSystemLS.value.find(
+        (entry) => entry.id === file.id
+    )
+    const alreadyDownloaded = check === undefined ? false : true
+    console.log('alreadyDownloaded = ', alreadyDownloaded)
+    return alreadyDownloaded
+}
+
+
 export const updateFileSystem = async () => {
     const fileSystem = useFileSystem()
 
@@ -67,7 +78,8 @@ const createAppDirectory = async () => {
 }
 
 export const fetchAndStoreMp3 = async (file) => {
-    if (Boolean(isAlreadyDownloaded(file))) {
+    const alreadyDownloaded = await isAlreadyDownloaded(file)
+    if (alreadyDownloaded) {
         globalToast.value = {
             severity: "info",
             summary: "Already downloaded",
@@ -227,14 +239,3 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
 //     return JSON.parse(val ?? '[]')
 // }
 
-export const isAlreadyDownloaded = async (file) => {
-    console.log('file = ', file)
-    const fileSystemLS = useFileSystemLS()
-    console.log('fileSystemLS.value = ', fileSystemLS.value)
-    const check = fileSystemLS.value.find(
-        (entry) => entry.id === file.id
-    )
-    const alreadyDownloaded = check === undefined ? false : true
-    console.log('alreadyDownloaded = ', alreadyDownloaded)
-    return alreadyDownloaded
-}

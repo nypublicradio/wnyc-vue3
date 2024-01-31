@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
+
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
@@ -253,6 +254,10 @@ const initReadOfPreferences = async () => {
 
 // init downloads for the app
 fileSystemLS.value = await initReadOfPreferences()
+
+onMounted(() => {
+  //updateFileSystem()
+})
 </script>
 
 <template>
