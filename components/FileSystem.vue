@@ -25,39 +25,6 @@ watch(fileSystem, (/* value */) => {
   })
 })
 
-const files = ref([
-  {
-    title: "Large: Colors",
-    audio: "https://waaa.wnyc.org/radiolab/radiolab040210.mp3",
-    details: "<p>This is a Radiolab sample description for this audio file</p>",
-    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
-  },
-  {
-    title: "Small: Colors",
-    audio: "https://waaa.wnyc.org/bl/bl122721dpod.mp3",
-    details: "<p>This is a Radiolab sample description for this audio file</p>",
-    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
-  },
-  {
-    title: "snap",
-    audio: "/episodes/snap.mp3",
-    details: "<p>This is a sample description for this audio file</p>",
-    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
-  },
-  {
-    title: "warm",
-    audio: "/episodes/warm.mp3",
-    details: "<p>This is a sample description for this audio file</p>",
-    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
-  },
-  {
-    title: "sample",
-    audio: "/episodes/sample.mp3",
-    details: "<p>This is a sample description for this audio file</p>",
-    image: { template: "https://media.wnyc.org/i/%s/%s/%s/%s/2020/10/atc.jpg" },
-  },
-])
-
 onMounted(() => {
   // initial read the CapacitorJS FileSystme and update the fileSystem state
   updateFileSystem()
@@ -67,19 +34,10 @@ onMounted(() => {
 <template>
   <div>
     <div class="file-system">
-      <p>Files:</p>
-
-      <ul>
-        <li v-for="file in files" :key="file.title">
-          <Button :label="file.title" @click="playMp3(file)" />
-
-          <DownloadDeleteButton :file="file" />
-        </li>
-      </ul>
       <p>Saved files:</p>
       <p>!!Storage limit: {{ used }} of {{ granted }}</p>
-      <div class="grid">
-        <ul class="col-6">
+      <div>
+        <!--         <ul class="col-6">
           <li v-for="file in fileSystem.files" :key="file.name">
             <Button
               :label="`${file.name} - ${formatFileSize(file.size)}`"
@@ -87,8 +45,8 @@ onMounted(() => {
             />
             <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
           </li>
-        </ul>
-        <ul class="col-6">
+        </ul> -->
+        <ul class="">
           <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
             <Button
               :label="`${file.name} - ${formatFileSize(file.size)}`"
@@ -96,10 +54,17 @@ onMounted(() => {
             />
             <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
           </li>
+          <EpisodeItem
+            v-for="file in fileSystemLS"
+            :data="file"
+            :key="file.id"
+            @onClick="goToEpisodePage(file)"
+            :fallback-image="showImage"
+          />
         </ul>
       </div>
       <div class="grid">
-        <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre>
+        <!-- <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre> -->
         <pre class="col-6 text-left">FileSystemLS = {{ fileSystemLS }}</pre>
       </div>
     </div>

@@ -154,6 +154,10 @@ const hasAudio = computed(() => {
     (Array.isArray(props.data.audio) && props.data.audio.length === 0)
   )
 })
+
+const imageSrc = computed(() => {
+  return props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
+})
 </script>
 
 <template>
@@ -161,7 +165,7 @@ const hasAudio = computed(() => {
     <div class="flex gap-3 w-full" @click.prevent="emit('onClick')" v-ripple>
       <VImage
         class="flex-none"
-        :src="props.data?.image?.template ?? props.fallbackImage"
+        :src="imageSrc"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
@@ -218,7 +222,7 @@ const hasAudio = computed(() => {
         <div>
           <div class="flex gap-3 px-4 align-items-center">
             <VImage
-              :src="props.data?.image?.template ?? props.fallbackImage"
+              :src="imageSrc"
               :alt="`${props.data.showTitle} show image`"
               :width="60"
               :height="60"
