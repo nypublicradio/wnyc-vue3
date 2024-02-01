@@ -48,8 +48,6 @@ const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
       const fileSystemLSData = await fileSystemLS.value?.find(
         (entry) => String(entry.id) === String(isDownloadedID)
       )
-      console.log("fileSystemLS.value = ", fileSystemLS.value)
-      console.log("fileSystemLSData = ", fileSystemLSData)
       // generate and inject the blob url into the episode data at the file key
       const blobUrl = await generateAudioBlobUrl(fileSystemLSData.name)
       fileSystemLSData.file = blobUrl
