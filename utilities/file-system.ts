@@ -118,10 +118,8 @@ export const fetchAndStoreMp3 = async (file) => {
                         const filesArr: any =
                         {
                             ...file,
-                            file: file.file,
                             name: nameFromUrl,
                             uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
-                            image: file.image.template,
                             size: thisFileSystemEntry?.size ?? null,
                             ctime: thisFileSystemEntry?.ctime ?? null,
                             mtime: thisFileSystemEntry?.mtime ?? null,
@@ -165,11 +163,9 @@ export const playStoredMp3 = async (file) => {
         directory: directoryToSaveTo,
     })
         .then((b64Content) => {
-            console.log('file = ', file)
             // eventually we will set a Type for the current episdode
             currentEpisode.value = {
                 ...file,
-                image: file.image,
                 audio: `data:audio/mpeg;base64,${b64Content.data}`,
                 file: `data:audio/mpeg;base64,${b64Content.data}`,
             }

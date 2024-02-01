@@ -25,6 +25,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isDownloaded: {
+    type: Boolean,
+    default: false,
+  },
   progress: {
     type: Number,
     default: 0,
@@ -99,6 +103,7 @@ const getProgress = computed(() => {
             bg-color="transparent"
             padding="1px 8px 1px 3px"
           />
+          <DownloadedSmallIcon v-if="props.isDownloaded" class="ml-2" />
         </div>
       </slot>
     </Button>

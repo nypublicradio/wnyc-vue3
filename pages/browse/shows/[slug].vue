@@ -24,6 +24,7 @@ import { FALLBACKIMAGE } from "~/composables/globals"
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
+
 const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`)
 
 const pagination = ref(show?.value?.episodes?.meta ?? null)

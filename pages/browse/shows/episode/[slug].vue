@@ -18,13 +18,46 @@ import {
   shareAPI,
 } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
+import { useFileSystemLS } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
-const { data: episode } = useFetch(
-  `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
-)
+
+const fileSystemLS = useFileSystemLS()
+const isDownloaded = route.query.downloaded
+const isDownloadedID = route.query.id
+
+const episode = ref(null)
+
+const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
+  // check if downloaded is true in URL params
+  if (isDownloaded) {
+    // Fetch data from another source when isDownloaded is true
+    const fileSystemLSData = await fileSystemLS.value?.find(
+      (entry) => entry.id === Number(isDownloadedID)
+    )
+    console.log("fileSystemLS.value", fileSystemLS.value)
+    console.log("fileSystemLSData", fileSystemLSData)
+    //fileSystemLSData.id = fileSystemLSData.id.toString()
+    episode.value = await fileSystemLSData
+  } else {
+    // Fetch data from BFF URL when isDownloaded is false
+    const response = await fetch(
+      `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
+    )
+    console.log("response.json()", await response.json())
+    episode.value = await response.json()
+  }
+})
+
+// if (isDownloaded) {
+//   // get data from somewhere else
+// } else {
+//   const { data: episode } = useFetch(
+//     `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
+//   )
+// }
 
 const episodeData = ref(episode?.value ?? null)
 
@@ -206,7 +239,7 @@ watch(episode, () => {
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :file="episodeData?.audio"
               @onClick="togglePlayHere(episodeData)"
-              class=""
+              :isDownloaded="isDownloaded"
             />
             <!--             <div v-else class="font-bold text-red-500">
               <i class="pi pi-exclamation-triangle mr-1"></i>No Audio
@@ -223,6 +256,7 @@ watch(episode, () => {
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button
+              v-if="!isDownloaded"
               class="w-2rem h-2rem"
               text
               plain

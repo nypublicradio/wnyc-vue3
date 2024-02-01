@@ -19,6 +19,9 @@ import {
   fetchDuration,
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import { deleteStoredMp3, fetchAndStoreMp3 } from "~/utilities/file-system"
+import { useFileSystemLS } from "~/composables/states"
+const fileSystemLS = useFileSystemLS()
 
 const toast = useToast()
 
@@ -43,6 +46,10 @@ const props = defineProps({
     default: false,
   },
   showTitle: {
+    type: Boolean,
+    default: false,
+  },
+  fromSaved: {
     type: Boolean,
     default: false,
   },
@@ -102,6 +109,17 @@ const handleAddToFavorites = async (bucketItem) => {
   }
 }
 
+const handleDownload = (bucketItem) => {
+  fetchAndStoreMp3(bucketItem)
+  toast.add({
+    severity: "info",
+    summary: "Download started",
+    detail: bucketItem.title,
+    life: 3000,
+  })
+  trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -158,6 +176,10 @@ const hasAudio = computed(() => {
 const imageSrc = computed(() => {
   return props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
 })
+
+const isDownloaded = computed(() => {
+  return fileSystemLS.value?.find((entry) => entry.id === props.data.id)
+})
 </script>
 
 <template>
@@ -172,7 +194,7 @@ const imageSrc = computed(() => {
         :srcset="[2]"
         style="min-height: 72px; min-width: 72px"
       />
-      <div class="flex gap-1 flex-column justify-content-between w-full">
+      <div class="flex gap-1 flex-column w-full">
         <div class="flex gap-0 flex-column align-items-start">
           <p v-if="props.showTitle" class="text-xs line-height-1">
             {{ props.data.org ?? props.data.showTitle }}
@@ -194,8 +216,8 @@ const imageSrc = computed(() => {
                 <p class="text-xs">
                   {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
-                <!-- FROM SUPABASE PROFILER DATA -->
-                <DownloadedSmallIcon v-if="props.data.downloaded" />
+                <!-- FROM CapacitorJS Preferences local storage -->
+                <DownloadedSmallIcon v-if="isDownloaded" />
               </div>
             </template>
           </PipeData>
@@ -259,5 +281,6 @@ const imageSrc = computed(() => {
 
 <style lang="scss" scoped>
 .episode-item {
+  cursor: pointer;
 }
 </style>
