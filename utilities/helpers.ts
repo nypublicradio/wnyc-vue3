@@ -146,12 +146,27 @@ export const templatizePublisherImageUrl = (url: string): string => {
   }
 }
 
+// function that tracks audio events to google analytics
+export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
+  const { $analytics } = useNuxtApp()
+  const currentUser = useCurrentUser()
+  $analytics.sendEvent(eventName, {
+    audio_type: audioType,
+    audio_title: audioTitle,
+    audio_show: audioShow,
+    wnyc_user_id: currentUser.value?.id
+  })
+}
+
+// function that tracks click events to google analytics
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
+  const currentUser = useCurrentUser()
   $analytics.sendEvent("click_tracking", {
     event_category: category,
     component: component,
     event_label: label,
+    wnyc_user_id: currentUser.value?.id
   })
 }
 
@@ -806,7 +821,6 @@ export const togglePlayEpisode = (media, index = 0) => {
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }
-
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 

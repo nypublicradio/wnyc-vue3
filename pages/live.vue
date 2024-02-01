@@ -52,11 +52,7 @@ const togglePlayHere = () => {
     currentEpisode.value = currentEpisodeHolder.value
     saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
-  trackClickEvent(
-    "Click Tracking - Toggle Play Button",
-    "Live Page",
-    `play pause station ${currentEpisodeHolder.value.name}`
-  )
+  togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 const scrollToActiveStation = () => {

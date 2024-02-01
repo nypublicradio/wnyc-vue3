@@ -79,13 +79,12 @@ const prepForPlayer = (item) => {
 }
 
 // handle the play button click
-const togglePlayHere = (item) => {
+const togglePlayHere = ( item ) => {
   if (currentEpisode.value?.id !== item.id) {
     currentEpisode.value = prepForPlayer(item)
-    saveRecentlyPlayed(item, mediaTypes.SEGMENT)
+    saveRecentlyPlayed( item, mediaTypes.SEGMENT )
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent("Click Tracking - Horizontal Large Card", item.title, "toggle play")
 }
 </script>
 
@@ -108,7 +107,6 @@ const togglePlayHere = (item) => {
               :file="item.audio"
               @onClick="togglePlayHere(item)"
               class="z-2"
-              @click.prevent
             />
           </template>
           <template #menu>
