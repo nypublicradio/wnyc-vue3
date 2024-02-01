@@ -13,7 +13,7 @@ import {
     prepForPlayer,
 } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
-const globalToast = useGlobalToast()
+
 
 const directoryToSaveTo = Directory.External
 
@@ -80,6 +80,7 @@ const createAppDirectory = async () => {
 export const fetchAndStoreMp3 = async (file) => {
     const alreadyDownloaded = await isAlreadyDownloaded(file)
     if (alreadyDownloaded) {
+        const globalToast = useGlobalToast()
         globalToast.value = {
             severity: "info",
             summary: "Already downloaded",
@@ -129,6 +130,7 @@ export const fetchAndStoreMp3 = async (file) => {
                         fileSystemLS.value.push(filesArr)
                         await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
 
+                        const globalToast = useGlobalToast()
                         globalToast.value = {
                             severity: "success",
                             summary: "Download Complete",
@@ -222,16 +224,14 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
 
 // initial pull of the preferencce plugin files data
 
-// export const initReadOfPreferences = async () => {
-//     let val: any = []
-//     try {
-//         const { value } = await Preferences.get({ key: 'fileSystemLS' })
-//         val = value ?? "[]"
-//         // const val = await Preferences.get({ key: "fileSystemLS" })
-//         console.log("val = ", JSON.parse(val))
-//     } catch (error) {
-//         console.error("preference read error = ", error)
-//     }
-//     return JSON.parse(val ?? '[]')
-// }
+export const initReadOfPreferences = async () => {
+    let val: any = []
+    try {
+        const { value } = await Preferences.get({ key: 'fileSystemLS' })
+        val = value ?? "[]"
+    } catch (error) {
+        console.error("preference read error = ", error)
+    }
+    return JSON.parse(val ?? '[]')
+}
 
