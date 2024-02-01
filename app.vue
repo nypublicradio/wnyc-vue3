@@ -254,7 +254,7 @@ const initReadOfPreferences = async () => {
 }
 
 onMounted(async () => {
-  // init downloads for the app
+  // init downloads files system for the app
   fileSystemLS.value = await initReadOfPreferences()
   updateFileSystem()
 })

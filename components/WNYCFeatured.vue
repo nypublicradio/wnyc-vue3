@@ -91,7 +91,7 @@ const togglePlayHere = (item) => {
 <template>
   <div>
     <div class="wnyc-featured">
-      <pre class="text-sm">{{ props.articles[0] }}</pre>
+      <!--  <pre class="text-sm">{{ props.articles[0] }}</pre> -->
       <HorizontalScrollFeature>
         <CardLarge
           v-for="item in props.articles"

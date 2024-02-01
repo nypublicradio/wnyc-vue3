@@ -63,10 +63,6 @@ const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
   }
 })
 
-// const { data: storyData } = useFetch(
-//   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
-// )
-
 const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
 const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
 const topStories = ref(null)
