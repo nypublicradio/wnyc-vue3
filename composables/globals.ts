@@ -9,6 +9,7 @@ export const mediaTypes = {
     EPISODE: 'episode',
     STORY: 'story',
     ARTICLE_PAGE: 'article_page',
+    ARTICLE: 'article',
     SEGMENT: 'segment',
 }
 

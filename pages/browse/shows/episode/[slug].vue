@@ -17,7 +17,7 @@ import {
   getFavoritedItems,
   shareAPI,
 } from "~/utilities/helpers"
-import { generateAudioBlobUrl } from "~/utilities/file-system"
+import { generateAudioBlobUrl, fetchAndStoreMp3 } from "~/utilities/file-system"
 import { mediaTypes } from "~/composables/globals"
 import { useFileSystemLS } from "~/composables/states"
 
@@ -26,7 +26,7 @@ const route = useRoute()
 const toast = useToast()
 
 const fileSystemLS = useFileSystemLS()
-const isDownloaded = route.query.downloaded
+const isDownloaded = route.query.downloaded === "true" ? true : false
 const isDownloadedID = route.query.id
 
 const episode = ref(null)
@@ -34,21 +34,24 @@ const episode = ref(null)
 const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
   // check if downloaded is true in URL params
   if (isDownloaded) {
-    // Fetch data from another source when isDownloaded is true
-    const fileSystemLSData = await fileSystemLS.value?.find(
-      (entry) => entry.id === Number(isDownloadedID)
-    )
-    // generate and inject the blob url into the episode data at the file key
-    const blobUrl = await generateAudioBlobUrl(fileSystemLSData.name)
-    fileSystemLSData.file = blobUrl
+    if (fileSystemLS.value.length > 0) {
+      // Fetch data from another source when isDownloaded is true
+      const fileSystemLSData = await fileSystemLS.value?.find(
+        (entry) => String(entry.id) === String(isDownloadedID)
+      )
+      console.log("fileSystemLS.value = ", fileSystemLS.value)
+      console.log("fileSystemLSData = ", fileSystemLSData)
+      // generate and inject the blob url into the episode data at the file key
+      const blobUrl = await generateAudioBlobUrl(fileSystemLSData.name)
+      fileSystemLSData.file = blobUrl
 
-    episode.value = await fileSystemLSData
+      episode.value = await fileSystemLSData
+    }
   } else {
     // Fetch data from BFF URL when isDownloaded is false
     const response = await fetch(
       `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
     )
-    console.log("response.json()", await response.json())
     episode.value = await response.json()
   }
 })
@@ -70,10 +73,17 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
-const handleDownload = (epD) => {
-  //console.log("handleDownload", epD)
-  console.error(`handle download to come ${epD.title}`)
+const handleDownload = (bucketItem) => {
+  fetchAndStoreMp3(bucketItem)
+  toast.add({
+    severity: "info",
+    summary: "Download started",
+    detail: bucketItem.title,
+    life: 3000,
+  })
+  trackClickEvent("Click Tracking - Audio Download", "Shows Episode", bucketItem.title)
 }
+
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }

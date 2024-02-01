@@ -364,7 +364,7 @@ const moreFromClick = () => {
           :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
           :to="author.url"
-          @onClick="emit('close-panel')"
+          @on-click="emit('close-panel')"
         />
       </div>
     </div>

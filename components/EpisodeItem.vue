@@ -30,7 +30,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
+const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
 
 const props = defineProps({
   data: {
@@ -184,7 +184,7 @@ const isDownloaded = computed(() => {
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3 w-full" @click.prevent="emit('onClick')" v-ripple>
+    <div class="flex gap-3 w-full" @click.prevent="emit('on-click')" v-ripple>
       <VImage
         class="flex-none"
         :src="imageSrc"

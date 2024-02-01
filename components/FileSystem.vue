@@ -1,5 +1,5 @@
 <script setup>
-import { goToEpisodePage } from "~/utilities/helpers"
+import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 import {
   playStoredMp3,
   deleteStoredMp3,
@@ -7,6 +7,7 @@ import {
   formatFileSize,
 } from "~/utilities/file-system"
 import { useFileSystem /* useFileSystemLS */ } from "~/composables/states"
+import { mediaTypes } from "~/composables/globals"
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
 
@@ -27,6 +28,21 @@ onMounted(() => {
   // initial read the CapacitorJS FileSystme and update the fileSystem state
   updateFileSystem()
 })
+
+const handleRoute = (file) => {
+  console.log("handleRoute", file)
+  switch (file.type) {
+    case mediaTypes.EPISODE:
+    case mediaTypes.SEGMENT:
+      goToEpisodePage(file, `downloaded=true&id=${file.id}`)
+      break
+    case mediaTypes.ARTICLE:
+      goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
+      break
+    default:
+      console.log("handleRoute", file)
+  }
+}
 </script>
 
 <template>
@@ -59,7 +75,7 @@ onMounted(() => {
             :data="file"
             :key="file.id"
             fromSaved
-            @onClick="goToEpisodePage(file, `downloaded=true&id=${file.id}`)"
+            @on-click="handleRoute(file)"
           />
         </div>
       </div>

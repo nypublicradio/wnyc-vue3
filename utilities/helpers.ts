@@ -625,3 +625,8 @@ export const getCssVar = (name: string, px = false) => {
 export const goToEpisodePage = (ep, params) => {
   navigateTo(`/browse/shows/episode/${ep.meta.slug}${params ? `?${params}` : ''}`)
 }
+
+/* centralized function to route to a story page */
+export const goToStoryPage = (story, params) => {
+  navigateTo(`/story/${story.id}${params ? `?${params}` : ''}`)
+}
