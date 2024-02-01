@@ -17,6 +17,7 @@ import {
   getFavoritedItems,
   shareAPI,
 } from "~/utilities/helpers"
+import { generateAudioBlobUrl } from "~/utilities/file-system"
 import { mediaTypes } from "~/composables/globals"
 import { useFileSystemLS } from "~/composables/states"
 
@@ -37,9 +38,10 @@ const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
     const fileSystemLSData = await fileSystemLS.value?.find(
       (entry) => entry.id === Number(isDownloadedID)
     )
-    console.log("fileSystemLS.value", fileSystemLS.value)
-    console.log("fileSystemLSData", fileSystemLSData)
-    //fileSystemLSData.id = fileSystemLSData.id.toString()
+    // generate and inject the blob url into the episode data at the file key
+    const blobUrl = await generateAudioBlobUrl(fileSystemLSData.name)
+    fileSystemLSData.file = blobUrl
+
     episode.value = await fileSystemLSData
   } else {
     // Fetch data from BFF URL when isDownloaded is false
@@ -50,14 +52,6 @@ const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
     episode.value = await response.json()
   }
 })
-
-// if (isDownloaded) {
-//   // get data from somewhere else
-// } else {
-//   const { data: episode } = useFetch(
-//     `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
-//   )
-// }
 
 const episodeData = ref(episode?.value ?? null)
 

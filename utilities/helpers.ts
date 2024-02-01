@@ -572,10 +572,13 @@ export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
 
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
+  console.log('prepForPlayer item = ', item)
   const isSegment = index !== null
+
+  const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio
   return {
     ...item,
-    file: isSegment ? item.audio[index] : item.audio,
+    file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
     image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage,
     //TODO convert to seconds
@@ -589,6 +592,8 @@ export const prepForPlayer = (item, index = null) => {
 export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
+
+
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media)

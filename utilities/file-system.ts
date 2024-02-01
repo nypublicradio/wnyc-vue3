@@ -108,14 +108,12 @@ export const fetchAndStoreMp3 = async (file) => {
             })
                 .then((fileURI) => {
 
-
                     //create a parralel browser local storage for this data, and bes to add it to the delete function.
                     setTimeout(async () => {
                         // slight delay is needed for the fileSystem to update
                         const thisFileSystemEntry = fileSystem.value?.files.find(
                             (entry: any) => entry.uri === fileURI.uri ? entry : null
                         )
-                        console.log('thisFileSystemEntry = ', thisFileSystemEntry)
                         const filesArr: any =
                         {
                             ...file,
@@ -125,9 +123,9 @@ export const fetchAndStoreMp3 = async (file) => {
                             ctime: thisFileSystemEntry?.ctime ?? null,
                             mtime: thisFileSystemEntry?.mtime ?? null,
                         }
-
-
+                        // add it to the list
                         fileSystemLS.value.push(filesArr)
+                        // save to local storage
                         await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
 
                         const globalToast = useGlobalToast()
@@ -157,19 +155,33 @@ export const fetchAndStoreMp3 = async (file) => {
 //     currentEpisode.value = file
 // }
 
+function base64ToArrayBuffer(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
-
+    file = prepForPlayer(file)
     await Filesystem.readFile({
         path: `${appDirectory}/${file.name}`,
         directory: directoryToSaveTo,
     })
         .then((b64Content) => {
-            // eventually we will set a Type for the current episdode
+            const arrayBuffer = base64ToArrayBuffer(b64Content.data);
+            const blob = new Blob([arrayBuffer], { type: "audio/mpeg" })
+            var url = URL.createObjectURL(blob)
+            console.log('url = ', url)
+            // eventually we will set a Type for the current episode
             currentEpisode.value = {
                 ...file,
-                audio: `data:audio/mpeg;base64,${b64Content.data}`,
-                file: `data:audio/mpeg;base64,${b64Content.data}`,
+                //file: `data:audio/mpeg;base64,${b64Content.data}`,
+                file: url,
             }
 
         })
@@ -177,6 +189,22 @@ export const playStoredMp3 = async (file) => {
             console.error("Unable to read file", e)
         })
 }
+
+export const generateAudioBlobUrl = async (fileName) => {
+    try {
+        const b64Content = await Filesystem.readFile({
+            path: `${appDirectory}/${fileName}`,
+            directory: directoryToSaveTo,
+        });
+        const arrayBuffer = base64ToArrayBuffer(b64Content.data);
+        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+        var url = URL.createObjectURL(blob);
+        console.log('generated url =', url)
+        return url;
+    } catch (e) {
+        console.error("Unable to read file", e);
+    }
+};
 
 export const deleteStoredMp3 = async (file) => {
     const fileSystem = useFileSystem()

@@ -4,6 +4,7 @@ import {
   trackClickEvent,
   copyToClipBoard,
   saveRecentlyPlayed,
+  prepForPlayer,
 } from "~/utilities/helpers"
 import {
   useTogglePlayTrigger,
@@ -74,19 +75,6 @@ const getDotMenuItems = (bucketItem) => {
 // fire the command located in tehe menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e.value.command()
-}
-
-// normalize the bucket item data for the player
-const prepForPlayer = (item) => {
-  return {
-    ...item,
-    file: item.audio,
-    title: item.title,
-    image: item.image.template,
-    duration: item.estimatedDuration,
-    details: item.body,
-    first_published_at: item.publishAt,
-  }
 }
 
 // handle the play button click
