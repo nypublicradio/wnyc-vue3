@@ -4,7 +4,6 @@ import {
   playStoredMp3,
   deleteStoredMp3,
   deleteDirectory,
-  updateFileSystem,
   formatFileSize,
 } from "~/utilities/file-system"
 import { useFileSystem, useFileSystemLS } from "~/composables/states"
@@ -15,35 +14,32 @@ const fileSystemLS = useFileSystemLS()
 const used = ref(0)
 const granted = ref(0)
 
-watch(fileSystem, (/* value */) => {
-  //console.log('fileSystem', value)
+watch(
+  fileSystem,
+  (/* value */) => {
+    navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => {
+      //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
+      used.value = usedBytes
+      granted.value = grantedBytes
+    })
+  },
+  { deep: true }
+)
 
-  navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => {
-    //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
-    used.value = usedBytes
-    granted.value = grantedBytes
-  })
-})
-
-onMounted(() => {
-  // initial read the CapacitorJS FileSystme and update the fileSystem state
-  updateFileSystem()
-})
-
-const handleRoute = (file) => {
-  console.log("handleRoute", file)
-  switch (file.type) {
-    case mediaTypes.EPISODE:
-    case mediaTypes.SEGMENT:
-      goToEpisodePage(file, `downloaded=true&id=${file.id}`)
-      break
-    case mediaTypes.ARTICLE:
-      goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
-      break
-    default:
-      console.log("handleRoute", file)
-  }
-}
+// const handleRoute = (file) => {
+//   console.log("handleRoute", file)
+//   switch (file.type) {
+//     case mediaTypes.EPISODE:
+//     case mediaTypes.SEGMENT:
+//       goToEpisodePage(file, `downloaded=true&id=${file.id}`)
+//       break
+//     case mediaTypes.ARTICLE:
+//       goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
+//       break
+//     default:
+//       console.log("handleRoute", file)
+//   }
+// }
 </script>
 
 <template>
@@ -82,8 +78,8 @@ const handleRoute = (file) => {
         </div>
       </div>
       <div class="grid">
-        <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre>
-        <pre class="col-6 text-left">fileSystemLS = {{ fileSystemLS }}</pre>
+        <pre class="col-6 text-left text-xs">fileSystem = {{ fileSystem }}</pre>
+        <pre class="col-6 text-left text-xs">fileSystemLS = {{ fileSystemLS }}</pre>
       </div>
     </div>
   </div>

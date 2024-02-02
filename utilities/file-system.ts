@@ -39,22 +39,29 @@ export const isAlreadyDownloaded = async (file) => {
 }
 
 
+async function traverseDirectory(path) {
+    let result = [];
+    const files = await Filesystem.readdir({ path });
+
+    files.files.forEach((file, index) => {
+        result[index] = file;
+    })
+    result.forEach(async (file, index) => {
+        const fullPath = `${path}/${file.name}`;
+        const stats = await Filesystem.readdir({ path: fullPath });
+        file.files = stats.files;
+    })
+    console.log('fileSystem.value =', result)
+    return result;
+}
+
 export const updateFileSystem = async () => {
     const fileSystem = useFileSystem()
 
     //initial check to see if the appDirectory exists and if not, create it
     await createAppDirectory()
 
-    fileSystem.value = await Filesystem.readdir({
-        path: `${appDirectory}/`,
-        directory: directoryToSaveTo,
-    })
-        .then((val) => {
-            return val ? val : []
-        })
-        .catch((e) => {
-            console.error("Unable to read dir", e)
-        })
+    fileSystem.value = await traverseDirectory(`${directoryToSaveTo}/${appDirectory}`)
 }
 
 const createAppDirectory = async () => {
@@ -156,7 +163,7 @@ export const fetchAndStoreMp3 = async (file) => {
                         {
                             ...file,
                             name: nameFromUrl,
-                            uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
+                            uri: `${directoryToSaveTo}/${appDirectory}/${file.id}/${nameFromUrl}`,
                             size: thisFileSystemEntry?.size ?? null,
                             ctime: thisFileSystemEntry?.ctime ?? null,
                             mtime: thisFileSystemEntry?.mtime ?? null,
@@ -174,7 +181,7 @@ export const fetchAndStoreMp3 = async (file) => {
                         }
                         updateFileSystem()
                         console.log('audio saved =', base64DataUrl)
-                        console.log('Filesystem =', Filesystem)
+
                     }, 500)
                 })
                 .catch((e) => {
@@ -257,8 +264,8 @@ export const fetchAndStoreMp3Orig = async (file) => {
                             summary: "Download Complete",
                             life: 3000,
                         }
+                        updateFileSystem()
                     }, 500)
-                    updateFileSystem()
                 })
                 .catch((e) => {
                     console.error("Unable to write file", e)
