@@ -23,7 +23,6 @@ import {
 } from "~/utilities/helpers"
 
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
-import { generateAudioBlobUrl } from "~/utilities/file-system"
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
@@ -33,36 +32,9 @@ const router = useRouter()
 const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
-
-const fileSystemLS = useFileSystemLS()
-const isDownloaded = route.query.downloaded === "true" ? true : false
-const isDownloadedID = route.query.id
-
-const storyData = ref(null)
-
-const { fetch: fetchEpisode, error: episodeError } = useFetch(async () => {
-  // check if downloaded is true in URL params
-  if (isDownloaded) {
-    if (fileSystemLS.value.length > 0) {
-      // Fetch data from another source when isDownloaded is true
-      const fileSystemLSData = await fileSystemLS.value?.find(
-        (entry) => String(entry.id) === String(isDownloadedID)
-      )
-      // generate and inject the blob url into the episode data at the file key
-      const blobUrl = await generateAudioBlobUrl(fileSystemLSData.name)
-      fileSystemLSData.file = blobUrl
-
-      storyData.value = await fileSystemLSData
-    }
-  } else {
-    // Fetch data from BFF URL when isDownloaded is false
-    const response = await fetch(
-      `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
-    )
-    storyData.value = await response.json()
-  }
-})
-
+const { data: storyData } = useFetch(
+  `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
+)
 const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
 const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
 const topStories = ref(null)
@@ -237,7 +209,6 @@ const togglePlayHere = (story, index = 0) => {
               :label="getMinutes(storyData.estimatedDuration, 1)"
               @click="togglePlayHere(storyData)"
               :file="storyData.audio"
-              :isDownloaded="isDownloaded"
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">

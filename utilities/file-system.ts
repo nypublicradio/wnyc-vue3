@@ -11,9 +11,12 @@ import {
 } from "~/composables/globals"
 import {
     prepForPlayer,
+    resizePublisherImageUrl,
 } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 
+// directory to save to in the CapacitorJS FileSystem
+export const localStorageKey = "fileSystemLS"
 
 const directoryToSaveTo = Directory.External
 
@@ -79,6 +82,7 @@ const createAppDirectory = async () => {
 
 export const fetchAndStoreMp3 = async (file) => {
     const alreadyDownloaded = await isAlreadyDownloaded(file)
+    // check if already downloaded
     if (alreadyDownloaded) {
         const globalToast = useGlobalToast()
         globalToast.value = {
@@ -90,7 +94,126 @@ export const fetchAndStoreMp3 = async (file) => {
         const fileSystem = useFileSystem()
         const fileSystemLS = useFileSystemLS()
 
-        // check if already downloaded
+        // create the directory
+        await Filesystem.mkdir({
+            path: `${appDirectory}/${file.id}`,
+            directory: directoryToSaveTo,
+        })
+            .catch((e) => {
+                console.error("Unable to create directory", e)
+            })
+
+        // Fetch the MP3 file as a Blob
+        const mp3Response = await fetch(file.audio)
+        const mp3Blob = await mp3Response.blob()
+
+        // Fetch the IMAGE file as a Blob
+        //const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
+        // redirect CORS issues forced me to use the large file url
+        const imgUrl = file.image.url
+        const imgResponse = await fetch(imgUrl)
+        const imgBlob = await imgResponse.blob()
+
+        // Read the Image as a data URL using FileReader
+        const imgReader = new FileReader()
+        imgReader.onload = async function () {
+            const base64DataUrl: any = this.result
+            const nameFromUrl = fileNameFromURL(file.image.url)
+            await Filesystem.writeFile({
+                path: `${appDirectory}/${file.id}/${nameFromUrl}`,
+                data: base64DataUrl,
+                directory: directoryToSaveTo,
+            })
+                .then((fileURI) => {
+                    console.log('image saved =', base64DataUrl)
+                })
+                .catch((e) => {
+                    console.error("Unable to write file", e)
+                })
+        }
+        imgReader.readAsDataURL(mp3Blob)
+
+
+        // Read the Blob as a data URL using FileReader
+        const mp3Reader = new FileReader()
+        mp3Reader.onload = async function () {
+            const base64DataUrl: any = this.result
+            const nameFromUrl = fileNameFromURL(file.audio)
+            await Filesystem.writeFile({
+                path: `${appDirectory}/${file.id}/${nameFromUrl}`,
+                data: base64DataUrl,
+                directory: directoryToSaveTo,
+            })
+                .then((fileURI) => {
+
+                    //create a parralel browser local storage for this data, and bes to add it to the delete function.
+                    setTimeout(async () => {
+                        // slight delay is needed for the fileSystem to update
+                        const thisFileSystemEntry = fileSystem.value?.files.find(
+                            (entry: any) => entry.uri === fileURI.uri ? entry : null
+                        )
+                        const filesArr: any =
+                        {
+                            ...file,
+                            name: nameFromUrl,
+                            uri: `${directoryToSaveTo}/${appDirectory}/${nameFromUrl}`,
+                            size: thisFileSystemEntry?.size ?? null,
+                            ctime: thisFileSystemEntry?.ctime ?? null,
+                            mtime: thisFileSystemEntry?.mtime ?? null,
+                        }
+                        // add it to the list
+                        fileSystemLS.value.push(filesArr)
+                        // save to local storage
+                        await Preferences.set({ key: localStorageKey, value: JSON.stringify(fileSystemLS.value) })
+
+                        const globalToast = useGlobalToast()
+                        globalToast.value = {
+                            severity: "success",
+                            summary: "Download Complete",
+                            life: 3000,
+                        }
+                        updateFileSystem()
+                        console.log('audio saved =', base64DataUrl)
+                        console.log('Filesystem =', Filesystem)
+                    }, 500)
+                })
+                .catch((e) => {
+                    console.error("Unable to write file", e)
+                })
+        }
+        mp3Reader.readAsDataURL(mp3Blob)
+    }
+}
+
+// async function downloadFile(url, path) {
+//     const response = await fetch(url);
+//     const blob = await response.blob();
+//     const result = await Filesystem.writeFile({
+//         path: `${appDirectory}/${path}`,
+//         data: blob,
+//         directory: FilesystemDirectory.Documents
+//     })
+//         .then((fileURI) => {
+//             return result;
+//         })
+//         .catch((e) => {
+//             console.error("Unable to write file", e)
+//         })
+// }
+
+export const fetchAndStoreMp3Orig = async (file) => {
+    const alreadyDownloaded = await isAlreadyDownloaded(file)
+    // check if already downloaded
+    if (alreadyDownloaded) {
+        const globalToast = useGlobalToast()
+        globalToast.value = {
+            severity: "info",
+            summary: "Already downloaded",
+            life: 6000,
+        }
+    } else {
+        const fileSystem = useFileSystem()
+        const fileSystemLS = useFileSystemLS()
 
         // Fetch the MP3 file as a Blob
         const response = await fetch(file.audio)
@@ -126,7 +249,7 @@ export const fetchAndStoreMp3 = async (file) => {
                         // add it to the list
                         fileSystemLS.value.push(filesArr)
                         // save to local storage
-                        await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(fileSystemLS.value) })
+                        await Preferences.set({ key: localStorageKey, value: JSON.stringify(fileSystemLS.value) })
 
                         const globalToast = useGlobalToast()
                         globalToast.value = {
@@ -169,7 +292,7 @@ export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
     file = prepForPlayer(file)
     await Filesystem.readFile({
-        path: `${appDirectory}/${file.name}`,
+        path: `${appDirectory}/${file.id}/${file.name}`,
         directory: directoryToSaveTo,
     })
         .then((b64Content) => {
@@ -190,10 +313,10 @@ export const playStoredMp3 = async (file) => {
         })
 }
 
-export const generateAudioBlobUrl = async (fileName) => {
+export const generateAudioBlobUrl = async (file) => {
     try {
         const b64Content = await Filesystem.readFile({
-            path: `${appDirectory}/${fileName}`,
+            path: `${appDirectory}/${file.id}/${file.name}`,
             directory: directoryToSaveTo,
         });
         const arrayBuffer = base64ToArrayBuffer(b64Content.data);
@@ -228,7 +351,40 @@ export const deleteStoredMp3 = async (file) => {
                 )
                 fileSystemLS.value = updatedFileSystemLS
 
-                await Preferences.set({ key: "fileSystemLS", value: JSON.stringify(updatedFileSystem) })
+                await Preferences.set({ key: localStorageKey, value: JSON.stringify(updatedFileSystem) })
+
+                updateFileSystem()
+            }, 100)
+        })
+        .catch((e) => {
+            console.error("Unable to delete file", e)
+        })
+}
+
+export const deleteDirectory = async (file) => {
+    const fileSystem = useFileSystem()
+    const fileSystemLS = useFileSystemLS()
+    const nameFromUrl = fileNameFromURL(file.name)
+    Filesystem.rmdir({
+        path: `${appDirectory}/${file.id}`,
+        directory: directoryToSaveTo,
+        recursive: true,
+    })
+        .then(() => {
+            // also delete from the fileSystemLS state and local storage
+            setTimeout(async () => {
+                const updatedFileSystem = fileSystem.value.files.filter(
+                    (entry: any) => entry.name !== (file.name || nameFromUrl)
+                )
+
+                fileSystem.value.files = updatedFileSystem
+
+                const updatedFileSystemLS = fileSystemLS.value.filter(
+                    (entry: any) => entry.name !== (file.name || nameFromUrl)
+                )
+                fileSystemLS.value = updatedFileSystemLS
+
+                await Preferences.set({ key: localStorageKey, value: JSON.stringify(updatedFileSystem) })
 
                 updateFileSystem()
             }, 100)

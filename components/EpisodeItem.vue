@@ -41,15 +41,15 @@ const props = defineProps({
     type: String,
     default: "./logo.png",
   },
-  saved: {
-    type: Boolean,
-    default: false,
-  },
   showTitle: {
     type: Boolean,
     default: false,
   },
-  fromSaved: {
+  saved: {
+    type: Boolean,
+    default: false,
+  },
+  isDownloaded: {
     type: Boolean,
     default: false,
   },
@@ -176,10 +176,6 @@ const hasAudio = computed(() => {
 const imageSrc = computed(() => {
   return props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
 })
-
-const isDownloaded = computed(() => {
-  return fileSystemLS.value?.find((entry) => entry.id === props.data.id)
-})
 </script>
 
 <template>
@@ -217,7 +213,7 @@ const isDownloaded = computed(() => {
                   {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
                 <!-- FROM CapacitorJS Preferences local storage -->
-                <DownloadedSmallIcon v-if="isDownloaded" />
+                <DownloadedSmallIcon v-if="props.isDownloaded" />
               </div>
             </template>
           </PipeData>
@@ -233,49 +229,51 @@ const isDownloaded = computed(() => {
       </div>
     </div>
 
-    <DotMenu
-      v-if="!props.saved"
-      :menuItems="getDotMenuItems(props.data)"
-      label=""
-      @changeEmit="onMenuChange"
-      class="-mr-2"
-    >
-      <template #header-bottom>
-        <div>
-          <div class="flex gap-3 px-4 align-items-center">
-            <VImage
-              :src="imageSrc"
-              :alt="`${props.data.showTitle} show image`"
-              :width="60"
-              :height="60"
-              :sizes="[2]"
-              class="show-image-in-menu flex-none"
-              :ratio="[1, 1]"
-              style="
-                min-height: 60px;
-                min-width: 60px;
-                background-color: var(--background);
-              "
-            />
+    <slot>
+      <DotMenu
+        v-if="!props.saved"
+        :menuItems="getDotMenuItems(props.data)"
+        label=""
+        @changeEmit="onMenuChange"
+        class="-mr-2"
+      >
+        <template #header-bottom>
+          <div>
+            <div class="flex gap-3 px-4 align-items-center">
+              <VImage
+                :src="imageSrc"
+                :alt="`${props.data.showTitle} show image`"
+                :width="60"
+                :height="60"
+                :sizes="[2]"
+                class="show-image-in-menu flex-none"
+                :ratio="[1, 1]"
+                style="
+                  min-height: 60px;
+                  min-width: 60px;
+                  background-color: var(--background);
+                "
+              />
 
-            <div class="info">
-              <h2>{{ props.data.title }}</h2>
-              <p>{{ props.data.showTitle }}</p>
+              <div class="info">
+                <h2>{{ props.data.title }}</h2>
+                <p>{{ props.data.showTitle }}</p>
+              </div>
             </div>
+            <hr class="mt-5 mb-2 dim" />
           </div>
-          <hr class="mt-5 mb-2 dim" />
-        </div>
-      </template>
-    </DotMenu>
-    <Button v-else text plain rounded class="flex-none">
-      <template #icon>
-        <StarIcon
-          class="h-2rem"
-          :active="isFavorited"
-          @click="handleAddToFavorites(bucketItem)"
-        />
-      </template>
-    </Button>
+        </template>
+      </DotMenu>
+      <Button v-else text plain rounded class="flex-none">
+        <template #icon>
+          <StarIcon
+            class="h-2rem"
+            :active="isFavorited"
+            @click="handleAddToFavorites(bucketItem)"
+          />
+        </template>
+      </Button>
+    </slot>
   </div>
 </template>
 

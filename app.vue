@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
-import { updateFileSystem } from "~/utilities/file-system"
+import { updateFileSystem, initReadOfPreferences } from "~/utilities/file-system"
 
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -240,18 +240,6 @@ watch(globalToast, (optionsObj) => {
     toast.add(optionsObj)
   }
 })
-
-// initial pull of the preferencce plugin files data
-const initReadOfPreferences = async () => {
-  let val: any = []
-  try {
-    const { value } = await Preferences.get({ key: "fileSystemLS" })
-    val = value ?? "[]"
-  } catch (error) {
-    console.error("preference read error = ", error)
-  }
-  return JSON.parse(val ?? "[]")
-}
 
 onMounted(async () => {
   // init downloads files system for the app

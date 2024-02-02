@@ -3,10 +3,11 @@ import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 import {
   playStoredMp3,
   deleteStoredMp3,
+  deleteDirectory,
   updateFileSystem,
   formatFileSize,
 } from "~/utilities/file-system"
-import { useFileSystem /* useFileSystemLS */ } from "~/composables/states"
+import { useFileSystem, useFileSystemLS } from "~/composables/states"
 import { mediaTypes } from "~/composables/globals"
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
@@ -66,7 +67,7 @@ const handleRoute = (file) => {
               :label="`${file.name} - ${formatFileSize(file.size)}`"
               @click="playStoredMp3(file)"
             />
-            <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
+            <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
         </ul>
         <div class="flex flex-column gap-4 mt-2">
@@ -74,14 +75,15 @@ const handleRoute = (file) => {
             v-for="file in fileSystemLS"
             :data="file"
             :key="file.id"
-            fromSaved
-            @on-click="handleRoute(file)"
-          />
+            isDownloaded
+          >
+            SLOT HERE
+          </EpisodeItem>
         </div>
       </div>
       <div class="grid">
-        <!--         <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre>
-        <pre class="col-6 text-left">fileSystemLS = {{ fileSystemLS }}</pre> -->
+        <pre class="col-6 text-left">FileSystem = {{ fileSystem.files }}</pre>
+        <pre class="col-6 text-left">fileSystemLS = {{ fileSystemLS }}</pre>
       </div>
     </div>
   </div>
