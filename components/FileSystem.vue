@@ -60,7 +60,7 @@ watch(
         <ul class="">
           <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
             <Button
-              :label="`${file.name} - ${formatFileSize(file.size)}`"
+              :label="`${file.id} - ${formatFileSize(file.size)}`"
               @click="playStoredMp3(file)"
             />
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />

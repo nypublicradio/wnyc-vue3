@@ -156,7 +156,7 @@ export const fetchAndStoreMp3 = async (file) => {
                     //create a parralel browser local storage for this data, and bes to add it to the delete function.
                     setTimeout(async () => {
                         // slight delay is needed for the fileSystem to update
-                        const thisFileSystemEntry = fileSystem.value?.files.find(
+                        const thisFileSystemEntry = fileSystem.value?.find(
                             (entry: any) => entry.uri === fileURI.uri ? entry : null
                         )
                         const filesArr: any =
@@ -371,7 +371,6 @@ export const deleteStoredMp3 = async (file) => {
 export const deleteDirectory = async (file) => {
     const fileSystem = useFileSystem()
     const fileSystemLS = useFileSystemLS()
-    const nameFromUrl = fileNameFromURL(file.name)
     Filesystem.rmdir({
         path: `${appDirectory}/${file.id}`,
         directory: directoryToSaveTo,
@@ -380,18 +379,12 @@ export const deleteDirectory = async (file) => {
         .then(() => {
             // also delete from the fileSystemLS state and local storage
             setTimeout(async () => {
-                const updatedFileSystem = fileSystem.value.files.filter(
-                    (entry: any) => entry.name !== (file.name || nameFromUrl)
-                )
-
-                fileSystem.value.files = updatedFileSystem
-
                 const updatedFileSystemLS = fileSystemLS.value.filter(
-                    (entry: any) => entry.name !== (file.name || nameFromUrl)
+                    (entry: any) => entry.id !== file.id
                 )
                 fileSystemLS.value = updatedFileSystemLS
 
-                await Preferences.set({ key: localStorageKey, value: JSON.stringify(updatedFileSystem) })
+                await Preferences.set({ key: localStorageKey, value: JSON.stringify(updatedFileSystemLS) })
 
                 updateFileSystem()
             }, 100)
