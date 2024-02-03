@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
-import { updateFileSystem, initReadOfPreferences } from "~/utilities/file-system"
+import { initFileSystem, initReadOfPreferences } from "~/utilities/file-system"
 
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -243,8 +243,7 @@ watch(globalToast, (optionsObj) => {
 
 onMounted(async () => {
   // init downloads files system for the app
-  fileSystemLS.value = await initReadOfPreferences()
-  updateFileSystem()
+  initFileSystem()
 })
 </script>
 

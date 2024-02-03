@@ -55,11 +55,19 @@ async function traverseDirectory(path) {
     return result;
 }
 
-export const updateFileSystem = async () => {
+export const initFileSystem = async () => {
     const fileSystem = useFileSystem()
+    const fileSystemLS = useFileSystemLS()
 
     //initial check to see if the appDirectory exists and if not, create it
     await createAppDirectory()
+
+    fileSystem.value = await traverseDirectory(`${directoryToSaveTo}/${appDirectory}`)
+    fileSystemLS.value = await initReadOfPreferences()
+}
+
+export const updateFileSystem = async () => {
+    const fileSystem = useFileSystem()
 
     fileSystem.value = await traverseDirectory(`${directoryToSaveTo}/${appDirectory}`)
 }
@@ -164,9 +172,7 @@ export const fetchAndStoreMp3 = async (file) => {
                             ...file,
                             name: nameFromUrl,
                             uri: `${directoryToSaveTo}/${appDirectory}/${file.id}/${nameFromUrl}`,
-                            size: thisFileSystemEntry?.size ?? null,
-                            ctime: thisFileSystemEntry?.ctime ?? null,
-                            mtime: thisFileSystemEntry?.mtime ?? null,
+
                         }
                         // add it to the list
                         fileSystemLS.value.push(filesArr)
