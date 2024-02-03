@@ -19,8 +19,13 @@ import {
   fetchDuration,
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
-import { deleteStoredMp3, fetchAndStoreMp3 } from "~/utilities/file-system"
+import {
+  deleteStoredMp3,
+  fetchAndStoreMp3,
+  getDownloadedImageBase64,
+} from "~/utilities/file-system"
 import { useFileSystemLS } from "~/composables/states"
+import { enterOutline } from "ionicons/icons"
 const fileSystemLS = useFileSystemLS()
 
 const toast = useToast()
@@ -40,6 +45,10 @@ const props = defineProps({
   fallbackImage: {
     type: String,
     default: "./logo.png",
+  },
+  imgSrc: {
+    type: String,
+    default: null,
   },
   showTitle: {
     type: Boolean,
@@ -173,17 +182,31 @@ const hasAudio = computed(() => {
   )
 })
 
-const imageSrc = computed(() => {
-  return props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
-})
+const imgSrcUrl = ref("")
+
+if (props.isDownloaded) {
+  imgSrcUrl.value = await getDownloadedImageBase64(props.data)
+} else {
+  imgSrcUrl.value =
+    props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
+}
 </script>
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
     <div class="flex gap-3 w-full" @click.prevent="emit('on-click')" v-ripple>
-      <VImage
+      <img
+        v-if="props.isDownloaded"
+        :src="imgSrcUrl"
+        :height="72"
+        :width="72"
+        alt="Episode image"
         class="flex-none"
-        :src="imageSrc"
+      />
+      <VImage
+        v-else
+        class="flex-none"
+        :src="imgSrcUrl"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
