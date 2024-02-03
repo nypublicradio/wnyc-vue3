@@ -127,7 +127,15 @@ export const fetchAndStoreMp3 = async (file) => {
 
         // Fetch the IMAGE file as a Blob
         const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
-        const imgResponse = await fetch(imgUrl)
+        const imgUrlAlt = file.image.url
+        let imgResponse;
+
+        try {
+            imgResponse = await fetch(imgUrl);
+        } catch (error) {
+            console.log('Error fetching primary image: ', error);
+            imgResponse = await fetch(imgUrlAlt);
+        }
         const imgBlob = await imgResponse.blob()
 
         // Convert the blob to a base64 string
