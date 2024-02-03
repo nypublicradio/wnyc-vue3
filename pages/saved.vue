@@ -45,6 +45,7 @@ const loadComponent = (componentName) => {
         size="large"
       ></Button>
     </section>
+
     <HorizontalScrollFeature class="items-holder mt-3">
       <div class="flex">
         <div

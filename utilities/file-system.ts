@@ -134,10 +134,6 @@ export const fetchAndStoreMp3 = async (file) => {
                 console.error("Unable to create directory", e)
             })
 
-        // Fetch the MP3 file as a Blob
-        const mp3Response = await fetch(file.audio)
-        const mp3Blob = await mp3Response.blob()
-
         // Fetch the IMAGE file as a Blob
         const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
         const imgResponse = await fetch(imgUrl);
@@ -166,6 +162,9 @@ export const fetchAndStoreMp3 = async (file) => {
         };
         reader.readAsDataURL(imgBlob);
 
+        // Fetch the MP3 file as a Blob
+        const mp3Response = await fetch(file.audio)
+        const mp3Blob = await mp3Response.blob()
 
         // Read the Blob as a data URL using FileReader
         const mp3Reader = new FileReader()
@@ -256,23 +255,32 @@ function base64ToArrayBuffer(base64) {
 }
 
 export const playStoredMp3 = async (file) => {
+
+    // find mp3 audio in directory/files
+    const mp3File = file.directory.files.find((entry) => {
+        const mainString = entry.name
+        const subStrings = [".mp3"]
+
+        return subStrings.some((substring) => mainString.includes(substring))
+    })
     const currentEpisode = useCurrentEpisode()
     file = prepForPlayer(file)
-    await Filesystem.readFile({
-        path: `${appDirectory}/${file.id}/${file.name}`,
-        directory: directoryToSaveTo,
-    })
-        .then((b64Content) => {
-            // eventually we will set a Type for the current episode
-            currentEpisode.value = {
-                ...file,
-                file: `data:audio/mpeg;base64,${b64Content.data}`,
-            }
-
-        })
-        .catch((e) => {
-            console.error("Unable to read file", e)
-        })
+    // if image is found, return it as base64
+    try {
+        console.log('mp3File =', mp3File)
+        const b64Content = await Filesystem.readFile({
+            path: `${appDirectory}/${file.id}/${mp3File.name}`,
+            directory: directoryToSaveTo,
+        });
+        //console.log('b64Content.data =', b64Content.data)
+        // eventually we will set a Type for the current episode
+        currentEpisode.value = {
+            ...file,
+            file: `data:audio/mpeg;base64,${b64Content.data}`,
+        }
+    } catch (e) {
+        console.error("Unable to read file", e)
+    }
 }
 
 
