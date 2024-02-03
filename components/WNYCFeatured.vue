@@ -12,7 +12,7 @@ import {
   useFileSystem,
 } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
-import { deleteStoredMp3, fetchAndStoreMp3 } from "~/utilities/file-system"
+import { deleteDirectory, fetchAndStoreMp3 } from "~/utilities/file-system"
 const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()

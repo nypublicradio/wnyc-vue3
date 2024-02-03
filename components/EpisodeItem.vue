@@ -20,7 +20,7 @@ import {
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import {
-  deleteStoredMp3,
+  deleteDirectory,
   fetchAndStoreMp3,
   getDownloadedImageBase64,
 } from "~/utilities/file-system"
@@ -263,8 +263,17 @@ if (props.isDownloaded) {
         <template #header-bottom>
           <div>
             <div class="flex gap-3 px-4 align-items-center">
+              <img
+                v-if="props.isDownloaded"
+                :src="imgSrcUrl"
+                :height="60"
+                :width="60"
+                alt="Episode image"
+                class="flex-none"
+              />
               <VImage
-                :src="imageSrc"
+                v-else
+                :src="imgSrcUrl"
                 :alt="`${props.data.showTitle} show image`"
                 :width="60"
                 :height="60"
@@ -277,7 +286,6 @@ if (props.isDownloaded) {
                   background-color: var(--background);
                 "
               />
-
               <div class="info">
                 <h2>{{ props.data.title }}</h2>
                 <p>{{ props.data.showTitle }}</p>

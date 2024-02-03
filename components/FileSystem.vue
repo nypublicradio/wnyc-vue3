@@ -1,11 +1,6 @@
 <script setup>
 import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
-import {
-  playStoredMp3,
-  deleteStoredMp3,
-  deleteDirectory,
-  formatFileSize,
-} from "~/utilities/file-system"
+import { playStoredMp3, deleteDirectory, formatFileSize } from "~/utilities/file-system"
 import { useFileSystem, useFileSystemLS } from "~/composables/states"
 import { mediaTypes } from "~/composables/globals"
 const fileSystem = useFileSystem()
@@ -54,7 +49,7 @@ watch(
               :label="`${file.name} - ${formatFileSize(file.size)}`"
               @click="playStoredMp3(file)"
             />
-            <Button icon="pi pi-trash" @click="deleteStoredMp3(file)" />
+            <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
         </ul> -->
         <ul class="">

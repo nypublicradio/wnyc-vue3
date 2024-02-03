@@ -1,11 +1,13 @@
 <script setup>
 import { useFileSystemLS } from "~/composables/states"
+import { deleteAll } from "~/utilities/file-system"
 const fileSystemLS = useFileSystemLS()
 </script>
 
 <template>
   <section class="downloads">
     <div class="empty flex flex-column gap-3">
+      <Button label="delete all" icon="pi pi-trash" @click="deleteAll()" />
       <FileSystem v-if="fileSystemLS.length > 0" />
 
       <div v-else class="text-center">

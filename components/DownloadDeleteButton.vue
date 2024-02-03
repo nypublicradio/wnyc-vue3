@@ -2,7 +2,7 @@
 import { useFileSystem } from "~/composables/states"
 import {
   fetchAndStoreMp3,
-  deleteStoredMp3,
+  deleteDirectory,
   fileNameFromURL,
 } from "~/utilities/file-system"
 const props = defineProps({
@@ -35,7 +35,7 @@ watch(fileSystem, (value) => {
     icon="pi pi-trash"
     @click="
       () => {
-        deleteStoredMp3(file)
+        deleteDirectory(file)
         pending = false
       }
     "
