@@ -9,8 +9,9 @@ const fileSystemLS = useFileSystemLS()
     <div class="empty flex flex-column gap-3">
       <Button
         class="w-3 ml-auto"
-        label="delete all"
+        label="Delete all"
         icon="pi pi-trash"
+        size="small"
         @click="deleteAll()"
       />
       <FileSystem v-if="fileSystemLS.length > 0" />

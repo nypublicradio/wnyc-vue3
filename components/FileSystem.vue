@@ -1,9 +1,12 @@
 <script setup>
-import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
-import { playStoredMp3, deleteDirectory, formatFileSize } from "~/utilities/file-system"
-import { useFileSystem, useFileSystemLS, useCurrentEpisode } from "~/composables/states"
-import { mediaTypes } from "~/composables/globals"
-const currentEpisode = useCurrentEpisode()
+/* import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers" */
+import {
+  playStoredMp3,
+  deleteDirectory /* , formatFileSize */,
+} from "~/utilities/file-system"
+import { useFileSystem, useFileSystemLS } from "~/composables/states"
+/* import { mediaTypes } from "~/composables/globals" */
+
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
 

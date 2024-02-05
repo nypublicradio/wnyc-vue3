@@ -5,6 +5,7 @@ import {
     useAppDirectory,
     useCurrentEpisode,
     useGlobalToast,
+    useTogglePlayTrigger,
 } from "~/composables/states"
 import { appDirectory } from "~/composables/globals"
 import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
@@ -27,7 +28,6 @@ export const isAlreadyDownloaded = async (file) => {
     const fileSystemLS = useFileSystemLS()
     const check = fileSystemLS.value.find((entry) => entry.id === file.id)
     const alreadyDownloaded = check === undefined ? false : true
-    console.log("alreadyDownloaded = ", alreadyDownloaded)
     return alreadyDownloaded
 }
 
@@ -43,7 +43,6 @@ async function traverseDirectory(path) {
         const stats = await Filesystem.readdir({ path: fullPath })
         file.files = stats.files
     })
-    console.log("fileSystem.value =", result)
     return result
 }
 
@@ -105,7 +104,7 @@ const createAppDirectory = async () => {
 
 export const fetchAndStoreMp3 = async (file) => {
     const alreadyDownloaded = await isAlreadyDownloaded(file)
-    // check if already downloaded
+    // check if already downloaded and alert the user
     if (alreadyDownloaded) {
         const globalToast = useGlobalToast()
         globalToast.value = {
@@ -130,6 +129,7 @@ export const fetchAndStoreMp3 = async (file) => {
         const imgUrlAlt = file.image.url
         let imgResponse;
 
+        // try catch to use the alt image if the primary image fails... CORS is the problem locally
         try {
             imgResponse = await fetch(imgUrl);
         } catch (error) {
@@ -143,7 +143,6 @@ export const fetchAndStoreMp3 = async (file) => {
         reader.onloadend = async function () {
             const base64String = reader.result.split(",")[1]
             const base64Format = reader.result.split(",")[0]
-            console.log("base64Format =", base64Format)
 
             // Save the base64 string
             const nameFromUrl = fileNameFromURL(file.image.url)
@@ -180,24 +179,25 @@ export const fetchAndStoreMp3 = async (file) => {
                     await updateFileSystem()
                     setTimeout(async () => {
                         // slight delay is needed for the fileSystem to update
-                        console.log("fileURI= ", fileURI)
+
                         const thisFileSystemEntry = fileSystem.value?.find((entry: any) =>
                             `${entry.uri}/${nameFromUrl}` === fileURI.uri ? entry : null
                         )
-                        console.log("thisFileSystemEntry= ", thisFileSystemEntry)
-                        console.log("thisFileSystemEntry files= ", thisFileSystemEntry.files)
+                        // find the image
                         const directoryImage = thisFileSystemEntry.files.find((entry) => {
                             const mainString = entry.name
                             const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
 
                             return subStrings.some((substring) => mainString.includes(substring))
                         })
+                        //find the audio
                         const directoryAudio = thisFileSystemEntry.files.find((entry) => {
                             const mainString = entry.name
                             const subStrings = [".mp3"]
 
                             return subStrings.some((substring) => mainString.includes(substring))
                         })
+                        //append directory,image and aduio to the file object
                         const newFile: any = {
                             ...file,
                             directory: thisFileSystemEntry,
@@ -214,13 +214,13 @@ export const fetchAndStoreMp3 = async (file) => {
                             })
                         }, 500)
 
+                        // alert the user
                         const globalToast = useGlobalToast()
                         globalToast.value = {
                             severity: "success",
                             summary: "Download Complete",
                             life: 3000,
                         }
-                        console.log("audio saved")
                     }, 500)
                 })
                 .catch((e) => {
@@ -253,8 +253,7 @@ export const playStoredMp3 = async (file) => {
                 path: `${appDirectory}/${file.id}/${file.directoryAudio.name}`,
                 directory: directoryToSaveTo,
             })
-            //console.log('b64Content.data =', b64Content.data)
-            // eventually we will set a Type for the current episode
+
             currentEpisode.value = {
                 ...file,
                 file: `data:audio/mpeg;base64,${b64Content.data}`,
@@ -263,7 +262,7 @@ export const playStoredMp3 = async (file) => {
         } catch (e) {
             console.error("Unable to read file", e)
         }
-        saveRecentlyPlayed(file, mediaTypes.EPISODE)
+        saveRecentlyPlayed(file, file.type)
     }
 
     togglePlayTrigger.value = !togglePlayTrigger.value
