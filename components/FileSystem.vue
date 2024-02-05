@@ -1,14 +1,20 @@
 <script setup>
-/* import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers" */
+import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 import {
   playStoredMp3,
   deleteDirectory /* , formatFileSize */,
 } from "~/utilities/file-system"
-import { useFileSystem, useFileSystemLS } from "~/composables/states"
+import {
+  useFileSystem,
+  useFileSystemLS,
+  useIsNetworkConnected,
+} from "~/composables/states"
+
 /* import { mediaTypes } from "~/composables/globals" */
 
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
+const isNetworkConnected = useIsNetworkConnected()
 
 const used = ref(0)
 const granted = ref(0)
@@ -25,20 +31,45 @@ watch(
   { deep: true }
 )
 
-// const handleRoute = (file) => {
-//   console.log("handleRoute", file)
-//   switch (file.type) {
-//     case mediaTypes.EPISODE:
-//     case mediaTypes.SEGMENT:
-//       goToEpisodePage(file, `downloaded=true&id=${file.id}`)
-//       break
-//     case mediaTypes.ARTICLE:
-//       goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
-//       break
-//     default:
-//       console.log("handleRoute", file)
-//   }
-// }
+const handleRoute = (file) => {
+  console.log("huh")
+  if (isNetworkConnected.value) {
+    console.log("isNetworkConnected.value", isNetworkConnected.value)
+    switch (file.type) {
+      case mediaTypes.EPISODE:
+      case mediaTypes.SEGMENT:
+        //goToEpisodePage(file, `downloaded=true&id=${file.id}`)
+        goToEpisodePage(file)
+        break
+      case mediaTypes.ARTICLE:
+        goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
+        //goToStoryPage(file)
+        break
+      default:
+        console.log("handleRoute", file)
+    }
+  }
+}
+
+const handlePlay = (file) => {
+  console.log("play")
+  playStoredMp3(file)
+  // GA tracking
+  trackClickEvent(
+    "Click Tracking - Audio file download",
+    "Episode Item",
+    `playing = ${file.directoryAudio.name}`
+  )
+}
+const handleDelete = (file) => {
+  deleteDirectory(file)
+  // GA tracking
+  trackClickEvent(
+    "Click Tracking - Audio file delete",
+    "Episode Item",
+    `deleting = ${file.directoryAudio.name}`
+  )
+}
 </script>
 
 <template>
@@ -71,6 +102,7 @@ watch(
             :data="file"
             :key="file.id"
             isDownloaded
+            @on-click="handleRoute(file)"
           >
             <div class="flex gap-2">
               <Button
@@ -78,12 +110,12 @@ watch(
                 text
                 rounded
                 aria-label="delete"
-                @click="deleteDirectory(file)"
+                @click="handleDelete(file)"
               />
               <PlayButton
                 label=""
                 :file="file.directoryAudio.name"
-                @onClick="playStoredMp3(file)"
+                @onClick="handlePlay(file)"
               />
             </div>
           </EpisodeItem>

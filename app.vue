@@ -16,10 +16,12 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useFileSystemLS,
+  useIsNetworkConnected,
   //useHomepageData,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
 
@@ -33,6 +35,7 @@ const currentUserProfile = useCurrentUserProfile()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
+const isNetworkConnected = useIsNetworkConnected()
 const fileSystemLS = useFileSystemLS()
 
 const isRefreshing = shallowRef(false)
@@ -146,6 +149,11 @@ const addListeners = async () => {
   // fired when the app becomes active
   await App.addListener("appStateChange", (/* { isActive } */) => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
+  })
+
+  Network.addListener("networkStatusChange", (status) => {
+    console.log("Network status changed", status)
+    isNetworkConnected.value = status.connected
   })
 
   // this is for deep links

@@ -48,6 +48,10 @@ export const useEditProfileSideBar = () => useState('useEditProfileSideBar', () 
 export const useAccountPromptSideBar = () => useState('useAccountPromptSideBar', () => false)
 
 
+// global state for the network connection
+export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () => true)
+
+
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
 
@@ -195,3 +199,6 @@ export const useSensitiveContent = () => useState<boolean>('sensitiveContent', (
 
 // global toast
 export const useGlobalToast = () => useState<object>('globalToast', () => null)
+
+// saved page tab state
+export const useSelectedSavedTab = () => useState<object>('useSelectedSavedTab', () => 0)

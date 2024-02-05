@@ -1,8 +1,10 @@
 <script setup>
-import { useSavedMenuItems } from "~/composables/globals.ts"
+import { useSelectedSavedTab } from "~/composables/states"
+import { useSavedMenuItems } from "~/composables/globals"
 
 const savedMenuItems = useSavedMenuItems()
-const selectedMenuItem = ref(savedMenuItems.value[0])
+const selectedSavedTab = useSelectedSavedTab()
+const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
 
 const scrollToActiveItem = () => {
   const selectedItem = document.getElementsByClassName("selected")
@@ -15,8 +17,9 @@ const scrollToActiveItem = () => {
   }
 }
 
-const selectMenuItem = async (menuItem) => {
+const selectMenuItem = async (menuItem, index) => {
   selectedMenuItem.value = menuItem
+  selectedSavedTab.value = index
   await nextTick()
   scrollToActiveItem()
 }
@@ -49,7 +52,7 @@ const loadComponent = (componentName) => {
     <HorizontalScrollFeature class="items-holder mt-3">
       <div class="flex">
         <div
-          v-for="item in savedMenuItems"
+          v-for="(item, index) in savedMenuItems"
           class="item-holder"
           :class="[{ selected: selectedMenuItem.value === item.value }]"
           :key="item.label"
@@ -58,7 +61,7 @@ const loadComponent = (componentName) => {
             <Button
               class="item-btn text-sm white-space-nowrap"
               :label="item.label"
-              @click="selectMenuItem(item)"
+              @click="selectMenuItem(item, index)"
               severity="secondary"
             />
           </div>

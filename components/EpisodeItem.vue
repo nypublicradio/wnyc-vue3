@@ -191,11 +191,16 @@ if (props.isDownloaded) {
   imgSrcUrl.value =
     props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
 }
+
+const handleClick = () => {
+  console.log("handleClick")
+  emit("on-click")
+}
 </script>
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3 w-full" @click.prevent="emit('on-click')" v-ripple>
+    <div class="flex gap-3 w-full" @click.prevent="handleClick" v-ripple>
       <img
         v-if="props.isDownloaded"
         :src="imgSrcUrl"
