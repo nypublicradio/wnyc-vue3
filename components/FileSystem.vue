@@ -41,8 +41,8 @@ watch(
 <template>
   <div>
     <div class="file-system">
-      <p>Saved files:</p>
-      <p>!!Storage limit: {{ used }} of {{ granted }}</p>
+      <!--  <p>Saved files:</p>
+      <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
       <div>
         <!--         <ul class="col-6">
           <li v-for="file in fileSystem.files" :key="file.name">
@@ -53,7 +53,7 @@ watch(
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
         </ul> -->
-        <ul class="">
+        <!-- <ul class="">
           <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
             <Button
               :label="`${file.id} - ${formatFileSize(file.directoryAudio.size)}`"
@@ -61,7 +61,7 @@ watch(
             />
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
-        </ul>
+        </ul> -->
         <div class="flex flex-column gap-4 mt-2">
           <EpisodeItem
             v-for="file in fileSystemLS"
@@ -86,10 +86,10 @@ watch(
           </EpisodeItem>
         </div>
       </div>
-      <div class="grid">
+      <!-- <div class="grid">
         <pre class="col-6 text-left text-xs">fileSystem = {{ fileSystem }}</pre>
         <pre class="col-6 text-left text-xs">fileSystemLS = {{ fileSystemLS }}</pre>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
