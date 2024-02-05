@@ -1,8 +1,9 @@
 <script setup>
 import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 import { playStoredMp3, deleteDirectory, formatFileSize } from "~/utilities/file-system"
-import { useFileSystem, useFileSystemLS } from "~/composables/states"
+import { useFileSystem, useFileSystemLS, useCurrentEpisode } from "~/composables/states"
 import { mediaTypes } from "~/composables/globals"
+const currentEpisode = useCurrentEpisode()
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
 
@@ -68,7 +69,20 @@ watch(
             :key="file.id"
             isDownloaded
           >
-            SLOT HERE
+            <div class="flex gap-2">
+              <Button
+                icon="pi pi-trash"
+                text
+                rounded
+                aria-label="delete"
+                @click="deleteDirectory(file)"
+              />
+              <PlayButton
+                label=""
+                :file="file.directoryAudio.name"
+                @onClick="playStoredMp3(file)"
+              />
+            </div>
           </EpisodeItem>
         </div>
       </div>

@@ -7,7 +7,7 @@ import {
     useGlobalToast,
 } from "~/composables/states"
 import { appDirectory } from "~/composables/globals"
-import { prepForPlayer, resizePublisherImageUrl } from "~/utilities/helpers"
+import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 
 // directory to save to in the CapacitorJS FileSystem
@@ -243,22 +243,31 @@ function base64ToArrayBuffer(base64) {
 
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
-    file = prepForPlayer(file)
-    // if image is found, return it as base64
-    try {
-        const b64Content = await Filesystem.readFile({
-            path: `${appDirectory}/${file.id}/${file.directoryAudio.name}`,
-            directory: directoryToSaveTo,
-        })
-        //console.log('b64Content.data =', b64Content.data)
-        // eventually we will set a Type for the current episode
-        currentEpisode.value = {
-            ...file,
-            file: `data:audio/mpeg;base64,${b64Content.data}`,
+    const togglePlayTrigger = useTogglePlayTrigger()
+
+    if (currentEpisode.value?.directoryAudio.name !== file.directoryAudio.name) {
+        file = prepForPlayer(file)
+        // if image is found, return it as base64
+        try {
+            const b64Content = await Filesystem.readFile({
+                path: `${appDirectory}/${file.id}/${file.directoryAudio.name}`,
+                directory: directoryToSaveTo,
+            })
+            //console.log('b64Content.data =', b64Content.data)
+            // eventually we will set a Type for the current episode
+            currentEpisode.value = {
+                ...file,
+                file: `data:audio/mpeg;base64,${b64Content.data}`,
+            }
+            togglePlayTrigger.value = !togglePlayTrigger.value
+        } catch (e) {
+            console.error("Unable to read file", e)
         }
-    } catch (e) {
-        console.error("Unable to read file", e)
+        saveRecentlyPlayed(file, mediaTypes.EPISODE)
     }
+
+    togglePlayTrigger.value = !togglePlayTrigger.value
+
 }
 
 export const getDownloadedImageBase64 = async (file) => {
