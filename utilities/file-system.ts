@@ -262,7 +262,7 @@ export const playStoredMp3 = async (file) => {
         } catch (e) {
             console.error("Unable to read file", e)
         }
-        saveRecentlyPlayed(file, file.type)
+        //saveRecentlyPlayed(file, file.type)
     }
 
     togglePlayTrigger.value = !togglePlayTrigger.value
