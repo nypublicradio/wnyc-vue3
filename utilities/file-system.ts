@@ -175,19 +175,34 @@ export const fetchAndStoreMp3 = async (file) => {
                 data: base64String,
                 directory: directoryToSaveTo,
             })
-                .then((fileURI) => {
+                .then(async (fileURI) => {
                     //create a parralel browser local storage for this data, and bes to add it to the delete function.
+                    await updateFileSystem()
                     setTimeout(async () => {
                         // slight delay is needed for the fileSystem to update
                         console.log("fileURI= ", fileURI)
-                        await updateFileSystem()
                         const thisFileSystemEntry = fileSystem.value?.find((entry: any) =>
                             `${entry.uri}/${nameFromUrl}` === fileURI.uri ? entry : null
                         )
+                        console.log("thisFileSystemEntry= ", thisFileSystemEntry)
+                        console.log("thisFileSystemEntry files= ", thisFileSystemEntry.files)
+                        const directoryImage = thisFileSystemEntry.files.find((entry) => {
+                            const mainString = entry.name
+                            const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
 
+                            return subStrings.some((substring) => mainString.includes(substring))
+                        })
+                        const directoryAudio = thisFileSystemEntry.files.find((entry) => {
+                            const mainString = entry.name
+                            const subStrings = [".mp3"]
+
+                            return subStrings.some((substring) => mainString.includes(substring))
+                        })
                         const newFile: any = {
                             ...file,
                             directory: thisFileSystemEntry,
+                            directoryImage: directoryImage,
+                            directoryAudio: directoryAudio,
                         }
                         // add it to the list
                         fileSystemLS.value.push(newFile)
@@ -227,20 +242,12 @@ function base64ToArrayBuffer(base64) {
 }
 
 export const playStoredMp3 = async (file) => {
-    // find mp3 audio in directory/files
-    const mp3File = file.directory.files.find((entry) => {
-        const mainString = entry.name
-        const subStrings = [".mp3"]
-
-        return subStrings.some((substring) => mainString.includes(substring))
-    })
     const currentEpisode = useCurrentEpisode()
     file = prepForPlayer(file)
     // if image is found, return it as base64
     try {
-        console.log("mp3File =", mp3File)
         const b64Content = await Filesystem.readFile({
-            path: `${appDirectory}/${file.id}/${mp3File.name}`,
+            path: `${appDirectory}/${file.id}/${file.directoryAudio.name}`,
             directory: directoryToSaveTo,
         })
         //console.log('b64Content.data =', b64Content.data)
@@ -256,26 +263,15 @@ export const playStoredMp3 = async (file) => {
 
 export const getDownloadedImageBase64 = async (file) => {
     // find image in directory/files
-    let base64Type = ''
-    const imgFile = file.directory.files.find((entry) => {
-        const mainString = entry.name
-        const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+    const fileName = file.directoryImage.name
+    const base64Type = fileName.split('.').pop();
 
-        return subStrings.some((substring) => {
-            base64Type = substring.replace(".", "")
-            return mainString.includes(substring)
-        })
-    })
-    // if image is found, return it as base64
     try {
-        console.log("imgFile =", imgFile)
-        console.log("base64Type =", base64Type)
         const b64Content = await Filesystem.readFile({
-            path: `${appDirectory}/${file.id}/${imgFile.name}`,
+            path: `${appDirectory}/${file.id}/${fileName}`,
             directory: directoryToSaveTo,
         })
         //console.log('b64Content.data =', b64Content.data)
-        // eventually we will set a Type for the current episode
         return `data:image/${base64Type};base64,${b64Content.data}`
     } catch (e) {
         console.error("Unable to read file", e)

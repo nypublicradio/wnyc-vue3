@@ -23,6 +23,7 @@ import {
   deleteDirectory,
   fetchAndStoreMp3,
   getDownloadedImageBase64,
+  /*   formatFileSize, */
 } from "~/utilities/file-system"
 import { useFileSystemLS } from "~/composables/states"
 import { enterOutline } from "ionicons/icons"
@@ -236,7 +237,9 @@ if (props.isDownloaded) {
                   {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
                 <!-- FROM CapacitorJS Preferences local storage -->
+
                 <DownloadedSmallIcon v-if="props.isDownloaded" />
+                <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
               </div>
             </template>
           </PipeData>
