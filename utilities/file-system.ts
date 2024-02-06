@@ -33,14 +33,21 @@ export const isAlreadyDownloaded = async (file) => {
 
 async function traverseDirectory(path) {
     let result = []
-    const files = await Filesystem.readdir({ path })
+    //const files = await Filesystem.readdir({ path })
+    const files = await Filesystem.readdir({
+        path: path,
+        directory: directoryToSaveTo,
+    })
 
     files.files.forEach((file, index) => {
         result[index] = file
     })
     result.forEach(async (file, index) => {
         const fullPath = `${path}/${file.name}`
-        const stats = await Filesystem.readdir({ path: fullPath })
+        const stats = await Filesystem.readdir({
+            path: fullPath,
+            directory: directoryToSaveTo,
+        })
         file.files = stats.files
     })
     return result
@@ -79,7 +86,6 @@ const createAppDirectory = async () => {
         await Filesystem.mkdir({
             path: `${appDirectory}`,
             directory: directoryToSaveTo,
-            recursive: true,
         })
             //.then(() => { })
             .catch((e) => {
@@ -98,14 +104,14 @@ export const initFileSystem = async () => {
     //initial check to see if the appDirectory exists and if not, create it
     await createAppDirectory()
 
-    fileSystem.value = await traverseDirectory(`${directoryToSaveTo}/${appDirectory}`)
+    fileSystem.value = await traverseDirectory(appDirectory)
     fileSystemLS.value = await initReadOfPreferences()
 }
 
 export const updateFileSystem = async () => {
     const fileSystem = useFileSystem()
 
-    fileSystem.value = await traverseDirectory(`${directoryToSaveTo}/${appDirectory}`)
+    fileSystem.value = await traverseDirectory(appDirectory)
 }
 
 export const fetchAndStoreMp3 = async (file) => {
@@ -126,7 +132,6 @@ export const fetchAndStoreMp3 = async (file) => {
         await Filesystem.mkdir({
             path: `${appDirectory}/${file.id}`,
             directory: directoryToSaveTo,
-            recursive: true,
         }).catch((e) => {
             console.error("Unable to create directory", e)
         })
@@ -176,6 +181,7 @@ export const fetchAndStoreMp3 = async (file) => {
         mp3Reader.onloadend = async function () {
             const base64String = mp3Reader.result.split(",")[1]
             const nameFromUrl = fileNameFromURL(file.audio)
+            console.log('nameFromUrl = ', nameFromUrl)
             await Filesystem.writeFile({
                 path: `${appDirectory}/${file.id}/${nameFromUrl}`,
                 data: base64String,

@@ -1,5 +1,5 @@
 <script setup>
-import { goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
+import { goToEpisodePage, goToStoryPage, trackClickEvent } from "~/utilities/helpers"
 import {
   playStoredMp3,
   deleteDirectory /* , formatFileSize */,
