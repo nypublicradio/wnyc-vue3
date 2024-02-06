@@ -2,19 +2,19 @@ import { Filesystem, Directory /* Encoding */ } from "@capacitor/filesystem"
 import {
     useFileSystem,
     useFileSystemLS,
-    useAppDirectory,
     useCurrentEpisode,
     useGlobalToast,
     useTogglePlayTrigger,
 } from "~/composables/states"
-import { appDirectory } from "~/composables/globals"
+
 import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
-
+// directory to save to in the CapacitorJS FileSystem
 const directoryToSaveTo = Directory.External
+const appDirectory = "wnyc-downloads"
 
 export const fileNameFromURL = (url: string) => {
     let urlWithoutParams = url
@@ -49,13 +49,42 @@ async function traverseDirectory(path) {
 const requestPermissions = async () => {
     try {
         const status = await Filesystem.requestPermissions()
-        if (status.hasPermission) {
-            console.log("Permission granted")
+        console.log("STATUS = ", status)
+        if (status.publicStorage === "granted") {
+            alert("STATUS GRANTED = " + JSON.stringify(status))
+            console.log("Permission granted!!!")
         } else {
-            console.log("Permission denied")
+            alert("STATUS DENIED = " + JSON.stringify(status))
+            console.log("Permission denied!!!")
         }
     } catch (error) {
-        console.error("Failed to request permissions", error)
+        console.error("Failed to request permissions!!!", error)
+    }
+}
+
+const createAppDirectory = async () => {
+    // initial check to see if the appDirectory exists and if not, create it
+    const appDirectories = await Filesystem.readdir({
+        path: "",
+        directory: directoryToSaveTo,
+    })
+
+    const result = appDirectories.files.filter(
+        (entry) => entry.type === "directory" && entry.name === appDirectory
+    )
+    console.log('init app dir creation result = ' + JSON.stringify(result))
+
+    alert('init app dir creationresult = ' + JSON.stringify(result))
+    if (result.length === 0) {
+        await Filesystem.mkdir({
+            path: `${appDirectory}`,
+            directory: directoryToSaveTo,
+            recursive: true,
+        })
+            //.then(() => { })
+            .catch((e) => {
+                console.error("Unable to create directory", e)
+            })
     }
 }
 
@@ -79,29 +108,6 @@ export const updateFileSystem = async () => {
     fileSystem.value = await traverseDirectory(`${directoryToSaveTo}/${appDirectory}`)
 }
 
-const createAppDirectory = async () => {
-    // initial check to see if the appDirectory exists and if not, create it
-    const appDirectories = await Filesystem.readdir({
-        path: "",
-        directory: directoryToSaveTo,
-    })
-
-    const result = appDirectories.files.filter(
-        (entry) => entry.type === "directory" && entry.name === appDirectory
-    )
-
-    if (result.length === 0) {
-        await Filesystem.mkdir({
-            path: `${appDirectory}`,
-            directory: directoryToSaveTo,
-        })
-            //.then(() => { })
-            .catch((e) => {
-                console.error("Unable to create directory", e)
-            })
-    }
-}
-
 export const fetchAndStoreMp3 = async (file) => {
     const alreadyDownloaded = await isAlreadyDownloaded(file)
     // check if already downloaded and alert the user
@@ -120,6 +126,7 @@ export const fetchAndStoreMp3 = async (file) => {
         await Filesystem.mkdir({
             path: `${appDirectory}/${file.id}`,
             directory: directoryToSaveTo,
+            recursive: true,
         }).catch((e) => {
             console.error("Unable to create directory", e)
         })

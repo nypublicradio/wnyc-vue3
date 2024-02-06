@@ -155,13 +155,6 @@ const navigationObj = null
  */
 export const useNavigation = () => useState('navigation', () => navigationObj)
 
-
-const appDirectory = "wnyc-downloads"
-/**
- * Global state for the app directory location
- */
-export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
-
 const fileSystem = []
 /**
  * Global state for the fileSystem

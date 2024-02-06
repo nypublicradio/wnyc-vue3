@@ -79,34 +79,32 @@ useHead({
 
 // handles the permissions for push notifications in the app
 const checkNotificationPermisstions = async () => {
-  if (isApp.value) {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    await PushNotifications.requestPermissions().then((result) => {
-      //alert('push request' + JSON.stringify(result))
-      if (result.receive === "granted") {
-        // Register with Apple / Google to receive push via APNS/FCM
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  await PushNotifications.requestPermissions().then((result) => {
+    //alert('push request' + JSON.stringify(result))
+    if (result.receive === "granted") {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+      acceptNotifications.value = true
+    } else {
+      //alert('Error Reguistering push notifications')
+      acceptNotifications.value = false
+    }
+  })
+
+  //Check permission to use push notifications for ANDROID ONLY
+  if (Capacitor.getPlatform() === "android") {
+    await LocalNotifications.requestPermissions().then((result) => {
+      //alert('local request = ' + JSON.stringify(result))
+      if (result.display === "granted") {
         PushNotifications.register()
         acceptNotifications.value = true
       } else {
-        //alert('Error Reguistering push notifications')
         acceptNotifications.value = false
       }
     })
-
-    //Check permission to use push notifications for ANDROID ONLY
-    if (Capacitor.getPlatform() === "android") {
-      await LocalNotifications.requestPermissions().then((result) => {
-        //alert('local request = ' + JSON.stringify(result))
-        if (result.display === "granted") {
-          PushNotifications.register()
-          acceptNotifications.value = true
-        } else {
-          acceptNotifications.value = false
-        }
-      })
-    }
   }
 }
 
@@ -198,9 +196,11 @@ onMounted(async () => {
 
   // if APP then add listeners
   if (isApp.value) {
-    addListeners()
-    checkAppLaunchUrl()
+    await addListeners()
+    await checkAppLaunchUrl()
   }
+  // init downloads files system for the app
+  await initFileSystem()
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", () => {
@@ -247,11 +247,6 @@ watch(globalToast, (optionsObj) => {
   if (optionsObj) {
     toast.add(optionsObj)
   }
-})
-
-onMounted(async () => {
-  // init downloads files system for the app
-  initFileSystem()
 })
 </script>
 
