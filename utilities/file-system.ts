@@ -64,7 +64,7 @@ export const initFileSystem = async () => {
     const fileSystemLS = useFileSystemLS()
 
     // request permissions
-    requestPermissions()
+    await requestPermissions()
 
     //initial check to see if the appDirectory exists and if not, create it
     await createAppDirectory()

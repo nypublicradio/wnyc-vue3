@@ -53,7 +53,7 @@ const checkEpisodeMatchAndPlaying = computed(() => {
   if (currentEpisode.value) {
     if (
       (currentEpisode.value.file === props.file && isEpisodePlaying.value) ||
-      (currentEpisode.value.directoryAudio.name === props.file && isEpisodePlaying.value)
+      (currentEpisode.value.directoryAudio?.name === props.file && isEpisodePlaying.value)
     ) {
       return true
     }
@@ -65,7 +65,7 @@ const checkEpisodeMatch = computed(() => {
   if (currentEpisode.value) {
     if (
       currentEpisode.value.file === props.file ||
-      currentEpisode.value.directoryAudio.name === props.file
+      currentEpisode.value.directoryAudio?.name === props.file
     ) {
       return true
     }
