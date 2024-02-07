@@ -44,8 +44,14 @@ const backHome = () => {
 }
 
 const handleDownload = (epD) => {
-  //console.log("handleDownload", epD)
-  console.error(`handle download to come ${epD.title}`)
+  fetchAndStoreMp3(epD)
+  toast.add({
+    severity: "info",
+    summary: "Download started",
+    detail: epD.title,
+    life: 3000,
+  })
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")

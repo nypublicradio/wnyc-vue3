@@ -117,124 +117,177 @@ export const updateFileSystem = async () => {
     fileSystem.value = await traverseDirectory(appDirectory)
 }
 
-export const fetchAndStoreMp3 = async (file) => {
-    const alreadyDownloaded = await isAlreadyDownloaded(file)
-    // check if already downloaded and alert the user
-    if (alreadyDownloaded) {
+
+const downloadFileToDesktop = async (url, filename) => {
+    try {
+        // Fetch the file data
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        // Get the Blob from the response
+        const blob = await response.blob();
+
+        // Create a Blob URL
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Create an anchor element and set its attributes
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+
+        // Append the anchor element to the body
+        document.body.appendChild(a);
+
+        // Trigger a click event on the anchor element to start the download
+        a.click();
+
+        // Cleanup: remove the anchor element and revoke the Blob URL
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+
+        // alert the user
         const globalToast = useGlobalToast()
         globalToast.value = {
-            severity: "info",
-            summary: "Already downloaded",
-            life: 6000,
+            severity: "success",
+            summary: "Download Complete",
+            life: 3000,
         }
+
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        // alert the user
+        const globalToast = useGlobalToast()
+        globalToast.value = {
+            severity: "error",
+            summary: "Error downloading file",
+            life: 3000,
+        }
+    }
+}
+
+export const fetchAndStoreMp3 = async (file) => {
+    const isApp = useIsApp()
+    if (!isApp.value) {
+        downloadFileToDesktop(file.audio, `WNYC-download-${file.id}`)
     } else {
-        const fileSystem = useFileSystem()
-        const fileSystemLS = useFileSystemLS()
+        const alreadyDownloaded = await isAlreadyDownloaded(file)
+        // check if already downloaded and alert the user
+        if (alreadyDownloaded) {
+            const globalToast = useGlobalToast()
+            globalToast.value = {
+                severity: "info",
+                summary: "Already downloaded",
+                life: 6000,
+            }
+        } else {
+            const fileSystem = useFileSystem()
+            const fileSystemLS = useFileSystemLS()
 
-        // create the directory
-        await Filesystem.mkdir({
-            path: `${appDirectory}/${file.id}`,
-            directory: directoryToSaveTo,
-        }).catch((e) => {
-            console.error("Unable to create directory", e)
-        })
-
-        // Fetch the IMAGE file as a Blob
-        const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
-        const imgUrlAlt = file.image.url
-        let imgResponse;
-
-        // try catch to use the alt image if the primary image fails... CORS is the problem locally
-        try {
-            imgResponse = await fetch(imgUrl);
-        } catch (error) {
-            console.log('Error fetching primary image: ', error);
-            imgResponse = await fetch(imgUrlAlt);
-        }
-
-
-        // downlaod image
-        const imgNameFromUrl = fileNameFromURL(file.image.url)
-        await Filesystem.downloadFile({
-            url: imgUrl,
-            path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
-            // progress: (progress) => { console.log('progress = ', progress) },
-            directory: directoryToSaveTo,
-        })
-            .then((fileURI) => {
-                console.log("image saved")
-            })
-            .catch((e) => {
-                console.error("Unable to write file", e)
+            // create the directory
+            await Filesystem.mkdir({
+                path: `${appDirectory}/${file.id}`,
+                directory: directoryToSaveTo,
+            }).catch((e) => {
+                console.error("Unable to create directory", e)
             })
 
-        // download the MP3
-        const nameFromUrl = fileNameFromURL(file.audio)
-        await Filesystem.downloadFile({
-            url: file.audio,
-            path: `${appDirectory}/${file.id}/${nameFromUrl}`,
-            directory: directoryToSaveTo,
-        })
-            .then(async (fileURI) => {
-                //create a parralel browser local storage for this data, and bes to add it to the delete function.                
+            // Fetch the IMAGE file as a Blob
+            const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
+            const imgUrlAlt = file.image.url
+            let imgResponse;
 
-                await updateFileSystem().then(() => {
-                    console.log('updated file system')
+            // try catch to use the alt image if the primary image fails... CORS is the problem locally
+            try {
+                imgResponse = await fetch(imgUrl);
+            } catch (error) {
+                console.log('Error fetching primary image: ', error);
+                imgResponse = await fetch(imgUrlAlt);
+            }
 
-                    setTimeout(async () => {
-                        // slight delay is needed for the fileSystem to update
-                        await nextTick()
-                        const thisFileSystemEntry = await fileSystem.value.find((entry) =>
-                            fileURI.path.includes(entry.name) ? entry : null)
 
-                        // find the image
-                        const directoryImage = thisFileSystemEntry.files.find((entry) => {
-                            const mainString = entry.name
-                            const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
-
-                            return subStrings.some((substring) => mainString.includes(substring))
-                        })
-
-                        //find the audio
-                        const directoryAudio = thisFileSystemEntry.files.find((entry) => {
-                            const mainString = entry.name
-                            const subStrings = [".mp3"]
-
-                            return subStrings.some((substring) => mainString.includes(substring))
-                        })
-
-                        //append directory,image and aduio to the file object
-                        const newFile: any = {
-                            ...file,
-                            directory: thisFileSystemEntry,
-                            directoryImage: directoryImage,
-                            directoryAudio: directoryAudio,
-                        }
-                        // add it to the list
-                        fileSystemLS.value.push(newFile)
-                        // save to local storage, selay needed for some reason
-                        setTimeout(async () => {
-                            await Preferences.set({
-                                key: localStorageKey,
-                                value: JSON.stringify(fileSystemLS.value),
-                            })
-                        }, 500)
-
-                        // alert the user
-                        const globalToast = useGlobalToast()
-                        globalToast.value = {
-                            severity: "success",
-                            summary: "Download Complete",
-                            life: 3000,
-                        }
-
-                    }, 500)
+            // downlaod image
+            const imgNameFromUrl = fileNameFromURL(file.image.url)
+            await Filesystem.downloadFile({
+                url: imgUrl,
+                path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
+                // progress: (progress) => { console.log('progress = ', progress) },
+                directory: directoryToSaveTo,
+            })
+                .then((fileURI) => {
+                    console.log("image saved")
                 })
-            })
-            .catch((e) => {
-                console.error("Unable to write file", e)
-            })
+                .catch((e) => {
+                    console.error("Unable to write file", e)
+                })
 
+            // download the MP3
+            const nameFromUrl = fileNameFromURL(file.audio)
+            await Filesystem.downloadFile({
+                url: file.audio,
+                path: `${appDirectory}/${file.id}/${nameFromUrl}`,
+                directory: directoryToSaveTo,
+            })
+                .then(async (fileURI) => {
+                    //create a parralel browser local storage for this data, and bes to add it to the delete function.                
+
+                    await updateFileSystem().then(() => {
+                        console.log('updated file system')
+
+                        setTimeout(async () => {
+                            // slight delay is needed for the fileSystem to update
+                            await nextTick()
+                            const thisFileSystemEntry = await fileSystem.value.find((entry) =>
+                                fileURI.path.includes(entry.name) ? entry : null)
+
+                            // find the image
+                            const directoryImage = thisFileSystemEntry.files.find((entry) => {
+                                const mainString = entry.name
+                                const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+
+                                return subStrings.some((substring) => mainString.includes(substring))
+                            })
+
+                            //find the audio
+                            const directoryAudio = thisFileSystemEntry.files.find((entry) => {
+                                const mainString = entry.name
+                                const subStrings = [".mp3"]
+
+                                return subStrings.some((substring) => mainString.includes(substring))
+                            })
+
+                            //append directory,image and aduio to the file object
+                            const newFile: any = {
+                                ...file,
+                                directory: thisFileSystemEntry,
+                                directoryImage: directoryImage,
+                                directoryAudio: directoryAudio,
+                            }
+                            // add it to the list
+                            fileSystemLS.value.push(newFile)
+                            // save to local storage, selay needed for some reason
+                            setTimeout(async () => {
+                                await Preferences.set({
+                                    key: localStorageKey,
+                                    value: JSON.stringify(fileSystemLS.value),
+                                })
+                            }, 500)
+
+                            // alert the user
+                            const globalToast = useGlobalToast()
+                            globalToast.value = {
+                                severity: "success",
+                                summary: "Download Complete",
+                                life: 3000,
+                            }
+
+                        }, 500)
+                    })
+                })
+                .catch((e) => {
+                    console.error("Unable to write file", e)
+                })
+
+        }
     }
 }
 

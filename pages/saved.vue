@@ -1,8 +1,8 @@
 <script setup>
 import { useSelectedSavedTab } from "~/composables/states"
-import { useSavedMenuItems } from "~/composables/globals"
+import { getSavedMenuItems } from "~/composables/globals"
 
-const savedMenuItems = useSavedMenuItems()
+const savedMenuItems = ref(getSavedMenuItems())
 const selectedSavedTab = useSelectedSavedTab()
 const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
 

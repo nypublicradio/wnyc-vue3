@@ -1,3 +1,5 @@
+import { useIsApp } from "./states"
+
 export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
@@ -76,28 +78,32 @@ export const useShowTopics = () => useState('showTopics', () => [
 ])
 
 //saved menu
-export const useSavedMenuItems = () => useState('savedMenuItems', () => [
-    {
-        label: 'Followed Shows',
-        value: 'FollowedShows',
-        color: 'var(--red)',
-    },
-    {
-        label: 'Favorites',
-        value: 'Favorites',
-        color: 'var(--red)',
-    },
-    {
-        label: 'Downloads',
-        value: 'Downloads',
-        color: 'var(--red)',
-    },
-    {
-        label: 'Recently Played',
-        value: 'RecentlyPlayed',
-        color: 'var(--red)',
-    },
-])
+export const getSavedMenuItems = () => {
+    const isApp = useIsApp()
+    return [
+        {
+            label: 'Followed Shows',
+            value: 'FollowedShows',
+            color: 'var(--red)',
+        },
+        {
+            label: 'Favorites',
+            value: 'Favorites',
+            color: 'var(--red)',
+        },
+        // Conditionally add the Downloads entry if isApp is true
+        ...(isApp.value ? [{
+            label: 'Downloads',
+            value: 'Downloads',
+            color: 'var(--red)',
+        }] : []),
+        {
+            label: 'Recently Played',
+            value: 'RecentlyPlayed',
+            color: 'var(--red)',
+        },
+    ]
+}
 
 
 
