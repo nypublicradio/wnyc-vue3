@@ -87,20 +87,17 @@ const handleDelete = (file) => {
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
         </ul> -->
-        <!-- <ul class="">
+        <ul class="">
           <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
-            <Button
-              :label="`${file.id} - ${formatFileSize(file.directoryAudio.size)}`"
-              @click="playStoredMp3(file)"
-            />
+            <Button :label="String(file.id)" @click="playStoredMp3(file)" />
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
-        </ul> -->
+        </ul>
         <div class="flex flex-column gap-4 mt-2">
           <EpisodeItem
             v-for="file in fileSystemLS"
             :data="file"
-            :key="file.id"
+            :key="`EI-${file.id}`"
             isDownloaded
             @on-click="handleRoute(file)"
           >
@@ -121,10 +118,10 @@ const handleDelete = (file) => {
           </EpisodeItem>
         </div>
       </div>
-      <!-- <div class="grid">
+      <div class="grid">
         <pre class="col-6 text-left text-xs">fileSystem = {{ fileSystem }}</pre>
         <pre class="col-6 text-left text-xs">fileSystemLS = {{ fileSystemLS }}</pre>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>

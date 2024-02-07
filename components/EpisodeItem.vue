@@ -20,14 +20,10 @@ import {
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import {
-  deleteDirectory,
   fetchAndStoreMp3,
   getDownloadedImageBase64,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
-import { useFileSystemLS } from "~/composables/states"
-import { enterOutline } from "ionicons/icons"
-const fileSystemLS = useFileSystemLS()
 
 const toast = useToast()
 
@@ -186,7 +182,9 @@ const hasAudio = computed(() => {
 const imgSrcUrl = ref("")
 
 if (props.isDownloaded) {
-  imgSrcUrl.value = await getDownloadedImageBase64(props.data)
+  //imgSrcUrl.value = await getDownloadedImageBase64(props.data)
+  imgSrcUrl.value =
+    "https://cdn.theatlantic.com/thumbor/tO5tLGl38cH3MjWz3PypY1dPHX4=/0x62:2000x1187/960x540/media/img/mt/2018/03/AP_325360162607/original.jpg"
 } else {
   imgSrcUrl.value =
     props.data?.image?.template ?? props.data?.image ?? props.fallbackImage

@@ -6,7 +6,8 @@ import {
     useGlobalToast,
     useTogglePlayTrigger,
 } from "~/composables/states"
-
+import { nextTick } from 'vue'
+import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 
@@ -31,7 +32,7 @@ export const isAlreadyDownloaded = async (file) => {
     return alreadyDownloaded
 }
 
-async function traverseDirectory(path) {
+const traverseDirectory = async (path) => {
     let result = []
     //const files = await Filesystem.readdir({ path })
     const files = await Filesystem.readdir({
@@ -58,10 +59,10 @@ const requestPermissions = async () => {
         const status = await Filesystem.requestPermissions()
         console.log("STATUS = ", status)
         if (status.publicStorage === "granted") {
-            alert("STATUS GRANTED = " + JSON.stringify(status))
+            //alert("STATUS GRANTED = " + JSON.stringify(status))
             console.log("Permission granted!!!")
         } else {
-            alert("STATUS DENIED = " + JSON.stringify(status))
+            //alert("STATUS DENIED = " + JSON.stringify(status))
             console.log("Permission denied!!!")
         }
     } catch (error) {
@@ -81,7 +82,7 @@ const createAppDirectory = async () => {
     )
     console.log('init app dir creation result = ' + JSON.stringify(result))
 
-    alert('init app dir creationresult = ' + JSON.stringify(result))
+    //alert('init app dir creationresult = ' + JSON.stringify(result))
     if (result.length === 0) {
         await Filesystem.mkdir({
             path: `${appDirectory}`,
@@ -148,54 +149,48 @@ export const fetchAndStoreMp3 = async (file) => {
             console.log('Error fetching primary image: ', error);
             imgResponse = await fetch(imgUrlAlt);
         }
-        const imgBlob = await imgResponse.blob()
 
-        // Convert the blob to a base64 string
-        const reader = new FileReader()
-        reader.onloadend = async function () {
-            const base64String = reader.result.split(",")[1]
-            const base64Format = reader.result.split(",")[0]
 
-            // Save the base64 string
-            const nameFromUrl = fileNameFromURL(file.image.url)
-            await Filesystem.writeFile({
-                path: `${appDirectory}/${file.id}/${nameFromUrl}`,
-                data: base64String,
-                directory: directoryToSaveTo,
+        // downlaod image
+        const imgNameFromUrl = fileNameFromURL(file.image.url)
+        await Filesystem.downloadFile({
+            url: imgUrl,
+            path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
+            // progress: (progress) => { console.log('progress = ', progress) },
+            directory: directoryToSaveTo,
+        })
+            .then((fileURI) => {
+                console.log("image saved")
             })
-                .then((fileURI) => {
-                    console.log("image saved")
-                })
-                .catch((e) => {
-                    console.error("Unable to write file", e)
-                })
-        }
-        reader.readAsDataURL(imgBlob)
-
-        // Fetch the MP3 file as a Blob
-        const mp3Response = await fetch(file.audio)
-        const mp3Blob = await mp3Response.blob()
-
-        // Read the Blob as a data URL using FileReader
-        const mp3Reader = new FileReader()
-        mp3Reader.onloadend = async function () {
-            const base64String = mp3Reader.result.split(",")[1]
-            const nameFromUrl = fileNameFromURL(file.audio)
-            console.log('nameFromUrl = ', nameFromUrl)
-            await Filesystem.writeFile({
-                path: `${appDirectory}/${file.id}/${nameFromUrl}`,
-                data: base64String,
-                directory: directoryToSaveTo,
+            .catch((e) => {
+                console.error("Unable to write file", e)
             })
-                .then(async (fileURI) => {
-                    //create a parralel browser local storage for this data, and bes to add it to the delete function.
-                    await updateFileSystem()
+
+
+
+        // download the MP3
+        const nameFromUrl = fileNameFromURL(file.audio)
+        await Filesystem.downloadFile({
+            url: file.audio,
+            path: `${appDirectory}/${file.id}/${nameFromUrl}`,
+            directory: directoryToSaveTo,
+        })
+            .then(async (fileURI) => {
+                //create a parralel browser local storage for this data, and bes to add it to the delete function.                
+
+                await updateFileSystem().then(() => {
+                    console.log('updated file system')
+
                     setTimeout(async () => {
+                        alert('fileSystem.value = ' + JSON.stringify(fileSystem.value))
                         // slight delay is needed for the fileSystem to update
+                        await nextTick()
+                        const thisFileSystemEntry = await fileSystem.value.find((entry) =>
+                            fileURI.path.includes(entry.name) ? entry : null)
 
-                        const thisFileSystemEntry = fileSystem.value?.find((entry: any) =>
-                            `${entry.uri}/${nameFromUrl}` === fileURI.uri ? entry : null
-                        )
+                        //alert('nameFromUrl = ' + JSON.stringify(nameFromUrl))
+                        //alert('fileURI.path = ' + JSON.stringify(fileURI.path))
+                        alert('thisFileSystemEntry = ' + JSON.stringify(thisFileSystemEntry))
                         // find the image
                         const directoryImage = thisFileSystemEntry.files.find((entry) => {
                             const mainString = entry.name
@@ -203,6 +198,7 @@ export const fetchAndStoreMp3 = async (file) => {
 
                             return subStrings.some((substring) => mainString.includes(substring))
                         })
+                        //alert('directoryImage = ' + JSON.stringify(directoryImage))
                         //find the audio
                         const directoryAudio = thisFileSystemEntry.files.find((entry) => {
                             const mainString = entry.name
@@ -210,6 +206,7 @@ export const fetchAndStoreMp3 = async (file) => {
 
                             return subStrings.some((substring) => mainString.includes(substring))
                         })
+                        //alert('directoryAudio = ' + JSON.stringify(directoryAudio))
                         //append directory,image and aduio to the file object
                         const newFile: any = {
                             ...file,
@@ -237,11 +234,11 @@ export const fetchAndStoreMp3 = async (file) => {
 
                     }, 500)
                 })
-                .catch((e) => {
-                    console.error("Unable to write file", e)
-                })
-        }
-        mp3Reader.readAsDataURL(mp3Blob)
+            })
+            .catch((e) => {
+                console.error("Unable to write file", e)
+            })
+
     }
 }
 
@@ -255,24 +252,66 @@ function base64ToArrayBuffer(base64) {
     return bytes.buffer
 }
 
+const convertBlobToBase64 = async (blob) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+};
+
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
     const togglePlayTrigger = useTogglePlayTrigger()
 
-    if (currentEpisode.value?.directoryAudio.name !== file.directoryAudio.name) {
+    if (currentEpisode.value?.directoryAudio?.name !== file.directoryAudio?.name) {
         file = prepForPlayer(file)
-        // if image is found, return it as base64
         try {
-            const b64Content = await Filesystem.readFile({
-                path: `${appDirectory}/${file.id}/${file.directoryAudio.name}`,
+            const path = `${appDirectory}/${file.id}/${file.directoryAudio.name}`
+            // const audio = await Filesystem.readFile({
+            //     path: path,
+            //     directory: directoryToSaveTo,
+            // })
+            const result = await Filesystem.getUri({
+                path: path,
                 directory: directoryToSaveTo,
             })
+            await nextTick()
+            //alert('audio = ' + JSON.stringify(audio))
+            alert('uri = ' + JSON.stringify(result.uri))
+            //alert('uri from file= ' + JSON.stringify(file.directoryAudio.uri))
+
+            //const uriWithScheme = result.uri.startsWith('cdvfile://') ? result.uri : 'file://' + result.uri;
+
+
+            // Create a blob from the file data
+            // const blob = new Blob([new Uint8Array(audio.data)], { type: 'audio/mpeg' });
+            // const blobURL = URL.createObjectURL(blob);
+
+            //const dir = await Filesystem.readdir({ path: `${appDirectory}/${file.id}`, directory: directoryToSaveTo });
+            //console.log('dir = ', dir)
+
+            //const b64 = await convertBlobToBase64(audio.data);
+
+            // for desktop
+            //const forDesktopSrc = await convertBlobToBase64(audio.data);
+            //const forDesktopBlobSrc = Capacitor.convertFileSrc(audio.data);
+            const forAppSrc = Capacitor.convertFileSrc(result.uri);
+            alert('forAppSrc PLEASE!!! = ' + JSON.stringify(forAppSrc))
 
             currentEpisode.value = {
                 ...file,
-                file: `data:audio/mpeg;base64,${b64Content.data}`,
+                //file: convertBlobToBase64(audio.data),
+                //file: uriWithScheme,
+                //file: result.uri
+                //file: forDesktopSrc
+                file: forAppSrc
+                //file: `cdvfile://localhost${result.uri}`,
+                //file: 'https://chrt.fm/track/53A61E/pdst.fm/e/dts.podtrac.com/pts/redirect.mp3/waaa.wnyc.org/news/news20230918_cms1363504_pod.mp3',
             }
             togglePlayTrigger.value = !togglePlayTrigger.value
+
         } catch (e) {
             console.error("Unable to read file", e)
         }
@@ -286,15 +325,14 @@ export const playStoredMp3 = async (file) => {
 export const getDownloadedImageBase64 = async (file) => {
     // find image in directory/files
     const fileName = file.directoryImage.name
-    const base64Type = fileName.split('.').pop();
 
     try {
-        const b64Content = await Filesystem.readFile({
+        const img = await Filesystem.readFile({
             path: `${appDirectory}/${file.id}/${fileName}`,
             directory: directoryToSaveTo,
         })
-        //console.log('b64Content.data =', b64Content.data)
-        return `data:image/${base64Type};base64,${b64Content.data}`
+        return convertBlobToBase64(img.data);
+
     } catch (e) {
         console.error("Unable to read file", e)
     }
