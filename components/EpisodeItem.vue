@@ -21,7 +21,7 @@ import {
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import {
   fetchAndStoreMp3,
-  getDownloadedImageBase64,
+  getDownloadedImageUri,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 
@@ -182,9 +182,7 @@ const hasAudio = computed(() => {
 const imgSrcUrl = ref("")
 
 if (props.isDownloaded) {
-  //imgSrcUrl.value = await getDownloadedImageBase64(props.data)
-  imgSrcUrl.value =
-    "https://cdn.theatlantic.com/thumbor/tO5tLGl38cH3MjWz3PypY1dPHX4=/0x62:2000x1187/960x540/media/img/mt/2018/03/AP_325360162607/original.jpg"
+  imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
   imgSrcUrl.value =
     props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
