@@ -343,12 +343,6 @@ export const playStoredMp3 = async (file) => {
 
 }
 
-const uriToBlob = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    return URL.createObjectURL(blob);
-}
-
 export const getDownloadedImageUri = async (file) => {
     //const isApp = useIsApp()
     const fileName = file.directoryImage.name
@@ -367,24 +361,7 @@ export const getDownloadedImageUri = async (file) => {
     }
 }
 
-export const generateAudioBlobUrl = async (file) => {
-    try {
-        const b64Content = await Filesystem.readFile({
-            path: `${appDirectory}/${file.id}/${file.name}`,
-            directory: directoryToSaveTo,
-        })
-        const arrayBuffer = base64ToArrayBuffer(b64Content.data)
-        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" })
-        var url = URL.createObjectURL(blob)
-        console.log("generated url =", url)
-        return url
-    } catch (e) {
-        console.error("Unable to read file", e)
-    }
-}
-
 export const deleteDirectory = async (file) => {
-    const fileSystem = useFileSystem()
     const fileSystemLS = useFileSystemLS()
     Filesystem.rmdir({
         path: `${appDirectory}/${file.id}`,
@@ -412,8 +389,7 @@ export const deleteDirectory = async (file) => {
         })
 }
 
-export const deleteAll = async (file) => {
-    const fileSystem = useFileSystem()
+export const deleteAll = async () => {
     const fileSystemLS = useFileSystemLS()
     Filesystem.rmdir({
         path: `${appDirectory}`,
