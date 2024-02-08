@@ -29,7 +29,7 @@ export const fileNameFromURL = (url: string) => {
     return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)
 }
 
-export const isAlreadyDownloaded = async (file) => {
+export const isAlreadyDownloaded = (file) => {
     const fileSystemLS = useFileSystemLS()
     const check = fileSystemLS.value.find((entry) => entry.id === file.id)
     const alreadyDownloaded = check === undefined ? false : true
@@ -223,7 +223,7 @@ export const fetchAndStoreMp3 = async (file) => {
                     totalBytes: event.contentLength,
                     percentage: (event.bytes / event.contentLength) * 100,
                 };
-                console.log('progress = ', progress.value.percentage)
+                //console.log('progress = ', progress.value.percentage)
             });
 
 

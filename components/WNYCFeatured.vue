@@ -6,13 +6,9 @@ import {
   saveRecentlyPlayed,
   prepForPlayer,
 } from "~/utilities/helpers"
-import {
-  useTogglePlayTrigger,
-  useCurrentEpisode,
-  useFileSystem,
-} from "~/composables/states"
+import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
-import { fetchAndStoreMp3 } from "~/utilities/file-system"
+import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -24,7 +20,7 @@ const props = defineProps({
   },
 })
 
-const progress = ref(null)
+const progress = reactive({})
 
 const handleDownload = async (bucketItem) => {
   toast.add({
@@ -35,7 +31,7 @@ const handleDownload = async (bucketItem) => {
   })
   trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
 
-  progress.value = await fetchAndStoreMp3(bucketItem)
+  progress[bucketItem.id] = await fetchAndStoreMp3(bucketItem)
 }
 
 // set the items for the Dot menu
@@ -101,7 +97,6 @@ const togglePlayHere = (item) => {
           :key="item.label"
           :item="item"
           style="min-width: 248px"
-          :class="item.id"
         >
           <template #play>
             <PlayButton
@@ -116,12 +111,10 @@ const togglePlayHere = (item) => {
           <template #menu>
             <div class="flex align-items-center">
               <DownloadProgress
-                v-if="progress"
-                :isDownloaded="false"
-                :progress="progress"
+                v-if="progress[item.id] || isAlreadyDownloaded(item)"
+                :isDownloaded="isAlreadyDownloaded(item)"
+                :progress="progress[item.id]"
               />
-
-              <!-- <pre style="font-size: 8px">{{ progress }}</pre> -->
               <DotMenu
                 v-if="item.audio"
                 :menuItems="getDotMenuItems(item)"

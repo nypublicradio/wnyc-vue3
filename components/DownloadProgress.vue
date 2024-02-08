@@ -1,4 +1,6 @@
 <script setup>
+import { de } from "date-fns/locale"
+
 const props = defineProps({
   progress: {
     type: Object,
@@ -10,13 +12,17 @@ const props = defineProps({
   },
 })
 
-const theProgress = computed(() => props.progress.percentage)
+const theProgress = computed(() => {
+  return Math.round(props.progress.percentage)
+})
 </script>
 
 <template>
   <div class="download-progress">
-    <!-- <pre style="font-size: 8px">{{ props.progress }}</pre> -->
-    <DownloadedSmallIcon v-if="props.isDownloaded" />
+    <DownloadedSmallIcon
+      v-if="theProgress === 100 || props.isDownloaded"
+      style="height: 16px; width: 29px"
+    />
     <div v-else class="spin-holder">
       <i class="pi pi-spin pi-spinner"></i>
       <div class="percent">{{ theProgress }}</div>
@@ -27,6 +33,7 @@ const theProgress = computed(() => props.progress.percentage)
 
 <style lang="scss" scoped>
 .download-progress {
+  display: inherit;
   .spin-holder {
     display: flex;
     align-items: center;
