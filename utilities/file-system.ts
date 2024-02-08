@@ -175,7 +175,7 @@ const downloadFileToDesktop = async (url, filename) => {
 export const fetchAndStoreMp3 = async (file) => {
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
-    if (isApp.value) {
+    if (!isApp.value) {
         downloadFileToDesktop(file.audio, `WNYC-download-${file.id}`)
     } else {
         const alreadyDownloaded = await isAlreadyDownloaded(file)
