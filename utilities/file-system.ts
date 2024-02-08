@@ -1,3 +1,4 @@
+import { ref } from "vue"
 import { Filesystem, Directory } from "@capacitor/filesystem"
 import {
     useFileSystem,
@@ -12,6 +13,7 @@ import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 import { FALLBACKIMAGE } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
+import { tr } from "date-fns/locale";
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
@@ -212,13 +214,27 @@ export const fetchAndStoreMp3 = async (file) => {
 
             // download the MP3
             const nameFromUrl = fileNameFromURL(file.audio)
-            await Filesystem.downloadFile({
+
+            // Add progress listener
+            const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
+            const progressListener = await Filesystem.addListener('progress', (event) => {
+                progress.value = {
+                    loadedBytes: event.bytes,
+                    totalBytes: event.contentLength,
+                    percentage: (event.bytes / event.contentLength) * 100,
+                };
+                console.log('progress = ', progress.value.percentage)
+            });
+
+
+            Filesystem.downloadFile({
                 url: file.audio,
                 path: `${appDirectory}/${file.id}/${nameFromUrl}`,
                 directory: directoryToSaveTo,
+                progress: true,
             })
                 .then(async (fileURI) => {
-
+                    progressListener.remove();
                     await updateFileSystem().then(() => {
                         console.log('updated file system')
 
@@ -275,7 +291,7 @@ export const fetchAndStoreMp3 = async (file) => {
                 .catch((e) => {
                     console.error("Unable to write file", e)
                 })
-
+            return progress
         }
     }
 }
