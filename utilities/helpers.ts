@@ -18,6 +18,7 @@ import { Browser } from "@capacitor/browser"
 import { mediaTypeRoutes } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
+import { FALLBACKIMAGELOCAL } from "../composables/globals"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 
@@ -578,11 +579,20 @@ export const prepForPlayer = (item, index = null) => {
 
   const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio
 
+  const getImage = async (item) => {
+    const isDownloaded = await isAlreadyDownloaded(item)
+    if (isDownloaded) {
+      return await getDownloadedImageUri(item)
+    } else {
+      return item?.image?.template ?? item?.listingImage?.template ?? item?.showImage ?? FALLBACKIMAGELOCAL
+    }
+  }
+
   return {
     ...item,
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
-    image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage,
+    image: getImage(item),
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
