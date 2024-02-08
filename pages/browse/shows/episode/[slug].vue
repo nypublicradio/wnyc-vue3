@@ -2,6 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import { isAlreadyDownloaded } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -43,15 +44,11 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
-const handleDownload = (epD) => {
-  fetchAndStoreMp3(epD)
-  toast.add({
-    severity: "info",
-    summary: "Download started",
-    detail: epD.title,
-    life: 3000,
-  })
+const progress = reactive(null)
+const handleDownload = async (epD) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+
+  progress = await fetchAndStoreMp3(epD)
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
@@ -206,13 +203,18 @@ watch(episode, () => {
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
         <div class="flex align-items-center justify-content-between">
-          <div>
+          <div class="flex align-items-center gap-2">
             <PlayButton
               v-if="!episodeData?.segments && episodeData?.audio"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :file="episodeData?.audio"
               @onClick="togglePlayHere(episodeData)"
               class=""
+            />
+            <DownloadProgress
+              v-if="progress || isAlreadyDownloaded(episodeData)"
+              :isDownloaded="isAlreadyDownloaded(episodeData)"
+              :progress="progress"
             />
             <!--             <div v-else class="font-bold text-red-500">
               <i class="pi pi-exclamation-triangle mr-1"></i>No Audio

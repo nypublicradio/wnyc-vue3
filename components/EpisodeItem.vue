@@ -22,6 +22,7 @@ import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
+  isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 
@@ -114,16 +115,11 @@ const handleAddToFavorites = async (bucketItem) => {
     accountPromptSideBar.value = true
   }
 }
+let progress = reactive(null)
 
-const handleDownload = (bucketItem) => {
-  fetchAndStoreMp3(bucketItem)
-  toast.add({
-    severity: "info",
-    summary: "Download started",
-    detail: bucketItem.title,
-    life: 3000,
-  })
+const handleDownload = async (bucketItem) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
+  progress = await fetchAndStoreMp3(bucketItem)
 }
 
 // set the items for the Dot menu
@@ -238,8 +234,11 @@ const handleClick = () => {
                   {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
                 <!-- FROM CapacitorJS Preferences local storage -->
-
-                <DownloadedSmallIcon v-if="props.isDownloaded" />
+                <DownloadProgress
+                  v-if="progress || isAlreadyDownloaded(props.data)"
+                  :isDownloaded="isAlreadyDownloaded(props.data)"
+                  :progress="progress"
+                />
                 <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
               </div>
             </template>

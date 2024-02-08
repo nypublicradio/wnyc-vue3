@@ -121,6 +121,12 @@ export const updateFileSystem = async () => {
 
 
 const downloadFileToDesktop = async (url, filename) => {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+        severity: "info",
+        summary: "Downloading to your computer",
+        life: 3000,
+    }
     try {
         // Fetch the file data
         const response = await fetch(url);
@@ -148,7 +154,7 @@ const downloadFileToDesktop = async (url, filename) => {
         URL.revokeObjectURL(blobUrl);
 
         // alert the user
-        const globalToast = useGlobalToast()
+
         globalToast.value = {
             severity: "success",
             summary: "Download Complete",
@@ -158,7 +164,6 @@ const downloadFileToDesktop = async (url, filename) => {
     } catch (error) {
         console.error('Error downloading file:', error);
         // alert the user
-        const globalToast = useGlobalToast()
         globalToast.value = {
             severity: "error",
             summary: "Error downloading file",
@@ -169,21 +174,27 @@ const downloadFileToDesktop = async (url, filename) => {
 
 export const fetchAndStoreMp3 = async (file) => {
     const isApp = useIsApp()
-    if (!isApp.value) {
+    const globalToast = useGlobalToast()
+    if (isApp.value) {
         downloadFileToDesktop(file.audio, `WNYC-download-${file.id}`)
     } else {
         const alreadyDownloaded = await isAlreadyDownloaded(file)
         // check if already downloaded and alert the user
         if (alreadyDownloaded) {
-            const globalToast = useGlobalToast()
             globalToast.value = {
                 severity: "info",
                 summary: "Already downloaded",
-                life: 6000,
+                life: 3000,
             }
         } else {
             const fileSystem = useFileSystem()
             const fileSystemLS = useFileSystemLS()
+
+            globalToast.value = {
+                severity: "info",
+                summary: "Download started!",
+                life: 3000,
+            }
 
             // create the directory
             await Filesystem.mkdir({
@@ -199,6 +210,7 @@ export const fetchAndStoreMp3 = async (file) => {
 
             // downlaod image
             const imgNameFromUrl = fileNameFromURL(file.image.url)
+
             await Filesystem.downloadFile({
                 url: imgUrl,
                 path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
@@ -331,7 +343,7 @@ export const playStoredMp3 = async (file) => {
 
 export const getDownloadedImageUri = async (file) => {
     //const isApp = useIsApp()
-    const fileName = file.directoryImage.name
+    const fileName = file.directoryImage?.name
 
     try {
         const result = await Filesystem.getUri({

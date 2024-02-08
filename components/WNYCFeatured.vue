@@ -23,12 +23,6 @@ const props = defineProps({
 const progress = reactive({})
 
 const handleDownload = async (bucketItem) => {
-  toast.add({
-    severity: "info",
-    summary: "Download started!",
-    detail: bucketItem.title,
-    life: 3000,
-  })
   trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
 
   progress[bucketItem.id] = await fetchAndStoreMp3(bucketItem)

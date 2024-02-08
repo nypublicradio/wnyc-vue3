@@ -13,7 +13,7 @@ const props = defineProps({
 })
 
 const theProgress = computed(() => {
-  return Math.round(props.progress.percentage)
+  return Math.round(props.progress?.percentage)
 })
 </script>
 

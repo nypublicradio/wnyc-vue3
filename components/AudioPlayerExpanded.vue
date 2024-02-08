@@ -79,23 +79,6 @@ const handleAddToFavorites = async () => {
 const handleDownload = () => {
   // update CapacitorJs filesystem
   fetchAndStoreMp3(currentEpisode.value)
-  toast.add({
-    severity: "info",
-    summary: "Download started",
-    detail: bucketItem.title,
-    life: 3000,
-  })
-  trackClickEvent(
-    "Click Tracking - Audio Download",
-    "Expandeed Player",
-    currentEpisode.value.title
-  )
-
-  toast.add({
-    severity: "info",
-    summary: "Downloading...",
-    life: 3000,
-  })
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Expanded Audio Player",
