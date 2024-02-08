@@ -24,7 +24,7 @@ const props = defineProps({
   },
 })
 
-const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 })
+const progress = ref(null)
 
 const handleDownload = async (bucketItem) => {
   toast.add({
@@ -34,6 +34,7 @@ const handleDownload = async (bucketItem) => {
     life: 3000,
   })
   trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
+
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
@@ -114,11 +115,13 @@ const togglePlayHere = (item) => {
           </template>
           <template #menu>
             <div class="flex align-items-center">
-              <!-- <DownloadProgress
-                v-if="downloadProgress"
-                :isDownloaded="item.directoyAudio"
-              /> -->
-              <pre style="font-size: 8px">{{ progress }}</pre>
+              <DownloadProgress
+                v-if="progress"
+                :isDownloaded="false"
+                :progress="progress"
+              />
+
+              <!-- <pre style="font-size: 8px">{{ progress }}</pre> -->
               <DotMenu
                 v-if="item.audio"
                 :menuItems="getDotMenuItems(item)"

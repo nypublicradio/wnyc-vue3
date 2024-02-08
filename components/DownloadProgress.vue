@@ -1,21 +1,25 @@
 <script setup>
 const props = defineProps({
-  //   percent: {
-  //     type: Number,
-  //     default: 0,
-  //   },
+  progress: {
+    type: Object,
+    default: { loadedBytes: 0, totalBytes: 0, percentage: 0 },
+  },
   isDownloaded: {
     type: Boolean,
     default: false,
   },
 })
+
+const theProgress = computed(() => props.progress.percentage)
 </script>
 
 <template>
   <div class="download-progress">
+    <!-- <pre style="font-size: 8px">{{ props.progress }}</pre> -->
     <DownloadedSmallIcon v-if="props.isDownloaded" />
-    <div v-else>
+    <div v-else class="spin-holder">
       <i class="pi pi-spin pi-spinner"></i>
+      <div class="percent">{{ theProgress }}</div>
       <!-- <i class="pi pi-download absolute"></i> -->
     </div>
   </div>
@@ -23,5 +27,20 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .download-progress {
+  .spin-holder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .pi-spinner {
+      font-size: 29px;
+      z-index: 1;
+    }
+    .percent {
+      font-size: 8px;
+
+      text-align: center;
+      position: absolute;
+    }
+  }
 }
 </style>
