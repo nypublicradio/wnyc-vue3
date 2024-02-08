@@ -118,10 +118,10 @@ const handleDelete = (file) => {
           </EpisodeItem>
         </div>
       </div>
-      <div class="grid">
+      <!-- <div class="grid">
         <pre class="col-6 text-left text-xs">fileSystem = {{ fileSystem }}</pre>
         <pre class="col-6 text-left text-xs">fileSystemLS = {{ fileSystemLS }}</pre>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
