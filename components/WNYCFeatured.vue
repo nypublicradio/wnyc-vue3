@@ -20,12 +20,12 @@ const props = defineProps({
   },
 })
 
-const progress = reactive({})
+const progress = ref({})
 
 const handleDownload = async (bucketItem) => {
   trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
 
-  progress[bucketItem.id] = await fetchAndStoreMp3(bucketItem)
+  progress.value[bucketItem.id] = await fetchAndStoreMp3(bucketItem)
 }
 
 // set the items for the Dot menu

@@ -11,7 +11,7 @@ import {
 import { nextTick } from 'vue'
 import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
-import { FALLBACKIMAGE } from "~/composables/globals"
+import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import { tr } from "date-fns/locale";
 
@@ -355,7 +355,7 @@ export const getDownloadedImageUri = async (file) => {
 
     } catch (e) {
         console.error("Unable to read file", e)
-        return FALLBACKIMAGE
+        return FALLBACKIMAGELOCAL
     }
 }
 

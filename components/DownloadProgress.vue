@@ -25,7 +25,7 @@ const theProgress = computed(() => {
     />
     <div v-else class="spin-holder">
       <i class="pi pi-spin pi-spinner"></i>
-      <div class="percent">{{ theProgress }}</div>
+      <div class="percent" v-if="theProgress > 0">{{ theProgress }}</div>
       <!-- <i class="pi pi-download absolute"></i> -->
     </div>
   </div>

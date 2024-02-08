@@ -27,6 +27,7 @@ import {
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
+import { get } from "@vueuse/core"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -148,16 +149,6 @@ const getDescription = computed(() => {
     class="absolute"
     style="top: 200px; z-index: 672397862938679"
   /> -->
-  <div
-    v-if="currentEpisode"
-    style="top: 0px; position: absolute; left: 0; z-index: 67567"
-  >
-    <audio controls>
-      <source :src="currentEpisode.file" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
-    {{ currentEpisode.file }}
-  </div>
   <div v-if="currentEpisode">
     <transition name="player">
       <VNewPersistentPlayer

@@ -19,7 +19,7 @@ import {
   useAccountPromptSideBar,
   useIsEpisodePlaying,
 } from "~/composables/states"
-import { FALLBACKIMAGE } from "~/composables/globals"
+import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -98,7 +98,7 @@ const handleShare = () => {
 watch(show, () => {
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGE
+  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGELOCAL
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.description
 })

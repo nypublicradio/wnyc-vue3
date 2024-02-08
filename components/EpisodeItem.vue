@@ -25,7 +25,7 @@ import {
   isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
-
+import { FALLBACKIMAGE } from "~/composables/globals"
 const toast = useToast()
 
 const $primevue = usePrimeVue()
@@ -40,10 +40,10 @@ const props = defineProps({
     type: Object,
     default: {},
   },
-  fallbackImage: {
-    type: String,
-    default: "./logo.png",
-  },
+  // fallbackImage: {
+  //   type: String,
+  //   default: "./logo.png",
+  // },
   imgSrc: {
     type: String,
     default: null,
@@ -180,8 +180,7 @@ const imgSrcUrl = ref("")
 if (props.isDownloaded) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
-  imgSrcUrl.value =
-    props.data?.image?.template ?? props.data?.image ?? props.fallbackImage
+  imgSrcUrl.value = props.data?.image?.template ?? props.data?.image ?? FALLBACKIMAGELOCAL
 }
 
 const handleClick = () => {
@@ -193,23 +192,14 @@ const handleClick = () => {
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
     <div class="flex gap-3 w-full" @click.prevent="handleClick" v-ripple>
-      <img
-        v-if="props.isDownloaded"
-        :src="imgSrcUrl"
-        :height="72"
-        :width="72"
-        alt="Episode image"
-        class="flex-none"
-      />
       <VImage
-        v-else
         class="flex-none"
         :src="imgSrcUrl"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 72px; min-width: 72px"
+        style="max-height: 72px; max-width: 72px"
       />
       <div class="flex gap-1 flex-column w-full">
         <div class="flex gap-0 flex-column align-items-start">
@@ -266,16 +256,7 @@ const handleClick = () => {
         <template #header-bottom>
           <div>
             <div class="flex gap-3 px-4 align-items-center">
-              <img
-                v-if="props.isDownloaded"
-                :src="imgSrcUrl"
-                :height="60"
-                :width="60"
-                alt="Episode image"
-                class="flex-none"
-              />
               <VImage
-                v-else
                 :src="imgSrcUrl"
                 :alt="`${props.data.showTitle} show image`"
                 :width="60"
@@ -284,8 +265,8 @@ const handleClick = () => {
                 class="show-image-in-menu flex-none"
                 :ratio="[1, 1]"
                 style="
-                  min-height: 60px;
-                  min-width: 60px;
+                  max-height: 60px;
+                  max-width: 60px;
                   background-color: var(--background);
                 "
               />

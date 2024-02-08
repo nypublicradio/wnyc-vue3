@@ -87,12 +87,12 @@ const handleDelete = (file) => {
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
         </ul> -->
-        <ul class="">
+        <!-- <ul class="">
           <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
             <Button :label="String(file.id)" @click="playStoredMp3(file)" />
             <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
           </li>
-        </ul>
+        </ul> -->
         <div class="flex flex-column gap-4 mt-2">
           <EpisodeItem
             v-for="file in fileSystemLS"

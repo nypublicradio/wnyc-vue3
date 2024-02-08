@@ -11,6 +11,7 @@ import {
   useCurrentUserFavorites,
   useTogglePlayTrigger,
 } from "~/composables/states"
+import { isAlreadyDownloaded, getDownloadedImageUri } from "~/utilities/file-system"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
@@ -576,12 +577,12 @@ export const prepForPlayer = (item, index = null) => {
   const isSegment = index !== null
 
   const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio
+
   return {
     ...item,
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
     image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage,
-    //TODO convert to seconds
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,

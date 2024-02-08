@@ -24,6 +24,7 @@ export const mediaTypeRoutes = {
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'
+export const FALLBACKIMAGELOCAL = './logo.png'
 export const FALLBACKIMAGEWAGTAIL = '342941'
 
 //Global vars for the browser top color

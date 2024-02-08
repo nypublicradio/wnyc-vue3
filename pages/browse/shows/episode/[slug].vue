@@ -44,11 +44,11 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 
-const progress = reactive(null)
+const progress = ref(null)
 const handleDownload = async (epD) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
 
-  progress = await fetchAndStoreMp3(epD)
+  progress.value = await fetchAndStoreMp3(epD)
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
