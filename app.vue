@@ -194,12 +194,12 @@ const checkAppLaunchUrl = async () => {
 onMounted(async () => {
   await getAndSetUserProfile()
 
-  // if APP then add listeners
   if (isApp.value) {
+    // if APP then add listeners
     await addListeners()
     await checkAppLaunchUrl()
+    // init downloads files system for the app
   }
-  // init downloads files system for the app
   await initFileSystem()
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus

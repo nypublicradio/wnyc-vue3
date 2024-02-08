@@ -24,15 +24,19 @@ const props = defineProps({
   },
 })
 
-const handleDownload = (bucketItem) => {
-  fetchAndStoreMp3(bucketItem)
+const downloadProgress = ref(false)
+
+const handleDownload = async (bucketItem) => {
+  downloadProgress.value = true
   toast.add({
     severity: "info",
-    summary: "Download started",
+    summary: "Download started!",
     detail: bucketItem.title,
     life: 3000,
   })
   trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
+  await fetchAndStoreMp3(bucketItem)
+  downloadProgress.value = false
 }
 
 // set the items for the Dot menu
@@ -111,25 +115,28 @@ const togglePlayHere = (item) => {
             />
           </template>
           <template #menu>
-            <DotMenu
-              v-if="item.audio"
-              :menuItems="getDotMenuItems(item)"
-              label="Options"
-              @changeEmit="onMenuChange"
-              class="-mr-1 z-2"
-              size="large"
-            >
-              <template #end v-if="item.embedCode">
-                <div class="p-0">
-                  <Textarea
-                    disabled
-                    class="w-full text-xs mt-2"
-                    v-model="item.embedCode"
-                    rows="9"
-                  />
-                </div>
-              </template>
-            </DotMenu>
+            <div class="flex align-items-center">
+              {{ downloadProgress }}
+              <DotMenu
+                v-if="item.audio"
+                :menuItems="getDotMenuItems(item)"
+                label="Options"
+                @changeEmit="onMenuChange"
+                class="-mr-1 z-2"
+                size="large"
+              >
+                <template #end v-if="item.embedCode">
+                  <div class="p-0">
+                    <Textarea
+                      disabled
+                      class="w-full text-xs mt-2"
+                      v-model="item.embedCode"
+                      rows="9"
+                    />
+                  </div>
+                </template>
+              </DotMenu>
+            </div>
           </template>
         </CardLarge>
 

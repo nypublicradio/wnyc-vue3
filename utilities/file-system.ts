@@ -1,4 +1,4 @@
-import { Filesystem, Directory /* Encoding */ } from "@capacitor/filesystem"
+import { Filesystem, Directory } from "@capacitor/filesystem"
 import {
     useFileSystem,
     useFileSystemLS,
@@ -167,7 +167,7 @@ const downloadFileToDesktop = async (url, filename) => {
 
 export const fetchAndStoreMp3 = async (file) => {
     const isApp = useIsApp()
-    if (!isApp.value) {
+    if (isApp.value) {
         downloadFileToDesktop(file.audio, `WNYC-download-${file.id}`)
     } else {
         const alreadyDownloaded = await isAlreadyDownloaded(file)
@@ -193,17 +193,7 @@ export const fetchAndStoreMp3 = async (file) => {
 
             // Fetch the IMAGE file as a Blob
             const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
-            const imgUrlAlt = file.image.url
-            let imgResponse;
-
-            // try catch to use the alt image if the primary image fails... CORS is the problem locally
-            try {
-                imgResponse = await fetch(imgUrl);
-            } catch (error) {
-                console.log('Error fetching primary image: ', error);
-                imgResponse = await fetch(imgUrlAlt);
-            }
-
+            //const imgUrlAlt = file.image.url
 
             // downlaod image
             const imgNameFromUrl = fileNameFromURL(file.image.url)
@@ -228,7 +218,6 @@ export const fetchAndStoreMp3 = async (file) => {
                 directory: directoryToSaveTo,
             })
                 .then(async (fileURI) => {
-                    //create a parralel browser local storage for this data, and bes to add it to the delete function.                
 
                     await updateFileSystem().then(() => {
                         console.log('updated file system')
@@ -290,25 +279,6 @@ export const fetchAndStoreMp3 = async (file) => {
         }
     }
 }
-
-function base64ToArrayBuffer(base64) {
-    const binaryString = window.atob(base64)
-    const len = binaryString.length
-    const bytes = new Uint8Array(len)
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i)
-    }
-    return bytes.buffer
-}
-
-const convertBlobToBase64 = async (blob) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-};
 
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
