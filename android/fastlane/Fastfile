@@ -32,8 +32,8 @@ platform :android do
       task: 'bundle',
       build_type: 'Release'
     )
-    upload_to_play_store(
-      release_status: 'draft',
+    upload_to_play_store_internal_app_sharing(
+      #release_status: 'draft',
       package_name: 'org.wnyc.android'
     ) # upload to Google Play Store
   end
