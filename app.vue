@@ -205,7 +205,9 @@ onMounted(async () => {
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
-      checkNotificationPermisstions()
+      if (isApp.value) {
+        checkNotificationPermisstions()
+      }
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false

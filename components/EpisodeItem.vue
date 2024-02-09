@@ -56,10 +56,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isDownloaded: {
-    type: Boolean,
-    default: false,
-  },
 })
 const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
@@ -176,15 +172,14 @@ const hasAudio = computed(() => {
 })
 
 const imgSrcUrl = ref("")
-
-if (props.isDownloaded) {
+const isDownloaded = ref(isAlreadyDownloaded(props.data))
+if (isDownloaded.value) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
   imgSrcUrl.value = props.data?.image?.template ?? props.data?.image ?? FALLBACKIMAGELOCAL
 }
 
 const handleClick = () => {
-  console.log("handleClick")
   emit("on-click")
 }
 </script>
@@ -225,8 +220,8 @@ const handleClick = () => {
                 </p>
                 <!-- FROM CapacitorJS Preferences local storage -->
                 <DownloadProgress
-                  v-if="progress || isAlreadyDownloaded(props.data)"
-                  :isDownloaded="isAlreadyDownloaded(props.data)"
+                  v-if="progress || isDownloaded"
+                  :isDownloaded="isDownloaded"
                   :progress="progress"
                 />
                 <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->

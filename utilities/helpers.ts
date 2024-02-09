@@ -125,7 +125,7 @@ export const resizePublisherImageUrl = (
 }
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
-  if (url) {
+  if (url && url.includes("media.wnyc.org")) {
     const pieces = url.split("/")
     const finalUrlArr: string[] = []
 
@@ -139,7 +139,7 @@ export const templatizePublisherImageUrl = (url: string): string => {
     })
     return finalUrlArr.join("/")
   } else {
-    return null
+    return url
   }
 }
 

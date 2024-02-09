@@ -30,10 +30,15 @@ export const fileNameFromURL = (url: string) => {
 }
 
 export const isAlreadyDownloaded = (file) => {
-    const fileSystemLS = useFileSystemLS()
-    const check = fileSystemLS.value.find((entry) => entry.id === file.id)
-    const alreadyDownloaded = check === undefined ? false : true
-    return alreadyDownloaded
+    const isApp = useIsApp()
+    if (isApp) {
+        const fileSystemLS = useFileSystemLS()
+        const check = fileSystemLS.value.find((entry) => entry.id === file.id)
+        const alreadyDownloaded = check === undefined ? false : true
+        return alreadyDownloaded
+    } else {
+        return false
+    }
 }
 
 const traverseDirectory = async (path) => {
@@ -316,19 +321,26 @@ export const playStoredMp3 = async (file) => {
     if (currentEpisode.value?.directoryAudio?.name !== file.directoryAudio?.name) {
         file = await prepForPlayer(file)
         try {
-            const path = `${appDirectory}/${file.id}/${file?.directoryAudio?.name}`
-
-            const result = await Filesystem.getUri({
-                path: path,
+            // get audio file
+            const audio = await Filesystem.getUri({
+                path: `${appDirectory}/${file.id}/${file?.directoryAudio?.name}`,
                 directory: directoryToSaveTo,
             })
             await nextTick()
+            const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
 
-            const forAppSrc = Capacitor.convertFileSrc(result.uri);
+            // get image file
+            const image = await Filesystem.getUri({
+                path: `${appDirectory}/${file.id}/${file?.directoryImage?.name}`,
+                directory: directoryToSaveTo,
+            })
+            await nextTick()
+            const savedImageSrc = Capacitor.convertFileSrc(image.uri);
 
             currentEpisode.value = {
                 ...file,
-                file: forAppSrc
+                file: savedAudioSrc,
+                image: savedImageSrc
             }
             togglePlayTrigger.value = !togglePlayTrigger.value
 
