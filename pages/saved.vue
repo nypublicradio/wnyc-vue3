@@ -8,7 +8,6 @@ const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
 
 const scrollToActiveItem = () => {
   const selectedItem = document.getElementsByClassName("selected")
-  console.log("selectedItem   ", selectedItem[0])
   if (selectedItem[0]) {
     selectedItem[0].scrollIntoView({
       behavior: "smooth",

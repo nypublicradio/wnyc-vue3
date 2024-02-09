@@ -111,7 +111,7 @@ const handleDelete = (file) => {
               />
               <PlayButton
                 label=""
-                :file="file.directoryAudio.name"
+                :file="file.directoryAudio?.name"
                 @onClick="handlePlay(file)"
               />
             </div>

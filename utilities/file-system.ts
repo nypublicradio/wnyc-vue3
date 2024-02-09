@@ -173,9 +173,11 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
 
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
+    const isSegments = file.segments ? true : false
+    const slug = isSegments ? file.segments[index].slug : file.meta.slug
+    //desktop download
     if (!isApp.value) {
         const audioFile = index !== null ? file.audio[index] : file.audio
-        const slug = file.segments ? file.segments[index].slug : file.meta.slug
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
@@ -189,6 +191,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
             }
             return null
         } else {
+            // app download
             const fileSystem = useFileSystem()
             const fileSystemLS = useFileSystemLS()
 
@@ -200,7 +203,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
 
             // create the directory
             await Filesystem.mkdir({
-                path: `${appDirectory}/${file.id}`,
+                path: `${appDirectory}/${file.id}${index ?? ''}`,
                 directory: directoryToSaveTo,
             }).catch((e) => {
                 console.error("Unable to create directory", e)
@@ -212,10 +215,9 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
 
             // downlaod image
             const imgNameFromUrl = fileNameFromURL(file.image.url)
-
             await Filesystem.downloadFile({
                 url: imgUrl,
-                path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
+                path: `${appDirectory}/${file.id}${index ?? ''}/${imgNameFromUrl}`,
                 directory: directoryToSaveTo,
             })
                 .then(() => {
@@ -226,7 +228,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                 })
 
             // download the MP3
-            const nameFromUrl = fileNameFromURL(file.audio)
+            const nameFromUrl = isSegments ? `${slug}.mp3` : fileNameFromURL(file.audio)
 
             // Add progress listener
             const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
@@ -241,7 +243,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
 
             Filesystem.downloadFile({
                 url: file.audio,
-                path: `${appDirectory}/${file.id}/${nameFromUrl}`,
+                path: `${appDirectory}/${file.id}${index ?? ''}/${nameFromUrl}`,
                 directory: directoryToSaveTo,
                 progress: true,
             })
@@ -278,6 +280,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                                 directory: thisFileSystemEntry,
                                 directoryImage: directoryImage,
                                 directoryAudio: directoryAudio,
+                                title: isSegments ? file.segments[index].title : file.title,
                             }
                             // add it to the fileSystemLS list
                             fileSystemLS.value.push(newFile)

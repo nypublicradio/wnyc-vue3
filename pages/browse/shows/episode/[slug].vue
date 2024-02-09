@@ -270,6 +270,7 @@ watch(episode, () => {
                       :sizes="[2]"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
+                      style="height: 60px; width: 60px"
                     />
 
                     <div class="info">

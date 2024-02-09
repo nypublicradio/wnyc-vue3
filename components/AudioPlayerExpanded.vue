@@ -313,6 +313,7 @@ const moreFromClick = () => {
                   :sizes="[2]"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"
+                  style="height: 60px; width: 60px"
                 />
 
                 <div class="info">
