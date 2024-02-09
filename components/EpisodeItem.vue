@@ -175,7 +175,7 @@ const hasAudio = computed(() => {
   )
 })
 
-const imgSrcUrl = ref(null)
+const imgSrcUrl = ref("")
 if (props.isDownloaded) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
@@ -201,7 +201,7 @@ const handleClick = () => {
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="max-height: 72px; max-width: 72px"
+        style="height: 72px; width: 72px"
       />
       <div class="flex gap-1 flex-column w-full">
         <div class="flex gap-0 flex-column align-items-start">
@@ -267,11 +267,7 @@ const handleClick = () => {
                 :sizes="[2]"
                 class="show-image-in-menu flex-none"
                 :ratio="[1, 1]"
-                style="
-                  max-height: 60px;
-                  max-width: 60px;
-                  background-color: var(--background);
-                "
+                style="height: 60px; width: 60px; background-color: var(--background)"
               />
               <div class="info">
                 <h2>{{ props.data.title }}</h2>

@@ -2,7 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
-import { isAlreadyDownloaded } from "~/utilities/file-system"
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -46,8 +46,14 @@ const backHome = () => {
 const progress = ref(null)
 const handleDownload = async (epD) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
-
-  progress.value = await fetchAndStoreMp3(epD)
+  // if multiple segments, download all
+  if (Array.isArray(epD.audio)) {
+    epD.audio.forEach(async (segment, index) => {
+      progress.value = await fetchAndStoreMp3(epD, index)
+    })
+  } else {
+    progress.value = await fetchAndStoreMp3(epD)
+  }
 }
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")

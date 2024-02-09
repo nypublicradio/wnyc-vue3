@@ -169,12 +169,16 @@ const downloadFileToDesktop = async (url, filename) => {
     }
 }
 
-export const fetchAndStoreMp3 = async (file) => {
+export const fetchAndStoreMp3 = async (file, index = null) => {
 
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
-    if (isApp.value) {
-        downloadFileToDesktop(file.audio, `WNYC-download-${file.id}`)
+    if (!isApp.value) {
+        const audioFile = index !== null ? file.audio[index] : file.audio
+        const slug = file.segments ? file.segments[index].slug : file.meta.slug
+        console.log('file = ', file)
+        downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
+        return null
     } else {
         const alreadyDownloaded = isAlreadyDownloaded(file)
         // check if already downloaded and alert the user
@@ -184,6 +188,7 @@ export const fetchAndStoreMp3 = async (file) => {
                 summary: "Already downloaded",
                 life: 3000,
             }
+            return null
         } else {
             const fileSystem = useFileSystem()
             const fileSystemLS = useFileSystemLS()
