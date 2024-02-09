@@ -137,7 +137,6 @@ watch(storyData, async () => {
 // handle the toggle play button and tracking
 const togglePlayHere = (story, index = 0) => {
   togglePlayEpisode(story, index)
-  trackClickEvent("Click Tracking - Story Page", story.title, "toggle play")
 }
 </script>
 
@@ -207,7 +206,7 @@ const togglePlayHere = (story, index = 0) => {
           <div v-if="storyData.estimatedDuration">
             <PlayButton
               :label="getMinutes(storyData.estimatedDuration, 1)"
-              @click="togglePlayHere(storyData)"
+              @onClick="togglePlayHere(storyData)"
               :file="storyData.audio"
             />
           </div>

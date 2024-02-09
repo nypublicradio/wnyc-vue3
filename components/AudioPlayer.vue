@@ -22,6 +22,7 @@ import {
 } from "~/composables/states"
 
 import {
+  trackAudioEvent,
   trackClickEvent,
   templatizePublisherImageUrl,
   getDate,
@@ -39,6 +40,7 @@ import { initMediaSession } from "~/utilities/media-session.js"
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
+const isNewEpisode = ref(false)
 const isPlayerExpanded = useIsPlayerExpanded()
 const togglePlayTrigger = useTogglePlayTrigger()
 const isPlayerMinimized = useIsPlayerMinimized()
@@ -54,15 +56,12 @@ const playerHeight = ref(audioPlayerHeight + "px")
 const skipTime = 10
 
 const route = useRoute()
+
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
-  trackClickEvent(
-    "Click Tracking - Audio Player play toggle button",
-    "Audio Player",
-    `playing = ${e}`
-  )
   isEpisodePlaying.value = e
 }
+
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
   trackClickEvent(
@@ -72,14 +71,17 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
+
 /*function that fires when the episode has ended/completed */
 const episodeEnded = () => {
-  trackClickEvent("Event - Audio file ended", "Audio Player", currentEpisode.value.title)
+  // TO DO
+  // trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
 let delay = 0
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
-const switchEpisode = async () => {
+const switchEpisode = () => {
+  isNewEpisode.value = true
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
@@ -94,8 +96,8 @@ watch(currentEpisode, () => {
   switchEpisode()
 })
 
-watch(togglePlayTrigger, () => {
-  if (playerRef.value) playerRef.value.togglePlay()
+watch( togglePlayTrigger, () => {
+  if ( playerRef.value ) playerRef.value.togglePlay()
 })
 
 watch(skipAheadTrigger, () => {
@@ -126,7 +128,8 @@ watch(
 
 const getTitle = computed(() => {
   return currentEpisode?.value?.title
-})
+} )
+
 const getDescription = computed(() => {
   if (!isStreamLoading.value) {
     if (isLiveStream.value) {
@@ -138,7 +141,20 @@ const getDescription = computed(() => {
   } else {
     return "..."
   }
-})
+} )
+
+// handle the toggle play button and tracking
+const togglePlayHere = ( e ) => {
+  // prevent the player from toggling twice
+  if (isEpisodePlaying.value === e) return
+  updateUseIsEpisodePlaying( e )
+  let eventType = isEpisodePlaying.value ? "resume" : "pause"
+  if (isNewEpisode.value) {
+    eventType = "play"
+  }
+  trackAudioEvent( eventType, isLiveStream.value ? "live" : "on_demand", getTitle.value, getDescription.value )
+  isNewEpisode.value = false
+}
 </script>
 
 <template>
@@ -164,7 +180,7 @@ const getDescription = computed(() => {
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
         :nativeHLS="true"
-        @togglePlay="updateUseIsEpisodePlaying"
+        @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
         @is-live="isLiveStream = $event"

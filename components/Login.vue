@@ -9,6 +9,8 @@ import {
   useForgotPasswordSideBar,
 } from '~/composables/states'
 
+import { trackClickEvent } from "~/utilities/helpers"
+
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
@@ -23,8 +25,14 @@ const onSignupClick = () => {
   signUpSideBar.value = true
 }
 
+// actions to be taken with the login link is clicked
+const onLogin = (provider) => {
+  trackClickEvent("Click Tracking - log in", "Log In Sidebar - user section", provider)
+}
+
 // close all sidebars
 const closeAll = () => {
+  onLogin('email')
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
@@ -54,8 +62,8 @@ const openForgotPassword = () => {
         label="Log in with Google"
         severity="secondary"
         class="center my-3"
+        @submit-success="onLogin('google')"
       />
-
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -63,6 +71,7 @@ const openForgotPassword = () => {
         label="Log in with Apple"
         severity="secondary"
         class="center"
+        @submit-success="onLogin('apple')"
       />
       <Divider class="my-4" align="center">
         <b>or</b>

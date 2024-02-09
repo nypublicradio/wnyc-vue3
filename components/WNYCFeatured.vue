@@ -77,7 +77,6 @@ const togglePlayHere = async (item) => {
     saveRecentlyPlayed(item, mediaTypes.SEGMENT)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
-  trackClickEvent("Click Tracking - Horizontal Large Card", item.title, "toggle play")
 }
 </script>
 
@@ -99,7 +98,6 @@ const togglePlayHere = async (item) => {
               :file="item.audio"
               @onClick="togglePlayHere(item)"
               class="z-2"
-              @click.prevent
             />
           </template>
           <template #menu>

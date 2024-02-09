@@ -13,7 +13,6 @@ import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
-import { tr } from "date-fns/locale";
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
@@ -43,7 +42,6 @@ export const isAlreadyDownloaded = (file) => {
 
 const traverseDirectory = async (path) => {
     let result = []
-    //const files = await Filesystem.readdir({ path })
     const files = await Filesystem.readdir({
         path: path,
         directory: directoryToSaveTo,
@@ -68,14 +66,12 @@ const requestPermissions = async () => {
         const status = await Filesystem.requestPermissions()
         console.log("STATUS = ", status)
         if (status.publicStorage === "granted") {
-            //alert("STATUS GRANTED = " + JSON.stringify(status))
-            console.log("Permission granted!!!")
+            console.log("Permission granted")
         } else {
-            //alert("STATUS DENIED = " + JSON.stringify(status))
-            console.log("Permission denied!!!")
+            console.log("Permission denied")
         }
     } catch (error) {
-        console.error("Failed to request permissions!!!", error)
+        console.error("Failed to request permissions", error)
     }
 }
 
@@ -89,9 +85,7 @@ const createAppDirectory = async () => {
     const result = appDirectories.files.filter(
         (entry) => entry.type === "directory" && entry.name === appDirectory
     )
-    console.log('init app dir creation result = ' + JSON.stringify(result))
 
-    //alert('init app dir creationresult = ' + JSON.stringify(result))
     if (result.length === 0) {
         await Filesystem.mkdir({
             path: `${appDirectory}`,
@@ -120,7 +114,6 @@ export const initFileSystem = async () => {
 
 export const updateFileSystem = async () => {
     const fileSystem = useFileSystem()
-
     fileSystem.value = await traverseDirectory(appDirectory)
 }
 
@@ -159,7 +152,6 @@ const downloadFileToDesktop = async (url, filename) => {
         URL.revokeObjectURL(blobUrl);
 
         // alert the user
-
         globalToast.value = {
             severity: "success",
             summary: "Download Complete",
@@ -184,7 +176,7 @@ export const fetchAndStoreMp3 = async (file) => {
     if (!isApp.value) {
         downloadFileToDesktop(file.audio, `WNYC-download-${file.id}`)
     } else {
-        const alreadyDownloaded = await isAlreadyDownloaded(file)
+        const alreadyDownloaded = isAlreadyDownloaded(file)
         // check if already downloaded and alert the user
         if (alreadyDownloaded) {
             globalToast.value = {
@@ -220,10 +212,9 @@ export const fetchAndStoreMp3 = async (file) => {
             await Filesystem.downloadFile({
                 url: imgUrl,
                 path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
-                // progress: (progress) => { console.log('progress = ', progress) },
                 directory: directoryToSaveTo,
             })
-                .then((fileURI) => {
+                .then(() => {
                     console.log("image saved")
                 })
                 .catch((e) => {
@@ -244,7 +235,6 @@ export const fetchAndStoreMp3 = async (file) => {
                 //console.log('progress = ', progress.value.percentage)
             });
 
-
             Filesystem.downloadFile({
                 url: file.audio,
                 path: `${appDirectory}/${file.id}/${nameFromUrl}`,
@@ -252,9 +242,9 @@ export const fetchAndStoreMp3 = async (file) => {
                 progress: true,
             })
                 .then(async (fileURI) => {
+                    // remove the progress listener once the file is downloaded
                     progressListener.remove();
                     await updateFileSystem().then(() => {
-                        console.log('updated file system')
 
                         setTimeout(async () => {
                             // slight delay is needed for the fileSystem to update
@@ -285,9 +275,9 @@ export const fetchAndStoreMp3 = async (file) => {
                                 directoryImage: directoryImage,
                                 directoryAudio: directoryAudio,
                             }
-                            // add it to the list
+                            // add it to the fileSystemLS list
                             fileSystemLS.value.push(newFile)
-                            // save to local storage, selay needed for some reason
+                            // save to local storage, delay needed for some reason
                             setTimeout(async () => {
                                 await Preferences.set({
                                     key: localStorageKey,
