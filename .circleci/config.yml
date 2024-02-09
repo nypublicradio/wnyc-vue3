@@ -177,7 +177,7 @@ jobs:
           name: Capacitor Setup
           command: |
             npm run generate
-            npx cap sync
+            npx cap sync ios
       - run:
           name: fastlane
           command: |
@@ -230,7 +230,7 @@ jobs:
           name: Capacitor Setup
           command: |
             npm run generate
-            npx cap sync
+            npx cap sync android
       - run:
           name: fastlane
           command: |
