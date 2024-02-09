@@ -10,6 +10,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  small: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const theProgress = computed(() => {
@@ -18,10 +22,10 @@ const theProgress = computed(() => {
 </script>
 
 <template>
-  <div class="download-progress">
+  <div class="download-progress" :class="[{ small: props.small }]">
     <DownloadedSmallIcon
+      class="check-icon"
       v-if="theProgress === 100 || props.isDownloaded"
-      style="height: 16px; width: 29px"
     />
     <div v-else class="spin-holder">
       <i class="pi pi-spin pi-spinner"></i>
@@ -34,6 +38,10 @@ const theProgress = computed(() => {
 <style lang="scss" scoped>
 .download-progress {
   display: inherit;
+  .check-icon {
+    width: 29px;
+    height: 16px;
+  }
   .spin-holder {
     display: flex;
     align-items: center;
@@ -47,6 +55,19 @@ const theProgress = computed(() => {
 
       text-align: center;
       position: absolute;
+    }
+  }
+  &.small {
+    .check-icon {
+      width: 16px;
+    }
+    .spin-holder {
+      .pi-spinner {
+        font-size: 14px;
+      }
+      .percent {
+        display: none;
+      }
     }
   }
 }

@@ -78,7 +78,7 @@ watch(pagedata, () => {
             <EpisodeItem
               v-for="ep in section.data"
               :data="ep"
-              :key="ep.id"
+              :key="`home-${ep.id}`"
               @onClick="goToEpisodePage(ep)"
               showTitle
               :fallback-image="ep.headers.brand.logoImage.template"

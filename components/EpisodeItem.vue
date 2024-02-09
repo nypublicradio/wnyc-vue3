@@ -25,7 +25,7 @@ import {
   isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
-import { FALLBACKIMAGE } from "~/composables/globals"
+import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 const toast = useToast()
 
 const $primevue = usePrimeVue()
@@ -40,10 +40,10 @@ const props = defineProps({
     type: Object,
     default: {},
   },
-  // fallbackImage: {
-  //   type: String,
-  //   default: "./logo.png",
-  // },
+  fallbackImage: {
+    type: String,
+    default: "./logo.png",
+  },
   imgSrc: {
     type: String,
     default: null,
@@ -53,6 +53,10 @@ const props = defineProps({
     default: false,
   },
   saved: {
+    type: Boolean,
+    default: false,
+  },
+  isDownloaded: {
     type: Boolean,
     default: false,
   },
@@ -111,11 +115,11 @@ const handleAddToFavorites = async (bucketItem) => {
     accountPromptSideBar.value = true
   }
 }
-let progress = reactive(null)
+let progress = ref(null)
 
 const handleDownload = async (bucketItem) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
-  progress = await fetchAndStoreMp3(bucketItem)
+  progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
 // set the items for the Dot menu
@@ -171,12 +175,15 @@ const hasAudio = computed(() => {
   )
 })
 
-const imgSrcUrl = ref("")
-const isDownloaded = ref(isAlreadyDownloaded(props.data))
-if (isDownloaded.value) {
+const imgSrcUrl = ref(null)
+if (props.isDownloaded) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
-  imgSrcUrl.value = props.data?.image?.template ?? props.data?.image ?? FALLBACKIMAGELOCAL
+  imgSrcUrl.value =
+    props.data?.image?.template ??
+    props.data?.image ??
+    props.fallbackImage ??
+    FALLBACKIMAGELOCAL
 }
 
 const handleClick = () => {
@@ -220,9 +227,10 @@ const handleClick = () => {
                 </p>
                 <!-- FROM CapacitorJS Preferences local storage -->
                 <DownloadProgress
-                  v-if="progress || isDownloaded"
-                  :isDownloaded="isDownloaded"
+                  v-if="progress || isAlreadyDownloaded(props.data)"
+                  :isDownloaded="isAlreadyDownloaded(props.data)"
                   :progress="progress"
+                  small
                 />
                 <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
               </div>

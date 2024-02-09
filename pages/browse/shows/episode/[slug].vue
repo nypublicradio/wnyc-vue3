@@ -43,7 +43,6 @@ const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
-
 const progress = ref(null)
 const handleDownload = async (epD) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
