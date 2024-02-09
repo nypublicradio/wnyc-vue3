@@ -228,7 +228,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                 })
 
             // download the MP3
-            const nameFromUrl = isSegments ? `${slug}.mp3` : fileNameFromURL(file.audio)
+            const audioNameFromUrl = isSegments ? `${slug}.mp3` : fileNameFromURL(file.audio)
 
             // Add progress listener
             const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
@@ -242,8 +242,8 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
             });
 
             Filesystem.downloadFile({
-                url: file.audio,
-                path: `${appDirectory}/${file.id}${index ?? ''}/${nameFromUrl}`,
+                url: isSegments ? file.audio[index] : file.audio,
+                path: `${appDirectory}/${file.id}${index ?? ''}/${audioNameFromUrl}`,
                 directory: directoryToSaveTo,
                 progress: true,
             })
