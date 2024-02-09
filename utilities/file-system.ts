@@ -169,12 +169,17 @@ const downloadFileToDesktop = async (url, filename) => {
     }
 }
 
+
+
 export const fetchAndStoreMp3 = async (file, index = null) => {
 
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
     const isSegments = file.segments ? true : false
     const slug = isSegments ? file.segments[index].slug : file.meta.slug
+    const uniqueDir = file.segments ? `${file.id}-${file.segments[index].segmentNumber}` : file.id
+
+
     //desktop download
     if (!isApp.value) {
         const audioFile = index !== null ? file.audio[index] : file.audio
@@ -203,7 +208,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
 
             // create the directory
             await Filesystem.mkdir({
-                path: `${appDirectory}/${file.id}${index ?? ''}`,
+                path: `${appDirectory}/${file.id}`,
                 directory: directoryToSaveTo,
             }).catch((e) => {
                 console.error("Unable to create directory", e)
@@ -217,7 +222,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
             const imgNameFromUrl = fileNameFromURL(file.image.url)
             await Filesystem.downloadFile({
                 url: imgUrl,
-                path: `${appDirectory}/${file.id}${index ?? ''}/${imgNameFromUrl}`,
+                path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
                 directory: directoryToSaveTo,
             })
                 .then(() => {
@@ -243,7 +248,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
 
             Filesystem.downloadFile({
                 url: isSegments ? file.audio[index] : file.audio,
-                path: `${appDirectory}/${file.id}${index ?? ''}/${audioNameFromUrl}`,
+                path: `${appDirectory}/${file.id}/${audioNameFromUrl}`,
                 directory: directoryToSaveTo,
                 progress: true,
             })
@@ -280,8 +285,10 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                                 directory: thisFileSystemEntry,
                                 directoryImage: directoryImage,
                                 directoryAudio: directoryAudio,
+                                id: uniqueDir,
                                 title: isSegments ? file.segments[index].title : file.title,
                             }
+                            //console.log('newFile = ', newFile)
                             // add it to the fileSystemLS list
                             fileSystemLS.value.push(newFile)
                             // save to local storage, delay needed for some reason

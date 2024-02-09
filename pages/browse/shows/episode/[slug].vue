@@ -45,6 +45,7 @@ const backHome = () => {
 }
 const progress = ref(null)
 const handleDownload = async (epD) => {
+  console.log("epD  =  ", epD)
   // if multiple audio segments, download all
   if (Array.isArray(epD.audio)) {
     epD.audio.forEach(async (segment, index) => {
