@@ -45,13 +45,18 @@ const backHome = () => {
 }
 const progress = ref(null)
 const handleDownload = async (epD) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
-  // if multiple segments, download all
+  // if multiple audio segments, download all
   if (Array.isArray(epD.audio)) {
     epD.audio.forEach(async (segment, index) => {
+      trackClickEvent(
+        "Click Tracking - Audio Download segment",
+        "Episode slug",
+        epD.segments[index].title
+      )
       progress.value = await fetchAndStoreMp3(epD, index)
     })
   } else {
+    trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
     progress.value = await fetchAndStoreMp3(epD)
   }
 }
@@ -99,7 +104,7 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
-      label: "Download",
+      label: `Download ${bucketItem.segments ? "All" : ""}`,
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
       title: bucketItem?.title,

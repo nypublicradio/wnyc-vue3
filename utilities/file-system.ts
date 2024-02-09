@@ -176,7 +176,6 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
     if (!isApp.value) {
         const audioFile = index !== null ? file.audio[index] : file.audio
         const slug = file.segments ? file.segments[index].slug : file.meta.slug
-        console.log('file = ', file)
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
