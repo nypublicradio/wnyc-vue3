@@ -154,7 +154,7 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
     audio_type: audioType,
     audio_title: audioTitle,
     audio_show: audioShow,
-    wnyc_user_id: currentUser.value?.id
+    user_id: currentUser.value?.id
   })
 }
 
@@ -166,7 +166,7 @@ export const trackClickEvent = (category, component, label) => {
     event_category: category,
     component: component,
     event_label: label,
-    wnyc_user_id: currentUser.value?.id
+    user_id: currentUser.value?.id
   })
 }
 
