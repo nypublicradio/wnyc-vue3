@@ -119,8 +119,12 @@ const handleDelete = (file) => {
         </div>
       </div>
       <!-- <div class="grid">
-        <pre class="col-6 text-left text-xs">fileSystem = {{ fileSystem }}</pre>
-        <pre class="col-6 text-left text-xs">fileSystemLS = {{ fileSystemLS }}</pre>
+        <pre class="col-6 text-left" style="font-size: 8px">
+fileSystem = {{ fileSystem }}</pre
+        >
+        <pre class="col-6 text-left" style="font-size: 8px">
+fileSystemLS = {{ fileSystemLS }}</pre
+        >
       </div> -->
     </div>
   </div>

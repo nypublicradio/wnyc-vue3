@@ -1,5 +1,4 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
-
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
@@ -11,7 +10,6 @@ import {
   useCurrentUserFavorites,
   useTogglePlayTrigger,
 } from "~/composables/states"
-import { isAlreadyDownloaded, getDownloadedImageUri } from "~/utilities/file-system"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
@@ -573,26 +571,16 @@ export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
 }
 
 // normalize the bucket item data for the player
-export const prepForPlayer = (item, index = null) => {
-  console.log('prepForPlayer item = ', item)
+export const prepForPlayer = async (item, index = null) => {
   const isSegment = index !== null
 
   const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio
-
-  const getImage = async (item) => {
-    const isDownloaded = await isAlreadyDownloaded(item)
-    if (isDownloaded) {
-      return await getDownloadedImageUri(item)
-    } else {
-      return item?.image?.template ?? item?.listingImage?.template ?? item?.showImage ?? FALLBACKIMAGELOCAL
-    }
-  }
 
   return {
     ...item,
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
-    image: getImage(item),
+    image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage ?? FALLBACKIMAGELOCAL,
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
@@ -600,20 +588,20 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = (media, index = 0) => {
+export const togglePlayEpisode = async (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
 
 
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = prepForPlayer(media)
+      currentEpisode.value = await prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   } else {
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = prepForPlayer(media, index)
+      currentEpisode.value = await prepForPlayer(media, index)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }

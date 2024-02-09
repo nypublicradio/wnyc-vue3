@@ -173,6 +173,7 @@ const downloadFileToDesktop = async (url, filename) => {
 }
 
 export const fetchAndStoreMp3 = async (file) => {
+
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
     if (!isApp.value) {
@@ -313,9 +314,9 @@ export const playStoredMp3 = async (file) => {
     const togglePlayTrigger = useTogglePlayTrigger()
 
     if (currentEpisode.value?.directoryAudio?.name !== file.directoryAudio?.name) {
-        file = prepForPlayer(file)
+        file = await prepForPlayer(file)
         try {
-            const path = `${appDirectory}/${file.id}/${file.directoryAudio.name}`
+            const path = `${appDirectory}/${file.id}/${file?.directoryAudio?.name}`
 
             const result = await Filesystem.getUri({
                 path: path,

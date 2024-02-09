@@ -71,9 +71,9 @@ const onMenuChange = (e) => {
 }
 
 // handle the play button click
-const togglePlayHere = (item) => {
+const togglePlayHere = async (item) => {
   if (currentEpisode.value?.id !== item.id) {
-    currentEpisode.value = prepForPlayer(item)
+    currentEpisode.value = await prepForPlayer(item)
     saveRecentlyPlayed(item, mediaTypes.SEGMENT)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value

@@ -20,6 +20,7 @@ import {
   useSkipBackTrigger,
   usePlayerSeek,
 } from "~/composables/states"
+
 import {
   trackClickEvent,
   templatizePublisherImageUrl,
@@ -27,7 +28,6 @@ import {
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
-import { get } from "@vueuse/core"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -84,7 +84,7 @@ const switchEpisode = async () => {
   setTimeout(() => {
     showPlayer.value = true
     // initiallizes the media session in ~/utilities/media-session.js
-    //initMediaSession(currentEpisode.value, skipTime)
+    initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
 }
@@ -142,13 +142,6 @@ const getDescription = computed(() => {
 </script>
 
 <template>
-  <!-- <div class="audio-player"> -->
-  <!-- <Button
-    :label="playerSeek.time"
-    @click="playerSeek.bool = playerSeek.bool ? false : true"
-    class="absolute"
-    style="top: 200px; z-index: 672397862938679"
-  /> -->
   <div v-if="currentEpisode">
     <transition name="player">
       <VNewPersistentPlayer
@@ -166,7 +159,7 @@ const getDescription = computed(() => {
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"
-        :image="templatizePublisherImageUrl(currentEpisode?.image)"
+        :image="templatizePublisherImageUrl(currentEpisode?.image) ?? FALLBACKIMAGELOCAL"
         :file="currentEpisode?.hls ?? currentEpisode?.file"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
