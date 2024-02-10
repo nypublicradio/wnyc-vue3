@@ -172,22 +172,23 @@ const downloadFileToDesktop = async (url, filename) => {
 
 
 export const fetchAndStoreMp3 = async (file, index = null) => {
-
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
     const isSegments = file.segments ? true : false
     const slug = isSegments ? file.segments[index].slug : file.meta.slug
-    const uniqueDir = file.segments ? `${file.id}-${file.segments[index].segmentNumber}` : file.id
+    // set the originalId initally only to keep track of the original id
+    file.originalId = file.originalId || file.id;
+    const uniqueDirId = file.segments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
+    file.id = uniqueDirId
 
-
-    //desktop download
     if (!isApp.value) {
+        //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
-        const alreadyDownloaded = isAlreadyDownloaded(file)
         // check if already downloaded and alert the user
+        const alreadyDownloaded = isAlreadyDownloaded(file)
         if (alreadyDownloaded) {
             globalToast.value = {
                 severity: "info",
@@ -285,10 +286,10 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                                 directory: thisFileSystemEntry,
                                 directoryImage: directoryImage,
                                 directoryAudio: directoryAudio,
-                                id: uniqueDir,
+                                id: uniqueDirId,
                                 title: isSegments ? file.segments[index].title : file.title,
                             }
-                            //console.log('newFile = ', newFile)
+                            console.log('newFile = ', newFile)
                             // add it to the fileSystemLS list
                             fileSystemLS.value.push(newFile)
                             // save to local storage, delay needed for some reason

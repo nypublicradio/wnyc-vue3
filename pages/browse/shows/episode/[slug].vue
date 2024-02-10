@@ -45,16 +45,18 @@ const backHome = () => {
 }
 const progress = ref(null)
 const handleDownload = async (epD) => {
-  console.log("epD  =  ", epD)
   // if multiple audio segments, download all
   if (Array.isArray(epD.audio)) {
     epD.audio.forEach(async (segment, index) => {
-      trackClickEvent(
-        "Click Tracking - Audio Download segment",
-        "Episode slug",
-        epD.segments[index].title
-      )
-      progress.value = await fetchAndStoreMp3(epD, index)
+      // delay needed to prevent too many requests at once and to keep the logic alignedin the fetchAndStoreMp3 function
+      setTimeout(async () => {
+        trackClickEvent(
+          "Click Tracking - Audio Download segment",
+          "Episode slug",
+          epD.segments[index].title
+        )
+        progress.value = await fetchAndStoreMp3(epD, index)
+      }, 1000 * index)
     })
   } else {
     trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
