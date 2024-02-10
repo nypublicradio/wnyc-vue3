@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
-import { initFileSystem, initReadOfPreferences } from "~/utilities/file-system"
+import { initFileSystem } from "~/utilities/file-system"
 
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
-import { Preferences } from "@capacitor/preferences"
 import {
   //PushNotificationSchema,
   PushNotifications,
@@ -15,7 +14,6 @@ import {
   useIsApp,
   useCurrentUserProfile,
   useGlobalToast,
-  useFileSystemLS,
   useIsNetworkConnected,
   //useHomepageData,
 } from "~/composables/states"
@@ -36,7 +34,6 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
-const fileSystemLS = useFileSystemLS()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)

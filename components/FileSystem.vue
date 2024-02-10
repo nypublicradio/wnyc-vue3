@@ -32,9 +32,7 @@ watch(
 )
 
 const handleRoute = (file) => {
-  console.log("huh")
   if (isNetworkConnected.value) {
-    console.log("isNetworkConnected.value", isNetworkConnected.value)
     switch (file.type) {
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
@@ -52,7 +50,6 @@ const handleRoute = (file) => {
 }
 
 const handlePlay = (file) => {
-  console.log("play")
   playStoredMp3(file)
   // GA tracking
   trackClickEvent(

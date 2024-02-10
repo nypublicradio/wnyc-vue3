@@ -43,7 +43,6 @@ const getDotMenuItems = (bucketItem) => {
       title: bucketItem.title,
       embedCode: bucketItem.embedCode,
       command: () => {
-        console.log("bucketItem", bucketItem)
         copyToClipBoard(bucketItem.embedCode)
           ? toast.add({
               severity: "info",

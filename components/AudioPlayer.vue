@@ -28,7 +28,7 @@ import {
   getDate,
 } from "~/utilities/helpers"
 
-import { initMediaSession } from "~/utilities/media-session.js"
+//import { initMediaSession } from "~/utilities/media-session.js"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -96,8 +96,8 @@ watch(currentEpisode, () => {
   switchEpisode()
 })
 
-watch( togglePlayTrigger, () => {
-  if ( playerRef.value ) playerRef.value.togglePlay()
+watch(togglePlayTrigger, () => {
+  if (playerRef.value) playerRef.value.togglePlay()
 })
 
 watch(skipAheadTrigger, () => {
@@ -128,7 +128,7 @@ watch(
 
 const getTitle = computed(() => {
   return currentEpisode?.value?.title
-} )
+})
 
 const getDescription = computed(() => {
   if (!isStreamLoading.value) {
@@ -141,18 +141,23 @@ const getDescription = computed(() => {
   } else {
     return "..."
   }
-} )
+})
 
 // handle the toggle play button and tracking
-const togglePlayHere = ( e ) => {
+const togglePlayHere = (e) => {
   // prevent the player from toggling twice
   if (isEpisodePlaying.value === e) return
-  updateUseIsEpisodePlaying( e )
+  updateUseIsEpisodePlaying(e)
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
   if (isNewEpisode.value) {
     eventType = "play"
   }
-  trackAudioEvent( eventType, isLiveStream.value ? "live" : "on_demand", getTitle.value, getDescription.value )
+  trackAudioEvent(
+    eventType,
+    isLiveStream.value ? "live" : "on_demand",
+    getTitle.value,
+    getDescription.value
+  )
   isNewEpisode.value = false
 }
 </script>

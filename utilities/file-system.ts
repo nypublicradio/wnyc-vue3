@@ -10,7 +10,7 @@ import {
 } from "~/composables/states"
 import { nextTick } from 'vue'
 import { Capacitor } from '@capacitor/core';
-import { prepForPlayer, resizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
+import { prepForPlayer, resizePublisherImageUrl } from "~/utilities/helpers"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 
@@ -50,7 +50,7 @@ const traverseDirectory = async (path) => {
     files.files.forEach((file, index) => {
         result[index] = file
     })
-    result.forEach(async (file, index) => {
+    result.forEach(async (file) => {
         const fullPath = `${path}/${file.name}`
         const stats = await Filesystem.readdir({
             path: fullPath,
@@ -96,6 +96,19 @@ const createAppDirectory = async () => {
                 console.error("Unable to create directory", e)
             })
     }
+}
+
+// initial pull of the preferencce plugin files data
+
+export const initReadOfPreferences = async () => {
+    let val: any = []
+    try {
+        const { value } = await Preferences.get({ key: "fileSystemLS" })
+        val = value ?? "[]"
+    } catch (error) {
+        console.error("preference read error = ", error)
+    }
+    return JSON.parse(val ?? "[]")
 }
 
 export const initFileSystem = async () => {
@@ -289,7 +302,6 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                                 id: uniqueDirId,
                                 title: isSegments ? file.segments[index].title : file.title,
                             }
-                            console.log('newFile = ', newFile)
                             // add it to the fileSystemLS list
                             fileSystemLS.value.push(newFile)
                             // save to local storage, delay needed for some reason
@@ -443,15 +455,4 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
 
-// initial pull of the preferencce plugin files data
 
-export const initReadOfPreferences = async () => {
-    let val: any = []
-    try {
-        const { value } = await Preferences.get({ key: "fileSystemLS" })
-        val = value ?? "[]"
-    } catch (error) {
-        console.error("preference read error = ", error)
-    }
-    return JSON.parse(val ?? "[]")
-}

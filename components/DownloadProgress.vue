@@ -1,6 +1,4 @@
 <script setup>
-import { de } from "date-fns/locale"
-
 const props = defineProps({
   progress: {
     type: Object,
