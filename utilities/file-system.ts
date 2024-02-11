@@ -186,20 +186,6 @@ const downloadFileToDesktop = async (url, filename) => {
     }
 }
 
-// handle initial call to determine if it is a single download or multiple segment downloads
-export const fetchAndStoreMp3 = (file) => {
-    // if multiple audio and multiple segments, download all
-    if (Array.isArray(file.audio) && Array.isArray(file.segments)) {
-        file.audio.forEach((segment, index) => {
-            setTimeout(async () => {
-                return await handleFetchAndStoreMp3(file, index)
-            }, 1000 * index)
-        })
-    } else {
-        return handleFetchAndStoreMp3(file)
-    }
-}
-
 // download and store the mp3 file and image file 
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const isApp = useIsApp()
@@ -345,6 +331,20 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 })
             return progress
         }
+    }
+}
+
+// handle initial call to determine if it is a single download or multiple segment downloads
+export const fetchAndStoreMp3 = (file) => {
+    // if multiple audio and multiple segments, download all
+    if (Array.isArray(file.audio) && Array.isArray(file.segments)) {
+        file.audio.forEach((segment, index) => {
+            setTimeout(async () => {
+                return await handleFetchAndStoreMp3(file, index)
+            }, 1000 * index)
+        })
+    } else {
+        return handleFetchAndStoreMp3(file)
     }
 }
 
