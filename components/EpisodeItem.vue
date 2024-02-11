@@ -115,7 +115,7 @@ const handleAddToFavorites = async (bucketItem) => {
     accountPromptSideBar.value = true
   }
 }
-let progress = ref(null)
+const progress = ref(null)
 
 const handleDownload = async (bucketItem) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)

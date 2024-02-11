@@ -125,7 +125,7 @@ export const resizePublisherImageUrl = (
 }
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
-  if (url && url.includes("media.wnyc.org")) {
+  if (url?.includes("media.wnyc.org")) {
     const pieces = url.split("/")
     const finalUrlArr: string[] = []
 
@@ -569,7 +569,7 @@ export const getFavoritedItems = async () => {
   }
 }
 
-export const checkIsFavorited = async (slug: string) => {
+export const checkIsFavorited = (slug: string) => {
   const user = useCurrentUser()
   if (user.value) {
     const favorites = useCurrentUserFavorites()
@@ -581,12 +581,12 @@ export const checkIsFavorited = async (slug: string) => {
   return false
 }
 
-export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
+export const saveRecentlyPlayed = (media: object, typeArg: string) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }
 
 // normalize the bucket item data for the player
-export const prepForPlayer = async (item, index = null) => {
+export const prepForPlayer = (item, index = null) => {
   const isSegment = index !== null
 
   const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio

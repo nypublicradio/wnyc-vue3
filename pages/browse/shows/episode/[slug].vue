@@ -47,7 +47,7 @@ const progress = ref(null)
 const handleDownload = async (epD) => {
   // if multiple audio segments, download all
   if (Array.isArray(epD.audio)) {
-    epD.audio.forEach(async (segment, index) => {
+    epD.audio.forEach((segment, index) => {
       // delay needed to prevent too many requests at once and to keep the logic alignedin the fetchAndStoreMp3 function
       setTimeout(async () => {
         trackClickEvent(

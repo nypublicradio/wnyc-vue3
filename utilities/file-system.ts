@@ -1,4 +1,4 @@
-import { ref } from "vue"
+import { ref, nextTick } from "vue"
 import { Filesystem, Directory } from "@capacitor/filesystem"
 import {
     useFileSystem,
@@ -8,7 +8,6 @@ import {
     useTogglePlayTrigger,
     useIsApp
 } from "~/composables/states"
-import { nextTick } from 'vue'
 import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl } from "~/utilities/helpers"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
@@ -41,7 +40,7 @@ export const isAlreadyDownloaded = (file) => {
 }
 
 const traverseDirectory = async (path) => {
-    let result = []
+    const result = []
     const files = await Filesystem.readdir({
         path: path,
         directory: directoryToSaveTo,
@@ -150,18 +149,18 @@ const downloadFileToDesktop = async (url, filename) => {
         const blobUrl = URL.createObjectURL(blob);
 
         // Create an anchor element and set its attributes
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
+        const aElm = document.createElement('a');
+        aElm.href = blobUrl;
+        aElm.download = filename;
 
         // Append the anchor element to the body
         document.body.appendChild(a);
 
         // Trigger a click event on the anchor element to start the download
-        a.click();
+        aElm.click();
 
         // Cleanup: remove the anchor element and revoke the Blob URL
-        document.body.removeChild(a);
+        document.body.removeChild(aElm);
         URL.revokeObjectURL(blobUrl);
 
         // alert the user
@@ -389,7 +388,7 @@ export const getDownloadedImageUri = async (file) => {
     }
 }
 
-export const deleteDirectory = async (file) => {
+export const deleteDirectory = (file) => {
     const fileSystemLS = useFileSystemLS()
     Filesystem.rmdir({
         path: `${appDirectory}/${file.id}`,
@@ -417,7 +416,7 @@ export const deleteDirectory = async (file) => {
         })
 }
 
-export const deleteAll = async () => {
+export const deleteAll = () => {
     const fileSystemLS = useFileSystemLS()
     Filesystem.rmdir({
         path: `${appDirectory}`,
