@@ -22,7 +22,6 @@ const updatePositionState = () => {
 
 export const initMediaSession = (episode, skipTime) => {
     currentEpisode = episode
-    console.log('setting meta data')
     MediaSession.setMetadata({
         title: currentEpisode.title,
         artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
