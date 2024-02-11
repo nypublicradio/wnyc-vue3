@@ -103,7 +103,7 @@ const createAppDirectory = async () => {
 
 // initial pull of the preferencce plugin files data
 export const initReadOfPreferences = async () => {
-    let val: any = []
+    let val = []
     try {
         const { value } = await Preferences.get({ key: "fileSystemLS" })
         val = value ?? "[]"
@@ -297,7 +297,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
                             })
 
                             //append directory,image and aduio to the file object
-                            const newFile: any = {
+                            const newFile = {
                                 ...file,
                                 directory: thisFileSystemEntry,
                                 directoryImage: directoryImage,
@@ -407,7 +407,7 @@ export const deleteDirectory = (file) => {
             // also delete from the fileSystemLS state and local storage
             setTimeout(async () => {
                 const updatedFileSystemLS = fileSystemLS.value.filter(
-                    (entry: any) => entry.id !== file.id
+                    (entry) => entry.id !== file.id
                 )
                 fileSystemLS.value = updatedFileSystemLS
 
