@@ -31,6 +31,7 @@ watch(
   { deep: true }
 )
 
+// handle the routing of the stored audio file IF network is connected
 const handleRoute = (file) => {
   if (isNetworkConnected.value) {
     switch (file.type) {
@@ -48,7 +49,7 @@ const handleRoute = (file) => {
     }
   }
 }
-
+// handle the playing of the stored audio file and GA tracking
 const handlePlay = (file) => {
   playStoredMp3(file)
   // GA tracking
@@ -58,6 +59,7 @@ const handlePlay = (file) => {
     `playing = ${file.directoryAudio.name}`
   )
 }
+// handle the delete of the stored audio file and GA tracking
 const handleDelete = (file) => {
   deleteDirectory(file)
   // GA tracking

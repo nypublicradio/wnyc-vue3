@@ -116,7 +116,7 @@ const handleAddToFavorites = async (bucketItem) => {
   }
 }
 const progress = ref(null)
-
+// handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
@@ -186,6 +186,7 @@ if (props.isDownloaded) {
     FALLBACKIMAGELOCAL
 }
 
+// handle click event emit
 const handleClick = () => {
   emit("on-click")
 }

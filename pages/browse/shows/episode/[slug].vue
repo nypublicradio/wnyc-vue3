@@ -44,6 +44,7 @@ const backHome = () => {
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
 const progress = ref(null)
+// handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
   // if multiple audio segments, download all
   if (Array.isArray(epD.audio)) {

@@ -19,6 +19,7 @@ export const localStorageKey = "fileSystemLS"
 const directoryToSaveTo = Directory.External
 const appDirectory = "wnyc-downloads"
 
+// get the file name from a URL
 export const fileNameFromURL = (url: string) => {
     let urlWithoutParams = url
     if (url.includes("?")) {
@@ -27,6 +28,7 @@ export const fileNameFromURL = (url: string) => {
     return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)
 }
 
+// check if a file is already downloaded
 export const isAlreadyDownloaded = (file) => {
     const isApp = useIsApp()
     if (isApp) {
@@ -39,6 +41,7 @@ export const isAlreadyDownloaded = (file) => {
     }
 }
 
+// traverse the directory and return the filesystem
 const traverseDirectory = async (path) => {
     const result = []
     const files = await Filesystem.readdir({
@@ -60,6 +63,7 @@ const traverseDirectory = async (path) => {
     return result
 }
 
+// request permissions for the Filesystem. Not sure if we really need this. 
 const requestPermissions = async () => {
     try {
         const status = await Filesystem.requestPermissions()
@@ -74,8 +78,8 @@ const requestPermissions = async () => {
     }
 }
 
+// initial check to see if the appDirectory exists and if not, create it
 const createAppDirectory = async () => {
-    // initial check to see if the appDirectory exists and if not, create it
     const appDirectories = await Filesystem.readdir({
         path: "",
         directory: directoryToSaveTo,
@@ -98,7 +102,6 @@ const createAppDirectory = async () => {
 }
 
 // initial pull of the preferencce plugin files data
-
 export const initReadOfPreferences = async () => {
     let val: any = []
     try {
@@ -110,6 +113,7 @@ export const initReadOfPreferences = async () => {
     return JSON.parse(val ?? "[]")
 }
 
+// initializing the fileSystem, gets called in the setup function of the App.vue
 export const initFileSystem = async () => {
     const fileSystem = useFileSystem()
     const fileSystemLS = useFileSystemLS()
@@ -124,12 +128,13 @@ export const initFileSystem = async () => {
     fileSystemLS.value = await initReadOfPreferences()
 }
 
+// update the fileSystem, this is called after a download or delete
 export const updateFileSystem = async () => {
     const fileSystem = useFileSystem()
     fileSystem.value = await traverseDirectory(appDirectory)
 }
 
-
+// handle downloading a file to the desktop
 const downloadFileToDesktop = async (url, filename) => {
     const globalToast = useGlobalToast()
     globalToast.value = {
@@ -181,8 +186,7 @@ const downloadFileToDesktop = async (url, filename) => {
     }
 }
 
-
-
+// download and store the mp3 file and image file
 export const fetchAndStoreMp3 = async (file, index = null) => {
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
@@ -330,6 +334,7 @@ export const fetchAndStoreMp3 = async (file, index = null) => {
     }
 }
 
+// handle playing the stored mp3 files and it stored image
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
     const togglePlayTrigger = useTogglePlayTrigger()
@@ -353,6 +358,7 @@ export const playStoredMp3 = async (file) => {
             await nextTick()
             const savedImageSrc = Capacitor.convertFileSrc(image.uri);
 
+            // set the currentEpisode to the file with updated stored URIs for the image adn audio
             currentEpisode.value = {
                 ...file,
                 file: savedAudioSrc,
@@ -363,13 +369,14 @@ export const playStoredMp3 = async (file) => {
         } catch (e) {
             console.error("Unable to read file", e)
         }
+        // not sure how we would handle tracking the saveRecentlyPlayed without a connection. If this were to become a feature, we would need to save the file to local storage and then save it to the server when a connection is re-established
         //saveRecentlyPlayed(file, file.type)
     }
 
     togglePlayTrigger.value = !togglePlayTrigger.value
-
 }
 
+// handle getting the stored image URI
 export const getDownloadedImageUri = async (file) => {
     //const isApp = useIsApp()
     const fileName = file.directoryImage?.name
@@ -388,6 +395,7 @@ export const getDownloadedImageUri = async (file) => {
     }
 }
 
+// handle recursively deleting a directory
 export const deleteDirectory = (file) => {
     const fileSystemLS = useFileSystemLS()
     Filesystem.rmdir({
@@ -416,6 +424,7 @@ export const deleteDirectory = (file) => {
         })
 }
 
+//handle deleting recursively the root appDirectory and reinitializing the fileSystem
 export const deleteAll = () => {
     const fileSystemLS = useFileSystemLS()
     Filesystem.rmdir({
@@ -442,6 +451,7 @@ export const deleteAll = () => {
         })
 }
 
+// helper function associated with the the file system to format the file size for display
 export const formatFileSize = (bytes: number, decimals = 2) => {
     if (bytes === 0) return "0 B"
 

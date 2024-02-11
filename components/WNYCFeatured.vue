@@ -21,7 +21,7 @@ const props = defineProps({
 })
 
 const progress = ref({})
-
+// handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
   trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
 

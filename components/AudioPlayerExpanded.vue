@@ -75,7 +75,7 @@ const handleAddToFavorites = async () => {
     accountPromptSideBar.value = true
   }
 }
-
+// handle the download of the audio file request and feed the progress
 const handleDownload = () => {
   // update CapacitorJs filesystem
   fetchAndStoreMp3(currentEpisode.value)
