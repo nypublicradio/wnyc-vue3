@@ -139,11 +139,10 @@ watch(episode, () => {
   //console.log("episode = ", episodeData.value)
 })
 
-const isSegment = computed(() => {
-  return (
-    Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segment)
-  )
-})
+const isSegment = computed(
+  () =>
+    Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segments)
+)
 </script>
 
 <template>
