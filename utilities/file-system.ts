@@ -33,7 +33,7 @@ export const isAlreadyDownloaded = (file) => {
     const isApp = useIsApp()
     if (isApp) {
         const fileSystemLS = useFileSystemLS()
-        const check = fileSystemLS.value.find((entry) => entry.id === file.id)
+        const check = fileSystemLS.value.find((entry) => entry.id === file.id || entry.originalId === file.id)
         const alreadyDownloaded = check === undefined ? false : true
         return alreadyDownloaded
     } else {
@@ -186,18 +186,32 @@ const downloadFileToDesktop = async (url, filename) => {
     }
 }
 
-// download and store the mp3 file and image file
-export const fetchAndStoreMp3 = async (file, index = null) => {
+// handle initial call to determine if it is a single download or multiple segment downloads
+export const fetchAndStoreMp3 = (file) => {
+    // if multiple audio and multiple segments, download all
+    if (Array.isArray(file.audio) && Array.isArray(file.segments)) {
+        file.audio.forEach((segment, index) => {
+            setTimeout(async () => {
+                return await handleFetchAndStoreMp3(file, index)
+            }, 1000 * index)
+        })
+    } else {
+        return handleFetchAndStoreMp3(file)
+    }
+}
+
+// download and store the mp3 file and image file 
+export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
-    const isSegments = file.segments ? true : false
+    const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false
     const slug = isSegments ? file.segments[index].slug : file.meta.slug
     // set the originalId initally only to keep track of the original id
     file.originalId = file.originalId || file.id;
-    const uniqueDirId = file.segments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
+    const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
     file.id = uniqueDirId
 
-    if (!isApp.value) {
+    if (isApp.value) {
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)

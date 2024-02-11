@@ -46,24 +46,10 @@ const backHome = () => {
 const progress = ref(null)
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
-  // if multiple audio segments, download all
-  if (Array.isArray(epD.audio)) {
-    epD.audio.forEach((segment, index) => {
-      // delay needed to prevent too many requests at once and to keep the logic alignedin the fetchAndStoreMp3 function
-      setTimeout(async () => {
-        trackClickEvent(
-          "Click Tracking - Audio Download segment",
-          "Episode slug",
-          epD.segments[index].title
-        )
-        progress.value = await fetchAndStoreMp3(epD, index)
-      }, 1000 * index)
-    })
-  } else {
-    trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
-    progress.value = await fetchAndStoreMp3(epD)
-  }
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+  progress.value = await fetchAndStoreMp3(epD)
 }
+
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }
@@ -108,7 +94,9 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
-      label: `Download ${bucketItem.segments ? "All" : ""}`,
+      label: `Download ${
+        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+      }`,
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
       title: bucketItem?.title,
@@ -149,6 +137,12 @@ const togglePlayHere = (epData, index = 0) => {
 watch(episode, () => {
   episodeData.value = episode.value
   //console.log("episode = ", episodeData.value)
+})
+
+const isSegment = computed(() => {
+  return (
+    Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segment)
+  )
 })
 </script>
 
@@ -218,14 +212,14 @@ watch(episode, () => {
         <div class="flex align-items-center justify-content-between">
           <div class="flex align-items-center gap-2">
             <PlayButton
-              v-if="!episodeData?.segments && episodeData?.audio"
+              v-if="!isSegment"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :file="episodeData?.audio"
               @onClick="togglePlayHere(episodeData)"
               class=""
             />
             <DownloadProgress
-              v-if="progress || isAlreadyDownloaded(episodeData)"
+              v-if="progress !== null || isAlreadyDownloaded(episodeData)"
               :isDownloaded="isAlreadyDownloaded(episodeData)"
               :progress="progress"
             />
@@ -289,7 +283,7 @@ watch(episode, () => {
           </div>
         </div>
         <!-- SEGMENTS -->
-        <div v-if="episodeData.segments" class="flex flex-column gap-3 mt-4">
+        <div v-if="isSegment" class="flex flex-column gap-3 mt-4">
           <div v-for="(segment, index) in episodeData?.segments" :key="segment.title">
             <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton

@@ -135,7 +135,9 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
-      label: "Download",
+      label: `Download ${
+        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+      }`,
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
       title: bucketItem.title,
@@ -228,7 +230,7 @@ const handleClick = () => {
                 </p>
                 <!-- FROM CapacitorJS Preferences local storage -->
                 <DownloadProgress
-                  v-if="progress || isAlreadyDownloaded(props.data)"
+                  v-if="progress !== null || isAlreadyDownloaded(props.data)"
                   :isDownloaded="isAlreadyDownloaded(props.data)"
                   :progress="progress"
                   small
