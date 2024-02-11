@@ -93,7 +93,7 @@ export const getSavedMenuItems = () => {
             color: 'var(--red)',
         },
         // Conditionally add the Downloads entry if isApp is true
-        ...(!isApp.value ? [{
+        ...(isApp.value ? [{
             label: 'Downloads',
             value: 'Downloads',
             color: 'var(--red)',

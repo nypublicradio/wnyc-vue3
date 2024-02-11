@@ -211,7 +211,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
     file.id = uniqueDirId
 
-    if (isApp.value) {
+    if (!isApp.value) {
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
