@@ -81,7 +81,7 @@ const handleAddToFavorites = async () => {
         :ratio="[1, 1]"
         :srcset="[2]"
         class="flex-none"
-        style="min-height: 72px; min-width: 72px; background-color: var(--background2)"
+        style="height: 72px; width: 72px; background-color: var(--background2)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <!-- <LiveBadge v-if="props.data.isLive" class="mb-1" /> -->

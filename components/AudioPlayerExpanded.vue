@@ -75,14 +75,10 @@ const handleAddToFavorites = async () => {
     accountPromptSideBar.value = true
   }
 }
-
+// handle the download of the audio file request and feed the progress
 const handleDownload = () => {
   // update CapacitorJs filesystem
-  toast.add({
-    severity: "info",
-    summary: "Downloading...",
-    life: 3000,
-  })
+  fetchAndStoreMp3(currentEpisode.value)
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Expanded Audio Player",
@@ -317,6 +313,7 @@ const moreFromClick = () => {
                   :sizes="[2]"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"
+                  style="height: 60px; width: 60px"
                 />
 
                 <div class="info">
@@ -364,7 +361,7 @@ const moreFromClick = () => {
           :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
           :to="author.url"
-          @onClick="emit('close-panel')"
+          @on-click="emit('close-panel')"
         />
       </div>
     </div>

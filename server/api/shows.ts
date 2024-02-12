@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources, FALLBACKIMAGE } from '~/composables/globals';
+import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
 
 const config = useRuntimeConfig()
 
@@ -14,7 +14,7 @@ const allShows = async () => {
         const res = await axios(option);
         res.data.results.forEach((show) => {
             show.cmsSource = cmsSources.PUBLISHER;
-            show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGE
+            show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGELOCAL
         });
         return humps.camelizeKeys(res.data).results;
     } catch (e) {

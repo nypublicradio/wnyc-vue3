@@ -2,6 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -42,11 +43,13 @@ const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   navigateTo(`/browse/shows/${episodeData?.value?.show}`)
 }
-
-const handleDownload = (epD) => {
-  //console.log("handleDownload", epD)
-  console.error(`handle download to come ${epD.title}`)
+const progress = ref(null)
+// handle the download of the audio file or multiple files request and feed the progress
+const handleDownload = async (epD) => {
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+  progress.value = await fetchAndStoreMp3(epD)
 }
+
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }
@@ -91,7 +94,9 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
-      label: "Download",
+      label: `Download ${
+        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+      }`,
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
       title: bucketItem?.title,
@@ -133,6 +138,11 @@ watch(episode, () => {
   episodeData.value = episode.value
   //console.log("episode = ", episodeData.value)
 })
+
+const isSegment = computed(
+  () =>
+    Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segments)
+)
 </script>
 
 <template>
@@ -199,13 +209,19 @@ watch(episode, () => {
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
         <div class="flex align-items-center justify-content-between">
-          <div>
+          <div class="flex align-items-center gap-2">
             <PlayButton
-              v-if="!episodeData?.segments && episodeData?.audio"
+              v-if="!isSegment"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :file="episodeData?.audio"
               @onClick="togglePlayHere(episodeData)"
               class=""
+            />
+            <pre class="text-xs">{{ progress }}</pre>
+            <DownloadProgress
+              v-if="progress !== null || isAlreadyDownloaded(episodeData)"
+              :isDownloaded="isAlreadyDownloaded(episodeData)"
+              :progress="progress"
             />
             <!--             <div v-else class="font-bold text-red-500">
               <i class="pi pi-exclamation-triangle mr-1"></i>No Audio
@@ -252,6 +268,7 @@ watch(episode, () => {
                       :sizes="[2]"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
+                      style="height: 60px; width: 60px"
                     />
 
                     <div class="info">
@@ -266,7 +283,7 @@ watch(episode, () => {
           </div>
         </div>
         <!-- SEGMENTS -->
-        <div v-if="episodeData.segments" class="flex flex-column gap-3 mt-4">
+        <div v-if="isSegment" class="flex flex-column gap-3 mt-4">
           <div v-for="(segment, index) in episodeData?.segments" :key="segment.title">
             <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton

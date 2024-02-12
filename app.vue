@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
+import { initFileSystem } from "~/utilities/file-system"
+
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
@@ -11,12 +13,16 @@ import type { ActionPerformed, Token } from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
+  useGlobalToast,
+  useIsNetworkConnected,
   //useHomepageData,
 } from "~/composables/states"
-import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals.ts"
+import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
+
 const toast = useToast()
 
 const { isDesktop } = useDevice()
@@ -26,6 +32,8 @@ const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
+const globalToast = useGlobalToast()
+const isNetworkConnected = useIsNetworkConnected()
 
 const isRefreshing = shallowRef(false)
 const acceptNotifications = shallowRef(false)
@@ -68,34 +76,32 @@ useHead({
 
 // handles the permissions for push notifications in the app
 const checkNotificationPermisstions = async () => {
-  if (isApp.value) {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    await PushNotifications.requestPermissions().then((result) => {
-      //alert('push request' + JSON.stringify(result))
-      if (result.receive === "granted") {
-        // Register with Apple / Google to receive push via APNS/FCM
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  await PushNotifications.requestPermissions().then((result) => {
+    //alert('push request' + JSON.stringify(result))
+    if (result.receive === "granted") {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+      acceptNotifications.value = true
+    } else {
+      //alert('Error Reguistering push notifications')
+      acceptNotifications.value = false
+    }
+  })
+
+  //Check permission to use push notifications for ANDROID ONLY
+  if (Capacitor.getPlatform() === "android") {
+    await LocalNotifications.requestPermissions().then((result) => {
+      //alert('local request = ' + JSON.stringify(result))
+      if (result.display === "granted") {
         PushNotifications.register()
         acceptNotifications.value = true
       } else {
-        //alert('Error Reguistering push notifications')
         acceptNotifications.value = false
       }
     })
-
-    //Check permission to use push notifications for ANDROID ONLY
-    if (Capacitor.getPlatform() === "android") {
-      await LocalNotifications.requestPermissions().then((result) => {
-        //alert('local request = ' + JSON.stringify(result))
-        if (result.display === "granted") {
-          PushNotifications.register()
-          acceptNotifications.value = true
-        } else {
-          acceptNotifications.value = false
-        }
-      })
-    }
   }
 }
 
@@ -140,6 +146,11 @@ const addListeners = async () => {
     //alert('App state changed. Is active?', JSON.stringify(isActive))
   })
 
+  Network.addListener("networkStatusChange", (status) => {
+    console.log("Network status changed", status)
+    isNetworkConnected.value = status.connected
+  })
+
   // this is for deep links
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
@@ -180,16 +191,20 @@ const checkAppLaunchUrl = async () => {
 onMounted(async () => {
   await getAndSetUserProfile()
 
-  // if APP then add listeners
   if (isApp.value) {
-    addListeners()
-    checkAppLaunchUrl()
+    // if APP then add listeners
+    await addListeners()
+    await checkAppLaunchUrl()
+    // init downloads files system for the app
+    await initFileSystem()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
-      checkNotificationPermisstions()
+      if (isApp.value) {
+        checkNotificationPermisstions()
+      }
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false
@@ -225,6 +240,12 @@ useHead({
       async: true,
     },
   ],
+})
+
+watch(globalToast, (optionsObj) => {
+  if (optionsObj) {
+    toast.add(optionsObj)
+  }
 })
 </script>
 

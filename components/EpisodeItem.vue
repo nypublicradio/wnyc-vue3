@@ -19,7 +19,13 @@ import {
   fetchDuration,
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
-
+import {
+  fetchAndStoreMp3,
+  getDownloadedImageUri,
+  isAlreadyDownloaded,
+  /*   formatFileSize, */
+} from "~/utilities/file-system"
+import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 const toast = useToast()
 
 const $primevue = usePrimeVue()
@@ -27,7 +33,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
+const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
 
 const props = defineProps({
   data: {
@@ -38,11 +44,19 @@ const props = defineProps({
     type: String,
     default: "./logo.png",
   },
+  imgSrc: {
+    type: String,
+    default: null,
+  },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
   saved: {
     type: Boolean,
     default: false,
   },
-  showTitle: {
+  isDownloaded: {
     type: Boolean,
     default: false,
   },
@@ -101,6 +115,12 @@ const handleAddToFavorites = async (bucketItem) => {
     accountPromptSideBar.value = true
   }
 }
+const progress = ref(null)
+// handle the download of the audio file request and feed the progress
+const handleDownload = async (bucketItem) => {
+  trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
+  progress.value = await fetchAndStoreMp3(bucketItem)
+}
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -115,7 +135,9 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
-      label: "Download",
+      label: `Download ${
+        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+      }`,
       //icon: 'pi pi-google',
       customIcon: DownloadIcon,
       title: bucketItem.title,
@@ -154,21 +176,37 @@ const hasAudio = computed(() => {
     (Array.isArray(props.data.audio) && props.data.audio.length === 0)
   )
 })
+
+const imgSrcUrl = ref("")
+if (props.isDownloaded) {
+  imgSrcUrl.value = await getDownloadedImageUri(props.data)
+} else {
+  imgSrcUrl.value =
+    props.data?.image?.template ??
+    props.data?.image ??
+    props.fallbackImage ??
+    FALLBACKIMAGELOCAL
+}
+
+// handle click event emit
+const handleClick = () => {
+  emit("on-click")
+}
 </script>
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3 w-full" @click.prevent="emit('onClick')" v-ripple>
+    <div class="flex gap-3 w-full" @click.prevent="handleClick" v-ripple>
       <VImage
         class="flex-none"
-        :src="props.data?.image?.template ?? props.fallbackImage"
+        :src="imgSrcUrl"
         :height="72"
         :width="72"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 72px; min-width: 72px"
+        style="height: 72px; width: 72px"
       />
-      <div class="flex gap-1 flex-column justify-content-between w-full">
+      <div class="flex gap-1 flex-column w-full">
         <div class="flex gap-0 flex-column align-items-start">
           <p v-if="props.showTitle" class="text-xs line-height-1">
             {{ props.data.org ?? props.data.showTitle }}
@@ -190,8 +228,14 @@ const hasAudio = computed(() => {
                 <p class="text-xs">
                   {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                 </p>
-                <!-- FROM SUPABASE PROFILER DATA -->
-                <DownloadedSmallIcon v-if="props.data.downloaded" />
+                <!-- FROM CapacitorJS Preferences local storage -->
+                <DownloadProgress
+                  v-if="progress !== null || isAlreadyDownloaded(props.data)"
+                  :isDownloaded="isAlreadyDownloaded(props.data)"
+                  :progress="progress"
+                  small
+                />
+                <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
               </div>
             </template>
           </PipeData>
@@ -207,53 +251,51 @@ const hasAudio = computed(() => {
       </div>
     </div>
 
-    <DotMenu
-      v-if="!props.saved"
-      :menuItems="getDotMenuItems(props.data)"
-      label=""
-      @changeEmit="onMenuChange"
-      class="-mr-2"
-    >
-      <template #header-bottom>
-        <div>
-          <div class="flex gap-3 px-4 align-items-center">
-            <VImage
-              :src="props.data?.image?.template ?? props.fallbackImage"
-              :alt="`${props.data.showTitle} show image`"
-              :width="60"
-              :height="60"
-              :sizes="[2]"
-              class="show-image-in-menu flex-none"
-              :ratio="[1, 1]"
-              style="
-                min-height: 60px;
-                min-width: 60px;
-                background-color: var(--background);
-              "
-            />
-
-            <div class="info">
-              <h2>{{ props.data.title }}</h2>
-              <p>{{ props.data.showTitle }}</p>
+    <slot>
+      <DotMenu
+        v-if="!props.saved"
+        :menuItems="getDotMenuItems(props.data)"
+        label=""
+        @changeEmit="onMenuChange"
+        class="-mr-2"
+      >
+        <template #header-bottom>
+          <div>
+            <div class="flex gap-3 px-4 align-items-center">
+              <VImage
+                :src="imgSrcUrl"
+                :alt="`${props.data.showTitle} show image`"
+                :width="60"
+                :height="60"
+                :sizes="[2]"
+                class="show-image-in-menu flex-none"
+                :ratio="[1, 1]"
+                style="height: 60px; width: 60px; background-color: var(--background)"
+              />
+              <div class="info">
+                <h2>{{ props.data.title }}</h2>
+                <p>{{ props.data.showTitle }}</p>
+              </div>
             </div>
+            <hr class="mt-5 mb-2 dim" />
           </div>
-          <hr class="mt-5 mb-2 dim" />
-        </div>
-      </template>
-    </DotMenu>
-    <Button v-else text plain rounded class="flex-none">
-      <template #icon>
-        <StarIcon
-          class="h-2rem"
-          :active="isFavorited"
-          @click="handleAddToFavorites(bucketItem)"
-        />
-      </template>
-    </Button>
+        </template>
+      </DotMenu>
+      <Button v-else text plain rounded class="flex-none">
+        <template #icon>
+          <StarIcon
+            class="h-2rem"
+            :active="isFavorited"
+            @click="handleAddToFavorites(bucketItem)"
+          />
+        </template>
+      </Button>
+    </slot>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .episode-item {
+  cursor: pointer;
 }
 </style>

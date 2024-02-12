@@ -66,6 +66,7 @@ export interface ArticlePage extends Page {
   headers?: any
   segments?: any
   transcript?: string
+  embedCode?: string
 }
 
 export interface InformationPage extends Page {

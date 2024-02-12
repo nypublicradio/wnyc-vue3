@@ -20,6 +20,7 @@ import {
   useSkipBackTrigger,
   usePlayerSeek,
 } from "~/composables/states"
+
 import {
   trackAudioEvent,
   trackClickEvent,
@@ -27,7 +28,7 @@ import {
   getDate,
 } from "~/utilities/helpers"
 
-import { initMediaSession } from "~/utilities/media-session.js"
+//import { initMediaSession } from "~/utilities/media-session.js"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -84,19 +85,20 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initializes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
+    // initiallizes the media session in ~/utilities/media-session.js
+    // Currently having problems with this plug in
+    //initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
 }
 
 watch(currentEpisode, () => {
-  // console.log("currentEpisode.value changed = ", currentEpisode.value)
+  //console.log("currentEpisode.value changed = ", currentEpisode.value)
   switchEpisode()
 })
 
-watch( togglePlayTrigger, () => {
-  if ( playerRef.value ) playerRef.value.togglePlay()
+watch(togglePlayTrigger, () => {
+  if (playerRef.value) playerRef.value.togglePlay()
 })
 
 watch(skipAheadTrigger, () => {
@@ -127,7 +129,7 @@ watch(
 
 const getTitle = computed(() => {
   return currentEpisode?.value?.title
-} )
+})
 
 const getDescription = computed(() => {
   if (!isStreamLoading.value) {
@@ -140,31 +142,28 @@ const getDescription = computed(() => {
   } else {
     return "..."
   }
-} )
+})
 
 // handle the toggle play button and tracking
-const togglePlayHere = ( e ) => {
+const togglePlayHere = (e) => {
   // prevent the player from toggling twice
   if (isEpisodePlaying.value === e) return
-  updateUseIsEpisodePlaying( e )
+  updateUseIsEpisodePlaying(e)
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
   if (isNewEpisode.value) {
     eventType = "play"
   }
-  trackAudioEvent( eventType, isLiveStream.value ? "live" : "on_demand", getTitle.value, getDescription.value )
+  trackAudioEvent(
+    eventType,
+    isLiveStream.value ? "live" : "on_demand",
+    getTitle.value,
+    getDescription.value
+  )
   isNewEpisode.value = false
 }
 </script>
 
 <template>
-  <!-- <div class="audio-player"> -->
-  <!-- <Button
-    :label="playerSeek.time"
-    @click="playerSeek.bool = playerSeek.bool ? false : true"
-    class="absolute"
-    style="top: 200px; z-index: 672397862938679"
-  /> -->
-
   <div v-if="currentEpisode">
     <transition name="player">
       <VNewPersistentPlayer
@@ -182,7 +181,7 @@ const togglePlayHere = ( e ) => {
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"
-        :image="templatizePublisherImageUrl(currentEpisode?.image)"
+        :image="templatizePublisherImageUrl(currentEpisode?.image) ?? FALLBACKIMAGELOCAL"
         :file="currentEpisode?.hls ?? currentEpisode?.file"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"

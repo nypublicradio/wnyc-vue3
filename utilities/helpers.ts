@@ -1,9 +1,6 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
-import { Filesystem, Directory, /* Encoding */ } from "@capacitor/filesystem"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
-  useFileSystem,
-  useAppDirectory,
   useCurrentEpisode,
   useTextSizeOption,
   useIsApp,
@@ -16,12 +13,12 @@ import {
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes } from "~/composables/globals.ts"
+import { mediaTypeRoutes } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
+import { FALLBACKIMAGELOCAL } from "../composables/globals"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
-const directoryToSaveTo = Directory.External
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -128,7 +125,7 @@ export const resizePublisherImageUrl = (
 }
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
-  if (url) {
+  if (url?.includes("media.wnyc.org")) {
     const pieces = url.split("/")
     const finalUrlArr: string[] = []
 
@@ -142,7 +139,7 @@ export const templatizePublisherImageUrl = (url: string): string => {
     })
     return finalUrlArr.join("/")
   } else {
-    return null
+    return url
   }
 }
 
@@ -168,208 +165,6 @@ export const trackClickEvent = (category, component, label) => {
     event_label: label,
     user_id: currentUser.value?.id
   })
-}
-
-export const fileNameFromURL = (url: string) => {
-  return url.substring(url.lastIndexOf("/") + 1)
-}
-
-export const readStoreDir = async () => {
-  const appDirectory = useAppDirectory()
-  const fileSystem = useFileSystem()
-
-  //initial check to see if the appDirectory exists and if not, create it
-  await createAppDirectory()
-
-  fileSystem.value = await Filesystem.readdir({
-    path: `${appDirectory.value}/`,
-    directory: directoryToSaveTo,
-  })
-    .then((val) => {
-      return val
-    })
-    .catch((e) => {
-      console.error("Unable to read dir", e)
-    })
-}
-
-const createAppDirectory = async () => {
-  // initial check to see if the appDirectory exists and if not, create it
-  const appDirectory = useAppDirectory()
-  const appDirectories = await Filesystem.readdir({
-    path: "",
-    directory: directoryToSaveTo,
-  })
-
-  const result = appDirectories.files.filter(
-    (entry) => entry.type === "directory" && entry.name === appDirectory.value
-  )
-
-  if (result.length === 0) {
-    await Filesystem.mkdir({
-      path: `${appDirectory.value}`,
-      directory: directoryToSaveTo,
-    })
-      //.then(() => { })
-      .catch((e) => {
-        console.error("Unable to create directory", e)
-      })
-  }
-}
-
-export const fetchAndStoreMp3 = async (file: {
-  file: string
-  title: string
-  details: string
-  image: string
-}) => {
-  const appDirectory = useAppDirectory()
-  const fileSystem = useFileSystem()
-  const fileSystemLS = useFileSystemLS()
-
-  // Fetch the MP3 file as a Blob
-  const response = await fetch(file.file)
-  const mp3Blob = await response.blob()
-
-  // Read the Blob as a data URL using FileReader
-  const reader = new FileReader()
-  reader.onload = async function () {
-    const base64DataUrl: any = this.result
-    await Filesystem.writeFile({
-      path: `${appDirectory.value}/${fileNameFromURL(file.file)}`,
-      data: base64DataUrl,
-      directory: directoryToSaveTo,
-    })
-      .then(() => {
-        //create a parralel browser local storage for this data, and bes to add it to the delete function.
-        setTimeout(async () => {
-          // slight delay is needed for the fileSystem to update
-          const thisFileSystemEntry = fileSystem.value?.files.find(
-            (entry: any) => entry.name === fileNameFromURL(file.file)
-          )
-          const filesArr: any = [
-            ...fileSystemLS.value,
-            {
-              title: file.title,
-              file: file.file,
-              details: file.details,
-              image: file.image,
-              name: fileNameFromURL(file.file),
-              uri: `${directoryToSaveTo}/${appDirectory.value}/${fileNameFromURL(
-                file.file
-              )}`,
-              size: thisFileSystemEntry.size,
-              ctime: thisFileSystemEntry.ctime,
-              mtime: thisFileSystemEntry.mtime,
-            },
-          ]
-
-          fileSystemLS.value = filesArr
-          await Preferences.set({ key: "files", value: JSON.stringify(filesArr) })
-        }, 500)
-        readStoreDir()
-      })
-      .catch((e) => {
-        console.error("Unable to write file", e)
-      })
-  }
-  reader.readAsDataURL(mp3Blob)
-}
-
-export const playMp3 = async (file: {
-  file: string
-  title: string
-  details: string
-  image: string
-}) => {
-  const currentEpisode = useCurrentEpisode()
-  currentEpisode.value = file
-}
-
-export const playStoredMp3 = async (file: {
-  name: string
-  uri: string
-  file: string
-  title: string
-  details: string
-  image: string
-}) => {
-  const currentEpisode = useCurrentEpisode()
-  const appDirectory = useAppDirectory()
-
-  await Filesystem.readFile({
-    path: `${appDirectory.value}/${file.name}`,
-    directory: directoryToSaveTo,
-  })
-    .then((b64Content) => {
-      // eventually we will set a Type for the current episdode
-      currentEpisode.value = {
-        title: file.title,
-        file: `data:audio/mpeg;base64,${b64Content.data}`,
-        details: file.details,
-        image: file.image,
-      }
-    })
-    .catch((e) => {
-      console.error("Unable to read file", e)
-    })
-}
-
-export const deleteStoredMp3 = async (file: {
-  file: string
-  title: string
-  details: string
-  image: string
-  name: string
-  uri: string
-}) => {
-  const appDirectory = useAppDirectory()
-  const fileSystemLS = useFileSystemLS()
-
-  Filesystem.deleteFile({
-    path: `${appDirectory.value}/${file.name || fileNameFromURL(file.file)}`,
-    directory: directoryToSaveTo,
-  })
-    .then(async () => {
-      // also delete from the fileSystemLS state and local storage
-      const updatedFileSystemLS = fileSystemLS.value.filter(
-        (entry: any) => entry.name !== (file.name || fileNameFromURL(file.file))
-      )
-
-      fileSystemLS.value = updatedFileSystemLS
-      await Preferences.set({ key: "files", value: JSON.stringify(updatedFileSystemLS) })
-
-      setTimeout(() => {
-        readStoreDir()
-      }, 100)
-    })
-    .catch((e) => {
-      console.error("Unable to delete file", e)
-    })
-}
-
-export const formatFileSize = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return "0 B"
-
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-}
-
-// initial pull of the preferencce plugin files data
-
-export const initReadOfPreferences = async () => {
-  let val = null
-  try {
-    val = await Preferences.get({ key: "files" })
-  } catch (error) {
-    console.error("preference read error = ", error)
-  }
-  return JSON.parse(val.value)
 }
 
 /**
@@ -774,7 +569,7 @@ export const getFavoritedItems = async () => {
   }
 }
 
-export const checkIsFavorited = async (slug: string) => {
+export const checkIsFavorited = (slug: string) => {
   const user = useCurrentUser()
   if (user.value) {
     const favorites = useCurrentUserFavorites()
@@ -786,19 +581,21 @@ export const checkIsFavorited = async (slug: string) => {
   return false
 }
 
-export const saveRecentlyPlayed = async (media: object, typeArg: string) => {
+export const saveRecentlyPlayed = (media: object, typeArg: string) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }
 
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
   const isSegment = index !== null
+
+  const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio
+
   return {
     ...item,
-    file: isSegment ? item.audio[index] : item.audio,
+    file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
-    image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage,
-    //TODO convert to seconds
+    image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage ?? FALLBACKIMAGELOCAL,
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
@@ -806,18 +603,20 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = (media, index = 0) => {
+export const togglePlayEpisode = async (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
+
+
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = prepForPlayer(media)
+      currentEpisode.value = await prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   } else {
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = prepForPlayer(media, index)
+      currentEpisode.value = await prepForPlayer(media, index)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }
@@ -836,6 +635,11 @@ export const getCssVar = (name: string, px = false) => {
 }
 
 /* centralized function to route to a episode page */
-export const goToEpisodePage = (ep) => {
-  navigateTo(`/browse/shows/episode/${ep.meta.slug}`)
+export const goToEpisodePage = (ep, params) => {
+  navigateTo(`/browse/shows/episode/${ep.meta.slug}${params ? `?${params}` : ''}`)
+}
+
+/* centralized function to route to a story page */
+export const goToStoryPage = (story, params) => {
+  navigateTo(`/story/${story.id}${params ? `?${params}` : ''}`)
 }

@@ -25,10 +25,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isDownloaded: {
+    type: Boolean,
+    default: false,
+  },
   progress: {
     type: Number,
     default: 0,
   },
+  /* file filed to match up agaist or, if playing a downloaded file, the directoryAudio.name to match up against */
   file: {
     default: "",
     type: String,
@@ -46,7 +51,10 @@ const togglePlay = () => {
 
 const checkEpisodeMatchAndPlaying = computed(() => {
   if (currentEpisode.value) {
-    if (currentEpisode.value.file === props.file && isEpisodePlaying.value) {
+    if (
+      (currentEpisode.value.file === props.file && isEpisodePlaying.value) ||
+      (currentEpisode.value.directoryAudio?.name === props.file && isEpisodePlaying.value)
+    ) {
       return true
     }
   }
@@ -55,7 +63,10 @@ const checkEpisodeMatchAndPlaying = computed(() => {
 
 const checkEpisodeMatch = computed(() => {
   if (currentEpisode.value) {
-    if (currentEpisode.value.file === props.file) {
+    if (
+      currentEpisode.value.file === props.file ||
+      currentEpisode.value.directoryAudio?.name === props.file
+    ) {
       return true
     }
   }
@@ -68,7 +79,7 @@ const getProgress = computed(() => {
 </script>
 
 <template>
-  <div class="small-play">
+  <div class="small-play" :class="[{ circle: props.label === '' }]">
     <Button
       severity="secondary"
       @click.prevent="togglePlay"
@@ -99,6 +110,7 @@ const getProgress = computed(() => {
             bg-color="transparent"
             padding="1px 8px 1px 3px"
           />
+          <DownloadedSmallIcon v-if="props.isDownloaded" class="ml-2" />
         </div>
       </slot>
     </Button>
@@ -146,6 +158,19 @@ const getProgress = computed(() => {
     font-weight: 700;
     line-height: normal;
     align-items: center;
+  }
+  &.circle {
+    height: 40px;
+    width: 40px;
+    .p-button {
+      height: 40px;
+      width: 40px;
+      .icon {
+        .play-icon {
+          margin: 0 0 0 2px;
+        }
+      }
+    }
   }
 }
 </style>

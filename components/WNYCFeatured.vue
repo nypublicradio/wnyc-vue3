@@ -4,9 +4,11 @@ import {
   trackClickEvent,
   copyToClipBoard,
   saveRecentlyPlayed,
+  prepForPlayer,
 } from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
+import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -18,6 +20,14 @@ const props = defineProps({
   },
 })
 
+const progress = ref({})
+// handle the download of the audio file request and feed the progress
+const handleDownload = async (bucketItem) => {
+  trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
+
+  progress.value[bucketItem.id] = await fetchAndStoreMp3(bucketItem)
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -25,13 +35,7 @@ const getDotMenuItems = (bucketItem) => {
       label: "Download",
       title: bucketItem.title,
       command: () => {
-        toast.add({
-          severity: "info",
-          summary: "Downloading...",
-          detail: bucketItem.title,
-          life: 3000,
-        })
-        trackClickEvent("Click Tracking - Audio Download", "Large Card", bucketItem.title)
+        handleDownload(bucketItem)
       },
     },
     {
@@ -65,24 +69,11 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
-// normalize the bucket item data for the player
-const prepForPlayer = (item) => {
-  return {
-    ...item,
-    file: item.audio,
-    title: item.title,
-    image: item.image.template,
-    duration: item.estimatedDuration,
-    details: item.body,
-    first_published_at: item.publishAt,
-  }
-}
-
 // handle the play button click
-const togglePlayHere = ( item ) => {
+const togglePlayHere = (item) => {
   if (currentEpisode.value?.id !== item.id) {
     currentEpisode.value = prepForPlayer(item)
-    saveRecentlyPlayed( item, mediaTypes.SEGMENT )
+    saveRecentlyPlayed(item, mediaTypes.SEGMENT)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
@@ -91,14 +82,13 @@ const togglePlayHere = ( item ) => {
 <template>
   <div>
     <div class="wnyc-featured">
-      <!--  <pre class="text-sm">{{ props.articles[0].id }}</pre> -->
+      <!--      <pre class="text-sm">{{ props.articles[0] }}</pre> -->
       <HorizontalScrollFeature>
         <CardLarge
           v-for="item in props.articles"
           :key="item.label"
           :item="item"
           style="min-width: 248px"
-          :class="item.id"
         >
           <template #play>
             <PlayButton
@@ -110,25 +100,32 @@ const togglePlayHere = ( item ) => {
             />
           </template>
           <template #menu>
-            <DotMenu
-              v-if="item.audio"
-              :menuItems="getDotMenuItems(item)"
-              label="Options"
-              @changeEmit="onMenuChange"
-              class="-mr-1 z-2"
-              size="large"
-            >
-              <template #end v-if="item.embedCode">
-                <div class="p-0">
-                  <Textarea
-                    disabled
-                    class="w-full text-xs mt-2"
-                    v-model="item.embedCode"
-                    rows="9"
-                  />
-                </div>
-              </template>
-            </DotMenu>
+            <div class="flex align-items-center">
+              <DownloadProgress
+                v-if="progress[item.id] || isAlreadyDownloaded(item)"
+                :isDownloaded="isAlreadyDownloaded(item)"
+                :progress="progress[item.id]"
+              />
+              <DotMenu
+                v-if="item.audio"
+                :menuItems="getDotMenuItems(item)"
+                label="Options"
+                @changeEmit="onMenuChange"
+                class="-mr-1 z-2"
+                size="large"
+              >
+                <template #end v-if="item.embedCode">
+                  <div class="p-0">
+                    <Textarea
+                      disabled
+                      class="w-full text-xs mt-2"
+                      v-model="item.embedCode"
+                      rows="9"
+                    />
+                  </div>
+                </template>
+              </DotMenu>
+            </div>
           </template>
         </CardLarge>
 

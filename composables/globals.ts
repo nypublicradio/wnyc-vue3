@@ -1,3 +1,5 @@
+import { useIsApp } from "./states"
+
 export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
@@ -9,6 +11,7 @@ export const mediaTypes = {
     EPISODE: 'episode',
     STORY: 'story',
     ARTICLE_PAGE: 'article_page',
+    ARTICLE: 'article',
     SEGMENT: 'segment',
 }
 
@@ -21,6 +24,7 @@ export const mediaTypeRoutes = {
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'
+export const FALLBACKIMAGELOCAL = './logo.png'
 export const FALLBACKIMAGEWAGTAIL = '342941'
 
 //Global vars for the browser top color
@@ -75,28 +79,33 @@ export const useShowTopics = () => useState('showTopics', () => [
 ])
 
 //saved menu
-export const useSavedMenuItems = () => useState('savedMenuItems', () => [
-    {
-        label: 'Followed Shows',
-        value: 'FollowedShows',
-        color: 'var(--red)',
-    },
-    {
-        label: 'Favorites',
-        value: 'Favorites',
-        color: 'var(--red)',
-    },
-    {
-        label: 'Downloads',
-        value: 'Downloads',
-        color: 'var(--red)',
-    },
-    {
-        label: 'Recently Played',
-        value: 'RecentlyPlayed',
-        color: 'var(--red)',
-    },
-])
+export const getSavedMenuItems = () => {
+    const isApp = useIsApp()
+    return [
+        {
+            label: 'Followed Shows',
+            value: 'FollowedShows',
+            color: 'var(--red)',
+        },
+        {
+            label: 'Favorites',
+            value: 'Favorites',
+            color: 'var(--red)',
+        },
+        // Conditionally add the Downloads entry if isApp is true
+        ...(isApp.value ? [{
+            label: 'Downloads',
+            value: 'Downloads',
+            color: 'var(--red)',
+        }] : []),
+        {
+            label: 'Recently Played',
+            value: 'RecentlyPlayed',
+            color: 'var(--red)',
+        },
+    ]
+}
+
 
 
 // const imageShape = {

@@ -48,6 +48,10 @@ export const useEditProfileSideBar = () => useState('useEditProfileSideBar', () 
 export const useAccountPromptSideBar = () => useState('useAccountPromptSideBar', () => false)
 
 
+// global state for the network connection
+export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () => true)
+
+
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
 
@@ -151,13 +155,6 @@ const navigationObj = null
  */
 export const useNavigation = () => useState('navigation', () => navigationObj)
 
-
-const appDirectory = "wnyc-downloads"
-/**
- * Global state for the app directory location
- */
-export const useAppDirectory = () => useState('appDirectory', () => appDirectory)
-
 const fileSystem = []
 /**
  * Global state for the fileSystem
@@ -191,3 +188,10 @@ export const useTextSizeOption = () => useState('textSizeOption', () => textSize
 
 // story
 export const useSensitiveContent = () => useState<boolean>('sensitiveContent', () => false)
+
+
+// global toast
+export const useGlobalToast = () => useState<object>('globalToast', () => null)
+
+// saved page tab state
+export const useSelectedSavedTab = () => useState<object>('useSelectedSavedTab', () => 0)

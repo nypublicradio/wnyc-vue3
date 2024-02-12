@@ -64,7 +64,7 @@ watch(pagedata, () => {
     </section>
     <section>
       <h2 class="mb-2">Top stories</h2>
-      <!-- <pre>{{ topStories[0] }}</pre> -->
+      <!-- <pre class="text-xs">{{ topStories[0] }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
     <div v-for="section in homeTemplate" :key="section.title">
@@ -78,7 +78,7 @@ watch(pagedata, () => {
             <EpisodeItem
               v-for="ep in section.data"
               :data="ep"
-              :key="ep.id"
+              :key="`home-${ep.id}`"
               @onClick="goToEpisodePage(ep)"
               showTitle
               :fallback-image="ep.headers.brand.logoImage.template"
