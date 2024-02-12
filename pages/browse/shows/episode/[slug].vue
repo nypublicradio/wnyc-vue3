@@ -217,6 +217,7 @@ const isSegment = computed(
               @onClick="togglePlayHere(episodeData)"
               class=""
             />
+            <pre class="text-xs">{{ progress }}</pre>
             <DownloadProgress
               v-if="progress !== null || isAlreadyDownloaded(episodeData)"
               :isDownloaded="isAlreadyDownloaded(episodeData)"

@@ -335,14 +335,15 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
 }
 
 // handle initial call to determine if it is a single download or multiple segment downloads
-export const fetchAndStoreMp3 = (file) => {
+export const fetchAndStoreMp3 = async (file) => {
     // if multiple audio and multiple segments, download all
     if (Array.isArray(file.audio) && Array.isArray(file.segments)) {
-        file.audio.forEach((segment, index) => {
-            setTimeout(async () => {
-                return await handleFetchAndStoreMp3(file, index)
-            }, 1000 * index)
-        })
+        const progressResults = [];
+        for (let i = 0; i < file.audio.length; i++) {
+            const progress = await handleFetchAndStoreMp3(file, i);
+            progressResults.push(progress);
+        }
+        return progressResults;
     } else {
         return handleFetchAndStoreMp3(file)
     }
