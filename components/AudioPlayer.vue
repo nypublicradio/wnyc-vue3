@@ -32,7 +32,7 @@ import {
 import { MediaRemoteControl } from "vidstack"
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
-//import { initMediaSession } from "~/utilities/media-session.js"
+import { initMediaSession } from "~/utilities/media-session.js"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -91,9 +91,10 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
-    // Currently having problems with this plug in
-    //initMediaSession(currentEpisode.value, skipTime)
+    // initiallizes the media session in ~/utilities/media-session.js for Android only
+    if (isAndroid) {
+      initMediaSession(currentEpisode.value, skipTime)
+    }
     delay = 250
   }, delay)
 }
