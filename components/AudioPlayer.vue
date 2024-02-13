@@ -171,8 +171,11 @@ const togglePlayHere = (e) => {
 }
 
 const handleCast = () => {
+  console.log("playerRef.value = ", playerRef.value)
+  console.log("remoteControl = ", remoteControl)
+  //playerRef.value.$mediaPlayerRef.requestGoogleCast()
   //playerRef.value.castToGoogleCast()
-  remoteControl.requestGoogleCast()
+  remoteControl.requestAirPlay()
 }
 </script>
 
@@ -200,7 +203,7 @@ const handleCast = () => {
         :skipBackTime="skipTime"
         :nativeHLS="true"
         :show-cast="isNetworkConnected && devicePlatform !== null"
-        :platform="devicePlatform"
+        platform="ios"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
@@ -247,6 +250,7 @@ const handleCast = () => {
           <Next10 />
         </template>
         <template #expanded-content>
+          <Button label="Cast" @click="handleCast" />
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
       </VNewPersistentPlayer>
