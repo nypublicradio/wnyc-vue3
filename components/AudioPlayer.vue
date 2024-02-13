@@ -199,7 +199,7 @@ const handleCast = () => {
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
         :nativeHLS="true"
-        :show-cast="isNetworkConnected && devicePlatform"
+        :show-cast="isNetworkConnected && devicePlatform !== null"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
