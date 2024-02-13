@@ -19,6 +19,7 @@ import {
   useSkipAheadTrigger,
   useSkipBackTrigger,
   usePlayerSeek,
+  useIsNetworkConnected,
 } from "~/composables/states"
 
 import {
@@ -28,6 +29,9 @@ import {
   getDate,
 } from "~/utilities/helpers"
 
+import { MediaRemoteControl } from "vidstack"
+const { isAndroid, isIos, isChrome } = useDevice()
+const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
 //import { initMediaSession } from "~/utilities/media-session.js"
 
 // if (process.client) {
@@ -37,6 +41,8 @@ import {
 //   })
 // }
 
+const remoteControl = new MediaRemoteControl()
+let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -49,9 +55,9 @@ const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
+const isNetworkConnected = useIsNetworkConnected()
 const showPlayer = ref(false)
-const playerRef = ref()
+const playerRef = ref(null)
 const playerHeight = ref(audioPlayerHeight + "px")
 const skipTime = 10
 
@@ -92,9 +98,11 @@ const switchEpisode = () => {
   }, delay)
 }
 
-watch(currentEpisode, () => {
+watch(currentEpisode, async () => {
   //console.log("currentEpisode.value changed = ", currentEpisode.value)
-  switchEpisode()
+  await switchEpisode()
+  remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
+  remotePlayer = remoteControl.getPlayer()
 })
 
 watch(togglePlayTrigger, () => {
@@ -161,6 +169,11 @@ const togglePlayHere = (e) => {
   )
   isNewEpisode.value = false
 }
+
+const handleCast = () => {
+  //playerRef.value.castToGoogleCast()
+  remoteControl.requestGoogleCast()
+}
 </script>
 
 <template>
@@ -186,6 +199,8 @@ const togglePlayHere = (e) => {
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
         :nativeHLS="true"
+        :show-cast="isNetworkConnected && devicePlatform"
+        :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
