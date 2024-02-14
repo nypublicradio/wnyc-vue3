@@ -42,7 +42,7 @@ import { initMediaSession } from "~/utilities/media-session.js"
 // }
 
 const remoteControl = new MediaRemoteControl()
-let remotePlayer = null
+//let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -171,13 +171,13 @@ const togglePlayHere = (e) => {
   isNewEpisode.value = false
 }
 
-const handleCast = () => {
-  console.log("playerRef.value = ", playerRef.value)
-  console.log("remoteControl = ", remoteControl)
-  //playerRef.value.$mediaPlayerRef.requestGoogleCast()
-  //playerRef.value.castToGoogleCast()
-  remoteControl.requestAirPlay()
-}
+//const handleCast = () => {
+//console.log("playerRef.value = ", playerRef.value)
+//console.log("remoteControl = ", remoteControl)
+//playerRef.value.$mediaPlayerRef.requestGoogleCast()
+//playerRef.value.castToGoogleCast()
+//remoteControl.requestGoogleCast()
+//}
 </script>
 
 <template>
@@ -204,7 +204,7 @@ const handleCast = () => {
         :skipBackTime="skipTime"
         :nativeHLS="true"
         :show-cast="isNetworkConnected && devicePlatform !== null"
-        platform="ios"
+        :platform="getPlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
@@ -251,7 +251,7 @@ const handleCast = () => {
           <Next10 />
         </template>
         <template #expanded-content>
-          <Button label="Cast" @click="handleCast" />
+          <!-- <Button label="Cast" @click="handleCast" /> -->
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
       </VNewPersistentPlayer>
