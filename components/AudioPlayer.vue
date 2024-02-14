@@ -20,6 +20,9 @@ import {
   useSkipBackTrigger,
   usePlayerSeek,
   useIsNetworkConnected,
+  useAdvertisingRestriction,
+  useAdvertisingId,
+  useIsApp,
 } from "~/composables/states"
 
 import {
@@ -27,12 +30,15 @@ import {
   trackClickEvent,
   templatizePublisherImageUrl,
   getDate,
+  hasQueryParams,
 } from "~/utilities/helpers"
 
+import { initMediaSession } from "~/utilities/media-session.js"
+
 import { MediaRemoteControl } from "vidstack"
+
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
-import { initMediaSession } from "~/utilities/media-session.js"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -56,6 +62,9 @@ const skipBackTrigger = useSkipBackTrigger()
 const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const isNetworkConnected = useIsNetworkConnected()
+const advertisingId = useAdvertisingId()
+const advertisingRestriction = useAdvertisingRestriction()
+const isApp = useIsApp()
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const playerHeight = ref(audioPlayerHeight + "px")
@@ -103,7 +112,7 @@ watch(currentEpisode, async () => {
   //console.log("currentEpisode.value changed = ", currentEpisode.value)
   await switchEpisode()
   remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
-  remotePlayer = remoteControl.getPlayer()
+  //remotePlayer = remoteControl.getPlayer()
 })
 
 watch(togglePlayTrigger, () => {
@@ -178,6 +187,24 @@ const togglePlayHere = (e) => {
 //playerRef.value.castToGoogleCast()
 //remoteControl.requestGoogleCast()
 //}
+
+/* 
+the url that comes down from publisher is in currentEpisode.value
+then if we are in the App env, we check if the url has a param(a "?" already)
+then we grab the asID and the restriction value (0 default or 1)
+then we merge it all together and return it to the player as the source for the request
+*/
+const getConfiguredAudioUrl = computed(() => {
+  const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
+  if (isApp.value) {
+    const hasQuery = hasQueryParams(url)
+    const adID = advertisingId.value
+    const restriction = advertisingRestriction.value
+    return `${url}${hasQuery ? "&" : "?"}listenerid=${adID}&aw_0_1st.lmt=${restriction}`
+  } else {
+    return url
+  }
+})
 </script>
 
 <template>
@@ -199,12 +226,12 @@ const togglePlayHere = (e) => {
         :station="currentEpisode?.name"
         :description="getDescription"
         :image="templatizePublisherImageUrl(currentEpisode?.image) ?? FALLBACKIMAGELOCAL"
-        :file="currentEpisode?.hls ?? currentEpisode?.file"
+        :file="getConfiguredAudioUrl"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
         :nativeHLS="true"
         :show-cast="isNetworkConnected && devicePlatform !== null"
-        :platform="getPlatform"
+        :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
