@@ -200,5 +200,7 @@ export const useSelectedSavedTab = () => useState<object>('useSelectedSavedTab',
 // store Advertising Id
 export const useAdvertisingId = () => useState<object>('useAdvertisingId', () => null)
 
-// store Advertising Id
+// store Advertising restriction preference 
+// 0 = allow
+// 1 = restrict
 export const useAdvertisingRestriction = () => useState<object>('useAdvertisingId', () => 0)
