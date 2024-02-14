@@ -177,6 +177,7 @@ a {
   opacity: 1 !important;
   width: 90%;
   max-width: 25rem;
+  top: calc(20px + env(safe-area-inset-top)) !important;
   .p-toast-message {
     border: none !important;
     box-shadow: none;
