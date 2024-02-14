@@ -15,7 +15,7 @@ import {
   useIsLiveStream,
   useIsPlayerExpanded,
   useCurrentEpisodeDuration,
-  useCurrentEpisodeProgress,
+  //useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
   usePlayerSeek,
