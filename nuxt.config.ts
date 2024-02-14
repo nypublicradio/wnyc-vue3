@@ -1,5 +1,5 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-
+import { vite as vidstack } from 'vidstack/plugins';
 export default defineNuxtConfig({
 
   modules: [
@@ -123,6 +123,7 @@ export default defineNuxtConfig({
           project: 'wnyc-vue3',
           authToken: process.env.SENTRY_AUTH_TOKEN,
         }),
+      vidstack({ include: /player\// }),
     ],
   },
   sourcemap: {

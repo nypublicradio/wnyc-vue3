@@ -15,10 +15,11 @@ import {
   useIsLiveStream,
   useIsPlayerExpanded,
   useCurrentEpisodeDuration,
-  useCurrentEpisodeProgress,
+  //useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
   usePlayerSeek,
+  useIsNetworkConnected,
 } from "~/composables/states"
 
 import {
@@ -28,7 +29,10 @@ import {
   getDate,
 } from "~/utilities/helpers"
 
-//import { initMediaSession } from "~/utilities/media-session.js"
+import { MediaRemoteControl } from "vidstack"
+const { isAndroid, isIos, isChrome } = useDevice()
+const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
+import { initMediaSession } from "~/utilities/media-session.js"
 
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
@@ -37,6 +41,8 @@ import {
 //   })
 // }
 
+const remoteControl = new MediaRemoteControl()
+//let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -49,9 +55,9 @@ const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
+const isNetworkConnected = useIsNetworkConnected()
 const showPlayer = ref(false)
-const playerRef = ref()
+const playerRef = ref(null)
 const playerHeight = ref(audioPlayerHeight + "px")
 const skipTime = 10
 
@@ -85,16 +91,19 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
-    // Currently having problems with this plug in
-    //initMediaSession(currentEpisode.value, skipTime)
+    // initiallizes the media session in ~/utilities/media-session.js for Android only
+    if (isAndroid) {
+      initMediaSession(currentEpisode.value, skipTime)
+    }
     delay = 250
   }, delay)
 }
 
-watch(currentEpisode, () => {
+watch(currentEpisode, async () => {
   //console.log("currentEpisode.value changed = ", currentEpisode.value)
-  switchEpisode()
+  await switchEpisode()
+  remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
+  remotePlayer = remoteControl.getPlayer()
 })
 
 watch(togglePlayTrigger, () => {
@@ -161,6 +170,14 @@ const togglePlayHere = (e) => {
   )
   isNewEpisode.value = false
 }
+
+//const handleCast = () => {
+//console.log("playerRef.value = ", playerRef.value)
+//console.log("remoteControl = ", remoteControl)
+//playerRef.value.$mediaPlayerRef.requestGoogleCast()
+//playerRef.value.castToGoogleCast()
+//remoteControl.requestGoogleCast()
+//}
 </script>
 
 <template>
@@ -186,6 +203,8 @@ const togglePlayHere = (e) => {
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"
         :nativeHLS="true"
+        :show-cast="isNetworkConnected && devicePlatform !== null"
+        :platform="getPlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
@@ -232,6 +251,7 @@ const togglePlayHere = (e) => {
           <Next10 />
         </template>
         <template #expanded-content>
+          <!-- <Button label="Cast" @click="handleCast" /> -->
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
       </VNewPersistentPlayer>
