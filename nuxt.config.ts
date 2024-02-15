@@ -151,7 +151,9 @@ export default defineNuxtConfig({
     '~/plugins/primevue.js'
   ],
 
-
+  experimental: {
+    crossOriginPrefetch: true
+  },
   runtimeConfig: {
     public: {
       SENTRY_DSN: process.env['SENTRY_DSN'],

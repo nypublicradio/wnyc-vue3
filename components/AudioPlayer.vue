@@ -20,9 +20,10 @@ import {
   useSkipBackTrigger,
   usePlayerSeek,
   useIsNetworkConnected,
-  useAdvertisingRestriction,
+  //useAdvertisingRestriction,
   useAdvertisingId,
   useIsApp,
+  useCurrentUserProfile,
 } from "~/composables/states"
 
 import {
@@ -39,7 +40,7 @@ import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
-
+const device = useDevice()
 // if (process.client) {
 //   import("~/utilities/media-session.js").then((module) => {
 //     // Use your module here
@@ -63,7 +64,8 @@ const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const isNetworkConnected = useIsNetworkConnected()
 const advertisingId = useAdvertisingId()
-const advertisingRestriction = useAdvertisingRestriction()
+//const advertisingRestriction = useAdvertisingRestriction()
+const currentUser = useCurrentUserProfile()
 const isApp = useIsApp()
 const showPlayer = ref(false)
 const playerRef = ref(null)
@@ -192,15 +194,30 @@ const togglePlayHere = (e) => {
 the url that comes down from publisher is in currentEpisode.value
 then if we are in the App env, we check if the url has a param(a "?" already)
 then we grab the asID and the restriction value (0 default or 1)
+then we add the user id to the url (0 if not logged in)
+then we detect the device and add it to the url
 then we merge it all together and return it to the player as the source for the request
 */
+
 const getConfiguredAudioUrl = computed(() => {
   const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
-  if (isApp.value) {
+  if (!isApp.value) {
     const hasQuery = hasQueryParams(url)
     const adID = advertisingId.value
-    const restriction = advertisingRestriction.value
-    return `${url}${hasQuery ? "&" : "?"}listenerid=${adID}&aw_0_1st.lmt=${restriction}`
+    const userID = currentUser?.value?.id ?? "0"
+    const desktop = device.isDesktop || device.isDesktopOrTablet
+    const thisDevice = device.isAndroid
+      ? "android"
+      : desktop
+      ? "desktop"
+      : device.isIos
+      ? "ios"
+      : "unknown"
+    // update restriction when we have the value from setting panel
+    const restriction = "0"
+    return `${url}${
+      !isApp.value ? `${hasQuery ? "&" : "?"}listenerid=${adID}` : ""
+    }&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
   } else {
     return url
   }

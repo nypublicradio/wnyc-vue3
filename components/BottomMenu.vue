@@ -17,12 +17,6 @@ const options = ref([
   { icon: markRaw(StarIcon), value: "saved", slug: "/saved" },
 ])
 
-// handle bottom menu click to navigate to the route
-const menuClick = (e) => {
-  trackClickEvent("Click Tracking - Bottom Menu", "Bottom Menu", e.value.slug)
-  navigateTo(e.value.slug)
-}
-
 // if another trigger changes the route, update the bottom menu state
 watch(
   () => route.path,
@@ -36,11 +30,27 @@ watch(
   },
   { immediate: true }
 )
+// handle bottom menu click to set active and track the event
+const menuClick = (item) => {
+  trackClickEvent("Click Tracking - Bottom Menu", "Bottom Menu", item.slug)
+  bottomMenuState.value = { value: item.value }
+}
 </script>
 
 <template>
   <div class="bottom-menu" data-style-mode="dark">
-    <SelectButton
+    <div class="buttons-holder">
+      <NuxtLink v-for="item in options" :to="item.slug" class="w-full" prefetch>
+        <Button @click="menuClick(item)" class="w-full">
+          <div class="item">
+            <component :is="item.icon" :active="bottomMenuState.value == item.value">
+            </component>
+            {{ capitalizeFirstLetter(item.value) }}
+          </div>
+        </Button>
+      </NuxtLink>
+    </div>
+    <!-- <SelectButton
       v-model="bottomMenuState"
       :options="options"
       option-label="value"
@@ -58,7 +68,7 @@ watch(
           {{ capitalizeFirstLetter(slotProps.option.value) }}
         </div>
       </template>
-    </SelectButton>
+    </SelectButton> -->
   </div>
 </template>
 
@@ -72,7 +82,7 @@ watch(
   width: 100vw;
   padding-bottom: env(safe-area-inset-bottom);
 
-  .p-selectbutton {
+  .buttons-holder {
     height: var(--bottom-menu-height);
     width: 100%;
     display: flex;

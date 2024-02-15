@@ -194,13 +194,13 @@ export const useSensitiveContent = () => useState<boolean>('sensitiveContent', (
 export const useGlobalToast = () => useState<object>('globalToast', () => null)
 
 // saved page tab state
-export const useSelectedSavedTab = () => useState<object>('useSelectedSavedTab', () => 0)
+export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)
 
 
 // store Advertising Id
-export const useAdvertisingId = () => useState<object>('useAdvertisingId', () => null)
+export const useAdvertisingId = () => useState<string>('useAdvertisingId', () => null)
 
 // store Advertising restriction preference 
 // 0 = allow
 // 1 = restrict
-export const useAdvertisingRestriction = () => useState<object>('useAdvertisingId', () => 0)
+export const useAdvertisingRestriction = () => useState<string>('useAdvertisingId', () => '0')
