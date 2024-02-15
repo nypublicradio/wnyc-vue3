@@ -3,6 +3,8 @@ import {
     useAdvertisingId,
 } from "~/composables/states"
 import { AdvertisingId } from '@capacitor-community/advertising-id'
+
+// Get the advertising ID
 export const initAdvertisingId = async () => {
     const advertisingId = useAdvertisingId()
     try {
