@@ -40,7 +40,7 @@ const menuClick = (item) => {
 <template>
   <div class="bottom-menu" data-style-mode="dark">
     <div class="buttons-holder">
-      <template v-for="item in options">
+      <template v-for="item in options" :key="item.slug">
         <NuxtLink :to="item.slug" class="w-full" prefetch>
           <Button @click="menuClick(item)" class="w-full">
             <div class="item">
