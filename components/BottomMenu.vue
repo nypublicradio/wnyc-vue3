@@ -40,15 +40,17 @@ const menuClick = (item) => {
 <template>
   <div class="bottom-menu" data-style-mode="dark">
     <div class="buttons-holder">
-      <NuxtLink v-for="item in options" :to="item.slug" class="w-full" prefetch>
-        <Button @click="menuClick(item)" class="w-full">
-          <div class="item">
-            <component :is="item.icon" :active="bottomMenuState.value == item.value">
-            </component>
-            {{ capitalizeFirstLetter(item.value) }}
-          </div>
-        </Button>
-      </NuxtLink>
+      <template v-for="item in options">
+        <NuxtLink :to="item.slug" class="w-full" prefetch>
+          <Button @click="menuClick(item)" class="w-full">
+            <div class="item">
+              <component :is="item.icon" :active="bottomMenuState.value == item.value">
+              </component>
+              {{ capitalizeFirstLetter(item.value) }}
+            </div>
+          </Button>
+        </NuxtLink>
+      </template>
     </div>
     <!-- <SelectButton
       v-model="bottomMenuState"
