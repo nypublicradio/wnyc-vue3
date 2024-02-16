@@ -16,7 +16,6 @@ import Textarea from 'primevue/textarea'
 import TieredMenu from 'primevue/tieredmenu'
 import Toast from 'primevue/toast'
 import ToastService from 'primevue/toastservice'
-import SelectButton from 'primevue/selectbutton'
 import Inplace from 'primevue/inplace'
 import InputText from 'primevue/inputtext'
 import Avatar from 'primevue/avatar'
@@ -46,7 +45,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Textarea', Textarea)
     nuxtApp.vueApp.component('TieredMenu', TieredMenu)
     nuxtApp.vueApp.component('Toast', Toast)
-    nuxtApp.vueApp.component('SelectButton', SelectButton)
     nuxtApp.vueApp.component('Inplace', Inplace)
     nuxtApp.vueApp.component('InputText', InputText)
     nuxtApp.vueApp.component('Avatar', Avatar)

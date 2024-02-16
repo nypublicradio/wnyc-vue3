@@ -3,9 +3,11 @@ import { useFuse } from "@vueuse/integrations/useFuse"
 import { useShowTopics } from "~/composables/globals.ts"
 
 const config = useRuntimeConfig()
-const { data: shows } = useFetch(`${config.public.BFF_URL}/api/shows`)
-const featuredShows = ref(shows?.value?.featuredShows ?? null)
-const allShows = ref(shows?.value?.all ?? null)
+const { data: shows, pending, error, refresh } = useFetch(
+  `${config.public.BFF_URL}/api/shows`
+)
+const featuredShows = ref(shows?.value?.featuredShows)
+const allShows = ref(shows?.value?.all)
 
 const showTopics = useShowTopics()
 const router = useRouter()
@@ -25,7 +27,7 @@ const options = computed(() => ({
   },
 }))
 
-const { results } = useFuse(searchFieldValue, allShows, options)
+const search = ref(null)
 
 const clearSearchField = () => {
   searchFieldValue.value = ""
@@ -47,11 +49,17 @@ const goToShowPage = (show) => {
     path: `browse/shows/${show.slug}`,
   })
 }
+if (!shows.value) {
+  const stopWatch = watch(shows, () => {
+    allShows.value = shows.value.all
+    featuredShows.value = shows.value.featuredShows
 
-watch(shows, () => {
-  allShows.value = shows.value.all
-  featuredShows.value = shows.value.featuredShows
-})
+    // Stop watching after the first change
+    nextTick(() => {
+      stopWatch()
+    })
+  })
+}
 
 watch(searchFieldValue, () => {
   // sets the scroll to the top of the page when search field is updated. This is needed because if the use scrolls down and searches, they do not see the top of the list if it is long.
@@ -59,6 +67,11 @@ watch(searchFieldValue, () => {
     behavior: "instant",
     block: "start",
   })
+})
+
+onMounted(() => {
+  // init the search in the mounted hook
+  search.value = useFuse(searchFieldValue, allShows, options)
 })
 </script>
 
@@ -110,7 +123,7 @@ watch(searchFieldValue, () => {
         <TabView>
           <TabPanel header="Featured Shows">
             <section class="shows flex flex-column gap-3">
-              <template v-if="featuredShows">
+              <template v-if="!pending">
                 <ShowItem
                   v-for="show in featuredShows"
                   :data="show"
@@ -127,7 +140,7 @@ watch(searchFieldValue, () => {
           </TabPanel>
           <TabPanel header="All Shows">
             <section class="shows flex flex-column gap-3">
-              <template v-if="allShows">
+              <template v-if="!pending">
                 <ShowItem
                   v-for="show in allShows"
                   :data="show"
@@ -153,14 +166,17 @@ watch(searchFieldValue, () => {
         </div>
         <div class="shows flex flex-column gap-3">
           <ShowItem
-            v-for="show in results"
+            v-for="show in search.results"
             :data="show.item"
             :key="show.item.title"
             @onClick="goToShowPage(show.item)"
           />
         </div>
         <!-- if no results show this -->
-        <div v-if="results.length === 0" class="text-center flex flex-column gap-4 mt-8">
+        <div
+          v-if="search.results.length === 0"
+          class="text-center flex flex-column gap-4 mt-8"
+        >
           <h2>No results for {{ searchFieldValue }}</h2>
           <img src="/noResults.svg" class="max-w-6rem m-auto" alt="No Results" />
           <div>
@@ -181,6 +197,10 @@ watch(searchFieldValue, () => {
           </div>
         </div>
       </section>
+    </div>
+    <div v-if="error" class="text-center py-4">
+      <p>An error occured while loading this page.</p>
+      <Button label="Try again" link @click="refresh" />
     </div>
   </div>
 </template>

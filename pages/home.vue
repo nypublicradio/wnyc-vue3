@@ -65,7 +65,7 @@ watch(pagedata, () => {
     <section>
       <h2 class="mb-2">Top stories</h2>
       <!-- <pre class="text-xs">{{ topStories[0] }}</pre> -->
-      <LazyTopStories :articles="topStories" />
+      <TopStories :articles="topStories" />
     </section>
     <div v-for="section in homeTemplate" :key="section.title">
       <div v-if="section.data.length">

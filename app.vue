@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
+import { initAdvertisingId } from "~/utilities/advertising-id.js"
 
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -197,6 +198,7 @@ onMounted(async () => {
     await checkAppLaunchUrl()
     // init downloads files system for the app
     await initFileSystem()
+    await initAdvertisingId()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus

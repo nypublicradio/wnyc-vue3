@@ -643,3 +643,9 @@ export const goToEpisodePage = (ep, params) => {
 export const goToStoryPage = (story, params) => {
   navigateTo(`/story/${story.id}${params ? `?${params}` : ''}`)
 }
+
+// return bool if the url has a query param
+export const hasQueryParams = (url) => {
+  const parsedUrl = new URL(url);
+  return parsedUrl.searchParams.toString().length > 0;
+}
