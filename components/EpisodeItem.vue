@@ -200,11 +200,11 @@ const handleClick = () => {
       <VImage
         class="flex-none"
         :src="imgSrcUrl"
-        :height="72"
-        :width="72"
+        :height="116"
+        :width="116"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="height: 72px; width: 72px"
+        style="height: 116px; width: 116px"
       />
       <div class="flex gap-1 flex-column w-full">
         <div class="flex gap-0 flex-column align-items-start">
@@ -273,7 +273,7 @@ const handleClick = () => {
                 style="height: 60px; width: 60px; background-color: var(--background)"
               />
               <div class="info">
-                <h2>{{ props.data.title }}</h2>
+                <h2 class="card-title-title">{{ props.data.title }}</h2>
                 <p>{{ props.data.showTitle }}</p>
               </div>
             </div>
@@ -297,5 +297,8 @@ const handleClick = () => {
 <style lang="scss" scoped>
 .episode-item {
   cursor: pointer;
+  .card-title-title {
+    @include cardTitle();
+  }
 }
 </style>

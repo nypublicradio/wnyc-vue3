@@ -32,7 +32,7 @@ const props = defineProps({
         <div class="title text-sm font-bold font-meta line-height-2">
           {{ props.item.title }}
         </div>
-        <!--  <pre>{{ props.item }}</pre> -->
+        <pre class="text-xs">{{ props.item }}</pre>
         <div class="desc" v-html="props.item.tease" />
         <PipeData
           :hidePipe="!props.item.showTitle || props.item.showTitle == undefined"
@@ -67,13 +67,10 @@ const props = defineProps({
     padding: 1rem;
     height: 100%;
     .title {
-      @include truncate();
-      @include t3lines();
+      @include cardTitle();
     }
     .desc {
-      @include truncate();
-      @include t4lines();
-      font-size: 13px;
+      @include cardBody();
     }
   }
 }

@@ -81,7 +81,7 @@ const routeBack = () => {
             <div
               v-for="(article, index) in newPageData.articles"
               :key="article?.uuid"
-              class="mb-4"
+              class="mb-5"
             >
               <StoryItem :data="article" :index="index" />
             </div>

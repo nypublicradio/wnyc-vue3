@@ -55,23 +55,22 @@ watch(pagedata, () => {
       </div> -->
 
     <section>
-      <h2 class="mt-4 mb-2">Latest News Updates</h2>
+      <h2 class="mt-4 mb-3">Latest News Updates</h2>
       <LatestNewsUpdates
-        class="pt-2"
         :localNewscast="localNewscast"
         :nationalNewscast="nationalNewscast"
       />
     </section>
     <section>
-      <h2 class="mb-2">Top stories</h2>
-      <!-- <pre class="text-xs">{{ topStories[0] }}</pre> -->
+      <h2 class="mb-3">Top stories</h2>
+      <pre class="text-xs">{{ topStories[0] }}</pre>
+      <pre class="text-xs">{{ topStories[3] }}</pre>
       <TopStories :articles="topStories" />
     </section>
     <div v-for="section in homeTemplate" :key="section.title">
       <div v-if="section.data.length">
         <section>
-          <h2>{{ section.title }}</h2>
-          <!-- <pre class="text-xs">{{ section }}</pre> -->
+          <h2 class="mt-4">{{ section.title }}</h2>
         </section>
         <section v-if="section.componentType === 'default'">
           <div class="flex flex-column gap-4">
@@ -85,7 +84,7 @@ watch(pagedata, () => {
             />
           </div>
         </section>
-        <WNYCFeatured v-else :articles="section.data" />
+        <WNYCFeatured class="mt-2" v-else :articles="section.data" />
       </div>
     </div>
   </div>

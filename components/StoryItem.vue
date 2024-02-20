@@ -10,6 +10,9 @@ import {
   saveFavorite,
   getFavoritedItems,
   checkIsFavorited,
+  hasAudio,
+  getReadingTime,
+  getMinutes,
 } from "~/utilities/helpers"
 
 import { useAccountPromptSideBar } from "~/composables/states"
@@ -92,7 +95,7 @@ const handleAddToFavorites = async () => {
   }
 }
 
-//console.log("StoryItem =", props.data)
+console.log("StoryItem =", props.data)
 </script>
 <template>
   <div class="story-card flex">
@@ -131,18 +134,37 @@ const handleAddToFavorites = async () => {
       "
     >
       <template #belowBlurb>
-        <div class="article-metadata pointer-events-none">
+        <div class="article-metadata">
           <!--    <pre>{{ props.data.authors }}</pre> -->
           <PipeData
+            class="pointer-events-none"
             :hidePipe="props.data.authors?.length == 0 || props.data.authors == undefined"
           >
             <template #left>
-              <VByline prefix="" :authors="props.data.authors" isBlockLinks> </VByline>
+              <!-- <VByline prefix="" :authors="props.data.authors" isBlockLinks> </VByline> -->
+              Gothamist
             </template>
             <template #right>
               <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
             </template>
           </PipeData>
+
+          <div class="mt-2">
+            <PlayButton
+              v-if="hasAudio(props.data?.audio)"
+              :label="
+                getMinutes(props.data?.duration || props.data?.estimatedDuration, 1)
+              "
+              :file="props.data?.name"
+              @onClick="handlePlay(props.data)"
+            />
+            <ReadButton
+              v-else
+              :label="getReadingTime(props.data?.body)"
+              :file="props.data?.name"
+              @on-click.prevent="console.log('click')"
+            />
+          </div>
         </div>
       </template>
     </VCard>
@@ -156,23 +178,19 @@ const handleAddToFavorites = async () => {
 
 <style lang="scss">
 .story-card {
+  cursor: pointer;
   .v-card {
     cursor: pointer;
     .card-details {
       flex: 1;
       align-self: stretch !important;
-      justify-content: space-between;
+      //justify-content: space-between;
     }
     .card-title-title {
-      font-size: 0.906rem;
-      line-height: 1.25rem;
-      font-weight: 700;
-      @include truncate();
-      @include t4lines();
+      @include cardTitle();
     }
     .slot-below-blurb {
-      font-size: 0.813rem;
-      font-weight: 400;
+      @include cardBody();
       .flexible-link {
         color: inherit;
         text-decoration: none;

@@ -432,3 +432,18 @@ a:visited {
     width: 38px;
   }
 }
+
+@mixin cardTitle() {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  @include truncate();
+  @include t3lines();
+}
+@mixin cardBody() {
+  font-size: 0.813rem;
+  line-height: 1.106rem;
+  font-weight: 400;
+  @include truncate();
+  @include t4lines();
+}

@@ -649,3 +649,27 @@ export const hasQueryParams = (url) => {
   const parsedUrl = new URL(url);
   return parsedUrl.searchParams.toString().length > 0;
 }
+
+export const hasAudio = (audio) => {
+  return (
+    audio !== undefined &&
+    audio !== null &&
+    audio !== "" &&
+    !(Array.isArray(audio) && audio.length === 0)
+  )
+}
+
+// Function to strip HTML tags and return text content
+function stripHtmlTags(str) {
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(str, 'text/html');
+  return dom.body.textContent || '';
+}
+
+// Computed property to calculate reading time
+export const getReadingTime = (htmlContent) => {
+  const textContent = stripHtmlTags(htmlContent);
+  const wordsPerMinute = 200; // Average reading speed
+  const estimatedWordCount = textContent.split(/\s+/).length;
+  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
+};

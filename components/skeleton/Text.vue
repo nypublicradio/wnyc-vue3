@@ -14,11 +14,11 @@ const props = defineProps({
   },
   radius: {
     type: String,
-    default: '16px',
+    default: "16px",
   },
   height: {
     type: String,
-    default: '0.825rem',
+    default: "0.825rem",
   },
 })
 
@@ -44,7 +44,7 @@ const gap = rndGap()
     :width="rndWidth(75, 100)"
     :borderRadius="props.radius"
     class="mb-1"
-    :class="gap === index ? 'mb-4' : ''"
+    :class="gap === index ? 'mb-5' : ''"
     v-bind="{ ...$props, ...$attrs }"
   />
 </template>
