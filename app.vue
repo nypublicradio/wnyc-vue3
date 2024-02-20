@@ -47,12 +47,6 @@ const appLaunchUrl = ref(null)
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
-// const homepageData = useHomepageData()
-// const { data: homepageFetchData } = await useFetch(
-//   `${config.public.BFF_URL}/api/homepage`
-// )
-// homepageData.value = homepageFetchData
-
 useHead({
   htmlAttrs: {
     lang: "en",

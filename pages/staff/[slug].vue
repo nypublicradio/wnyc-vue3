@@ -11,7 +11,7 @@ const config = useRuntimeConfig()
 
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const { data: pagedata } = await useFetch(
+const { data: pagedata, pending, error, refresh } = await useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
 newPageData.value = pagedata.value
@@ -59,7 +59,8 @@ const routeBack = () => {
         @click="routeBack"
         label="Back"
       />
-      <div class="content">
+      <FetchError v-if="error" @on-click="refresh" />
+      <div v-if="!pending" class="content">
         <div class="grid">
           <div class="col-12">
             <hr class="my-4" />
@@ -109,6 +110,7 @@ const routeBack = () => {
         >
         </Button>
       </div>
+      <div v-else class="text-center">LOADING</div>
     </div>
     <BackToTopButton />
   </section>

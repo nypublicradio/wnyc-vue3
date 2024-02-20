@@ -118,9 +118,9 @@ onMounted(() => {
           </div>
         </HorizontalScrollFeature>
       </div>
-
+      <FetchError v-if="error" @on-click="refresh" />
       <div class="tabs mt-3">
-        <TabView>
+        <TabView :lazy="true">
           <TabPanel header="Featured Shows">
             <section class="shows flex flex-column gap-3">
               <template v-if="!pending">
@@ -197,10 +197,6 @@ onMounted(() => {
           </div>
         </div>
       </section>
-    </div>
-    <div v-if="error" class="text-center py-4">
-      <p>An error occured while loading this page.</p>
-      <Button label="Try again" link @click="refresh" />
     </div>
   </div>
 </template>

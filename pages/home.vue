@@ -43,7 +43,7 @@ watch(pagedata, () => {
           <p class="mb-4">{{ currentUserProfile }}</p>
         </div>
       </ClientOnly> -->
-
+    <!-- <FetchError v-if="error" @on-click="refresh" /> -->
     <LiveFeature />
     <!-- <div class="grid gap-3">
         <div class="col-fixed ad300 hidden lg:block">
