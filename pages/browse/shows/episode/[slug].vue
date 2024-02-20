@@ -23,7 +23,7 @@ import { mediaTypes } from "~/composables/globals"
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
-const { data: episode } = useFetch(
+const { data: episode, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
@@ -162,9 +162,10 @@ const isSegment = computed(
         />
       </div>
     </section>
+    <FetchError v-if="error" @on-click="refresh" />
     <div class="relative mb-4">
       <v-image
-        v-if="episodeData"
+        v-if="!pending"
         :src="episodeData?.image.template"
         :width="390"
         :height="360"
@@ -180,7 +181,7 @@ const isSegment = computed(
         class="episode-page-image mb-2 opacity-60"
       />
       <v-image
-        v-if="episodeData"
+        v-if="!pending"
         :src="episodeData?.headers.brand.logoImage.template"
         :width="70"
         :height="70"
@@ -197,7 +198,7 @@ const isSegment = computed(
         class="episode-page-show-image mb-2 absolute"
       />
     </div>
-    <div v-if="episodeData">
+    <div v-if="!pending">
       <section>
         <p class="episode-page-date my-1">
           {{

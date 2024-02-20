@@ -32,7 +32,7 @@ const router = useRouter()
 const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
-const { data: storyData } = useFetch(
+const { data: storyData, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
 const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
@@ -156,8 +156,8 @@ const togglePlayHere = (story, index = 0) => {
         />
       </div>
     </section>
-
-    <div v-if="storyData">
+    <FetchError v-if="error" @on-click="refresh" />
+    <div v-if="!pending">
       <VImage
         v-if="topImage"
         :src="topImage"

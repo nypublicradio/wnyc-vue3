@@ -2,7 +2,7 @@
 const router = useRouter()
 const route = useRoute()
 const config = useRuntimeConfig()
-const { data: categoryData } = useFetch(
+const { data: categoryData, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`
 )
 
@@ -39,7 +39,9 @@ onUnmounted(() => {
       </div>
     </section>
     <section class="shows flex flex-column gap-3">
-      <template v-if="categoryData">
+      <FetchError v-if="error" @on-click="refresh" />
+      <template v-if="!pending">
+        <!-- data = {{ categoryData }} -->
         <ShowItem
           v-for="show in categoryData"
           :data="show"

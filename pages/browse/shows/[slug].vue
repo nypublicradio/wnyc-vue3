@@ -25,7 +25,9 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: show } = useFetch(`${config.public.BFF_URL}/api/show/${route.params.slug}`)
+const { data: show, pending, error, refresh } = useFetch(
+  `${config.public.BFF_URL}/api/show/${route.params.slug}`
+)
 
 const pagination = ref(show?.value?.episodes?.meta ?? null)
 const episodes = ref(show?.value?.episodes?.data ?? null)
@@ -117,7 +119,7 @@ watch(show, () => {
         label="Browse"
       />
     </div>
-
+    <FetchError v-if="error" @on-click="refresh" />
     <VImage
       v-if="showImage"
       :src="showImage"
@@ -137,7 +139,7 @@ watch(show, () => {
       borderRadius="0px"
     />
     <div
-      v-if="show"
+      v-if="!pending"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
       <Button rounded text plain @click="handleAddToFavorites">
@@ -165,7 +167,7 @@ watch(show, () => {
       <Skeleton height="48px" width="48px" borderRadius="24px" />
       <Skeleton height="37px" width="37px" borderRadius="20px" />
     </div>
-    <div v-if="show">
+    <div v-if="!pending">
       <h2 class="text-lg mt-2">{{ showTitle }}</h2>
       <div class="text-sm mt-2 html-formatting" v-html="showTease" />
     </div>
@@ -197,7 +199,7 @@ watch(show, () => {
     </div>
     <h2 class="mt-4">Episodes</h2>
     <div class="flex flex-column gap-4 mt-2">
-      <template v-if="show">
+      <template v-if="!pending">
         <EpisodeItem
           v-for="ep in episodes"
           :data="ep"

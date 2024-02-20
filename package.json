@@ -42,7 +42,7 @@
     "@jofr/capacitor-media-session": "^3.0.2",
     "@nuxt/image": "^1.1.0",
     "@nuxtjs/supabase": "^1.0.2",
-    "@nypublicradio/nypr-design-system-vue3": "^2.1.16",
+    "@nypublicradio/nypr-design-system-vue3": "^2.1.22",
     "@sentry/integrations": "^7.93.0",
     "@sentry/tracing": "^7.93.0",
     "@sentry/vue": "^7.93.0",
