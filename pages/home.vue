@@ -3,9 +3,7 @@ import { goToEpisodePage } from "~/utilities/helpers"
 //import { useUpdateCommentCounts } from "~/composables/comments"
 
 const config = useRuntimeConfig()
-const { data: pagedata, pending, error, refresh } = useFetch(
-  `${config.public.BFF_URL}/api/homepage`
-)
+const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
 const homeTemplate = ref(pagedata?.value?.home_template ?? null)
 const topStories = ref(pagedata?.value?.top_stories ?? null)
 const localNewscast = ref(pagedata?.value?.local_newscast ?? null)
@@ -45,7 +43,7 @@ watch(pagedata, () => {
           <p class="mb-4">{{ currentUserProfile }}</p>
         </div>
       </ClientOnly> -->
-    <FetchError v-if="error" @on-click="refresh" />
+    <!-- <FetchError v-if="error" @on-click="refresh" /> -->
     <LiveFeature />
     <!-- <div class="grid gap-3">
         <div class="col-fixed ad300 hidden lg:block">
