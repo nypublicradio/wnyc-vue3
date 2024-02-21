@@ -212,7 +212,7 @@ const handleClick = () => {
         style="height: 116px; width: 116px"
       />
       <div class="flex gap-1 flex-column justify-content-between w-full">
-        <div>
+        <div class="flex gap-1 flex-column w-full">
           <div class="flex gap-0 flex-column align-items-start">
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
