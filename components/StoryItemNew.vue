@@ -209,7 +209,7 @@ const handleClick = () => {
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       @click.prevent="handleClick"
     ></div>
-    <div class="flex gap-3 w-full" v-ripple>
+    <div v-if="imgSrcUrl" class="flex gap-3 w-full" v-ripple>
       <VImage
         class="flex-none"
         :src="imgSrcUrl"
@@ -234,7 +234,9 @@ const handleClick = () => {
                   {{
                     props.data.showTitle ||
                     props.data.headers?.brand?.title ||
-                    "Gothamist"
+                    props.data.cmsSource === cmsSources.WAGTAIL
+                      ? "Gothamist"
+                      : "WNYC"
                   }}
                 </p>
               </template>
@@ -264,6 +266,7 @@ const handleClick = () => {
         </div>
         <div class="flex justify-content-between align-items-center">
           <ReadButton
+            class="z-1"
             :label="getReadingTime(props.data?.rawBody)"
             :file="props.data?.name"
             @on-click="handleClick"
@@ -283,10 +286,9 @@ const handleClick = () => {
                   <div class="flex gap-3 px-4 align-items-center">
                     <VImage
                       :src="imgSrcUrl"
-                      :alt="`${props.data.showTitle} show image`"
-                      :width="60"
-                      :height="60"
-                      :sizes="[2]"
+                      :alt="`${props.data?.showTitle} show image`"
+                      :width="116"
+                      :height="116"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
                       style="
