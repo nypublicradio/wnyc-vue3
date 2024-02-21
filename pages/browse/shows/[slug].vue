@@ -13,6 +13,7 @@ import {
   shareAPI,
   trackClickEvent,
   goToEpisodePage,
+  hasAudio,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -53,7 +54,7 @@ const backHome = () => {
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
   return episodes.value.find((ep) => {
-    if (Array.isArray(ep.audio) && ep.audio[0] !== null) {
+    if (hasAudio(ep.audio)) {
       return ep
     } else if (typeof ep.audio === "string") {
       return ep
@@ -198,10 +199,11 @@ watch(show, () => {
       />
     </div>
     <h2 class="mt-4">Episodes</h2>
-    <div class="flex flex-column gap-4 mt-2">
-      <template v-if="!pending">
+    <!--     <pre class="text-xs">{{ episodes[2] }}</pre> -->
+    <div class="flex flex-column gap-5 mt-2">
+      <template v-if="!pending" v-for="ep in episodes">
         <EpisodeItem
-          v-for="ep in episodes"
+          v-if="hasAudio(ep?.audio)"
           :data="ep"
           :key="ep.id"
           @onClick="goToEpisodePage(ep)"
@@ -210,6 +212,7 @@ watch(show, () => {
       </template>
       <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
     </div>
+    <!-- TODO: setup infini-scroll -->
     <BackToTopButton />
   </section>
 </template>
@@ -220,9 +223,9 @@ watch(show, () => {
     width: 50px !important;
     height: 50px !important;
     svg {
-      width: 1.5rem;
-      height: 1.5rem;
-      margin-left: 5px;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-left: 3px;
     }
   }
 }

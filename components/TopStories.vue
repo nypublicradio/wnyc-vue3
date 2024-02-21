@@ -24,10 +24,8 @@ defineExpose({
         v-if="hasAudio(article.audio)"
         :data="article"
         @on-click="goToEpisodePage(article)"
-        showPlayButton
       />
-      <StoryItemNew v-else :data="article" :index="index" />
-      <!-- <StoryItem :data="article" :index="index" /> -->
+      <StoryItem v-else :data="article" :index="index" />
     </div>
   </div>
   <div v-else>

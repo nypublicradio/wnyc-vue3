@@ -56,7 +56,7 @@ const props = defineProps({
   },
   showPlayButton: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   saved: {
     type: Boolean,
@@ -76,15 +76,15 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
 })
 
-const estimatedDuration = ref(props.data.estimatedDuration)
+const estimatedDuration = ref(null)
 
 watch(
   estimatedDuration,
   async () => {
     estimatedDuration.value =
-      estimatedDuration.value === 0 || estimatedDuration.value === undefined
+      props.data.estimatedDuration === 0 || props.data.estimatedDuration === undefined
         ? await fetchDuration(props.data.audio)
-        : estimatedDuration.value
+        : props.data.estimatedDuration
   },
   { immediate: true, deep: true }
 )
@@ -223,7 +223,7 @@ const handleClick = () => {
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
                 <span v-if="hasAudio && !showPlayButton">
-                  <p class="text-xs" v-if="estimatedDuration !== 0">
+                  <p class="text-xs" v-if="estimatedDuration">
                     {{ getMinutes(estimatedDuration, 1) }}
                   </p>
                   <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
@@ -261,11 +261,19 @@ const handleClick = () => {
         <div class="flex justify-content-between align-items-center">
           <PlayButton
             v-if="props.showPlayButton"
-            class="z-1"
-            :label="getMinutes(estimatedDuration, 1)"
             :file="props.data?.name"
+            class="z-1"
             @onClick="togglePlayEpisode(props.data)"
-          />
+          >
+            <template v-if="estimatedDuration">
+              <p class="font-bold">{{ getMinutes(estimatedDuration, 1) }}</p>
+            </template>
+
+            <p v-else class="font-bold">
+              <i class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
+              min
+            </p>
+          </PlayButton>
           <slot>
             <DotMenu
               v-if="!props.saved"

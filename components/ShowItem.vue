@@ -76,12 +76,12 @@ const handleAddToFavorites = async () => {
     <div class="flex gap-3 w-full" v-ripple @click.prevent="emit('onClick')">
       <VImage
         :src="props.data.image.template"
-        :height="72"
-        :width="72"
+        :height="116"
+        :width="116"
         :ratio="[1, 1]"
         :srcset="[2]"
         class="flex-none"
-        style="height: 72px; width: 72px; background-color: var(--background2)"
+        style="height: 116px; width: 116px; background-color: var(--background2)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <!-- <LiveBadge v-if="props.data.isLive" class="mb-1" /> -->

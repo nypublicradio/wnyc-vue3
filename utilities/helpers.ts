@@ -72,10 +72,11 @@ export const fetchDuration = async (url: string) => {
     //Multiplying the file size by 8 and dividing by 128000 gives the same
     //duration as dividing by 16000 and not multiplying the file size by 8.
     const duration: number = Math.round(mp3Size / 16000)
-    return duration
+    console.log('duration = ', duration)
+    return duration !== 0 ? duration : -1
   } catch (e) {
     console.log('error fetching duration', e);
-    return false
+    return "error"
 
   }
 }

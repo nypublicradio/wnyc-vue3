@@ -122,7 +122,7 @@ onMounted(() => {
       <div class="tabs mt-3">
         <TabView :lazy="true">
           <TabPanel header="Featured Shows">
-            <section class="shows flex flex-column gap-3">
+            <section class="shows flex flex-column gap-4">
               <template v-if="!pending">
                 <ShowItem
                   v-for="show in featuredShows"
@@ -139,7 +139,7 @@ onMounted(() => {
             </section>
           </TabPanel>
           <TabPanel header="All Shows">
-            <section class="shows flex flex-column gap-3">
+            <section class="shows flex flex-column gap-4">
               <template v-if="!pending">
                 <ShowItem
                   v-for="show in allShows"
