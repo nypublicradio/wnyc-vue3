@@ -19,6 +19,8 @@ import {
   fetchDuration,
   hasAudio,
   togglePlayEpisode,
+  getReadingTime,
+  whenTime,
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import {
@@ -192,10 +194,6 @@ if (props.isDownloaded) {
 // handle click event emit
 const handleClick = () => {
   emit("on-click")
-}
-
-const onCardClick = () => {
-  emit("onClick")
   navigateTo({
     path: `/story/${props.data.id || props.data.media_id}`,
     query: {
@@ -232,21 +230,17 @@ const onCardClick = () => {
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
-                <span v-if="hasAudio && !showPlayButton">
-                  <p class="text-xs" v-if="estimatedDuration !== 0">
-                    {{ getMinutes(estimatedDuration, 1) }}
-                  </p>
-                  <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-                </span>
-                <p class="text-xs" v-else>
-                  {{ props.data.showTitle || props.data.headers.brand.title }}
+                <p class="text-xs">
+                  {{
+                    props.data.showTitle ||
+                    props.data.headers?.brand?.title ||
+                    "Gothamist"
+                  }}
                 </p>
               </template>
               <template #right>
                 <div class="flex gap-2 align-items-center">
-                  <p class="text-xs">
-                    {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
-                  </p>
+                  <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
                   <!-- FROM CapacitorJS Preferences local storage -->
                   <DownloadProgress
                     v-if="progress !== null || isAlreadyDownloaded(props.data)"
@@ -269,17 +263,10 @@ const onCardClick = () => {
           ></ProgressBar> -->
         </div>
         <div class="flex justify-content-between align-items-center">
-          <PlayButton
-            v-if="props.showPlayButton"
-            class="z-1"
-            :label="getMinutes(estimatedDuration, 1)"
-            :file="props.data?.name"
-            @onClick="togglePlayEpisode(props.data)"
-          />
           <ReadButton
-            :label="getReadingTime(props.data?.body)"
+            :label="getReadingTime(props.data?.rawBody)"
             :file="props.data?.name"
-            @on-click="onCardClick"
+            @on-click="handleClick"
           />
           <slot>
             <DotMenu
