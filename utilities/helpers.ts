@@ -674,3 +674,13 @@ export const getReadingTime = (htmlContent) => {
   const estimatedWordCount = textContent.split(/\s+/).length;
   return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
 };
+
+export const getWagtailRawBody = (bodyArr) => {
+  let rawbody = ""
+  bodyArr.map((item) => {
+    if (item.type === "paragraph") {
+      rawbody += item.value
+    };
+  })
+  return rawbody
+}

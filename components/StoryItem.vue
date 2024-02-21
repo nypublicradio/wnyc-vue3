@@ -145,14 +145,13 @@ const handleAddToFavorites = async () => {
               <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
             </template>
           </PipeData>
-
-          <div class="mt-2">
-            <ReadButton
-              :label="getReadingTime(props.data?.body)"
-              :file="props.data?.name"
-              @on-click="console.log('click')"
-            />
-          </div>
+        </div>
+        <div class="mt-2">
+          <ReadButton
+            :label="getReadingTime(props.data?.rawBody)"
+            :file="props.data?.name"
+            @on-click="onCardClick"
+          />
         </div>
       </template>
     </VCard>

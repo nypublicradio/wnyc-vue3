@@ -2,6 +2,7 @@ import type Author from '../types/Author'
 import type { ArticlePage } from '../types/Page'
 import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
+import { getWagtailRawBody } from "~/utilities/helpers"
 
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
@@ -98,6 +99,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
     url: article.url,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     body: article.body,
+    rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
 
     // curated images
@@ -153,6 +155,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     url: article.attributes.url,
     section: undefined, //Does this exist in publisher?
     body: article.attributes.body,
+    rawBody: article.attributes.body,
     audio: article.attributes.audio,
 
     // curated images

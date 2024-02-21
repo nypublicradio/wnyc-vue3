@@ -12,7 +12,12 @@ const emit = defineEmits(["on-click"])
 <template>
   <div class="fetch-error text-center py-4">
     <p>{{ props.msg }}</p>
-    <Button label="Try again" text severity="secondary" @click="emit('on-click')" />
+    <Button
+      class="mt-2"
+      label="Try again"
+      severity="secondary"
+      @click="emit('on-click')"
+    />
   </div>
 </template>
 

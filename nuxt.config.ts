@@ -170,7 +170,7 @@ export default defineNuxtConfig({
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.prod.nypr.digital/images/',
       FEATURED_SHOWS: process.env.FEATURED_SHOWS ?? 'https://www.wnyc.org/api/v2/discover/shows/',
       GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
-      BFF_URL: 'https://demo.wnyc.org',
+      BFF_URL: 'http://local.dev.nypr.digital:3000',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',
       environment: process.env.environment ?? 'prod',
       supabaseUrl: process.env.SUPABASE_URL,

@@ -19,7 +19,7 @@ defineExpose({
 <template>
   <div v-if="articles" class="top-stories">
     <div v-for="(article, index) in articles" :key="article.id" class="mb-5">
-      <pre class="text-xs">{{ article.body }}</pre>
+      <!-- <pre class="text-xs">{{ article.rawBody }}</pre> -->
       <EpisodeItem
         v-if="hasAudio(article.audio)"
         :data="article"
