@@ -4,7 +4,7 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
-import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+//import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
@@ -123,18 +123,18 @@ const handleAddToFavorites = async (bucketItem) => {
     accountPromptSideBar.value = true
   }
 }
-const progress = ref(null)
+//const progress = ref(null)
 // handle the download of the audio file request and feed the progress
-const handleDownload = async (bucketItem) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
-  progress.value = await fetchAndStoreMp3(bucketItem)
-}
+// const handleDownload = async (bucketItem) => {
+//   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
+//   progress.value = await fetchAndStoreMp3(bucketItem)
+// }
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: "Favorite Episode",
+      label: "Favorite Story",
       customIcon: StarIcon,
       active: isFavorited.value,
       title: bucketItem.title,
@@ -142,17 +142,17 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    {
-      label: `Download ${
-        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
-      }`,
-      //icon: 'pi pi-google',
-      customIcon: DownloadIcon,
-      title: bucketItem.title,
-      command: () => {
-        handleDownload(bucketItem)
-      },
-    },
+    // {
+    //   label: `Download ${
+    //     bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+    //   }`,
+    //   //icon: 'pi pi-google',
+    //   customIcon: DownloadIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleDownload(bucketItem)
+    //   },
+    // },
     {
       label: "Share",
       customIcon: ShareIcon,
@@ -244,12 +244,12 @@ const handleClick = () => {
                 <div class="flex gap-2 align-items-center">
                   <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
                   <!-- FROM CapacitorJS Preferences local storage -->
-                  <DownloadProgress
+                  <!-- <DownloadProgress
                     v-if="progress !== null || isAlreadyDownloaded(props.data)"
                     :isDownloaded="isAlreadyDownloaded(props.data)"
                     :progress="progress"
                     small
-                  />
+                  /> -->
                   <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
                 </div>
               </template>
