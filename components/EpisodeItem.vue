@@ -17,6 +17,8 @@ import {
   getMinutes,
   getDate,
   fetchDuration,
+  hasAudio,
+  togglePlayEpisode,
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import {
@@ -49,6 +51,10 @@ const props = defineProps({
     default: null,
   },
   showTitle: {
+    type: Boolean,
+    default: false,
+  },
+  showPlayButton: {
     type: Boolean,
     default: false,
   },
@@ -170,22 +176,17 @@ const onMenuChange = (e) => {
   e.value.command()
 }
 
-const hasAudio = computed(() => {
-  return (
-    (props.data.audio && typeof props.data.audio === "string") ||
-    (Array.isArray(props.data.audio) && props.data.audio.length === 0)
-  )
-})
-
 const imgSrcUrl = ref("")
 if (props.isDownloaded) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
-  imgSrcUrl.value =
+  imgSrcUrl.value = String(
     props.data?.image?.template ??
-    props.data?.image ??
-    props.fallbackImage ??
-    FALLBACKIMAGELOCAL
+      props.data?.image?.id ??
+      props.data?.image ??
+      props.fallbackImage ??
+      FALLBACKIMAGELOCAL
+  )
 }
 
 // handle click event emit
@@ -213,7 +214,7 @@ const handleClick = () => {
           </p>
           <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
         </div>
-        <div class="article-metadata -mb-1">
+        <div class="article-metadata">
           <PipeData class="text-xs" :hide-pipe="!hasAudio">
             <template #left>
               <span v-if="hasAudio">
@@ -248,6 +249,12 @@ const handleClick = () => {
           class="w-full"
           :showValue="false"
         ></ProgressBar> -->
+        <PlayButton
+          v-if="props.showPlayButton"
+          :label="getMinutes(props.data?.duration || props.data?.estimatedDuration, 1)"
+          :file="props.data?.name"
+          @onClick="togglePlayEpisode(props.data)"
+        />
       </div>
     </div>
 

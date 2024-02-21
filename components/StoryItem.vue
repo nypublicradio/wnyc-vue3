@@ -141,8 +141,7 @@ console.log("StoryItem =", props.data)
             :hidePipe="props.data.authors?.length == 0 || props.data.authors == undefined"
           >
             <template #left>
-              <!-- <VByline prefix="" :authors="props.data.authors" isBlockLinks> </VByline> -->
-              Gothamist
+              <VByline prefix="" :authors="props.data.authors" isBlockLinks> </VByline>
             </template>
             <template #right>
               <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
@@ -150,16 +149,7 @@ console.log("StoryItem =", props.data)
           </PipeData>
 
           <div class="mt-2">
-            <PlayButton
-              v-if="hasAudio(props.data?.audio)"
-              :label="
-                getMinutes(props.data?.duration || props.data?.estimatedDuration, 1)
-              "
-              :file="props.data?.name"
-              @onClick="handlePlay(props.data)"
-            />
             <ReadButton
-              v-else
               :label="getReadingTime(props.data?.body)"
               :file="props.data?.name"
               @on-click.prevent="console.log('click')"

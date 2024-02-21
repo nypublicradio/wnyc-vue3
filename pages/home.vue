@@ -63,8 +63,6 @@ watch(pagedata, () => {
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
-      <pre class="text-xs">{{ topStories[0] }}</pre>
-      <pre class="text-xs">{{ topStories[3] }}</pre>
       <TopStories :articles="topStories" />
     </section>
     <div v-for="section in homeTemplate" :key="section.title">
