@@ -120,7 +120,7 @@ const getProgress = computed(() => {
 <style lang="scss" scoped>
 .small-play {
   .p-button {
-    padding: 0.25rem 0.75rem;
+    padding: 0.219rem 0.75rem;
     &.active {
       //border: var(--night) 1px solid;
     }

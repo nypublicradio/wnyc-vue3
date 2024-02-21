@@ -94,8 +94,6 @@ const handleAddToFavorites = async () => {
     accountPromptSideBar.value = true
   }
 }
-
-console.log("StoryItem =", props.data)
 </script>
 <template>
   <div class="story-card flex">
@@ -152,7 +150,7 @@ console.log("StoryItem =", props.data)
             <ReadButton
               :label="getReadingTime(props.data?.body)"
               :file="props.data?.name"
-              @on-click.prevent="console.log('click')"
+              @on-click="console.log('click')"
             />
           </div>
         </div>

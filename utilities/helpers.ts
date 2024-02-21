@@ -74,9 +74,10 @@ export const fetchDuration = async (url: string) => {
     const duration: number = Math.round(mp3Size / 16000)
     return duration
   } catch (e) {
-    //console.log(e);
+    console.log('error fetching duration', e);
+    return false
+
   }
-  return null
 }
 
 // returns a resized image url when provided the entire image object

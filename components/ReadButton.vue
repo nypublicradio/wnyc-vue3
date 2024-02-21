@@ -45,7 +45,7 @@ const emit = defineEmits(["on-click"])
 
 <template>
   <div class="read-button" :class="[{ circle: props.label === '' }]">
-    <Button severity="secondary" @click.prevent="emit('on-click')">
+    <Button severity="secondary" @click="emit('on-click')">
       <slot name="icon">
         <div class="flex align-items-center icon">
           <i class="pi pi-book text-xs"></i>
@@ -63,7 +63,7 @@ const emit = defineEmits(["on-click"])
 <style lang="scss" scoped>
 .read-button {
   .p-button {
-    padding: 0.25rem 0.75rem;
+    padding: 0.219rem 0.75rem;
     &.active {
       //border: var(--night) 1px solid;
     }

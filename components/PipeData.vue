@@ -9,11 +9,12 @@ const props = defineProps({
 
 <template>
   <div class="pipe-data flex row-gap-0 flex-wrap align-items-center">
-    <div class="">
+    <div class="flex align-items-center mr-2">
       <slot name="left" />
+      <!-- <div class="pipe mx-2" v-if="!props.hidePipe" /> -->
     </div>
     <div class="flex align-items-center">
-      <div class="pipe mx-2" v-if="!props.hidePipe" />
+      <div class="pipe mr-2" v-if="!props.hidePipe" />
       <slot name="right" />
     </div>
   </div>

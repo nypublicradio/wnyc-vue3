@@ -2,6 +2,8 @@
 import { whenTime } from "~/utilities/helpers"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage"
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+// TEMP fix to make ripple work
+import { usePrimeVue } from "primevue/config"
 
 const props = defineProps({
   item: {
@@ -9,10 +11,15 @@ const props = defineProps({
     default: null,
   },
 })
+
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
 </script>
 
 <template>
-  <div v-if="props.item" class="card-large mb-4">
+  <div v-if="props.item" class="card-large mb-4 p-ripple">
     <VFlexibleLink
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       raw
@@ -32,7 +39,7 @@ const props = defineProps({
         <div class="title text-sm font-bold font-meta line-height-2">
           {{ props.item.title }}
         </div>
-        <pre class="text-xs">{{ props.item }}</pre>
+        <!--    <pre class="text-xs">{{ props.item }}</pre> -->
         <div class="desc" v-html="props.item.tease" />
         <PipeData
           :hidePipe="!props.item.showTitle || props.item.showTitle == undefined"

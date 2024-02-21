@@ -86,7 +86,7 @@ watch(
         ? await fetchDuration(props.data.audio)
         : estimatedDuration.value
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 )
 
 const handleAddToFavorites = async (bucketItem) => {
@@ -197,7 +197,11 @@ const handleClick = () => {
 
 <template>
   <div class="episode-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3 w-full" @click.prevent="handleClick" v-ripple>
+    <div
+      class="card-click w-full h-full absolute top-0 left-0 z-1"
+      @click.prevent="handleClick"
+    ></div>
+    <div class="flex gap-3 w-full" v-ripple>
       <VImage
         class="flex-none"
         :src="imgSrcUrl"
@@ -207,97 +211,110 @@ const handleClick = () => {
         :srcset="[2]"
         style="height: 116px; width: 116px"
       />
-      <div class="flex gap-1 flex-column w-full">
-        <div class="flex gap-0 flex-column align-items-start">
-          <p v-if="props.showTitle" class="text-xs line-height-1">
-            {{ props.data.org ?? props.data.showTitle }}
-          </p>
-          <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
-        </div>
-        <div class="article-metadata">
-          <PipeData class="text-xs" :hide-pipe="!hasAudio">
-            <template #left>
-              <span v-if="hasAudio">
-                <p class="text-xs" v-if="estimatedDuration">
-                  {{ getMinutes(estimatedDuration, 1) }}
+      <div class="flex gap-1 flex-column justify-content-between w-full">
+        <div>
+          <div class="flex gap-0 flex-column align-items-start">
+            <p v-if="props.showTitle" class="text-xs line-height-1">
+              {{ props.data.org ?? props.data.showTitle }}
+            </p>
+            <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+          </div>
+          <div class="article-metadata">
+            <PipeData class="text-xs" :hide-pipe="!hasAudio">
+              <template #left>
+                <span v-if="hasAudio && !showPlayButton">
+                  <p class="text-xs" v-if="estimatedDuration !== 0">
+                    {{ getMinutes(estimatedDuration, 1) }}
+                  </p>
+                  <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
+                </span>
+                <p class="text-xs" v-else>
+                  {{ props.data.showTitle || props.data.headers.brand.title }}
                 </p>
-                <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-              </span>
-            </template>
-            <template #right>
-              <div class="flex gap-2 align-items-center">
-                <p class="text-xs">
-                  {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
-                </p>
-                <!-- FROM CapacitorJS Preferences local storage -->
-                <DownloadProgress
-                  v-if="progress !== null || isAlreadyDownloaded(props.data)"
-                  :isDownloaded="isAlreadyDownloaded(props.data)"
-                  :progress="progress"
-                  small
-                />
-                <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
-              </div>
-            </template>
-          </PipeData>
-        </div>
-        <!-- FROM SUPABASE PROFILER DATA -->
-        <!-- Has to have started playing to show -->
-        <!-- <ProgressBar
+              </template>
+              <template #right>
+                <div class="flex gap-2 align-items-center">
+                  <p class="text-xs">
+                    {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
+                  </p>
+                  <!-- FROM CapacitorJS Preferences local storage -->
+                  <DownloadProgress
+                    v-if="progress !== null || isAlreadyDownloaded(props.data)"
+                    :isDownloaded="isAlreadyDownloaded(props.data)"
+                    :progress="progress"
+                    small
+                  />
+                  <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
+                </div>
+              </template>
+            </PipeData>
+          </div>
+          <!-- FROM SUPABASE PROFILER DATA -->
+          <!-- Has to have started playing to show -->
+          <!-- <ProgressBar
           :value="50"
           style="height: 4px"
           class="w-full"
           :showValue="false"
-        ></ProgressBar> -->
-        <PlayButton
-          v-if="props.showPlayButton"
-          :label="getMinutes(props.data?.duration || props.data?.estimatedDuration, 1)"
-          :file="props.data?.name"
-          @onClick="togglePlayEpisode(props.data)"
-        />
+          ></ProgressBar> -->
+        </div>
+        <div class="flex justify-content-between align-items-center">
+          <PlayButton
+            v-if="props.showPlayButton"
+            class="z-1"
+            :label="getMinutes(estimatedDuration, 1)"
+            :file="props.data?.name"
+            @onClick="togglePlayEpisode(props.data)"
+          />
+          <slot>
+            <DotMenu
+              v-if="!props.saved"
+              :menuItems="getDotMenuItems(props.data)"
+              label=""
+              @changeEmit.prevent="onMenuChange"
+              class="z-1"
+              height="28px"
+              width="32px"
+            >
+              <template #header-bottom>
+                <div>
+                  <div class="flex gap-3 px-4 align-items-center">
+                    <VImage
+                      :src="imgSrcUrl"
+                      :alt="`${props.data.showTitle} show image`"
+                      :width="60"
+                      :height="60"
+                      :sizes="[2]"
+                      class="show-image-in-menu flex-none"
+                      :ratio="[1, 1]"
+                      style="
+                        height: 60px;
+                        width: 60px;
+                        background-color: var(--background);
+                      "
+                    />
+                    <div class="info">
+                      <h2 class="card-title-title">{{ props.data.title }}</h2>
+                      <p>{{ props.data.showTitle }}</p>
+                    </div>
+                  </div>
+                  <hr class="mt-5 mb-2 dim" />
+                </div>
+              </template>
+            </DotMenu>
+            <Button v-else text plain rounded class="flex-none">
+              <template #icon>
+                <StarIcon
+                  class="h-2rem"
+                  :active="isFavorited"
+                  @click="handleAddToFavorites(bucketItem)"
+                />
+              </template>
+            </Button>
+          </slot>
+        </div>
       </div>
     </div>
-
-    <slot>
-      <DotMenu
-        v-if="!props.saved"
-        :menuItems="getDotMenuItems(props.data)"
-        label=""
-        @changeEmit="onMenuChange"
-        class="-mr-2"
-      >
-        <template #header-bottom>
-          <div>
-            <div class="flex gap-3 px-4 align-items-center">
-              <VImage
-                :src="imgSrcUrl"
-                :alt="`${props.data.showTitle} show image`"
-                :width="60"
-                :height="60"
-                :sizes="[2]"
-                class="show-image-in-menu flex-none"
-                :ratio="[1, 1]"
-                style="height: 60px; width: 60px; background-color: var(--background)"
-              />
-              <div class="info">
-                <h2 class="card-title-title">{{ props.data.title }}</h2>
-                <p>{{ props.data.showTitle }}</p>
-              </div>
-            </div>
-            <hr class="mt-5 mb-2 dim" />
-          </div>
-        </template>
-      </DotMenu>
-      <Button v-else text plain rounded class="flex-none">
-        <template #icon>
-          <StarIcon
-            class="h-2rem"
-            :active="isFavorited"
-            @click="handleAddToFavorites(bucketItem)"
-          />
-        </template>
-      </Button>
-    </slot>
   </div>
 </template>
 

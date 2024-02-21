@@ -63,6 +63,7 @@ watch(pagedata, () => {
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
+      <!-- <pre class="text-xs" v-if="topStories">{{ topStories.body }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
     <div v-for="section in homeTemplate" :key="section.title">
@@ -72,12 +73,13 @@ watch(pagedata, () => {
         </section>
         <section v-if="section.componentType === 'default'">
           <div class="flex flex-column gap-4">
+            <!-- <pre class="text-xs">{{ section.data[4] }}</pre> -->
             <EpisodeItem
               v-for="ep in section.data"
               :data="ep"
               :key="`home-${ep.id}`"
               @onClick="goToEpisodePage(ep)"
-              showTitle
+              showPlayButton
               :fallback-image="ep.headers.brand.logoImage.template"
             />
           </div>
