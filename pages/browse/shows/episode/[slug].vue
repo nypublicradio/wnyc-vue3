@@ -18,7 +18,7 @@ import {
   getFavoritedItems,
   shareAPI,
 } from "~/utilities/helpers"
-import { mediaTypes } from "~/composables/globals"
+import { mediaTypes, FALLBACKIMAGEEPHEAD } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -143,6 +143,13 @@ const isSegment = computed(
   () =>
     Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segments)
 )
+
+// get the image for the episode. if the episode image is the same as the show image, use the fallback image
+const getEpisodeImage = computed(() => {
+  const epImage = episodeData.value?.image?.template
+  const showImage = episodeData.value?.headers.brand.logoImage.template
+  return epImage !== showImage ? epImage : FALLBACKIMAGEEPHEAD
+})
 </script>
 
 <template>
@@ -166,7 +173,7 @@ const isSegment = computed(
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
-        :src="episodeData?.image.template"
+        :src="getEpisodeImage"
         :width="390"
         :height="360"
         :ratio="[3, 2]"

@@ -20,7 +20,7 @@ import {
   useAccountPromptSideBar,
   useIsEpisodePlaying,
 } from "~/composables/states"
-import { FALLBACKIMAGELOCAL } from "~/composables/globals"
+import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -100,7 +100,7 @@ const handleShare = () => {
 watch(show, () => {
   pagination.value = show.value.episodes?.meta
   episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGELOCAL
+  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGEEP
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.description
 })
@@ -207,7 +207,7 @@ watch(show, () => {
           :data="ep"
           :key="ep.id"
           @onClick="goToEpisodePage(ep)"
-          :fallback-image="showImage"
+          :fallback-image="FALLBACKIMAGEEP"
         />
       </template>
       <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
