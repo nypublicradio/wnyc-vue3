@@ -17,7 +17,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["onClick, onDeleteFavorite, onSaveFavorite"])
+const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
 
 const toast = useToast()
 const accountPromptSideBar = useAccountPromptSideBar()
@@ -73,7 +73,7 @@ const handleAddToFavorites = async () => {
 
 <template>
   <div class="browse-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3 w-full" v-ripple @click.prevent="emit('onClick')">
+    <div class="flex gap-3 w-full" v-ripple @click.prevent="emit('on-click')">
       <VImage
         :src="props.data.image.template"
         :height="116"

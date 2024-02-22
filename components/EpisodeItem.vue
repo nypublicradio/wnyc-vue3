@@ -261,18 +261,18 @@ const handleClick = () => {
         <div class="flex justify-content-between align-items-center">
           <PlayButton
             v-if="props.showPlayButton"
-            :file="props.data?.name"
+            :file="props.data?.audio"
             class="z-1"
             @onClick="togglePlayEpisode(props.data)"
           >
-            <template v-if="estimatedDuration">
-              <p class="font-bold">{{ getMinutes(estimatedDuration, 1) }}</p>
-            </template>
+            <div v-if="estimatedDuration" class="font-bold text-sm line-height-2">
+              {{ getMinutes(estimatedDuration, 1) }}
+            </div>
 
-            <p v-else class="font-bold">
+            <div v-else class="font-bold text-sm line-height-2">
               <i class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
               min
-            </p>
+            </div>
           </PlayButton>
           <slot>
             <DotMenu

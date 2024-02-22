@@ -72,7 +72,7 @@ export const fetchDuration = async (url: string) => {
     //Multiplying the file size by 8 and dividing by 128000 gives the same
     //duration as dividing by 16000 and not multiplying the file size by 8.
     const duration: number = Math.round(mp3Size / 16000)
-    console.log('duration = ', duration)
+    //console.log('duration = ', duration)
     return duration !== 0 ? duration : -1
   } catch (e) {
     console.log('error fetching duration', e);
@@ -605,20 +605,19 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = async (media, index = 0) => {
+export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
 
-
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = await prepForPlayer(media)
+      currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   } else {
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = await prepForPlayer(media, index)
+      currentEpisode.value = prepForPlayer(media, index)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }

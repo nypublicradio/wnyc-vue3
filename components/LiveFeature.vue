@@ -6,10 +6,7 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from "~/composables/states"
-import {
-  templatizePublisherImageUrl,
-  saveRecentlyPlayed,
-} from "~/utilities/helpers"
+import { templatizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
