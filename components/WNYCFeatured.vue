@@ -103,9 +103,11 @@ const togglePlayHere = (item) => {
             <div class="flex align-items-center">
               <DownloadProgress
                 v-if="progress[item.id] || isAlreadyDownloaded(item)"
+                class="mr-2"
                 :isDownloaded="isAlreadyDownloaded(item)"
                 :progress="progress[item.id]"
               />
+              <BarsPlaying :data="item" />
               <DotMenu
                 v-if="item.audio"
                 :menuItems="getDotMenuItems(item)"

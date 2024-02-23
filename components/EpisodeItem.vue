@@ -238,12 +238,6 @@ const handleClick = () => {
                     {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
                   </p>
                   <!-- FROM CapacitorJS Preferences local storage -->
-                  <DownloadProgress
-                    v-if="progress !== null || isAlreadyDownloaded(props.data)"
-                    :isDownloaded="isAlreadyDownloaded(props.data)"
-                    :progress="progress"
-                    small
-                  />
                   <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
                 </div>
               </template>
@@ -275,50 +269,60 @@ const handleClick = () => {
             </div>
           </PlayButton>
           <slot>
-            <DotMenu
-              v-if="!props.saved"
-              :menuItems="getDotMenuItems(props.data)"
-              label=""
-              @changeEmit.prevent="onMenuChange"
-              class="z-1"
-              height="28px"
-              width="32px"
-            >
-              <template #header-bottom>
-                <div>
-                  <div class="flex gap-3 px-4 align-items-center">
-                    <VImage
-                      :src="imgSrcUrl"
-                      :alt="`${props.data.showTitle} show image`"
-                      :width="60"
-                      :height="60"
-                      :sizes="[2]"
-                      class="show-image-in-menu flex-none"
-                      :ratio="[1, 1]"
-                      style="
-                        height: 60px;
-                        width: 60px;
-                        background-color: var(--background);
-                      "
-                    />
-                    <div class="info">
-                      <h2 class="card-title-title">{{ props.data.title }}</h2>
-                      <p>{{ props.data.showTitle }}</p>
+            <div class="flex gap-1 align-items-center">
+              <DownloadProgress
+                class="mr-2"
+                v-if="progress !== null || isAlreadyDownloaded(props.data)"
+                :isDownloaded="isAlreadyDownloaded(props.data)"
+                :progress="progress"
+                small
+              />
+              <BarsPlaying :data="props.data" />
+              <DotMenu
+                v-if="!props.saved"
+                :menuItems="getDotMenuItems(props.data)"
+                label=""
+                @changeEmit="onMenuChange"
+                class="z-1"
+                height="28px"
+                width="32px"
+              >
+                <template #header-bottom>
+                  <div>
+                    <div class="flex gap-3 px-4 align-items-center">
+                      <VImage
+                        :src="imgSrcUrl"
+                        :alt="`${props.data.showTitle} show image`"
+                        :width="60"
+                        :height="60"
+                        :sizes="[2]"
+                        class="show-image-in-menu flex-none"
+                        :ratio="[1, 1]"
+                        style="
+                          height: 60px;
+                          width: 60px;
+                          background-color: var(--background);
+                        "
+                      />
+                      <div class="info">
+                        <h2 class="card-title-title">{{ props.data.title }}</h2>
+                        <p>{{ props.data.showTitle }}</p>
+                      </div>
                     </div>
+                    <hr class="mt-5 mb-2 dim" />
                   </div>
-                  <hr class="mt-5 mb-2 dim" />
-                </div>
-              </template>
-            </DotMenu>
-            <Button v-else text plain rounded class="flex-none">
-              <template #icon>
-                <StarIcon
-                  class="h-2rem"
-                  :active="isFavorited"
-                  @click="handleAddToFavorites(bucketItem)"
-                />
-              </template>
-            </Button>
+                </template>
+              </DotMenu>
+              <Button v-else text plain rounded class="flex-none">
+                <template #icon>
+                  <StarIcon
+                    class="h-2rem"
+                    :active="isFavorited"
+                    @click="handleAddToFavorites(bucketItem)"
+                  />
+                </template>
+              </Button>
+            </div>
           </slot>
         </div>
       </div>

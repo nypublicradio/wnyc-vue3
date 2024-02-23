@@ -19,12 +19,14 @@
         </div>
         <div class="flex gap-2 mt-2">
           <Skeleton class="opacity-50" height="12px" width="60%" borderRadius="16px" />
-          <Skeleton class="" height="12px" width="12px" borderRadius="16px" />
         </div>
       </div>
       <div class="flex align-items-center justify-content-between">
         <Skeleton height="24px" width="91.73px" borderRadius="16px" />
-        <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
+        <div class="flex align-items-center gap-4">
+          <Skeleton class="" height="16px" width="16px" borderRadius="16px" />
+          <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
+        </div>
       </div>
     </div>
   </div>

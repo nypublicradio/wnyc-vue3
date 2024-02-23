@@ -190,9 +190,9 @@ onMounted(async () => {
     // if APP then add listeners
     await addListeners()
     await checkAppLaunchUrl()
+    await initAdvertisingId()
     // init downloads files system for the app
     await initFileSystem()
-    await initAdvertisingId()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus

@@ -68,12 +68,15 @@ const togglePlayHere = () => {
                   currentEpisodeHolder?.details
                 "
               ></div>
-              <PlayButton
-                :label="currentEpisodeHolder?.station"
-                live
-                :file="currentEpisodeHolder?.file"
-                @onClick="togglePlayHere"
-              />
+              <div class="flex align-items-center justify-content-between">
+                <PlayButton
+                  :label="currentEpisodeHolder?.station"
+                  live
+                  :file="currentEpisodeHolder?.file"
+                  @onClick="togglePlayHere"
+                />
+                <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />
+              </div>
             </div>
             <div
               class="skeleton-holder flex flex-column justify-content-center w-full absolute p-3"
