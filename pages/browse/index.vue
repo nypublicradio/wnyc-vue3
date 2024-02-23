@@ -119,10 +119,10 @@ onMounted(() => {
         </HorizontalScrollFeature>
       </div>
       <FetchError v-if="error" @on-click="refresh" />
-      <div class="tabs mt-3">
+      <section class="tabs mt-3">
         <TabView :lazy="true">
           <TabPanel header="Featured Shows">
-            <section class="shows flex flex-column gap-4">
+            <div class="shows flex flex-column gap-4">
               <template v-if="!pending">
                 <ShowItem
                   v-for="show in featuredShows"
@@ -136,10 +136,10 @@ onMounted(() => {
                 v-for="(show, index) in 27"
                 :key="`sk1-${index}`"
               />
-            </section>
+            </div>
           </TabPanel>
           <TabPanel header="All Shows">
-            <section class="shows flex flex-column gap-4">
+            <div class="shows flex flex-column gap-4">
               <template v-if="!pending">
                 <ShowItem
                   v-for="show in allShows"
@@ -153,10 +153,10 @@ onMounted(() => {
                 v-for="(show, index) in 27"
                 :key="`sk2-${index}`"
               />
-            </section>
+            </div>
           </TabPanel>
         </TabView>
-      </div>
+      </section>
     </div>
     <div v-else>
       <section class="results">

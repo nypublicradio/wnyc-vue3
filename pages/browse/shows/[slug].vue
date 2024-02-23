@@ -198,9 +198,44 @@ watch(show, () => {
         style="margin-bottom: 6px"
       />
     </div>
-    <h2 class="mt-4">Episodes</h2>
-    <!--     <pre class="text-xs">{{ episodes[2] }}</pre> -->
-    <div class="flex flex-column gap-5 mt-2">
+    <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
+    <!-- <pre class="text-xs">{{ episodes[0] }}</pre> -->
+
+    <!-- tabs for the future segment split -->
+    <div class="tabs mt-5">
+      <TabView :lazy="true">
+        <TabPanel header="Episodes">
+          <div class="flex flex-column gap-5 mt-2">
+            <template v-if="!pending" v-for="ep in episodes">
+              <EpisodeItem
+                v-if="hasAudio(ep?.audio) && ep?.type !== 'segment'"
+                :data="ep"
+                :key="ep.id"
+                @onClick="goToEpisodePage(ep)"
+                :fallback-image="FALLBACKIMAGEEP"
+              />
+            </template>
+            <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
+          </div>
+        </TabPanel>
+        <TabPanel header="Segments">
+          <div class="flex flex-column gap-5 mt-2">
+            <template v-if="!pending" v-for="ep in episodes">
+              <EpisodeItem
+                v-if="hasAudio(ep?.audio) && ep?.type === 'segment'"
+                :data="ep"
+                :key="ep.id"
+                @onClick="goToEpisodePage(ep)"
+                :fallback-image="FALLBACKIMAGEEP"
+              />
+            </template>
+            <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
+          </div>
+        </TabPanel>
+      </TabView>
+    </div>
+
+    <!-- <div class="flex flex-column gap-5 mt-2">
       <template v-if="!pending" v-for="ep in episodes">
         <EpisodeItem
           v-if="hasAudio(ep?.audio)"
@@ -211,7 +246,7 @@ watch(show, () => {
         />
       </template>
       <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
-    </div>
+    </div> -->
     <!-- TODO: setup infini-scroll -->
     <BackToTopButton />
   </section>

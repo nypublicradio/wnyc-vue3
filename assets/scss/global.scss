@@ -390,6 +390,8 @@ a:visited {
   .p-tabview-nav {
     border-color: transparent;
     background: transparent;
+    padding: 0;
+
     li {
       margin-right: 2rem;
       .p-tabview-nav-link {
@@ -408,7 +410,7 @@ a:visited {
     }
   }
   .p-tabview-panels {
-    padding: 0.5rem 0 0 0;
+    padding: 1rem 0 0 0;
     background: transparent;
   }
 }
