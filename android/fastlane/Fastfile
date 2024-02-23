@@ -33,7 +33,8 @@ platform :android do
       build_type: 'Release'
     )
     upload_to_play_store(
-      release_status: 'draft',
+      release_status: 'completed',
+      track: 'internal',
       package_name: 'org.wnyc.android'
     ) # upload to Google Play Store
   end
