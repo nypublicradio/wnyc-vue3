@@ -48,7 +48,7 @@ const emit = defineEmits(["on-click"])
     <Button severity="secondary" @click="emit('on-click')">
       <slot name="icon">
         <div class="flex align-items-center icon">
-          <i class="pi pi-book text-xs"></i>
+          <ReadIcon />
         </div>
       </slot>
       <slot>
