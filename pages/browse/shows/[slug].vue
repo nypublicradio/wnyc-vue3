@@ -1,5 +1,6 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
+import { useIntersectionObserver } from "@vueuse/core"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
@@ -38,6 +39,22 @@ const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
 
 const pendingMore = ref(false)
+const loadMoreRefVisible = ref(false)
+const loadMoreRef = ref(null)
+
+const { stop } = useIntersectionObserver(
+  loadMoreRef,
+  ([{ isIntersecting }], observerElement) => {
+    loadMoreRefVisible.value = isIntersecting
+  }
+)
+
+watch(loadMoreRefVisible, (val) => {
+  if (val) {
+    //stop()
+    loadMore()
+  }
+})
 
 const loadMore = async () => {
   page.value += 1
@@ -254,15 +271,15 @@ watch(show, () => {
         </TabPanel>
       </TabView>
     </div>
-    <Button
+    <!-- <Button
       v-if="page < maxPages"
       label="LOAD MORE"
       class="mx-auto block mt-6"
       severity="secondary"
       :disabled="pendingMore"
       @click="loadMore"
-    />
-    <WnycLoader ref="loadMoreRef" v-if="pendingMore" spinner size="40px" class="mt-4" />
+    /> -->
+    <WnycLoader ref="loadMoreRef" spinner size="40px" class="mt-8" />
 
     <!-- <div class="flex flex-column gap-5 mt-2">
       <template v-if="!pending" v-for="ep in episodes">
