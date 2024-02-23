@@ -72,7 +72,7 @@ const togglePlayHere = () => {
                 <PlayButton
                   :label="currentEpisodeHolder?.station"
                   live
-                  :file="currentEpisodeHolder?.file"
+                  :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                 />
                 <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />

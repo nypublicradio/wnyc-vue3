@@ -225,7 +225,7 @@ watch(show, () => {
     svg {
       width: 1.25rem;
       height: 1.25rem;
-      margin-left: 3px;
+      margin-left: 2px;
     }
   }
 }

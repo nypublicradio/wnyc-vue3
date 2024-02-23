@@ -207,7 +207,7 @@ const togglePlayHere = (story, index = 0) => {
             <PlayButton
               :label="getMinutes(storyData.estimatedDuration, 1)"
               @onClick="togglePlayHere(storyData)"
-              :file="storyData.audio"
+              :data="storyData"
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">

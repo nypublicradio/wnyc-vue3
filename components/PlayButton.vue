@@ -33,10 +33,14 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  index: {
+    type: Number,
+    default: 0,
+  },
   /* file filed to match up agaist or, if playing a downloaded file, the directoryAudio.name to match up against */
-  file: {
-    default: "",
-    type: String,
+  data: {
+    default: {},
+    type: Object,
   },
 })
 
@@ -49,33 +53,52 @@ const togglePlay = () => {
   }
 }
 
-const checkEpisodeMatchAndPlaying = computed(() => {
-  if (currentEpisode.value) {
-    if (
-      (currentEpisode.value.file === props.file && isEpisodePlaying.value) ||
-      (currentEpisode.value.directoryAudio?.name === props.file && isEpisodePlaying.value)
-    ) {
-      return true
-    }
-  }
-  return false
-})
+// const checkEpisodeMatchAndPlaying = computed(() => {
+//   if (currentEpisode.value) {
+//     if (
+//       (currentEpisode.value.file === props.data.file && isEpisodePlaying.value) ||
+//       (currentEpisode.value.directoryAudio?.name === props.data.file && isEpisodePlaying.value)
+//     ) {
+//       return true
+//     }
+//   }
+//   return false
+// })
 
-const checkEpisodeMatch = computed(() => {
-  if (currentEpisode.value) {
-    if (
-      currentEpisode.value.file === props.file ||
-      currentEpisode.value.directoryAudio?.name === props.file
-    ) {
-      return true
-    }
-  }
-  return false
-})
+// const checkEpisodeMatch = computed(() => {
+//   if (currentEpisode.value) {
+//     if (
+//       currentEpisode.value.file === props.data.file ||
+//       currentEpisode.value.directoryAudio?.name === props.data.file
+//     ) {
+//       return true
+//     }
+//   }
+//   return false
+// })
 
 const getProgress = computed(() => {
   return Math.ceil((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
 })
+
+const isPlaying = ref(false)
+watch(
+  isEpisodePlaying,
+  () => {
+    // to handle segments
+    if (Array.isArray(props.data.audio)) {
+      isPlaying.value =
+        currentEpisode.value?.file === props.data?.audio[props.index] &&
+        isEpisodePlaying.value
+    } else {
+      isPlaying.value =
+        currentEpisode.value?.id === props.data?.id && isEpisodePlaying.value
+    }
+  },
+  {
+    immediate: true,
+  }
+)
 </script>
 
 <template>
@@ -84,26 +107,28 @@ const getProgress = computed(() => {
       severity="secondary"
       @click.prevent="togglePlay"
       :aria-disabled="isStreamLoading"
-      :class="[{ active: checkEpisodeMatch }, { anim: checkEpisodeMatchAndPlaying }]"
+      :class="[{ active: isPlaying }]"
     >
       <slot name="icon">
-        <div
-          v-if="checkEpisodeMatch"
-          class="flex align-items-center icon relative"
-          :class="[{ live: props.live, paused: !isEpisodePlaying }]"
-        >
-          <CircularProgressBar :progress="getProgress" />
-          <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
-          <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
-          <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
-        </div>
-        <div v-else class="flex align-items-center icon">
-          <PlayIcon />
-        </div>
+        <Transition name="fade" mode="out-in">
+          <div
+            v-if="isPlaying"
+            class="flex align-items-center icon relative"
+            :class="[{ live: props.live, paused: !isEpisodePlaying }]"
+          >
+            <CircularProgressBar :progress="getProgress" />
+            <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
+            <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
+            <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
+          </div>
+          <div v-else class="flex align-items-center icon">
+            <PlayIcon />
+          </div>
+        </Transition>
       </slot>
       <slot>
-        <div class="content flex white-space-nowrap">
-          <span>{{ props.label }}</span>
+        <div class="content flex white-space-nowrap align-items-center">
+          <span class="center">{{ props.label }}</span>
           <LiveBadge
             v-if="props.live"
             font-size="14px"
@@ -121,6 +146,7 @@ const getProgress = computed(() => {
 .small-play {
   .p-button {
     padding: 0.219rem 0.75rem;
+    min-height: 28px;
     &.active {
       //border: var(--night) 1px solid;
     }
@@ -158,6 +184,9 @@ const getProgress = computed(() => {
     font-weight: 700;
     line-height: normal;
     align-items: center;
+    * {
+      line-height: 1;
+    }
   }
   &.circle {
     height: 40px;

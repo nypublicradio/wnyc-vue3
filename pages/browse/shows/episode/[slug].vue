@@ -221,7 +221,7 @@ const getEpisodeImage = computed(() => {
             <PlayButton
               v-if="!isSegment"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
-              :file="episodeData?.audio"
+              :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
               class=""
             />
@@ -296,7 +296,8 @@ const getEpisodeImage = computed(() => {
             <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton
                 :label="segment.audioDurationReadable"
-                :file="episodeData?.audio[index]"
+                :data="episodeData"
+                :index="index"
                 @onClick="togglePlayHere(episodeData, index)"
               />
               <p class="truncate t2lines">{{ segment.title }}</p>

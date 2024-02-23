@@ -255,7 +255,7 @@ const handleClick = () => {
         <div class="flex justify-content-between align-items-center">
           <PlayButton
             v-if="props.showPlayButton"
-            :file="props.data?.audio"
+            :data="props.data"
             class="z-1"
             @onClick="togglePlayEpisode(props.data)"
           >

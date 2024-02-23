@@ -39,13 +39,12 @@ defineExpose({
         <div class="title text-sm font-bold font-meta line-height-2">
           {{ props.item.title }}
         </div>
-        <!--    <pre class="text-xs">{{ props.item }}</pre> -->
+        <!-- <pre class="text-xs">{{ props.item }}</pre> -->
         <div class="desc" v-html="props.item.tease" />
-        <PipeData
-          :hidePipe="!props.item.showTitle || props.item.showTitle == undefined"
-          class="text-xs"
-        >
-          <template #left>{{ props.item.showTitle }}</template>
+        <PipeData class="text-xs">
+          <template #left
+            ><span>{{ props.item.headers.brand.title }}</span></template
+          >
           <template #right>
             <span class="nobreak">{{ whenTime(props.item) }}</span>
           </template>

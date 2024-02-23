@@ -12,13 +12,22 @@ const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isPlaying = ref(false)
 
-watch(isEpisodePlaying, () => {
-  isPlaying.value = currentEpisode.value?.id === props.data?.id && isEpisodePlaying.value
-})
+watch(
+  isEpisodePlaying,
+  () => {
+    isPlaying.value =
+      currentEpisode.value?.id === props.data?.id && isEpisodePlaying.value
+  },
+  {
+    immediate: true,
+  }
+)
 </script>
 
 <template>
-  <WnycLoader v-if="isPlaying" class="loader-anim" :svgYscale="1.75" :bars="3" />
+  <Transition name="fade">
+    <WnycLoader v-if="isPlaying" class="loader-anim" :svgYscale="1.75" :bars="3" />
+  </Transition>
 </template>
 
 <style lang="scss" scoped>

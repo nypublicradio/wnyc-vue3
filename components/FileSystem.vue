@@ -108,11 +108,7 @@ const handleDelete = (file) => {
                 aria-label="delete"
                 @click="handleDelete(file)"
               />
-              <PlayButton
-                label=""
-                :file="file.directoryAudio?.name"
-                @onClick="handlePlay(file)"
-              />
+              <PlayButton label="" :data="file" @onClick="handlePlay(file)" />
             </div>
           </EpisodeItem>
         </div>

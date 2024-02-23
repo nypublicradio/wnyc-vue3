@@ -64,6 +64,7 @@ const emit = defineEmits(["on-click"])
 .read-button {
   .p-button {
     padding: 0.219rem 0.75rem;
+    min-height: 28px;
     &.active {
       //border: var(--night) 1px solid;
     }
@@ -76,6 +77,9 @@ const emit = defineEmits(["on-click"])
     font-weight: 700;
     line-height: normal;
     align-items: center;
+    * {
+      line-height: 1;
+    }
   }
 }
 </style>

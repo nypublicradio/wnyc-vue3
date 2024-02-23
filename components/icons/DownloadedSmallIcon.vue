@@ -1,5 +1,19 @@
+<script setup lang="ts">
+const { $gsap } = useNuxtApp()
+const svgRef = ref<SVGElement | null>(null)
+onMounted(() => {
+  $gsap.from(svgRef.value, {
+    opacity: 0,
+    y: -20,
+    duration: 1,
+    ease: "bounce.out",
+  })
+})
+</script>
+
 <template>
   <svg
+    ref="svgRef"
     role="img"
     aria-label="downloadedsmall icon"
     class="downloadedsmall-icon o-icon"
