@@ -30,12 +30,25 @@ const { data: show, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/${route.params.slug}`
 )
 
-const pagination = ref(show?.value?.episodes?.meta ?? null)
+const page = ref(show?.value?.episodes?.meta.pagination.page ?? null)
 const episodes = ref(show?.value?.episodes?.data ?? null)
+let maxPages = show?.value?.episodes?.meta.pagination.pages ?? null
 const showImage = ref(show?.value?.show?.image?.template ?? null)
 const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
 
+const pendingMore = ref(false)
+
+const loadMore = async () => {
+  page.value += 1
+  //console.log("page.value", page.value)
+  pendingMore.value = true
+  const { data: moreShows } = await useFetch(
+    `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
+  )
+  pendingMore.value = false
+  episodes.value = [...episodes.value, ...moreShows.value.episodes.data]
+}
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -97,8 +110,17 @@ const handleShare = () => {
   shareAPI(show.value.show, "shows slug")
 }
 
+const hasEpisodes = computed(() => {
+  return episodes.value?.some((ep) => ep?.type !== "segment")
+})
+
+const hasSegments = computed(() => {
+  return episodes.value?.some((ep) => ep?.type === "segment")
+})
+
 watch(show, () => {
-  pagination.value = show.value.episodes?.meta
+  page.value = show?.value?.episodes?.meta.pagination.page
+  maxPages = show.value.episodes?.meta.pagination.pages
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGEEP
   showTitle.value = show.value.show?.title
@@ -199,18 +221,17 @@ watch(show, () => {
       />
     </div>
     <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
-    <!-- <pre class="text-xs">{{ episodes[0] }}</pre> -->
+    <!-- <pre class="text-xs">{{ episodes }}</pre> -->
 
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">
       <TabView :lazy="true">
-        <TabPanel header="Episodes">
+        <TabPanel header="Episodes" v-if="hasEpisodes">
           <div class="flex flex-column gap-5 mt-2">
-            <template v-if="!pending" v-for="ep in episodes">
+            <template v-if="!pending" v-for="ep in episodes" :key="ep.id">
               <EpisodeItem
-                v-if="hasAudio(ep?.audio) && ep?.type !== 'segment'"
+                v-if="ep?.type !== 'segment'"
                 :data="ep"
-                :key="ep.id"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="FALLBACKIMAGEEP"
               />
@@ -218,13 +239,12 @@ watch(show, () => {
             <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
           </div>
         </TabPanel>
-        <TabPanel header="Segments">
+        <TabPanel header="Segments" v-if="hasSegments">
           <div class="flex flex-column gap-5 mt-2">
-            <template v-if="!pending" v-for="ep in episodes">
+            <template v-if="!pending" v-for="ep in episodes" :key="ep.id">
               <EpisodeItem
-                v-if="hasAudio(ep?.audio) && ep?.type === 'segment'"
+                v-if="ep?.type === 'segment'"
                 :data="ep"
-                :key="ep.id"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="FALLBACKIMAGEEP"
               />
@@ -234,6 +254,15 @@ watch(show, () => {
         </TabPanel>
       </TabView>
     </div>
+    <Button
+      v-if="page < maxPages"
+      label="LOAD MORE"
+      class="mx-auto block mt-6"
+      severity="secondary"
+      :disabled="pendingMore"
+      @click="loadMore"
+    />
+    <WnycLoader ref="loadMoreRef" v-if="pendingMore" spinner size="40px" class="mt-4" />
 
     <!-- <div class="flex flex-column gap-5 mt-2">
       <template v-if="!pending" v-for="ep in episodes">

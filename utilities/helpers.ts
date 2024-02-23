@@ -652,12 +652,21 @@ export const hasQueryParams = (url) => {
 }
 
 export const hasAudio = (audio) => {
+  // return (
+  //   audio !== undefined &&
+  //   audio !== null &&
+  //   audio !== "" &&
+  //   (Array.isArray(audio) && audio.length !== 0) &&
+  //   audio[0] !== null
+  // )
   return (
-    audio !== undefined &&
-    audio !== null &&
-    audio !== "" &&
-    !(Array.isArray(audio) && audio.length === 0)
-  )
+    audio &&
+    (typeof audio === 'string' && audio.trim() !== '' ||
+      (Array.isArray(audio) &&
+        audio.length > 0 &&
+        audio.every(item => item && typeof item === 'string' && item.trim() !== '')))
+  );
+  //return true
 }
 
 // Function to strip HTML tags and return text content
