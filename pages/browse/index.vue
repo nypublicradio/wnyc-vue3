@@ -3,7 +3,7 @@ import { useFuse } from "@vueuse/integrations/useFuse"
 import { useShowTopics } from "~/composables/globals.ts"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error, refresh } = useFetch(
+const { data: shows, pending, error, refresh } = await useLazyFetch(
   `${config.public.BFF_URL}/api/shows`
 )
 const featuredShows = ref(shows?.value?.featuredShows)
@@ -14,13 +14,9 @@ const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
 
-const keys = computed(() => {
-  return ["title"]
-})
-
 const options = computed(() => ({
   fuseOptions: {
-    keys: keys.value,
+    keys: ["title"],
     location: 0,
     threshold: 0.35,
     distance: 80,
@@ -40,26 +36,21 @@ const selectTopic = (topic) => {
   })
 }
 
-// const getAlgoliaSuggestion = computed(() => {
-//   return 'Blah blah'
-// })
-
 const goToShowPage = (show) => {
   navigateTo({
     path: `browse/shows/${show.slug}`,
   })
 }
-if (!shows.value) {
-  const stopWatch = watch(shows, () => {
-    allShows.value = shows.value.all
-    featuredShows.value = shows.value.featuredShows
 
-    // Stop watching after the first change
-    nextTick(() => {
-      stopWatch()
-    })
+const stopWatch = watch(shows, () => {
+  allShows.value = shows.value.all
+  featuredShows.value = shows.value.featuredShows
+
+  // Stop watching after the first change
+  nextTick(() => {
+    stopWatch()
   })
-}
+})
 
 watch(searchFieldValue, () => {
   // sets the scroll to the top of the page when search field is updated. This is needed because if the use scrolls down and searches, they do not see the top of the list if it is long.

@@ -3,7 +3,7 @@ import { goToEpisodePage } from "~/utilities/helpers"
 //import { useUpdateCommentCounts } from "~/composables/comments"
 
 const config = useRuntimeConfig()
-const { data: pagedata } = useFetch(`${config.public.BFF_URL}/api/homepage`)
+const { data: pagedata } = await useLazyFetch(`${config.public.BFF_URL}/api/homepage`)
 const homeTemplate = ref(pagedata?.value?.home_template ?? null)
 const topStories = ref(pagedata?.value?.top_stories ?? null)
 const localNewscast = ref(pagedata?.value?.local_newscast ?? null)
@@ -21,11 +21,15 @@ useHead({
   },
 })
 
-watch(pagedata, () => {
+const stopWatch = watch(pagedata, () => {
   homeTemplate.value = pagedata.value.home_template
   topStories.value = pagedata.value.top_stories
   localNewscast.value = pagedata.value.local_newscast
   nationalNewscast.value = pagedata.value.national_newscast
+  // Stop watching after the first change
+  nextTick(() => {
+    stopWatch()
+  })
 })
 
 // onMounted(async () => {
