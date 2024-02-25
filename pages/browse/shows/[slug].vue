@@ -58,9 +58,12 @@ const { stop } = useIntersectionObserver(
 
 watch(loadMoreRefVisible, (val) => {
   if (val) {
-    //stop()
     loadMore()
   }
+})
+// clean up the useIntersectionObserver
+onUnmounted(() => {
+  stop()
 })
 
 const loadMore = async () => {
@@ -261,7 +264,6 @@ watch(show, () => {
                 :fallback-image="FALLBACKIMAGEEP"
               />
             </template>
-            <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
           </div>
         </TabPanel>
         <TabPanel header="Segments" v-if="hasSegments">
@@ -274,7 +276,6 @@ watch(show, () => {
                 :fallback-image="FALLBACKIMAGEEP"
               />
             </template>
-            <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
           </div>
         </TabPanel>
       </TabView>
@@ -287,6 +288,10 @@ watch(show, () => {
       :disabled="pendingMore"
       @click="loadMore"
     /> -->
+    <div v-if="pending">
+      <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
+      <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+    </div>
     <WnycLoader ref="loadMoreRef" spinner size="40px" class="mt-8" />
 
     <!-- <div class="flex flex-column gap-5 mt-2">
