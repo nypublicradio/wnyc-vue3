@@ -22,6 +22,7 @@ import { mediaTypes, FALLBACKIMAGEEPHEAD } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const { data: episode, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
@@ -41,7 +42,7 @@ const user = useCurrentUser()
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
-  navigateTo(`/browse/shows/${episodeData?.value?.show}`)
+  router.go(-1)
 }
 const progress = ref(null)
 // handle the download of the audio file or multiple files request and feed the progress
@@ -165,7 +166,7 @@ const getEpisodeImage = computed(() => {
           severity="secondary"
           aria-label="back to previous page"
           @click="backHome"
-          :label="episodeData?.showTitle"
+          label="Back"
         />
       </div>
     </section>

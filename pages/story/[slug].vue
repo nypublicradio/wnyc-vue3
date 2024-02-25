@@ -60,7 +60,7 @@ watchEffect(async () => {
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.back() : navigateTo("/home")
+  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 const handleComments = () => {

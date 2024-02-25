@@ -192,10 +192,16 @@ export function howLongAgo(date) {
  * to get the desired date format for the header
  */
 export function getDate(date = null, formatString = "EEE, MMM do") {
-  if (!date) {
-    return format(new Date(), formatString)
+  const currentYear = new Date().getFullYear();
+  if (date) {
+    const inputDate = new Date(date);
+    const inputYear = inputDate.getFullYear();
+    if (inputYear !== currentYear) {
+      formatString = `${formatString}, yyyy`; // Update formatString to include the year
+    }
+    return format(inputDate, formatString);
   } else {
-    return format(new Date(date), formatString)
+    return format(new Date(), formatString);
   }
 }
 

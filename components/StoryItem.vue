@@ -82,13 +82,11 @@ const estimatedDuration = ref(props.data.estimatedDuration)
 
 watch(
   estimatedDuration,
-  async () => {
+  async (dur) => {
     estimatedDuration.value =
-      estimatedDuration.value === 0 || estimatedDuration.value === undefined
-        ? await fetchDuration(props.data.audio)
-        : estimatedDuration.value
+      typeof dur === "number" && dur !== 0 ? dur : await fetchDuration(props.data.audio)
   },
-  { immediate: true, deep: true }
+  { immediate: false, deep: true }
 )
 
 const handleAddToFavorites = async (bucketItem) => {

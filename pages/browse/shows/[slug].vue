@@ -25,6 +25,7 @@ import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 
 const { data: show, pending, error, refresh } = useFetch(
@@ -41,11 +42,17 @@ const showTease = ref(show?.value?.show?.description ?? null)
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
+const isInitialObserver = ref(true)
 
 const { stop } = useIntersectionObserver(
   loadMoreRef,
   ([{ isIntersecting }], observerElement) => {
-    loadMoreRefVisible.value = isIntersecting
+    // so it does not trigger on initial load and before we have data
+    if (!isInitialObserver.value && episodes.value) {
+      loadMoreRefVisible.value = isIntersecting
+    } else {
+      isInitialObserver.value = false
+    }
   }
 )
 
@@ -64,7 +71,7 @@ const loadMore = async () => {
     `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
   )
   pendingMore.value = false
-  episodes.value = [...episodes.value, ...moreShows.value.episodes.data]
+  episodes.value = [...episodes.value, ...moreShows.value?.episodes?.data]
 }
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -77,8 +84,9 @@ const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
 
 // navigate back to home and track it
-const backHome = () => {
-  navigateTo("/browse")
+const routeBack = () => {
+  trackClickEvent("story", "story page", "route back")
+  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 // finds first episode with audio to play
@@ -155,8 +163,8 @@ watch(show, () => {
         text
         severity="secondary"
         aria-label="back to previous page"
-        @click="backHome"
-        label="Browse"
+        @click="routeBack"
+        label="Back"
       />
     </div>
     <FetchError v-if="error" @on-click="refresh" />
