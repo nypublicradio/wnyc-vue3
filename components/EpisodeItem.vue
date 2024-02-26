@@ -25,6 +25,7 @@ import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
   isAlreadyDownloaded,
+  playStoredMp3,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 import { FALLBACKIMAGEEP } from "~/composables/globals"
@@ -190,6 +191,18 @@ if (props.isDownloaded) {
   )
 }
 
+// handle the playing of the stored audio file and GA tracking
+const toggleDownloadedPlay = (file) => {
+  console.log("play downloaded file")
+  playStoredMp3(file)
+  // GA tracking
+  trackClickEvent(
+    "Click Tracking - Audio file download",
+    "Episode Item",
+    `playing = ${file.directoryAudio.name}`
+  )
+}
+
 // handle click event emit
 const handleClick = () => {
   emit("on-click")
@@ -262,7 +275,11 @@ const handleClick = () => {
             v-if="props.showPlayButton"
             :data="props.data"
             class="z-1"
-            @onClick="togglePlayEpisode(props.data)"
+            @onClick="
+              props.isDownloaded
+                ? toggleDownloadedPlay(props.data)
+                : togglePlayEpisode(props.data)
+            "
           >
             <div v-if="estimatedDuration" class="font-bold text-sm line-height-2">
               {{ getMinutes(estimatedDuration, 1) }}

@@ -630,7 +630,6 @@ export const togglePlayEpisode = (media, index = 0) => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
-
 export const getCssVar = (name: string, px = false) => {
 
   const val = getComputedStyle(document.documentElement).getPropertyValue(

@@ -49,16 +49,7 @@ const handleRoute = (file) => {
     }
   }
 }
-// handle the playing of the stored audio file and GA tracking
-const handlePlay = (file) => {
-  playStoredMp3(file)
-  // GA tracking
-  trackClickEvent(
-    "Click Tracking - Audio file download",
-    "Episode Item",
-    `playing = ${file.directoryAudio.name}`
-  )
-}
+
 // handle the delete of the stored audio file and GA tracking
 const handleDelete = (file) => {
   deleteDirectory(file)
@@ -100,7 +91,7 @@ const handleDelete = (file) => {
             isDownloaded
             @on-click="handleRoute(file)"
           >
-            <div class="flex gap-2">
+            <div class="flex gap-2 z-2">
               <Button
                 icon="pi pi-trash"
                 text
@@ -108,7 +99,6 @@ const handleDelete = (file) => {
                 aria-label="delete"
                 @click="handleDelete(file)"
               />
-              <PlayButton label="" :data="file" @onClick="handlePlay(file)" />
             </div>
           </EpisodeItem>
         </div>
