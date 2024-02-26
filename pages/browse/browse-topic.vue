@@ -18,6 +18,15 @@ const goToShowPage = (show) => {
   })
 }
 
+onMounted(() => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'browse_topics_tab',
+    content_group: 'app_tab',
+  } )
+})
+
 onUnmounted(() => {
   categoryData.value = null
 })

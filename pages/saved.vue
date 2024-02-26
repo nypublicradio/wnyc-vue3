@@ -34,6 +34,12 @@ const loadComponent = (componentName) => {
 }
 
 onMounted(() => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'saved_tab',
+    content_group: 'app_tab',
+  } )
   // scroll to active item
   setTimeout(() => {
     scrollToActiveItem()
