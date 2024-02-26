@@ -3,7 +3,7 @@ import { goToEpisodePage } from "~/utilities/helpers"
 //import { useUpdateCommentCounts } from "~/composables/comments"
 
 const config = useRuntimeConfig()
-const { data: pagedata } = await useLazyFetch(`${config.public.BFF_URL}/api/homepage`)
+const { data: pagedata } = useLazyFetch(`${config.public.BFF_URL}/api/homepage`)
 const homeTemplate = ref(pagedata?.value?.home_template ?? null)
 const topStories = ref(pagedata?.value?.top_stories ?? null)
 const localNewscast = ref(pagedata?.value?.local_newscast ?? null)

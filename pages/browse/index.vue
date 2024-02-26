@@ -3,7 +3,7 @@ import { useFuse } from "@vueuse/integrations/useFuse"
 import { useShowTopics } from "~/composables/globals.ts"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error, refresh } = await useLazyFetch(
+const { data: shows, pending, error, refresh } = useLazyFetch(
   `${config.public.BFF_URL}/api/shows`
 )
 const featuredShows = ref(shows?.value?.featuredShows)

@@ -272,8 +272,8 @@ const getEpisodeImage = computed(() => {
                     <VImage
                       :src="episodeData?.image.template"
                       :alt="`${episodeData?.title} show image`"
-                      :width="60"
-                      :height="60"
+                      :width="116"
+                      :height="116"
                       :sizes="[2]"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
