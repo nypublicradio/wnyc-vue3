@@ -197,12 +197,15 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div class="episode-item flex justify-content-between align-items-center p-ripple">
+  <div
+    class="episode-item flex justify-content-between align-items-center p-ripple"
+    v-ripple
+  >
     <div
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       @click.prevent="handleClick"
     ></div>
-    <div class="flex gap-3 w-full" v-ripple>
+    <div class="flex gap-3 w-full">
       <VImage
         class="flex-none"
         :alt="`${props.data.showTitle} show `"

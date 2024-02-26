@@ -202,12 +202,15 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div class="episode-item flex justify-content-between align-items-center p-ripple">
+  <div
+    class="episode-item flex justify-content-between align-items-center p-ripple"
+    v-ripple
+  >
     <div
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       @click.prevent="handleClick"
     ></div>
-    <div v-if="imgSrcUrl" class="flex gap-3 w-full" v-ripple>
+    <div v-if="imgSrcUrl" class="flex gap-3 w-full">
       <VImage
         class="flex-none"
         :src="imgSrcUrl"
@@ -274,7 +277,7 @@ const handleClick = () => {
               v-if="!props.saved"
               :menuItems="getDotMenuItems(props.data)"
               label=""
-              @changeEmit.prevent="onMenuChange"
+              @changeEmit="onMenuChange"
               class="z-1"
               height="28px"
               width="32px"

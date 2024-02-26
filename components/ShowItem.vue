@@ -72,8 +72,11 @@ const handleAddToFavorites = async () => {
 </script>
 
 <template>
-  <div class="browse-item flex justify-content-between align-items-center p-ripple">
-    <div class="flex gap-3 w-full" v-ripple @click="emit('on-click')">
+  <div
+    class="browse-item flex justify-content-between align-items-center p-ripple"
+    v-ripple
+  >
+    <div class="flex gap-3 w-full" @click="emit('on-click')">
       <VImage
         :src="props.data.image.template"
         :height="116"
