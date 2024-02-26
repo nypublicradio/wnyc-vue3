@@ -695,7 +695,9 @@ export const getWagtailRawBody = (bodyArr) => {
   rawbody += bodyArr.map((item) => {
     if (item.type === "paragraph") {
       return item.value
-    };
+    } else {
+      return ''
+    }
   })
   return rawbody
 }
