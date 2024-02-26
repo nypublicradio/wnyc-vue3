@@ -1,21 +1,4 @@
 <script setup lang="ts">
-import PlayIcon from "~/components/icons/PlayIcon.vue"
-import PauseIcon from "~/components/icons/PauseIcon.vue"
-
-import {
-  useCurrentEpisode,
-  useIsStreamLoading,
-  useIsEpisodePlaying,
-  useCurrentEpisodeDuration,
-  useCurrentEpisodeProgress,
-} from "~/composables/states"
-
-const isEpisodePlaying = useIsEpisodePlaying()
-const currentEpisode = useCurrentEpisode()
-const isStreamLoading = useIsStreamLoading()
-const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
-
 const props = defineProps({
   label: {
     type: String,

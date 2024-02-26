@@ -1,16 +1,13 @@
 <script setup>
 import { goToEpisodePage, goToStoryPage, trackClickEvent } from "~/utilities/helpers"
-import {
-  playStoredMp3,
-  deleteDirectory /* , formatFileSize */,
-} from "~/utilities/file-system"
+import { deleteDirectory } from "~/utilities/file-system"
 import {
   useFileSystem,
   useFileSystemLS,
   useIsNetworkConnected,
 } from "~/composables/states"
 
-/* import { mediaTypes } from "~/composables/globals" */
+import { mediaTypes } from "~/composables/globals"
 
 const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
@@ -65,24 +62,8 @@ const handleDelete = (file) => {
 <template>
   <div>
     <div class="file-system">
-      <!--  <p>Saved files:</p>
-      <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
+      <!-- <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
       <div>
-        <!--         <ul class="col-6">
-          <li v-for="file in fileSystem.files" :key="file.name">
-            <Button
-              :label="`${file.name} - ${formatFileSize(file.size)}`"
-              @click="playStoredMp3(file)"
-            />
-            <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
-          </li>
-        </ul> -->
-        <!-- <ul class="">
-          <li v-for="file in fileSystemLS" :key="`LS-${file.title}`">
-            <Button :label="String(file.id)" @click="playStoredMp3(file)" />
-            <Button icon="pi pi-trash" @click="deleteDirectory(file)" />
-          </li>
-        </ul> -->
         <div class="flex flex-column gap-4 mt-2">
           <EpisodeItem
             v-for="file in fileSystemLS"
@@ -103,19 +84,6 @@ const handleDelete = (file) => {
           </EpisodeItem>
         </div>
       </div>
-      <!-- <div class="grid">
-        <pre class="col-6 text-left" style="font-size: 8px">
-fileSystem = {{ fileSystem }}</pre
-        >
-        <pre class="col-6 text-left" style="font-size: 8px">
-fileSystemLS = {{ fileSystemLS }}</pre
-        >
-      </div> -->
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.file-system {
-}
-</style>

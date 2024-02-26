@@ -14,21 +14,13 @@ import {
   getFavoritedItems,
   trackClickEvent,
   shareAPI,
-  getMinutes,
-  getDate,
   fetchDuration,
   hasAudio,
-  togglePlayEpisode,
   getReadingTime,
   whenTime,
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
-import {
-  fetchAndStoreMp3,
-  getDownloadedImageUri,
-  isAlreadyDownloaded,
-  /*   formatFileSize, */
-} from "~/utilities/file-system"
+import { getDownloadedImageUri } from "~/utilities/file-system"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 const toast = useToast()
 

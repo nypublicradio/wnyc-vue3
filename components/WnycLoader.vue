@@ -52,7 +52,7 @@ const svgWidth = 75
 
         <rect
           v-for="(bar, index) in bars"
-          :id="`b${index}`"
+          :key="`loaderBar${index}`"
           :x="(svgWidth / bars + gap) * index"
           y="22"
           class="st1"

@@ -193,7 +193,6 @@ if (props.isDownloaded) {
 
 // handle the playing of the stored audio file and GA tracking
 const toggleDownloadedPlay = (file) => {
-  console.log("play downloaded file")
   playStoredMp3(file)
   // GA tracking
   trackClickEvent(

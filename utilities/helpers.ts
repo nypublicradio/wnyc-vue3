@@ -678,7 +678,7 @@ export const hasAudio = (audio) => {
 function stripHtmlTags(str) {
   const parser = new DOMParser();
   const dom = parser.parseFromString(str, 'text/html');
-  return dom.body.textContent || '';
+  return dom.body.textContent ?? '';
 }
 
 // Computed property to calculate reading time
@@ -689,11 +689,12 @@ export const getReadingTime = (htmlContent) => {
   return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
 };
 
+// Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
   let rawbody = ""
-  bodyArr.map((item) => {
+  rawbody += bodyArr.map((item) => {
     if (item.type === "paragraph") {
-      rawbody += item.value
+      return item.value
     };
   })
   return rawbody

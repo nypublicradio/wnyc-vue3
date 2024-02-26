@@ -44,28 +44,21 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const { stop } = useIntersectionObserver(
-  loadMoreRef,
-  ([{ isIntersecting }], observerElement) => {
-    // so it does not trigger on initial load and before we have data
-    if (!isInitialObserver.value && episodes.value) {
-      loadMoreRefVisible.value = isIntersecting
-    } else {
-      isInitialObserver.value = false
-    }
-  }
-)
-
-watch(loadMoreRefVisible, (val) => {
-  if (val) {
-    loadMore()
+const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
+  // so it does not trigger on initial load and before we have data
+  if (!isInitialObserver.value && episodes.value) {
+    loadMoreRefVisible.value = isIntersecting
+  } else {
+    isInitialObserver.value = false
   }
 })
+
 // clean up the useIntersectionObserver
 onUnmounted(() => {
   stop()
 })
 
+// load more episodes and track it
 const loadMore = async () => {
   page.value += 1
   //console.log("page.value", page.value)
@@ -75,6 +68,11 @@ const loadMore = async () => {
   )
   pendingMore.value = false
   episodes.value = [...episodes.value, ...moreShows.value?.episodes?.data]
+  trackClickEvent(
+    "Event Tracking - load more episodes",
+    "Shows Page",
+    show.value.show.title
+  )
 }
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -109,6 +107,8 @@ const togglePlayMostRecentEpisode = () => {
   const ep = firstEpisodeWithAudio()
   togglePlayEpisode(ep)
 }
+
+// handle the click of the share button and tracking
 const handleAddToFavorites = async () => {
   if (user.value) {
     if (isFavorited.value) {
@@ -155,13 +155,19 @@ watch(show, () => {
   showTease.value = show.value.show?.description
 })
 
-onMounted( () => {
+watch(loadMoreRefVisible, (val) => {
+  if (val) {
+    loadMore()
+  }
+})
+
+onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_type: 'browse_shows_page',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_type: "browse_shows_page",
+    content_group: "app_tab",
+  })
 })
 </script>
 
@@ -264,8 +270,8 @@ onMounted( () => {
     <div class="tabs mt-5">
       <TabView :lazy="true">
         <TabPanel header="Episodes" v-if="hasEpisodes">
-          <div class="flex flex-column gap-5 mt-2">
-            <template v-if="!pending" v-for="ep in episodes" :key="ep.id">
+          <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+            <template v-for="ep in episodes" :key="ep.id">
               <EpisodeItem
                 v-if="ep?.type !== 'segment'"
                 :data="ep"
@@ -276,8 +282,8 @@ onMounted( () => {
           </div>
         </TabPanel>
         <TabPanel header="Segments" v-if="hasSegments">
-          <div class="flex flex-column gap-5 mt-2">
-            <template v-if="!pending" v-for="ep in episodes" :key="ep.id">
+          <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+            <template v-for="ep in episodes" :key="ep.id">
               <EpisodeItem
                 v-if="ep?.type === 'segment'"
                 :data="ep"
@@ -301,7 +307,13 @@ onMounted( () => {
       <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
       <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
     </div>
-    <WnycLoader ref="loadMoreRef" spinner size="40px" class="mt-8" />
+    <WnycLoader
+      v-if="page < maxPages"
+      ref="loadMoreRef"
+      spinner
+      size="40px"
+      class="mt-8"
+    />
 
     <!-- <div class="flex flex-column gap-5 mt-2">
       <template v-if="!pending" v-for="ep in episodes">

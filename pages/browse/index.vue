@@ -36,6 +36,7 @@ const selectTopic = (topic) => {
   })
 }
 
+// handle route to show page
 const goToShowPage = (show) => {
   navigateTo({
     path: `browse/shows/${show.slug}`,
@@ -63,10 +64,10 @@ watch(searchFieldValue, () => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_type: 'browse_tab',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_type: "browse_tab",
+    content_group: "app_tab",
+  })
   // init the search in the mounted hook
   search.value = useFuse(searchFieldValue, allShows, options)
 })
