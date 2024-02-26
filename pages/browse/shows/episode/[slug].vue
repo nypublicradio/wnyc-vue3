@@ -137,7 +137,17 @@ const togglePlayHere = (epData, index = 0) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
-  //console.log("episode = ", episodeData.value)
+  
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'episode_page',
+    content_group: 'on_demand_episode',
+    article_authors: episodeData.value.authors.map(author => author.name).join(','),
+    article_publish_date: episodeData.value.publicationDate,
+    article_updated_date: episodeData.value.updatedDate ? episodeData.value.updatedDate : episodeData.value.publicationDate,
+    article_title: episodeData.value.title,
+  } )
 })
 
 const isSegment = computed(

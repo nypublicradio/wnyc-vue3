@@ -92,6 +92,12 @@ const getTime = (startArg, endArg, index) => {
 }
 
 onMounted(() => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'live_tab',
+    content_group: 'app_tab',
+  } )
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)

@@ -9,7 +9,7 @@ export default defineNuxtPlugin(() => {
   function gtag(...args) { dataLayer.push(arguments) }
   gtag('js', new Date())
   gtag('set', 'send_page_view', false)
-  gtag('config', config.public.GA_MEASUREMENT_ID, { 'debug_mode':true })
+  gtag('config', config.public.GA_MEASUREMENT_ID)
 
   // event to use when sending gtag events
   const sendEvent = (name: string, params: Record<string, string>) => {

@@ -44,6 +44,15 @@ const routeBack = () => {
   trackClickEvent("Staff", "Staff page", "route back")
   window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
+
+onMounted( () => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'author_page',
+    content_group: 'app_tab',
+  } )
+})
 </script>
 
 <template>

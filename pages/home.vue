@@ -32,9 +32,14 @@ const stopWatch = watch(pagedata, () => {
   })
 })
 
-// onMounted(async () => {
-//   await useUpdateCommentCounts(topStories.value)
-// })
+onMounted( () => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'home_page',
+    content_group: 'home',
+  } )
+})
 </script>
 
 <template>

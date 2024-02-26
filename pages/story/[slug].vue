@@ -106,7 +106,18 @@ watch(stories, () => {
   )
 })
 
-watch(storyData, async () => {
+watch( storyData, async () => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'article',
+    content_group: `${storySource}_article`,
+    article_authors: storyData.value.authors.map(author => author.name).join(','),
+    article_publish_date: storyData.value.publicationDate,
+    article_updated_date: storyData.value.updatedDate ? storyData.value.updatedDate : storyData.value.publicationDate,
+    article_title: storyData.value.title,
+  } )
+
   //console.log("storyData = ", storyData.value)
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(

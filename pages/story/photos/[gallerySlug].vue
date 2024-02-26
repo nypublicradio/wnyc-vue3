@@ -14,6 +14,15 @@ const gallery = await usePageById(route.params.gallerySlug).then(({ data }) =>
 
 const shareUrl = ref(gallery.url)
 const shareTitle = ref(gallery.title)
+
+onMounted( () => {
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView( {
+    page_type: 'gallery_page',
+    content_group: 'app_tab',
+  } )
+})
 </script>
 <template>
   <div class="gallery-page">
