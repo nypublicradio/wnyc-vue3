@@ -60,7 +60,7 @@ watchEffect(async () => {
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.back() : navigateTo("/home")
+  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 const handleComments = () => {
@@ -218,7 +218,7 @@ const togglePlayHere = (story, index = 0) => {
             <PlayButton
               :label="getMinutes(storyData.estimatedDuration, 1)"
               @onClick="togglePlayHere(storyData)"
-              :file="storyData.audio"
+              :data="storyData"
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">

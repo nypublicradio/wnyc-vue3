@@ -1,5 +1,6 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
+import { useIntersectionObserver } from "@vueuse/core"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
@@ -13,28 +14,66 @@ import {
   shareAPI,
   trackClickEvent,
   goToEpisodePage,
+  hasAudio,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
   useAccountPromptSideBar,
   useIsEpisodePlaying,
 } from "~/composables/states"
-import { FALLBACKIMAGELOCAL } from "~/composables/globals"
+import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 
 const { data: show, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/${route.params.slug}`
 )
 
-const pagination = ref(show?.value?.episodes?.meta ?? null)
+const page = ref(show?.value?.episodes?.meta.pagination.page ?? null)
 const episodes = ref(show?.value?.episodes?.data ?? null)
+let maxPages = show?.value?.episodes?.meta.pagination.pages ?? null
 const showImage = ref(show?.value?.show?.image?.template ?? null)
 const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
 
+const pendingMore = ref(false)
+const loadMoreRefVisible = ref(false)
+const loadMoreRef = ref(null)
+const isInitialObserver = ref(true)
+
+const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
+  // so it does not trigger on initial load and before we have data
+  if (!isInitialObserver.value && episodes.value) {
+    loadMoreRefVisible.value = isIntersecting
+  } else {
+    isInitialObserver.value = false
+  }
+})
+
+// clean up the useIntersectionObserver
+onUnmounted(() => {
+  stop()
+})
+
+// load more episodes and track it
+const loadMore = async () => {
+  page.value += 1
+  //console.log("page.value", page.value)
+  pendingMore.value = true
+  const { data: moreShows } = await useFetch(
+    `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
+  )
+  pendingMore.value = false
+  episodes.value = [...episodes.value, ...moreShows.value?.episodes?.data]
+  trackClickEvent(
+    "Event Tracking - load more episodes",
+    "Shows Page",
+    show.value.show.title
+  )
+}
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -46,14 +85,15 @@ const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
 
 // navigate back to home and track it
-const backHome = () => {
-  navigateTo("/browse")
+const routeBack = () => {
+  trackClickEvent("story", "story page", "route back")
+  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
   return episodes.value.find((ep) => {
-    if (Array.isArray(ep.audio) && ep.audio[0] !== null) {
+    if (hasAudio(ep.audio)) {
       return ep
     } else if (typeof ep.audio === "string") {
       return ep
@@ -67,6 +107,8 @@ const togglePlayMostRecentEpisode = () => {
   const ep = firstEpisodeWithAudio()
   togglePlayEpisode(ep)
 }
+
+// handle the click of the share button and tracking
 const handleAddToFavorites = async () => {
   if (user.value) {
     if (isFavorited.value) {
@@ -96,21 +138,36 @@ const handleShare = () => {
   shareAPI(show.value.show, "shows slug")
 }
 
+const hasEpisodes = computed(() => {
+  return episodes.value?.some((ep) => ep?.type !== "segment")
+})
+
+const hasSegments = computed(() => {
+  return episodes.value?.some((ep) => ep?.type === "segment")
+})
+
 watch(show, () => {
-  pagination.value = show.value.episodes?.meta
+  page.value = show?.value?.episodes?.meta.pagination.page
+  maxPages = show.value.episodes?.meta.pagination.pages
   episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGELOCAL
+  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGEEP
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.description
 })
 
-onMounted( () => {
+watch(loadMoreRefVisible, (val) => {
+  if (val) {
+    loadMore()
+  }
+})
+
+onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_type: 'browse_shows_page',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_type: "browse_shows_page",
+    content_group: "app_tab",
+  })
 })
 </script>
 
@@ -124,8 +181,8 @@ onMounted( () => {
         text
         severity="secondary"
         aria-label="back to previous page"
-        @click="backHome"
-        label="Browse"
+        @click="routeBack"
+        label="Back"
       />
     </div>
     <FetchError v-if="error" @on-click="refresh" />
@@ -206,19 +263,71 @@ onMounted( () => {
         style="margin-bottom: 6px"
       />
     </div>
-    <h2 class="mt-4">Episodes</h2>
-    <div class="flex flex-column gap-4 mt-2">
-      <template v-if="!pending">
+    <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
+    <!-- <pre class="text-xs">{{ episodes }}</pre> -->
+
+    <!-- tabs for the future segment split -->
+    <div class="tabs mt-5">
+      <TabView :lazy="true">
+        <TabPanel header="Episodes" v-if="hasEpisodes">
+          <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+            <template v-for="ep in episodes" :key="ep.id">
+              <EpisodeItem
+                v-if="ep?.type !== 'segment'"
+                :data="ep"
+                @onClick="goToEpisodePage(ep)"
+                :fallback-image="FALLBACKIMAGEEP"
+              />
+            </template>
+          </div>
+        </TabPanel>
+        <TabPanel header="Segments" v-if="hasSegments">
+          <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+            <template v-for="ep in episodes" :key="ep.id">
+              <EpisodeItem
+                v-if="ep?.type === 'segment'"
+                :data="ep"
+                @onClick="goToEpisodePage(ep)"
+                :fallback-image="FALLBACKIMAGEEP"
+              />
+            </template>
+          </div>
+        </TabPanel>
+      </TabView>
+    </div>
+    <!-- <Button
+      v-if="page < maxPages"
+      label="LOAD MORE"
+      class="mx-auto block mt-6"
+      severity="secondary"
+      :disabled="pendingMore"
+      @click="loadMore"
+    /> -->
+    <div v-if="pending">
+      <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
+      <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+    </div>
+    <WnycLoader
+      v-if="page < maxPages"
+      ref="loadMoreRef"
+      spinner
+      size="40px"
+      class="mt-8"
+    />
+
+    <!-- <div class="flex flex-column gap-5 mt-2">
+      <template v-if="!pending" v-for="ep in episodes">
         <EpisodeItem
-          v-for="ep in episodes"
+          v-if="hasAudio(ep?.audio)"
           :data="ep"
           :key="ep.id"
           @onClick="goToEpisodePage(ep)"
-          :fallback-image="showImage"
+          :fallback-image="FALLBACKIMAGEEP"
         />
       </template>
       <skeleton-episode-item v-else v-for="i in 10" :key="`sk1-${i}`" />
-    </div>
+    </div> -->
+    <!-- TODO: setup infini-scroll -->
     <BackToTopButton />
   </section>
 </template>
@@ -229,9 +338,9 @@ onMounted( () => {
     width: 50px !important;
     height: 50px !important;
     svg {
-      width: 1.5rem;
-      height: 1.5rem;
-      margin-left: 5px;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-left: 2px;
     }
   }
 }

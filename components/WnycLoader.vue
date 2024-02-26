@@ -2,7 +2,7 @@
 const props = defineProps({
   size: {
     type: String,
-    default: '100%',
+    default: "100%",
   },
   bg: {
     type: Boolean,
@@ -14,9 +14,26 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: 'var(--text-color)',
+    default: "var(--text-color)",
+  },
+  svgXscale: {
+    type: Number,
+    default: 1,
+  },
+  svgYscale: {
+    type: Number,
+    default: 1,
+  },
+  bars: {
+    type: Number,
+    default: 4,
+  },
+  gap: {
+    type: Number,
+    default: 0.65,
   },
 })
+const svgWidth = 75
 </script>
 
 <template>
@@ -28,10 +45,20 @@ const props = defineProps({
         :style="`font-size: ${props.size}; color: ${props.color};`"
       ></i>
       <svg v-else class="svg" x="0px" y="0px" viewBox="0 0 75.1 30">
-        <rect id="b4" x="38.7" y="22" class="st1" width="16.9" height="30" />
-        <rect id="b3" x="58.1" y="22" class="st1" width="16.9" height="30" />
+        <!-- <rect id="b4" x="58.1" y="22" class="st1" width="16.9" height="30" />
+        <rect id="b3" x="38.7" y="22" class="st1" width="16.9" height="30" />
         <rect id="b2" x="19.4" y="22" class="st1" width="16.9" height="30" />
-        <rect id="b1" x="0" y="22" class="st1" width="16.9" height="30" />
+        <rect id="b1" x="0" y="22" class="st1" width="16.9" height="30" /> -->
+
+        <rect
+          v-for="(bar, index) in bars"
+          :key="`loaderBar${index}`"
+          :x="(svgWidth / bars + gap) * index"
+          y="22"
+          class="st1"
+          width="16.9"
+          height="30"
+        />
       </svg>
     </div>
   </div>
@@ -72,6 +99,8 @@ const props = defineProps({
       margin: auto;
       width: v-bind(size);
       height: auto;
+      transform: scalex(v-bind(svgXscale));
+      transform: scaleY(v-bind(svgYscale));
       .st1 {
         animation: moveUpAndDown 2s infinite;
         transform-origin: top;

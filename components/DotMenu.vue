@@ -37,7 +37,7 @@ const emit = defineEmits(["changeEmit"])
   >
     <template #customButton="slotProps">
       <Button
-        class="text-cyan-500 hover:bg-cyan-50"
+        class="text-cyan-500 hover:bg-cyan-50 rounded"
         icon="pi pi-ellipsis-v"
         text
         rounded
@@ -55,3 +55,9 @@ const emit = defineEmits(["changeEmit"])
     </template>
   </DropupMenu>
 </template>
+
+<style lang="scss" scoped>
+.p-dropdown {
+  border-radius: 50%;
+}
+</style>

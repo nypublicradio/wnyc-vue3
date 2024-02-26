@@ -36,6 +36,7 @@ const theProgress = computed(() => {
 <style lang="scss" scoped>
 .download-progress {
   display: inherit;
+  color: var(--text-color);
   .check-icon {
     width: 29px;
     height: 16px;

@@ -159,7 +159,7 @@ const downloadFileToDesktop = async (url, filename) => {
         aElm.download = filename;
 
         // Append the anchor element to the body
-        document.body.appendChild(a);
+        document.body.appendChild(aElm);
 
         // Trigger a click event on the anchor element to start the download
         aElm.click();

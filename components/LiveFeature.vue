@@ -6,10 +6,7 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from "~/composables/states"
-import {
-  templatizePublisherImageUrl,
-  saveRecentlyPlayed,
-} from "~/utilities/helpers"
+import { templatizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -71,12 +68,15 @@ const togglePlayHere = () => {
                   currentEpisodeHolder?.details
                 "
               ></div>
-              <PlayButton
-                :label="currentEpisodeHolder?.station"
-                live
-                :file="currentEpisodeHolder?.file"
-                @onClick="togglePlayHere"
-              />
+              <div class="flex align-items-center justify-content-between">
+                <PlayButton
+                  :label="currentEpisodeHolder?.station"
+                  live
+                  :data="currentEpisodeHolder"
+                  @onClick="togglePlayHere"
+                />
+                <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />
+              </div>
             </div>
             <div
               class="skeleton-holder flex flex-column justify-content-center w-full absolute p-3"

@@ -1,5 +1,6 @@
 <script setup>
 import { usePrimeVue } from "primevue/config"
+import { hasAudio, goToEpisodePage } from "~/utilities/helpers"
 
 const props = defineProps({
   articles: {
@@ -17,14 +18,19 @@ defineExpose({
 
 <template>
   <div v-if="articles" class="top-stories">
-    <div v-for="(article, index) in articles" :key="article.id" class="mb-4">
-      <!--       <pre class="text-xs">{{ article.id }}</pre> -->
-      <StoryItem :data="article" :index="index" />
+    <!-- <pre class="text-xs">{{ articles[0] }}</pre> -->
+    <div v-for="(article, index) in articles" :key="article.id" class="mb-5">
+      <EpisodeItem
+        v-if="hasAudio(article.audio)"
+        :data="article"
+        @on-click="goToEpisodePage(article)"
+      />
+      <StoryItem v-else :data="article" :index="index" />
     </div>
   </div>
   <div v-else>
     <skeleton-top-story
-      class="skeleton-holder flex gap-3 mb-4"
+      class="skeleton-holder flex gap-3 mb-5"
       v-for="(article, index) in 6"
       :key="`skeleton-${index}`"
     />

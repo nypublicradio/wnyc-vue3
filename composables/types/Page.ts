@@ -54,6 +54,7 @@ export interface ArticlePage extends Page {
   uuid: string
   section: Tag
   body?: StreamfieldBlock[]
+  rawBody?: string
   audio?: string
 
   authors?: Author[]

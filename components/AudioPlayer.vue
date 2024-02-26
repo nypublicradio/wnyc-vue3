@@ -15,7 +15,7 @@ import {
   useIsLiveStream,
   useIsPlayerExpanded,
   useCurrentEpisodeDuration,
-  //useCurrentEpisodeProgress,
+  useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
   usePlayerSeek,
@@ -66,6 +66,7 @@ const isNetworkConnected = useIsNetworkConnected()
 const advertisingId = useAdvertisingId()
 //const advertisingRestriction = useAdvertisingRestriction()
 const currentUser = useCurrentUserProfile()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isApp = useIsApp()
 const showPlayer = ref(false)
 const playerRef = ref(null)

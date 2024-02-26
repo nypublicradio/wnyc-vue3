@@ -94,7 +94,7 @@ const togglePlayHere = (item) => {
             <PlayButton
               v-if="item.audio"
               :label="getMinutes(item.estimatedDuration, 1)"
-              :file="item.audio"
+              :data="item"
               @onClick="togglePlayHere(item)"
               class="z-2"
             />
@@ -103,16 +103,17 @@ const togglePlayHere = (item) => {
             <div class="flex align-items-center">
               <DownloadProgress
                 v-if="progress[item.id] || isAlreadyDownloaded(item)"
+                class="mr-2"
                 :isDownloaded="isAlreadyDownloaded(item)"
                 :progress="progress[item.id]"
               />
+              <BarsPlaying :data="item" />
               <DotMenu
                 v-if="item.audio"
                 :menuItems="getDotMenuItems(item)"
                 label="Options"
                 @changeEmit="onMenuChange"
                 class="-mr-1 z-2"
-                size="large"
               >
                 <template #end v-if="item.embedCode">
                   <div class="p-0">

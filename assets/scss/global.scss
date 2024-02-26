@@ -390,6 +390,8 @@ a:visited {
   .p-tabview-nav {
     border-color: transparent;
     background: transparent;
+    padding: 0;
+
     li {
       margin-right: 2rem;
       .p-tabview-nav-link {
@@ -408,7 +410,7 @@ a:visited {
     }
   }
   .p-tabview-panels {
-    padding: 0.5rem 0 0 0;
+    padding: 1rem 0 0 0;
     background: transparent;
   }
 }
@@ -431,4 +433,19 @@ a:visited {
     height: 38px;
     width: 38px;
   }
+}
+
+@mixin cardTitle() {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  @include truncate();
+  @include t3lines();
+}
+@mixin cardBody() {
+  font-size: 0.813rem;
+  line-height: 1.106rem;
+  font-weight: 400;
+  @include truncate();
+  @include t4lines();
 }

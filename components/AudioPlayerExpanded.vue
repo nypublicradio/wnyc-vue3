@@ -308,8 +308,8 @@ const moreFromClick = () => {
                 <VImage
                   :src="templatizePublisherImageUrl(currentEpisode.image)"
                   :alt="`${currentEpisode.title} show image`"
-                  :width="60"
-                  :height="60"
+                  :width="116"
+                  :height="116"
                   :sizes="[2]"
                   class="show-image-in-menu"
                   :ratio="[1, 1]"

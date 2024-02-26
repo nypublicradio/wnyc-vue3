@@ -54,10 +54,10 @@ const emit = defineEmits(["on-click"])
         </PipeData>
       </div>
     </div>
-    <PlayButton
-      :label="getMinutes(props.newsData?.duration)"
-      :file="props.newsData?.file"
-    />
+    <div class="flex align-items-center justify-content-between">
+      <PlayButton :label="getMinutes(props.newsData?.duration)" :data="props.newsData" />
+      <BarsPlaying class="mr-2" :data="props.newsData" />
+    </div>
   </div>
   <div v-else class="news-card skeleton-holder flex">
     <Skeleton height="16px" width="91px" borderRadius="0px" />

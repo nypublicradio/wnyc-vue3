@@ -42,7 +42,7 @@ useServerHead({
 
 const routeBack = () => {
   trackClickEvent("Staff", "Staff page", "route back")
-  window.history.state.back ? router.back() : navigateTo("/home")
+  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 onMounted( () => {
@@ -90,7 +90,7 @@ onMounted( () => {
             <div
               v-for="(article, index) in newPageData.articles"
               :key="article?.uuid"
-              class="mb-4"
+              class="mb-5"
             >
               <StoryItem :data="article" :index="index" />
             </div>

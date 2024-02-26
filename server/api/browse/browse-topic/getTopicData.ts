@@ -3,10 +3,9 @@ import axios from 'axios'
 import humps from 'humps'
 
 export default defineEventHandler(async (event) => {
-    const req = event.req
+    const req = event.node.req
     const url = new URL(req.headers.referer)
     const params = url.searchParams
-    //console.log('params: ', params)
     try {
         const options = {
             method: 'GET',

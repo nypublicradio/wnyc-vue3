@@ -18,10 +18,11 @@ import {
   getFavoritedItems,
   shareAPI,
 } from "~/utilities/helpers"
-import { mediaTypes } from "~/composables/globals"
+import { mediaTypes, FALLBACKIMAGEEPHEAD } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const { data: episode, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
@@ -41,7 +42,7 @@ const user = useCurrentUser()
 // navigate back to home and track it
 const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
-  navigateTo(`/browse/shows/${episodeData?.value?.show}`)
+  router.go(-1)
 }
 const progress = ref(null)
 // handle the download of the audio file or multiple files request and feed the progress
@@ -153,6 +154,13 @@ const isSegment = computed(
   () =>
     Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segments)
 )
+
+// get the image for the episode. if the episode image is the same as the show image, use the fallback image
+const getEpisodeImage = computed(() => {
+  const epImage = episodeData.value?.image?.template
+  const showImage = episodeData.value?.headers.brand.logoImage.template
+  return epImage !== showImage ? epImage : FALLBACKIMAGEEPHEAD
+})
 </script>
 
 <template>
@@ -168,7 +176,7 @@ const isSegment = computed(
           severity="secondary"
           aria-label="back to previous page"
           @click="backHome"
-          :label="episodeData?.showTitle"
+          label="Back"
         />
       </div>
     </section>
@@ -176,7 +184,7 @@ const isSegment = computed(
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
-        :src="episodeData?.image.template"
+        :src="getEpisodeImage"
         :width="390"
         :height="360"
         :ratio="[3, 2]"
@@ -224,7 +232,7 @@ const isSegment = computed(
             <PlayButton
               v-if="!isSegment"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
-              :file="episodeData?.audio"
+              :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
               class=""
             />
@@ -274,8 +282,8 @@ const isSegment = computed(
                     <VImage
                       :src="episodeData?.image.template"
                       :alt="`${episodeData?.title} show image`"
-                      :width="60"
-                      :height="60"
+                      :width="116"
+                      :height="116"
                       :sizes="[2]"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
@@ -299,7 +307,8 @@ const isSegment = computed(
             <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton
                 :label="segment.audioDurationReadable"
-                :file="episodeData?.audio[index]"
+                :data="episodeData"
+                :index="index"
                 @onClick="togglePlayHere(episodeData, index)"
               />
               <p class="truncate t2lines">{{ segment.title }}</p>

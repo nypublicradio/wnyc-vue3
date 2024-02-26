@@ -72,11 +72,13 @@ export const fetchDuration = async (url: string) => {
     //Multiplying the file size by 8 and dividing by 128000 gives the same
     //duration as dividing by 16000 and not multiplying the file size by 8.
     const duration: number = Math.round(mp3Size / 16000)
-    return duration
+    //console.log('duration = ', duration)
+    return duration !== 0 ? duration : -1
   } catch (e) {
-    //console.log(e);
+    console.log('error fetching duration', e);
+    return "error"
+
   }
-  return null
 }
 
 // returns a resized image url when provided the entire image object
@@ -190,10 +192,16 @@ export function howLongAgo(date) {
  * to get the desired date format for the header
  */
 export function getDate(date = null, formatString = "EEE, MMM do") {
-  if (!date) {
-    return format(new Date(), formatString)
+  const currentYear = new Date().getFullYear();
+  if (date) {
+    const inputDate = new Date(date);
+    const inputYear = inputDate.getFullYear();
+    if (inputYear !== currentYear) {
+      formatString = `${formatString}, yyyy`; // Update formatString to include the year
+    }
+    return format(inputDate, formatString);
   } else {
-    return format(new Date(date), formatString)
+    return format(new Date(), formatString);
   }
 }
 
@@ -603,26 +611,24 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = async (media, index = 0) => {
+export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
 
-
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = await prepForPlayer(media)
+      currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   } else {
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = await prepForPlayer(media, index)
+      currentEpisode.value = prepForPlayer(media, index)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
-
 
 export const getCssVar = (name: string, px = false) => {
 
@@ -648,4 +654,50 @@ export const goToStoryPage = (story, params) => {
 export const hasQueryParams = (url) => {
   const parsedUrl = new URL(url);
   return parsedUrl.searchParams.toString().length > 0;
+}
+
+export const hasAudio = (audio) => {
+  // return (
+  //   audio !== undefined &&
+  //   audio !== null &&
+  //   audio !== "" &&
+  //   (Array.isArray(audio) && audio.length !== 0) &&
+  //   audio[0] !== null
+  // )
+  return (
+    audio &&
+    (typeof audio === 'string' && audio.trim() !== '' ||
+      (Array.isArray(audio) &&
+        audio.length > 0 &&
+        audio.every(item => item && typeof item === 'string' && item.trim() !== '')))
+  );
+  //return true
+}
+
+// Function to strip HTML tags and return text content
+function stripHtmlTags(str) {
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(str, 'text/html');
+  return dom.body.textContent ?? '';
+}
+
+// Computed property to calculate reading time
+export const getReadingTime = (htmlContent) => {
+  const textContent = stripHtmlTags(htmlContent);
+  const wordsPerMinute = 200; // Average reading speed
+  const estimatedWordCount = textContent.split(/\s+/).length;
+  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
+};
+
+// Function to get the raw body from a wagtail body array
+export const getWagtailRawBody = (bodyArr) => {
+  let rawbody = ""
+  rawbody += bodyArr.map((item) => {
+    if (item.type === "paragraph") {
+      return item.value
+    } else {
+      return ''
+    }
+  })
+  return rawbody
 }
