@@ -27,7 +27,7 @@ import {
   isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
-import { FALLBACKIMAGELOCAL } from "~/composables/globals"
+import { FALLBACKIMAGEEP } from "~/composables/globals"
 const toast = useToast()
 
 const $primevue = usePrimeVue()
@@ -177,6 +177,7 @@ const onMenuChange = (e) => {
 }
 
 const imgSrcUrl = ref("")
+
 if (props.isDownloaded) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
@@ -185,7 +186,7 @@ if (props.isDownloaded) {
       props.data?.image?.id ??
       props.data?.image ??
       props.fallbackImage ??
-      FALLBACKIMAGELOCAL
+      FALLBACKIMAGEEP
   )
 }
 
@@ -204,6 +205,7 @@ const handleClick = () => {
     <div class="flex gap-3 w-full" v-ripple>
       <VImage
         class="flex-none"
+        :alt="`${props.data.showTitle} show `"
         :src="imgSrcUrl"
         :height="116"
         :width="116"
@@ -293,11 +295,11 @@ const handleClick = () => {
                       <VImage
                         :src="imgSrcUrl"
                         :alt="`${props.data.showTitle} show image`"
-                        :width="60"
-                        :height="60"
-                        :sizes="[2]"
                         class="show-image-in-menu flex-none"
+                        :height="116"
+                        :width="116"
                         :ratio="[1, 1]"
+                        :srcset="[2]"
                         style="
                           height: 60px;
                           width: 60px;
