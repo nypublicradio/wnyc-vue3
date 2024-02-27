@@ -30,6 +30,13 @@ export const initMediaSession = (episode, skipTime) => {
             { src: resizePublisherImageUrl(currentEpisode.image, 512, 512), type: 'image/jpg', sizes: '512x512' }
         ]
     })
+    // test for ios
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentEpisode.title,
+        artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
+        album: currentEpisode.showTitle,
+        artwork: [{ src: resizePublisherImageUrl(currentEpisode.image, 512, 512) }]
+    })
 
     if (!initFlag) {
         initFlag = true
