@@ -44,7 +44,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.download-icon path {
+.download-icon {
   height: 28px;
   width: 28px;
 }
