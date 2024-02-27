@@ -37,6 +37,7 @@ onMounted( () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
+    page_title: 'Login',
     page_type: 'login_page',
     content_group: 'login',
   })
@@ -53,8 +54,17 @@ onUnmounted(() => {
 <template>
   <div>
     <Html>
-      <!-- force browser top color dark -->
       <Head>
+        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <!-- force browser top color dark -->
         <Meta name="theme-color" :content="browserTopColorDarkMode" />
         <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
       </Head>

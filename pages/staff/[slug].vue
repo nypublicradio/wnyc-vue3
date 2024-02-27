@@ -49,6 +49,7 @@ onMounted( () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView( {
+    page_title: authorName,
     page_type: 'author_page',
     content_group: 'app_tab',
   } )
@@ -57,6 +58,19 @@ onMounted( () => {
 
 <template>
   <section class="staff-page">
+    <Html lang="en">
+      <Head>
+        <Title>{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+      </Head>
+    </Html>
     <div>
       <Button
         class="back-btn text-color -ml-4"
