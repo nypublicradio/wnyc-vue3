@@ -9,6 +9,7 @@ import {
   useLocalUserProfileDefault,
   useCurrentUserFavorites,
   useTogglePlayTrigger,
+  useGlobalToast,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
@@ -310,24 +311,28 @@ export const getMinutes = (ms, mult = 1000) => {
 
 // global funcrtion for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
-  if (!navigator.clipboard) return false
-  await navigator.clipboard
-    .writeText(content)
-    .then(() => {
-      return true
-    })
-    .catch(() => {
-      return false
-    })
-  return null
+  const globalToast = useGlobalToast()
+  try {
+    await navigator.clipboard.writeText(content);
+    globalToast.value = {
+      severity: "info",
+      summary: "Copied to clipboard",
+      life: 3000,
+    }
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+    globalToast.value = {
+      severity: "error",
+      summary: "Failed to copy to the clipboard",
+      life: 3000,
+    }
+  }
 }
 
 /*basic function that detects if the site is running in a mobile browser*/
 function isMobileBrowser() {
-  return (
-    typeof window.orientation !== "undefined" ||
-    navigator.userAgent.indexOf("IEMobile") !== -1
-  )
+  const userAgent = navigator.userAgent;
+  return (/iPhone|iPad|iPod/.test(userAgent) && !window.MSStream) && (/Android/.test(userAgent) && /Chrome/.test(userAgent))
 }
 
 export const removeHTMLTags = (str) => {
@@ -353,10 +358,11 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
   )
 
   //console.log('shareContent = ', shareContent)
-  if (navigator.canShare(shareContent) && isMobileBrowser()) {
+  if (isMobileBrowser()) {
     await navigator.share(shareContent)
     return true
   } else {
+    copyToClipBoard(shareContent.url)
     return false
   }
 }

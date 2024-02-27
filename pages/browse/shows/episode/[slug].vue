@@ -7,6 +7,8 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
+import FollowIcon from "~/components/icons/FollowIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
   trackClickEvent,
@@ -53,6 +55,10 @@ const handleDownload = async (epD) => {
 
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
+}
+
+const handleFollow = () => {
+  // follow the show
 }
 
 const handleAddToFavorites = async (bucketItem) => {
@@ -114,12 +120,28 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
+      label: "Follow",
+      customIcon: FollowIcon,
+      title: bucketItem?.title,
+      command: () => {
+        handleFollow()
+      },
+    },
+    {
       label: "Add to Queue",
       active: true,
       customIcon: QueueIcon,
       title: bucketItem?.title,
       command: () => {
         handleAddToQueue(bucketItem)
+      },
+    },
+    {
+      label: "More episodes",
+      customIcon: MoreEpisodesIcon,
+      title: bucketItem?.title,
+      command: () => {
+        handleFollow()
       },
     },
   ]
@@ -137,17 +159,19 @@ const togglePlayHere = (epData, index = 0) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
-  
+
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_type: 'episode_page',
-    content_group: 'on_demand_episode',
-    article_authors: episodeData.value.authors.map(author => author.name).join(','),
+  $analytics.sendPageView({
+    page_type: "episode_page",
+    content_group: "on_demand_episode",
+    article_authors: episodeData.value.authors.map((author) => author.name).join(","),
     article_publish_date: episodeData.value.publicationDate,
-    article_updated_date: episodeData.value.updatedDate ? episodeData.value.updatedDate : episodeData.value.publicationDate,
+    article_updated_date: episodeData.value.updatedDate
+      ? episodeData.value.updatedDate
+      : episodeData.value.publicationDate,
     article_title: episodeData.value.title,
-  } )
+  })
 })
 
 const isSegment = computed(
