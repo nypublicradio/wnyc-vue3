@@ -95,6 +95,7 @@ onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView( {
+    page_title: 'Listen Live',
     page_type: 'live_tab',
     content_group: 'app_tab',
   } )
@@ -125,6 +126,19 @@ watch(
 </script>
 <template>
   <div class="live-page">
+    <Html lang="en">
+      <Head>
+        <Title>Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+      </Head>
+    </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
