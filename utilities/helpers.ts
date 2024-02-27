@@ -17,6 +17,7 @@ import { Browser } from "@capacitor/browser"
 import { mediaTypeRoutes } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
+import { Share } from '@capacitor/share';
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
@@ -329,12 +330,6 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
-/*basic function that detects if the site is running in a mobile browser*/
-function isMobileBrowser() {
-  const userAgent = navigator.userAgent;
-  return (/iPhone|iPad|iPod/.test(userAgent) && !window.MSStream) && (/Android/.test(userAgent) && /Chrome/.test(userAgent))
-}
-
 export const removeHTMLTags = (str) => {
   const parser = new DOMParser();
   const parsedHTML = parser.parseFromString(str, 'text/html');
@@ -344,7 +339,6 @@ export const removeHTMLTags = (str) => {
 export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
 
   // DESKTOP sharing is not supported yet
-
   const shareContent = {
     title: removeHTMLTags(content.title),
     text: removeHTMLTags(content.details || content.description),
@@ -356,14 +350,23 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
     componentOfOrigin,
     shareContent.title
   )
-
-  //console.log('shareContent = ', shareContent)
-  if (isMobileBrowser()) {
-    await navigator.share(shareContent)
-    return true
+  console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
+  if (Capacitor.getPlatform() !== "web") {
+    await Share.share({
+      title: shareContent.title,
+      text: shareContent.text,
+      url: content.url,
+      dialogTitle: 'Share with buddies',
+    });
   } else {
-    copyToClipBoard(shareContent.url)
-    return false
+
+    try {
+      await navigator.share(shareContent)
+    } catch (error) {
+      copyToClipBoard(shareContent.url)
+      //console.error('Error sharing', error)
+    }
+
   }
 }
 

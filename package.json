@@ -36,6 +36,7 @@
     "@capacitor/network": "^5.0.7",
     "@capacitor/preferences": "5.0.7",
     "@capacitor/push-notifications": "5.1.1",
+    "@capacitor/share": "^5.0.7",
     "@capacitor/splash-screen": "5.0.7",
     "@capacitor/status-bar": "5.0.7",
     "@hypernym/nuxt-gsap": "^2.4.2",
