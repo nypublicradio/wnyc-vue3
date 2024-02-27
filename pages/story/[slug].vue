@@ -110,6 +110,7 @@ watch( storyData, async () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView( {
+    page_title: storyData.value.title,
     page_type: 'article',
     content_group: `${storySource}_article`,
     article_authors: storyData.value.authors.map(author => author.name).join(','),
@@ -153,6 +154,19 @@ const togglePlayHere = (story, index = 0) => {
 
 <template>
   <div class="story-page">
+    <Html lang="en">
+      <Head>
+        <Title>{{ storyData?.title }} | WNYC</Title>
+        <Meta
+          name="og:title"
+          content="{{storyData?.title}} | WNYC"
+        />
+        <Meta
+          name="twitter:title"
+          content="{{storyData?.title}} | WNYC"
+        />
+      </Head>
+    </Html>
     <section class="">
       <div class="flex align-items-center">
         <Button

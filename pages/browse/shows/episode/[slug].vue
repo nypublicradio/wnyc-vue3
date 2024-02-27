@@ -141,6 +141,7 @@ watch(episode, () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView( {
+    page_title: episodeData.value.title,
     page_type: 'episode_page',
     content_group: 'on_demand_episode',
     article_authors: episodeData.value.authors.map(author => author.name).join(','),
@@ -165,6 +166,19 @@ const getEpisodeImage = computed(() => {
 
 <template>
   <div class="episode-page">
+    <Html lang="en">
+      <Head>
+        <Title>{{episodeData?.title}} | WNYC</Title>
+        <Meta
+          name="og:title"
+          content="{{episodeData?.title}} | WNYC"
+        />
+        <Meta
+          name="twitter:title"
+          content="{{episodeData?.title}} | WNYC"
+        />
+      </Head>
+    </Html>
     <!--  <pre class="text-xs">{{ episodeData }}</pre> -->
     <section class="">
       <div class="flex align-items-center">

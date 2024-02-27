@@ -19,6 +19,7 @@ onMounted( () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView( {
+    page_title: shareTitle.value,
     page_type: 'gallery_page',
     content_group: 'app_tab',
   } )
@@ -26,6 +27,19 @@ onMounted( () => {
 </script>
 <template>
   <div class="gallery-page">
+    <Html lang="en">
+      <Head>
+        <Title>{{ shareTitle }} | WNYC</Title>
+        <Meta
+          name="og:title"
+          content="{{shareTitle}} | WNYC"
+        />
+        <Meta
+          name="twitter:title"
+          content="{{shareTitle}} | WNYC"
+        />
+      </Head>
+    </Html>
     <section class="header flex align-items-center justify-content-between">
       <div class="flex align-items-center">
         <Button

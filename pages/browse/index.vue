@@ -64,10 +64,11 @@ watch(searchFieldValue, () => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_type: "browse_tab",
-    content_group: "app_tab",
-  })
+  $analytics.sendPageView( {
+    page_title: 'Browse Shows',
+    page_type: 'browse_tab',
+    content_group: 'app_tab',
+  } )
   // init the search in the mounted hook
   search.value = useFuse(searchFieldValue, allShows, options)
 })
@@ -75,6 +76,19 @@ onMounted(() => {
 
 <template>
   <div class="browse-page">
+    <Html lang="en">
+      <Head>
+        <Title>Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+      </Head>
+    </Html>
     <section class="search">
       <span class="p-input-icon-left w-full">
         <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
