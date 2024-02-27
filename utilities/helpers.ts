@@ -351,7 +351,7 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
     shareContent.title
   )
   console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
-  if (Capacitor.getPlatform() !== "web") {
+  if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
       title: shareContent.title,
       text: shareContent.text,
