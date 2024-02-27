@@ -37,6 +37,7 @@ onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView( {
+    page_title: 'Saved',
     page_type: 'saved_tab',
     content_group: 'app_tab',
   } )
@@ -49,6 +50,19 @@ onMounted(() => {
 
 <template>
   <div class="saved-page">
+    <Html lang="en">
+      <Head>
+        <Title>Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+      </Head>
+    </Html>
     <section class="flex align-items-center justify-content-between">
       <h1>Saved</h1>
       <Button

@@ -164,15 +164,29 @@ watch(loadMoreRefVisible, (val) => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_type: "browse_shows_page",
-    content_group: "app_tab",
-  })
+  $analytics.sendPageView( {
+    page_title: 'Browse Shows',
+    page_type: 'browse_shows_page',
+    content_group: 'app_tab',
+  } )
 })
 </script>
 
 <template>
   <section class="shows-page pb-7">
+    <Html lang="en">
+      <Head>
+        <Title>Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+      </Head>
+    </Html>
     <div class="flex align-items-center">
       <Button
         class="back-btn text-color -ml-4"
