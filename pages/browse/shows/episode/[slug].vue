@@ -259,7 +259,7 @@ const getEpisodeImage = computed(() => {
           }}
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
-        <div class="flex align-items-center justify-content-between">
+        <div class="flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="flex align-items-center gap-2">
             <PlayButton
               v-if="!isSegment"
@@ -383,7 +383,6 @@ const getEpisodeImage = computed(() => {
 .episode-page .episode-page-image {
   width: 100%;
   height: auto;
-  max-height: 333.33px;
   aspect-ratio: 3/2;
   object-fit: cover;
 }
