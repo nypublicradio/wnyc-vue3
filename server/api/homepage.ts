@@ -172,6 +172,7 @@ const getGothamistTopStories = async () => {
 		const articles = resData.map((article: any) => {
 			article.cmsSource = cmsSources.WAGTAIL;
 			article.sortDate = article.publicationDate;
+			article.url = article.meta.htmlUrl
 			return normalizeArticlePage(article);
 		});
 		return articles;
