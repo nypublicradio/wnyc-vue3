@@ -88,11 +88,11 @@ const handleAddToFavorites = async (bucketItem) => {
   }
 }
 
-const handleAddToQueue = (bucketItem) => {
-  // toggle active state
-  // update SB and LS with new state
-  trackClickEvent("Click Tracking - Add to Queue", "Episode Slug", bucketItem.title)
-}
+// const handleAddToQueue = (bucketItem) => {
+//   // toggle active state
+//   // update SB and LS with new state
+//   trackClickEvent("Click Tracking - Add to Queue", "Episode Slug", bucketItem.title)
+// }
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -133,15 +133,15 @@ const getDotMenuItems = (bucketItem) => {
         handleFollow()
       },
     },
-    {
-      label: "Add to Queue",
-      active: true,
-      customIcon: QueueIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleAddToQueue(bucketItem)
-      },
-    },
+    // {
+    //   label: "Add to Queue",
+    //   active: true,
+    //   customIcon: QueueIcon,
+    //   title: bucketItem?.title,
+    //   command: () => {
+    //     handleAddToQueue(bucketItem)
+    //   },
+    // },
     {
       label: "More episodes",
       customIcon: MoreEpisodesIcon,

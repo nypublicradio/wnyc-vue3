@@ -90,15 +90,15 @@ const handleShare = () => {
   shareAPI(currentEpisode.value, "Expanded Audio Player")
 }
 
-const handleAddToQueue = () => {
-  // toggle active state
-  // update SB and LS with new state
-  trackClickEvent(
-    "Click Tracking - Add to Queue",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
+// const handleAddToQueue = () => {
+//   // toggle active state
+//   // update SB and LS with new state
+//   trackClickEvent(
+//     "Click Tracking - Add to Queue",
+//     "Expanded Audio Player",
+//     currentEpisode.value.title
+//   )
+// }
 
 const handleMoreEpisodes = () => {
   // navitget to show page
@@ -203,15 +203,15 @@ const getDotMenuItems = () => {
               handleShare()
             },
           },
-          {
-            label: "Add to Queue",
-            active: true,
-            customIcon: QueueIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleAddToQueue()
-            },
-          },
+          // {
+          //   label: "Add to Queue",
+          //   active: true,
+          //   customIcon: QueueIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleAddToQueue()
+          //   },
+          // },
           {
             label: "More Episodes",
             customIcon: MoreEpisodesIcon,

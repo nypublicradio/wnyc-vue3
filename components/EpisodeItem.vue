@@ -90,11 +90,11 @@ watch(
   { immediate: true, deep: true }
 )
 
-const handleAddToQueue = (bucketItem) => {
-  // toggle active state
-  // update SB and LS with new state
-  trackClickEvent("Click Tracking - Add to Queue", "Episode Item", bucketItem.title)
-}
+// const handleAddToQueue = (bucketItem) => {
+//   // toggle active state
+//   // update SB and LS with new state
+//   trackClickEvent("Click Tracking - Add to Queue", "Episode Item", bucketItem.title)
+// }
 
 const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
@@ -166,15 +166,15 @@ const getDotMenuItems = (bucketItem) => {
         shareAPI(bucketItem, "Episode Item")
       },
     },
-    {
-      label: "Add to Queue",
-      active: true,
-      customIcon: QueueIcon,
-      title: bucketItem.title,
-      command: () => {
-        handleAddToQueue(bucketItem)
-      },
-    },
+    // {
+    //   label: "Add to Queue",
+    //   active: true,
+    //   customIcon: QueueIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleAddToQueue(bucketItem)
+    //   },
+    // },
   ]
 }
 
