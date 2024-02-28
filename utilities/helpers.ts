@@ -19,6 +19,7 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
+import { Clipboard } from '@capacitor/clipboard';
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 
@@ -314,7 +315,9 @@ export const getMinutes = (ms, mult = 1000) => {
 export const copyToClipBoard = async (content: string) => {
   const globalToast = useGlobalToast()
   try {
-    await navigator.clipboard.writeText(content);
+    await Clipboard.write({
+      string: content
+    });
     globalToast.value = {
       severity: "info",
       summary: "Copied to clipboard",
