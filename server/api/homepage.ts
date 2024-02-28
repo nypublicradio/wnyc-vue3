@@ -159,7 +159,7 @@ const getGothamistTopStories = async () => {
 			url: `${config.public.AVIARY_BASE_API}pages/`,
 			params: {
 				type: 'news.ArticlePage',
-				fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body',
+				fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body,url',
 				order: '-publication_date',
 				show_on_index_listing: true,
 				limit: 3,
@@ -172,7 +172,6 @@ const getGothamistTopStories = async () => {
 		const articles = resData.map((article: any) => {
 			article.cmsSource = cmsSources.WAGTAIL;
 			article.sortDate = article.publicationDate;
-			article.url = `https://gothamist.com/${article.link}`
 			return normalizeArticlePage(article);
 		});
 		return articles;
