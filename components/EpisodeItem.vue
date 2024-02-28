@@ -90,6 +90,12 @@ watch(
   { immediate: true, deep: true }
 )
 
+const handleAddToQueue = (bucketItem) => {
+  // toggle active state
+  // update SB and LS with new state
+  trackClickEvent("Click Tracking - Add to Queue", "Episode Item", bucketItem.title)
+}
+
 const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
     const episode = {

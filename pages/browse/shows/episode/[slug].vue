@@ -88,6 +88,12 @@ const handleAddToFavorites = async (bucketItem) => {
   }
 }
 
+const handleAddToQueue = (bucketItem) => {
+  // toggle active state
+  // update SB and LS with new state
+  trackClickEvent("Click Tracking - Add to Queue", "Episode Slug", bucketItem.title)
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [

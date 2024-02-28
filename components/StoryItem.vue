@@ -113,6 +113,13 @@ const handleAddToFavorites = async (bucketItem) => {
     accountPromptSideBar.value = true
   }
 }
+
+const handleAddToQueue = (bucketItem) => {
+  // toggle active state
+  // update SB and LS with new state
+  trackClickEvent("Click Tracking - Add to Queue", "Story Item", bucketItem.title)
+}
+
 //const progress = ref(null)
 // handle the download of the audio file request and feed the progress
 // const handleDownload = async (bucketItem) => {
