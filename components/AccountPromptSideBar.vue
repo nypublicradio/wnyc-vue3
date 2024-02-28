@@ -5,10 +5,20 @@ import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
+
+const props = defineProps({
+  styleMode: {
+    type: String,
+    default: "dark",
+  },
+})
 </script>
 
 <template>
-  <div class="account-prompt-sidebar style-mode-dark flex flex-column gap-3 py-5 px-4">
+  <div
+    class="account-prompt-sidebar flex flex-column gap-3 py-5 px-4"
+    :class="`style-mode-${props.styleMode}`"
+  >
     <h1 class="font-tisa text-5xl line-height-1 mb-4">
       Save now,<br />
       listen later.
