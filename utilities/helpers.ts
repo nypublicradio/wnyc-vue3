@@ -9,14 +9,18 @@ import {
   useLocalUserProfileDefault,
   useCurrentUserFavorites,
   useTogglePlayTrigger,
+  useGlobalToast,
 } from "~/composables/states"
+import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
 import { mediaTypeRoutes } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
+import { Share } from '@capacitor/share';
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
+import { Clipboard } from '@capacitor/clipboard';
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 
@@ -310,24 +314,24 @@ export const getMinutes = (ms, mult = 1000) => {
 
 // global funcrtion for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
-  if (!navigator.clipboard) return false
-  await navigator.clipboard
-    .writeText(content)
-    .then(() => {
-      return true
-    })
-    .catch(() => {
-      return false
-    })
-  return null
-}
-
-/*basic function that detects if the site is running in a mobile browser*/
-function isMobileBrowser() {
-  return (
-    typeof window.orientation !== "undefined" ||
-    navigator.userAgent.indexOf("IEMobile") !== -1
-  )
+  const globalToast = useGlobalToast()
+  try {
+    await Clipboard.write({
+      string: content
+    });
+    globalToast.value = {
+      severity: "info",
+      summary: "Copied to clipboard",
+      life: 3000,
+    }
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+    globalToast.value = {
+      severity: "error",
+      summary: "Failed to copy to the clipboard",
+      life: 3000,
+    }
+  }
 }
 
 export const removeHTMLTags = (str) => {
@@ -339,7 +343,6 @@ export const removeHTMLTags = (str) => {
 export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
 
   // DESKTOP sharing is not supported yet
-
   const shareContent = {
     title: removeHTMLTags(content.title),
     text: removeHTMLTags(content.details || content.description),
@@ -351,13 +354,23 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
     componentOfOrigin,
     shareContent.title
   )
-
-  //console.log('shareContent = ', shareContent)
-  if (navigator.canShare(shareContent) && isMobileBrowser()) {
-    await navigator.share(shareContent)
-    return true
+  //console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
+  if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
+    await Share.share({
+      title: shareContent.title,
+      text: shareContent.text,
+      url: content.url,
+      dialogTitle: 'Share with buddies',
+    });
   } else {
-    return false
+
+    try {
+      await navigator.share(shareContent)
+    } catch (error) {
+      copyToClipBoard(shareContent.url)
+      //console.error('Error sharing', error)
+    }
+
   }
 }
 

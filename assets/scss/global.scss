@@ -52,7 +52,9 @@ body {
     position: relative !important;
   }
   main {
-    padding-bottom: calc($bottomMenuHeight + $playerHeight); // account for the sticky bottom menu
+    padding-bottom: calc(
+      $bottomMenuHeight + $playerHeight + env(safe-area-inset-bottom) + 20px
+    ); // account for the sticky bottom menu
   }
   &.no-bottom-padding {
     main {

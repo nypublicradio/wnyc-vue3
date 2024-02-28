@@ -104,9 +104,9 @@ const switchEpisode = () => {
   setTimeout(() => {
     showPlayer.value = true
     // initiallizes the media session in ~/utilities/media-session.js for Android only
-    if (isAndroid) {
-      initMediaSession(currentEpisode.value, skipTime)
-    }
+    //if (isAndroid) {
+    initMediaSession(currentEpisode.value, skipTime)
+    //}
     delay = 250
   }, delay)
 }

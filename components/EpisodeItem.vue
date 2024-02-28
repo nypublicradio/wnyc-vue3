@@ -269,7 +269,7 @@ const handleClick = () => {
           :showValue="false"
           ></ProgressBar> -->
         </div>
-        <div class="flex justify-content-between align-items-center">
+        <div class="flex justify-content-between align-items-center flex-wrap">
           <PlayButton
             v-if="props.showPlayButton"
             :data="props.data"

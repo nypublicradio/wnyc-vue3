@@ -7,6 +7,8 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import QueueIcon from "~/components/icons/QueueIcon.vue"
+import FollowIcon from "~/components/icons/FollowIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
   trackClickEvent,
@@ -53,6 +55,10 @@ const handleDownload = async (epD) => {
 
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
+}
+
+const handleFollow = () => {
+  // follow the show
 }
 
 const handleAddToFavorites = async (bucketItem) => {
@@ -114,12 +120,28 @@ const getDotMenuItems = (bucketItem) => {
       },
     },
     {
+      label: "Follow",
+      customIcon: FollowIcon,
+      title: bucketItem?.title,
+      command: () => {
+        handleFollow()
+      },
+    },
+    {
       label: "Add to Queue",
       active: true,
       customIcon: QueueIcon,
       title: bucketItem?.title,
       command: () => {
         handleAddToQueue(bucketItem)
+      },
+    },
+    {
+      label: "More episodes",
+      customIcon: MoreEpisodesIcon,
+      title: bucketItem?.title,
+      command: () => {
+        handleFollow()
       },
     },
   ]
@@ -137,18 +159,20 @@ const togglePlayHere = (epData, index = 0) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
-  
+
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
+  $analytics.sendPageView({
     page_title: episodeData.value.title,
-    page_type: 'episode_page',
-    content_group: 'on_demand_episode',
-    article_authors: episodeData.value.authors.map(author => author.name).join(','),
+    page_type: "episode_page",
+    content_group: "on_demand_episode",
+    article_authors: episodeData.value.authors.map((author) => author.name).join(","),
     article_publish_date: episodeData.value.publicationDate,
-    article_updated_date: episodeData.value.updatedDate ? episodeData.value.updatedDate : episodeData.value.publicationDate,
+    article_updated_date: episodeData.value.updatedDate
+      ? episodeData.value.updatedDate
+      : episodeData.value.publicationDate,
     article_title: episodeData.value.title,
-  } )
+  })
 })
 
 const isSegment = computed(
@@ -168,15 +192,9 @@ const getEpisodeImage = computed(() => {
   <div class="episode-page">
     <Html lang="en">
       <Head>
-        <Title>{{episodeData?.title}} | WNYC</Title>
-        <Meta
-          name="og:title"
-          content="{{episodeData?.title}} | WNYC"
-        />
-        <Meta
-          name="twitter:title"
-          content="{{episodeData?.title}} | WNYC"
-        />
+        <Title>{{ episodeData?.title }} | WNYC</Title>
+        <Meta name="og:title" content="{{episodeData?.title}} | WNYC" />
+        <Meta name="twitter:title" content="{{episodeData?.title}} | WNYC" />
       </Head>
     </Html>
     <!--  <pre class="text-xs">{{ episodeData }}</pre> -->
@@ -241,7 +259,7 @@ const getEpisodeImage = computed(() => {
           }}
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
-        <div class="flex align-items-center justify-content-between">
+        <div class="flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="flex align-items-center gap-2">
             <PlayButton
               v-if="!isSegment"
@@ -365,7 +383,6 @@ const getEpisodeImage = computed(() => {
 .episode-page .episode-page-image {
   width: 100%;
   height: auto;
-  max-height: 333.33px;
   aspect-ratio: 3/2;
   object-fit: cover;
 }
