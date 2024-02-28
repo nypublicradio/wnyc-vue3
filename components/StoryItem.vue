@@ -148,7 +148,6 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem.title,
       command: () => {
-        console.log("bucketItem", bucketItem)
         shareAPI(bucketItem, "Episode Item")
       },
     },
