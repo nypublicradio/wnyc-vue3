@@ -11,6 +11,7 @@ import {
   useTogglePlayTrigger,
   useGlobalToast,
 } from "~/composables/states"
+import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
@@ -353,7 +354,7 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
     componentOfOrigin,
     shareContent.title
   )
-  console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
+  //console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
       title: shareContent.title,
