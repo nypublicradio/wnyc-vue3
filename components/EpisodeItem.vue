@@ -98,10 +98,10 @@ watch(
 
 const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
+    console.log("bucketItem = ", bucketItem)
     const episode = {
-      cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
-      id: props.data?.id,
-      slug: props.data?.meta.slug,
+      ...bucketItem,
+      slug: bucketItem.meta.slug,
     }
     if (isFavorited.value) {
       await deleteFavorite(episode)
@@ -109,7 +109,7 @@ const handleAddToFavorites = async (bucketItem) => {
       isFavorited.value = false
       emit("onDeleteFavorite")
     } else {
-      await saveFavorite(episode, props.data?.type)
+      await saveFavorite(episode, episode.type)
       getFavoritedItems()
       isFavorited.value = true
       emit("onSaveFavorite")

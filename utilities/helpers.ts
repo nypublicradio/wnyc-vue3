@@ -498,6 +498,7 @@ interface SavedItem {
   producingOrganizations: any
   authors: any
   meta: any
+  audio: any
 }
 
 // const isDifferentMedia = (media: object, type: string) => {
@@ -513,6 +514,7 @@ interface SavedItem {
 
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
+  console.log('media = ', media)
   const source = media?.cmsSource ?? media?.cmsSource
   const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
   const href = `${mediaTypeRoutes[typeArg]}${thisSlug}`
@@ -530,6 +532,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     const producingOrganizations = media?.producingOrganizations
     const authors = media?.authors
     const meta = media?.meta
+    const audio = media?.audio
     const itemToSave: SavedItem = {
       uid,
       type,
@@ -542,12 +545,15 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
       authors,
       producingOrganizations,
       meta,
+      audio,
     }
     //console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client.from(tableArg).insert([itemToSave])
-    console.error('error = ', error)
+    if (error) {
+      console.error('error = ', error)
+    }
   }
 }
 

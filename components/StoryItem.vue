@@ -202,7 +202,7 @@ const handleClick = () => {
 
 <template>
   <div
-    class="episode-item flex justify-content-between align-items-center p-ripple"
+    class="story-item flex justify-content-between align-items-center p-ripple"
     v-ripple
   >
     <div
@@ -323,7 +323,7 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
-.episode-item {
+.story-item {
   cursor: pointer;
   .card-title-title {
     @include cardTitle();

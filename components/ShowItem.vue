@@ -8,6 +8,7 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  trackClickEvent,
 } from "~/utilities/helpers"
 
 import { useAccountPromptSideBar } from "~/composables/states"
