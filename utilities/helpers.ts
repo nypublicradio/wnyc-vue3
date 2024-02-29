@@ -662,7 +662,7 @@ export const getCssVar = (name: string, px = false) => {
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params) => {
   navigateTo({
-    path: `/browse/shows/episode/${ep.meta.slug}`,
+    path: `/browse/shows/episode/${ep.meta?.slug ?? ep.slug}`,
     query: params,
   })
 }
@@ -670,7 +670,14 @@ export const goToEpisodePage = (ep, params) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params) => {
   navigateTo({
-    path: `/story/${story.id}`,
+    path: `/story/${story.media_id ?? story.id}`,
+    query: params,
+  })
+}
+/* centralized function to route to a show page */
+export const goToShowPage = (show, params) => {
+  navigateTo({
+    path: `/browse/shows/${show.meta?.slug ?? show.slug}`,
     query: params,
   })
 }

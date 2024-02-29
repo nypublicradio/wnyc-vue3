@@ -1,4 +1,7 @@
 <script setup>
+import { mediaTypes } from "~/composables/globals"
+import { goToEpisodePage, goToStoryPage, goToShowPage } from "~/utilities/helpers"
+
 const props = defineProps({
   table: {
     type: String,
@@ -105,7 +108,22 @@ watch(
 )
 
 const handleDynamicNavigation = (item) => {
-  navigateTo(item.route_href)
+  switch (item.type) {
+    case mediaTypes.EPISODES:
+    case mediaTypes.SEGMENT:
+      goToEpisodePage(item)
+      break
+    case mediaTypes.STORY:
+    case mediaTypes.ARTICLE:
+    case mediaTypes.ARTICLE_PAGE:
+      goToStoryPage(item, { src: item.cmsSource })
+      break
+    case mediaTypes.SHOW:
+      goToShowPage(item)
+      break
+    default:
+      goToEpisodePage(item)
+  }
 }
 </script>
 
