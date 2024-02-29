@@ -106,18 +106,20 @@ watch(stories, () => {
   )
 })
 
-watch( storyData, async () => {
+watch(storyData, async () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_title: storyData.value.title,
-    page_type: 'article',
+  $analytics.sendPageView({
+    page_title: storyData.value?.title,
+    page_type: "article",
     content_group: `${storySource}_article`,
-    article_authors: storyData.value.authors.map(author => author.name).join(','),
-    article_publish_date: storyData.value.publicationDate,
-    article_updated_date: storyData.value.updatedDate ? storyData.value.updatedDate : storyData.value.publicationDate,
-    article_title: storyData.value.title,
-  } )
+    article_authors: storyData.value?.authors.map((author) => author.name).join(","),
+    article_publish_date: storyData.value?.publicationDate,
+    article_updated_date: storyData.value?.updatedDate
+      ? storyData.value?.updatedDate
+      : storyData.value?.publicationDate,
+    article_title: storyData.value?.title,
+  })
 
   //console.log("storyData = ", storyData.value)
   if (storyData.value?.leadGallery) {
@@ -157,14 +159,8 @@ const togglePlayHere = (story, index = 0) => {
     <Html lang="en">
       <Head>
         <Title>{{ storyData?.title }} | WNYC</Title>
-        <Meta
-          name="og:title"
-          content="{{storyData?.title}} | WNYC"
-        />
-        <Meta
-          name="twitter:title"
-          content="{{storyData?.title}} | WNYC"
-        />
+        <Meta name="og:title" content="{{storyData?.title}} | WNYC" />
+        <Meta name="twitter:title" content="{{storyData?.title}} | WNYC" />
       </Head>
     </Html>
     <section class="">
@@ -223,7 +219,7 @@ const togglePlayHere = (story, index = 0) => {
             <span class="nobreak">{{ whenTime(storyData) }}</span>
           </template>
         </PipeData>
-        <h1 class="mb-1 alt">{{ storyData.title }}</h1>
+        <h1 class="mb-1 alt">{{ storyData?.title }}</h1>
         <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
           <VByline v-if="storyData.authors.length > 0" :authors="storyData.authors" />
         </div>

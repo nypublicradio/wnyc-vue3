@@ -85,7 +85,7 @@ const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
     const episode = {
       ...bucketItem,
-      slug: bucketItem.meta.slug,
+      slug: bucketItem.meta?.slug ?? bucketItem.slug,
     }
     if (isFavorited.value) {
       await deleteFavorite(episode)
@@ -217,6 +217,7 @@ const handleClick = () => {
         :ratio="[1, 1]"
         :srcset="[2]"
         style="height: 116px; width: 116px"
+        format="jpeg"
       />
       <div class="flex gap-1 flex-column justify-content-between w-full">
         <div class="flex gap-1 flex-column w-full">
@@ -260,7 +261,7 @@ const handleClick = () => {
         <div class="flex justify-content-between align-items-center">
           <ReadButton
             class="z-1"
-            :label="getReadingTime(props.data?.rawBody)"
+            :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
             :file="props.data?.name"
             @on-click="handleClick"
           />
@@ -299,7 +300,7 @@ const handleClick = () => {
                 </div>
               </template>
             </DotMenu>
-            <Button v-else text plain rounded class="flex-none">
+            <Button v-else text plain rounded class="flex-none z-1">
               <template #icon>
                 <StarIcon
                   class="h-2rem"

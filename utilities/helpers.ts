@@ -492,13 +492,14 @@ interface SavedItem {
   cmsSource: string
   media_id: string
   slug: string
-  route_href: string
+  reading_time: string
   title: string
   image: any
   producingOrganizations: any
   authors: any
   meta: any
   audio: any
+  showTitle: string
 }
 
 // const isDifferentMedia = (media: object, type: string) => {
@@ -517,7 +518,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
   console.log('media = ', media)
   const source = media?.cmsSource ?? media?.cmsSource
   const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
-  const href = `${mediaTypeRoutes[typeArg]}${thisSlug}`
 
   if (user.value) {
     // format the media object to save
@@ -526,26 +526,28 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     const media_id = media?.id
     const slug = thisSlug
     const type = typeArg
-    const route_href = href
+    const reading_time = getReadingTime(media?.rawBody)
     const image = media?.image
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
     const authors = media?.authors
     const meta = media?.meta
     const audio = media?.audio
+    const showTitle = media?.showTitle || media?.headers?.brand?.title
     const itemToSave: SavedItem = {
       uid,
       type,
       cmsSource,
       media_id,
       slug,
-      route_href,
+      reading_time,
       image,
       title,
       authors,
       producingOrganizations,
       meta,
       audio,
+      showTitle,
     }
     //console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
@@ -608,7 +610,7 @@ export const checkIsFavorited = (slug: string) => {
   return false
 }
 
-export const saveRecentlyPlayed = (media: object, typeArg: string) => {
+export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }
 
@@ -660,24 +662,26 @@ export const getCssVar = (name: string, px = false) => {
 }
 // ROUTING
 /* centralized function to route to a episode page */
-export const goToEpisodePage = (ep, params) => {
+export const goToEpisodePage = (ep, params, log = true) => {
   navigateTo({
-    path: `${mediaTypeRoutes[ep.type]}${ep.meta?.slug ?? ep.slug}`,
+    path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${ep.meta?.slug ?? ep.slug}`,
     query: params,
   })
+  if (log) { saveRecentlyPlayed(ep) }
 }
 
 /* centralized function to route to a story page */
-export const goToStoryPage = (story, params) => {
+export const goToStoryPage = (story, params, log = true) => {
   navigateTo({
-    path: `${mediaTypeRoutes[story.type]}${story.media_id ?? story.id}`,
+    path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
     query: params,
   })
+  if (log) { saveRecentlyPlayed(story) }
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params) => {
   navigateTo({
-    path: `${mediaTypeRoutes[show.type]}${show.meta?.slug ?? show.slug}`,
+    path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,
   })
 }

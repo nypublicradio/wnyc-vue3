@@ -24,17 +24,16 @@ const loadComponent = async (item) => {
       case "show":
         return "ShowItem"
       case "episode":
-        return "EpisodeItem"
-      case "story":
-        return "StoryItem"
-      case "article_page":
-        return "StoryItem"
       case "segment":
         return "EpisodeItem"
+      case "story":
+      case "article_page":
+      case "article":
+        return item.audio ? "EpisodeItem" : "StoryItem"
       case "live":
         return "LiveItem"
       default:
-        return "ShowItem"
+        return "EpisodeItem"
     }
   })
 
@@ -111,18 +110,20 @@ const handleDynamicNavigation = (item) => {
   switch (item.type) {
     case mediaTypes.EPISODES:
     case mediaTypes.SEGMENT:
-      goToEpisodePage(item)
+      goToEpisodePage(item, null, false)
       break
     case mediaTypes.STORY:
     case mediaTypes.ARTICLE:
     case mediaTypes.ARTICLE_PAGE:
-      goToStoryPage(item, { src: item.cmsSource })
+      item.audio
+        ? goToEpisodePage(item, null, false)
+        : goToStoryPage(item, { src: item.cmsSource }, false)
       break
     case mediaTypes.SHOW:
       goToShowPage(item)
       break
     default:
-      goToEpisodePage(item)
+      goToEpisodePage(item, null, false)
   }
 }
 </script>

@@ -34,12 +34,10 @@ const handleRoute = (file) => {
     switch (file.type) {
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
-        //goToEpisodePage(file, `downloaded=true&id=${file.id}`)
         goToEpisodePage(file)
         break
       case mediaTypes.ARTICLE:
         goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
-        //goToStoryPage(file)
         break
       default:
         console.log("handleRoute", file)

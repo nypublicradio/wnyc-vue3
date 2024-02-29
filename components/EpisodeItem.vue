@@ -101,7 +101,7 @@ const handleAddToFavorites = async (bucketItem) => {
     console.log("bucketItem = ", bucketItem)
     const episode = {
       ...bucketItem,
-      slug: bucketItem.meta.slug,
+      slug: bucketItem.meta?.slug ?? bucketItem.slug,
     }
     if (isFavorited.value) {
       await deleteFavorite(episode)
@@ -240,7 +240,9 @@ const handleClick = () => {
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
             </p>
-            <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+            <h2 class="text-sm line-height-2 truncate t2lines">
+              {{ props.data?.title }}
+            </h2>
           </div>
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
@@ -332,7 +334,7 @@ const handleClick = () => {
                         "
                       />
                       <div class="info">
-                        <h2 class="card-title-title">{{ props.data.title }}</h2>
+                        <h2 class="card-title-title">{{ props.data?.title }}</h2>
                         <p>{{ props.data.showTitle }}</p>
                       </div>
                     </div>
@@ -340,12 +342,12 @@ const handleClick = () => {
                   </div>
                 </template>
               </DotMenu>
-              <Button v-else text plain rounded class="flex-none">
+              <Button v-else text plain rounded class="flex-none z-1">
                 <template #icon>
                   <StarIcon
                     class="h-2rem"
                     :active="isFavorited"
-                    @click="handleAddToFavorites(bucketItem)"
+                    @click="handleAddToFavorites(props.data)"
                   />
                 </template>
               </Button>

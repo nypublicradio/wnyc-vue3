@@ -1,6 +1,7 @@
 <script setup>
 import { useFuse } from "@vueuse/integrations/useFuse"
 import { useShowTopics } from "~/composables/globals.ts"
+import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const { data: shows, pending, error, refresh } = useLazyFetch(
@@ -36,13 +37,6 @@ const selectTopic = (topic) => {
   })
 }
 
-// handle route to show page
-const goToShowPage = (show) => {
-  navigateTo({
-    path: `browse/shows/${show.slug}`,
-  })
-}
-
 const stopWatch = watch(shows, () => {
   allShows.value = shows.value.all
   featuredShows.value = shows.value.featuredShows
@@ -64,11 +58,11 @@ watch(searchFieldValue, () => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_title: 'Browse Shows',
-    page_type: 'browse_tab',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_title: "Browse Shows",
+    page_type: "browse_tab",
+    content_group: "app_tab",
+  })
   // init the search in the mounted hook
   search.value = useFuse(searchFieldValue, allShows, options)
 })
@@ -78,7 +72,10 @@ onMounted(() => {
   <div class="browse-page">
     <Html lang="en">
       <Head>
-        <Title>Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
