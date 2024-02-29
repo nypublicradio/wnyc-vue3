@@ -6,7 +6,7 @@ import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 //import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import QueueIcon from "~/components/icons/QueueIcon.vue"
+//import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
   deleteFavorite,
   saveFavorite,
@@ -21,7 +21,7 @@ import {
 } from "~/utilities/helpers"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-import { FALLBACKIMAGELOCAL } from "~/composables/globals"
+import { FALLBACKIMAGELOCAL, cmsSources } from "~/composables/globals"
 const toast = useToast()
 
 const $primevue = usePrimeVue()
@@ -84,9 +84,8 @@ watch(
 const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
     const episode = {
-      cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
-      id: props.data?.id,
-      slug: props.data?.meta.slug,
+      ...bucketItem,
+      slug: bucketItem.meta.slug,
     }
     if (isFavorited.value) {
       await deleteFavorite(episode)
@@ -94,7 +93,7 @@ const handleAddToFavorites = async (bucketItem) => {
       isFavorited.value = false
       emit("onDeleteFavorite")
     } else {
-      await saveFavorite(episode, props.data?.type)
+      await saveFavorite(episode, episode.type)
       getFavoritedItems()
       isFavorited.value = true
       emit("onSaveFavorite")
@@ -191,12 +190,12 @@ if (props.isDownloaded) {
 // handle click event emit
 const handleClick = () => {
   emit("on-click")
-  navigateTo({
-    path: `/story/${props.data.id || props.data.media_id}`,
-    query: {
-      src: props.data.cmsSource,
-    },
-  })
+  // navigateTo({
+  //   path: `/story/${props.data.id ?? props.data.media_id}`,
+  //   query: {
+  //     src: props.data.cmsSource,
+  //   },
+  // })
 }
 </script>
 
@@ -231,13 +230,7 @@ const handleClick = () => {
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
                 <p class="text-xs">
-                  {{
-                    props.data.showTitle ||
-                    props.data.headers?.brand?.title ||
-                    props.data.cmsSource === cmsSources.WAGTAIL
-                      ? "Gothamist"
-                      : "WNYC"
-                  }}
+                  {{ props.data.cmsSource == cmsSources.WAGTAIL ? "Gothamist" : "WNYC" }}
                 </p>
               </template>
               <template #right>

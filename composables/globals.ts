@@ -9,18 +9,20 @@ export const mediaTypes = {
     LIVE: 'live',
     SHOW: 'show',
     EPISODE: 'episode',
+    SEGMENT: 'segment',
     STORY: 'story',
     ARTICLE_PAGE: 'article_page',
     ARTICLE: 'article',
-    SEGMENT: 'segment',
 }
 
 export const mediaTypeRoutes = {
     [mediaTypes.LIVE]: '/live/',
     [mediaTypes.SHOW]: '/browse/shows/',
     [mediaTypes.EPISODE]: '/browse/shows/episode/',
+    [mediaTypes.SEGMENT]: '/browse/shows/episode/',
     [mediaTypes.STORY]: '/story/',
     [mediaTypes.ARTICLE_PAGE]: '/story/',
+    [mediaTypes.ARTICLE]: '/story/',
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'

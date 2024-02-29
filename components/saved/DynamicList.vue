@@ -27,7 +27,7 @@ const loadComponent = async (item) => {
       case "article_page":
         return "StoryItem"
       case "segment":
-        return "StoryItem"
+        return "EpisodeItem"
       case "live":
         return "LiveItem"
       default:
@@ -93,7 +93,7 @@ const getItemsData = async () => {
 watch(
   user,
   async () => {
-    getItemsData()
+    await getItemsData()
   },
   { immediate: true }
 )
@@ -103,6 +103,10 @@ watch(
     getItemsData()
   }
 )
+
+const handleDynamicNavigation = (item) => {
+  navigateTo(item.route_href)
+}
 </script>
 
 <template>
@@ -114,7 +118,7 @@ watch(
       :data="item.data"
       :saved="true"
       @onDeleteFavorite="getItemsData"
-      @onClick="navigateTo(item.route_href)"
+      @onClick="handleDynamicNavigation(item)"
     />
   </div>
   <slot v-else />

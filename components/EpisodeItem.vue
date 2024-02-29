@@ -252,7 +252,7 @@ const handleClick = () => {
                   <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
                 </span>
                 <p class="text-xs" v-else>
-                  {{ props.data.showTitle || props.data.headers.brand.title }}
+                  {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
                 </p>
               </template>
               <template #right>

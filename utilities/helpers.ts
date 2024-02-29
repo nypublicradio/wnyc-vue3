@@ -661,12 +661,18 @@ export const getCssVar = (name: string, px = false) => {
 
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params) => {
-  navigateTo(`/browse/shows/episode/${ep.meta.slug}${params ? `?${params}` : ''}`)
+  navigateTo({
+    path: `/browse/shows/episode/${ep.meta.slug}`,
+    query: params,
+  })
 }
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params) => {
-  navigateTo(`/story/${story.id}${params ? `?${params}` : ''}`)
+  navigateTo({
+    path: `/story/${story.id}`,
+    query: params,
+  })
 }
 
 // return bool if the url has a query param
