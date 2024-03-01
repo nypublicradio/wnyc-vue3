@@ -516,7 +516,6 @@ interface SavedItem {
 
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
-  console.log('media = ', media)
 
   if (user.value) {
     const client = useSupabaseClient()
@@ -529,7 +528,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
 
     if (existingError) throw existingError;
     if (existingRecord && existingRecord.length > 0) {
-      //console.log('existingRecord = ', existingRecord[0])
       await deleteFavorite(existingRecord[0], tableArg)
     }
 
@@ -564,9 +562,8 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
       audio,
       showTitle,
     }
-    //console.log('itemToSave = ', itemToSave)
-    //save instance to Supabase
 
+    //save instance to Supabase
     const { error } = await client.from(tableArg).insert([itemToSave])
     if (error) {
       console.error('error = ', error)
@@ -577,7 +574,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
 export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
   // detect if logged in
   const user = useCurrentUser()
-  console.log('delete media = ', media)
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
