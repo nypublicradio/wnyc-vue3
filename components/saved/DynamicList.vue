@@ -2,9 +2,6 @@
 import { mediaTypes } from "~/composables/globals"
 import { goToEpisodePage, goToStoryPage, goToShowPage } from "~/utilities/helpers"
 
-import { useSelectedSavedTab } from "~/composables/states"
-import { getSavedMenuItems } from "~/composables/globals"
-
 const props = defineProps({
   table: {
     type: String,
@@ -23,8 +20,6 @@ const props = defineProps({
 // if user is logged in, get all their favorited shows
 const client = useSupabaseClient()
 const savedItems = ref(null)
-const selectedSavedTab = useSelectedSavedTab()
-const savedMenuItems = ref(getSavedMenuItems())
 const user = useCurrentUser()
 
 // determines what component to load based on the item type
