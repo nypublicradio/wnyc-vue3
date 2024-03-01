@@ -421,6 +421,9 @@ const moreFromClick = () => {
         bottom: env(safe-area-inset-bottom) !important;
       }
     }
+    .header-cast-btn {
+      display: none;
+    }
   }
 }
 </style>

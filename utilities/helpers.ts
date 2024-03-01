@@ -569,7 +569,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     if (existingRecord && existingRecord.length > 0) {
       await deleteFavorite(existingRecord[0], tableArg)
     }
-    console.log('media = ', media)
     const source = media?.cmsSource
     const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
     // format the media object to save
@@ -602,7 +601,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
       audio,
       showTitle,
     }
-    console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
     const { error } = await client.from(tableArg).insert([itemToSave])
     if (error) {

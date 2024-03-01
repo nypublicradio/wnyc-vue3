@@ -19,6 +19,7 @@ const props = defineProps({
 
 const size = ref(props.size)
 
+// handle the click if this item is in the saved page and navigate to the live page
 const handleClick = () => {
   if (props.saved) {
     navigateTo("/live")
