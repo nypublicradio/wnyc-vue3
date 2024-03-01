@@ -9,7 +9,7 @@ const props = defineProps({
   },
   size: {
     type: Number,
-    default: 72,
+    default: 116,
   },
   saved: {
     type: Boolean,
@@ -34,7 +34,7 @@ const size = ref(props.size)
     <div class="info flex gap-3">
       <div class="content flex flex-column gap-1 justify-content-start">
         <LiveBadge v-if="!props.saved" class="align-self-start" />
-        <h2>{{ props.data?.title }}</h2>
+        <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
         <p
           class="blurb truncate t3lines"
           v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"

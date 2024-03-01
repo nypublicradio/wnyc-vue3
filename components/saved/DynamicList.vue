@@ -2,6 +2,9 @@
 import { mediaTypes } from "~/composables/globals"
 import { goToEpisodePage, goToStoryPage, goToShowPage } from "~/utilities/helpers"
 
+import { useSelectedSavedTab } from "~/composables/states"
+import { getSavedMenuItems } from "~/composables/globals"
+
 const props = defineProps({
   table: {
     type: String,
@@ -11,11 +14,17 @@ const props = defineProps({
     type: [String, Array],
     default: null,
   },
+  isSaveHistory: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // if user is logged in, get all their favorited shows
 const client = useSupabaseClient()
 const savedItems = ref(null)
+const selectedSavedTab = useSelectedSavedTab()
+const savedMenuItems = ref(getSavedMenuItems())
 const user = useCurrentUser()
 
 // determines what component to load based on the item type
@@ -113,20 +122,20 @@ const handleDynamicNavigation = (item) => {
   switch (item.type) {
     case mediaTypes.EPISODES:
     case mediaTypes.SEGMENT:
-      goToEpisodePage(item, null, false)
+      goToEpisodePage(item, null, props.isSaveHistory)
       break
     case mediaTypes.STORY:
     case mediaTypes.ARTICLE:
     case mediaTypes.ARTICLE_PAGE:
       item.audio
-        ? goToEpisodePage(item, null, false)
-        : goToStoryPage(item, { src: item.cmsSource }, false)
+        ? goToEpisodePage(item, null, props.isSaveHistory)
+        : goToStoryPage(item, { src: item.cmsSource }, props.isSaveHistory)
       break
     case mediaTypes.SHOW:
       goToShowPage(item)
       break
     default:
-      goToEpisodePage(item, null, false)
+      goToEpisodePage(item, null, props.isSaveHistory)
   }
 }
 </script>

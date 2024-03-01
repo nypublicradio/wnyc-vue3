@@ -217,7 +217,6 @@ const handleClick = () => {
         :ratio="[1, 1]"
         :srcset="[2]"
         style="height: 116px; width: 116px"
-        format="jpeg"
       />
       <div class="flex gap-1 flex-column justify-content-between w-full">
         <div class="flex gap-1 flex-column w-full">
