@@ -103,8 +103,8 @@ export const getSavedMenuItems = () => {
             color: 'var(--red)',
         }] : []),
         {
-            label: 'Recently Played',
-            value: 'RecentlyPlayed',
+            label: 'History',
+            value: 'History',
             color: 'var(--red)',
         },
     ]
