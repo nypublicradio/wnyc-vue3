@@ -6,7 +6,7 @@ import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import QueueIcon from "~/components/icons/QueueIcon.vue"
+//import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
   deleteFavorite,
   saveFavorite,
@@ -74,7 +74,7 @@ const user = useCurrentUser()
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
+  isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
 })
 
 const estimatedDuration = ref(null)
@@ -90,12 +90,17 @@ watch(
   { immediate: true, deep: true }
 )
 
+// const handleAddToQueue = (bucketItem) => {
+//   // toggle active state
+//   // update SB and LS with new state
+//   trackClickEvent("Click Tracking - Add to Queue", "Episode Item", bucketItem.title)
+// }
+
 const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
     const episode = {
-      cmsSource: "publisher", // BONO TO DO: is this right to hardcode this?
-      id: props.data?.id,
-      slug: props.data?.meta.slug,
+      ...bucketItem,
+      slug: bucketItem.meta?.slug ?? bucketItem.slug,
     }
     if (isFavorited.value) {
       await deleteFavorite(episode)
@@ -103,7 +108,7 @@ const handleAddToFavorites = async (bucketItem) => {
       isFavorited.value = false
       emit("onDeleteFavorite")
     } else {
-      await saveFavorite(episode, props.data?.type)
+      await saveFavorite(episode, episode.type)
       getFavoritedItems()
       isFavorited.value = true
       emit("onSaveFavorite")
@@ -160,15 +165,15 @@ const getDotMenuItems = (bucketItem) => {
         shareAPI(bucketItem, "Episode Item")
       },
     },
-    {
-      label: "Add to Queue",
-      active: true,
-      customIcon: QueueIcon,
-      title: bucketItem.title,
-      command: () => {
-        handleAddToQueue(bucketItem)
-      },
-    },
+    // {
+    //   label: "Add to Queue",
+    //   active: true,
+    //   customIcon: QueueIcon,
+    //   title: bucketItem.title,
+    //   command: () => {
+    //     handleAddToQueue(bucketItem)
+    //   },
+    // },
   ]
 }
 
@@ -234,7 +239,9 @@ const handleClick = () => {
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
             </p>
-            <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+            <h2 class="text-sm line-height-2 truncate t2lines">
+              {{ props.data?.title }}
+            </h2>
           </div>
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
@@ -246,7 +253,7 @@ const handleClick = () => {
                   <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
                 </span>
                 <p class="text-xs" v-else>
-                  {{ props.data.showTitle || props.data.headers.brand.title }}
+                  {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
                 </p>
               </template>
               <template #right>
@@ -326,7 +333,7 @@ const handleClick = () => {
                         "
                       />
                       <div class="info">
-                        <h2 class="card-title-title">{{ props.data.title }}</h2>
+                        <h2 class="card-title-title">{{ props.data?.title }}</h2>
                         <p>{{ props.data.showTitle }}</p>
                       </div>
                     </div>
@@ -334,12 +341,12 @@ const handleClick = () => {
                   </div>
                 </template>
               </DotMenu>
-              <Button v-else text plain rounded class="flex-none">
+              <Button v-else text plain rounded class="flex-none z-1">
                 <template #icon>
                   <StarIcon
                     class="h-2rem"
                     :active="isFavorited"
-                    @click="handleAddToFavorites(bucketItem)"
+                    @click="handleAddToFavorites(props.data)"
                   />
                 </template>
               </Button>

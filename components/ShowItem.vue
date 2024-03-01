@@ -8,6 +8,7 @@ import {
   saveFavorite,
   checkIsFavorited,
   getFavoritedItems,
+  trackClickEvent,
 } from "~/utilities/helpers"
 
 import { useAccountPromptSideBar } from "~/composables/states"
@@ -94,7 +95,7 @@ const handleAddToFavorites = async () => {
         </p>
       </div>
     </div>
-    <Button text plain rounded class="flex-none">
+    <Button text plain rounded class="flex-none z-1">
       <template #icon>
         <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>

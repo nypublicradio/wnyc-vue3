@@ -35,7 +35,7 @@ import {
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
-
+import "vidstack/bundle"
 import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()

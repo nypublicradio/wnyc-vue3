@@ -22,7 +22,7 @@ import { useToast } from "primevue/usetoast"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import QueueIcon from "~/components/icons/QueueIcon.vue"
+//import QueueIcon from "~/components/icons/QueueIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
@@ -90,15 +90,15 @@ const handleShare = () => {
   shareAPI(currentEpisode.value, "Expanded Audio Player")
 }
 
-const handleAddToQueue = () => {
-  // toggle active state
-  // update SB and LS with new state
-  trackClickEvent(
-    "Click Tracking - Add to Queue",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
+// const handleAddToQueue = () => {
+//   // toggle active state
+//   // update SB and LS with new state
+//   trackClickEvent(
+//     "Click Tracking - Add to Queue",
+//     "Expanded Audio Player",
+//     currentEpisode.value.title
+//   )
+// }
 
 const handleMoreEpisodes = () => {
   // navitget to show page
@@ -203,15 +203,15 @@ const getDotMenuItems = () => {
               handleShare()
             },
           },
-          {
-            label: "Add to Queue",
-            active: true,
-            customIcon: QueueIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleAddToQueue()
-            },
-          },
+          // {
+          //   label: "Add to Queue",
+          //   active: true,
+          //   customIcon: QueueIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleAddToQueue()
+          //   },
+          // },
           {
             label: "More Episodes",
             customIcon: MoreEpisodesIcon,
@@ -420,6 +420,9 @@ const moreFromClick = () => {
       .expanded-footer {
         bottom: env(safe-area-inset-bottom) !important;
       }
+    }
+    .header-cast-btn {
+      display: none;
     }
   }
 }

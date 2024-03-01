@@ -50,6 +50,7 @@ const selectedFilterOption = ref(filterOptions.value[0])
 .favorites {
   .p-dropdown {
     border: none;
+    background: transparent;
   }
 }
 </style>
@@ -58,6 +59,9 @@ const selectedFilterOption = ref(filterOptions.value[0])
   .p-dropdown {
     .p-dropdown-label {
       padding-right: 0 !important;
+    }
+    .p-icon {
+      color: var(--text-color);
     }
   }
 }

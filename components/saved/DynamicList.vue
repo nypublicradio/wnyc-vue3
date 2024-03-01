@@ -1,4 +1,7 @@
 <script setup>
+import { mediaTypes } from "~/composables/globals"
+import { goToEpisodePage, goToStoryPage, goToShowPage } from "~/utilities/helpers"
+
 const props = defineProps({
   table: {
     type: String,
@@ -8,6 +11,10 @@ const props = defineProps({
     type: [String, Array],
     default: null,
   },
+  isSaveHistory: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // if user is logged in, get all their favorited shows
@@ -15,23 +22,23 @@ const client = useSupabaseClient()
 const savedItems = ref(null)
 const user = useCurrentUser()
 
+// determines what component to load based on the item type
 const loadComponent = async (item) => {
   const componentName = computed(() => {
     switch (item.type) {
       case "show":
         return "ShowItem"
       case "episode":
+      case "segment":
         return "EpisodeItem"
       case "story":
-        return "StoryItem"
       case "article_page":
-        return "StoryItem"
-      case "segment":
-        return "StoryItem"
+      case "article":
+        return item.audio ? "EpisodeItem" : "StoryItem"
       case "live":
         return "LiveItem"
       default:
-        return "ShowItem"
+        return "EpisodeItem"
     }
   })
 
@@ -63,6 +70,7 @@ const getFilteredItemsData = computed(() => {
   return query
 })
 
+// retrieve item data
 const getItemsData = async () => {
   if (user.value) {
     const { data, error } = props.typeFilter
@@ -93,7 +101,7 @@ const getItemsData = async () => {
 watch(
   user,
   async () => {
-    getItemsData()
+    await getItemsData()
   },
   { immediate: true }
 )
@@ -103,6 +111,28 @@ watch(
     getItemsData()
   }
 )
+
+// handles how to use the correct navigate method based on the item type
+const handleDynamicNavigation = (item) => {
+  switch (item.type) {
+    case mediaTypes.EPISODES:
+    case mediaTypes.SEGMENT:
+      goToEpisodePage(item, null, props.isSaveHistory)
+      break
+    case mediaTypes.STORY:
+    case mediaTypes.ARTICLE:
+    case mediaTypes.ARTICLE_PAGE:
+      item.audio
+        ? goToEpisodePage(item, null, props.isSaveHistory)
+        : goToStoryPage(item, { src: item.cmsSource }, props.isSaveHistory)
+      break
+    case mediaTypes.SHOW:
+      goToShowPage(item)
+      break
+    default:
+      goToEpisodePage(item, null, props.isSaveHistory)
+  }
+}
 </script>
 
 <template>
@@ -114,7 +144,7 @@ watch(
       :data="item.data"
       :saved="true"
       @onDeleteFavorite="getItemsData"
-      @onClick="navigateTo(item.route_href)"
+      @onClick="handleDynamicNavigation(item)"
     />
   </div>
   <slot v-else />

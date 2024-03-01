@@ -1,9 +1,9 @@
 <script setup>
-  const user = useCurrentUser()
+const user = useCurrentUser()
 </script>
 <template>
   <section v-if="user" class="recently-played">
-    <saved-dynamic-list table="recently_viewed">
+    <saved-dynamic-list table="recently_viewed" :isSaveHistory="false">
       <div class="empty flex flex-column gap-3 text-center mt-8">
         <h2>You haven't listened to anything...yet!</h2>
 

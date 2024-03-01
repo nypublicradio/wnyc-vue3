@@ -2,6 +2,7 @@
 import { useSelectedSavedTab } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
 
+const user = useCurrentUser()
 const savedMenuItems = ref(getSavedMenuItems())
 const selectedSavedTab = useSelectedSavedTab()
 const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
@@ -36,11 +37,11 @@ const loadComponent = (componentName) => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_title: 'Saved',
-    page_type: 'saved_tab',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_title: "Saved",
+    page_type: "saved_tab",
+    content_group: "app_tab",
+  })
   // scroll to active item
   setTimeout(() => {
     scrollToActiveItem()
@@ -52,7 +53,10 @@ onMounted(() => {
   <div class="saved-page">
     <Html lang="en">
       <Head>
-        <Title>Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -65,7 +69,7 @@ onMounted(() => {
     </Html>
     <section class="flex align-items-center justify-content-between">
       <h1>Saved</h1>
-      <Button
+      <!-- <Button
         class="-mr-3 text-sm"
         label="Add"
         text
@@ -73,34 +77,36 @@ onMounted(() => {
         icon="pi pi-plus"
         iconPos="right"
         size="large"
-      ></Button>
+      ></Button> -->
     </section>
-
-    <HorizontalScrollFeature class="items-holder mt-3">
-      <div class="flex">
-        <div
-          v-for="(item, index) in savedMenuItems"
-          class="item-holder"
-          :class="[{ selected: selectedMenuItem.value === item.value }]"
-          :key="item.label"
-        >
-          <div class="relative item-btn-holder">
-            <Button
-              class="item-btn text-sm white-space-nowrap"
-              :label="item.label"
-              @click="selectMenuItem(item, index)"
-              severity="secondary"
-            />
+    <div v-if="user">
+      <HorizontalScrollFeature class="items-holder mt-3">
+        <div class="flex">
+          <div
+            v-for="(item, index) in savedMenuItems"
+            class="item-holder"
+            :class="[{ selected: selectedMenuItem.value === item.value }]"
+            :key="item.label"
+          >
+            <div class="relative item-btn-holder">
+              <Button
+                class="item-btn text-sm white-space-nowrap"
+                :label="item.label"
+                @click="selectMenuItem(item, index)"
+                severity="secondary"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </HorizontalScrollFeature>
+      </HorizontalScrollFeature>
 
-    <div v-for="item in savedMenuItems" :key="item.value">
-      <div v-if="item.value === selectedMenuItem.value">
-        <component :is="loadComponent(item.value)" />
+      <div v-for="item in savedMenuItems" :key="item.value">
+        <div v-if="item.value === selectedMenuItem.value">
+          <component :is="loadComponent(item.value)" />
+        </div>
       </div>
     </div>
+    <AccountPromptSideBar v-else style-mode="light" />
   </div>
 </template>
 

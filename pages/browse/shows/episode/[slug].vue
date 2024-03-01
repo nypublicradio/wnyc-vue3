@@ -6,7 +6,7 @@ import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import QueueIcon from "~/components/icons/QueueIcon.vue"
+//import QueueIcon from "~/components/icons/QueueIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
@@ -88,6 +88,12 @@ const handleAddToFavorites = async (bucketItem) => {
   }
 }
 
+// const handleAddToQueue = (bucketItem) => {
+//   // toggle active state
+//   // update SB and LS with new state
+//   trackClickEvent("Click Tracking - Add to Queue", "Episode Slug", bucketItem.title)
+// }
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -127,15 +133,15 @@ const getDotMenuItems = (bucketItem) => {
         handleFollow()
       },
     },
-    {
-      label: "Add to Queue",
-      active: true,
-      customIcon: QueueIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleAddToQueue(bucketItem)
-      },
-    },
+    // {
+    //   label: "Add to Queue",
+    //   active: true,
+    //   customIcon: QueueIcon,
+    //   title: bucketItem?.title,
+    //   command: () => {
+    //     handleAddToQueue(bucketItem)
+    //   },
+    // },
     {
       label: "More episodes",
       customIcon: MoreEpisodesIcon,

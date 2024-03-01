@@ -49,6 +49,21 @@ export const formatPublisherImage = (attributes) => {
   return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
 }
 
+// Function to strip HTML tags and return text content
+function stripHtmlTags(str) {
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(str, 'text/html');
+  return dom.body.textContent ?? '';
+}
+
+// Computed property to calculate reading time
+export const getReadingTime = (htmlContent) => {
+  const textContent = stripHtmlTags(htmlContent);
+  const wordsPerMinute = 200; // Average reading speed
+  const estimatedWordCount = textContent.split(/\s+/).length;
+  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
+};
+
 interface ImageAttributes {
   imageMain?: {
     template: string
@@ -492,12 +507,14 @@ interface SavedItem {
   cmsSource: string
   media_id: string
   slug: string
-  route_href: string
+  reading_time: string
   title: string
   image: any
   producingOrganizations: any
   authors: any
   meta: any
+  audio: any
+  showTitle: string
 }
 
 // const isDifferentMedia = (media: object, type: string) => {
@@ -511,67 +528,87 @@ interface SavedItem {
 //   }
 // }
 
-export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
-  const user = useCurrentUser()
-  const source = media?.cmsSource ?? media?.cmsSource
-  const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
-  const href = `${mediaTypeRoutes[typeArg]}${thisSlug}`
-
-  if (user.value) {
-    // format the media object to save
-    const uid = user.value?.id
-    const cmsSource = source
-    const media_id = media?.id
-    const slug = thisSlug
-    const type = typeArg
-    const route_href = href
-    const image = media?.image
-    const title = media?.title
-    const producingOrganizations = media?.producingOrganizations
-    const authors = media?.authors
-    const meta = media?.meta
-    const itemToSave: SavedItem = {
-      uid,
-      type,
-      cmsSource,
-      media_id,
-      slug,
-      route_href,
-      image,
-      title,
-      authors,
-      producingOrganizations,
-      meta,
-    }
-    //console.log('itemToSave = ', itemToSave)
-    //save instance to Supabase
-    const client = useSupabaseClient()
-    const { error } = await client.from(tableArg).insert([itemToSave])
-    console.error('error = ', error)
-  }
-}
-
-export const deleteFavorite = async (media: object) => {
+export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
   // detect if logged in
   const user = useCurrentUser()
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
     const slug = media?.slug ?? media?.meta.slug
-    const media_id = media?.id
+    //const media_id = media.media_id ?? media?.id
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client
-      .from("favorited")
+      .from(tableArg)
       .delete()
       .eq("uid", uid)
-      .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
+      .or(`slug.eq.${slug}`)
 
     if (error) {
       console.error("error deleting favorite", error)
     }
   }
 }
+
+
+// handles saving a favorite or recently played item
+// if a duplicate existingRecord is found, it removed the original and adds the new one
+export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
+  const user = useCurrentUser()
+
+  if (user.value) {
+    const client = useSupabaseClient()
+    // check if record exists
+    const { data: existingRecord, error: existingError } = await client
+      .from(tableArg)
+      .select('*')
+      .eq("uid", user.value.id)
+      .eq('slug', media?.slug);
+
+    if (existingError) throw existingError;
+    if (existingRecord && existingRecord.length > 0) {
+      await deleteFavorite(existingRecord[0], tableArg)
+    }
+    const source = media?.cmsSource
+    const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
+    // format the media object to save
+    // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
+    const uid = user.value?.id
+    const cmsSource = source
+    const media_id = media?.media_id ?? media?.id
+    const slug = thisSlug
+    const type = typeArg
+    const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
+    const image = media?.image
+    const title = media?.title
+    const producingOrganizations = media?.producingOrganizations
+    const authors = media?.authors
+    const meta = media?.meta
+    const audio = media?.audio ?? media?.hls
+    const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
+    const itemToSave: SavedItem = {
+      uid,
+      type,
+      cmsSource,
+      media_id,
+      slug,
+      reading_time,
+      image,
+      title,
+      authors,
+      producingOrganizations,
+      meta,
+      audio,
+      showTitle,
+    }
+    //save instance to Supabase
+    const { error } = await client.from(tableArg).insert([itemToSave])
+    if (error) {
+      console.error('error = ', error)
+    }
+  }
+}
+
 
 export const getFavoritedItems = async () => {
   const favorites = useCurrentUserFavorites()
@@ -602,7 +639,7 @@ export const checkIsFavorited = (slug: string) => {
   return false
 }
 
-export const saveRecentlyPlayed = (media: object, typeArg: string) => {
+export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }
 
@@ -652,15 +689,30 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 
 }
-
+// ROUTING
 /* centralized function to route to a episode page */
-export const goToEpisodePage = (ep, params) => {
-  navigateTo(`/browse/shows/episode/${ep.meta.slug}${params ? `?${params}` : ''}`)
+export const goToEpisodePage = (ep, params, log = true) => {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${ep.meta?.slug ?? ep.slug}`,
+    query: params,
+  })
+  if (log) { saveRecentlyPlayed(ep) }
 }
 
 /* centralized function to route to a story page */
-export const goToStoryPage = (story, params) => {
-  navigateTo(`/story/${story.id}${params ? `?${params}` : ''}`)
+export const goToStoryPage = (story, params, log = true) => {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+    query: params,
+  })
+  if (log) { saveRecentlyPlayed(story) }
+}
+/* centralized function to route to a show page */
+export const goToShowPage = (show, params) => {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
+    query: params,
+  })
 }
 
 // return bool if the url has a query param
@@ -687,20 +739,7 @@ export const hasAudio = (audio) => {
   //return true
 }
 
-// Function to strip HTML tags and return text content
-function stripHtmlTags(str) {
-  const parser = new DOMParser();
-  const dom = parser.parseFromString(str, 'text/html');
-  return dom.body.textContent ?? '';
-}
 
-// Computed property to calculate reading time
-export const getReadingTime = (htmlContent) => {
-  const textContent = stripHtmlTags(htmlContent);
-  const wordsPerMinute = 200; // Average reading speed
-  const estimatedWordCount = textContent.split(/\s+/).length;
-  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
-};
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {

@@ -1,6 +1,6 @@
 <script setup>
 import { usePrimeVue } from "primevue/config"
-import { hasAudio, goToEpisodePage } from "~/utilities/helpers"
+import { hasAudio, goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 
 const props = defineProps({
   articles: {
@@ -25,7 +25,12 @@ defineExpose({
         :data="article"
         @on-click="goToEpisodePage(article)"
       />
-      <StoryItem v-else :data="article" :index="index" />
+      <StoryItem
+        v-else
+        :data="article"
+        :index="index"
+        @on-click="goToStoryPage(article, { src: article.cmsSource })"
+      />
     </div>
   </div>
   <div v-else>

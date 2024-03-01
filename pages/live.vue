@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, saveRecentlyPlayed } from "~/utilities/helpers"
+import { trackClickEvent } from "~/utilities/helpers"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
@@ -50,7 +50,6 @@ const togglePlayHere = () => {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug
     currentEpisode.value = currentEpisodeHolder.value
-    saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
@@ -94,11 +93,11 @@ const getTime = (startArg, endArg, index) => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_title: 'Listen Live',
-    page_type: 'live_tab',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_title: "Listen Live",
+    page_type: "live_tab",
+    content_group: "app_tab",
+  })
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
@@ -128,7 +127,10 @@ watch(
   <div class="live-page">
     <Html lang="en">
       <Head>
-        <Title>Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
