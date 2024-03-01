@@ -18,6 +18,7 @@ const client = useSupabaseClient()
 const savedItems = ref(null)
 const user = useCurrentUser()
 
+// determines what component to load based on the item type
 const loadComponent = async (item) => {
   const componentName = computed(() => {
     switch (item.type) {
@@ -65,6 +66,7 @@ const getFilteredItemsData = computed(() => {
   return query
 })
 
+// retrieve item data
 const getItemsData = async () => {
   if (user.value) {
     const { data, error } = props.typeFilter
@@ -106,6 +108,7 @@ watch(
   }
 )
 
+// handles how to use the correct navigate method based on the item type
 const handleDynamicNavigation = (item) => {
   switch (item.type) {
     case mediaTypes.EPISODES:

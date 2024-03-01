@@ -551,7 +551,8 @@ export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
 }
 
 
-
+// handles saving a favorite or recently played item
+// if a duplicate existingRecord is found, it removed the original and adds the new one
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
 
