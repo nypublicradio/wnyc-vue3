@@ -573,6 +573,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     const source = media?.cmsSource
     const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
     // format the media object to save
+    // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
