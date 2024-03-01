@@ -1,17 +1,8 @@
 <script setup>
-import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import {
-  deleteFavorite,
-  saveFavorite,
-  checkIsFavorited,
-  getFavoritedItems,
-  trackClickEvent,
-} from "~/utilities/helpers"
-
-import { useAccountPromptSideBar } from "~/composables/states"
+import { checkIsFavorited, addToFavorites } from "~/utilities/helpers"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -20,8 +11,6 @@ defineExpose({
 
 const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
 
-const toast = useToast()
-const accountPromptSideBar = useAccountPromptSideBar()
 const props = defineProps({
   data: {
     type: Object,
@@ -42,38 +31,19 @@ watchEffect(async () => {
 const user = useCurrentUser()
 
 // add item to favorites
-const handleAddToFavorites = async () => {
+const handleAddToFavorites = () => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(props.data, isFavorited.value)
   if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(props.data)
-      getFavoritedItems()
-      isFavorited.value = false
-      emit("onDeleteFavorite")
-    } else {
-      await saveFavorite(props.data, props.data?.type)
-      getFavoritedItems()
-      isFavorited.value = true
-      emit("onSaveFavorite")
-    }
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Show Item",
-      props.data?.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
+    isFavorited.value ? emit("onDeleteFavorite") : emit("onSaveFavorite")
   }
 }
 </script>
 
 <template>
   <div
-    class="browse-item flex justify-content-between align-items-center p-ripple"
+    class="browse-item flex justify-content-between align-items-center p-ripple cursor-pointer"
     v-ripple
     v-if="props.data"
   >

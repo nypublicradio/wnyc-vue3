@@ -2,10 +2,11 @@
 const user = useCurrentUser()
 const filterOptions = ref([
   { label: "All", value: null },
-  { label: "Episodes", value: mediaTypes.EPISODE },
+  { label: "Episodes", value: [mediaTypes.EPISODE, mediaTypes.SEGMENTS] },
+  // { label: "Segments", value: mediaTypes.SEGMENT },
   {
     label: "Articles",
-    value: [mediaTypes.ARTICLE_PAGE, mediaTypes.STORY, mediaTypes.SEGMENT],
+    value: [mediaTypes.ARTICLE_PAGE, mediaTypes.ARTICLE, mediaTypes.STORY],
   },
   { label: "Shows", value: mediaTypes.SHOW },
 ])

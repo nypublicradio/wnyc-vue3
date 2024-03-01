@@ -10,6 +10,7 @@ import {
   useCurrentUserFavorites,
   useTogglePlayTrigger,
   useGlobalToast,
+  useAccountPromptSideBar
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -555,7 +556,6 @@ export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
 // if a duplicate existingRecord is found, it removed the original and adds the new one
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
-
   if (user.value) {
     const client = useSupabaseClient()
     // check if record exists
@@ -752,4 +752,36 @@ export const getWagtailRawBody = (bodyArr) => {
     }
   })
   return rawbody
+}
+
+export const addToFavorites = async (bucketItem, isFavorited) => {
+  const user = useCurrentUser()
+  if (user.value) {
+    const globalToast = useGlobalToast()
+    const accountPromptSideBar = useAccountPromptSideBar()
+
+    const episode = {
+      ...bucketItem,
+      slug: bucketItem.meta?.slug ?? bucketItem.slug,
+    }
+    if (isFavorited) {
+      await deleteFavorite(episode)
+      getFavoritedItems()
+    } else {
+      await saveFavorite(episode, episode.type)
+      getFavoritedItems()
+    }
+    globalToast.value = {
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    }
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Episode Item",
+      bucketItem.title
+    )
+  } else {
+    accountPromptSideBar.value = true
+  }
 }
