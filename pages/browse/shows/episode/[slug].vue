@@ -1,5 +1,4 @@
 <script setup>
-import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
@@ -14,31 +13,22 @@ import {
   trackClickEvent,
   getDate,
   togglePlayEpisode,
-  deleteFavorite,
-  saveFavorite,
   checkIsFavorited,
-  getFavoritedItems,
   shareAPI,
+  addToFavorites,
 } from "~/utilities/helpers"
-import { mediaTypes, FALLBACKIMAGEEPHEAD } from "~/composables/globals"
+import { FALLBACKIMAGEEPHEAD } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
+
 const { data: episode, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
 const episodeData = ref(episode?.value ?? null)
 
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
-
-const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 
 // navigate back to home and track it
@@ -61,30 +51,18 @@ const handleFollow = () => {
   // follow the show
 }
 
-const handleAddToFavorites = async (bucketItem) => {
-  if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(bucketItem)
-      getFavoritedItems()
-      isFavorited.value = false
-    } else {
-      await saveFavorite(bucketItem, mediaTypes.EPISODE)
-      getFavoritedItems()
-      isFavorited.value = true
-    }
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
 
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Episode Page",
-      bucketItem.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+// add item to favorites
+const handleAddToFavorites = (bucketItem) => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(bucketItem, isFavorited.value)
+  if (user.value) {
+    isFavorited.value = !isFavorited.value
   }
 }
 

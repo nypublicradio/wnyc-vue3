@@ -11,15 +11,13 @@ import { cmsSources } from "~/composables/globals"
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
 import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 import {
-  deleteFavorite,
-  saveFavorite,
   checkIsFavorited,
-  getFavoritedItems,
   shareAPI,
   trackClickEvent,
   whenTime,
   getMinutes,
   togglePlayEpisode,
+  addToFavorites,
 } from "~/utilities/helpers"
 
 import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
@@ -71,31 +69,16 @@ const handleComments = () => {
     inline: "start",
   })
 }
-const handleAddToFavorites = async () => {
+
+// add item to favorites
+const handleAddToFavorites = () => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(storyData.value, isFavorited.value)
   if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(storyData.value)
-      getFavoritedItems()
-      isFavorited.value = false
-    } else {
-      await saveFavorite(storyData.value, storyData.value.type)
-      getFavoritedItems()
-      isFavorited.value = true
-    }
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Story Page",
-      storyData.value.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
   }
 }
+
 const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }

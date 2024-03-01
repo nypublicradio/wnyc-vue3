@@ -1,15 +1,11 @@
 <script setup>
-import { useToast } from "primevue/usetoast"
 import { useIntersectionObserver } from "@vueuse/core"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import {
-  deleteFavorite,
-  saveFavorite,
   checkIsFavorited,
-  getFavoritedItems,
   togglePlayEpisode,
   shareAPI,
   trackClickEvent,
@@ -17,19 +13,12 @@ import {
   hasAudio,
   addToFavorites,
 } from "~/utilities/helpers"
-import {
-  useCurrentUser,
-  useAccountPromptSideBar,
-  useIsEpisodePlaying,
-} from "~/composables/states"
-import { FALLBACKIMAGEEP, cmsSources } from "~/composables/globals"
-
-const emit = defineEmits(["onDeleteFavorite", "onSaveFavorite"])
+import { useCurrentUser, useIsEpisodePlaying } from "~/composables/states"
+import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
 
 const { data: show, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/show/${route.params.slug}`
@@ -77,13 +66,7 @@ const loadMore = async () => {
     show.value.show.title
   )
 }
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
 
-const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
 
@@ -111,43 +94,21 @@ const togglePlayMostRecentEpisode = () => {
   togglePlayEpisode(ep)
 }
 
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(false)
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
+
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  console.log("show.value.show = ", show.value.show)
   addToFavorites(show.value.show, isFavorited.value)
   if (user.value) {
     isFavorited.value = !isFavorited.value
-    isFavorited.value ? emit("onDeleteFavorite") : emit("onSaveFavorite")
   }
 }
 
-// handle the click of the share button and tracking
-// const handleAddToFavorites = async () => {
-//   if (user.value) {
-//     if (isFavorited.value) {
-//       await deleteFavorite(show.value.show)
-//       getFavoritedItems()
-//       isFavorited.value = false
-//     } else {
-//       await saveFavorite(show.value.show, "show")
-//       getFavoritedItems()
-//       isFavorited.value = true
-//     }
-//     toast.add({
-//       severity: "info",
-//       summary: "Updated your favorites.",
-//       life: 3000,
-//     })
-//     trackClickEvent(
-//       "Click Tracking - Add/remove from favorites",
-//       "Shows Page",
-//       show.value.show.title
-//     )
-//   } else {
-//     accountPromptSideBar.value = true
-//   }
-// }
 const handleShare = () => {
   shareAPI(show.value.show, "shows slug")
 }
