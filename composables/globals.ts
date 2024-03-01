@@ -8,7 +8,6 @@ export const cmsSources = {
 export const mediaTypes = {
     LIVE: 'live',
     SHOW: 'show',
-    CHANNEL: 'channel',
     EPISODE: 'episode',
     SEGMENT: 'segment',
     STORY: 'story',
@@ -19,7 +18,6 @@ export const mediaTypes = {
 export const mediaTypeRoutes = {
     [mediaTypes.LIVE]: '/live/',
     [mediaTypes.SHOW]: '/browse/shows/',
-    [mediaTypes.CHANNEL]: '/browse/shows/',
     [mediaTypes.EPISODE]: '/browse/shows/episode/',
     [mediaTypes.SEGMENT]: '/browse/shows/episode/',
     [mediaTypes.STORY]: '/story/',

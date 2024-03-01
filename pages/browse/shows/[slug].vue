@@ -114,7 +114,6 @@ const togglePlayMostRecentEpisode = () => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  show.value.show.cmsSource = cmsSources.PUBLISHER
   console.log("show.value.show = ", show.value.show)
   addToFavorites(show.value.show, isFavorited.value)
   if (user.value) {

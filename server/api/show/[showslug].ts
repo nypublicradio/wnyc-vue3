@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources } from '~/composables/globals'
+import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig()
@@ -60,6 +60,9 @@ const getShow = async (slug: string) => {
             return s.slug === slug
         });
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
+        show.cmsSource = cmsSources.PUBLISHER
+        // change "channel" to "show" for the client
+        show.type = mediaTypes.SHOW
         return show;
     } catch (e) {
         console.error('getShow error = ', e);

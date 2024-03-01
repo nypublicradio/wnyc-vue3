@@ -802,7 +802,6 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
         : goToStoryPage(item, { src: item.cmsSource }, isSaveHistory)
       break
     case mediaTypes.SHOW:
-    case mediaTypes.CHANNEL:
       goToShowPage(item)
       break
     default:

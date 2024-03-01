@@ -27,7 +27,6 @@ const loadComponent = async (item) => {
   const componentName = computed(() => {
     switch (item.type) {
       case mediaTypes.SHOW:
-      case mediaTypes.CHANNEL:
         return "ShowItem"
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
