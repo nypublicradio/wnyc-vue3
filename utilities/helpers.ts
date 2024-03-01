@@ -708,7 +708,7 @@ export const goToStoryPage = (story, params, log = true) => {
   if (log) { saveRecentlyPlayed(story) }
 }
 /* centralized function to route to a show page */
-export const goToShowPage = (show, params) => {
+export const goToShowPage = (show, params = null) => {
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,
@@ -756,9 +756,9 @@ export const getWagtailRawBody = (bodyArr) => {
 
 export const addToFavorites = async (bucketItem, isFavorited) => {
   const user = useCurrentUser()
+  const accountPromptSideBar = useAccountPromptSideBar()
   if (user.value) {
     const globalToast = useGlobalToast()
-    const accountPromptSideBar = useAccountPromptSideBar()
 
     const episode = {
       ...bucketItem,
@@ -790,7 +790,7 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true) => {
   switch (item.type) {
-    case mediaTypes.EPISODES:
+    case mediaTypes.EPISODE:
     case mediaTypes.SEGMENT:
       goToEpisodePage(item, null, isSaveHistory)
       break
