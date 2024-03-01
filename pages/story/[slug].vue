@@ -20,14 +20,13 @@ import {
   addToFavorites,
 } from "~/utilities/helpers"
 
-import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import { useCurrentUser } from "~/composables/states"
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
 const router = useRouter()
 
-const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 const { data: storyData, pending, error, refresh } = useFetch(

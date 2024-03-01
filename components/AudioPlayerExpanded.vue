@@ -19,7 +19,7 @@ import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 
-const emit = defineEmits(["close-panel", "onDeleteFavorite", "onSaveFavorite"])
+const emit = defineEmits(["close-panel"])
 
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
@@ -44,7 +44,6 @@ const handleAddToFavorites = () => {
   addToFavorites(currentEpisode.value, isFavorited.value)
   if (user.value) {
     isFavorited.value = !isFavorited.value
-    isFavorited.value ? emit("onDeleteFavorite") : emit("onSaveFavorite")
   }
 }
 

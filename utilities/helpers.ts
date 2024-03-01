@@ -754,6 +754,7 @@ export const getWagtailRawBody = (bodyArr) => {
   return rawbody
 }
 
+// function to add to the favorites 
 export const addToFavorites = async (bucketItem, isFavorited) => {
   const user = useCurrentUser()
   const accountPromptSideBar = useAccountPromptSideBar()

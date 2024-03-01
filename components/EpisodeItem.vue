@@ -32,7 +32,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
+const emit = defineEmits(["on-click"])
 
 const props = defineProps({
   data: {
@@ -98,7 +98,6 @@ const handleAddToFavorites = (bucketItem) => {
   addToFavorites(bucketItem, isFavorited.value)
   if (user.value) {
     isFavorited.value = !isFavorited.value
-    isFavorited.value ? emit("onDeleteFavorite") : emit("onSaveFavorite")
   }
 }
 

@@ -18,6 +18,7 @@ const props = defineProps({
 const config = useRuntimeConfig()
 const fetchedEpisodes = ref(null)
 
+// fetch the number of episodes for the props.show
 const getEpisodes = async () => {
   try {
     const option = {
@@ -65,5 +66,3 @@ onMounted(() => {
     <skeleton-episode-item v-for="i in props.episodesPerShow" :key="i" class="my-5" />
   </div>
 </template>
-
-<style></style>
