@@ -305,7 +305,7 @@ const handleClick = () => {
                 <StarIcon
                   class="h-2rem"
                   :active="isFavorited"
-                  @click="handleAddToFavorites(bucketItem)"
+                  @click="handleAddToFavorites(props.data)"
                 />
               </template>
             </Button>

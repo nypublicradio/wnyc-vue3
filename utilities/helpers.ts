@@ -513,13 +513,28 @@ interface SavedItem {
 //   }
 // }
 
+
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
   console.log('media = ', media)
-  const source = media?.cmsSource ?? media?.cmsSource
-  const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
 
   if (user.value) {
+    const client = useSupabaseClient()
+    // check if record exists
+    const { data: existingRecord, existingError } = await client
+      .from(tableArg)
+      .select('*')
+      .eq("uid", user.value.id)
+      .eq('media_id', media?.id);
+
+    if (existingError) throw existingError;
+    if (existingRecord && existingRecord.length > 0) {
+      //console.log('existingRecord = ', existingRecord[0])
+      await deleteFavorite(existingRecord[0], tableArg)
+    }
+
+    const source = media?.cmsSource ?? media?.cmsSource
+    const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
     // format the media object to save
     const uid = user.value?.id
     const cmsSource = source
@@ -551,7 +566,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     }
     //console.log('itemToSave = ', itemToSave)
     //save instance to Supabase
-    const client = useSupabaseClient()
+
     const { error } = await client.from(tableArg).insert([itemToSave])
     if (error) {
       console.error('error = ', error)
@@ -559,18 +574,19 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
   }
 }
 
-export const deleteFavorite = async (media: object) => {
+export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
   // detect if logged in
   const user = useCurrentUser()
+  console.log('delete media = ', media)
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
     const slug = media?.slug ?? media?.meta.slug
-    const media_id = media?.id
+    const media_id = media.media_id ?? media?.id
     //save instance to Supabase
     const client = useSupabaseClient()
     const { error } = await client
-      .from("favorited")
+      .from(tableArg)
       .delete()
       .eq("uid", uid)
       .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
