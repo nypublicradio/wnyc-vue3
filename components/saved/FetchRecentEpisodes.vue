@@ -53,6 +53,9 @@ try {
     />
     <hr />
   </div>
+  <div v-else class="my-5">
+    <skeleton-episode-item v-for="i in props.episodesPerShow" :key="i" />
+  </div>
 </template>
 
 <style></style>

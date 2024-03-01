@@ -25,7 +25,7 @@ const accountPromptSideBar = useAccountPromptSideBar()
 const props = defineProps({
   data: {
     type: Object,
-    default: {},
+    default: null,
   },
   saved: {
     type: Boolean,
@@ -41,7 +41,6 @@ watchEffect(async () => {
 
 const user = useCurrentUser()
 
-//console.log("props.data = ", props.data);
 // add item to favorites
 const handleAddToFavorites = async () => {
   if (user.value) {
@@ -76,10 +75,11 @@ const handleAddToFavorites = async () => {
   <div
     class="browse-item flex justify-content-between align-items-center p-ripple"
     v-ripple
+    v-if="props.data"
   >
     <div class="flex gap-3 w-full" @click="emit('on-click')">
       <VImage
-        :src="props.data.image.template"
+        :src="props.data.image.template ?? props.data.image.url"
         :height="116"
         :width="116"
         :ratio="[1, 1]"
@@ -100,6 +100,9 @@ const handleAddToFavorites = async () => {
         <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>
     </Button>
+  </div>
+  <div v-else>
+    <skeleton-show-item />
   </div>
 </template>
 

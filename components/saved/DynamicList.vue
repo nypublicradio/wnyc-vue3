@@ -148,5 +148,5 @@ const handleDynamicNavigation = (item) => {
       <slot name="recent-episodes" :show="item" />
     </div>
   </div>
-  <slot name="empty" v-else />
+  <slot v-else name="empty" />
 </template>
