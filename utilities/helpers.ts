@@ -575,10 +575,10 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     // format the media object to save
     const uid = user.value?.id
     const cmsSource = source
-    const media_id = media?.id
+    const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
     const type = typeArg
-    const reading_time = getReadingTime(media?.rawBody)
+    const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const image = media?.image
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
