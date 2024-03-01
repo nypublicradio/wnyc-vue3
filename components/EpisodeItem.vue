@@ -6,7 +6,7 @@ import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import QueueIcon from "~/components/icons/QueueIcon.vue"
+//import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
   deleteFavorite,
   saveFavorite,
@@ -98,7 +98,6 @@ watch(
 
 const handleAddToFavorites = async (bucketItem) => {
   if (user.value) {
-    console.log("bucketItem = ", bucketItem)
     const episode = {
       ...bucketItem,
       slug: bucketItem.meta?.slug ?? bucketItem.slug,

@@ -49,6 +49,21 @@ export const formatPublisherImage = (attributes) => {
   return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
 }
 
+// Function to strip HTML tags and return text content
+function stripHtmlTags(str) {
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(str, 'text/html');
+  return dom.body.textContent ?? '';
+}
+
+// Computed property to calculate reading time
+export const getReadingTime = (htmlContent) => {
+  const textContent = stripHtmlTags(htmlContent);
+  const wordsPerMinute = 200; // Average reading speed
+  const estimatedWordCount = textContent.split(/\s+/).length;
+  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
+};
+
 interface ImageAttributes {
   imageMain?: {
     template: string
@@ -513,6 +528,29 @@ interface SavedItem {
 //   }
 // }
 
+export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
+  // detect if logged in
+  const user = useCurrentUser()
+  if (user.value) {
+    // format the media object to save
+    const uid = user.value?.id
+    const slug = media?.slug ?? media?.meta.slug
+    const media_id = media.media_id ?? media?.id
+    //save instance to Supabase
+    const client = useSupabaseClient()
+    const { error } = await client
+      .from(tableArg)
+      .delete()
+      .eq("uid", uid)
+      .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
+
+    if (error) {
+      console.error("error deleting favorite", error)
+    }
+  }
+}
+
+
 
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
@@ -571,27 +609,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
   }
 }
 
-export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
-  // detect if logged in
-  const user = useCurrentUser()
-  if (user.value) {
-    // format the media object to save
-    const uid = user.value?.id
-    const slug = media?.slug ?? media?.meta.slug
-    const media_id = media.media_id ?? media?.id
-    //save instance to Supabase
-    const client = useSupabaseClient()
-    const { error } = await client
-      .from(tableArg)
-      .delete()
-      .eq("uid", uid)
-      .or(`slug.eq.${slug}`, `media_id.eq.${media_id}`)
-
-    if (error) {
-      console.error("error deleting favorite", error)
-    }
-  }
-}
 
 export const getFavoritedItems = async () => {
   const favorites = useCurrentUserFavorites()
@@ -722,20 +739,7 @@ export const hasAudio = (audio) => {
   //return true
 }
 
-// Function to strip HTML tags and return text content
-function stripHtmlTags(str) {
-  const parser = new DOMParser();
-  const dom = parser.parseFromString(str, 'text/html');
-  return dom.body.textContent ?? '';
-}
 
-// Computed property to calculate reading time
-export const getReadingTime = (htmlContent) => {
-  const textContent = stripHtmlTags(htmlContent);
-  const wordsPerMinute = 200; // Average reading speed
-  const estimatedWordCount = textContent.split(/\s+/).length;
-  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
-};
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
