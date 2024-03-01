@@ -785,3 +785,27 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
     accountPromptSideBar.value = true
   }
 }
+
+
+// handles how to use the correct navigate method based on the item type
+export const dynamicNavigation = (item, isSaveHistory = true) => {
+  switch (item.type) {
+    case mediaTypes.EPISODES:
+    case mediaTypes.SEGMENT:
+      goToEpisodePage(item, null, isSaveHistory)
+      break
+    case mediaTypes.STORY:
+    case mediaTypes.ARTICLE:
+    case mediaTypes.ARTICLE_PAGE:
+      item.audio
+        ? goToEpisodePage(item, null, isSaveHistory)
+        : goToStoryPage(item, { src: item.cmsSource }, isSaveHistory)
+      break
+    case mediaTypes.SHOW:
+    case mediaTypes.CHANNEL:
+      goToShowPage(item)
+      break
+    default:
+      goToEpisodePage(item, null, isSaveHistory)
+  }
+}

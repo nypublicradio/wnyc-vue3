@@ -6,18 +6,10 @@ import {
   trackClickEvent,
   shareAPI,
   templatizePublisherImageUrl,
-  deleteFavorite,
-  saveFavorite,
   checkIsFavorited,
-  getFavoritedItems,
+  addToFavorites,
 } from "~/utilities/helpers"
-import {
-  useCurrentEpisode,
-  useCurrentUser,
-  useAccountPromptSideBar,
-  useIsLiveStream,
-} from "~/composables/states"
-import { useToast } from "primevue/usetoast"
+import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
@@ -27,15 +19,12 @@ import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 
-const toast = useToast()
-
-const emit = defineEmits(["close-panel"])
+const emit = defineEmits(["close-panel", "onDeleteFavorite", "onSaveFavorite"])
 
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const isLiveStream = useIsLiveStream()
 
-const accountPromptSideBar = useAccountPromptSideBar()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
 
@@ -49,32 +38,16 @@ onMounted(() => {
     expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
 })
 
-const handleAddToFavorites = async () => {
+// add item to favorites
+const handleAddToFavorites = () => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(currentEpisode.value, isFavorited.value)
   if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(currentEpisode.value)
-      getFavoritedItems()
-      isFavorited.value = false
-    } else {
-      await saveFavorite(currentEpisode.value, currentEpisode.value.type)
-      getFavoritedItems()
-      isFavorited.value = true
-    }
-
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Expanded Audio Player",
-      currentEpisode.value.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
+    isFavorited.value ? emit("onDeleteFavorite") : emit("onSaveFavorite")
   }
 }
+
 // handle the download of the audio file request and feed the progress
 const handleDownload = () => {
   // update CapacitorJs filesystem

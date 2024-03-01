@@ -3,7 +3,7 @@ import axios from "axios"
 import humps from "humps"
 import { cmsSources } from "~/composables/globals"
 import { normalizeArticlePage } from "~/composables/data/articlePages"
-
+import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   episodesPerShow: {
     type: Number,
@@ -50,6 +50,7 @@ try {
       v-for="episode in fetchedEpisodes"
       :key="episode.id"
       class="my-5"
+      @on-click="dynamicNavigation(episode)"
     />
     <hr />
   </div>

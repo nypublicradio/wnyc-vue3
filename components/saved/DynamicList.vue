@@ -1,6 +1,6 @@
 <script setup>
+import { dynamicNavigation } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
-import { goToEpisodePage, goToStoryPage, goToShowPage } from "~/utilities/helpers"
 
 const props = defineProps({
   table: {
@@ -26,16 +26,17 @@ const user = useCurrentUser()
 const loadComponent = async (item) => {
   const componentName = computed(() => {
     switch (item.type) {
-      case "show":
+      case mediaTypes.SHOW:
+      case mediaTypes.CHANNEL:
         return "ShowItem"
-      case "episode":
-      case "segment":
+      case mediaTypes.EPISODE:
+      case mediaTypes.SEGMENT:
         return "EpisodeItem"
-      case "story":
-      case "article_page":
-      case "article":
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE_PAGE:
+      case mediaTypes.ARTICLE:
         return item.audio ? "EpisodeItem" : "StoryItem"
-      case "live":
+      case mediaTypes.LIVE:
         return "LiveItem"
       default:
         return "EpisodeItem"
@@ -111,28 +112,6 @@ watch(
     getItemsData()
   }
 )
-
-// handles how to use the correct navigate method based on the item type
-const handleDynamicNavigation = (item) => {
-  switch (item.type) {
-    case mediaTypes.EPISODES:
-    case mediaTypes.SEGMENT:
-      goToEpisodePage(item, null, props.isSaveHistory)
-      break
-    case mediaTypes.STORY:
-    case mediaTypes.ARTICLE:
-    case mediaTypes.ARTICLE_PAGE:
-      item.audio
-        ? goToEpisodePage(item, null, props.isSaveHistory)
-        : goToStoryPage(item, { src: item.cmsSource }, props.isSaveHistory)
-      break
-    case mediaTypes.SHOW:
-      goToShowPage(item)
-      break
-    default:
-      goToEpisodePage(item, null, props.isSaveHistory)
-  }
-}
 </script>
 
 <template>
@@ -143,7 +122,7 @@ const handleDynamicNavigation = (item) => {
         :data="item.data"
         :saved="true"
         @onDeleteFavorite="getItemsData"
-        @onClick="handleDynamicNavigation(item)"
+        @onClick="dynamicNavigation(item, props.isSaveHistory)"
       />
       <slot name="recent-episodes" :show="item" />
     </div>

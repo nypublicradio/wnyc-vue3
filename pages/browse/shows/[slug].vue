@@ -15,13 +15,16 @@ import {
   trackClickEvent,
   goToEpisodePage,
   hasAudio,
+  addToFavorites,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
   useAccountPromptSideBar,
   useIsEpisodePlaying,
 } from "~/composables/states"
-import { FALLBACKIMAGEEP } from "~/composables/globals"
+import { FALLBACKIMAGEEP, cmsSources } from "~/composables/globals"
+
+const emit = defineEmits(["onDeleteFavorite", "onSaveFavorite"])
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -108,32 +111,44 @@ const togglePlayMostRecentEpisode = () => {
   togglePlayEpisode(ep)
 }
 
-// handle the click of the share button and tracking
-const handleAddToFavorites = async () => {
+// add item to favorites
+const handleAddToFavorites = () => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  show.value.show.cmsSource = cmsSources.PUBLISHER
+  console.log("show.value.show = ", show.value.show)
+  addToFavorites(show.value.show, isFavorited.value)
   if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(show.value.show)
-      getFavoritedItems()
-      isFavorited.value = false
-    } else {
-      await saveFavorite(show.value.show, "show")
-      getFavoritedItems()
-      isFavorited.value = true
-    }
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Shows Page",
-      show.value.show.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
+    isFavorited.value ? emit("onDeleteFavorite") : emit("onSaveFavorite")
   }
 }
+
+// handle the click of the share button and tracking
+// const handleAddToFavorites = async () => {
+//   if (user.value) {
+//     if (isFavorited.value) {
+//       await deleteFavorite(show.value.show)
+//       getFavoritedItems()
+//       isFavorited.value = false
+//     } else {
+//       await saveFavorite(show.value.show, "show")
+//       getFavoritedItems()
+//       isFavorited.value = true
+//     }
+//     toast.add({
+//       severity: "info",
+//       summary: "Updated your favorites.",
+//       life: 3000,
+//     })
+//     trackClickEvent(
+//       "Click Tracking - Add/remove from favorites",
+//       "Shows Page",
+//       show.value.show.title
+//     )
+//   } else {
+//     accountPromptSideBar.value = true
+//   }
+// }
 const handleShare = () => {
   shareAPI(show.value.show, "shows slug")
 }
