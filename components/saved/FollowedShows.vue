@@ -1,28 +1,33 @@
 <script setup>
-  const user = useCurrentUser()
+const user = useCurrentUser()
 </script>
 <template>
   <section v-if="user" class="followed-shows">
     <saved-dynamic-list typeFilter="show" table="favorited">
-      <div class="empty flex flex-column gap-3 text-center mt-8">
-        <h2>Followed shows will appear here!</h2>
-        <div class="max-w-15rem m-auto">
-          <p class="line-height-3">
-            Use the <strong>follow</strong> button
-            <FollowIcon class="w-2rem -mb-2" />
-          </p>
-          <p class="line-height-3">
-            to follow your favorite shows — the latest episodes will appear here.
-          </p>
+      <template #empty>
+        <div class="empty flex flex-column gap-3 text-center mt-8">
+          <h2>Followed shows will appear here!</h2>
+          <div class="max-w-15rem m-auto">
+            <p class="line-height-3">
+              Use the <strong>follow</strong> button
+              <FollowIcon class="w-2rem -mb-2" />
+            </p>
+            <p class="line-height-3">
+              to follow your favorite shows — the latest episodes will appear here.
+            </p>
+          </div>
+          <Button
+            label="Browse Shows"
+            link
+            class="underline"
+            size="small"
+            @click="navigateTo('/browse')"
+          />
         </div>
-        <Button
-          label="Browse Shows"
-          link
-          class="underline"
-          size="small"
-          @click="navigateTo('/browse')"
-        />
-      </div>
+      </template>
+      <template #recent-episodes="slotProps">
+        <saved-fetch-recent-episodes :show="slotProps.show" />
+      </template>
     </saved-dynamic-list>
 
     <div class="up-to-date flex flex-column gap-3 text-center mt-8">
@@ -43,7 +48,7 @@
     </div>
   </section>
   <section v-else class="followed-shows">
-  You must be logged in to see your followed shows.
+    You must be logged in to see your followed shows.
   </section>
 </template>
 

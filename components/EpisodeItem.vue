@@ -45,7 +45,7 @@ const props = defineProps({
   },
   fallbackImage: {
     type: String,
-    default: "./logo.png",
+    default: null,
   },
   imgSrc: {
     type: String,

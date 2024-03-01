@@ -137,15 +137,16 @@ const handleDynamicNavigation = (item) => {
 
 <template>
   <div v-if="savedItems" class="flex flex-column gap-4">
-    <component
-      v-for="(item, index) in savedItems"
-      :key="index"
-      :is="item.component"
-      :data="item.data"
-      :saved="true"
-      @onDeleteFavorite="getItemsData"
-      @onClick="handleDynamicNavigation(item)"
-    />
+    <div v-for="(item, index) in savedItems" :key="index">
+      <component
+        :is="item.component"
+        :data="item.data"
+        :saved="true"
+        @onDeleteFavorite="getItemsData"
+        @onClick="handleDynamicNavigation(item)"
+      />
+      <slot name="recent-episodes" :show="item" />
+    </div>
   </div>
-  <slot v-else />
+  <slot name="empty" v-else />
 </template>
