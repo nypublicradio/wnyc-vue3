@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
+import { cmsSources } from '~/composables/globals'
 
 const config = useRuntimeConfig()
 const getLivestream = async (slug: string) => {
@@ -15,7 +16,6 @@ const formatShowData = (apiResponse: any) => {
 	const episodeData = apiResponse?.included?.find((obj) => obj.type === 'episode')
 	const airingData = apiResponse?.included?.find((obj) => obj.type === 'airing')
 	const segmentData = apiResponse?.included?.filter((item) => item.type === 'segment')
-
 	const formattedSegments: any = []
 	if (apiResponse.included) {
 		if (segmentData !== null) {
@@ -31,6 +31,7 @@ const formatShowData = (apiResponse: any) => {
 	let title = showData ? showData.attributes.title : null
 	let details = showData ? showData.attributes.tease : null
 	let titleLink = showData ? showData.attributes.url : null
+	let id = showData ? showData.id : null
 	// handle special airings
 	if (airingData) {
 		title = airingData.attributes.title
@@ -42,6 +43,7 @@ const formatShowData = (apiResponse: any) => {
 		details = apiResponse.data[0].attributes['short-description']
 	}
 	return {
+		cmsSource: cmsSources.PUBLISHER,
 		details,
 		detailsLink: showData ? showData.attributes.url : null,
 		episodeTitle: episodeData ? episodeData.attributes.title : null,
@@ -50,6 +52,7 @@ const formatShowData = (apiResponse: any) => {
 		episodeTranscript: episodeData ? episodeData.attributes.transcript : null,
 		file: apiResponse.data[0].attributes['mobile-mp3'],
 		hls: apiResponse.data[0].attributes['hls'],
+		id,
 		image: imageData ? 'https://media.wnyc.org/i/448/448/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
 		slug: apiResponse.data[0].attributes.slug,
 		station: apiResponse.data[0].attributes.name,
