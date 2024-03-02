@@ -47,13 +47,6 @@ const commentCount = computed(() => {
   return commentCounts.value[storyData?.value.commentId]
 })
 
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
-
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
@@ -68,6 +61,13 @@ const handleComments = () => {
     inline: "start",
   })
 }
+
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(false)
+
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
 
 // add item to favorites
 const handleAddToFavorites = () => {
@@ -103,16 +103,19 @@ watch(storyData, async () => {
     article_title: storyData.value?.title,
   })
 
-  //console.log("storyData = ", storyData.value)
   if (storyData.value?.leadGallery) {
-    gallery.value = await usePageById(
-      storyData.value.leadGallery.gallery
-    ).then(({ data }) => normalizeGalleryPage(data.value))
+    gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
+      ({ data }) => {
+        console.log("gallery data = ", data.value)
+        return normalizeGalleryPage(data.value)
+      }
+    )
   }
+
   topImage.value =
     storyData.value?.cmsSource === cmsSources.WAGTAIL
       ? String(storyData.value?.image?.id)
-      : storyData.value?.image?.template ?? gallery?.slides?.[0]?.image ?? null
+      : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
 
   topCaption.value =
     storyData.value?.leadImageCaption ??
@@ -146,6 +149,7 @@ const togglePlayHere = (story, index = 0) => {
       </Head>
     </Html>
     <section class="">
+      <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-4"

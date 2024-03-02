@@ -37,7 +37,8 @@ const selectedFilterOption = ref(filterOptions.value[0])
           </div>
           <Button
             label="Browse Shows"
-            link
+            text
+            severity="secondary"
             class="underline"
             size="small"
             @click="navigateTo('/browse')"

@@ -14,7 +14,8 @@ const user = useCurrentUser()
 
           <Button
             label="Listen to the live stream"
-            link
+            text
+            severity="secondary"
             class="underline"
             size="small"
             @click="navigateTo('/live')"
