@@ -41,7 +41,6 @@ export function normalizeGalleryPage(page: Record<string, any>): GalleryPage {
   }) as GalleryPage
   // when an article is not published, it does not included the relatedArticle in the gallery data, so we dont have reference to the parent article.
   const isRelatedArticles = galleryPage.relatedArticles?.length > 0 && galleryPage.relatedArticles[0] !== undefined && galleryPage.relatedArticles[0] !== null
-  console.log('galleryPage = ', galleryPage)
   galleryPage.articleTitle = isRelatedArticles ? galleryPage.relatedArticles?.[0].title : galleryPage.title
   galleryPage.articleLink = isRelatedArticles ? galleryPage.relatedArticles?.[0].link : null
   return galleryPage

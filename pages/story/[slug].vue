@@ -104,12 +104,9 @@ watch(storyData, async () => {
   })
 
   if (storyData.value?.leadGallery) {
-    gallery.value = await usePageById(storyData.value.leadGallery.gallery).then(
-      ({ data }) => {
-        console.log("gallery data = ", data.value)
-        return normalizeGalleryPage(data.value)
-      }
-    )
+    gallery.value = await usePageById(
+      storyData.value.leadGallery.gallery
+    ).then(({ data }) => normalizeGalleryPage(data.value))
   }
 
   topImage.value =
@@ -193,7 +190,12 @@ const togglePlayHere = (story, index = 0) => {
           </div>
         </template>
       </VImage>
-
+      <Skeleton
+        v-else
+        borderRadius="0px"
+        height="auto"
+        class="episode-page-image mb-2 opacity-60"
+      />
       <section>
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>
