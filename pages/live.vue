@@ -115,10 +115,10 @@ watch(
 watch(
   currentStreamStation,
   async () => {
-    const { data: schedule } = await useFetch(
+    const schedule = await $fetch(
       `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`
     )
-    scheduleRef.value = schedule.value
+    scheduleRef.value = schedule
   },
   { immediate: true }
 )
