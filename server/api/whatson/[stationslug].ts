@@ -31,7 +31,7 @@ const formatShowData = (apiResponse: any) => {
 	let title = showData ? showData.attributes.title : null
 	let details = showData ? showData.attributes.tease : null
 	let titleLink = showData ? showData.attributes.url : null
-	let id = showData ? showData.id : null
+	const id = showData ? showData.id : null
 	// handle special airings
 	if (airingData) {
 		title = airingData.attributes.title
