@@ -12,7 +12,7 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
         params: {
             author_slug: staffSlug,
             type: 'news.ArticlePage',
-            fields: 'id,title,lead_asset,related_authors,publication_date,ancestry',
+            fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body',
             order: '-publication_date',
             limit: 10,
             offset: offset,
