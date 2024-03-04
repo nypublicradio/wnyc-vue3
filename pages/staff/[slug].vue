@@ -37,6 +37,7 @@ onUnmounted(() => {
 
 let offset = 0
 
+// load more articles by the author, triggered by the lazy load observer
 const loadMore = async () => {
   pendingMore.value = true
   const additionalPageData = await $fetch(
