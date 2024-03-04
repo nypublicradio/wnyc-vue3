@@ -1,5 +1,4 @@
 <script setup>
-import axios from "axios"
 import humps from "humps"
 import { cmsSources } from "~/composables/globals"
 import { normalizeArticlePage } from "~/composables/data/articlePages"
@@ -18,12 +17,10 @@ const props = defineProps({
 const config = useRuntimeConfig()
 const fetchedEpisodes = ref(null)
 
-// fetch the number of episodes for the props.show
+//fetch the number of episodes for the props.show
 const getEpisodes = async () => {
   try {
-    const option = {
-      method: "GET",
-      url: `${config.public.PUBLISHER_BASE_API}v3/story/`,
+    const res = await $fetch(`${config.public.PUBLISHER_BASE_API}v3/story/`, {
       params: {
         [props.show.type]: props.show.slug,
         ordering: "-newsdate",
@@ -31,14 +28,12 @@ const getEpisodes = async () => {
         page_size: props.episodesPerShow,
         audio_only: true,
       },
-    }
-    const res = await axios(option)
-    const resData = res.data.data
+    })
+    const resData = res.data
     for (let i = 0; i < resData.length; i++) {
       resData[i].cmsSource = cmsSources.PUBLISHER
       resData[i] = normalizeArticlePage(humps.camelizeKeys(resData[i]))
     }
-    //console.log(resData)
 
     fetchedEpisodes.value = resData
   } catch (e) {
@@ -53,9 +48,10 @@ onMounted(() => {
 </script>
 <template>
   <div v-if="fetchedEpisodes">
+    <!-- <pre class="text-xs">{{ fetchedEpisodes }}</pre> -->
     <EpisodeItem
-      :data="episode"
       v-for="episode in fetchedEpisodes"
+      :data="episode"
       :key="episode.id"
       class="my-5"
       @on-click="dynamicNavigation(episode)"
