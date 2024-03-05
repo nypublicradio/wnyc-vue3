@@ -18,7 +18,8 @@ const user = useCurrentUser()
           </div>
           <Button
             label="Browse Shows"
-            link
+            text
+            severity="secondary"
             class="underline"
             size="small"
             @click="navigateTo('/browse')"
@@ -32,7 +33,8 @@ const user = useCurrentUser()
 
     <div class="up-to-date flex flex-column gap-3 text-center mt-8">
       <h2>You're up to date!</h2>
-      <img src="/face.svg" alt="happy face illustration" class="w-6rem m-auto my-4" />
+
+      <FaceGraphic alt="happy face illustration" class="w-6rem m-auto my-4" />
       <p class="px-4">
         It feels great to be informed...<br />
         check back tomorrow for the latest.

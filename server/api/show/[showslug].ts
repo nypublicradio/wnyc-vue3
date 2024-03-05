@@ -5,7 +5,7 @@ import { normalizeArticlePage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig()
 
-const getEpisodes = async (slug: string, showImage: string, type?: string, page?: number) => {
+const getEpisodes = async (slug: string, showImage: string, type?: string, pageSize?: string, page?: number) => {
     try {
         // If page is not defined, set it to 1
         if (!page) {
@@ -19,7 +19,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, page?
                 [type]: slug,
                 ordering: '-newsdate',
                 page,
-                page_size: 10,
+                page_size: Number(pageSize),
                 audio_only: true,
             }
         };
@@ -78,11 +78,11 @@ export default defineEventHandler(async (event) => {
     //Fetching query params
     const query = getQuery(event);
     const page: number | undefined = Array.isArray(query.page) ? query.page[0] : query.page;
-
+    const pageSize: string | undefined = query.pageSize?.toString() ?? '10';
     if (slug) {
         // Get show details
         const show = await getShow(slug);
-        const episodes = await getEpisodes(slug, show?.image?.template, show?.type, page);
+        const episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page);
         res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
         //console.log('page = ', page)
         return {

@@ -21,6 +21,7 @@ const props = defineProps({
 const client = useSupabaseClient()
 const savedItems = ref(null)
 const user = useCurrentUser()
+const fetchError = ref(null)
 
 // determines what component to load based on the item type
 const loadComponent = async (item) => {
@@ -80,7 +81,6 @@ const getItemsData = async () => {
           .select("*")
           .eq("uid", user.value.id)
           .order("created_at", { ascending: false })
-
     if (data?.length > 0) {
       savedItems.value = await Promise.all(
         data.map(async (item) => {
@@ -92,6 +92,7 @@ const getItemsData = async () => {
     } else {
       savedItems.value = null
     }
+    fetchError.value = error
     if (error) {
       console.error("favorited items error", error)
     }
@@ -126,5 +127,6 @@ watch(
       <slot name="recent-episodes" :show="item" />
     </div>
   </div>
+  <FetchError v-if="fetchError" @on-click="getItemsData" />
   <slot v-else name="empty" />
 </template>
