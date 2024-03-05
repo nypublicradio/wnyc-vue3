@@ -355,6 +355,11 @@ a:visited {
   color: var(--text-color);
   border-color: var(--stroke);
 }
+.p-inputwrapper {
+  .p-icon {
+    color: var(--text-color) !important;
+  }
+}
 
 .p-divider {
   .p-divider-content {
