@@ -11,25 +11,22 @@ import { cmsSources } from "~/composables/globals"
 //import { ArticlePage, GalleryPage } from '~/composables/types/Page'
 import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 import {
-  deleteFavorite,
-  saveFavorite,
   checkIsFavorited,
-  getFavoritedItems,
   shareAPI,
   trackClickEvent,
   whenTime,
   getMinutes,
   togglePlayEpisode,
+  addToFavorites,
 } from "~/utilities/helpers"
 
-import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import { useCurrentUser } from "~/composables/states"
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
 const router = useRouter()
 
-const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 const { data: storyData, pending, error, refresh } = useFetch(
@@ -50,13 +47,6 @@ const commentCount = computed(() => {
   return commentCounts.value[storyData?.value.commentId]
 })
 
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
-
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
@@ -71,31 +61,23 @@ const handleComments = () => {
     inline: "start",
   })
 }
-const handleAddToFavorites = async () => {
+
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(false)
+
+watchEffect(async () => {
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
+
+// add item to favorites
+const handleAddToFavorites = () => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(storyData.value, isFavorited.value)
   if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(storyData.value)
-      getFavoritedItems()
-      isFavorited.value = false
-    } else {
-      await saveFavorite(storyData.value, storyData.value.type)
-      getFavoritedItems()
-      isFavorited.value = true
-    }
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Story Page",
-      storyData.value.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
   }
 }
+
 const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }
@@ -121,16 +103,16 @@ watch(storyData, async () => {
     article_title: storyData.value?.title,
   })
 
-  //console.log("storyData = ", storyData.value)
   if (storyData.value?.leadGallery) {
     gallery.value = await usePageById(
       storyData.value.leadGallery.gallery
     ).then(({ data }) => normalizeGalleryPage(data.value))
   }
+
   topImage.value =
     storyData.value?.cmsSource === cmsSources.WAGTAIL
       ? String(storyData.value?.image?.id)
-      : storyData.value?.image?.template ?? gallery?.slides?.[0]?.image ?? null
+      : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
 
   topCaption.value =
     storyData.value?.leadImageCaption ??
@@ -164,6 +146,7 @@ const togglePlayHere = (story, index = 0) => {
       </Head>
     </Html>
     <section class="">
+      <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-4"
@@ -207,7 +190,12 @@ const togglePlayHere = (story, index = 0) => {
           </div>
         </template>
       </VImage>
-
+      <Skeleton
+        v-else
+        borderRadius="0px"
+        height="auto"
+        class="episode-page-image mb-2 opacity-60"
+      />
       <section>
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>

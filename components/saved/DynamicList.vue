@@ -1,6 +1,6 @@
 <script setup>
+import { dynamicNavigation } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
-import { goToEpisodePage, goToStoryPage, goToShowPage } from "~/utilities/helpers"
 
 const props = defineProps({
   table: {
@@ -21,21 +21,22 @@ const props = defineProps({
 const client = useSupabaseClient()
 const savedItems = ref(null)
 const user = useCurrentUser()
+const fetchError = ref(null)
 
 // determines what component to load based on the item type
 const loadComponent = async (item) => {
   const componentName = computed(() => {
     switch (item.type) {
-      case "show":
+      case mediaTypes.SHOW:
         return "ShowItem"
-      case "episode":
-      case "segment":
+      case mediaTypes.EPISODE:
+      case mediaTypes.SEGMENT:
         return "EpisodeItem"
-      case "story":
-      case "article_page":
-      case "article":
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE_PAGE:
+      case mediaTypes.ARTICLE:
         return item.audio ? "EpisodeItem" : "StoryItem"
-      case "live":
+      case mediaTypes.LIVE:
         return "LiveItem"
       default:
         return "EpisodeItem"
@@ -80,7 +81,6 @@ const getItemsData = async () => {
           .select("*")
           .eq("uid", user.value.id)
           .order("created_at", { ascending: false })
-
     if (data?.length > 0) {
       savedItems.value = await Promise.all(
         data.map(async (item) => {
@@ -92,6 +92,7 @@ const getItemsData = async () => {
     } else {
       savedItems.value = null
     }
+    fetchError.value = error
     if (error) {
       console.error("favorited items error", error)
     }
@@ -111,41 +112,21 @@ watch(
     getItemsData()
   }
 )
-
-// handles how to use the correct navigate method based on the item type
-const handleDynamicNavigation = (item) => {
-  switch (item.type) {
-    case mediaTypes.EPISODES:
-    case mediaTypes.SEGMENT:
-      goToEpisodePage(item, null, props.isSaveHistory)
-      break
-    case mediaTypes.STORY:
-    case mediaTypes.ARTICLE:
-    case mediaTypes.ARTICLE_PAGE:
-      item.audio
-        ? goToEpisodePage(item, null, props.isSaveHistory)
-        : goToStoryPage(item, { src: item.cmsSource }, props.isSaveHistory)
-      break
-    case mediaTypes.SHOW:
-      goToShowPage(item)
-      break
-    default:
-      goToEpisodePage(item, null, props.isSaveHistory)
-  }
-}
 </script>
 
 <template>
   <div v-if="savedItems" class="flex flex-column gap-4">
-    <component
-      v-for="(item, index) in savedItems"
-      :key="index"
-      :is="item.component"
-      :data="item.data"
-      :saved="true"
-      @onDeleteFavorite="getItemsData"
-      @onClick="handleDynamicNavigation(item)"
-    />
+    <div v-for="(item, index) in savedItems" :key="index">
+      <component
+        :is="item.component"
+        :data="item.data"
+        :saved="true"
+        @onDeleteFavorite="getItemsData"
+        @onClick="dynamicNavigation(item, props.isSaveHistory)"
+      />
+      <slot name="recent-episodes" :show="item" />
+    </div>
   </div>
-  <slot v-else />
+  <FetchError v-if="fetchError" @on-click="getItemsData" />
+  <slot v-else name="empty" />
 </template>

@@ -29,7 +29,8 @@ const fileSystemLS = useFileSystemLS()
         </div>
         <Button
           label="Browse Shows"
-          link
+          text
+          severity="secondary"
           class="underline"
           size="small"
           @click="navigateTo('/browse')"

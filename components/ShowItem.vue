@@ -1,31 +1,20 @@
 <script setup>
-import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import {
-  deleteFavorite,
-  saveFavorite,
-  checkIsFavorited,
-  getFavoritedItems,
-  trackClickEvent,
-} from "~/utilities/helpers"
-
-import { useAccountPromptSideBar } from "~/composables/states"
+import { checkIsFavorited, addToFavorites } from "~/utilities/helpers"
 
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
+const emit = defineEmits(["on-click"])
 
-const toast = useToast()
-const accountPromptSideBar = useAccountPromptSideBar()
 const props = defineProps({
   data: {
     type: Object,
-    default: {},
+    default: null,
   },
   saved: {
     type: Boolean,
@@ -41,45 +30,25 @@ watchEffect(async () => {
 
 const user = useCurrentUser()
 
-//console.log("props.data = ", props.data);
 // add item to favorites
-const handleAddToFavorites = async () => {
+const handleAddToFavorites = () => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(props.data, isFavorited.value)
   if (user.value) {
-    if (isFavorited.value) {
-      await deleteFavorite(props.data)
-      getFavoritedItems()
-      isFavorited.value = false
-      emit("onDeleteFavorite")
-    } else {
-      await saveFavorite(props.data, props.data?.type)
-      getFavoritedItems()
-      isFavorited.value = true
-      emit("onSaveFavorite")
-    }
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Show Item",
-      props.data?.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
   }
 }
 </script>
 
 <template>
   <div
-    class="browse-item flex justify-content-between align-items-center p-ripple"
+    class="browse-item flex justify-content-between align-items-center p-ripple cursor-pointer"
     v-ripple
+    v-if="props.data"
   >
     <div class="flex gap-3 w-full" @click="emit('on-click')">
       <VImage
-        :src="props.data.image.template"
+        :src="props.data.image.template ?? props.data.image.url"
         :height="116"
         :width="116"
         :ratio="[1, 1]"
@@ -100,6 +69,9 @@ const handleAddToFavorites = async () => {
         <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>
     </Button>
+  </div>
+  <div v-else>
+    <skeleton-show-item />
   </div>
 </template>
 

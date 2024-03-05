@@ -1,5 +1,4 @@
 <script setup>
-import { useToast } from "primevue/usetoast"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -8,28 +7,24 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
-  deleteFavorite,
-  saveFavorite,
   checkIsFavorited,
-  getFavoritedItems,
-  trackClickEvent,
   shareAPI,
   fetchDuration,
   hasAudio,
   getReadingTime,
   whenTime,
+  addToFavorites,
 } from "~/utilities/helpers"
-import { useCurrentUser, useAccountPromptSideBar } from "~/composables/states"
+import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
 import { FALLBACKIMAGELOCAL, cmsSources } from "~/composables/globals"
-const toast = useToast()
 
 const $primevue = usePrimeVue()
 defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click, onDeleteFavorite, onSaveFavorite"])
+const emit = defineEmits(["on-click"])
 
 const props = defineProps({
   data: {
@@ -61,7 +56,7 @@ const props = defineProps({
     default: false,
   },
 })
-const accountPromptSideBar = useAccountPromptSideBar()
+
 const user = useCurrentUser()
 
 // check if item is already favorited
@@ -80,36 +75,12 @@ watch(
   },
   { immediate: false, deep: true }
 )
-
-const handleAddToFavorites = async (bucketItem) => {
+// add item to favorites
+const handleAddToFavorites = (bucketItem) => {
+  // helper func for adding to favorites, also handles account prompt if not logged in
+  addToFavorites(bucketItem, isFavorited.value)
   if (user.value) {
-    const episode = {
-      ...bucketItem,
-      slug: bucketItem.meta?.slug ?? bucketItem.slug,
-    }
-    if (isFavorited.value) {
-      await deleteFavorite(episode)
-      getFavoritedItems()
-      isFavorited.value = false
-      emit("onDeleteFavorite")
-    } else {
-      await saveFavorite(episode, episode.type)
-      getFavoritedItems()
-      isFavorited.value = true
-      emit("onSaveFavorite")
-    }
-    toast.add({
-      severity: "info",
-      summary: "Updated your favorites.",
-      life: 3000,
-    })
-    trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
-      "Episode Item",
-      bucketItem.title
-    )
-  } else {
-    accountPromptSideBar.value = true
+    isFavorited.value = !isFavorited.value
   }
 }
 

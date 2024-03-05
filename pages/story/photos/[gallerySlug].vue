@@ -1,10 +1,10 @@
 <script setup lang="ts">
 //import { GalleryPage } from "~/composables/types/Page";
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VShareTools from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue'
-import VShareToolsItem from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue'
-import { trackClickEvent } from '~/utilities/helpers'
-import { normalizeGalleryPage } from '~/composables/data/galleryPages'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import VShareTools from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue"
+import VShareToolsItem from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue"
+import { trackClickEvent } from "~/utilities/helpers"
+import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 const route = useRoute()
 //const router = useRouter()
 
@@ -15,14 +15,14 @@ const gallery = await usePageById(route.params.gallerySlug).then(({ data }) =>
 const shareUrl = ref(gallery.url)
 const shareTitle = ref(gallery.title)
 
-onMounted( () => {
+onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
+  $analytics.sendPageView({
     page_title: shareTitle.value,
-    page_type: 'gallery_page',
-    content_group: 'app_tab',
-  } )
+    page_type: "gallery_page",
+    content_group: "app_tab",
+  })
 })
 </script>
 <template>
@@ -30,14 +30,8 @@ onMounted( () => {
     <Html lang="en">
       <Head>
         <Title>{{ shareTitle }} | WNYC</Title>
-        <Meta
-          name="og:title"
-          content="{{shareTitle}} | WNYC"
-        />
-        <Meta
-          name="twitter:title"
-          content="{{shareTitle}} | WNYC"
-        />
+        <Meta name="og:title" content="{{shareTitle}} | WNYC" />
+        <Meta name="twitter:title" content="{{shareTitle}} | WNYC" />
       </Head>
     </Html>
     <section class="header flex align-items-center justify-content-between">
@@ -49,9 +43,7 @@ onMounted( () => {
           text
           severity="secondary"
           aria-label="back to previous page"
-          @click="
-            navigateTo(`/story/${route.query.article}?src=${route.query.src}`)
-          "
+          @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
           label="Return"
         />
       </div>
@@ -181,7 +173,7 @@ onMounted( () => {
     z-index: 999993453453453999 !important;
   }
   .enlarge-button-holder {
-    @include media('<md') {
+    @include media("<md") {
       display: none !important;
     }
   }

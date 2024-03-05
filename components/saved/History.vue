@@ -4,21 +4,24 @@ const user = useCurrentUser()
 <template>
   <section v-if="user" class="recently-played">
     <saved-dynamic-list table="recently_viewed" :isSaveHistory="false">
-      <div class="empty flex flex-column gap-3 text-center mt-8">
-        <h2>You haven't listened to anything...yet!</h2>
+      <template #empty>
+        <div class="empty flex flex-column gap-3 text-center mt-8">
+          <h2>You haven't listened to anything...yet!</h2>
 
-        <p class="max-w-15rem m-auto">
-          Your most recently played content will appear here.
-        </p>
+          <p class="max-w-15rem m-auto">
+            Your most recently played content will appear here.
+          </p>
 
-        <Button
-          label="Listen to the live stream"
-          link
-          class="underline"
-          size="small"
-          @click="navigateTo('/live')"
-        />
-      </div>
+          <Button
+            label="Listen to the live stream"
+            text
+            severity="secondary"
+            class="underline"
+            size="small"
+            @click="navigateTo('/live')"
+          />
+        </div>
+      </template>
     </saved-dynamic-list>
   </section>
   <section v-else class="recently-played">

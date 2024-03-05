@@ -10,6 +10,7 @@ import {
   useCurrentUserFavorites,
   useTogglePlayTrigger,
   useGlobalToast,
+  useAccountPromptSideBar
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -555,7 +556,6 @@ export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
 // if a duplicate existingRecord is found, it removed the original and adds the new one
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
-
   if (user.value) {
     const client = useSupabaseClient()
     // check if record exists
@@ -708,7 +708,7 @@ export const goToStoryPage = (story, params, log = true) => {
   if (log) { saveRecentlyPlayed(story) }
 }
 /* centralized function to route to a show page */
-export const goToShowPage = (show, params) => {
+export const goToShowPage = (show, params = null) => {
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,
@@ -752,4 +752,60 @@ export const getWagtailRawBody = (bodyArr) => {
     }
   })
   return rawbody
+}
+
+// function to add to the favorites 
+export const addToFavorites = async (bucketItem, isFavorited) => {
+  const user = useCurrentUser()
+  const accountPromptSideBar = useAccountPromptSideBar()
+  if (user.value) {
+    const globalToast = useGlobalToast()
+
+    const episode = {
+      ...bucketItem,
+      slug: bucketItem.meta?.slug ?? bucketItem.slug,
+    }
+    if (isFavorited) {
+      await deleteFavorite(episode)
+      getFavoritedItems()
+    } else {
+      await saveFavorite(episode, episode.type)
+      getFavoritedItems()
+    }
+    globalToast.value = {
+      severity: "info",
+      summary: "Updated your favorites.",
+      life: 3000,
+    }
+    trackClickEvent(
+      "Click Tracking - Add/remove from favorites",
+      "Episode Item",
+      bucketItem.title
+    )
+  } else {
+    accountPromptSideBar.value = true
+  }
+}
+
+
+// handles how to use the correct navigate method based on the item type
+export const dynamicNavigation = (item, isSaveHistory = true) => {
+  switch (item.type) {
+    case mediaTypes.EPISODE:
+    case mediaTypes.SEGMENT:
+      goToEpisodePage(item, null, isSaveHistory)
+      break
+    case mediaTypes.STORY:
+    case mediaTypes.ARTICLE:
+    case mediaTypes.ARTICLE_PAGE:
+      item.audio
+        ? goToEpisodePage(item, null, isSaveHistory)
+        : goToStoryPage(item, { src: item.cmsSource }, isSaveHistory)
+      break
+    case mediaTypes.SHOW:
+      goToShowPage(item)
+      break
+    default:
+      goToEpisodePage(item, null, isSaveHistory)
+  }
 }

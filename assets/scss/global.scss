@@ -355,6 +355,11 @@ a:visited {
   color: var(--text-color);
   border-color: var(--stroke);
 }
+.p-inputwrapper {
+  .p-icon {
+    color: var(--text-color) !important;
+  }
+}
 
 .p-divider {
   .p-divider-content {
@@ -434,6 +439,20 @@ a:visited {
     color: var(--night-500);
     height: 38px;
     width: 38px;
+    &.gallery-button {
+      width: auto;
+      display: flex;
+      gap: 0.4rem;
+      .p-badge {
+        font-size: inherit;
+        line-height: inherit;
+        font-weight: inherit;
+        color: inherit !important;
+        font-family: inherit;
+        margin: 0;
+        padding: 0;
+      }
+    }
   }
 }
 

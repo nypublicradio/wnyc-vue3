@@ -1,6 +1,7 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { trackClickEvent } from "~/utilities/helpers"
+import { useIntersectionObserver } from "@vueuse/core"
 //import { trackClickEvent } from '~/utilities/helpers'
 //import { StaffPage } from '../../composables/types/Page'
 //import { ArticlePage } from '~/composables/types/Page'
@@ -16,20 +17,40 @@ const { data: pagedata, pending, error, refresh } = await useFetch(
 )
 newPageData.value = pagedata.value
 
+const pendingMore = ref(false)
+const loadMoreRefVisible = ref(false)
+const loadMoreRef = ref(null)
+const isInitialObserver = ref(true)
+const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
+  // so it does not trigger on initial load and before we have data
+  if (!isInitialObserver.value && newPageData.value) {
+    loadMoreRefVisible.value = isIntersecting
+  } else {
+    isInitialObserver.value = false
+  }
+})
+
+// clean up the useIntersectionObserver
+onUnmounted(() => {
+  stop()
+})
+
 let offset = 0
 
-const loadMoreArticles = async () => {
-  const { data: additionalPageData } = await useFetch(
+// load more articles by the author, triggered by the lazy load observer
+const loadMore = async () => {
+  pendingMore.value = true
+  const additionalPageData = await $fetch(
     `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
   )
-
+  pendingMore.value = false
   newPageData.value.articles = [
     ...newPageData.value.articles,
-    ...additionalPageData.value.articles,
+    ...additionalPageData.articles,
   ]
+  trackClickEvent("Event Tracking - load more articles", "Shows Page", staffSlug)
 }
-
-const authorName = `${pagedata.value.authorData[0]?.firstName} ${pagedata.value.authorData[0]?.lastName}`
+const authorName = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
 
 const pageTitle = `Articles by ${authorName} | Gothamist`
 
@@ -45,14 +66,20 @@ const routeBack = () => {
   window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
-onMounted( () => {
+watch(loadMoreRefVisible, (val) => {
+  if (val) {
+    loadMore()
+  }
+})
+
+onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
+  $analytics.sendPageView({
     page_title: authorName,
-    page_type: 'author_page',
-    content_group: 'app_tab',
-  } )
+    page_type: "author_page",
+    content_group: "app_tab",
+  })
 })
 </script>
 
@@ -60,7 +87,10 @@ onMounted( () => {
   <section class="staff-page">
     <Html lang="en">
       <Head>
-        <Title>{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming
+          Radio, News</Title
+        >
         <Meta
           name="og:title"
           content="{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -89,7 +119,7 @@ onMounted( () => {
             <hr class="my-4" />
             <!-- <pre>{{ pagedata.authorData }}</pre> -->
             <VPerson
-              v-if="pagedata.authorData"
+              v-if="pagedata?.authorData"
               :profileData="pagedata.authorData[0]"
               class="text-sm"
               onStaffPage
@@ -100,9 +130,9 @@ onMounted( () => {
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
         <div id="articleList" class="grid">
-          <div v-if="pagedata.articles.length > 0" class="col staff-articles">
+          <div v-if="pagedata?.articles.length > 0" class="col staff-articles">
             <div
-              v-for="(article, index) in newPageData.articles"
+              v-for="(article, index) in newPageData?.articles"
               :key="article?.uuid"
               class="mb-5"
             >
@@ -118,22 +148,32 @@ onMounted( () => {
             /> -->
           </div>
         </div>
-        <div class="block xl:hidden mb-4">
-          <!-- <HtlAd
+        <!-- <div class="block xl:hidden mb-4">
+           <HtlAd
             layout="rectangle"
             slot="htl-gothamist_interior_midpage_2"
             fineprint="Gothamist is funded by sponsors and member donations"
-          /> -->
-        </div>
-        <Button
-          v-if="pagedata.articles.length < pagedata.count"
+          /> 
+        </div> -->
+        <!-- <Button
+          v-if="pagedata?.articles.length < pagedata?.count"
           class="p-button-rounded"
           label="Load More"
-          @click="loadMoreArticles"
+          @click="loadMore"
         >
-        </Button>
+        </Button> -->
       </div>
       <div v-else class="text-center">LOADING</div>
+      <div v-if="pendingMore">
+        <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+      </div>
+      <WnycLoader
+        ref="loadMoreRef"
+        v-if="pagedata?.articles.length < pagedata?.count"
+        spinner
+        size="40px"
+        class="mt-8"
+      />
     </div>
     <BackToTopButton />
   </section>
