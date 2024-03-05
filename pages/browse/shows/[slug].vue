@@ -55,11 +55,11 @@ const loadMore = async () => {
   page.value += 1
   //console.log("page.value", page.value)
   pendingMore.value = true
-  const { data: moreShows } = await useFetch(
+  const moreShows = await $fetch(
     `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
   )
   pendingMore.value = false
-  episodes.value = [...episodes.value, ...moreShows.value?.episodes?.data]
+  episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
   trackClickEvent(
     "Event Tracking - load more episodes",
     "Shows Page",

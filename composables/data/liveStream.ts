@@ -6,9 +6,9 @@ import { saveRecentlyPlayed } from '~/utilities/helpers'
 export async function updateLiveStream(slug: string) {
     const config = useRuntimeConfig()
     //BFF
-    const { data: fetchData } = await useFetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
+    const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
     const currentEpisodeHolder = useCurrentEpisodeHolder()
-    currentEpisodeHolder.value = fetchData.value
+    currentEpisodeHolder.value = fetchData
     saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE)
 }
 
@@ -18,10 +18,10 @@ export async function updateAllLiveStreams() {
     const currentUserProfile = useCurrentUserProfile()
     const config = useRuntimeConfig()
     // BFF
-    const { data: fetchingAll } = await useFetch(`${config.public.BFF_URL}/api/streams`)
+    const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
     //console.log('fetchingAll = ', fetchingAll.value)
     // set all streams
-    allCurrentStations.value = fetchingAll.value.filter(Boolean)
+    allCurrentStations.value = fetchingAll.filter(Boolean)
     //allCurrentStations.value = allCurrentStationsImport
 
     // set initial stream with the `currentStreamStation` value in the states.ts file
