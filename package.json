@@ -12,7 +12,7 @@
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
   },
   "devDependencies": {
-    "@capacitor/cli": "5.7.1",
+    "@capacitor/cli": "5.6.0",
     "@nuxtjs/device": "^3.1.0",
     "@nuxtjs/ionic": "0.13.1",
     "@sentry/vite-plugin": "^2.10.2",
@@ -23,15 +23,15 @@
   },
   "dependencies": {
     "@capacitor-community/advertising-id": "^5.0.0",
-    "@capacitor/android": "5.7.1",
+    "@capacitor/android": "5.6.0",
     "@capacitor/app": "5.0.7",
     "@capacitor/assets": "3.0.4",
     "@capacitor/browser": "5.2.0",
     "@capacitor/clipboard": "^5.0.7",
-    "@capacitor/core": "5.7.1",
+    "@capacitor/core": "5.6.0",
     "@capacitor/filesystem": "5.2.1",
     "@capacitor/haptics": "5.0.7",
-    "@capacitor/ios": "5.7.1",
+    "@capacitor/ios": "5.6.0",
     "@capacitor/keyboard": "5.0.8",
     "@capacitor/local-notifications": "5.0.7",
     "@capacitor/network": "^5.0.7",
@@ -43,7 +43,7 @@
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@jofr/capacitor-media-session": "^3.0.2",
     "@nuxt/image": "^1.1.0",
-    "@nuxtjs/supabase": "^1.0.2",
+    "@nuxtjs/supabase": "1.1.6",
     "@nypublicradio/nypr-design-system-vue3": "^2.1.26",
     "@sentry/integrations": "^7.93.0",
     "@sentry/tracing": "^7.93.0",
@@ -62,7 +62,7 @@
     "jsdom": "^21.1.2",
     "primeflex": "^3.3.0",
     "primevue": "^3.46.0",
-    "vidstack": "^1.10.5",
+    "vidstack": "^1.10.9",
     "vitest": "0.32.4",
     "vue": "3.4.6"
   }
