@@ -127,33 +127,31 @@ function getTimeDifference(targetTime) {
 
   return targetTimeInMilliseconds - nowTime
 }
-const timeouts = ref([])
+let timeout = null
 
 // Function to clear all timeouts
-const clearAllTimeouts = () => {
-  timeouts.value.forEach((id) => clearTimeout(id))
-  timeouts.value = [] // Clear the array
+const clearAllTimeout = () => {
+  clearTimeout(timeout)
 }
 
 // Fetch the schedule
 const fetchSchedule = async () => {
-  clearAllTimeouts()
+  clearAllTimeout()
   scheduleRef.value = null
   const schedule = await $fetch(
-    `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`
+    `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
+    { method: "POST" }
   )
   scheduleRef.value = schedule
 
   // init setTimeouts to refetch the schedule when the current event starts
-  scheduleRef.value.forEach((entry) => {
-    if (scheduleRef.value.length > 0) {
-      // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-      const delay = getTimeDifference(entry.attributes.end) + 2000
-      //console.log("delay", delay)
-      const timeout = setTimeout(fetchSchedule, delay)
-      timeouts.value.push(timeout)
-    }
-  })
+
+  if (scheduleRef.value[0]) {
+    // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
+    const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
+    //console.log("delay", delay)
+    timeout = setTimeout(fetchSchedule, delay)
+  }
 }
 
 watch(
@@ -164,7 +162,7 @@ watch(
   { immediate: true }
 )
 onBeforeUnmount(() => {
-  clearAllTimeouts()
+  clearAllTimeout()
 })
 </script>
 <template>
