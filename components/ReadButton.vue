@@ -28,7 +28,11 @@ const emit = defineEmits(["on-click"])
 
 <template>
   <div class="read-button" :class="[{ circle: props.label === '' }]">
-    <Button severity="secondary" @click="emit('on-click')">
+    <Button
+      severity="secondary"
+      @click="emit('on-click')"
+      class="flex align-items-center cursor-pointer"
+    >
       <slot name="icon">
         <div class="flex align-items-center icon">
           <ReadIcon />

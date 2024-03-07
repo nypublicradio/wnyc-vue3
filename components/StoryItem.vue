@@ -171,10 +171,7 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div
-    class="story-item flex justify-content-between align-items-center p-ripple"
-    v-ripple
-  >
+  <div class="story-item relative p-ripple" v-ripple>
     <div
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       @click.prevent="handleClick"

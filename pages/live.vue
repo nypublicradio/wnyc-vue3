@@ -51,7 +51,7 @@ const togglePlayHere = () => {
     currentStreamStation.value = currentEpisodeHolder.value.slug
     currentEpisode.value = currentEpisodeHolder.value
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
+  //togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 const scrollToActiveStation = () => {
@@ -112,16 +112,58 @@ watch(
   },
   { immediate: true }
 )
+
+// Function to calculate the time difference between now and the target time
+function getTimeDifference(targetTime) {
+  const now = new Date()
+  const target = new Date(targetTime)
+  const nowTime = now.getTime()
+  const targetTimeInMilliseconds = target.getTime()
+
+  // If the target time is in the past, calculate the time until the next occurrence
+  if (nowTime > targetTimeInMilliseconds) {
+    target.setDate(target.getDate() + 1)
+  }
+
+  return targetTimeInMilliseconds - nowTime
+}
+let timeout = null
+
+// Function to clear all timeouts
+const clearAllTimeout = () => {
+  clearTimeout(timeout)
+}
+
+// Fetch the schedule
+const fetchSchedule = async () => {
+  clearAllTimeout()
+  scheduleRef.value = null
+  const schedule = await $fetch(
+    `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
+    { method: "POST" }
+  )
+  scheduleRef.value = schedule
+
+  // init setTimeouts to refetch the schedule when the current event starts
+
+  if (scheduleRef.value[0]) {
+    // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
+    const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
+    //console.log("delay", delay)
+    timeout = setTimeout(fetchSchedule, delay)
+  }
+}
+
 watch(
   currentStreamStation,
-  async () => {
-    const schedule = await $fetch(
-      `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`
-    )
-    scheduleRef.value = schedule
+  () => {
+    fetchSchedule()
   },
   { immediate: true }
 )
+onBeforeUnmount(() => {
+  clearAllTimeout()
+})
 </script>
 <template>
   <div class="live-page">
