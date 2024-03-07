@@ -2,15 +2,20 @@
 const router = useRouter()
 const route = useRoute()
 const config = useRuntimeConfig()
-const { data: categoryData, pending, error, refresh } = useFetch(
-  `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`
+const { data: categoryData, pending, error, refresh } = await useFetch(
+  `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`,
+  {
+    params: {
+      topic: route.query.topic,
+    },
+  }
 )
-
 // navigate back to home and track it
 const backHome = () => {
   router.go(-1)
 }
-const topic = route.query.topic
+
+const label = route.query.label
 
 const goToShowPage = (show) => {
   navigateTo({
@@ -21,11 +26,11 @@ const goToShowPage = (show) => {
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_title: 'Browse Topics',
-    page_type: 'browse_topics_tab',
-    content_group: 'app_tab',
-  } )
+  $analytics.sendPageView({
+    page_title: "Browse Topics",
+    page_type: "browse_topics_tab",
+    content_group: "app_tab",
+  })
 })
 
 onUnmounted(() => {
@@ -36,7 +41,10 @@ onUnmounted(() => {
   <div class="browse-topic-page">
     <Html lang="en">
       <Head>
-        <Title>Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -58,7 +66,7 @@ onUnmounted(() => {
           aria-label="back to previous page"
           @click="backHome"
         />
-        <h1>{{ topic }}</h1>
+        <h1>{{ label }}</h1>
       </div>
     </section>
     <section class="shows flex flex-column gap-3">

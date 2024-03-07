@@ -37,7 +37,7 @@ export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffff
 export const useBrowserTopColorDarkMode = () => useState('browserTopColorDarkMode', () => '#1f2741')
 
 //browse topics
-export const useShowTopics = () => useState('showTopics', () => [
+export const showTopics = [
     {
         label: 'Arts & Culture',
         value: 'arts-and-culture',
@@ -80,7 +80,7 @@ export const useShowTopics = () => useState('showTopics', () => [
         url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-music&api_key=csharp',
         color: 'var(--sea-green',
     },
-])
+]
 
 //saved menu
 export const getSavedMenuItems = () => {

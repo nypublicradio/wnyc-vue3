@@ -1,19 +1,18 @@
 
 import axios from 'axios'
 import humps from 'humps'
+import { showTopics } from '~/composables/globals'
 
 export default defineEventHandler(async (event) => {
-    const req = event.node.req
-    const url = new URL(req.headers.referer)
-    const params = url.searchParams
+    const query = getQuery(event);
+    const topic = showTopics.find(topic => topic.value === query.topic);
     try {
         const options = {
             method: 'GET',
-            url: params.get('url'),
+            url: topic.url,
         }
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-        //console.log('resData: ', resData)
         return resData
     } catch (error) {
         console.error('An error occurred:', error.message)

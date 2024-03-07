@@ -1,6 +1,6 @@
 <script setup>
 import { useFuse } from "@vueuse/integrations/useFuse"
-import { useShowTopics } from "~/composables/globals.ts"
+import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
@@ -10,7 +10,6 @@ const { data: shows, pending, error, refresh } = useLazyFetch(
 const featuredShows = ref(shows?.value?.featuredShows)
 const allShows = ref(shows?.value?.all)
 
-const showTopics = useShowTopics()
 const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
@@ -33,7 +32,7 @@ const clearSearchField = () => {
 const selectTopic = (topic) => {
   router.push({
     path: "browse/browse-topic",
-    query: { topic: topic.label, url: topic.url },
+    query: { topic: topic.value, label: topic.label },
   })
 }
 
