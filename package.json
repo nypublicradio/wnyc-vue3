@@ -18,7 +18,7 @@
     "@sentry/vite-plugin": "^2.10.2",
     "@vueuse/nuxt": "^10.5.0",
     "date-fns": "^2.30.0",
-    "nuxt": "^3.9.3",
+    "nuxt": "^3.10.3",
     "sass": "1.69.7"
   },
   "dependencies": {

@@ -188,10 +188,7 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div
-    class="episode-item flex justify-content-between align-items-center p-ripple"
-    v-ripple
-  >
+  <div class="episode-item relative p-ripple" v-ripple>
     <div
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       @click.prevent="handleClick"
@@ -334,6 +331,7 @@ const handleClick = () => {
 
 <style lang="scss" scoped>
 .episode-item {
+  position: relative;
   cursor: pointer;
   .card-title-title {
     @include cardTitle();

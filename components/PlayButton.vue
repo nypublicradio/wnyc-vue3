@@ -108,6 +108,7 @@ watch(
       @click.prevent="togglePlay"
       :aria-disabled="isStreamLoading"
       :class="[{ active: isPlaying }]"
+      class="flex align-items-center cursor-pointer"
     >
       <slot name="icon">
         <Transition name="fade" mode="out-in">
