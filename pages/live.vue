@@ -51,7 +51,7 @@ const togglePlayHere = () => {
     currentStreamStation.value = currentEpisodeHolder.value.slug
     currentEpisode.value = currentEpisodeHolder.value
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
+  //togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 const scrollToActiveStation = () => {
@@ -112,13 +112,53 @@ watch(
   },
   { immediate: true }
 )
+
+// Function to calculate the time difference between now and the target time
+function getTimeDifference(targetTime) {
+  const now = new Date()
+  const target = new Date(targetTime)
+  const nowTime = now.getTime()
+  const targetTimeInMilliseconds = target.getTime()
+
+  // If the target time is in the past, calculate the time until the next occurrence
+  if (nowTime > targetTimeInMilliseconds) {
+    target.setDate(target.getDate() + 1)
+  }
+
+  return targetTimeInMilliseconds - nowTime
+}
+const timeouts = ref([])
+
+// Function to clear all timeouts
+const clearAllTimeouts = () => {
+  timeouts.value.forEach((id) => clearTimeout(id))
+  timeouts.value = [] // Clear the array
+}
+
+// Fetch the schedule
+const fetchSchedule = async () => {
+  clearAllTimeouts()
+  scheduleRef.value = null
+  const schedule = await $fetch(
+    `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`
+  )
+  scheduleRef.value = schedule
+
+  // init setTimeouts to refetch the schedule when the current event starts
+  scheduleRef.value.forEach((entry, index) => {
+    if (scheduleRef.value.length > 0) {
+      // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
+      const delay = getTimeDifference(entry.attributes.end) + 2000
+      const timeout = setTimeout(fetchSchedule, delay)
+      timeouts.value.push(timeout)
+    }
+  })
+}
+
 watch(
   currentStreamStation,
   async () => {
-    const schedule = await $fetch(
-      `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`
-    )
-    scheduleRef.value = schedule
+    fetchSchedule()
   },
   { immediate: true }
 )
