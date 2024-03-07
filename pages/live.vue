@@ -145,11 +145,11 @@ const fetchSchedule = async () => {
   scheduleRef.value = schedule
 
   // init setTimeouts to refetch the schedule when the current event starts
-  scheduleRef.value.forEach((entry, index) => {
+  scheduleRef.value.forEach((entry) => {
     if (scheduleRef.value.length > 0) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = getTimeDifference(entry.attributes.end) + 2000
-      console.log("delay", delay)
+      //console.log("delay", delay)
       const timeout = setTimeout(fetchSchedule, delay)
       timeouts.value.push(timeout)
     }
@@ -158,7 +158,7 @@ const fetchSchedule = async () => {
 
 watch(
   currentStreamStation,
-  async () => {
+  () => {
     fetchSchedule()
   },
   { immediate: true }
