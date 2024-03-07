@@ -149,6 +149,7 @@ const fetchSchedule = async () => {
     if (scheduleRef.value.length > 0) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = getTimeDifference(entry.attributes.end) + 2000
+      console.log("delay", delay)
       const timeout = setTimeout(fetchSchedule, delay)
       timeouts.value.push(timeout)
     }
@@ -162,6 +163,9 @@ watch(
   },
   { immediate: true }
 )
+onBeforeUnmount(() => {
+  clearAllTimeouts()
+})
 </script>
 <template>
   <div class="live-page">
