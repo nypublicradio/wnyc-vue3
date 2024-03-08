@@ -57,6 +57,7 @@ export default defineNuxtConfig({
     pageTransition: true,
     layoutTransition: true,
     head: {
+      title: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News',
       meta: [
         { name: 'viewport', content: 'viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1' },
         // { name: 'msapplication-TileColor', content: '#ffffff' },
