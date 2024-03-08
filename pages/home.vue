@@ -89,6 +89,13 @@ onMounted( () => {
       <!-- <pre class="text-xs" v-if="topStories">{{ topStories.body }}</pre> -->
       <TopStories :articles="topStories" />
     </section>
+    <div class="mx-auto mb-6" style="width: 300px">
+      <story-htlAd
+        layout="rectangle"
+        slotClass="htlad-wnyc_homepage_rectangle"
+        fineprint="Gothamist is funded by sponsors and member donations"
+      />
+    </div>
     <div v-for="section in homeTemplate" :key="section.title">
       <div v-if="section.data.length">
         <section>
