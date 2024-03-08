@@ -96,7 +96,7 @@ const episodeEnded = () => {
   // trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
-let delay = 0
+let delay = 250
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
   isNewEpisode.value = true

@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue"
 
 const props = defineProps({
   radius: {
@@ -12,15 +12,15 @@ const props = defineProps({
   },
   stroke: {
     type: String,
-    default: '2',
+    default: "2",
   },
   color: {
     type: String,
-    default: 'var(--night-500)',
+    default: "var(--night-500)",
   },
   bgColor: {
     type: String,
-    default: 'var(--background2)',
+    default: "#e3e3e3",
   },
 })
 

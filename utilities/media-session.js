@@ -1,7 +1,6 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
 import { getDate, resizePublisherImageUrl } from '~/utilities/helpers'
 
-let initFlag = false
 let currentEpisode = null
 let playbackStopped = true
 let audioElement = null
@@ -38,58 +37,49 @@ export const initMediaSession = (episode, skipTime) => {
         //     { src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png' },
         // ]
     })
-    // test for ios
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: currentEpisode.title,
-        artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
-        album: currentEpisode.showTitle,
-        artwork: [{ src: resizePublisherImageUrl(currentEpisode.image, 512, 512) }]
+
+
+
+    const mediaProvider = document.querySelector('media-provider')
+    audioElement = mediaProvider.querySelector('audio, video')
+
+    audioElement.addEventListener('durationchange', updatePositionState)
+    audioElement.addEventListener('seeked', updatePositionState)
+    audioElement.addEventListener('ratechange', updatePositionState)
+    audioElement.addEventListener('play', updatePositionState)
+    audioElement.addEventListener('pause', updatePositionState)
+
+    audioElement.addEventListener('play', () => {
+        playbackStopped = false
+        updatePlaybackState()
+    })
+    audioElement.addEventListener('pause', updatePlaybackState)
+
+
+    MediaSession.setActionHandler({ action: 'play' }, () => {
+        audioElement.play()
     })
 
-    if (!initFlag) {
-        initFlag = true
+    MediaSession.setActionHandler({ action: 'pause' }, () => {
+        audioElement.pause()
+    })
 
-        const mediaProvider = document.querySelector('media-provider')
-        audioElement = mediaProvider.querySelector('audio, video')
+    MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
+        audioElement.currentTime = details.seekTime
+    })
 
-        audioElement.addEventListener('durationchange', updatePositionState)
-        audioElement.addEventListener('seeked', updatePositionState)
-        audioElement.addEventListener('ratechange', updatePositionState)
-        audioElement.addEventListener('play', updatePositionState)
-        audioElement.addEventListener('pause', updatePositionState)
+    MediaSession.setActionHandler({ action: 'seekforward' }, () => {
+        const seekOffset = skipTime
+        audioElement.currentTime = audioElement.currentTime + seekOffset
+    })
 
-        audioElement.addEventListener('play', () => {
-            playbackStopped = false
-            updatePlaybackState()
-        })
-        audioElement.addEventListener('pause', updatePlaybackState)
+    MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
+        const seekOffset = skipTime
+        audioElement.currentTime = audioElement.currentTime - seekOffset
+    })
 
-
-        MediaSession.setActionHandler({ action: 'play' }, () => {
-            audioElement.play()
-        })
-
-        MediaSession.setActionHandler({ action: 'pause' }, () => {
-            audioElement.pause()
-        })
-
-        MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
-            audioElement.currentTime = details.seekTime
-        })
-
-        MediaSession.setActionHandler({ action: 'seekforward' }, () => {
-            const seekOffset = skipTime
-            audioElement.currentTime = audioElement.currentTime + seekOffset
-        })
-
-        MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
-            const seekOffset = skipTime
-            audioElement.currentTime = audioElement.currentTime - seekOffset
-        })
-
-        MediaSession.setActionHandler({ action: 'stop' }, () => {
-            playbackStopped = true
-            audioElement.pause()
-        })
-    }
+    MediaSession.setActionHandler({ action: 'stop' }, () => {
+        playbackStopped = true
+        audioElement.pause()
+    })
 }

@@ -53,30 +53,6 @@ const togglePlay = () => {
   }
 }
 
-// const checkEpisodeMatchAndPlaying = computed(() => {
-//   if (currentEpisode.value) {
-//     if (
-//       (currentEpisode.value.file === props.data.file && isEpisodePlaying.value) ||
-//       (currentEpisode.value.directoryAudio?.name === props.data.file && isEpisodePlaying.value)
-//     ) {
-//       return true
-//     }
-//   }
-//   return false
-// })
-
-// const checkEpisodeMatch = computed(() => {
-//   if (currentEpisode.value) {
-//     if (
-//       currentEpisode.value.file === props.data.file ||
-//       currentEpisode.value.directoryAudio?.name === props.data.file
-//     ) {
-//       return true
-//     }
-//   }
-//   return false
-// })
-
 const getProgress = computed(() => {
   return Math.ceil((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
 })
@@ -85,14 +61,14 @@ const isPlaying = ref(false)
 watch(
   isEpisodePlaying,
   () => {
-    // to handle segments
+    // to handle segments\
     if (Array.isArray(props.data.audio)) {
       isPlaying.value =
         currentEpisode.value?.file === props.data?.audio[props.index] &&
         isEpisodePlaying.value
     } else {
       isPlaying.value =
-        currentEpisode.value?.id === props.data?.id && isEpisodePlaying.value
+        currentEpisode.value?.id === Number(props.data?.id) && isEpisodePlaying.value
     }
   },
   {
@@ -113,7 +89,7 @@ watch(
       <slot name="icon">
         <Transition name="fade" mode="out-in">
           <div
-            v-if="isPlaying"
+            v-if="isPlaying || isStreamLoading"
             class="flex align-items-center icon relative"
             :class="[{ live: props.live, paused: !isEpisodePlaying }]"
           >
