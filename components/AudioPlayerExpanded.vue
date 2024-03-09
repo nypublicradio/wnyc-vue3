@@ -332,7 +332,7 @@ const moreFromClick = () => {
           :key="author.url"
           :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
-          :to="author.url"
+          :to="author.url.replace('people', 'staff')"
           @on-click="emit('close-panel')"
         />
       </div>

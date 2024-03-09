@@ -143,7 +143,6 @@ const fetchSchedule = async () => {
     { method: "POST" }
   )
   scheduleRef.value = schedule
-
   // init setTimeouts to refetch the schedule when the current event starts
 
   if (scheduleRef.value[0]) {
