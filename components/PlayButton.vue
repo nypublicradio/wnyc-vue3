@@ -63,9 +63,9 @@ watch(
   () => {
     // to handle segments\
     if (Array.isArray(props.data.audio)) {
-      isPlaying.value = currentEpisode.value?.file == props.data?.audio[props.index]
+      isPlaying.value = currentEpisode.value?.file === props.data?.audio[props.index]
     } else {
-      isPlaying.value = currentEpisode.value?.id == Number(props.data?.id)
+      isPlaying.value = Number(currentEpisode.value?.id) === Number(props.data?.id)
     }
   },
   {
@@ -86,7 +86,7 @@ watch(
       <slot name="icon">
         <Transition name="fade" mode="out-in">
           <div
-            v-if="isPlaying"
+            v-if="isPlaying && !isStreamLoading"
             class="flex align-items-center icon relative"
             :class="[{ live: props.live, paused: !isEpisodePlaying }]"
           >
