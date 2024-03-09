@@ -64,11 +64,11 @@ watch(
     // to handle segments\
     if (Array.isArray(props.data.audio)) {
       isPlaying.value =
-        currentEpisode.value?.file === props.data?.audio[props.index] &&
+        currentEpisode.value?.file == props.data?.audio[props.index] &&
         isEpisodePlaying.value
     } else {
       isPlaying.value =
-        currentEpisode.value?.id === Number(props.data?.id) && isEpisodePlaying.value
+        currentEpisode.value?.id == Number(props.data?.id) && isEpisodePlaying.value
     }
   },
   {
