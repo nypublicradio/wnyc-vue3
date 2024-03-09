@@ -63,12 +63,9 @@ watch(
   () => {
     // to handle segments\
     if (Array.isArray(props.data.audio)) {
-      isPlaying.value =
-        currentEpisode.value?.file == props.data?.audio[props.index] &&
-        isEpisodePlaying.value
+      isPlaying.value = currentEpisode.value?.file == props.data?.audio[props.index]
     } else {
-      isPlaying.value =
-        currentEpisode.value?.id == Number(props.data?.id) && isEpisodePlaying.value
+      isPlaying.value = currentEpisode.value?.id == Number(props.data?.id)
     }
   },
   {
@@ -89,7 +86,7 @@ watch(
       <slot name="icon">
         <Transition name="fade" mode="out-in">
           <div
-            v-if="isPlaying || isStreamLoading"
+            v-if="isPlaying"
             class="flex align-items-center icon relative"
             :class="[{ live: props.live, paused: !isEpisodePlaying }]"
           >
@@ -97,6 +94,12 @@ watch(
             <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
             <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
             <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
+          </div>
+          <div
+            v-else-if="isPlaying && isStreamLoading"
+            class="flex align-items-center icon relative"
+          >
+            <i class="pi pi-spin pi-spinner"></i>
           </div>
           <div v-else class="flex align-items-center icon">
             <PlayIcon />

@@ -13,6 +13,7 @@ const getSchedule = async (slug: string, schedDate: string) => {
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).data;
+    console.log('resData', resData);
     const filteredSchedule = removePastShows(resData);
     return filteredSchedule;
 };

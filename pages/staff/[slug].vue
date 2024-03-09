@@ -1,6 +1,6 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, goToStoryPage } from "~/utilities/helpers"
 import { useIntersectionObserver } from "@vueuse/core"
 //import { trackClickEvent } from '~/utilities/helpers'
 //import { StaffPage } from '../../composables/types/Page'
@@ -136,7 +136,11 @@ onMounted(() => {
               :key="article?.uuid"
               class="mb-5"
             >
-              <StoryItem :data="article" :index="index" />
+              <StoryItem
+                :data="article"
+                :index="index"
+                @on-click="goToStoryPage(article, { src: article.cmsSource })"
+              />
             </div>
           </div>
           <p v-else class="col">No articles available</p>
