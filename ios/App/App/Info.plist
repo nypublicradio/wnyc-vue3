@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Our app utilizes user tracking data to personalize your experience and provide relevant content. This data helps us understand your preferences and tailor our services to better suit your needs. Rest assured, we prioritize your privacy and adhere to strict data protection measures. Your information is securely handled and never shared with third parties without your explicit consent.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleDevelopmentRegion</key>
