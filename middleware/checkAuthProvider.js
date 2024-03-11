@@ -13,15 +13,15 @@ export default defineNuxtRouteMiddleware(async () => {
 
   // update the user's profile (name and image) if they signed up with google
   const updateUser = async () => {
-    if (currentUser.value.user_metadata.provider === 'google') {
+    if (user.data.session.user.app_metadata.provider === 'google') {
       await client
         .from('profiles')
         .update({
           updated_at: new Date().toISOString(),
-          name: currentUser.value.user_metadata.full_name,
-          avatar_image_url: currentUser.value.user_metadata.avatar_url,
+          name: user.data.session.user.user_metadata.full_name,
+          avatar_image_url: user.data.session.user.user_metadata.avatar_url,
         })
-        .match({ id: currentUser.value.id })
+        .match({ id: user.data.session.user.id })
     }
   }
 
