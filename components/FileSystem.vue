@@ -16,17 +16,18 @@ const isNetworkConnected = useIsNetworkConnected()
 const used = ref(0)
 const granted = ref(0)
 
-watch(
-  fileSystem,
-  (/* value */) => {
-    navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => {
-      //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
-      used.value = usedBytes
-      granted.value = grantedBytes
-    })
-  },
-  { deep: true }
-)
+// get the used and granted storage
+// watch(
+//   fileSystem,
+//   (/* value */) => {
+//     navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => {
+//       //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
+//       used.value = usedBytes
+//       granted.value = grantedBytes
+//     })
+//   },
+//   { deep: true }
+// )
 
 // handle the routing of the stored audio file IF network is connected
 const handleRoute = (file) => {

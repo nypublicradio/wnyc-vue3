@@ -73,7 +73,7 @@ watch(
     estimatedDuration.value =
       typeof dur === "number" && dur !== 0 ? dur : await fetchDuration(props.data.audio)
   },
-  { immediate: false, deep: true }
+  { immediate: false }
 )
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {

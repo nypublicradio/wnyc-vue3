@@ -83,7 +83,7 @@ watch(
         ? await fetchDuration(props.data.audio)
         : props.data.estimatedDuration
   },
-  { immediate: true, deep: true }
+  { immediate: true }
 )
 
 // const handleAddToQueue = (bucketItem) => {
