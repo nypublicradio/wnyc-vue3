@@ -85,7 +85,7 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    <section class="search">
+    <section class="search z-2">
       <span class="p-input-icon-left w-full">
         <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
         <i v-else class="pi pi-search text-color" />
