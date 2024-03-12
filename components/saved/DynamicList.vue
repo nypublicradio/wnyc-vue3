@@ -21,6 +21,7 @@ const props = defineProps({
 const client = useSupabaseClient()
 const savedItems = ref(null)
 const user = useCurrentUser()
+const pending = ref(false)
 const fetchError = ref(null)
 
 // determines what component to load based on the item type
@@ -74,6 +75,7 @@ const getFilteredItemsData = computed(() => {
 // retrieve item data
 const getItemsData = async () => {
   if (user.value) {
+    pending.value = true
     const { data, error } = props.typeFilter
       ? await getFilteredItemsData.value
       : await client
@@ -92,6 +94,7 @@ const getItemsData = async () => {
     } else {
       savedItems.value = null
     }
+    pending.value = false
     fetchError.value = error
     if (error) {
       console.error("favorited items error", error)
@@ -127,6 +130,6 @@ watch(
       <slot name="recent-episodes" :show="item" />
     </div>
   </div>
+  <slot v-if="!savedItems && !pending" name="empty" />
   <FetchError v-if="fetchError" @on-click="getItemsData" />
-  <slot v-else name="empty" />
 </template>
