@@ -9,6 +9,7 @@ import {
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -34,6 +35,7 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: "Download",
       title: bucketItem.title,
+      customIcon: DownloadIcon,
       command: () => {
         handleDownload(bucketItem)
       },
@@ -41,19 +43,10 @@ const getDotMenuItems = (bucketItem) => {
     {
       label: "Copy embed code",
       title: bucketItem.title,
+      icon: "pi pi-code",
       embedCode: bucketItem.embedCode,
       command: () => {
         copyToClipBoard(bucketItem.embedCode)
-          ? toast.add({
-              severity: "info",
-              summary: "Embed code copied to clipboard",
-              life: 3000,
-            })
-          : toast.add({
-              severity: "error",
-              summary: "Copy to clipboard failed. Try again another time",
-              life: 3000,
-            })
         trackClickEvent(
           "Click Tracking - Audio Copy Embed Code",
           "Large Card",
