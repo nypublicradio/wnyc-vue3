@@ -5,6 +5,7 @@ import {
   useSkipAheadTrigger,
   useSkipBackTrigger,
   useIsLiveStream,
+  useIsStreamLoading,
 } from "~/composables/states"
 
 const props = defineProps({
@@ -22,6 +23,7 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 const isLiveStream = useIsLiveStream()
+const isStreamLoading = useIsStreamLoading()
 
 const emit = defineEmits(["beforeTogglePlay", "beforeSkipAhead", "beforeSkipBack"])
 
@@ -55,12 +57,23 @@ const isLive = computed(() => {
         <template #icon> <Previous10 /></template>
       </Button>
     </template>
-    <Button v-if="isEpisodePlaying" severity="secondary" rounded @click="togglePlay">
+    <Button
+      v-if="isEpisodePlaying && !isStreamLoading"
+      severity="secondary"
+      rounded
+      @click="togglePlay"
+    >
       <template #icon> <PauseIcon /></template>
     </Button>
-    <Button v-else severity="secondary" rounded @click="togglePlay">
+    <Button v-else-if="!isStreamLoading" severity="secondary" rounded @click="togglePlay">
       <template #icon> <PlayIcon /></template>
     </Button>
+    <Button v-if="isStreamLoading" severity="secondary" rounded>
+      <template #icon>
+        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i
+      ></template>
+    </Button>
+
     <template v-if="!props.hideSkip">
       <Button v-if="!isLive" severity="secondary" rounded @click="skipAhead">
         <template #icon> <Next10 /></template>

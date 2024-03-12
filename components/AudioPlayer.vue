@@ -18,7 +18,7 @@ import {
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
-  usePlayerSeek,
+  //usePlayerSeek,
   useIsNetworkConnected,
   //useAdvertisingRestriction,
   useAdvertisingId,
@@ -60,7 +60,7 @@ const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
-const playerSeek = usePlayerSeek()
+//const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const isNetworkConnected = useIsNetworkConnected()
 const advertisingId = useAdvertisingId()
@@ -128,15 +128,15 @@ watch(skipAheadTrigger, () => {
 watch(skipBackTrigger, () => {
   if (playerRef.value) playerRef.value.skipBack()
 })
-watch(
-  playerSeek,
-  (e) => {
-    if (playerRef.value) {
-      playerRef.value.scrubTimelineEnd(e.time)
-    }
-  },
-  { deep: true }
-)
+// watch(
+//   playerSeek,
+//   (e) => {
+//     if (playerRef.value) {
+//       playerRef.value.scrubTimelineEnd(e.time)
+//     }
+//   },
+//   { deep: true }
+// )
 
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
@@ -191,7 +191,7 @@ const togglePlayHere = (e) => {
 //remoteControl.requestGoogleCast()
 //}
 
-/* 
+/*
 the url that comes down from publisher is in currentEpisode.value
 then if we are in the App env, we check if the url has a param(a "?" already)
 then we grab the asID and the restriction value (0 default or 1)

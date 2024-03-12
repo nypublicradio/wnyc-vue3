@@ -553,7 +553,7 @@ export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
 
 
 // handles saving a favorite or recently played item
-// if a duplicate existingRecord is found, it removed the original and adds the new one
+// if a duplicate existingRecord is found, it removes the original and adds the new one
 export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
   const user = useCurrentUser()
   if (user.value) {
@@ -563,8 +563,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
       .from(tableArg)
       .select('*')
       .eq("uid", user.value.id)
-      .eq('slug', media?.slug);
-
+      .eq('slug', media?.meta.slug);
     if (existingError) throw existingError;
     if (existingRecord && existingRecord.length > 0) {
       await deleteFavorite(existingRecord[0], tableArg)

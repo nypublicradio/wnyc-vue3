@@ -7,6 +7,7 @@ import {
   useCurrentUser,
   useCurrentUserProfile,
   useEditProfileSideBar,
+  useIsLiveStream,
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
@@ -15,6 +16,7 @@ const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
+const isLiveStream = useIsLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
@@ -124,6 +126,10 @@ const onUpdateStation = () => {
     "Settings Sidebar - Listening Preferences",
     currentUserProfile.value.default_live_stream.station
   )
+  // if not playing, update the live stream so the home page updates with the new default stream
+  if (!isLiveStream.value) {
+    updateLiveStream(currentUserProfile.value.default_live_stream.slug)
+  }
 }
 
 const accountHeader = computed(() => {

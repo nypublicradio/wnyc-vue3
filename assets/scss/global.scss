@@ -456,6 +456,14 @@ a:visited {
   }
 }
 
+// dotmenu pi icons
+.p-dropdown-item {
+  .pi {
+    font-size: 24px;
+    padding: 0 4px;
+  }
+}
+
 @mixin cardTitle() {
   font-size: 0.875rem;
   line-height: 1.25rem;

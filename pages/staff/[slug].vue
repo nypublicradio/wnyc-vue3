@@ -2,6 +2,7 @@
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { trackClickEvent, goToStoryPage } from "~/utilities/helpers"
 import { useIntersectionObserver } from "@vueuse/core"
+import { useGlobalToast } from "~/composables/states"
 //import { trackClickEvent } from '~/utilities/helpers'
 //import { StaffPage } from '../../composables/types/Page'
 //import { ArticlePage } from '~/composables/types/Page'
@@ -40,15 +41,27 @@ let offset = 0
 // load more articles by the author, triggered by the lazy load observer
 const loadMore = async () => {
   pendingMore.value = true
-  const additionalPageData = await $fetch(
-    `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
-  )
-  pendingMore.value = false
-  newPageData.value.articles = [
-    ...newPageData.value.articles,
-    ...additionalPageData.articles,
-  ]
-  trackClickEvent("Event Tracking - load more articles", "Shows Page", staffSlug)
+  try {
+    const additionalPageData = await $fetch(
+      `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
+    )
+    pendingMore.value = false
+    newPageData.value.articles = [
+      ...newPageData.value.articles,
+      ...additionalPageData.articles,
+    ]
+    trackClickEvent("Event Tracking - load more articles", "Shows Page", staffSlug)
+  } catch (e) {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "Sorry. We are having trouble loading more articles. Please try again later.",
+      life: null,
+      closable: true,
+    }
+    console.error("error = ", e)
+  }
 }
 const authorName = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
 
