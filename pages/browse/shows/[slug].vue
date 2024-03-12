@@ -13,7 +13,7 @@ import {
   hasAudio,
   addToFavorites,
 } from "~/utilities/helpers"
-import { useCurrentUser, useIsEpisodePlaying } from "~/composables/states"
+import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
 import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const config = useRuntimeConfig()
@@ -55,16 +55,28 @@ const loadMore = async () => {
   page.value += 1
   //console.log("page.value", page.value)
   pendingMore.value = true
-  const moreShows = await $fetch(
-    `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
-  )
-  pendingMore.value = false
-  episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
-  trackClickEvent(
-    "Event Tracking - load more episodes",
-    "Shows Page",
-    show.value.show.title
-  )
+  try {
+    const moreShows = await $fetch(
+      `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
+    )
+    pendingMore.value = false
+    episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
+    trackClickEvent(
+      "Event Tracking - load more episodes",
+      "Shows Page",
+      show.value.show.title
+    )
+  } catch (error) {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "Sorry. We are having trouble loading more episodes. Please try again later.",
+      life: null,
+      closable: true,
+    }
+    console.error("error = ", error)
+  }
 }
 
 const user = useCurrentUser()

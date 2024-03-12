@@ -9,6 +9,7 @@ import {
   useAllCurrentStations,
   useIsEpisodePlaying,
   useIsStreamLoading,
+  useGlobalToast,
 } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -138,18 +139,30 @@ const clearAllTimeout = () => {
 const fetchSchedule = async () => {
   clearAllTimeout()
   scheduleRef.value = null
-  const schedule = await $fetch(
-    `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
-    { method: "POST" }
-  )
-  scheduleRef.value = schedule
-  // init setTimeouts to refetch the schedule when the current event starts
+  try {
+    const schedule = await $fetch(
+      `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
+      { method: "POST" }
+    )
+    scheduleRef.value = schedule
+    // init setTimeouts to refetch the schedule when the current event starts
 
-  if (scheduleRef.value[0]) {
-    // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-    const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
-    //console.log("delay", delay)
-    timeout = setTimeout(fetchSchedule, delay)
+    if (scheduleRef.value[0]) {
+      // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
+      const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
+      //console.log("delay", delay)
+      timeout = setTimeout(fetchSchedule, delay)
+    }
+  } catch (error) {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "Sorry. We are having trouble getting the schedule. Please try again later.",
+      life: null,
+      closable: true,
+    }
+    console.error("error = ", error)
   }
 }
 
