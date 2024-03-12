@@ -1,4 +1,4 @@
-import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, } from '~/composables/states'
+import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, useGlobalToast } from '~/composables/states'
 import { saveRecentlyPlayed } from '~/utilities/helpers'
 
 
@@ -6,10 +6,21 @@ import { saveRecentlyPlayed } from '~/utilities/helpers'
 export async function updateLiveStream(slug: string) {
     const config = useRuntimeConfig()
     //BFF
-    const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
-    const currentEpisodeHolder = useCurrentEpisodeHolder()
-    currentEpisodeHolder.value = fetchData
-    saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE)
+    try {
+        const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
+        const currentEpisodeHolder = useCurrentEpisodeHolder()
+        currentEpisodeHolder.value = fetchData
+        saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE)
+    } catch (error) {
+        const globalToast = useGlobalToast()
+        globalToast.value = {
+            severity: "error",
+            summary: "Sorry. We are having trouble with the live stream. Please try again later.",
+            life: null,
+            closable: true,
+        }
+        console.error('error = ', error)
+    }
 }
 
 export async function updateAllLiveStreams() {
@@ -18,25 +29,36 @@ export async function updateAllLiveStreams() {
     const currentUserProfile = useCurrentUserProfile()
     const config = useRuntimeConfig()
     // BFF
-    const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
-    //console.log('fetchingAll = ', fetchingAll.value)
-    // set all streams
-    allCurrentStations.value = fetchingAll.filter(Boolean)
-    //allCurrentStations.value = allCurrentStationsImport
+    try {
+        const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
+        //console.log('fetchingAll = ', fetchingAll.value)
+        // set all streams
+        allCurrentStations.value = fetchingAll.filter(Boolean)
+        //allCurrentStations.value = allCurrentStationsImport
 
-    // set initial stream with the `currentStreamStation` value in the states.ts file
-    const initialStation = allCurrentStations.value.find(
-        (option) => {
-            //console.log('currentUserProfile.value  = ', currentUserProfile.value)
-            if (currentUserProfile.value) {
-                const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
-                return option.station === profile
-            } else {
-                return null
+        // set initial stream with the `currentStreamStation` value in the states.ts file
+        const initialStation = allCurrentStations.value.find(
+            (option) => {
+                //console.log('currentUserProfile.value  = ', currentUserProfile.value)
+                if (currentUserProfile.value) {
+                    const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
+                    return option.station === profile
+                } else {
+                    return null
+                }
             }
-        }
-    )
+        )
 
-    currentEpisodeHolder.value = initialStation
-    //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
+        currentEpisodeHolder.value = initialStation
+        //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
+    } catch (error) {
+        const globalToast = useGlobalToast()
+        globalToast.value = {
+            severity: "error",
+            summary: "Sorry. We are having trouble with the live stream. Please try again later.",
+            life: null,
+            closable: true,
+        }
+        console.error('error = ', error)
+    }
 }
