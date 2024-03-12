@@ -7,10 +7,8 @@ import {
   prepForPlayer,
 } from "~/utilities/helpers"
 import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
-import { useToast } from "primevue/usetoast"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
-const toast = useToast()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 

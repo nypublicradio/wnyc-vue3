@@ -11,7 +11,6 @@ import {
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
-import { is } from "date-fns/locale"
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -129,7 +128,6 @@ const onUpdateStation = () => {
   )
   // if not playing, update the live stream so the home page updates with the new default stream
   if (!isLiveStream.value) {
-    alert("update")
     updateLiveStream(currentUserProfile.value.default_live_stream.slug)
   }
 }

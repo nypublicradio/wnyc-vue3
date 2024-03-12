@@ -51,7 +51,7 @@ const loadMore = async () => {
       ...additionalPageData.articles,
     ]
     trackClickEvent("Event Tracking - load more articles", "Shows Page", staffSlug)
-  } catch (error) {
+  } catch (e) {
     const globalToast = useGlobalToast()
     globalToast.value = {
       severity: "error",
@@ -60,7 +60,7 @@ const loadMore = async () => {
       life: null,
       closable: true,
     }
-    console.error("error = ", error)
+    console.error("error = ", e)
   }
 }
 const authorName = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`

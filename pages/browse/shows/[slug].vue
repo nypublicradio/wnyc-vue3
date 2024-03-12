@@ -66,7 +66,7 @@ const loadMore = async () => {
       "Shows Page",
       show.value.show.title
     )
-  } catch (error) {
+  } catch (e) {
     const globalToast = useGlobalToast()
     globalToast.value = {
       severity: "error",
@@ -75,7 +75,7 @@ const loadMore = async () => {
       life: null,
       closable: true,
     }
-    console.error("error = ", error)
+    console.error("error = ", e)
   }
 }
 

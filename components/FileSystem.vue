@@ -2,19 +2,19 @@
 import { goToEpisodePage, goToStoryPage, trackClickEvent } from "~/utilities/helpers"
 import { deleteDirectory } from "~/utilities/file-system"
 import {
-  useFileSystem,
+  //useFileSystem,
   useFileSystemLS,
   useIsNetworkConnected,
 } from "~/composables/states"
 
 import { mediaTypes } from "~/composables/globals"
 
-const fileSystem = useFileSystem()
+//const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
 const isNetworkConnected = useIsNetworkConnected()
 
-const used = ref(0)
-const granted = ref(0)
+// const used = ref(0)
+// const granted = ref(0)
 
 // get the used and granted storage
 // watch(
