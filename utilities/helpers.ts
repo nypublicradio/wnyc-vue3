@@ -446,12 +446,10 @@ export const getAndSetUserProfile = async () => {
     if (error) {
       console.error(error)
     } else if (data) {
-      console.log('data = ', data)
       if (data.initial) {
         // if first time logging in with new profile
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
-        console.log('ls = ', ls)
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
@@ -461,7 +459,6 @@ export const getAndSetUserProfile = async () => {
 
         // update supabase profile data
         // set the supabase prferences with what is currently set in the local storage
-        console.log('data after = ', data)
         await client
           .from("profiles")
           .update({
@@ -473,7 +470,6 @@ export const getAndSetUserProfile = async () => {
             text_size: ls.text_size,
           })
           .match({ id: currentUser.value.id })
-        console.log('profile updated')
 
         // set the current user profile state
         currentUserProfile.value = data
