@@ -147,7 +147,7 @@ const fetchSchedule = async () => {
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
-      timeout = setTimeout(() => fetchSchedule(), delay)
+      timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
     const globalToast = useGlobalToast()
@@ -161,13 +161,16 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
-watch(
-  currentStreamStation,
-  () => {
-    fetchSchedule()
-  },
-  { immediate: true }
-)
+// watch(
+//   currentStreamStation,
+//   () => {
+//     fetchSchedule()
+//   },
+//   { immediate: true }
+// )
+watchEffect(() => {
+  fetchSchedule()
+})
 onBeforeUnmount(() => {
   clearAllTimeout()
 })
