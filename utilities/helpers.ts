@@ -16,7 +16,7 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -414,36 +414,47 @@ export const getAndSetUserProfile = async () => {
     if (error) {
       console.error(error)
     } else if (data) {
+      console.log('data = ', data)
       if (data.initial) {
         // if first time logging in with new profile
-        const lsSTRING = await Preferences.get({ key: "localUserProfile" })
+        const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
+        console.log('ls = ', ls)
         data.initial = false
         data.autodownload = ls.autodownload
-        data.default_live_stream = ls.default_live_stream.label
+        data.default_live_stream = ls.default_live_stream
         data.receive_general_notifications = ls.receive_general_notifications
         data.dark_mode = ls.dark_mode
-        data.text_size = ls.text_size.label
+        data.text_size = ls.text_size
 
         // update supabase profile data
         // set the supabase prferences with what is currently set in the local storage
+        console.log('data after = ', data)
         await client
           .from("profiles")
           .update({
             initial: false,
             autodownload: ls.autodownload,
-            default_live_stream: ls.default_live_stream.label,
+            default_live_stream: ls.default_live_stream,
             receive_general_notifications: ls.receive_general_notifications,
             dark_mode: ls.dark_mode,
-            text_size: ls.text_size.label,
+            text_size: ls.text_size,
           })
           .match({ id: currentUser.value.id })
+        console.log('profile updated')
+
+        // set the current user profile state
+        currentUserProfile.value = data
+        updateAllLiveStreams()
+        setDisplaySettings(data)
+      } else {
+
+        // set the current user profile state
+        currentUserProfile.value = data
+        updateAllLiveStreams()
+        setDisplaySettings(data)
       }
 
-      // set the current user profile state
-      currentUserProfile.value = data
-      updateAllLiveStreams()
-      setDisplaySettings(data)
     }
   }
 
@@ -468,7 +479,7 @@ export const getAndSetUserProfile = async () => {
       // initially set default user profile settings or use the local storage settings
 
       // does local storage settings exist?
-      const isLocalUserProfile = await Preferences.get({ key: "localUserProfile" })
+      const isLocalUserProfile = await Preferences.get({ key: localUserProfileKey })
       if (!isLocalUserProfile.value) {
         // no, set defaults from localUserProfileDefault state
         const defaults = localUserProfileDefault.value
@@ -478,7 +489,7 @@ export const getAndSetUserProfile = async () => {
 
         const defaultsSTRING = JSON.stringify(defaults)
         await Preferences.set({
-          key: "localUserProfile",
+          key: localUserProfileKey,
           value: defaultsSTRING,
         })
         currentUserProfile.value = localUserProfileDefault.value
@@ -494,13 +505,13 @@ export const getAndSetUserProfile = async () => {
         //set display settings
         setDisplaySettings(currentUserProfile.value)
       }
-      //navigateTo('/home')
     } else {
       // if they are a user, get their profile data
-      getProfile()
-      getFavoritedItems()
+      await getProfile()
+      await getFavoritedItems()
     }
   }
+
 }
 interface SavedItem {
   uid: string

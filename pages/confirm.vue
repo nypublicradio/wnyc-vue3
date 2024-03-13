@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { getAndSetUserProfile } from '~/utilities/helpers'
+import { getAndSetUserProfile } from "~/utilities/helpers"
 useHead({
   bodyAttrs: {
-    class:
-      'no-bottom-padding hide-bottom-menu background-gradient style-mode-dark',
+    class: "no-bottom-padding hide-bottom-menu background-gradient style-mode-dark",
   },
 })
 
 definePageMeta({
-  layout: 'default',
+  layout: "default",
 })
 
 const user = useSupabaseUser()
@@ -17,10 +16,9 @@ watch(
   async () => {
     if (user.value) {
       await nextTick()
-      getAndSetUserProfile()
-      return navigateTo('/home')
+      await getAndSetUserProfile()
+      navigateTo("/home")
     }
-    return null
   },
   { immediate: true }
 )

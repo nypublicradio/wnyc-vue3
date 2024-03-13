@@ -1,5 +1,7 @@
 import { useIsApp } from "./states"
 
+export const localUserProfileKey = 'localUserProfile'
+
 export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
