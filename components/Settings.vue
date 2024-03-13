@@ -11,6 +11,7 @@ import {
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
+import { localUserProfileKey } from "~/composables/globals"
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -89,7 +90,7 @@ const updateProfile = async () => {
   } else {
     const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
     await Preferences.set({
-      key: "localUserProfile",
+      key: localUserProfileKey,
       value: currentUserProfileSTRING,
     })
     setTimeout(() => {

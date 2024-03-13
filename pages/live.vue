@@ -104,15 +104,11 @@ onMounted(() => {
   }, 200)
 })
 
-watch(
-  currentEpisodeHolder,
-  () => {
-    setTimeout(() => {
-      scrollToActiveStation()
-    }, 200)
-  },
-  { immediate: true }
-)
+watch(currentEpisodeHolder, () => {
+  setTimeout(() => {
+    scrollToActiveStation()
+  }, 200)
+})
 
 // Function to calculate the time difference between now and the target time
 function getTimeDifference(targetTime) {
@@ -150,7 +146,6 @@ const fetchSchedule = async () => {
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
-      //console.log("delay", delay)
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
@@ -165,14 +160,16 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
-
-watch(
-  currentStreamStation,
-  () => {
-    fetchSchedule()
-  },
-  { immediate: true }
-)
+// watch(
+//   currentStreamStation,
+//   () => {
+//     fetchSchedule()
+//   },
+//   { immediate: true }
+// )
+watchEffect(() => {
+  fetchSchedule()
+})
 onBeforeUnmount(() => {
   clearAllTimeout()
 })

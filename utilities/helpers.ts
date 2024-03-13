@@ -16,7 +16,7 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -390,6 +390,38 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
   }
 }
 
+// get the current user's favorited items
+export const getFavoritedItems = async () => {
+  const favorites = useCurrentUserFavorites()
+  const user = useCurrentUser()
+  if (user.value) {
+    const client = useSupabaseClient()
+    const { data, error } = await client
+      .from("favorited")
+      .select("*")
+      .eq("uid", user.value.id)
+
+    if (error) {
+      console.error("favorited items error", error)
+    }
+    favorites.value = data
+  }
+}
+
+// check if an item is favorited
+export const checkIsFavorited = (slug: string) => {
+  const user = useCurrentUser()
+  if (user.value) {
+    const favorites = useCurrentUserFavorites()
+    if (favorites.value) {
+      const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
+      return result ? true : false
+    }
+  }
+  return false
+}
+
+
 // time converter
 export const convertTime = (val) => {
   const hhmmss = new Date(val * 1000).toISOString().substring(11, 19)
@@ -416,14 +448,14 @@ export const getAndSetUserProfile = async () => {
     } else if (data) {
       if (data.initial) {
         // if first time logging in with new profile
-        const lsSTRING = await Preferences.get({ key: "localUserProfile" })
+        const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
         data.initial = false
         data.autodownload = ls.autodownload
-        data.default_live_stream = ls.default_live_stream.label
+        data.default_live_stream = ls.default_live_stream
         data.receive_general_notifications = ls.receive_general_notifications
         data.dark_mode = ls.dark_mode
-        data.text_size = ls.text_size.label
+        data.text_size = ls.text_size
 
         // update supabase profile data
         // set the supabase prferences with what is currently set in the local storage
@@ -432,18 +464,25 @@ export const getAndSetUserProfile = async () => {
           .update({
             initial: false,
             autodownload: ls.autodownload,
-            default_live_stream: ls.default_live_stream.label,
+            default_live_stream: ls.default_live_stream,
             receive_general_notifications: ls.receive_general_notifications,
             dark_mode: ls.dark_mode,
-            text_size: ls.text_size.label,
+            text_size: ls.text_size,
           })
           .match({ id: currentUser.value.id })
+
+        // set the current user profile state
+        currentUserProfile.value = data
+        updateAllLiveStreams()
+        setDisplaySettings(data)
+      } else {
+
+        // set the current user profile state
+        currentUserProfile.value = data
+        updateAllLiveStreams()
+        setDisplaySettings(data)
       }
 
-      // set the current user profile state
-      currentUserProfile.value = data
-      updateAllLiveStreams()
-      setDisplaySettings(data)
     }
   }
 
@@ -468,7 +507,7 @@ export const getAndSetUserProfile = async () => {
       // initially set default user profile settings or use the local storage settings
 
       // does local storage settings exist?
-      const isLocalUserProfile = await Preferences.get({ key: "localUserProfile" })
+      const isLocalUserProfile = await Preferences.get({ key: localUserProfileKey })
       if (!isLocalUserProfile.value) {
         // no, set defaults from localUserProfileDefault state
         const defaults = localUserProfileDefault.value
@@ -478,7 +517,7 @@ export const getAndSetUserProfile = async () => {
 
         const defaultsSTRING = JSON.stringify(defaults)
         await Preferences.set({
-          key: "localUserProfile",
+          key: localUserProfileKey,
           value: defaultsSTRING,
         })
         currentUserProfile.value = localUserProfileDefault.value
@@ -494,13 +533,13 @@ export const getAndSetUserProfile = async () => {
         //set display settings
         setDisplaySettings(currentUserProfile.value)
       }
-      //navigateTo('/home')
     } else {
       // if they are a user, get their profile data
-      getProfile()
-      getFavoritedItems()
+      await getProfile()
+      await getFavoritedItems()
     }
   }
+
 }
 interface SavedItem {
   uid: string
@@ -609,34 +648,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
 }
 
 
-export const getFavoritedItems = async () => {
-  const favorites = useCurrentUserFavorites()
-  const user = useCurrentUser()
-  if (user.value) {
-    const client = useSupabaseClient()
-    const { data, error } = await client
-      .from("favorited")
-      .select("*")
-      .eq("uid", user.value.id)
 
-    if (error) {
-      console.error("favorited items error", error)
-    }
-    favorites.value = data
-  }
-}
-
-export const checkIsFavorited = (slug: string) => {
-  const user = useCurrentUser()
-  if (user.value) {
-    const favorites = useCurrentUserFavorites()
-    if (favorites.value) {
-      const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
-      return result ? true : false
-    }
-  }
-  return false
-}
 
 export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")

@@ -1,14 +1,14 @@
 <script setup>
-import VSignupWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VSignupWithEmail.vue'
+import VSignupWithEmail from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VSignupWithEmail.vue"
 //import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
-import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import VLoginWithProvider from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue"
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 
 import {
   useSignupSideBar,
   useLoginSideBar,
   useSettingSideBar,
-} from '~/composables/states'
+} from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
 
@@ -23,7 +23,11 @@ const config = useRuntimeConfig()
 const onLoginClick = () => {
   loginSideBar.value = true
   signUpSideBar.value = false
-  trackClickEvent("Click Tracking - log in", "Sign Up Sidebar - user section", "log in link")
+  trackClickEvent(
+    "Click Tracking - log in",
+    "Sign Up Sidebar - user section",
+    "log in link"
+  )
 }
 
 // actions to be taken with the signup link is clicked
@@ -33,7 +37,7 @@ const onSignup = (provider) => {
 
 // close all sidebars
 const closeAll = () => {
-  onSignup('email')
+  onSignup("email")
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
@@ -75,13 +79,13 @@ const closeAll = () => {
         :client="client"
         :config="config"
         label="Sign up"
-        slug="/home"
+        slug="/confirm"
         @login-success="closeAll"
       >
         <template #aboveSubmit>
           <p class="mb-3">
-            By proceeding to create your account, you are agreeing to New York
-            Public Radio's
+            By proceeding to create your account, you are agreeing to New York Public
+            Radio's
             <VFlexibleLink to="/terms">Terms of Service</VFlexibleLink> and
             <VFlexibleLink to="/privacy">Privacy Policy</VFlexibleLink>
           </p>
