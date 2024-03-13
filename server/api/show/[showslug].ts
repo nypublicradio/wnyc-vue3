@@ -11,7 +11,6 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
         if (!page) {
             page = 1;
         }
-
         const option = {
             method: 'GET',
             url: `${config.public.PUBLISHER_BASE_API}v3/story/`,

@@ -10,6 +10,7 @@ import {
   addToFavorites,
 } from "~/utilities/helpers"
 import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
+import { fetchAndStoreMp3 } from "~/utilities/file-system"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
