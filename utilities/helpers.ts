@@ -390,6 +390,38 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
   }
 }
 
+// get the current user's favorited items
+export const getFavoritedItems = async () => {
+  const favorites = useCurrentUserFavorites()
+  const user = useCurrentUser()
+  if (user.value) {
+    const client = useSupabaseClient()
+    const { data, error } = await client
+      .from("favorited")
+      .select("*")
+      .eq("uid", user.value.id)
+
+    if (error) {
+      console.error("favorited items error", error)
+    }
+    favorites.value = data
+  }
+}
+
+// check if an item is favorited
+export const checkIsFavorited = (slug: string) => {
+  const user = useCurrentUser()
+  if (user.value) {
+    const favorites = useCurrentUserFavorites()
+    if (favorites.value) {
+      const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
+      return result ? true : false
+    }
+  }
+  return false
+}
+
+
 // time converter
 export const convertTime = (val) => {
   const hhmmss = new Date(val * 1000).toISOString().substring(11, 19)
@@ -620,34 +652,7 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
 }
 
 
-export const getFavoritedItems = async () => {
-  const favorites = useCurrentUserFavorites()
-  const user = useCurrentUser()
-  if (user.value) {
-    const client = useSupabaseClient()
-    const { data, error } = await client
-      .from("favorited")
-      .select("*")
-      .eq("uid", user.value.id)
 
-    if (error) {
-      console.error("favorited items error", error)
-    }
-    favorites.value = data
-  }
-}
-
-export const checkIsFavorited = (slug: string) => {
-  const user = useCurrentUser()
-  if (user.value) {
-    const favorites = useCurrentUserFavorites()
-    if (favorites.value) {
-      const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
-      return result ? true : false
-    }
-  }
-  return false
-}
 
 export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
