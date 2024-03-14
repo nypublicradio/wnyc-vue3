@@ -24,6 +24,7 @@ const appDirectory = "wnyc-downloads"
 export const fileNameFromURL = (url: string) => {
     let urlWithoutParams = url
     if (url.includes("?")) {
+        alert('split = ' + JSON.stringify(url.split("?")[0]))
         urlWithoutParams = url.split("?")[0]
     }
     return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)
@@ -233,6 +234,9 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
+                const fileImage = file.image.template ?? file.image.url ?? file.image
+
+                alert('fileImage = ' + JSON.stringify(fileImage))
 
                 // create the directory
                 await Filesystem.mkdir({
@@ -243,11 +247,12 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 })
 
                 // Fetch the IMAGE file as a Blob
-                const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
+                const imgUrl = resizePublisherImageUrl(fileImage, 288, 288, 80)
                 //const imgUrlAlt = file.image.url
 
                 // downlaod image
-                const imgNameFromUrl = fileNameFromURL(file.image.url)
+
+                const imgNameFromUrl = fileNameFromURL(fileImage)
                 await Filesystem.downloadFile({
                     url: imgUrl,
                     path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
