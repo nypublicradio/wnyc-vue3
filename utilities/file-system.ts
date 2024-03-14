@@ -236,8 +236,6 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 }
                 const fileImage = file.image.template ?? file.image.url ?? file.image
 
-                alert('fileImage = ' + JSON.stringify(fileImage))
-
                 // create the directory
                 await Filesystem.mkdir({
                     path: `${appDirectory}/${file.id}`,
