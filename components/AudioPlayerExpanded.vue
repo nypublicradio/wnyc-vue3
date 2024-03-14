@@ -51,12 +51,12 @@ const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async () => {
   // update CapacitorJs filesystem
-  progress.value[bucketItem.id] = await fetchAndStoreMp3(currentEpisode.value)
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Expanded Audio Player",
     currentEpisode.value.title
   )
+  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
 }
 
 const handleShare = () => {
@@ -252,7 +252,7 @@ const moreFromClick = () => {
         </Button>
         <DownloadProgress
           v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
-          class="mr-2"
+          class="flex align-items-center"
           :isDownloaded="isAlreadyDownloaded(currentEpisode)"
           :progress="progress[currentEpisode.id]"
         />
