@@ -10,7 +10,7 @@ import {
   addToFavorites,
 } from "~/utilities/helpers"
 import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
-import { fetchAndStoreMp3 } from "~/utilities/file-system"
+import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
@@ -47,11 +47,11 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
-
+const progress = ref({})
 // handle the download of the audio file request and feed the progress
-const handleDownload = () => {
+const handleDownload = async () => {
   // update CapacitorJs filesystem
-  fetchAndStoreMp3(currentEpisode.value)
+  progress.value[bucketItem.id] = await fetchAndStoreMp3(currentEpisode.value)
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Expanded Audio Player",
@@ -250,6 +250,12 @@ const moreFromClick = () => {
         <Button text severity="secondary" rounded @click="handleDownload">
           <template #icon> <DownloadIcon /></template>
         </Button>
+        <DownloadProgress
+          v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
+          class="mr-2"
+          :isDownloaded="isAlreadyDownloaded(currentEpisode)"
+          :progress="progress[currentEpisode.id]"
+        />
       </div>
 
       <div class="flex gap-1">
