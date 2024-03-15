@@ -24,7 +24,7 @@ const appDirectory = "wnyc-downloads"
 export const fileNameFromURL = (url: string) => {
     let urlWithoutParams = url
     if (url.includes("?")) {
-        alert('split = ' + JSON.stringify(url.split("?")[0]))
+        //alert('split = ' + JSON.stringify(url.split("?")[0]))
         urlWithoutParams = url.split("?")[0]
     }
     return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)

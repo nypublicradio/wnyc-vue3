@@ -101,6 +101,23 @@ export const fetchDuration = async (url: string) => {
   }
 }
 
+// returns the rounded up minutes duration of the episode
+export const getMinutes = (ms, mult = 1000) => {
+  const seconds = Math.round(ms / mult)
+  const minutes = Math.round(seconds / 60)
+  return `${minutes} min`
+}
+// returns the rounded up minutes duration of the episode
+export const getMinutes2 = async (item, mult = 1000) => {
+  if (item.estimatedDuration === 0 || item.estimatedDuration === null || item.estimatedDuration === undefined) {
+    const seconds = Math.round(item.estimatedDuration / mult)
+    const minutes = Math.round(seconds / 60)
+    return `${minutes} min`
+  } else {
+    return await fetchDuration(item.audio)
+  }
+}
+
 // returns a resized image url when provided the entire image object
 export const resizePublisherImage = (
   attributes: ImageAttributes,
@@ -317,15 +334,6 @@ export const whenTime = (data) => {
         ? howLongAgo(data.publishAt)
         : howLongAgo(data.firstPublishedAt)
   return res
-}
-
-// returns the rounded up minutes duration of the episode
-export const getMinutes = (ms, mult = 1000) => {
-  const seconds = Math.round(ms / mult)
-  const minutes = Math.round(seconds / 60)
-  //const remainingSeconds = seconds % 60
-  //remainingSeconds > 30 ? minutes++ : minutes
-  return `${minutes} min`
 }
 
 // global funcrtion for copying to clipboard
