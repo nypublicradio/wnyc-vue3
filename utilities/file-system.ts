@@ -33,7 +33,8 @@ export const fileNameFromURL = (url: string) => {
 // check if a file is already downloaded
 export const isAlreadyDownloaded = (file) => {
     const isApp = useIsApp()
-    if (isApp) {
+    const user = useCurrentUser()
+    if (isApp.value && user.value) {
         const fileSystemLS = useFileSystemLS()
         const check = fileSystemLS.value.find((entry) => entry.id === file.id || entry.originalId === file.id)
         const alreadyDownloaded = check === undefined ? false : true

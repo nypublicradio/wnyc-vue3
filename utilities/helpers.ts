@@ -107,16 +107,6 @@ export const getMinutes = (ms, mult = 1000) => {
   const minutes = Math.round(seconds / 60)
   return `${minutes} min`
 }
-// returns the rounded up minutes duration of the episode
-export const getMinutes2 = async (item, mult = 1000) => {
-  if (item.estimatedDuration === 0 || item.estimatedDuration === null || item.estimatedDuration === undefined) {
-    const seconds = Math.round(item.estimatedDuration / mult)
-    const minutes = Math.round(seconds / 60)
-    return `${minutes} min`
-  } else {
-    return await fetchDuration(item.audio)
-  }
-}
 
 // returns a resized image url when provided the entire image object
 export const resizePublisherImage = (

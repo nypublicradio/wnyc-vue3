@@ -75,16 +75,12 @@ watchEffect(async () => {
 
 const estimatedDuration = ref(null)
 
-watch(
-  estimatedDuration,
-  async () => {
-    estimatedDuration.value =
-      props.data.estimatedDuration === 0 || props.data.estimatedDuration === undefined
-        ? await fetchDuration(props.data.audio)
-        : props.data.estimatedDuration
-  },
-  { immediate: true }
-)
+onMounted(async () => {
+  estimatedDuration.value =
+    props.data.estimatedDuration === 0 || props.data.estimatedDuration === undefined
+      ? await fetchDuration(props.data.audio)
+      : props.data.estimatedDuration
+})
 
 // const handleAddToQueue = (bucketItem) => {
 //   // toggle active state
