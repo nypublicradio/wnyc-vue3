@@ -56,7 +56,6 @@ const handleDownload = async () => {
     "Expanded Audio Player",
     currentEpisode.value.title
   )
-  console.log("currentEpisode.value=  ", currentEpisode.value)
   progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
 }
 

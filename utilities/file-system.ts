@@ -190,6 +190,7 @@ const downloadFileToDesktop = async (url, filename) => {
 }
 
 // download and store the mp3 file and image file 
+//# skipcq: JS-0045
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
@@ -315,8 +316,8 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                                 const newFile = {
                                     ...file,
                                     directory: thisFileSystemEntry,
-                                    directoryImage: directoryImage,
-                                    directoryAudio: directoryAudio,
+                                    directoryImage,
+                                    directoryAudio,
                                     id: uniqueDirId,
                                     title: isSegments ? file.segments[index].title : file.title,
                                 }
