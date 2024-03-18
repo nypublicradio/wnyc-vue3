@@ -13,7 +13,9 @@ export const initAdvertisingId = async () => {
         const id = await AdvertisingId.getAdvertisingId()
         advertisingId.value = id.id
 
-        // Save the advertising ID to the deviceId table in supabase here IF the user is logged in
+        if (currentUser) {
+            // Save the advertising ID to the deviceId table in supabase here IF the user is logged in
+        }
     } catch (error) {
         console.error("Error getting advertising ID:", error)
     }
