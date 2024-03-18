@@ -223,6 +223,14 @@ const getConfiguredAudioUrl = computed(() => {
     return url
   }
 })
+
+const handleIsExpanded = (e) => {
+  isPlayerExpanded.value = e
+  // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player
+  setTimeout(() => {
+    initMediaSession(currentEpisode.value, skipTime)
+  }, 300)
+}
 </script>
 
 <template>
@@ -254,7 +262,7 @@ const getConfiguredAudioUrl = computed(() => {
         @is-minimized="updateUseIsPlayerMinimized"
         @is-loading="isStreamLoading = $event"
         @is-live="isLiveStream = $event"
-        @is-expanded="isPlayerExpanded = $event"
+        @is-expanded="handleIsExpanded($event)"
         @duration="currentEpisodeDuration = $event"
         @current-duration="currentEpisodeProgress = $event"
         @ended="episodeEnded"
