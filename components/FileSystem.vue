@@ -63,7 +63,7 @@ const handleDelete = (file) => {
     <div class="file-system">
       <!-- <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
       <div>
-        <div class="flex flex-column gap-4 mt-2">
+        <div class="flex flex-column-reverse gap-4 mt-2">
           <EpisodeItem
             v-for="file in fileSystemLS"
             :data="file"

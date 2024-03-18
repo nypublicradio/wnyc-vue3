@@ -6,7 +6,8 @@ import {
     useCurrentEpisode,
     useGlobalToast,
     useTogglePlayTrigger,
-    useIsApp
+    useIsApp,
+    useCurrentUser
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl } from "~/utilities/helpers"
@@ -23,6 +24,7 @@ const appDirectory = "wnyc-downloads"
 export const fileNameFromURL = (url: string) => {
     let urlWithoutParams = url
     if (url.includes("?")) {
+        //alert('split = ' + JSON.stringify(url.split("?")[0]))
         urlWithoutParams = url.split("?")[0]
     }
     return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)
@@ -31,7 +33,8 @@ export const fileNameFromURL = (url: string) => {
 // check if a file is already downloaded
 export const isAlreadyDownloaded = (file) => {
     const isApp = useIsApp()
-    if (isApp) {
+    const user = useCurrentUser()
+    if (isApp.value && user.value) {
         const fileSystemLS = useFileSystemLS()
         const check = fileSystemLS.value.find((entry) => entry.id === file.id || entry.originalId === file.id)
         const alreadyDownloaded = check === undefined ? false : true
@@ -187,6 +190,7 @@ const downloadFileToDesktop = async (url, filename) => {
 }
 
 // download and store the mp3 file and image file 
+//# skipcq: JS-0045
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
@@ -198,138 +202,151 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
     file.id = uniqueDirId
 
     if (!isApp.value) {
+        // is runnning in the browser
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
-        // check if already downloaded and alert the user
-        const alreadyDownloaded = isAlreadyDownloaded(file)
-        if (alreadyDownloaded) {
-            globalToast.value = {
-                severity: "info",
-                summary: "Already downloaded",
-                life: 3000,
-            }
-            return null
+        // is running as an app
+        // check if user is logged in
+        const user = useCurrentUser()
+        if (!user.value) {
+            // not logged in, prompt the user to log in
+            const accountPromptSideBar = useAccountPromptSideBar()
+            accountPromptSideBar.value = true
         } else {
-            // app download
-            const fileSystem = useFileSystem()
-            const fileSystemLS = useFileSystemLS()
+            // user is logged in
+            // check if already downloaded and alert the user
+            const alreadyDownloaded = isAlreadyDownloaded(file)
+            if (alreadyDownloaded) {
+                globalToast.value = {
+                    severity: "info",
+                    summary: "Already downloaded",
+                    life: 3000,
+                }
+                return null
+            } else {
+                // app download
+                const fileSystem = useFileSystem()
+                const fileSystemLS = useFileSystemLS()
 
-            globalToast.value = {
-                severity: "info",
-                summary: "Download started!",
-                life: 3000,
-            }
+                globalToast.value = {
+                    severity: "info",
+                    summary: "Download started!",
+                    life: 3000,
+                }
+                const fileImage = file.image.template ?? file.image.url ?? file.image
 
-            // create the directory
-            await Filesystem.mkdir({
-                path: `${appDirectory}/${file.id}`,
-                directory: directoryToSaveTo,
-            }).catch((e) => {
-                console.error("Unable to create directory", e)
-            })
-
-            // Fetch the IMAGE file as a Blob
-            const imgUrl = resizePublisherImageUrl(file.image.template, 288, 288, 80)
-            //const imgUrlAlt = file.image.url
-
-            // downlaod image
-            const imgNameFromUrl = fileNameFromURL(file.image.url)
-            await Filesystem.downloadFile({
-                url: imgUrl,
-                path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
-                directory: directoryToSaveTo,
-            })
-                .then(() => {
-                    console.log("image saved")
-                })
-                .catch((e) => {
-                    console.error("Unable to write file", e)
+                // create the directory
+                await Filesystem.mkdir({
+                    path: `${appDirectory}/${file.id}`,
+                    directory: directoryToSaveTo,
+                }).catch((e) => {
+                    console.error("Unable to create directory", e)
                 })
 
-            // download the MP3
-            const audioNameFromUrl = isSegments ? `${slug}.mp3` : fileNameFromURL(file.audio)
+                // Fetch the IMAGE file as a Blob
+                const imgUrl = resizePublisherImageUrl(fileImage, 288, 288, 80)
+                //const imgUrlAlt = file.image.url
 
-            // Add progress listener
-            const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
-            const progressListener = await Filesystem.addListener('progress', (event) => {
-                progress.value = {
-                    loadedBytes: event.bytes,
-                    totalBytes: event.contentLength,
-                    percentage: (event.bytes / event.contentLength) * 100,
-                };
-                //console.log('progress = ', progress.value.percentage)
-            });
+                // downlaod image
 
-            Filesystem.downloadFile({
-                url: isSegments ? file.audio[index] : file.audio,
-                path: `${appDirectory}/${file.id}/${audioNameFromUrl}`,
-                directory: directoryToSaveTo,
-                progress: true,
-            })
-                .then(async (fileURI) => {
-                    // remove the progress listener once the file is downloaded
-                    progressListener.remove();
-                    await updateFileSystem().then(() => {
-
-                        setTimeout(async () => {
-                            // slight delay is needed for the fileSystem to update
-                            await nextTick()
-                            const thisFileSystemEntry = await fileSystem.value.find((entry) =>
-                                fileURI.path.includes(entry.name) ? entry : null)
-
-                            // find the image
-                            const directoryImage = thisFileSystemEntry.files.find((entry) => {
-                                const mainString = entry.name
-                                const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
-
-                                return subStrings.some((substring) => mainString.includes(substring))
-                            })
-
-                            //find the audio
-                            const directoryAudio = thisFileSystemEntry.files.find((entry) => {
-                                const mainString = entry.name
-                                const subStrings = [".mp3"]
-
-                                return subStrings.some((substring) => mainString.includes(substring))
-                            })
-
-                            //append directory,image and aduio to the file object
-                            const newFile = {
-                                ...file,
-                                directory: thisFileSystemEntry,
-                                directoryImage: directoryImage,
-                                directoryAudio: directoryAudio,
-                                id: uniqueDirId,
-                                title: isSegments ? file.segments[index].title : file.title,
-                            }
-                            // add it to the fileSystemLS list
-                            fileSystemLS.value.push(newFile)
-                            // save to local storage, delay needed for some reason
-                            setTimeout(async () => {
-                                await Preferences.set({
-                                    key: localStorageKey,
-                                    value: JSON.stringify(fileSystemLS.value),
-                                })
-                            }, 500)
-
-                            // alert the user
-                            const globalToast = useGlobalToast()
-                            globalToast.value = {
-                                severity: "success",
-                                summary: "Download Complete",
-                                life: 3000,
-                            }
-
-                        }, 500)
+                const imgNameFromUrl = fileNameFromURL(fileImage)
+                await Filesystem.downloadFile({
+                    url: imgUrl,
+                    path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
+                    directory: directoryToSaveTo,
+                })
+                    .then(() => {
+                        console.log("image saved")
                     })
+                    .catch((e) => {
+                        console.error("Unable to write file", e)
+                    })
+
+                // download the MP3
+                const audioNameFromUrl = isSegments ? `${slug}.mp3` : fileNameFromURL(file.audio)
+
+                // Add progress listener
+                const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
+                const progressListener = await Filesystem.addListener('progress', (event) => {
+                    progress.value = {
+                        loadedBytes: event.bytes,
+                        totalBytes: event.contentLength,
+                        percentage: (event.bytes / event.contentLength) * 100,
+                    };
+                    //console.log('progress = ', progress.value.percentage)
+                });
+
+                Filesystem.downloadFile({
+                    url: isSegments ? file.audio[index] : file.audio,
+                    path: `${appDirectory}/${file.id}/${audioNameFromUrl}`,
+                    directory: directoryToSaveTo,
+                    progress: true,
                 })
-                .catch((e) => {
-                    console.error("Unable to write file", e)
-                })
-            return progress
+                    .then(async (fileURI) => {
+                        // remove the progress listener once the file is downloaded
+                        progressListener.remove();
+                        await updateFileSystem().then(() => {
+
+                            setTimeout(async () => {
+                                // slight delay is needed for the fileSystem to update
+                                await nextTick()
+                                const thisFileSystemEntry = await fileSystem.value.find((entry) =>
+                                    fileURI.path.includes(entry.name) ? entry : null)
+
+                                // find the image
+                                const directoryImage = thisFileSystemEntry.files.find((entry) => {
+                                    const mainString = entry.name
+                                    const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+
+                                    return subStrings.some((substring) => mainString.includes(substring))
+                                })
+
+                                //find the audio
+                                const directoryAudio = thisFileSystemEntry.files.find((entry) => {
+                                    const mainString = entry.name
+                                    const subStrings = [".mp3"]
+
+                                    return subStrings.some((substring) => mainString.includes(substring))
+                                })
+
+                                //append directory,image and aduio to the file object
+                                const newFile = {
+                                    ...file,
+                                    directory: thisFileSystemEntry,
+                                    directoryImage,
+                                    directoryAudio,
+                                    id: uniqueDirId,
+                                    title: isSegments ? file.segments[index].title : file.title,
+                                }
+                                // add it to the fileSystemLS list
+                                fileSystemLS.value.push(newFile)
+                                // save to local storage, delay needed for some reason
+                                setTimeout(async () => {
+                                    await Preferences.set({
+                                        key: localStorageKey,
+                                        value: JSON.stringify(fileSystemLS.value),
+                                    })
+                                }, 500)
+
+                                // alert the user
+                                const globalToast = useGlobalToast()
+                                globalToast.value = {
+                                    severity: "success",
+                                    summary: "Download Complete",
+                                    life: 3000,
+                                }
+
+                            }, 500)
+                        })
+                    })
+                    .catch((e) => {
+                        console.error("Unable to write file", e)
+                    })
+                return progress
+            }
         }
     }
 }

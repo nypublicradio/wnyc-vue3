@@ -46,7 +46,6 @@ const fcmToken = ref("")
 const appLaunchUrl = ref(null)
 
 isApp.value = Capacitor.getPlatform() !== "web"
-
 useHead({
   htmlAttrs: {
     lang: "en",

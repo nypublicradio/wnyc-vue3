@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
+import { fetchDuration, getMinutes } from "~/utilities/helpers"
 
 import {
   useCurrentEpisode,
@@ -72,6 +73,19 @@ watch(
     immediate: true,
   }
 )
+const durationLabel = ref(props.label)
+// fetch minutes if not available
+onMounted(() => {
+  if (
+    props.label === "0 min" ||
+    props.label === "NaN min" ||
+    props.label === "error min"
+  ) {
+    fetchDuration(props.data.audio).then((res) => {
+      durationLabel.value = getMinutes(res, 1)
+    })
+  }
+})
 </script>
 
 <template>
@@ -108,7 +122,7 @@ watch(
       </slot>
       <slot>
         <div class="content flex white-space-nowrap align-items-center">
-          <span class="center">{{ props.label }}</span>
+          <span class="center">{{ durationLabel }}</span>
           <LiveBadge
             v-if="props.live"
             font-size="14px"

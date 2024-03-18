@@ -361,12 +361,15 @@ onUnmounted(() => {
       }
       .station-options {
         //margin: 10px 0;
+        word-wrap: break-word;
+        width: 100%;
         img {
           width: 40px !important;
           height: 40px !important;
         }
         .option {
           font-size: 16px;
+          white-space: wrap;
         }
         &.selected {
           @include checkMark;
@@ -375,6 +378,7 @@ onUnmounted(() => {
       .custom-icon {
         width: 2rem;
         height: 2rem;
+        flex: none;
       }
     }
   }
