@@ -224,6 +224,7 @@ const getConfiguredAudioUrl = computed(() => {
   }
 })
 
+// function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
   // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player

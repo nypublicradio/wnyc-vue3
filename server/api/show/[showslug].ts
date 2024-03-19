@@ -2,7 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { checkUrl404 } from '~/utilities/helpers'
+//import { checkUrl404 } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
 

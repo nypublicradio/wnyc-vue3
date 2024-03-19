@@ -24,7 +24,7 @@ import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from '@capacitor/clipboard';
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
-
+// function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
     const response = await axios(url, { method: 'HEAD' });

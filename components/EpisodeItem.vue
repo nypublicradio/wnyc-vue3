@@ -100,7 +100,6 @@ const handleAddToFavorites = (bucketItem) => {
 const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
-  console.log("bucketItem", bucketItem)
   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
