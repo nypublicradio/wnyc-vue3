@@ -16,7 +16,7 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey, missingAudioText } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -116,7 +116,7 @@ export const fetchDuration = async (url: string) => {
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
   const minutes = Math.round(seconds / 60)
-  return Number.isNaN(minutes) ? "Audio Missing" : `${minutes} min`
+  return Number.isNaN(minutes) || ms === 0 || ms === null || ms === '' ? missingAudioText : `${minutes} min`
 }
 
 // returns a resized image url when provided the entire image object

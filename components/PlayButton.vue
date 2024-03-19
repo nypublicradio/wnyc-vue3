@@ -2,7 +2,7 @@
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import { fetchDuration, getMinutes } from "~/utilities/helpers"
-
+import { missingAudioText } from "~/composables/globals"
 import {
   useCurrentEpisode,
   useIsStreamLoading,
@@ -20,7 +20,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const props = defineProps({
   label: {
     type: String,
-    default: null,
+    default: "Play",
   },
   live: {
     type: Boolean,
@@ -77,15 +77,17 @@ const durationLabel = ref(props.label)
 const durationFetchPending = ref(true)
 // fetch minutes if not available
 onMounted(() => {
-  if (
-    props.label === "0 min" ||
-    props.label === "NaN min" ||
-    props.label === "error min"
-  ) {
-    fetchDuration(props.data.audio).then((res) => {
-      durationLabel.value = getMinutes(res, 1)
-      durationFetchPending.value = false
-    })
+  if (props.label === missingAudioText) {
+    fetchDuration(props.data.audio)
+      .then((res) => {
+        durationLabel.value = getMinutes(res, 1)
+        durationFetchPending.value = false
+      })
+      .catch((error) => {
+        durationLabel.value = missingAudioText
+        durationFetchPending.value = false
+        console.error("error = ", error)
+      })
   } else {
     durationFetchPending.value = false
   }

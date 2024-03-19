@@ -7,6 +7,8 @@ export const cmsSources = {
     WAGTAIL: 'wagtail',
 }
 
+export const missingAudioText = 'Audio not available'
+
 export const mediaTypes = {
     LIVE: 'live',
     SHOW: 'show',
