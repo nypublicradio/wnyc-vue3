@@ -131,6 +131,7 @@ const clearAllTimeout = () => {
   if (timeout) {
     console.log("clear timeout...")
     clearTimeout(timeout)
+    timeout = null
   }
 }
 
@@ -150,6 +151,7 @@ const fetchSchedule = async () => {
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
+      alert("delay = " + JSON.stringify(delay))
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
@@ -165,14 +167,14 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
-watch(currentStreamStation, () => {
+watch(currentStreamStation, async () => {
   console.log("watching currentStreamStation...")
-  fetchSchedule()
+  await fetchSchedule()
 })
 
-onMounted(() => {
+onMounted(async () => {
   console.log("INITIAL fetch")
-  fetchSchedule()
+  await fetchSchedule()
 })
 
 onUnmounted(() => {
