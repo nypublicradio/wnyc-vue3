@@ -95,7 +95,7 @@ watch(storyData, async () => {
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
-    article_authors: storyData.value?.authors.map((author) => author.name).join(","),
+    article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
     article_publish_date: storyData.value?.publicationDate,
     article_updated_date: storyData.value?.updatedDate
       ? storyData.value?.updatedDate

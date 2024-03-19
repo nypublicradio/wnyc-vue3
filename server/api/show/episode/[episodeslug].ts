@@ -25,7 +25,6 @@ const getEpisode = async (slug: string) => {
         }
 
         resData.cmsSource = cmsSources.PUBLISHER
-
         resData = normalizeArticlePage(resData)
 
         //Passing meta and data separately to the client. Meta is to used for pagination

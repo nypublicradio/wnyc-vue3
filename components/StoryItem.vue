@@ -206,7 +206,7 @@ const handleClick = () => {
                   <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
                   <!-- FROM CapacitorJS Preferences local storage -->
                   <!-- <DownloadProgress
-                    v-if="Object.keys(progress).length > 0 || isAlreadyDownloaded(props.data)"
+                    v-if="(progress && Object.keys(progress).length > 0) || isAlreadyDownloaded(props.data)"
                     :isDownloaded="isAlreadyDownloaded(props.data)"
                     :progress="progress"
                     small

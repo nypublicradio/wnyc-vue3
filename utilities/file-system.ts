@@ -13,21 +13,49 @@ import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl } from "~/utilities/helpers"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
-
+import axios from 'axios'
+import { el } from "date-fns/locale";
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
 // directory to save to in the CapacitorJS FileSystem
 const directoryToSaveTo = Directory.External
 const appDirectory = "wnyc-downloads"
 
+// check if a file has an extension
+const hasExtension = (filename) => {
+    const lastDotIndex = filename.lastIndexOf('.');
+    return lastDotIndex !== -1 && lastDotIndex < filename.length - 1;
+};
+
+// fetch the image mime type
+const fetchImageMimeType = async (imageUrl) => {
+    try {
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+        return response.headers['content-type'];
+    } catch (error) {
+        return 'image/jpeg';
+    }
+};
+
 // get the file name from a URL
-export const fileNameFromURL = (url: string) => {
+export const fileNameFromURL = async (url: string) => {
     let urlWithoutParams = url
     if (url.includes("?")) {
-        //alert('split = ' + JSON.stringify(url.split("?")[0]))
         urlWithoutParams = url.split("?")[0]
     }
-    return urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)
+    const name = urlWithoutParams.substring(urlWithoutParams.lastIndexOf("/") + 1)
+    if (hasExtension(name)) {
+        return name
+    } else {
+        const mimeType = await fetchImageMimeType(url)
+        if (mimeType === 'image/jpeg') {
+            return `${name}.jpg`
+        } else if (mimeType === 'image/png') {
+            return `${name}.png`
+        } else if (mimeType === 'audio/mpeg') {
+            return `${name}.mp3`
+        }
+    }
 }
 
 // check if a file is already downloaded
@@ -108,7 +136,7 @@ const createAppDirectory = async () => {
 export const initReadOfPreferences = async () => {
     let val = []
     try {
-        const { value } = await Preferences.get({ key: "fileSystemLS" })
+        const { value } = await Preferences.get({ key: localStorageKey })
         val = value ?? "[]"
     } catch (error) {
         console.error("preference read error = ", error)
@@ -192,6 +220,7 @@ const downloadFileToDesktop = async (url, filename) => {
 // download and store the mp3 file and image file 
 //# skipcq: JS-0045
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
+    console.log('file = ', file)
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
     const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false
@@ -258,7 +287,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     imgNameFromUrl = `${fileImage}.jpg`
                 } else {
                     imgUrl = resizePublisherImageUrl(fileImage, 288, 288, 80)
-                    imgNameFromUrl = fileNameFromURL(fileImage)
+                    imgNameFromUrl = await fileNameFromURL(imgUrl)
                 }
 
                 // downlaod image
