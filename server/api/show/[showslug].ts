@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
+//import { checkUrl404 } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
 
@@ -30,6 +31,11 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
             //     resData[i].attributes['estimated-duration'] = await fetchDuration(url)
             // }
 
+            // this checks if the audio url is a 404 and removes it by assigning an emptry string to the audio file key, but it slows down the page load
+            // if (await checkUrl404(resData[i].attributes.audio)) {
+            //     console.log('resData[i].attributes.audio = ', resData[i].attributes.audio)
+            //     resData[i].attributes.audio = ''
+            // }
             resData[i].cmsSource = cmsSources.PUBLISHER
             resData[i].showImage = showImage
             resData[i] = normalizeArticlePage(humps.camelizeKeys(resData[i]))

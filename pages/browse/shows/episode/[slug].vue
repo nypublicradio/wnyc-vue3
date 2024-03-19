@@ -36,7 +36,7 @@ const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   router.go(-1)
 }
-const progress = ref(null)
+const progress = ref({})
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
@@ -252,9 +252,9 @@ const getEpisodeImage = computed(() => {
               @onClick="togglePlayHere(episodeData)"
               class=""
             />
-            <!-- <pre class="text-xs">{{ progress }}</pre> -->
+
             <DownloadProgress
-              v-if="progress !== null || isAlreadyDownloaded(episodeData)"
+              v-if="Object.keys(progress).length > 0 || isAlreadyDownloaded(episodeData)"
               :isDownloaded="isAlreadyDownloaded(episodeData)"
               :progress="progress"
             />

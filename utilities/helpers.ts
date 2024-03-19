@@ -16,7 +16,7 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey, missingAudioText } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -24,6 +24,16 @@ import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from '@capacitor/clipboard';
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
+// function to check if a URL returns a 404
+export const checkUrl404 = async (url) => {
+  try {
+    const response = await axios(url, { method: 'HEAD' });
+    return response.status === 404;
+  } catch (error) {
+    console.error('Error checking URL:', error);
+    return true;
+  }
+};
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -87,6 +97,7 @@ export const fetchDuration = async (url: string) => {
     }
     const mp3Res = await axios(options)
     const mp3Size = mp3Res.headers["content-length"]
+
     // Calculate the duration in seconds not converting size into bits.
     // The bitrate is 128kps according to vlc and the file size is in bytes.
     //Multiplying the file size by 8 and dividing by 128000 gives the same
@@ -105,7 +116,7 @@ export const fetchDuration = async (url: string) => {
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
   const minutes = Math.round(seconds / 60)
-  return `${minutes} min`
+  return Number.isNaN(minutes) || ms === 0 || ms === null || ms === '' ? missingAudioText : `${minutes} min`
 }
 
 // returns a resized image url when provided the entire image object

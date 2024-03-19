@@ -2,7 +2,7 @@
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import { fetchDuration, getMinutes } from "~/utilities/helpers"
-
+import { missingAudioText } from "~/composables/globals"
 import {
   useCurrentEpisode,
   useIsStreamLoading,
@@ -74,16 +74,22 @@ watch(
   }
 )
 const durationLabel = ref(props.label)
+const durationFetchPending = ref(true)
 // fetch minutes if not available
 onMounted(() => {
-  if (
-    props.label === "0 min" ||
-    props.label === "NaN min" ||
-    props.label === "error min"
-  ) {
-    fetchDuration(props.data.audio).then((res) => {
-      durationLabel.value = getMinutes(res, 1)
-    })
+  if (props.label === missingAudioText) {
+    fetchDuration(props.data.audio)
+      .then((res) => {
+        durationLabel.value = getMinutes(res, 1)
+        durationFetchPending.value = false
+      })
+      .catch((error) => {
+        durationLabel.value = missingAudioText
+        durationFetchPending.value = false
+        console.error("error = ", error)
+      })
+  } else {
+    durationFetchPending.value = false
   }
 })
 </script>
@@ -110,7 +116,7 @@ onMounted(() => {
             <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
           </div>
           <div
-            v-else-if="isPlaying && isStreamLoading"
+            v-else-if="(isPlaying && isStreamLoading) || durationFetchPending"
             class="flex align-items-center icon relative"
           >
             <i class="pi pi-spin pi-spinner"></i>
@@ -122,7 +128,8 @@ onMounted(() => {
       </slot>
       <slot>
         <div class="content flex white-space-nowrap align-items-center">
-          <span class="center">{{ durationLabel }}</span>
+          <span v-if="!durationFetchPending" class="center">{{ durationLabel }}</span>
+          <span v-else class="center">&#x2013;&#x2013; min </span>
           <LiveBadge
             v-if="props.live"
             font-size="14px"
