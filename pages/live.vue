@@ -150,7 +150,7 @@ const fetchSchedule = async () => {
 
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-      const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
+      const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
       alert("delay = " + JSON.stringify(delay))
       timeout = setTimeout(fetchSchedule, delay)
     }
