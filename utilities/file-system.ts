@@ -196,6 +196,8 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const globalToast = useGlobalToast()
     const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false
     const slug = isSegments ? file.segments[index].slug : file.meta.slug
+
+    //const uid = Number(file.id)
     // set the originalId initally only to keep track of the original id
     file.originalId = file.originalId || file.id;
     const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
@@ -236,7 +238,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
-                const fileImage = file.image.template ?? file.image.url ?? file.image
+                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
 
                 // create the directory
                 await Filesystem.mkdir({
@@ -246,13 +248,20 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     console.error("Unable to create directory", e)
                 })
 
-                // Fetch the IMAGE file as a Blob
-                const imgUrl = resizePublisherImageUrl(fileImage, 288, 288, 80)
-                //const imgUrlAlt = file.image.url
+                // prep image based on publisher or wagtail
+                let imgUrl = null
+                let imgNameFromUrl = null
+                // check if the image is a wagtail image by checking if it is all numbers only
+                if (/^\d+$/.test(fileImage)) {
+                    const config = useRuntimeConfig()
+                    imgUrl = `${config.public.IMAGE_BASE_URL}${fileImage}/fill-288x288-c0|format-jpeg|webpquality-80`
+                    imgNameFromUrl = `${fileImage}.jpg`
+                } else {
+                    imgUrl = resizePublisherImageUrl(fileImage, 288, 288, 80)
+                    imgNameFromUrl = fileNameFromURL(fileImage)
+                }
 
                 // downlaod image
-
-                const imgNameFromUrl = fileNameFromURL(fileImage)
                 await Filesystem.downloadFile({
                     url: imgUrl,
                     path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,

@@ -90,7 +90,7 @@ const handleAddToFavorites = (bucketItem) => {
 //   trackClickEvent("Click Tracking - Add to Queue", "Story Item", bucketItem.title)
 // }
 
-//const progress = ref(null)
+//const progress = ref({})
 // handle the download of the audio file request and feed the progress
 // const handleDownload = async (bucketItem) => {
 //   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
@@ -206,7 +206,7 @@ const handleClick = () => {
                   <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
                   <!-- FROM CapacitorJS Preferences local storage -->
                   <!-- <DownloadProgress
-                    v-if="progress !== null || isAlreadyDownloaded(props.data)"
+                    v-if="Object.keys(progress).length > 0 || isAlreadyDownloaded(props.data)"
                     :isDownloaded="isAlreadyDownloaded(props.data)"
                     :progress="progress"
                     small

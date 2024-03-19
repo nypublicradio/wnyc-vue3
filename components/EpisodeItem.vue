@@ -97,9 +97,10 @@ const handleAddToFavorites = (bucketItem) => {
   }
 }
 
-const progress = ref(null)
+const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
+  console.log("bucketItem", bucketItem)
   trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
@@ -260,7 +261,7 @@ const handleClick = () => {
             <div class="flex gap-1 align-items-center">
               <DownloadProgress
                 class="mr-2"
-                v-if="progress !== null || isAlreadyDownloaded(props.data)"
+                v-if="Object.keys(progress).length > 0 || isAlreadyDownloaded(props.data)"
                 :isDownloaded="isAlreadyDownloaded(props.data)"
                 :progress="progress"
                 small
