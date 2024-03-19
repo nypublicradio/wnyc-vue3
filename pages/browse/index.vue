@@ -213,7 +213,7 @@ onMounted(() => {
 .browse-page {
   .search {
     position: sticky;
-    top: 0;
+    top: env(safe-area-inset-top);
     background: var(--backgroundSimple);
     z-index: 1;
     .search-field {
