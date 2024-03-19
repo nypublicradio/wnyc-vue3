@@ -114,22 +114,45 @@ watch(currentEpisodeHolder, () => {
 function getTimeDifference(targetTime) {
   const now = new Date()
   const target = new Date(targetTime)
-  const nowTime = now.getTime()
-  const targetTimeInMilliseconds = target.getTime()
+
+  // Convert both dates to UTC
+  const nowUtc = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds()
+  )
+  const targetUtc = Date.UTC(
+    target.getUTCFullYear(),
+    target.getUTCMonth(),
+    target.getUTCDate(),
+    target.getUTCHours(),
+    target.getUTCMinutes(),
+    target.getUTCSeconds()
+  )
 
   // If the target time is in the past, calculate the time until the next occurrence
-  if (nowTime > targetTimeInMilliseconds) {
-    target.setDate(target.getDate() + 1)
+  if (nowUtc > targetUtc) {
+    target.setUTCDate(target.getUTCDate() + 1)
+    targetUtc = Date.UTC(
+      target.getUTCFullYear(),
+      target.getUTCMonth(),
+      target.getUTCDate(),
+      target.getUTCHours(),
+      target.getUTCMinutes(),
+      target.getUTCSeconds()
+    )
   }
 
-  return targetTimeInMilliseconds - nowTime
+  return targetUtc - nowUtc
 }
 let timeout = null
 
 // Function to clear all timeouts
 const clearAllTimeout = () => {
   if (timeout) {
-    console.log("clear timeout...")
     clearTimeout(timeout)
     timeout = null
   }
@@ -137,7 +160,6 @@ const clearAllTimeout = () => {
 
 // Fetch the schedule
 const fetchSchedule = async () => {
-  console.log("fetching schedule...")
   clearAllTimeout()
   scheduleRef.value = null
   try {
@@ -151,7 +173,6 @@ const fetchSchedule = async () => {
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
-      alert("delay = " + JSON.stringify(delay))
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
@@ -168,12 +189,10 @@ const fetchSchedule = async () => {
   }
 }
 watch(currentStreamStation, async () => {
-  console.log("watching currentStreamStation...")
   await fetchSchedule()
 })
 
 onMounted(async () => {
-  console.log("INITIAL fetch")
   await fetchSchedule()
 })
 

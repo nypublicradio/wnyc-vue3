@@ -607,7 +607,6 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
   if (user.value) {
     const client = useSupabaseClient()
     // check if record exists
-    console.log('media = ', media)
     const thisSlug = media?.meta?.slug ?? media?.slug ?? media?.id
     const { data: existingRecord, error: existingError } = await client
       .from(tableArg)
