@@ -128,11 +128,15 @@ let timeout = null
 
 // Function to clear all timeouts
 const clearAllTimeout = () => {
-  clearTimeout(timeout)
+  if (timeout) {
+    console.log("clear timeout...")
+    clearTimeout(timeout)
+  }
 }
 
 // Fetch the schedule
 const fetchSchedule = async () => {
+  console.log("fetching schedule...")
   clearAllTimeout()
   scheduleRef.value = null
   try {
@@ -157,18 +161,21 @@ const fetchSchedule = async () => {
       life: null,
       closable: true,
     }
+    clearAllTimeout()
     console.error("error = ", error)
   }
 }
 watch(currentStreamStation, () => {
+  console.log("watching currentStreamStation...")
   fetchSchedule()
 })
 
 onMounted(() => {
+  console.log("INITIAL fetch")
   fetchSchedule()
 })
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   clearAllTimeout()
 })
 </script>
