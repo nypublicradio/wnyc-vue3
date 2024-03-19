@@ -607,17 +607,18 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
   if (user.value) {
     const client = useSupabaseClient()
     // check if record exists
+    console.log('media = ', media)
+    const thisSlug = media?.meta?.slug ?? media?.slug ?? media?.id
     const { data: existingRecord, error: existingError } = await client
       .from(tableArg)
       .select('*')
       .eq("uid", user.value.id)
-      .eq('slug', media?.meta.slug);
+      .eq('slug', thisSlug)
     if (existingError) throw existingError;
     if (existingRecord && existingRecord.length > 0) {
       await deleteFavorite(existingRecord[0], tableArg)
     }
     const source = media?.cmsSource
-    const thisSlug = media?.slug ?? media?.meta.slug ?? media?.id
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id

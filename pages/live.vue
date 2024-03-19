@@ -160,16 +160,14 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
-// watch(
-//   currentStreamStation,
-//   () => {
-//     fetchSchedule()
-//   },
-//   { immediate: true }
-// )
-watchEffect(() => {
+watch(currentStreamStation, () => {
   fetchSchedule()
 })
+
+onMounted(() => {
+  fetchSchedule()
+})
+
 onBeforeUnmount(() => {
   clearAllTimeout()
 })
