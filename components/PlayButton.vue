@@ -20,7 +20,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const props = defineProps({
   label: {
     type: String,
-    default: "Play",
+    default: null,
   },
   live: {
     type: Boolean,
@@ -74,6 +74,7 @@ watch(
   }
 )
 const durationLabel = ref(props.label)
+const durationFetchPending = ref(true)
 // fetch minutes if not available
 onMounted(() => {
   if (
@@ -83,7 +84,10 @@ onMounted(() => {
   ) {
     fetchDuration(props.data.audio).then((res) => {
       durationLabel.value = getMinutes(res, 1)
+      durationFetchPending.value = false
     })
+  } else {
+    durationFetchPending.value = false
   }
 })
 </script>
@@ -110,7 +114,7 @@ onMounted(() => {
             <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
           </div>
           <div
-            v-else-if="isPlaying && isStreamLoading"
+            v-else-if="(isPlaying && isStreamLoading) || durationFetchPending"
             class="flex align-items-center icon relative"
           >
             <i class="pi pi-spin pi-spinner"></i>
@@ -122,7 +126,8 @@ onMounted(() => {
       </slot>
       <slot>
         <div class="content flex white-space-nowrap align-items-center">
-          <span class="center">{{ durationLabel }}</span>
+          <span v-if="!durationFetchPending" class="center">{{ durationLabel }}</span>
+          <span v-else class="center">&#x2013;&#x2013; min </span>
           <LiveBadge
             v-if="props.live"
             font-size="14px"

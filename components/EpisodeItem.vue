@@ -248,20 +248,13 @@ const handleClick = () => {
             v-if="props.showPlayButton"
             :data="props.data"
             class="z-1"
+            :label="getMinutes(props.data.estimatedDuration, 1)"
             @onClick="
               props.isDownloaded
                 ? toggleDownloadedPlay(props.data)
                 : togglePlayEpisode(props.data)
             "
           >
-            <div v-if="estimatedDuration" class="font-bold text-sm line-height-2">
-              {{ getMinutes(estimatedDuration, 1) }}
-            </div>
-
-            <div v-else class="font-bold text-sm line-height-2">
-              <i class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-              min
-            </div>
           </PlayButton>
           <slot>
             <div class="flex gap-1 align-items-center">
