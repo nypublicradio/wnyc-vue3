@@ -14,7 +14,7 @@ import { prepForPlayer, resizePublisherImageUrl } from "~/utilities/helpers"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
-import { el } from "date-fns/locale";
+
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
 // directory to save to in the CapacitorJS FileSystem
@@ -54,6 +54,8 @@ export const fileNameFromURL = async (url: string) => {
             return `${name}.png`
         } else if (mimeType === 'audio/mpeg') {
             return `${name}.mp3`
+        } else {
+            return name
         }
     }
 }
@@ -220,7 +222,6 @@ const downloadFileToDesktop = async (url, filename) => {
 // download and store the mp3 file and image file 
 //# skipcq: JS-0045
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
-    console.log('file = ', file)
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
     const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false

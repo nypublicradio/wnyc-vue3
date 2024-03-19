@@ -124,7 +124,7 @@ function getTimeDifference(targetTime) {
     now.getUTCMinutes(),
     now.getUTCSeconds()
   )
-  const targetUtc = Date.UTC(
+  let targetUtc = Date.UTC(
     target.getUTCFullYear(),
     target.getUTCMonth(),
     target.getUTCDate(),
