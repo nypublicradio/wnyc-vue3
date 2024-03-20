@@ -125,7 +125,7 @@ onMounted(() => {
         @click="routeBack"
         label="Back"
       />
-      <FetchError v-if="error" @on-click="refresh" />
+      <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
       <div v-if="!pending" class="content">
         <div class="grid">
           <div class="col-12">

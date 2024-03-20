@@ -189,7 +189,7 @@ onMounted(() => {
         label="Back"
       />
     </div>
-    <FetchError v-if="error" @on-click="refresh" />
+    <FetchError v-if="error || show === undefined" @on-click="refresh" />
     <VImage
       v-if="showImage"
       :src="showImage"

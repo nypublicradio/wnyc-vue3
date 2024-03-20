@@ -150,7 +150,7 @@ watch(episode, () => {
     page_title: episodeData.value.title,
     page_type: "episode_page",
     content_group: "on_demand_episode",
-    article_authors: episodeData.value.authors.map((author) => author.name).join(","),
+    article_authors: episodeData.value?.authors?.map((author) => author.name).join(","),
     article_publish_date: episodeData.value.publicationDate,
     article_updated_date: episodeData.value.updatedDate
       ? episodeData.value.updatedDate
@@ -196,7 +196,7 @@ const getEpisodeImage = computed(() => {
         />
       </div>
     </section>
-    <FetchError v-if="error" @on-click="refresh" />
+    <FetchError v-if="error || episode === undefined" @on-click="refresh" />
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
@@ -254,7 +254,10 @@ const getEpisodeImage = computed(() => {
             />
 
             <DownloadProgress
-              v-if="Object.keys(progress).length > 0 || isAlreadyDownloaded(episodeData)"
+              v-if="
+                (progress && Object.keys(progress).length > 0) ||
+                isAlreadyDownloaded(episodeData)
+              "
               :isDownloaded="isAlreadyDownloaded(episodeData)"
               :progress="progress"
             />

@@ -260,7 +260,10 @@ const handleClick = () => {
             <div class="flex gap-1 align-items-center">
               <DownloadProgress
                 class="mr-2"
-                v-if="Object.keys(progress).length > 0 || isAlreadyDownloaded(props.data)"
+                v-if="
+                  (progress && Object.keys(progress).length > 0) ||
+                  isAlreadyDownloaded(props.data)
+                "
                 :isDownloaded="isAlreadyDownloaded(props.data)"
                 :progress="progress"
                 small

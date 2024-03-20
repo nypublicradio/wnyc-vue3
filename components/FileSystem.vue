@@ -5,6 +5,7 @@ import {
   //useFileSystem,
   useFileSystemLS,
   useIsNetworkConnected,
+  useGlobalToast,
 } from "~/composables/states"
 
 import { mediaTypes } from "~/composables/globals"
@@ -33,15 +34,28 @@ const isNetworkConnected = useIsNetworkConnected()
 const handleRoute = (file) => {
   if (isNetworkConnected.value) {
     switch (file.type) {
+      case mediaTypes.SHOW:
+        goToStoryPage(file, { downloaded: "true", id: file.id, src: file.cmsSource })
+        break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
         goToEpisodePage(file)
         break
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE_PAGE:
       case mediaTypes.ARTICLE:
-        goToStoryPage(file, `downloaded=true&id=${file.id}&src=${file.cmsSource}`)
+        goToStoryPage(file, { downloaded: "true", id: file.id, src: file.cmsSource })
         break
       default:
-        console.log("handleRoute", file)
+        goToEpisodePage(file)
+    }
+  } else {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary: "Not connected. Try again later.",
+      life: 3000,
+      closable: true,
     }
   }
 }

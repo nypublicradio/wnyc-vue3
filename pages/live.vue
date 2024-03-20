@@ -114,21 +114,48 @@ watch(currentEpisodeHolder, () => {
 function getTimeDifference(targetTime) {
   const now = new Date()
   const target = new Date(targetTime)
-  const nowTime = now.getTime()
-  const targetTimeInMilliseconds = target.getTime()
+
+  // Convert both dates to UTC
+  const nowUtc = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds()
+  )
+  let targetUtc = Date.UTC(
+    target.getUTCFullYear(),
+    target.getUTCMonth(),
+    target.getUTCDate(),
+    target.getUTCHours(),
+    target.getUTCMinutes(),
+    target.getUTCSeconds()
+  )
 
   // If the target time is in the past, calculate the time until the next occurrence
-  if (nowTime > targetTimeInMilliseconds) {
-    target.setDate(target.getDate() + 1)
+  if (nowUtc > targetUtc) {
+    target.setUTCDate(target.getUTCDate() + 1)
+    targetUtc = Date.UTC(
+      target.getUTCFullYear(),
+      target.getUTCMonth(),
+      target.getUTCDate(),
+      target.getUTCHours(),
+      target.getUTCMinutes(),
+      target.getUTCSeconds()
+    )
   }
 
-  return targetTimeInMilliseconds - nowTime
+  return targetUtc - nowUtc
 }
 let timeout = null
 
 // Function to clear all timeouts
 const clearAllTimeout = () => {
-  clearTimeout(timeout)
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
 }
 
 // Fetch the schedule
@@ -145,7 +172,7 @@ const fetchSchedule = async () => {
 
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-      const delay = getTimeDifference(scheduleRef.value[0].attributes.end) + 2000
+      const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
@@ -157,20 +184,19 @@ const fetchSchedule = async () => {
       life: null,
       closable: true,
     }
+    clearAllTimeout()
     console.error("error = ", error)
   }
 }
-// watch(
-//   currentStreamStation,
-//   () => {
-//     fetchSchedule()
-//   },
-//   { immediate: true }
-// )
-watchEffect(() => {
-  fetchSchedule()
+watch(currentStreamStation, async () => {
+  await fetchSchedule()
 })
-onBeforeUnmount(() => {
+
+onMounted(async () => {
+  await fetchSchedule()
+})
+
+onUnmounted(() => {
   clearAllTimeout()
 })
 </script>
