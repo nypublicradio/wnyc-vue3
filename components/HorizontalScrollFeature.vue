@@ -1,6 +1,13 @@
+<script setup>
+const { isMobile } = useDevice()
+</script>
+
 <template>
   <div class="horizontal-scroll-feature">
-    <div class="scroll flex gap-3 align-items-stretch">
+    <div
+      class="scroll flex gap-3 align-items-stretch"
+      :class="[{ hideScrollBar: isMobile }]"
+    >
       <slot />
     </div>
   </div>
@@ -11,7 +18,7 @@
   background: transparent;
   position: relative;
   .scroll {
-    padding: 0 $padding 20px $padding;
+    padding: 0 $padding 16px $padding;
     overflow-y: hidden;
     overflow-x: auto;
     scroll-behavior: smooth;
@@ -31,6 +38,12 @@
     );
     .card-large {
       //height: 100%;
+    }
+    &.hideScrollBar {
+      padding-bottom: 0;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 }

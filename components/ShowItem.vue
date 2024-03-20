@@ -3,6 +3,7 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 import { checkIsFavorited, addToFavorites } from "~/utilities/helpers"
+import { useCurrentEpisodeHolder, useCurrentEpisode } from "~/composables/states"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -22,13 +23,21 @@ const props = defineProps({
   },
 })
 
+const user = useCurrentUser()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
+const currentEpisode = useCurrentEpisode()
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data.slug)
 })
 
-const user = useCurrentUser()
+const handleIsLiveIndicator = computed(() => {
+  return (
+    currentEpisodeHolder.value?.title === props.data.title ||
+    currentEpisode?.value?.title === props.data.title
+  )
+})
 
 // add item to favorites
 const handleAddToFavorites = () => {
@@ -57,7 +66,7 @@ const handleAddToFavorites = () => {
         style="height: 116px; width: 116px; background-color: var(--background2)"
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <!-- <LiveBadge v-if="props.data.isLive" class="mb-1" /> -->
+        <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
         <h2>{{ props.data.title }}</h2>
         <p v-for="org in props.data?.producingOrganizations" :key="org.name">
           {{ org.name }}
