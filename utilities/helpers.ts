@@ -85,6 +85,7 @@ interface ImageAttributes {
   }
 }
 
+// if the axios fetchDuration fails, it used this function to fetch the duration
 const fetchDurationWithFetch = async (url: string, bitrate: number) => {
   try {
     const mp3Res = await $fetch(url)
@@ -116,7 +117,7 @@ export const fetchDuration = async (url: string, bitrate = 16000) => {
     //Multiplying the file size by 8 and dividing by 128000 gives the same
     //duration as dividing by 16000 and not multiplying the file size by 8.
     const duration: number = Math.round(mp3Size / bitrate)
-    return duration !== 0 ? duration : fetchDurationWithFetch(url, bitrate)
+    return duration !== 0 ? duration : await fetchDurationWithFetch(url, bitrate)
   } catch (e) {
     console.log('error fetching duration', e);
     return "error"
@@ -298,11 +299,13 @@ export async function setDarkMode(bool: boolean) {
   isDarkMode.value = bool
 }
 
+// function to get the EPISODE fallback image for the episode depending on darkmode
 export const getEpisodefallBackImage = () => {
   const isDarkMode = useIsDarkMode()
   return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
 }
 
+// function to get the EPISODE HEADER fallback image for the episode depending on darkmode
 export const getEpisodeHeadfallBackImage = () => {
   const isDarkMode = useIsDarkMode()
   return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
