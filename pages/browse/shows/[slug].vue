@@ -189,7 +189,7 @@ onMounted(() => {
         label="Back"
       />
     </div>
-    <FetchError v-if="error" @on-click="refresh" />
+    <FetchError v-if="error || show === undefined" @on-click="refresh" />
     <VImage
       v-if="showImage"
       :src="showImage"
@@ -268,7 +268,7 @@ onMounted(() => {
       />
     </div>
     <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
-    <pre class="text-xs">{{ episodes }}</pre>
+    <!-- <pre class="text-xs">{{ episodes }}</pre> -->
 
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">

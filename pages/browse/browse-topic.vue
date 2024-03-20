@@ -70,7 +70,7 @@ onUnmounted(() => {
       </div>
     </section>
     <section class="shows flex flex-column gap-3">
-      <FetchError v-if="error" @on-click="refresh" />
+      <FetchError v-if="error || categoryData === undefined" @on-click="refresh" />
       <template v-if="!pending">
         <!-- data = {{ categoryData }} -->
         <ShowItem

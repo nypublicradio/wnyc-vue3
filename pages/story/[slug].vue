@@ -44,7 +44,7 @@ const galleryLink = ref(null)
 
 const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
-  return commentCounts.value[storyData?.value.commentId]
+  return commentCounts.value[storyData?.value?.commentId]
 })
 
 // navigate back to home and track it
@@ -160,7 +160,7 @@ const togglePlayHere = (story, index = 0) => {
         />
       </div>
     </section>
-    <FetchError v-if="error" @on-click="refresh" />
+    <FetchError v-if="error || storyData === undefined" @on-click="refresh" />
     <div v-if="!pending">
       <VImage
         v-if="topImage"
@@ -209,12 +209,12 @@ const togglePlayHere = (story, index = 0) => {
         </PipeData>
         <h1 class="mb-1 alt">{{ storyData?.title }}</h1>
         <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
-          <VByline v-if="storyData.authors.length > 0" :authors="storyData.authors" />
+          <VByline v-if="storyData?.authors?.length > 0" :authors="storyData.authors" />
         </div>
         <div class="flex align-items-center justify-content-between gap-3 flex-wrap">
-          <div v-if="storyData.estimatedDuration">
+          <div v-if="storyData?.estimatedDuration">
             <PlayButton
-              :label="getMinutes(storyData.estimatedDuration, 1)"
+              :label="getMinutes(storyData?.estimatedDuration, 1)"
               @onClick="togglePlayHere(storyData)"
               :data="storyData"
             />
@@ -242,7 +242,7 @@ const togglePlayHere = (story, index = 0) => {
         </div>
       </section>
 
-      <v-streamfield class="story-page-body" :article="storyData" />
+      <v-streamfield v-if="storyData.body" class="story-page-body" :article="storyData" />
 
       <story-article-footer :article="storyData" />
     </div>

@@ -126,7 +126,7 @@ onMounted(() => {
           </div>
         </HorizontalScrollFeature>
       </div>
-      <FetchError v-if="error" @on-click="refresh" />
+      <FetchError v-if="error || shows === undefined" @on-click="refresh" />
       <section class="tabs mt-3">
         <TabView :lazy="true">
           <TabPanel header="Featured Shows">

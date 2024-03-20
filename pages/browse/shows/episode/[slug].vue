@@ -196,7 +196,7 @@ const getEpisodeImage = computed(() => {
         />
       </div>
     </section>
-    <FetchError v-if="error" @on-click="refresh" />
+    <FetchError v-if="error || episode === undefined" @on-click="refresh" />
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
