@@ -34,15 +34,20 @@ const isNetworkConnected = useIsNetworkConnected()
 const handleRoute = (file) => {
   if (isNetworkConnected.value) {
     switch (file.type) {
+      case mediaTypes.SHOW:
+        goToStoryPage(file, { downloaded: "true", id: file.id, src: file.cmsSource })
+        break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
         goToEpisodePage(file)
         break
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE_PAGE:
       case mediaTypes.ARTICLE:
         goToStoryPage(file, { downloaded: "true", id: file.id, src: file.cmsSource })
         break
       default:
-        console.log("handleRoute", file)
+        goToEpisodePage(file)
     }
   } else {
     const globalToast = useGlobalToast()
