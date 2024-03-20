@@ -16,6 +16,7 @@ import {
   hasAudio,
   togglePlayEpisode,
   addToFavorites,
+  getEpisodefallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import {
@@ -25,7 +26,6 @@ import {
   playStoredMp3,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
-import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -162,7 +162,7 @@ if (props.isDownloaded) {
       props.data?.image?.id ??
       props.data?.image ??
       props.fallbackImage ??
-      FALLBACKIMAGEEP
+      getEpisodefallBackImage()
   )
 }
 

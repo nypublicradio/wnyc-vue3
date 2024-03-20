@@ -10,13 +10,14 @@ import {
   useCurrentUserFavorites,
   useTogglePlayTrigger,
   useGlobalToast,
-  useAccountPromptSideBar
+  useAccountPromptSideBar,
+  useIsDarkMode,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey, missingAudioText } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey, missingAudioText, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -293,6 +294,18 @@ export async function setDarkMode(bool: boolean) {
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
   await setStatusDarkMode(bool)
+  const isDarkMode = useIsDarkMode()
+  isDarkMode.value = bool
+}
+
+export const getEpisodefallBackImage = () => {
+  const isDarkMode = useIsDarkMode()
+  return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
+}
+
+export const getEpisodeHeadfallBackImage = () => {
+  const isDarkMode = useIsDarkMode()
+  return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
 }
 
 // helper function to get the pixel size from thr label

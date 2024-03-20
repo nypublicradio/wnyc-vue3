@@ -16,8 +16,8 @@ import {
   checkIsFavorited,
   shareAPI,
   addToFavorites,
+  getEpisodeHeadfallBackImage,
 } from "~/utilities/helpers"
-import { FALLBACKIMAGEEPHEAD } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -168,7 +168,7 @@ const isSegment = computed(
 const getEpisodeImage = computed(() => {
   const epImage = episodeData.value?.image?.template
   const showImage = episodeData.value?.headers.brand.logoImage.template
-  return epImage !== showImage ? epImage : FALLBACKIMAGEEPHEAD
+  return epImage !== showImage ? epImage : getEpisodeHeadfallBackImage()
 })
 </script>
 
