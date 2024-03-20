@@ -274,20 +274,14 @@ const handleIsExpanded = (e) => {
         <template #expanded-player-title>
           <PipeData class="text-xs">
             <template #left>
-              <span>
-                <p class="text-xs">
-                  {{ currentEpisode.showTitle ?? currentEpisode.station }}
-                </p>
-              </span>
+              {{
+                currentEpisode.showTitle ||
+                currentEpisode.station ||
+                currentEpisode.headers.brand.title
+              }}
             </template>
             <template #right>
-              <div class="flex gap-2 align-items-center">
-                <p class="text-xs">
-                  {{
-                    getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate)
-                  }}
-                </p>
-              </div>
+              {{ getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate) }}
             </template>
           </PipeData>
           <div class="expanded-title">{{ currentEpisode.title }}</div>

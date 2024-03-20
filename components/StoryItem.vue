@@ -197,22 +197,10 @@ const handleClick = () => {
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
-                <p class="text-xs">
-                  {{ props.data.cmsSource == cmsSources.WAGTAIL ? "Gothamist" : "WNYC" }}
-                </p>
+                {{ props.data.cmsSource == cmsSources.WAGTAIL ? "Gothamist" : "WNYC" }}
               </template>
               <template #right>
-                <div class="flex gap-2 align-items-center">
-                  <span class="nobreak">{{ whenTime(props.data.meta) }}</span>
-                  <!-- FROM CapacitorJS Preferences local storage -->
-                  <!-- <DownloadProgress
-                    v-if="(progress && Object.keys(progress).length > 0) || isAlreadyDownloaded(props.data)"
-                    :isDownloaded="isAlreadyDownloaded(props.data)"
-                    :progress="progress"
-                    small
-                  /> -->
-                  <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
-                </div>
+                {{ whenTime(props.data.meta) }}
               </template>
             </PipeData>
           </div>
@@ -225,7 +213,7 @@ const handleClick = () => {
           :showValue="false"
           ></ProgressBar> -->
         </div>
-        <div class="flex justify-content-between align-items-center">
+        <div class="flex justify-content-between align-items-center flex-wrap">
           <ReadButton
             class="z-1"
             :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
