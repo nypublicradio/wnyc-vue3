@@ -4,7 +4,7 @@ const props = defineProps({
     type: String,
     default: "An error occured while loading this page.",
   },
-  refershRoute: {
+  refreshRoute: {
     type: String,
     default: "/home",
   },
@@ -12,8 +12,9 @@ const props = defineProps({
 
 const emit = defineEmits(["on-click"])
 
+// hard refresh to the home page
 const handleReloadHome = () => {
-  window.location.href = props.refershRoute
+  window.location.href = props.refreshRoute
 }
 </script>
 
