@@ -1,8 +1,6 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { parseISO } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc, toDate } from 'date-fns-tz';
 
 const getSchedule = async (slug: string, schedDate: string) => {
     // convert UTC schedDate to EST
@@ -45,11 +43,12 @@ const removeFutureShows = (schedule: any) => {
 };
 
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event);
+    //const query = getQuery(event);
     const slug = event?.context?.params?.stationslug as string;
     if (slug) {
         //Get schedule for today and tomorrow
-        const date = new Date(query.localUTCDate);
+        //const date = new Date(query.localDate);
+        const date = new Date();
         const offset = date.getTimezoneOffset() * 60 * 1000;
         const today = new Date(date.getTime() - offset);
         const tomorrow = new Date(today);

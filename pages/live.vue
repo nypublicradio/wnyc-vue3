@@ -162,16 +162,15 @@ const clearAllTimeout = () => {
 const fetchSchedule = async () => {
   clearAllTimeout()
   scheduleRef.value = null
-  const localUTCDate = new Date()
-  console.log("localUTCDate =", localUTCDate)
+  //const localDate = new Date()
   try {
     const schedule = await $fetch(
       `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
       {
         method: "POST",
-        params: {
-          localUTCDate: String(localUTCDate),
-        },
+        // params: {
+        //   localDate: String(localDate),
+        // },
       }
     )
     scheduleRef.value = schedule
