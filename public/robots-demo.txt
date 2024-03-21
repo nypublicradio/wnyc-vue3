@@ -5,4 +5,4 @@ Disallow:
 User-agent: *
 Disallow: /
 
-Sitemap: https://demo.wnyc.org/sitemap.xml
+Sitemap: https://demo.native-app.wnyc.org/sitemap.xml
