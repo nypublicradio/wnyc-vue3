@@ -15,14 +15,14 @@ const getLocalNewscast = async () => {
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
 		//Fetch the mp3 Content-Length and calculate the duration in seconds
-		const mp3Res = await axios(resData.attributes.audio);
-		const mp3Size = mp3Res.headers['content-length'];
+		//const mp3Res = await axios(resData.attributes.audio);
+		//const mp3Size = mp3Res.headers['content-length'];
 		// Calculate the duration in seconds not converting size into bits. 
 		// The bitrate is 128kps according to vlc and the file size is in bytes.
 		//Multiplying the file size by 8 and dividing by 128000 gives the same 
 		//duration as dividing by 16000 and not multiplying the file size by 8.
-		const duration = Math.round(mp3Size / 16000) * 1000;
-		resData.attributes.duration = duration;
+		//const duration = Math.round(mp3Size / 16000) * 1000;
+		//resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'NYC Headlines';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -48,15 +48,15 @@ const getNationalNewscast = async () => {
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
 		//Fetch the mp3 last modified date
-		const mp3Res = await axios(resData.attributes.audio);
-		resData.attributes.newsdate = mp3Res.headers['last-modified'];
-		const mp3Size = mp3Res.headers['content-length'];
+		//const mp3Res = await axios(resData.attributes.audio);
+		//resData.attributes.newsdate = mp3Res.headers['last-modified'];
+		//const mp3Size = mp3Res.headers['content-length'];
 		// Calculate the duration in seconds not converting size into bits. 
 		// The bitrate is 128kps according to vlc and the file size is in bytes.
 		//Multiplying the file size by 8 and dividing by 128000 gives the same 
 		//duration as dividing by 16000 and not multiplying the file size by 8.
-		const duration = Math.round(mp3Size / 16000) * 1000;
-		resData.attributes.duration = duration;
+		//const duration = Math.round(mp3Size / 16000) * 1000;
+		//resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'NPR News Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -87,14 +87,14 @@ const getNYCNowNewscast = async () => {
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/NYNOW_WNYC_LOGO_HEX_1400PX.png';
 		//Fetch the mp3 Content-Length and calculate the duration in seconds
-		const mp3Res = await axios(resData.attributes.audio);
-		const mp3Size = mp3Res.headers['content-length'];
+		//const mp3Res = await axios(resData.attributes.audio);
+		//const mp3Size = mp3Res.headers['content-length'];
 		// Calculate the duration in seconds not converting size into bits. 
 		// The bitrate is 128kps according to vlc and the file size is in bytes.
 		//Multiplying the file size by 8 and dividing by 128000 gives the same
 		//duration as dividing by 16000 and not multiplying the file
-		const duration = Math.round(mp3Size / 16000) * 1000;
-		resData.attributes.duration = duration;
+		//onst duration = Math.round(mp3Size / 16000) * 1000;
+		//resData.attributes.duration = duration;
 		resData.attributes.cardTitle = 'NYC Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;

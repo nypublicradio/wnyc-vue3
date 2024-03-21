@@ -9,7 +9,6 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 import {
   checkIsFavorited,
   shareAPI,
-  fetchDuration,
   hasAudio,
   getReadingTime,
   whenTime,
@@ -65,16 +64,6 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
 })
 
-const estimatedDuration = ref(props.data.estimatedDuration)
-
-watch(
-  estimatedDuration,
-  async (dur) => {
-    estimatedDuration.value =
-      typeof dur === "number" && dur !== 0 ? dur : await fetchDuration(props.data.audio)
-  },
-  { immediate: false }
-)
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in

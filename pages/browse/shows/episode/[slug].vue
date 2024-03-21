@@ -380,7 +380,7 @@ const getEpisodeImage = computed(() => {
   aspect-ratio: 1/1;
   position: absolute;
   bottom: -36px;
-  left: 20px;
+  left: $padding;
 }
 
 .episode-page .episode-page-date {

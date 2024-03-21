@@ -17,7 +17,7 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey, missingAudioText, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -85,51 +85,11 @@ interface ImageAttributes {
   }
 }
 
-// if the axios fetchDuration fails, it used this function to fetch the duration
-const fetchDurationWithFetch = async (url: string, bitrate: number) => {
-  try {
-    const mp3Res = await $fetch(url)
-    const mp3Size = mp3Res.size
-    const duration: number = Math.round(mp3Size / bitrate)
-    return duration !== 0 ? duration : -1
-  } catch (e) {
-    console.log('error fetching duration', e);
-    return "error"
-
-  }
-}
-
-/**
- *  Function to fetch duration from an mp3 file
- * @param {string} url - url of the mp3 file
- * @returns {number} - duration of the mp3 file in seconds
- */
-export const fetchDuration = async (url: string, bitrate = 16000) => {
-  try {
-    const options = {
-      method: "HEAD",
-      url: url,
-    }
-    const mp3Res = await axios(options)
-    const mp3Size = mp3Res.headers["content-length"]
-    // Calculate the duration in seconds not converting size into bits.
-    // The bitrate is 128kps according to vlc and the file size is in bytes.
-    //Multiplying the file size by 8 and dividing by 128000 gives the same
-    //duration as dividing by 16000 and not multiplying the file size by 8.
-    const duration: number = Math.round(mp3Size / bitrate)
-    return duration !== 0 ? duration : await fetchDurationWithFetch(url, bitrate)
-  } catch (e) {
-    console.log('error fetching duration', e);
-    return "error"
-
-  }
-}
-
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
   const minutes = Math.round(seconds / 60)
-  return Number.isNaN(minutes) || ms === 0 || !ms ? missingAudioText : `${minutes} min`
+  return Number.isNaN(minutes) || ms === 0 || !ms ? 'Play' : `${minutes} min`
 }
 
 // returns a resized image url when provided the entire image object

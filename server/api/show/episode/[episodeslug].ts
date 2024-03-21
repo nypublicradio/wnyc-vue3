@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
-import { fetchDuration } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
 
@@ -17,12 +16,6 @@ const getEpisode = async (slug: string) => {
         //console.log('resData', resData)
         // fallback image to show image when no image is available
         resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGELOCAL };
-
-        // Fetch the mp3 Content-Length and calculate the duration in seconds
-        if (!resData.attributes.estimatedDuration) {
-            const url: string = resData.attributes.audio
-            resData.attributes.estimatedDuration = await fetchDuration(url)
-        }
 
         resData.cmsSource = cmsSources.PUBLISHER
         resData = normalizeArticlePage(resData)

@@ -12,7 +12,6 @@ import {
   shareAPI,
   getMinutes,
   getDate,
-  fetchDuration,
   hasAudio,
   togglePlayEpisode,
   addToFavorites,
@@ -71,15 +70,6 @@ const user = useCurrentUser()
 const isFavorited = ref(false)
 watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
-})
-
-const estimatedDuration = ref(null)
-
-onMounted(async () => {
-  estimatedDuration.value =
-    props.data.estimatedDuration === 0 || props.data.estimatedDuration === undefined
-      ? await fetchDuration(props.data.audio)
-      : props.data.estimatedDuration
 })
 
 // const handleAddToQueue = (bucketItem) => {
@@ -214,8 +204,8 @@ const handleClick = () => {
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
                 <template v-if="hasAudio && !showPlayButton">
-                  <template v-if="estimatedDuration">
-                    {{ getMinutes(estimatedDuration, 1) }}
+                  <template v-if="props.data.estimatedDuration > 0">
+                    {{ getMinutes(props.data.estimatedDuration) }}
                   </template>
                   <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
                 </template>
