@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   backgroundColor: "#d4d4d4",
   /*   server: {
       androidScheme: 'https',
-      url: "https://demo.wnyc.org",
+      url: "https://demo.native-app.wnyc.org",
     }, */
   plugins: {
     CapacitorCookies: {

@@ -12,7 +12,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     integrations: [
       new Sentry.BrowserTracing({
         routingInstrumentation: Sentry.vueRouterInstrumentation(nuxtApp.$router),
-        tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'demo.wnyc.org', 'api.wnyc.org'],
+        tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'demo.native-app.wnyc.org', 'api.wnyc.org'],
       }),
       new HttpClient(),
       new Sentry.Replay(),
@@ -21,11 +21,11 @@ export default defineNuxtPlugin((nuxtApp) => {
     replaysSessionSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.0005 : 1.0,
     replaysOnErrorSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.001 : 1.0,
     allowUrls: [
-      'https://demo.wnyc.org',
+      'https://demo.native-app.wnyc.org',
       'http://local.dev.nypr.digital:3000',
       'capacitor://localhost',
     ],
-    tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital','api.wnyc.org','www.wnyc.org'],
+    tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'api.wnyc.org', 'www.wnyc.org'],
     trackComponents: true,
     timeout: 2000,
     hooks: ['activate', 'mount', 'update'],
