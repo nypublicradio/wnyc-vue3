@@ -17,7 +17,7 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey, missingAudioText, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
