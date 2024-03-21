@@ -162,10 +162,17 @@ const clearAllTimeout = () => {
 const fetchSchedule = async () => {
   clearAllTimeout()
   scheduleRef.value = null
+  const localUTCDate = new Date()
+  console.log("localUTCDate =", localUTCDate)
   try {
     const schedule = await $fetch(
       `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
-      { method: "POST" }
+      {
+        method: "POST",
+        params: {
+          localUTCDate: String(localUTCDate),
+        },
+      }
     )
     scheduleRef.value = schedule
     // init setTimeouts to refetch the schedule when the current event starts
@@ -310,7 +317,14 @@ onUnmounted(() => {
                 {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
               </p>
               <h2 class="title">
-                {{ entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle }}
+                {{
+                  `${
+                    entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
+                      ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
+                      : entry.attributes.scheduleEventTitle ??
+                        entry.attributes.parentTitle
+                  }`
+                }}
               </h2>
             </div>
           </div>

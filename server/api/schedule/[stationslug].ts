@@ -1,8 +1,12 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { parseISO } from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc, toDate } from 'date-fns-tz';
 
 const getSchedule = async (slug: string, schedDate: string) => {
+    // convert UTC schedDate to EST
+    console.log('schedDate', schedDate)
     const options = {
         method: 'GET',
         url: config.public.PUBLISHER_BASE_API + 'v3/schedule/',
@@ -13,6 +17,7 @@ const getSchedule = async (slug: string, schedDate: string) => {
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).data;
+    // convert EST dates to UTC
     const filteredSchedule = removePastShows(resData);
     return filteredSchedule;
 };
@@ -40,17 +45,33 @@ const removeFutureShows = (schedule: any) => {
 };
 
 export default defineEventHandler(async (event) => {
+    const query = getQuery(event);
     const slug = event?.context?.params?.stationslug as string;
     if (slug) {
         //Get schedule for today and tomorrow
-        const today = new Date();
-        const tomorrow = new Date(today);
+        const date = new Date(query.localUTCDate);
+        const offset = date.getTimezoneOffset() * 60 * 1000;
+        let today = new Date(date.getTime() - offset);
+        //let today = new Date();
+        console.log('today     =', today)
+        let tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
+
+
         const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0]);
         const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0]);
         const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
+
         //Combine today and tomorrow's schedule and return
-        return scheduleToday.concat(filteredScheduleTomorrow);
+        let concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
+        //console.log('concatSchedule = ', concatSchedule)
+
+        //convert back to UTC because the user/frontend expects UTC
+        concatSchedule.forEach((show: any) => {
+            //show.attributes.start = zonedTimeToUtc(parseISO(show.attributes.start), 'UTC').toISOString();
+            //show.attributes.end = zonedTimeToUtc(parseISO(show.attributes.end), 'UTC').toISOString();
+        })
+        return concatSchedule;
     }
     return null;
 });
