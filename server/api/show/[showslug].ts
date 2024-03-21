@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources, mediaTypes } from '~/composables/globals'
+import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 //import { checkUrl404 } from '~/utilities/helpers'
 
@@ -27,10 +27,6 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
         const res = await axios(option);
         const resData = res.data.data
         for (let i = 0; i < resData.length; i++) {
-            // if (!resData[i].attributes['estimated-duration']) {
-            //     const url: string = resData[i].attributes.audio
-            //     resData[i].attributes['estimated-duration'] = await fetchDuration(url)
-            // }
 
             // this checks if the audio url is a 404 and removes it by assigning an emptry string to the audio file key, but it slows down the page load
             // if (await checkUrl404(resData[i].attributes.audio)) {
