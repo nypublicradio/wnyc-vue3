@@ -1,5 +1,6 @@
 import { useIsApp } from "./states"
 
+
 export const localUserProfileKey = 'localUserProfile'
 
 export const cmsSources = {
@@ -30,10 +31,12 @@ export const mediaTypeRoutes = {
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'
+export const FALLBACKIMAGEWAGTAIL = '342941'
 export const FALLBACKIMAGELOCAL = '342941'
 export const FALLBACKIMAGEEP = '343750'
+export const FALLBACKIMAGEEPDARK = '344059'
 export const FALLBACKIMAGEEPHEAD = '343751'
-export const FALLBACKIMAGEWAGTAIL = '342941'
+export const FALLBACKIMAGEEPHEADDARK = '344060'
 
 //Global vars for the browser top color
 export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffffff')

@@ -10,13 +10,14 @@ import {
   useCurrentUserFavorites,
   useTogglePlayTrigger,
   useGlobalToast,
-  useAccountPromptSideBar
+  useAccountPromptSideBar,
+  useIsDarkMode,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey, missingAudioText } from "~/composables/globals"
+import { mediaTypeRoutes, localUserProfileKey, missingAudioText, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from '@capacitor/share';
@@ -84,12 +85,26 @@ interface ImageAttributes {
   }
 }
 
+// if the axios fetchDuration fails, it used this function to fetch the duration
+const fetchDurationWithFetch = async (url: string, bitrate: number) => {
+  try {
+    const mp3Res = await $fetch(url)
+    const mp3Size = mp3Res.size
+    const duration: number = Math.round(mp3Size / bitrate)
+    return duration !== 0 ? duration : -1
+  } catch (e) {
+    console.log('error fetching duration', e);
+    return "error"
+
+  }
+}
+
 /**
  *  Function to fetch duration from an mp3 file
  * @param {string} url - url of the mp3 file
  * @returns {number} - duration of the mp3 file in seconds
  */
-export const fetchDuration = async (url: string) => {
+export const fetchDuration = async (url: string, bitrate = 16000) => {
   try {
     const options = {
       method: "HEAD",
@@ -97,14 +112,12 @@ export const fetchDuration = async (url: string) => {
     }
     const mp3Res = await axios(options)
     const mp3Size = mp3Res.headers["content-length"]
-
     // Calculate the duration in seconds not converting size into bits.
     // The bitrate is 128kps according to vlc and the file size is in bytes.
     //Multiplying the file size by 8 and dividing by 128000 gives the same
     //duration as dividing by 16000 and not multiplying the file size by 8.
-    const duration: number = Math.round(mp3Size / 16000)
-    //console.log('duration = ', duration)
-    return duration !== 0 ? duration : -1
+    const duration: number = Math.round(mp3Size / bitrate)
+    return duration !== 0 ? duration : await fetchDurationWithFetch(url, bitrate)
   } catch (e) {
     console.log('error fetching duration', e);
     return "error"
@@ -116,7 +129,7 @@ export const fetchDuration = async (url: string) => {
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
   const minutes = Math.round(seconds / 60)
-  return Number.isNaN(minutes) || ms === 0 || ms === null || ms === '' ? missingAudioText : `${minutes} min`
+  return Number.isNaN(minutes) || ms === 0 || !ms ? missingAudioText : `${minutes} min`
 }
 
 // returns a resized image url when provided the entire image object
@@ -282,6 +295,20 @@ export async function setDarkMode(bool: boolean) {
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
   await setStatusDarkMode(bool)
+  const isDarkMode = useIsDarkMode()
+  isDarkMode.value = bool
+}
+
+// function to get the EPISODE fallback image for the episode depending on darkmode
+export const getEpisodefallBackImage = () => {
+  const isDarkMode = useIsDarkMode()
+  return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
+}
+
+// function to get the EPISODE HEADER fallback image for the episode depending on darkmode
+export const getEpisodeHeadfallBackImage = () => {
+  const isDarkMode = useIsDarkMode()
+  return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
 }
 
 // helper function to get the pixel size from thr label

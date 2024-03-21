@@ -127,10 +127,10 @@ onMounted(() => {
         </HorizontalScrollFeature>
       </div>
       <FetchError v-if="error || shows === undefined" @on-click="refresh" />
-      <section class="tabs mt-3">
+      <section class="tabs mt-2">
         <TabView :lazy="true">
           <TabPanel header="Featured Shows">
-            <div class="shows flex flex-column gap-4">
+            <div class="shows flex flex-column gap-5">
               <template v-if="!pending">
                 <ShowItem
                   v-for="show in featuredShows"
@@ -147,7 +147,7 @@ onMounted(() => {
             </div>
           </TabPanel>
           <TabPanel header="All Shows">
-            <div class="shows flex flex-column gap-4">
+            <div class="shows flex flex-column gap-5">
               <template v-if="!pending">
                 <ShowItem
                   v-for="show in allShows"
@@ -170,9 +170,9 @@ onMounted(() => {
       <section class="results">
         <!-- if results show them -->
         <div class="results-list mb-2">
-          <h2>Rearch Results</h2>
+          <h2>Search Results</h2>
         </div>
-        <div class="shows flex flex-column gap-3">
+        <div class="shows flex flex-column gap-5">
           <ShowItem
             v-for="show in search.results"
             :data="show.item"
@@ -185,8 +185,8 @@ onMounted(() => {
           v-if="search.results.length === 0"
           class="text-center flex flex-column gap-4 mt-8"
         >
-          <h2>No results for {{ searchFieldValue }}</h2>
-          <img src="/noResults.svg" class="max-w-6rem m-auto" alt="No Results" />
+          <h2>No results for "{{ searchFieldValue }}"</h2>
+          <NoResultsGraphic class="max-w-6rem m-auto" alt="No Results" />
           <div>
             <!-- <p class="mb-2">
               Did you mean:
@@ -199,7 +199,7 @@ onMounted(() => {
               />
             </p> -->
             <p>
-              Or... try searching again using<br />
+              Try searching again using<br />
               different keywords or spelling
             </p>
           </div>

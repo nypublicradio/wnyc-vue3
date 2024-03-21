@@ -15,6 +15,9 @@ const localUserProfileDefault: object = {
  */
 export const useLocalUserProfileDefault = () => useState('localUserProfileDefault', () => localUserProfileDefault)
 
+// keep track of dark mode
+export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
+
 const currentUser = null
 // global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)

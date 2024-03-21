@@ -42,11 +42,9 @@ defineExpose({
         <!-- <pre class="text-xs">{{ props.item }}</pre> -->
         <div class="desc" v-html="props.item.tease" />
         <PipeData class="text-xs">
-          <template #left
-            ><span>{{ props.item.headers.brand.title }}</span></template
-          >
+          <template #left>{{ props.item.headers.brand.title }}</template>
           <template #right>
-            <span class="nobreak">{{ whenTime(props.item) }}</span>
+            {{ whenTime(props.item) }}
           </template>
         </PipeData>
       </div>

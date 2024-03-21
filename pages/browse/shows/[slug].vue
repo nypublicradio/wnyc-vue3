@@ -12,9 +12,9 @@ import {
   goToEpisodePage,
   hasAudio,
   addToFavorites,
+  getEpisodefallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
-import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -137,7 +137,7 @@ watch(show, () => {
   page.value = show?.value?.episodes?.meta.pagination.page
   maxPages = show.value.episodes?.meta.pagination.pages
   episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template ?? FALLBACKIMAGEEP
+  showImage.value = show.value.show?.image?.template ?? getEpisodefallBackImage()
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.description
 })
@@ -280,7 +280,7 @@ onMounted(() => {
                 v-if="ep?.type !== 'segment'"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
-                :fallback-image="FALLBACKIMAGEEP"
+                :fallback-image="getEpisodefallBackImage()"
               />
             </template>
           </div>
@@ -292,7 +292,7 @@ onMounted(() => {
                 v-if="ep?.type === 'segment'"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
-                :fallback-image="FALLBACKIMAGEEP"
+                :fallback-image="getEpisodefallBackImage()"
               />
             </template>
           </div>

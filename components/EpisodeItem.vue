@@ -16,6 +16,7 @@ import {
   hasAudio,
   togglePlayEpisode,
   addToFavorites,
+  getEpisodefallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import {
@@ -25,7 +26,6 @@ import {
   playStoredMp3,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
-import { FALLBACKIMAGEEP } from "~/composables/globals"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -162,7 +162,7 @@ if (props.isDownloaded) {
       props.data?.image?.id ??
       props.data?.image ??
       props.fallbackImage ??
-      FALLBACKIMAGEEP
+      getEpisodefallBackImage()
   )
 }
 
@@ -213,24 +213,18 @@ const handleClick = () => {
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
-                <span v-if="hasAudio && !showPlayButton">
-                  <p class="text-xs" v-if="estimatedDuration">
+                <template v-if="hasAudio && !showPlayButton">
+                  <template v-if="estimatedDuration">
                     {{ getMinutes(estimatedDuration, 1) }}
-                  </p>
+                  </template>
                   <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-                </span>
-                <p class="text-xs" v-else>
+                </template>
+                <template v-else>
                   {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
-                </p>
+                </template>
               </template>
               <template #right>
-                <div class="flex gap-2 align-items-center">
-                  <p class="text-xs">
-                    {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
-                  </p>
-                  <!-- FROM CapacitorJS Preferences local storage -->
-                  <!-- <span> {{ formatFileSize(props.data.directoryAudio.size) }}</span> -->
-                </div>
+                {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
               </template>
             </PipeData>
           </div>

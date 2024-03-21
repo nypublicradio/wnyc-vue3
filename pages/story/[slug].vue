@@ -204,7 +204,7 @@ const togglePlayHere = (story, index = 0) => {
             </span>
           </template>
           <template #right>
-            <span class="nobreak">{{ whenTime(storyData) }}</span>
+            {{ whenTime(storyData) }}
           </template>
         </PipeData>
         <h1 class="mb-1 alt">{{ storyData?.title }}</h1>
