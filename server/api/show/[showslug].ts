@@ -17,6 +17,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
             url: `${config.public.PUBLISHER_BASE_API}v3/story/`,
             params: {
                 [type]: slug,
+                // channel: slug,
                 ordering: '-newsdate',
                 page,
                 page_size: Number(pageSize),
@@ -66,8 +67,6 @@ const getShow = async (slug: string) => {
         });
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
         show.cmsSource = cmsSources.PUBLISHER
-        // change "channel" to "show" for the client
-        show.type = mediaTypes.SHOW
         return show;
     } catch (e) {
         console.error('getShow error = ', e);
