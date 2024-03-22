@@ -47,11 +47,10 @@ const stopWatch = watch(shows, () => {
 })
 
 watch(searchFieldValue, () => {
-  // sets the scroll to the top of the page when search field is updated. This is needed because if the use scrolls down and searches, they do not see the top of the list if it is long.
-  document.body.scrollIntoView({
-    behavior: "instant",
-    block: "start",
-  })
+  // sets the scroll to the top of the page when search field is updated. a delay is needed to allow the search to complete
+  setTimeout(() => {
+    window.scrollTo(0, 0)
+  }, 200)
 })
 
 onMounted(() => {
@@ -214,7 +213,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .browse-page {
   .search {
-    position: fixed;
+    position: sticky;
     top: env(safe-area-inset-top);
     background: var(--backgroundSimple);
     z-index: 1;
@@ -229,7 +228,6 @@ onMounted(() => {
     margin-left: -2.5rem;
   }
   .content-holder {
-    padding-top: calc(env(safe-area-inset-top) + 72px);
     .topics {
       .topic-btn-holder {
         .topic-btn {
