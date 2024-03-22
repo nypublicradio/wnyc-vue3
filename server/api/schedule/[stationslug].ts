@@ -51,12 +51,9 @@ export default defineEventHandler(async (event) => {
         //Get schedule for today and tomorrow
         const date = new Date(query.localUTCDate);
         const offset = date.getTimezoneOffset() * 60 * 1000;
-        let today = new Date(date.getTime() - offset);
-        //let today = new Date();
-        console.log('today     =', today)
-        let tomorrow = new Date(today);
+        const today = new Date(date.getTime() - offset);
+        const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-
 
         const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0]);
         const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0]);
@@ -64,13 +61,7 @@ export default defineEventHandler(async (event) => {
 
         //Combine today and tomorrow's schedule and return
         let concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
-        //console.log('concatSchedule = ', concatSchedule)
 
-        //convert back to UTC because the user/frontend expects UTC
-        concatSchedule.forEach((show: any) => {
-            //show.attributes.start = zonedTimeToUtc(parseISO(show.attributes.start), 'UTC').toISOString();
-            //show.attributes.end = zonedTimeToUtc(parseISO(show.attributes.end), 'UTC').toISOString();
-        })
         return concatSchedule;
     }
     return null;
