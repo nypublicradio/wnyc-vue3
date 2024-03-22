@@ -11,7 +11,7 @@ import {
   useIsStreamLoading,
   useGlobalToast,
 } from "~/composables/states"
-
+import { LocalNotifications } from "@capacitor/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -24,6 +24,13 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
 const scheduleRef = ref(null)
+const pendingLocalNotification = ref(null)
+
+const getEntryTitle = (entry) => {
+  return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
+    ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
+    : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
+}
 
 const switchStation = async (station) => {
   if (!isStreamLoading.value) {
@@ -67,12 +74,42 @@ const scrollToActiveStation = () => {
   }
 }
 
-const toggleFollow = (episode) => {
+const updateLocalNotification = async () => {
+  pendingLocalNotification.value = await LocalNotifications.getPending()
+}
+const scheduleLocalNotificationToggle = async (entry) => {
+  console.log("notify me", entry)
   trackClickEvent(
-    "Click Tracking - Schedule Follow Button",
+    "Click Tracking - Schedule Notify Button",
     "Live Page",
-    `follow ${currentStreamStation.value} - ${episode}`
+    `Notify me about ${currentStreamStation.value} - ${getEntryTitle(entry)} at ${
+      entry.attributes.start
+    }`
   )
+
+  const idNumber = entry.id.split(":")
+  const id = idNumber[1]
+  // const date = new Date();
+  //       const offset = date.getTimezoneOffset() * 60 * 1000;
+  //       const today = new Date(date.getTime() - offset);
+  // const startDate =
+
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        title: `${entry.attributes.parentTitle} is starting now!`,
+        body: entry.attributes.scheduleEventTitle,
+        id,
+        schedule: { at: new Date(entry.attributes.start) },
+        sound: "notification.mp3",
+        attachments: null,
+        actionTypeId: "",
+        extra: entry.id,
+        channelId: null,
+      },
+    ],
+  })
+  updateLocalNotification()
 }
 
 const getTime = (startArg, endArg, index) => {
@@ -90,19 +127,6 @@ const getTime = (startArg, endArg, index) => {
   })
   return index === 0 ? `Now Until ${endTime}` : startTime
 }
-
-onMounted(() => {
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: "Listen Live",
-    page_type: "live_tab",
-    content_group: "app_tab",
-  })
-  setTimeout(() => {
-    scrollToActiveStation()
-  }, 200)
-})
 
 watch(currentEpisodeHolder, () => {
   setTimeout(() => {
@@ -194,12 +218,26 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
+
 watch(currentStreamStation, async () => {
   await fetchSchedule()
 })
 
 onMounted(async () => {
   await fetchSchedule()
+
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: "Listen Live",
+    page_type: "live_tab",
+    content_group: "app_tab",
+  })
+  setTimeout(() => {
+    scrollToActiveStation()
+  }, 200)
+
+  updateLocalNotification()
 })
 
 onUnmounted(() => {
@@ -225,6 +263,7 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
+      {{ pendingLocalNotification?.notifications }}
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
@@ -316,14 +355,7 @@ onUnmounted(() => {
                 {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
               </p>
               <h2 class="title">
-                {{
-                  `${
-                    entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
-                      ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
-                      : entry.attributes.scheduleEventTitle ??
-                        entry.attributes.parentTitle
-                  }`
-                }}
+                {{ getEntryTitle(entry) }}
               </h2>
             </div>
           </div>
@@ -333,15 +365,11 @@ onUnmounted(() => {
             text
             plain
             rounded
-            class="flex-none"
-            @click="
-              toggleFollow(
-                entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
-              )
-            "
+            class="flex-none no-hover"
+            @click="scheduleLocalNotificationToggle(entry)"
           >
             <template #icon>
-              <FollowIcon :active="false" />
+              <FollowIcon :active="entry.active" />
             </template>
           </Button>
         </div>

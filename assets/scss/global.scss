@@ -276,10 +276,8 @@ label {
 }
 
 // remove sticky hover on mobile
-@media (hover: hover) {
-  .p-button:hover {
-    //background-color: #ccf6c8;
-  }
+.p-button.no-hover:hover {
+  background: transparent !important;
 }
 
 .p-button {
