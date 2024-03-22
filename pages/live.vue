@@ -89,10 +89,6 @@ const scheduleLocalNotificationToggle = async (entry) => {
 
   const idNumber = entry.id.split(":")
   const id = idNumber[1]
-  // const date = new Date();
-  //       const offset = date.getTimezoneOffset() * 60 * 1000;
-  //       const today = new Date(date.getTime() - offset);
-  // const startDate =
 
   await LocalNotifications.schedule({
     notifications: [
@@ -100,12 +96,11 @@ const scheduleLocalNotificationToggle = async (entry) => {
         title: `${entry.attributes.parentTitle} is starting now!`,
         body: entry.attributes.scheduleEventTitle,
         id,
-        schedule: { at: new Date(entry.attributes.start) },
-        sound: "notification.mp3",
-        attachments: null,
-        actionTypeId: "",
-        extra: entry.id,
-        channelId: null,
+        schedule: { at: new Date(entry.attributes.start), allowWhileIdle: true },
+        sound: "notification.wav",
+        actionTypeId: "route-live",
+        extra: entry,
+        channelId: "local-notifications-channel-id",
       },
     ],
   })
