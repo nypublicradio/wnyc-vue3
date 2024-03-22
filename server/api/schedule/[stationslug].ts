@@ -3,8 +3,6 @@ import axios from 'axios'
 import humps from 'humps'
 
 const getSchedule = async (slug: string, schedDate: string) => {
-    // convert UTC schedDate to EST
-    console.log('schedDate', schedDate)
     const options = {
         method: 'GET',
         url: config.public.PUBLISHER_BASE_API + 'v3/schedule/',
@@ -15,7 +13,6 @@ const getSchedule = async (slug: string, schedDate: string) => {
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).data;
-    // convert EST dates to UTC
     const filteredSchedule = removePastShows(resData);
     return filteredSchedule;
 };
