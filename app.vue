@@ -17,6 +17,8 @@ import {
   useGlobalToast,
   useIsNetworkConnected,
   //useHomepageData,
+  useAllowPushNotifications,
+  useAllowLocalNotifications,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
@@ -36,9 +38,10 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
+const allowPushNotifications = useAllowPushNotifications()
+const allowLocalNotifications = useAllowLocalNotifications()
 
 const isRefreshing = shallowRef(false)
-const acceptNotifications = shallowRef(false)
 
 const isApp = useIsApp()
 
@@ -79,25 +82,24 @@ const checkNotificationPermisstions = async () => {
     if (result.receive === "granted") {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register()
-      acceptNotifications.value = true
+      allowPushNotifications.value = true
     } else {
       //alert('Error Reguistering push notifications')
-      acceptNotifications.value = false
+      allowPushNotifications.value = false
     }
   })
 
-  //Check permission to use push notifications for ANDROID ONLY
-  if (Capacitor.getPlatform() === "android") {
-    await LocalNotifications.requestPermissions().then((result) => {
-      //alert('local request = ' + JSON.stringify(result))
-      if (result.display === "granted") {
-        PushNotifications.register()
-        acceptNotifications.value = true
-      } else {
-        acceptNotifications.value = false
-      }
-    })
-  }
+  //if (Capacitor.getPlatform() === "android") {
+  await LocalNotifications.requestPermissions().then((result) => {
+    //alert('local request = ' + JSON.stringify(result))
+    if (result.display === "granted") {
+      PushNotifications.register()
+      allowLocalNotifications.value = true
+    } else {
+      allowLocalNotifications.value = false
+    }
+  })
+  //}
 }
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
