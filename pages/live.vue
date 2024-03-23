@@ -10,6 +10,7 @@ import {
   useIsEpisodePlaying,
   useIsStreamLoading,
   useGlobalToast,
+  useIsApp,
 } from "~/composables/states"
 
 import {
@@ -26,6 +27,7 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
+const isApp = useIsApp()
 
 const scheduleRef = ref(null)
 const pendingLocalNotifications = usePendingLocalNotifications()
@@ -336,7 +338,7 @@ onUnmounted(() => {
             </div>
           </div>
           <Button
-            v-if="index > 0"
+            v-if="isApp && index > 0"
             severity="secondary"
             text
             plain
