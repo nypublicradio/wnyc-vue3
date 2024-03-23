@@ -11,7 +11,11 @@ import {
   useIsStreamLoading,
   useGlobalToast,
 } from "~/composables/states"
-import { LocalNotifications } from "@capacitor/local-notifications"
+
+import {
+  usePendingLocalNotifications,
+  scheduleLocalNotification,
+} from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -24,7 +28,7 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 
 const scheduleRef = ref(null)
-const pendingLocalNotification = ref(null)
+const pendingLocalNotifications = usePendingLocalNotifications()
 
 const getEntryTitle = (entry) => {
   return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
@@ -74,11 +78,7 @@ const scrollToActiveStation = () => {
   }
 }
 
-const updateLocalNotification = async () => {
-  pendingLocalNotification.value = await LocalNotifications.getPending()
-}
-const scheduleLocalNotificationToggle = async (entry) => {
-  console.log("notify me", entry)
+const handleScheduleLocalNotification = async (entry) => {
   trackClickEvent(
     "Click Tracking - Schedule Notify Button",
     "Live Page",
@@ -87,25 +87,7 @@ const scheduleLocalNotificationToggle = async (entry) => {
     }`
   )
 
-  const idNumber = entry.id.split(":")
-  const id = idNumber[1]
-
-  await LocalNotifications.schedule({
-    notifications: [
-      {
-        title: `${entry.attributes.parentTitle} is starting now!`,
-        body: entry.attributes.scheduleEventTitle,
-        id,
-        //schedule: { at: new Date(entry.attributes.start), allowWhileIdle: true },
-        schedule: { at: new Date(Date.now() + 5000) },
-        sound: "notification.wav",
-        actionTypeId: "route-live",
-        extra: entry,
-        //channelId: "local-notifications-channel-id",
-      },
-    ],
-  })
-  updateLocalNotification()
+  scheduleLocalNotification(entry)
 }
 
 const getTime = (startArg, endArg, index) => {
@@ -232,8 +214,6 @@ onMounted(async () => {
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
-
-  updateLocalNotification()
 })
 
 onUnmounted(() => {
@@ -259,7 +239,7 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      {{ pendingLocalNotification?.notifications }}
+      {{ pendingLocalNotifications?.notifications }}
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
@@ -362,7 +342,7 @@ onUnmounted(() => {
             plain
             rounded
             class="flex-none no-hover"
-            @click="scheduleLocalNotificationToggle(entry)"
+            @click="handleScheduleLocalNotification(entry)"
           >
             <template #icon>
               <FollowIcon :active="entry.active" />

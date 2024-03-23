@@ -20,6 +20,7 @@ import {
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { setPendingLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
@@ -192,6 +193,8 @@ onMounted(async () => {
     await initAdvertisingId()
     // init downloads files system for the app
     await initFileSystem()
+    // init local notifications
+    await setPendingLocalNotifications()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
