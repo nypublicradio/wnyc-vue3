@@ -89,7 +89,8 @@ const handleScheduleLocalNotification = async (entry) => {
     }`
   )
   entry.active = !entry.active
-  scheduleLocalNotification(entry)
+
+  await scheduleLocalNotification(entry)
 }
 
 const getTime = (startArg, endArg, index) => {
@@ -241,7 +242,7 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      {{ pendingLocalNotifications?.notifications }}
+      <pre class="text-xs">{{ pendingLocalNotifications }}</pre>
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
