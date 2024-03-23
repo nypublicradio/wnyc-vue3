@@ -88,7 +88,7 @@ const handleScheduleLocalNotification = async (entry) => {
       entry.attributes.start
     }`
   )
-
+  entry.active = !entry.active
   scheduleLocalNotification(entry)
 }
 
@@ -337,8 +337,9 @@ onUnmounted(() => {
               </h2>
             </div>
           </div>
+
           <Button
-            v-if="isApp && index > 0"
+            v-if="index > 0"
             severity="secondary"
             text
             plain
