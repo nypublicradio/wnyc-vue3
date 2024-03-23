@@ -1,6 +1,5 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { J } from "vitest/dist/types-198fd1d9"
-import { useCurrentStreamStation, useAllowLocalNotifications } from "~/composables/states"
+import { useCurrentStreamStation, useAllowLocalNotifications, useGlobalToast } from "~/composables/states"
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
@@ -9,7 +8,6 @@ export const setPendingLocalNotifications = async () => {
     console.log('setting')
     const pendingLocalNotifications = usePendingLocalNotifications()
     pendingLocalNotifications.value = await LocalNotifications.getPending()
-
 }
 
 
@@ -18,7 +16,7 @@ export const scheduleLocalNotification = async (entry) => {
     const id = idNumber[1]
     const allowLocalNotifications = useAllowLocalNotifications()
     const currentStreamStation = useCurrentStreamStation()
-    console.log('currentStreamStation.value = ', currentStreamStation.value)
+
     const notificationBody = {
         notifications: [
             {
@@ -33,18 +31,36 @@ export const scheduleLocalNotification = async (entry) => {
             },
         ],
     }
-    alert('entry =' + JSON.stringify(entry))
+    //alert('allowLocalNotifications.value = ' + JSON.stringify(allowLocalNotifications.value))
     if (allowLocalNotifications.value) {
         if (entry.active) {
+            //alert(JSON.stringify(await LocalNotifications.getPending()))
             await LocalNotifications.schedule(notificationBody)
-            alert(JSON.stringify(await LocalNotifications.getPending()))
+
             setPendingLocalNotifications()
 
         } else {
+            //alert("remove =" + JSON.stringify(await LocalNotifications.getPending()))
             console.log('should cancel notification')
             await LocalNotifications.cancel(notificationBody)
-            alert("remove =" + JSON.stringify(await LocalNotifications.getPending()))
+
             setPendingLocalNotifications()
         }
+    } else {
+        // ask permissions and try again
+        await LocalNotifications.requestPermissions().then((result) => {
+            if (result.display === "granted") {
+                allowLocalNotifications.value = true
+                const globalToast = useGlobalToast()
+                globalToast.value = {
+                    severity: "success",
+                    summary: "Local notifications are now enabled. Please try again.",
+                    life: 3000,
+                    closable: true,
+                }
+            } else {
+                allowLocalNotifications.value = false
+            }
+        })
     }
 }

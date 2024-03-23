@@ -91,9 +91,8 @@ const checkNotificationPermisstions = async () => {
 
   //if (Capacitor.getPlatform() === "android") {
   await LocalNotifications.requestPermissions().then((result) => {
-    //alert('local request = ' + JSON.stringify(result))
+    //alert("local request = " + JSON.stringify(result))
     if (result.display === "granted") {
-      PushNotifications.register()
       allowLocalNotifications.value = true
     } else {
       allowLocalNotifications.value = false
