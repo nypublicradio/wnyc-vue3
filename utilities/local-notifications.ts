@@ -5,11 +5,9 @@ import { useCurrentStreamStation, useAllowLocalNotifications, useGlobalToast } f
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
 
 export const setPendingLocalNotifications = async () => {
-    console.log('setting')
     const pendingLocalNotifications = usePendingLocalNotifications()
     pendingLocalNotifications.value = await LocalNotifications.getPending()
 }
-
 
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")

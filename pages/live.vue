@@ -349,7 +349,7 @@ onUnmounted(() => {
             @click="handleScheduleLocalNotification(entry)"
           >
             <template #icon>
-              <FollowIcon :active="entry.active" />
+              <NotificationIcon :entry="entry" />
             </template>
           </Button>
         </div>

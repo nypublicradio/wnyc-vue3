@@ -195,8 +195,8 @@ onMounted(async () => {
     // init downloads files system for the app
     await initFileSystem()
     // init local notifications
-    await setPendingLocalNotifications()
   }
+  await setPendingLocalNotifications()
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", () => {
