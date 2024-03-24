@@ -241,7 +241,7 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <!-- <pre class="text-xs">{{ pendingLocalNotifications }}</pre> -->
+      <pre class="text-xs">{{ pendingLocalNotifications }}</pre>
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
