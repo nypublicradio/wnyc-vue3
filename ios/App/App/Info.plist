@@ -57,12 +57,7 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>audio</string>
-		<string>bluetooth-central</string>
-		<string>external-accessory</string>
-		<string>fetch</string>
-		<string>processing</string>
-		<string>remote-notification</string>
+    	<string>org.wnyc.android.localnotificationstask</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
