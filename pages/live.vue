@@ -29,6 +29,7 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 const isApp = useIsApp()
 
+const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
 const pendingLocalNotifications = usePendingLocalNotifications()
 
@@ -88,7 +89,6 @@ const handleScheduleLocalNotification = async (entry) => {
       entry.attributes.start
     }`
   )
-  entry.active = !entry.active
 
   await scheduleLocalNotification(entry)
 }
@@ -187,7 +187,6 @@ const fetchSchedule = async () => {
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
-    const globalToast = useGlobalToast()
     globalToast.value = {
       severity: "error",
       summary:

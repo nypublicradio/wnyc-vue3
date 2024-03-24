@@ -1,5 +1,6 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
 import { useCurrentStreamStation, useAllowLocalNotifications, useGlobalToast } from "~/composables/states"
+import { getDate } from "~/utilities/helpers"
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
@@ -9,11 +10,19 @@ export const setPendingLocalNotifications = async () => {
     pendingLocalNotifications.value = await LocalNotifications.getPending()
 }
 
+const checkNotificationsList = (entry) => {
+    const pendingLocalNotifications = usePendingLocalNotifications()
+    return pendingLocalNotifications.value?.notifications.some(
+        (notification) => notification.extra.id === entry.id
+    ) || false;
+}
+
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
     const id = idNumber[1]
     const allowLocalNotifications = useAllowLocalNotifications()
     const currentStreamStation = useCurrentStreamStation()
+    const globalToast = useGlobalToast()
 
     const notificationBody = {
         notifications: [
@@ -29,19 +38,22 @@ export const scheduleLocalNotification = async (entry) => {
             },
         ],
     }
-    //alert('allowLocalNotifications.value = ' + JSON.stringify(allowLocalNotifications.value))
     if (allowLocalNotifications.value) {
-        if (entry.active) {
-            //alert(JSON.stringify(await LocalNotifications.getPending()))
+        if (!checkNotificationsList(entry)) {
             await LocalNotifications.schedule(notificationBody)
-
             setPendingLocalNotifications()
+            globalToast.value = {
+                severity: "success",
+                summary: `Notification set for ${getDate(
+                    entry.attributes.start,
+                    "h:mm a EEE, MMM do "
+                )}`,
+                life: 3000,
+                closable: true,
+            }
 
         } else {
-            //alert("remove =" + JSON.stringify(await LocalNotifications.getPending()))
-            console.log('should cancel notification')
             await LocalNotifications.cancel(notificationBody)
-
             setPendingLocalNotifications()
         }
     } else {
@@ -49,7 +61,7 @@ export const scheduleLocalNotification = async (entry) => {
         await LocalNotifications.requestPermissions().then((result) => {
             if (result.display === "granted") {
                 allowLocalNotifications.value = true
-                const globalToast = useGlobalToast()
+
                 globalToast.value = {
                     severity: "success",
                     summary: "Local notifications are now enabled. Please try again.",
