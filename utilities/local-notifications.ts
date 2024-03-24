@@ -19,22 +19,26 @@ const checkNotificationsList = (entry) => {
 
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
-    const id = idNumber[1]
+    const id = Number(idNumber[1])
     const allowLocalNotifications = useAllowLocalNotifications()
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
+    const title = JSON.stringify(`${entry.attributes.parentTitle} is starting now on ${entry.station}!`)
+    const body = JSON.stringify(entry.attributes.scheduleEventTitle)
+    const serializedEntry = JSON.stringify(entry);
+    const parsedEntry = JSON.parse(serializedEntry);
 
     const notificationBody = {
         notifications: [
             {
-                title: `${entry.attributes.parentTitle} is starting now on ${entry.station}!`,
-                body: entry.attributes.scheduleEventTitle,
+                title,
+                body,
                 id,
-                schedule: { at: entryStartDate },
+                schedule: { at: entryStartDate, allowWhileIdle: true },
                 sound: "notification.wav",
                 actionTypeId: "route-live",
-                extra: entry,
+                extra: parsedEntry,
             },
         ],
     }
