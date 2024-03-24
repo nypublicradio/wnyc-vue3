@@ -24,9 +24,10 @@ export const scheduleLocalNotification = async (entry) => {
     const currentStreamStation = useCurrentStreamStation()
     const globalToast = useGlobalToast()
 
-    const entryDate = new Date(entry.attributes.start)
-    const dateTimeToTrigger = new Date(entryDate.getTime() - entryDate.getTimezoneOffset() * 60 * 1000);
-
+    const entryDate = await new Date(entry.attributes.start)
+    const dateTimeToTrigger = await new Date(entryDate.getTime() - entryDate.getTimezoneOffset() * 60 * 1000);
+    alert('entryDate = ' + JSON.stringify(entryDate))
+    alert('dateTimeToTrigger = ' + JSON.stringify(dateTimeToTrigger))
     const notificationBody = {
         notifications: [
             {
