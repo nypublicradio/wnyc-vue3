@@ -21,25 +21,20 @@ export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
     const id = idNumber[1]
     const allowLocalNotifications = useAllowLocalNotifications()
-    const currentStreamStation = useCurrentStreamStation()
     const globalToast = useGlobalToast()
 
-    const entryDate = await new Date(entry.attributes.start)
-    const dateTimeToTrigger = await new Date(entryDate.getTime() - entryDate.getTimezoneOffset() * 60 * 1000);
-    alert('entryDate = ' + JSON.stringify(entryDate))
-    alert('dateTimeToTrigger = ' + JSON.stringify(dateTimeToTrigger))
+    const entryStartDate = await new Date(entry.attributes.start)
+
     const notificationBody = {
         notifications: [
             {
-                title: `${entry.attributes.parentTitle} is starting now!`,
+                title: `${entry.attributes.parentTitle} is starting now on ${entry.station}!`,
                 body: entry.attributes.scheduleEventTitle,
                 id,
-                schedule: { at: dateTimeToTrigger/* , allowWhileIdle: true */ },
-                //schedule: { at: new Date(Date.now() + 5000) },
+                schedule: { at: entryStartDate },
                 sound: "notification.wav",
                 actionTypeId: "route-live",
                 extra: entry,
-                channelId: currentStreamStation.value,
             },
         ],
     }

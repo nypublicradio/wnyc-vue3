@@ -89,11 +89,11 @@ const handleScheduleLocalNotification = async (entry) => {
       entry.attributes.start
     }`
   )
-
+  entry.station = currentEpisodeHolder.value.station
   await scheduleLocalNotification(entry)
 }
 
-const getTime = (startArg, endArg, index) => {
+const getTheTime = (startArg, endArg, index) => {
   const start = new Date(startArg)
   const startTime = start.toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -330,14 +330,13 @@ onUnmounted(() => {
             <div class="left my-1" />
             <div>
               <p class="time">
-                {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
+                {{ getTheTime(entry.attributes.start, entry.attributes.end, index) }}
               </p>
               <h2 class="title">
                 {{ getEntryTitle(entry) }}
               </h2>
             </div>
           </div>
-
           <Button
             v-if="isApp && index > 0"
             severity="secondary"
