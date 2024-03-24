@@ -45,7 +45,7 @@ const checkNotificationsList = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.notification-icon path {
+.notification-icon {
   height: 28px;
   width: 28px;
 }
