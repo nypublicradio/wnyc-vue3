@@ -24,13 +24,16 @@ export const scheduleLocalNotification = async (entry) => {
     const currentStreamStation = useCurrentStreamStation()
     const globalToast = useGlobalToast()
 
+    const entryDate = new Date(entry.attributes.start)
+    const dateTimeToTrigger = new Date(entryDate.getTime() - entryDate.getTimezoneOffset() * 60 * 1000);
+
     const notificationBody = {
         notifications: [
             {
                 title: `${entry.attributes.parentTitle} is starting now!`,
                 body: entry.attributes.scheduleEventTitle,
                 id,
-                schedule: { at: new Date(entry.attributes.start) },
+                schedule: { at: dateTimeToTrigger/* , allowWhileIdle: true */ },
                 //schedule: { at: new Date(Date.now() + 5000) },
                 sound: "notification.wav",
                 actionTypeId: "route-live",
