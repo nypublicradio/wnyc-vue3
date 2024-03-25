@@ -24,8 +24,9 @@ export const scheduleLocalNotification = async (entry) => {
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
-    const title = JSON.stringify(`${entry.attributes.parentTitle} is starting now on ${entry.station}!`)
-    const body = JSON.stringify(entry.attributes.scheduleEventTitle)
+    const title = `${entry.attributes.parentTitle} is starting now on ${entry.station}!`
+
+    const body = entry.attributes.scheduleEventTitle ? `${entry.attributes.scheduleEventTitle}` : ''
     const serializedEntry = JSON.stringify(entry);
     const parsedEntry = JSON.parse(serializedEntry);
 
