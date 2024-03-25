@@ -87,7 +87,10 @@ export const initLocalNotifications = async () => {
     await LocalNotifications.addListener(
         "localNotificationActionPerformed",
         (notification) => {
-            alert('local notifications action performed: ' + JSON.stringify(notification))
+            //alert('local notifications action performed: ' + JSON.stringify(notification))
+
+            // the notification object will contain the all the data that was added to the locaal notification. so in the future we can add more data to the notification and use it here to do whatever we want. As of now, we are just hard loading the LIVE page
+            window.location.href = "/live"
         }
     )
 }
