@@ -22,7 +22,7 @@ import {
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { setPendingLocalNotifications } from "~/utilities/local-notifications"
+import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
@@ -125,7 +125,7 @@ const addListeners = async () => {
     }
   )
 
-  // Method called when tapping on a notification
+  // Method called when tapping on a local notification
   await PushNotifications.addListener(
     "pushNotificationActionPerformed",
     (notification: ActionPerformed) => {
@@ -195,7 +195,7 @@ onMounted(async () => {
     // init downloads files system for the app
     await initFileSystem()
     // init local notifications
-    await setPendingLocalNotifications()
+    await initLocalNotifications()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus

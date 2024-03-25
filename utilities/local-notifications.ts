@@ -36,7 +36,8 @@ export const scheduleLocalNotification = async (entry) => {
                 title,
                 body,
                 id,
-                schedule: { at: entryStartDate, allowWhileIdle: true },
+                //schedule: { at: entryStartDate, allowWhileIdle: true },
+                schedule: { at: new Date(Date.now() + 5000) },
                 sound: "notification.wav",
                 actionTypeId: "route-live",
                 extra: parsedEntry,
@@ -78,4 +79,15 @@ export const scheduleLocalNotification = async (entry) => {
             }
         })
     }
+}
+
+export const initLocalNotifications = async () => {
+    setPendingLocalNotifications()
+    // Method called when tapping on a push notification
+    await LocalNotifications.addListener(
+        "localNotificationActionPerformed",
+        (notification) => {
+            alert('local notifications action performed: ' + JSON.stringify(notification))
+        }
+    )
 }
