@@ -11,8 +11,10 @@ const featuredShows = ref(shows?.value?.featuredShows)
 const allShows = ref(shows?.value?.all)
 
 const router = useRouter()
+const route = useRoute()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
+const activeTab = ref(route.query.tab ?? "0")
 
 const options = computed(() => ({
   fuseOptions: {
@@ -45,6 +47,11 @@ const stopWatch = watch(shows, () => {
     stopWatch()
   })
 })
+
+const handleActiveTab = (e) => {
+  router.push({ query: { tab: e.index } })
+  activeTab.value = e.index
+}
 
 watch(searchFieldValue, () => {
   // sets the scroll to the top of the page when search field is updated. a delay is needed to allow the search to complete
@@ -128,7 +135,11 @@ onMounted(() => {
         </div>
         <FetchError v-if="error || shows === undefined" @on-click="refresh" />
         <section class="tabs mt-2">
-          <TabView :lazy="true">
+          <TabView
+            :lazy="true"
+            :activeIndex="Number(activeTab)"
+            @tab-change="handleActiveTab"
+          >
             <TabPanel header="Featured Shows">
               <div class="shows flex flex-column gap-5">
                 <template v-if="!pending">
