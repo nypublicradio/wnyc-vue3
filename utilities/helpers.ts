@@ -671,8 +671,9 @@ export const prepForPlayer = (item, index = null) => {
 export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
-
+  console.log('media = ', media)
   if (typeof media.audio === "string") {
+    console.log('currentEpisode.value? = ', currentEpisode.value)
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)

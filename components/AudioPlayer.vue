@@ -24,8 +24,8 @@ import {
   useAdvertisingId,
   useIsApp,
   useCurrentUserProfile,
+  useGlobalToast,
 } from "~/composables/states"
-
 import {
   trackAudioEvent,
   trackClickEvent,
@@ -68,6 +68,8 @@ const advertisingId = useAdvertisingId()
 const currentUser = useCurrentUserProfile()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isApp = useIsApp()
+const globalToast = useGlobalToast()
+
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const playerHeight = ref(audioPlayerHeight + "px")
@@ -232,6 +234,28 @@ const handleIsExpanded = (e) => {
     initMediaSession(currentEpisode.value, skipTime)
   }, 300)
 }
+
+const handleError = (e) => {
+  if (e) {
+    globalToast.value = {
+      severity: "error",
+      summary: "We are having a problem loading the audio. Please try again later.",
+      life: 6000,
+      closable: true,
+    }
+    setTimeout(() => {
+      isEpisodePlaying.value = false
+      showPlayer.value = false
+    }, 500)
+
+    trackAudioEvent(
+      "audio error",
+      isLiveStream.value ? "live" : "on_demand",
+      getTitle.value,
+      getDescription.value
+    )
+  }
+}
 </script>
 
 <template>
@@ -267,6 +291,7 @@ const handleIsExpanded = (e) => {
         @duration="currentEpisodeDuration = $event"
         @current-duration="currentEpisodeProgress = $event"
         @ended="episodeEnded"
+        @error="handleError"
         can-click-anywhere
         :marquee="false"
         streamType="unknown"
