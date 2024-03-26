@@ -197,7 +197,6 @@ onMounted(async () => {
     await initFileSystem()
     // init local notifications
     await initLocalNotifications()
-    await initBatteryOptimizations()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
