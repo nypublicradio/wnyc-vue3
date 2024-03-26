@@ -14,7 +14,7 @@ import {
 } from "~/composables/states"
 
 import {
-  usePendingLocalNotifications,
+  /* usePendingLocalNotifications, */
   scheduleLocalNotification,
 } from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
@@ -31,7 +31,7 @@ const isApp = useIsApp()
 
 const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
-const pendingLocalNotifications = usePendingLocalNotifications()
+//const pendingLocalNotifications = usePendingLocalNotifications()
 
 const getEntryTitle = (entry) => {
   return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle

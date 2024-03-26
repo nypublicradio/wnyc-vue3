@@ -1,15 +1,17 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { useCurrentStreamStation, useAllowLocalNotifications, useGlobalToast } from "~/composables/states"
+import { useAllowLocalNotifications, useGlobalToast } from "~/composables/states"
 import { getDate } from "~/utilities/helpers"
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
 
+// update the global state
 export const setPendingLocalNotifications = async () => {
     const pendingLocalNotifications = usePendingLocalNotifications()
     pendingLocalNotifications.value = await LocalNotifications.getPending()
 }
 
+// check if the entry is in the local notifications list
 const checkNotificationsList = (entry) => {
     const pendingLocalNotifications = usePendingLocalNotifications()
     return pendingLocalNotifications.value?.notifications.some(
@@ -17,6 +19,7 @@ const checkNotificationsList = (entry) => {
     ) || false;
 }
 
+// schedule a local notification
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
     const id = Number(idNumber[1])
@@ -81,12 +84,13 @@ export const scheduleLocalNotification = async (entry) => {
     }
 }
 
+// initialize local notifications and add listener to handle when tapping on a notification and what the app should do
 export const initLocalNotifications = async () => {
     setPendingLocalNotifications()
     // Method called when tapping on a push notification
     await LocalNotifications.addListener(
         "localNotificationActionPerformed",
-        (notification) => {
+        (/* notification */) => {
             //alert('local notifications action performed: ' + JSON.stringify(notification))
 
             // the notification object will contain the all the data that was added to the locaal notification. so in the future we can add more data to the notification and use it here to do whatever we want. As of now, we are just hard loading the LIVE page
