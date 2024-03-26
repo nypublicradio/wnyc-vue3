@@ -41,6 +41,7 @@
     "@capacitor/share": "^5.0.7",
     "@capacitor/splash-screen": "5.0.7",
     "@capacitor/status-bar": "5.0.7",
+    "@capawesome-team/capacitor-android-battery-optimization": "^5.0.0",
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@jofr/capacitor-media-session": "3.0.3",
     "@nuxt/image": "1.4.0",
