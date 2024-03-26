@@ -34,7 +34,7 @@ const config: CapacitorConfig = {
     LocalNotifications: {
       smallIcon: "ic_stat_notification_default",
       iconColor: "#de1e3d",
-      //sound: "notification.wav"
+      sound: "notification.wav"
     }
   }
 };

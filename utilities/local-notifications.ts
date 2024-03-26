@@ -38,7 +38,7 @@ export const scheduleLocalNotification = async (entry) => {
                 id,
                 schedule: { at: entryStartDate, allowWhileIdle: true },
                 //schedule: { at: new Date(Date.now() + 5000) },
-                //sound: "notification.wav",
+                sound: "notification.wav",
                 actionTypeId: "route-live",
                 extra: parsedEntry,
             },
