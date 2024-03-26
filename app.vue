@@ -17,9 +17,12 @@ import {
   useGlobalToast,
   useIsNetworkConnected,
   //useHomepageData,
+  useAllowPushNotifications,
+  useAllowLocalNotifications,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
@@ -35,9 +38,10 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
+const allowPushNotifications = useAllowPushNotifications()
+const allowLocalNotifications = useAllowLocalNotifications()
 
 const isRefreshing = shallowRef(false)
-const acceptNotifications = shallowRef(false)
 
 const isApp = useIsApp()
 
@@ -78,25 +82,23 @@ const checkNotificationPermisstions = async () => {
     if (result.receive === "granted") {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register()
-      acceptNotifications.value = true
+      allowPushNotifications.value = true
     } else {
       //alert('Error Reguistering push notifications')
-      acceptNotifications.value = false
+      allowPushNotifications.value = false
     }
   })
 
-  //Check permission to use push notifications for ANDROID ONLY
-  if (Capacitor.getPlatform() === "android") {
-    await LocalNotifications.requestPermissions().then((result) => {
-      //alert('local request = ' + JSON.stringify(result))
-      if (result.display === "granted") {
-        PushNotifications.register()
-        acceptNotifications.value = true
-      } else {
-        acceptNotifications.value = false
-      }
-    })
-  }
+  //if (Capacitor.getPlatform() === "android") {
+  await LocalNotifications.requestPermissions().then((result) => {
+    //alert("local request = " + JSON.stringify(result))
+    if (result.display === "granted") {
+      allowLocalNotifications.value = true
+    } else {
+      allowLocalNotifications.value = false
+    }
+  })
+  //}
 }
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
@@ -123,7 +125,7 @@ const addListeners = async () => {
     }
   )
 
-  // Method called when tapping on a notification
+  // Method called when tapping on a local notification
   await PushNotifications.addListener(
     "pushNotificationActionPerformed",
     (notification: ActionPerformed) => {
@@ -192,6 +194,8 @@ onMounted(async () => {
     await initAdvertisingId()
     // init downloads files system for the app
     await initFileSystem()
+    // init local notifications
+    await initLocalNotifications()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus

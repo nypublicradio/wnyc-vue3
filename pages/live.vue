@@ -10,8 +10,13 @@ import {
   useIsEpisodePlaying,
   useIsStreamLoading,
   useGlobalToast,
+  useIsApp,
 } from "~/composables/states"
 
+import {
+  /* usePendingLocalNotifications, */
+  scheduleLocalNotification,
+} from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -22,9 +27,20 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
+const isApp = useIsApp()
 
+const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
+//const pendingLocalNotifications = usePendingLocalNotifications()
 
+// assembles the proper title for the schedule entry
+const getEntryTitle = (entry) => {
+  return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
+    ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
+    : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
+}
+
+// switch the station and track it
 const switchStation = async (station) => {
   if (!isStreamLoading.value) {
     if (currentEpisode.value !== station) {
@@ -67,15 +83,21 @@ const scrollToActiveStation = () => {
   }
 }
 
-const toggleFollow = (episode) => {
+// schedule a local notification and track it
+const handleScheduleLocalNotification = async (entry) => {
   trackClickEvent(
-    "Click Tracking - Schedule Follow Button",
+    "Click Tracking - Schedule Notify Button",
     "Live Page",
-    `follow ${currentStreamStation.value} - ${episode}`
+    `Notify me about ${currentStreamStation.value} - ${getEntryTitle(entry)} at ${
+      entry.attributes.start
+    }`
   )
+  entry.station = currentEpisodeHolder.value.station
+  await scheduleLocalNotification(entry)
 }
 
-const getTime = (startArg, endArg, index) => {
+// get the time for the schedule entry
+const getTheTime = (startArg, endArg, index) => {
   const start = new Date(startArg)
   const startTime = start.toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -90,19 +112,6 @@ const getTime = (startArg, endArg, index) => {
   })
   return index === 0 ? `Now Until ${endTime}` : startTime
 }
-
-onMounted(() => {
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: "Listen Live",
-    page_type: "live_tab",
-    content_group: "app_tab",
-  })
-  setTimeout(() => {
-    scrollToActiveStation()
-  }, 200)
-})
 
 watch(currentEpisodeHolder, () => {
   setTimeout(() => {
@@ -162,10 +171,16 @@ const clearAllTimeout = () => {
 const fetchSchedule = async () => {
   clearAllTimeout()
   scheduleRef.value = null
+  //const localDate = new Date()
   try {
     const schedule = await $fetch(
       `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
-      { method: "POST" }
+      {
+        method: "POST",
+        // params: {
+        //   localDate: String(localDate),
+        // },
+      }
     )
     scheduleRef.value = schedule
     // init setTimeouts to refetch the schedule when the current event starts
@@ -176,7 +191,6 @@ const fetchSchedule = async () => {
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
-    const globalToast = useGlobalToast()
     globalToast.value = {
       severity: "error",
       summary:
@@ -188,12 +202,24 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
+
 watch(currentStreamStation, async () => {
   await fetchSchedule()
 })
 
 onMounted(async () => {
   await fetchSchedule()
+
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: "Listen Live",
+    page_type: "live_tab",
+    content_group: "app_tab",
+  })
+  setTimeout(() => {
+    scrollToActiveStation()
+  }, 200)
 })
 
 onUnmounted(() => {
@@ -219,6 +245,7 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
+      <!-- <pre class="text-xs">{{ pendingLocalNotifications }}</pre> -->
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
@@ -307,28 +334,24 @@ onUnmounted(() => {
             <div class="left my-1" />
             <div>
               <p class="time">
-                {{ getTime(entry.attributes.start, entry.attributes.end, index) }}
+                {{ getTheTime(entry.attributes.start, entry.attributes.end, index) }}
               </p>
               <h2 class="title">
-                {{ entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle }}
+                {{ getEntryTitle(entry) }}
               </h2>
             </div>
           </div>
           <Button
-            v-if="index > 0"
+            v-if="isApp && index > 0"
             severity="secondary"
             text
             plain
             rounded
-            class="flex-none"
-            @click="
-              toggleFollow(
-                entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
-              )
-            "
+            class="flex-none no-hover"
+            @click="handleScheduleLocalNotification(entry)"
           >
             <template #icon>
-              <FollowIcon :active="false" />
+              <NotificationIcon :entry="entry" />
             </template>
           </Button>
         </div>

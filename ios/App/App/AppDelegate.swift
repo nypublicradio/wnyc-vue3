@@ -2,6 +2,7 @@ import UIKit
 import Capacitor
 import Firebase
 import FirebaseCore
+import CapacitorBackgroundRunner
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -11,6 +12,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         // Override point for customization after application launch.
+        BackgroundRunnerPlugin.registerBackgroundTask()
+        BackgroundRunnerPlugin.handleApplicationDidFinishLaunching(launchOptions: launchOptions)
         return true
     }
 
@@ -62,5 +65,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
     }
+    
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+            // ....
+            BackgroundRunnerPlugin.dispatchEvent(event: "remoteNotification", eventArgs: userInfo) { result in
+                switch result {
+                case .success:
+                    completionHandler(.newData)
+                case .failure:
+                    completionHandler(.failed)
+                }
+            }
+        }
 
 }

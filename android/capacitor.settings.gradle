@@ -8,6 +8,9 @@ project(':capacitor-community-advertising-id').projectDir = new File('../node_mo
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
 
+include ':capacitor-background-runner'
+project(':capacitor-background-runner').projectDir = new File('../node_modules/@capacitor/background-runner/android')
+
 include ':capacitor-browser'
 project(':capacitor-browser').projectDir = new File('../node_modules/@capacitor/browser/android')
 
@@ -43,6 +46,9 @@ project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capa
 
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
+
+include ':capawesome-team-capacitor-android-battery-optimization'
+project(':capawesome-team-capacitor-android-battery-optimization').projectDir = new File('../node_modules/@capawesome-team/capacitor-android-battery-optimization/android')
 
 include ':jofr-capacitor-media-session'
 project(':jofr-capacitor-media-session').projectDir = new File('../node_modules/@jofr/capacitor-media-session/android')

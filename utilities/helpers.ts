@@ -671,7 +671,6 @@ export const prepForPlayer = (item, index = null) => {
 export const togglePlayEpisode = (media, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
-
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
       currentEpisode.value = prepForPlayer(media)

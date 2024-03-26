@@ -305,7 +305,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     })
 
                 // download the MP3
-                const audioNameFromUrl = isSegments ? `${slug}.mp3` : fileNameFromURL(file.audio)
+                const audioNameFromUrl = isSegments ? `${slug}.mp3` : await fileNameFromURL(file.audio)
 
                 // Add progress listener
                 const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
@@ -336,7 +336,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                                     fileURI.path.includes(entry.name) ? entry : null)
 
                                 // find the image
-                                const directoryImage = thisFileSystemEntry.files.find((entry) => {
+                                const directoryImage = await thisFileSystemEntry.files.find((entry) => {
                                     const mainString = entry.name
                                     const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
 
@@ -344,7 +344,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                                 })
 
                                 //find the audio
-                                const directoryAudio = thisFileSystemEntry.files.find((entry) => {
+                                const directoryAudio = await thisFileSystemEntry.files.find((entry) => {
                                     const mainString = entry.name
                                     const subStrings = [".mp3"]
 
@@ -409,8 +409,7 @@ export const fetchAndStoreMp3 = async (file) => {
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
     const togglePlayTrigger = useTogglePlayTrigger()
-
-    if (currentEpisode.value?.directoryAudio?.name !== file.directoryAudio?.name) {
+    if (currentEpisode.value?.id !== file.id) {
         file = await prepForPlayer(file)
         try {
             // get audio file

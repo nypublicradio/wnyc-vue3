@@ -47,9 +47,7 @@ const emit = defineEmits(["on-click"])
 
 // handles the click event
 const togglePlay = () => {
-  if (!isStreamLoading.value) {
-    emit("on-click")
-  }
+  emit("on-click")
 }
 
 const getProgress = computed(() => {

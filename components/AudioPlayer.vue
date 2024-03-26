@@ -24,8 +24,8 @@ import {
   useAdvertisingId,
   useIsApp,
   useCurrentUserProfile,
+  useGlobalToast,
 } from "~/composables/states"
-
 import {
   trackAudioEvent,
   trackClickEvent,
@@ -68,6 +68,8 @@ const advertisingId = useAdvertisingId()
 const currentUser = useCurrentUserProfile()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isApp = useIsApp()
+const globalToast = useGlobalToast()
+
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const playerHeight = ref(audioPlayerHeight + "px")
@@ -103,10 +105,8 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js for Android only
-    //if (isAndroid) {
+    // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
-    //}
     delay = 250
   }, delay)
 }
@@ -232,6 +232,30 @@ const handleIsExpanded = (e) => {
     initMediaSession(currentEpisode.value, skipTime)
   }, 300)
 }
+
+// function that handles the error event from the persistent player emit
+//I have to check for "e" it fires 2 times... once with the error and once without
+const handleError = (e) => {
+  if (e) {
+    globalToast.value = {
+      severity: "error",
+      summary: "We are having a problem loading the audio. Please try again later.",
+      life: 6000,
+      closable: true,
+    }
+    setTimeout(() => {
+      isEpisodePlaying.value = false
+      showPlayer.value = false
+    }, 500)
+
+    trackAudioEvent(
+      "audio error",
+      isLiveStream.value ? "live" : "on_demand",
+      getTitle.value,
+      getDescription.value
+    )
+  }
+}
 </script>
 
 <template>
@@ -267,6 +291,7 @@ const handleIsExpanded = (e) => {
         @duration="currentEpisodeDuration = $event"
         @current-duration="currentEpisodeProgress = $event"
         @ended="episodeEnded"
+        @error="handleError"
         can-click-anywhere
         :marquee="false"
         streamType="unknown"

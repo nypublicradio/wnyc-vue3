@@ -40,17 +40,25 @@ const removeFutureShows = (schedule: any) => {
 };
 
 export default defineEventHandler(async (event) => {
+    //const query = getQuery(event);
     const slug = event?.context?.params?.stationslug as string;
     if (slug) {
         //Get schedule for today and tomorrow
-        const today = new Date();
+        //const date = new Date(query.localDate);
+        const date = new Date();
+        const offset = date.getTimezoneOffset() * 60 * 1000;
+        const today = new Date(date.getTime() - offset);
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
+
         const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0]);
         const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0]);
         const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
+
         //Combine today and tomorrow's schedule and return
-        return scheduleToday.concat(filteredScheduleTomorrow);
+        const concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
+
+        return concatSchedule;
     }
     return null;
 });

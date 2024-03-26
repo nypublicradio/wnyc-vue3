@@ -21,24 +21,15 @@ const updatePositionState = () => {
 
 export const initMediaSession = (episode, skipTime) => {
     currentEpisode = episode
+
+    // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
+    const artworkImage = currentEpisode?.directoryImage?.uri ? currentEpisode.directoryImage.uri : resizePublisherImageUrl(currentEpisode.image, 512, 512)
     MediaSession.setMetadata({
         title: currentEpisode.title,
         artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
         album: currentEpisode.showTitle,
-        artwork: [
-            { src: resizePublisherImageUrl(currentEpisode.image, 512, 512), type: 'image/jpg', sizes: '512x512' }
-        ]
-        // artwork: [
-        //     { src: 'https://dummyimage.com/96x96', sizes: '96x96', type: 'image/png' },
-        //     { src: 'https://dummyimage.com/128x128', sizes: '128x128', type: 'image/png' },
-        //     { src: 'https://dummyimage.com/192x192', sizes: '192x192', type: 'image/png' },
-        //     { src: 'https://dummyimage.com/256x256', sizes: '256x256', type: 'image/png' },
-        //     { src: 'https://dummyimage.com/384x384', sizes: '384x384', type: 'image/png' },
-        //     { src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png' },
-        // ]
+        artwork: [{ src: artworkImage }]
     })
-
-
 
     const mediaProvider = document.querySelector('media-provider')
     audioElement = mediaProvider.querySelector('audio, video')

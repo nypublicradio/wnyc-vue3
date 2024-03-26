@@ -161,9 +161,9 @@ const toggleDownloadedPlay = (file) => {
   playStoredMp3(file)
   // GA tracking
   trackClickEvent(
-    "Click Tracking - Audio file download",
+    "Click Tracking - Play download episode",
     "Episode Item",
-    `playing = ${file.directoryAudio.name}`
+    `playing = ${file.title}`
   )
 }
 
