@@ -23,8 +23,7 @@ export const initMediaSession = (episode, skipTime) => {
     currentEpisode = episode
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
-    const artworkImage = currentEpisode.directoryImage.uri ? currentEpisode.directoryImage.uri : resizePublisherImageUrl(currentEpisode.image, 512, 512)
-
+    const artworkImage = currentEpisode?.directoryImage?.uri ? currentEpisode.directoryImage.uri : resizePublisherImageUrl(currentEpisode.image, 512, 512)
     MediaSession.setMetadata({
         title: currentEpisode.title,
         artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
