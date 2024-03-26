@@ -23,7 +23,6 @@ import {
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { LocalNotifications } from "@capacitor/local-notifications"
 import { initLocalNotifications } from "~/utilities/local-notifications"
-import { initBatteryOptimizations } from "~/utilities/battery-optimizations"
 import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
