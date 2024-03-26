@@ -41,7 +41,7 @@
     "@capacitor/splash-screen": "5.0.7",
     "@capacitor/status-bar": "5.0.7",
     "@hypernym/nuxt-gsap": "^2.4.2",
-    "@jofr/capacitor-media-session": "^3.0.2",
+    "@jofr/capacitor-media-session": "3.0.3",
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",
     "@nypublicradio/nypr-design-system-vue3": "^2.1.26",
