@@ -8,6 +8,9 @@ project(':capacitor-community-advertising-id').projectDir = new File('../node_mo
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
 
+include ':capacitor-background-runner'
+project(':capacitor-background-runner').projectDir = new File('../node_modules/@capacitor/background-runner/android')
+
 include ':capacitor-browser'
 project(':capacitor-browser').projectDir = new File('../node_modules/@capacitor/browser/android')
 
