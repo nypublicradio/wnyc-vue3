@@ -1,6 +1,6 @@
-addEventListener('remoteNotification', (resolve, reject, args) => {
+addEventListener('remoteNotification', (resolve, reject/* , args */) => {
     try {
-        console.log('received silent push notification')
+        //console.log('received silent push notification')
 
         resolve()
     } catch (err) {

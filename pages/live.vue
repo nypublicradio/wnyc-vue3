@@ -33,12 +33,14 @@ const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
 //const pendingLocalNotifications = usePendingLocalNotifications()
 
+// assembles the proper title for the schedule entry
 const getEntryTitle = (entry) => {
   return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
     ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
     : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
 }
 
+// switch the station and track it
 const switchStation = async (station) => {
   if (!isStreamLoading.value) {
     if (currentEpisode.value !== station) {
@@ -81,6 +83,7 @@ const scrollToActiveStation = () => {
   }
 }
 
+// schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
   trackClickEvent(
     "Click Tracking - Schedule Notify Button",
@@ -93,6 +96,7 @@ const handleScheduleLocalNotification = async (entry) => {
   await scheduleLocalNotification(entry)
 }
 
+// get the time for the schedule entry
 const getTheTime = (startArg, endArg, index) => {
   const start = new Date(startArg)
   const startTime = start.toLocaleTimeString("en-US", {

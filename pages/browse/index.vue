@@ -27,10 +27,12 @@ const options = computed(() => ({
 
 const search = ref(null)
 
+// clear the search field
 const clearSearchField = () => {
   searchFieldValue.value = ""
 }
 
+// route to the show page and add query
 const selectTopic = (topic) => {
   router.push({
     path: "browse/browse-topic",
@@ -48,6 +50,7 @@ const stopWatch = watch(shows, () => {
   })
 })
 
+// handle the active tab for the featured and all shows to set url query
 const handleActiveTab = (e) => {
   router.push({ query: { tab: e.index } })
   activeTab.value = e.index

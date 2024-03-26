@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
         const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
 
         //Combine today and tomorrow's schedule and return
-        let concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
+        const concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
 
         return concatSchedule;
     }

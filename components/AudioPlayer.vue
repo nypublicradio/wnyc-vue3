@@ -233,6 +233,8 @@ const handleIsExpanded = (e) => {
   }, 300)
 }
 
+// function that handles the error event from the persistent player emit
+//I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = (e) => {
   if (e) {
     globalToast.value = {
