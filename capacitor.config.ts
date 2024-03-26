@@ -37,12 +37,12 @@ const config: CapacitorConfig = {
       sound: "notification.wav"
     },
     BackgroundRunner: {
-      // label: 'org.wnyc.background.task',
-      // src: 'background.js',
-      // event: 'myCustomEvent',
-      // repeat: true,
-      // interval: 2,
-      // autoStart: false,
+      label: 'org.wnyc.background.task',
+      src: 'utilities/background.js',
+      event: 'remoteNotification',
+      repeat: true,
+      interval: 2,
+      autoStart: false,
     },
   }
 };
