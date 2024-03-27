@@ -56,13 +56,12 @@ workflows:
           requires:
             - test
             - test_nginx
-
       - ios:
           name: iOS (beta)
           context: 
             - ios
             - xcode
-          FASTLANE_LANE: beta
+          FASTLANE_LANE: alpha
           env: demo
           <<: *filter_demo
           requires:
@@ -73,6 +72,16 @@ workflows:
           FASTLANE_LANE: beta
           env: demo
           <<: *filter_demo
+          requires:
+            - test
+      - ios:
+          name: iOS (prod)
+          context: 
+            - ios
+            - xcode
+          FASTLANE_LANE: beta
+          env: demo
+          <<: *filter_prod
           requires:
             - test
 
