@@ -70,7 +70,7 @@ platform :ios do
   end
   
   desc "Submits a new WNYC Alpha Build to Apple TestFlight"
-  lane :beta do
+  lane :alpha do
     clear_derived_data # this step required to clear "exit status: 65" errors during testing
     match(type: "appstore")
     app_store_connect_api_key
