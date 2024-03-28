@@ -18,12 +18,6 @@ export const useLocalUserProfileDefault = () => useState('localUserProfileDefaul
 // keep track of dark mode
 export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
 
-// keep track push notifications
-export const useAllowPushNotifications = () => useState('useAllowPushNotifications', () => false)
-
-// keep track of local notifications
-export const useAllowLocalNotifications = () => useState('useAllowLocalNotifications', () => false)
-
 const currentUser = null
 // global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
