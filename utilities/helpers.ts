@@ -306,6 +306,10 @@ export const toSystemSettings = () => {
     optionAndroid: AndroidSettings.ApplicationDetails,
     optionIOS: IOSSettings.App,
   })
+
+  NativeSettings.openAndroid({
+    option: AndroidSettings.AppNotification,
+  });
 }
 
 // helper function to open a link in the browser IN the app
@@ -821,28 +825,33 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
 export const askNotificationPermisstions = async (message = null) => {
   const currentUserProfile = useCurrentUserProfile()
   const globalToast = useGlobalToast()
-  console.log("currentUserProfile", currentUserProfile.value)
+
   // Request permission to use push notifications
   // iOS will prompt user and return if they granted permission or not
   // Android will just grant without prompting
-  await PushNotifications.requestPermissions().then((result) => {
-    //alert('push request' + JSON.stringify(result))
-    if (result.receive === "granted") {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      currentUserProfile.value.receive_general_notifications = true
-
-      if (message) {
-        globalToast.value = {
-          severity: "success",
-          summary: message,
-          life: 3000,
-          closable: true,
-        }
-      }
+  await PushNotifications.checkPermissions().then(async (result) => {
+    console.log('checkPermissions = ', result)
+    if (result.receive === "denied") {
+      toSystemSettings()
     } else {
-      //alert('Error Reguistering push notifications')
-      currentUserProfile.value.receive_general_notifications = false
+      await PushNotifications.requestPermissions().then(async (result) => {
+        //alert('push request' + JSON.stringify(result))
+        if (result.receive === "granted") {
+          // Register with Apple / Google to receive push via APNS/FCM
+          PushNotifications.register()
+          currentUserProfile.value.receive_general_notifications = true
+
+          if (message) {
+            globalToast.value = {
+              severity: "success",
+              summary: message,
+              closable: true,
+            }
+          }
+        } else {
+          currentUserProfile.value.receive_general_notifications = false
+        }
+      })
     }
   })
 }

@@ -1,6 +1,12 @@
 <script setup>
 import { onMounted } from "vue"
-import { trackClickEvent, getYear, setFontSize, setDarkMode } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  getYear,
+  setFontSize,
+  setDarkMode,
+  askNotificationPermisstions,
+} from "~/utilities/helpers"
 import {
   useAllCurrentStations,
   useTextSizeOption,
@@ -8,6 +14,7 @@ import {
   useCurrentUserProfile,
   useEditProfileSideBar,
   useIsLiveStream,
+  useIsApp,
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
@@ -18,6 +25,7 @@ const currentUserProfile = useCurrentUserProfile()
 const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
 const isLiveStream = useIsLiveStream()
+const isApp = useIsApp()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
@@ -164,6 +172,20 @@ const editField = (field) => {
 const clickThisId = (id) => {
   document.getElementById(id).click()
 }
+
+const handleNotificationChange = async (e) => {
+  console.log("handle returnValue = ", e.returnValue)
+  if (e.returnValue) {
+    toSystemSettings()
+  } else {
+    await askNotificationPermisstions()
+  }
+  trackClickEvent(
+    "Click Tracking - General switch",
+    "Settings Sidebar - Notifications",
+    currentUserProfile.receive_general_notifications
+  )
+}
 </script>
 
 <template>
@@ -209,7 +231,7 @@ const clickThisId = (id) => {
         />
       </SBox>
     </section>
-    <section class="notifications p-0">
+    <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -219,15 +241,7 @@ const clickThisId = (id) => {
           no="OFF"
           static-width
           v-model:data="currentUserProfile.receive_general_notifications"
-          @change="
-            () => {
-              trackClickEvent(
-                'Click Tracking - General switch',
-                'Settings Sidebar - Notifications',
-                currentUserProfile.receive_general_notifications
-              )
-            }
-          "
+          @change="handleNotificationChange"
         />
       </SBox>
     </section>
