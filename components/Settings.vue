@@ -194,23 +194,6 @@ const clickThisId = (id) => {
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox label="Autodownload">
-        <VInputSwitch
-          yes="ON"
-          no="OFF"
-          static-width
-          v-model:data="currentUserProfile.autodownload"
-          @change="
-            () => {
-              trackClickEvent(
-                'Click Tracking - Autodownload switch',
-                'Settings Sidebar - Listening Preferences',
-                currentUserProfile.autodownload
-              )
-            }
-          "
-        />
-      </SBox>
       <SBox label="Default stream" @labelClick="clickThisId('default-stream')">
         <DropupMenu
           id="default-stream"

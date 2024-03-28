@@ -43,22 +43,21 @@ const getEntryTitle = (entry) => {
 // switch the station and track it
 const switchStation = async (station) => {
   if (!isStreamLoading.value) {
-    if (currentEpisode.value !== station) {
+    //if (currentEpisode.value !== station) {
+    if (isEpisodePlaying.value) {
       await updateLiveStream(station.slug)
-
-      //if (isEpisodePlaying.value) {
       togglePlayTrigger.value = !togglePlayTrigger.value
-      currentStreamStation.value = station.slug
       currentEpisode.value = station
-      currentEpisodeHolder.value = station
-      //}
-
-      trackClickEvent(
-        "Click Tracking - Station Button",
-        "Live Page",
-        `switch station ${currentEpisodeHolder.value.name}`
-      )
     }
+    currentStreamStation.value = station.slug
+    currentEpisodeHolder.value = station
+
+    trackClickEvent(
+      "Click Tracking - Station Button",
+      "Live Page",
+      `switch station ${currentEpisodeHolder.value.name}`
+    )
+    //}
   }
 }
 // handle the toggle play button and tracking

@@ -12,6 +12,7 @@ const updatePlaybackState = () => {
 }
 
 const updatePositionState = () => {
+    console.log('audioElement  = ', audioElement)
     MediaSession.setPositionState({
         position: audioElement.currentTime,
         duration: audioElement.duration,
