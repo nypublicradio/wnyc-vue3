@@ -16,12 +16,9 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
-  //useHomepageData,
-  useAllowPushNotifications,
-  useAllowLocalNotifications,
 } from "~/composables/states"
+import { askNotificationPermisstions } from "~/utilities/helpers"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
-import { LocalNotifications } from "@capacitor/local-notifications"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 
@@ -38,8 +35,6 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
-const allowPushNotifications = useAllowPushNotifications()
-const allowLocalNotifications = useAllowLocalNotifications()
 
 const isRefreshing = shallowRef(false)
 
@@ -72,38 +67,9 @@ useHead({
   // },
 })
 
-// handles the permissions for push notifications in the app
-const checkNotificationPermisstions = async () => {
-  // Request permission to use push notifications
-  // iOS will prompt user and return if they granted permission or not
-  // Android will just grant without prompting
-  await PushNotifications.requestPermissions().then((result) => {
-    //alert('push request' + JSON.stringify(result))
-    if (result.receive === "granted") {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      allowPushNotifications.value = true
-    } else {
-      //alert('Error Reguistering push notifications')
-      allowPushNotifications.value = false
-    }
-  })
-
-  //if (Capacitor.getPlatform() === "android") {
-  await LocalNotifications.requestPermissions().then((result) => {
-    //alert("local request = " + JSON.stringify(result))
-    if (result.display === "granted") {
-      allowLocalNotifications.value = true
-    } else {
-      allowLocalNotifications.value = false
-    }
-  })
-  //}
-}
-
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  await checkNotificationPermisstions()
+  await askNotificationPermisstions()
 
   // On success, we should be able to receive notifications
   await PushNotifications.addListener("registration", (token: Token) => {
@@ -201,9 +167,6 @@ onMounted(async () => {
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
-      if (isApp.value) {
-        checkNotificationPermisstions()
-      }
       isRefreshing.value = true
       setTimeout(() => {
         isRefreshing.value = false

@@ -23,6 +23,7 @@ import axios from "axios"
 import { Share } from '@capacitor/share';
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from '@capacitor/clipboard';
+import { PushNotifications } from "@capacitor/push-notifications"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
@@ -814,4 +815,34 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
     default:
       goToEpisodePage(item, null, isSaveHistory)
   }
+}
+
+// handles the permissions for push & local notifications in the app
+export const askNotificationPermisstions = async (message = null) => {
+  const currentUserProfile = useCurrentUserProfile()
+  const globalToast = useGlobalToast()
+  console.log("currentUserProfile", currentUserProfile.value)
+  // Request permission to use push notifications
+  // iOS will prompt user and return if they granted permission or not
+  // Android will just grant without prompting
+  await PushNotifications.requestPermissions().then((result) => {
+    //alert('push request' + JSON.stringify(result))
+    if (result.receive === "granted") {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+      currentUserProfile.value.receive_general_notifications = true
+
+      if (message) {
+        globalToast.value = {
+          severity: "success",
+          summary: message,
+          life: 3000,
+          closable: true,
+        }
+      }
+    } else {
+      //alert('Error Reguistering push notifications')
+      currentUserProfile.value.receive_general_notifications = false
+    }
+  })
 }

@@ -106,6 +106,7 @@ onMounted(async () => {
 })
 
 watch(currentUserProfile.value, () => {
+  console.log("updating profile")
   updateProfile()
 })
 
