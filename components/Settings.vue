@@ -176,10 +176,11 @@ const clickThisId = (id) => {
 
 const handleNotificationChange = async (e) => {
   console.log("handle = ", e)
-  if (!e) {
-    toSystemSettings()
-  } else {
+  let permStatus = await PushNotifications.checkPermissions()
+  if (e && (permStatus.receive === "prompt-with-rationale" || "prompt")) {
     await askNotificationPermisstions()
+  } else {
+    toSystemSettings()
   }
   trackClickEvent(
     "Click Tracking - General switch",

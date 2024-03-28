@@ -829,29 +829,27 @@ export const askNotificationPermisstions = async (message = null) => {
   // Request permission to use push notifications
   // iOS will prompt user and return if they granted permission or not
   // Android will just grant without prompting
-  await PushNotifications.checkPermissions().then(async (result) => {
-    console.log('checkPermissions = ', result)
-    if (result.receive === "denied") {
-      toSystemSettings()
-    } else {
-      await PushNotifications.requestPermissions().then(async (result) => {
-        //alert('push request' + JSON.stringify(result))
-        if (result.receive === "granted") {
-          // Register with Apple / Google to receive push via APNS/FCM
-          PushNotifications.register()
-          currentUserProfile.value.receive_general_notifications = true
+  await nextTick()
+  let permStatus = await PushNotifications.checkPermissions();
+  console.log('permStatus = ', permStatus)
+  if (permStatus.receive === 'prompt-with-rationale' || 'prompt') {
+    await PushNotifications.requestPermissions().then(async (result) => {
+      //alert('push request' + JSON.stringify(result))
+      if (result.receive === "granted") {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register()
+        currentUserProfile.value.receive_general_notifications = true
 
-          if (message) {
-            globalToast.value = {
-              severity: "success",
-              summary: message,
-              closable: true,
-            }
+        if (message) {
+          globalToast.value = {
+            severity: "success",
+            summary: message,
+            closable: true,
           }
-        } else {
-          currentUserProfile.value.receive_general_notifications = false
         }
-      })
-    }
-  })
+      } else {
+        currentUserProfile.value.receive_general_notifications = false
+      }
+    })
+  }
 }
