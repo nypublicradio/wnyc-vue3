@@ -6,6 +6,7 @@ import {
   setFontSize,
   setDarkMode,
   askNotificationPermisstions,
+  toSystemSettings,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -174,8 +175,8 @@ const clickThisId = (id) => {
 }
 
 const handleNotificationChange = async (e) => {
-  console.log("handle returnValue = ", e.returnValue)
-  if (e.returnValue) {
+  console.log("handle = ", e)
+  if (!e) {
     toSystemSettings()
   } else {
     await askNotificationPermisstions()
@@ -220,7 +221,7 @@ const handleNotificationChange = async (e) => {
       <SBox label="Default stream" @labelClick="clickThisId('default-stream')">
         <DropupMenu
           id="default-stream"
-          v-model:data="currentUserProfile.default_live_stream"
+          v-model:data.sync="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
           placeholder="Select a station"
@@ -231,7 +232,7 @@ const handleNotificationChange = async (e) => {
         />
       </SBox>
     </section>
-    <section v-if="isApp" class="notifications p-0">
+    <section class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -240,7 +241,7 @@ const handleNotificationChange = async (e) => {
           yes="ON"
           no="OFF"
           static-width
-          v-model:data="currentUserProfile.receive_general_notifications"
+          v-model:data.sync="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
         />
       </SBox>
@@ -252,7 +253,7 @@ const handleNotificationChange = async (e) => {
       <SBox label="Text size" @labelClick="clickThisId('text-size')">
         <DropupMenu
           id="text-size"
-          v-model:data="currentUserProfile.text_size"
+          v-model:data.sync="currentUserProfile.text_size"
           :options="textSizeOptions"
           optionLabel="label"
           placeholder="Select a Text Size"
@@ -267,7 +268,7 @@ const handleNotificationChange = async (e) => {
           yes="ON"
           no="OFF"
           static-width
-          v-model:data="currentUserProfile.dark_mode"
+          v-model:data.sync="currentUserProfile.dark_mode"
           @change="
             () => {
               setDarkMode(currentUserProfile.dark_mode)
