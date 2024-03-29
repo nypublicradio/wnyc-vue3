@@ -71,6 +71,22 @@ export const scheduleLocalNotification = async (entry) => {
     }
 }
 
+export const cancelAllNotifications = async () => {
+    alert("cancel all notifications ")
+    try {
+        // Get all pending notifications
+        const pendingNotifications = await LocalNotifications.getPending();
+        alert("pendingNotifications: " + JSON.stringify(pendingNotifications))
+        // Cancel all pending notifications
+        await LocalNotifications.cancel({ notifications: pendingNotifications.notifications });
+        const pendingLocalNotifications = usePendingLocalNotifications()
+        pendingLocalNotifications.value = null
+        console.log('All pending notifications have been canceled.');
+    } catch (error) {
+        console.error('Error canceling all notifications:', error);
+    }
+};
+
 // initialize local notifications and add listener to handle when tapping on a notification and what the app should do
 export const initLocalNotifications = async () => {
     setPendingLocalNotifications()

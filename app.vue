@@ -19,7 +19,10 @@ import {
 } from "~/composables/states"
 import { askNotificationPermisstions } from "~/utilities/helpers"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
-import { initLocalNotifications } from "~/utilities/local-notifications"
+import {
+  initLocalNotifications,
+  cancelAllNotifications,
+} from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 
 import { useToast } from "primevue/usetoast"
@@ -173,6 +176,7 @@ onMounted(async () => {
       await PushNotifications.checkPermissions().then(async (result) => {
         if (result.receive === "denied") {
           currentUserProfile.value.receive_general_notifications = false
+          cancelAllNotifications()
         }
         if (result.receive === "granted") {
           currentUserProfile.value.receive_general_notifications = true
@@ -288,6 +292,6 @@ watch(globalToast, (optionsObj) => {
   </NuxtLayout>
 
   <AudioPlayer />
-  <Sidebars />
+  <Sidebars class="z-2" />
   <Toast position="top-center" />
 </template>
