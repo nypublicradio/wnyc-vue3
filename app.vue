@@ -38,9 +38,6 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
-
-const isRefreshing = shallowRef(false)
-
 const isApp = useIsApp()
 
 const fcmToken = ref("")
@@ -170,8 +167,6 @@ onMounted(async () => {
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
-      isRefreshing.value = true
-
       // update user profile when coming back from  the system settings
       await PushNotifications.checkPermissions().then(async (result) => {
         if (result.receive === "denied") {
@@ -182,20 +177,11 @@ onMounted(async () => {
           currentUserProfile.value.receive_general_notifications = true
         }
       })
-
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
     }
   })
-  //refresh data every time the cursor enters the window on desktop only
+  //every time the cursor enters the window on desktop only
   if (isDesktop) {
-    document.addEventListener("pointerenter", () => {
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
-    })
+    document.addEventListener("pointerenter", () => {})
   }
 
   // Ads

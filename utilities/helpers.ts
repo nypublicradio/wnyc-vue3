@@ -24,6 +24,7 @@ import { Share } from '@capacitor/share';
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from '@capacitor/clipboard';
 import { PushNotifications } from "@capacitor/push-notifications"
+import { cancelAllNotifications } from "~/utilities/local-notifications"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
@@ -832,6 +833,7 @@ export const askNotificationPermisstions = async () => {
       currentUserProfile.value.receive_general_notifications = true
     } else {
       currentUserProfile.value.receive_general_notifications = false
+      cancelAllNotifications()
     }
   })
 }

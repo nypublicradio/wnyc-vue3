@@ -13,10 +13,7 @@ import {
   useIsApp,
 } from "~/composables/states"
 
-import {
-  usePendingLocalNotifications,
-  scheduleLocalNotification,
-} from "~/utilities/local-notifications"
+import { scheduleLocalNotification } from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -31,7 +28,6 @@ const isApp = useIsApp()
 
 const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
-const pendingLocalNotifications = usePendingLocalNotifications()
 
 // assembles the proper title for the schedule entry
 const getEntryTitle = (entry) => {
@@ -244,7 +240,6 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <pre class="text-xs">{{ pendingLocalNotifications }}</pre>
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
