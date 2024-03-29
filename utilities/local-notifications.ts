@@ -67,7 +67,7 @@ export const scheduleLocalNotification = async (entry) => {
         }
     } else {
         // ask permissions and try again
-        await toggleAskNotificationPermisstions(true, "Local notifications are now enabled. Please try again.")
+        await toggleAskNotificationPermisstions()
     }
 }
 

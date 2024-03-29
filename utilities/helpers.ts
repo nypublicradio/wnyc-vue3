@@ -824,23 +824,14 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
   }
 }
 
-export const askNotificationPermisstions = async (message = null) => {
+export const askNotificationPermisstions = async () => {
   const currentUserProfile = useCurrentUserProfile()
-  const globalToast = useGlobalToast()
   await PushNotifications.requestPermissions().then(async (result) => {
     //alert('push request' + JSON.stringify(result))
     if (result.receive === "granted") {
       // Register with Apple / Google to receive push via APNS/FCM
       PushNotifications.register()
       currentUserProfile.value.receive_general_notifications = true
-
-      if (message) {
-        globalToast.value = {
-          severity: "success",
-          summary: message,
-          closable: true,
-        }
-      }
     } else {
       currentUserProfile.value.receive_general_notifications = false
     }
@@ -848,14 +839,14 @@ export const askNotificationPermisstions = async (message = null) => {
 }
 
 // handles the permissions for push & local notifications in the app
-export const toggleAskNotificationPermisstions = async (isEnabled = true, message = null) => {
+export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
   await nextTick()
   let permStatus = await PushNotifications.checkPermissions();
   if (
     isEnabled === true &&
     (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")
   ) {
-    askNotificationPermisstions(message)
+    askNotificationPermisstions()
   } else {
     toSystemSettings()
   }
