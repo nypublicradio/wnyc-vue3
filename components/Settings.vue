@@ -114,7 +114,6 @@ onMounted(async () => {
 })
 
 watch(currentUserProfile.value, () => {
-  console.log("updating profile")
   updateProfile()
 })
 
@@ -173,6 +172,7 @@ const clickThisId = (id) => {
   document.getElementById(id).click()
 }
 
+// handles the notification switch change event
 const handleNotificationChange = async (e) => {
   await toggleAskNotificationPermisstions(e)
   trackClickEvent(

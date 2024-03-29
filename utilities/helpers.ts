@@ -823,9 +823,10 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
   }
 }
 
+// handles the permissions for push & local notifications
 export const askNotificationPermisstions = async () => {
   const currentUserProfile = useCurrentUserProfile()
-  await PushNotifications.requestPermissions().then(async (result) => {
+  await PushNotifications.requestPermissions().then((result) => {
     //alert('push request' + JSON.stringify(result))
     if (result.receive === "granted") {
       // Register with Apple / Google to receive push via APNS/FCM
@@ -838,10 +839,10 @@ export const askNotificationPermisstions = async () => {
   })
 }
 
-// handles the permissions for push & local notifications in the app
+// handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
 export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
   await nextTick()
-  let permStatus = await PushNotifications.checkPermissions();
+  const permStatus = await PushNotifications.checkPermissions();
   if (
     isEnabled === true &&
     (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")

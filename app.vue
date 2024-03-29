@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
+import { getAndSetUserProfile, askNotificationPermisstions } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { initAdvertisingId } from "~/utilities/advertising-id.js"
 
@@ -17,7 +17,6 @@ import {
   useGlobalToast,
   useIsNetworkConnected,
 } from "~/composables/states"
-import { askNotificationPermisstions } from "~/utilities/helpers"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import {
   initLocalNotifications,
@@ -104,7 +103,7 @@ const addListeners = async () => {
     }
   )
   // fired when the app becomes active (ios only)
-  await App.addListener("appStateChange", ({ isActive }) => {
+  await App.addListener("appStateChange", (/* { isActive } */) => {
     //alert("App state changed. ", JSON.stringify(isActive))
   })
 
@@ -168,7 +167,7 @@ onMounted(async () => {
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
       // update user profile when coming back from  the system settings
-      await PushNotifications.checkPermissions().then(async (result) => {
+      await PushNotifications.checkPermissions().then((result) => {
         if (result.receive === "denied") {
           currentUserProfile.value.receive_general_notifications = false
           cancelAllNotifications()
@@ -180,9 +179,9 @@ onMounted(async () => {
     }
   })
   //every time the cursor enters the window on desktop only
-  if (isDesktop) {
-    document.addEventListener("pointerenter", () => {})
-  }
+  // if (isDesktop) {
+  //   document.addEventListener("pointerenter", () => {})
+  // }
 
   // Ads
   window.htlbid = window.htlbid || {}

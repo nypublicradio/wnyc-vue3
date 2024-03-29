@@ -71,6 +71,7 @@ export const scheduleLocalNotification = async (entry) => {
     }
 }
 
+// loops through all pending notifications and cancels them
 export const cancelAllNotifications = async () => {
     try {
         // Get all pending notifications
