@@ -28,7 +28,7 @@ import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
 
-const { isDesktop } = useDevice()
+//const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
