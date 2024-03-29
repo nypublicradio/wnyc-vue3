@@ -1,6 +1,6 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
 import { useGlobalToast, useCurrentUserProfile } from "~/composables/states"
-import { getDate, askNotificationPermisstions } from "~/utilities/helpers"
+import { getDate, toggleAskNotificationPermisstions } from "~/utilities/helpers"
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
@@ -67,8 +67,7 @@ export const scheduleLocalNotification = async (entry) => {
         }
     } else {
         // ask permissions and try again
-        console.log('ask permissions and try again')
-        await askNotificationPermisstions("Local notifications are now enabled. Please try again.")
+        await toggleAskNotificationPermisstions(true, "Local notifications are now enabled. Please try again.")
     }
 }
 

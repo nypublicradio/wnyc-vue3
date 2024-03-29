@@ -103,9 +103,9 @@ const addListeners = async () => {
       }
     }
   )
-  // fired when the app becomes active
+  // fired when the app becomes active (ios only)
   await App.addListener("appStateChange", ({ isActive }) => {
-    alert("App state changed. Is active?", JSON.stringify(isActive))
+    //alert("App state changed. ", JSON.stringify(isActive))
   })
 
   Network.addListener("networkStatusChange", (status) => {

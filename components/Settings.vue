@@ -5,8 +5,7 @@ import {
   getYear,
   setFontSize,
   setDarkMode,
-  askNotificationPermisstions,
-  toSystemSettings,
+  toggleAskNotificationPermisstions,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -175,13 +174,7 @@ const clickThisId = (id) => {
 }
 
 const handleNotificationChange = async (e) => {
-  console.log("handle = ", e)
-  let permStatus = await PushNotifications.checkPermissions()
-  if (e && (permStatus.receive === "prompt-with-rationale" || "prompt")) {
-    await askNotificationPermisstions()
-  } else {
-    toSystemSettings()
-  }
+  await toggleAskNotificationPermisstions(e)
   trackClickEvent(
     "Click Tracking - General switch",
     "Settings Sidebar - Notifications",
@@ -233,7 +226,7 @@ const handleNotificationChange = async (e) => {
         />
       </SBox>
     </section>
-    <section class="notifications p-0">
+    <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>

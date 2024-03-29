@@ -302,14 +302,17 @@ export const getRandomNumber = (min, max) => {
 
 // will take the user to their native os system settings
 export const toSystemSettings = () => {
-  NativeSettings.open({
-    optionAndroid: AndroidSettings.ApplicationDetails,
-    optionIOS: IOSSettings.App,
-  })
 
-  NativeSettings.openAndroid({
-    option: AndroidSettings.AppNotification,
-  });
+  alert('Capacitor.getPlatform() = ' + JSON.stringify(Capacitor.getPlatform()))
+  if (Capacitor.getPlatform() === "android") {
+    NativeSettings.openAndroid({
+      option: AndroidSettings.AppNotification,
+    });
+  } else {
+    NativeSettings.openIOS({
+      option: IOSSettings.App,
+    });
+  }
 }
 
 // helper function to open a link in the browser IN the app
@@ -821,35 +824,39 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
   }
 }
 
-// handles the permissions for push & local notifications in the app
 export const askNotificationPermisstions = async (message = null) => {
   const currentUserProfile = useCurrentUserProfile()
   const globalToast = useGlobalToast()
+  await PushNotifications.requestPermissions().then(async (result) => {
+    //alert('push request' + JSON.stringify(result))
+    if (result.receive === "granted") {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+      currentUserProfile.value.receive_general_notifications = true
 
-  // Request permission to use push notifications
-  // iOS will prompt user and return if they granted permission or not
-  // Android will just grant without prompting
+      if (message) {
+        globalToast.value = {
+          severity: "success",
+          summary: message,
+          closable: true,
+        }
+      }
+    } else {
+      currentUserProfile.value.receive_general_notifications = false
+    }
+  })
+}
+
+// handles the permissions for push & local notifications in the app
+export const toggleAskNotificationPermisstions = async (isEnabled = true, message = null) => {
   await nextTick()
   let permStatus = await PushNotifications.checkPermissions();
-  console.log('permStatus = ', permStatus)
-  if (permStatus.receive === 'prompt-with-rationale' || 'prompt') {
-    await PushNotifications.requestPermissions().then(async (result) => {
-      //alert('push request' + JSON.stringify(result))
-      if (result.receive === "granted") {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register()
-        currentUserProfile.value.receive_general_notifications = true
-
-        if (message) {
-          globalToast.value = {
-            severity: "success",
-            summary: message,
-            closable: true,
-          }
-        }
-      } else {
-        currentUserProfile.value.receive_general_notifications = false
-      }
-    })
+  if (
+    isEnabled === true &&
+    (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")
+  ) {
+    askNotificationPermisstions(message)
+  } else {
+    toSystemSettings()
   }
 }
