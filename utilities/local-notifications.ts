@@ -77,12 +77,10 @@ export const cancelAllNotifications = async () => {
         const pendingNotifications = await LocalNotifications.getPending();
 
         // Cancel all pending notifications
-        pendingNotifications.notifications.forEach(async (entry) => {
+        await pendingNotifications.notifications.forEach(async (entry) => {
             await LocalNotifications.cancel({ notifications: [entry] });
         })
-        const pendingLocalNotifications = usePendingLocalNotifications()
-        pendingLocalNotifications.value = null
-
+        setPendingLocalNotifications()
     } catch (error) {
         console.error('Error canceling all notifications:', error);
     }
