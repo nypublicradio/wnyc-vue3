@@ -171,7 +171,6 @@ onMounted(async () => {
 
       // update user profile when coming back from  the system settings
       await PushNotifications.checkPermissions().then(async (result) => {
-        console.log("on return from settings", result)
         if (result.receive === "denied") {
           currentUserProfile.value.receive_general_notifications = false
         }

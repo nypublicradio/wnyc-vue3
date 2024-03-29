@@ -302,8 +302,6 @@ export const getRandomNumber = (min, max) => {
 
 // will take the user to their native os system settings
 export const toSystemSettings = () => {
-
-  alert('Capacitor.getPlatform() = ' + JSON.stringify(Capacitor.getPlatform()))
   if (Capacitor.getPlatform() === "android") {
     NativeSettings.openAndroid({
       option: AndroidSettings.AppNotification,
