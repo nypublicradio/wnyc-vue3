@@ -24,7 +24,6 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
-    implementation project(':capawesome-team-capacitor-android-battery-optimization')
     implementation project(':jofr-capacitor-media-session')
     implementation project(':capacitor-native-settings')
 

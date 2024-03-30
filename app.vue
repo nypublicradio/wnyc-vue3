@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { /* trackClickEvent, */ getAndSetUserProfile } from "~/utilities/helpers"
+import { getAndSetUserProfile, askNotificationPermisstions } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { initAdvertisingId } from "~/utilities/advertising-id.js"
 
@@ -16,12 +16,8 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
-  //useHomepageData,
-  useAllowPushNotifications,
-  useAllowLocalNotifications,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
-import { LocalNotifications } from "@capacitor/local-notifications"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 
@@ -29,7 +25,7 @@ import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
 
-const { isDesktop } = useDevice()
+//const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -38,11 +34,6 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
-const allowPushNotifications = useAllowPushNotifications()
-const allowLocalNotifications = useAllowLocalNotifications()
-
-const isRefreshing = shallowRef(false)
-
 const isApp = useIsApp()
 
 const fcmToken = ref("")
@@ -72,38 +63,9 @@ useHead({
   // },
 })
 
-// handles the permissions for push notifications in the app
-const checkNotificationPermisstions = async () => {
-  // Request permission to use push notifications
-  // iOS will prompt user and return if they granted permission or not
-  // Android will just grant without prompting
-  await PushNotifications.requestPermissions().then((result) => {
-    //alert('push request' + JSON.stringify(result))
-    if (result.receive === "granted") {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      allowPushNotifications.value = true
-    } else {
-      //alert('Error Reguistering push notifications')
-      allowPushNotifications.value = false
-    }
-  })
-
-  //if (Capacitor.getPlatform() === "android") {
-  await LocalNotifications.requestPermissions().then((result) => {
-    //alert("local request = " + JSON.stringify(result))
-    if (result.display === "granted") {
-      allowLocalNotifications.value = true
-    } else {
-      allowLocalNotifications.value = false
-    }
-  })
-  //}
-}
-
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  await checkNotificationPermisstions()
+  await askNotificationPermisstions()
 
   // On success, we should be able to receive notifications
   await PushNotifications.addListener("registration", (token: Token) => {
@@ -137,9 +99,9 @@ const addListeners = async () => {
       }
     }
   )
-  // fired when the app becomes active
+  // fired when the app becomes active (ios only)
   await App.addListener("appStateChange", (/* { isActive } */) => {
-    //alert('App state changed. Is active?', JSON.stringify(isActive))
+    //alert("App state changed. ", JSON.stringify(isActive))
   })
 
   Network.addListener("networkStatusChange", (status) => {
@@ -199,26 +161,23 @@ onMounted(async () => {
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
-  document.addEventListener("visibilitychange", () => {
+  document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
-      if (isApp.value) {
-        checkNotificationPermisstions()
-      }
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
+      // update user profile when coming back from  the system settings
+      await PushNotifications.checkPermissions().then((result) => {
+        if (result.receive === "denied") {
+          currentUserProfile.value.receive_general_notifications = false
+        }
+        if (result.receive === "granted") {
+          currentUserProfile.value.receive_general_notifications = true
+        }
+      })
     }
   })
-  //refresh data every time the cursor enters the window on desktop only
-  if (isDesktop) {
-    document.addEventListener("pointerenter", () => {
-      isRefreshing.value = true
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1500)
-    })
-  }
+  //every time the cursor enters the window on desktop only
+  // if (isDesktop) {
+  //   document.addEventListener("pointerenter", () => {})
+  // }
 
   // Ads
   window.htlbid = window.htlbid || {}
@@ -314,6 +273,6 @@ watch(globalToast, (optionsObj) => {
   </NuxtLayout>
 
   <AudioPlayer />
-  <Sidebars />
+  <Sidebars class="z-2" />
   <Toast position="top-center" />
 </template>

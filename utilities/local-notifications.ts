@@ -1,6 +1,6 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { useAllowLocalNotifications, useGlobalToast } from "~/composables/states"
-import { getDate } from "~/utilities/helpers"
+import { useGlobalToast, useCurrentUserProfile } from "~/composables/states"
+import { getDate, toggleAskNotificationPermisstions } from "~/utilities/helpers"
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
@@ -23,7 +23,7 @@ const checkNotificationsList = (entry) => {
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
     const id = Number(idNumber[1])
-    const allowLocalNotifications = useAllowLocalNotifications()
+    const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
@@ -47,7 +47,7 @@ export const scheduleLocalNotification = async (entry) => {
             },
         ],
     }
-    if (allowLocalNotifications.value) {
+    if (currentUserProfile.value.receive_general_notifications) {
         if (!checkNotificationsList(entry)) {
             await LocalNotifications.schedule(notificationBody)
             setPendingLocalNotifications()
@@ -67,20 +67,7 @@ export const scheduleLocalNotification = async (entry) => {
         }
     } else {
         // ask permissions and try again
-        await LocalNotifications.requestPermissions().then((result) => {
-            if (result.display === "granted") {
-                allowLocalNotifications.value = true
-
-                globalToast.value = {
-                    severity: "success",
-                    summary: "Local notifications are now enabled. Please try again.",
-                    life: 3000,
-                    closable: true,
-                }
-            } else {
-                allowLocalNotifications.value = false
-            }
-        })
+        await toggleAskNotificationPermisstions()
     }
 }
 

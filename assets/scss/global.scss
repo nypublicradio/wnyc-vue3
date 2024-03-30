@@ -462,6 +462,14 @@ a:visited {
   }
 }
 
+//p.sidebar
+.p-component-overlay-enter {
+  background: rgba(0, 0, 0, 0) !important;
+}
+.p-sidebar {
+  box-shadow: none !important;
+}
+
 @mixin cardTitle() {
   font-size: 0.875rem;
   line-height: 1.25rem;

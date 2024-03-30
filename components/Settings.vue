@@ -1,6 +1,12 @@
 <script setup>
 import { onMounted } from "vue"
-import { trackClickEvent, getYear, setFontSize, setDarkMode } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  getYear,
+  setFontSize,
+  setDarkMode,
+  toggleAskNotificationPermisstions,
+} from "~/utilities/helpers"
 import {
   useAllCurrentStations,
   useTextSizeOption,
@@ -8,6 +14,7 @@ import {
   useCurrentUserProfile,
   useEditProfileSideBar,
   useIsLiveStream,
+  useIsApp,
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
@@ -18,6 +25,7 @@ const currentUserProfile = useCurrentUserProfile()
 const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
 const isLiveStream = useIsLiveStream()
+const isApp = useIsApp()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
@@ -163,6 +171,16 @@ const editField = (field) => {
 const clickThisId = (id) => {
   document.getElementById(id).click()
 }
+
+// handles the notification switch change event
+const handleNotificationChange = async (e) => {
+  await toggleAskNotificationPermisstions(e)
+  trackClickEvent(
+    "Click Tracking - General switch",
+    "Settings Sidebar - Notifications",
+    currentUserProfile.receive_general_notifications
+  )
+}
 </script>
 
 <template>
@@ -194,27 +212,10 @@ const clickThisId = (id) => {
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox label="Autodownload">
-        <VInputSwitch
-          yes="ON"
-          no="OFF"
-          static-width
-          v-model:data="currentUserProfile.autodownload"
-          @change="
-            () => {
-              trackClickEvent(
-                'Click Tracking - Autodownload switch',
-                'Settings Sidebar - Listening Preferences',
-                currentUserProfile.autodownload
-              )
-            }
-          "
-        />
-      </SBox>
       <SBox label="Default stream" @labelClick="clickThisId('default-stream')">
         <DropupMenu
           id="default-stream"
-          v-model:data="currentUserProfile.default_live_stream"
+          v-model:data.sync="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
           placeholder="Select a station"
@@ -225,7 +226,7 @@ const clickThisId = (id) => {
         />
       </SBox>
     </section>
-    <section class="notifications p-0">
+    <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -234,16 +235,8 @@ const clickThisId = (id) => {
           yes="ON"
           no="OFF"
           static-width
-          v-model:data="currentUserProfile.receive_general_notifications"
-          @change="
-            () => {
-              trackClickEvent(
-                'Click Tracking - General switch',
-                'Settings Sidebar - Notifications',
-                currentUserProfile.receive_general_notifications
-              )
-            }
-          "
+          v-model:data.sync="currentUserProfile.receive_general_notifications"
+          @change="handleNotificationChange"
         />
       </SBox>
     </section>
@@ -254,7 +247,7 @@ const clickThisId = (id) => {
       <SBox label="Text size" @labelClick="clickThisId('text-size')">
         <DropupMenu
           id="text-size"
-          v-model:data="currentUserProfile.text_size"
+          v-model:data.sync="currentUserProfile.text_size"
           :options="textSizeOptions"
           optionLabel="label"
           placeholder="Select a Text Size"
@@ -269,7 +262,7 @@ const clickThisId = (id) => {
           yes="ON"
           no="OFF"
           static-width
-          v-model:data="currentUserProfile.dark_mode"
+          v-model:data.sync="currentUserProfile.dark_mode"
           @change="
             () => {
               setDarkMode(currentUserProfile.dark_mode)

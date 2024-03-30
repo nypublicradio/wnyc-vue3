@@ -1,6 +1,8 @@
 <script setup>
 import { usePendingLocalNotifications } from "~/utilities/local-notifications"
+import { useCurrentUserProfile } from "~/composables/states"
 const pendingLocalNotifications = usePendingLocalNotifications()
+const currentUserProfile = useCurrentUserProfile()
 const props = defineProps({
   entry: {
     type: Object,
@@ -9,9 +11,13 @@ const props = defineProps({
 })
 
 const checkNotificationsList = computed(() => {
-  return pendingLocalNotifications.value?.notifications.some(
-    (notification) => notification.extra.id === props.entry.id
-  )
+  if (currentUserProfile.value.receive_general_notifications) {
+    return pendingLocalNotifications.value?.notifications.some(
+      (notification) => notification.extra.id === props.entry.id
+    )
+  } else {
+    return false
+  }
 })
 </script>
 <template>

@@ -6,7 +6,7 @@
 const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: 'WNYC 93.9 FM',
-    receive_general_notifications: true,
+    receive_general_notifications: false,
     text_size: 'Normal',
     dark_mode: false,
 }
@@ -17,12 +17,6 @@ export const useLocalUserProfileDefault = () => useState('localUserProfileDefaul
 
 // keep track of dark mode
 export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
-
-// keep track push notifications
-export const useAllowPushNotifications = () => useState('useAllowPushNotifications', () => false)
-
-// keep track of local notifications
-export const useAllowLocalNotifications = () => useState('useAllowLocalNotifications', () => false)
 
 const currentUser = null
 // global state for the current authorized user

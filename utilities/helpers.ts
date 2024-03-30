@@ -23,6 +23,7 @@ import axios from "axios"
 import { Share } from '@capacitor/share';
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from '@capacitor/clipboard';
+import { PushNotifications } from "@capacitor/push-notifications"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
@@ -301,10 +302,15 @@ export const getRandomNumber = (min, max) => {
 
 // will take the user to their native os system settings
 export const toSystemSettings = () => {
-  NativeSettings.open({
-    optionAndroid: AndroidSettings.ApplicationDetails,
-    optionIOS: IOSSettings.App,
-  })
+  if (Capacitor.getPlatform() === "android") {
+    NativeSettings.openAndroid({
+      option: AndroidSettings.AppNotification,
+    });
+  } else {
+    NativeSettings.openIOS({
+      option: IOSSettings.App,
+    });
+  }
 }
 
 // helper function to open a link in the browser IN the app
@@ -813,5 +819,34 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
       break
     default:
       goToEpisodePage(item, null, isSaveHistory)
+  }
+}
+
+// handles the permissions for push & local notifications
+export const askNotificationPermisstions = async () => {
+  const currentUserProfile = useCurrentUserProfile()
+  await PushNotifications.requestPermissions().then((result) => {
+    //alert('push request' + JSON.stringify(result))
+    if (result.receive === "granted") {
+      // Register with Apple / Google to receive push via APNS/FCM
+      PushNotifications.register()
+      currentUserProfile.value.receive_general_notifications = true
+    } else {
+      currentUserProfile.value.receive_general_notifications = false
+    }
+  })
+}
+
+// handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
+export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
+  await nextTick()
+  const permStatus = await PushNotifications.checkPermissions();
+  if (
+    isEnabled === true &&
+    (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")
+  ) {
+    askNotificationPermisstions()
+  } else {
+    toSystemSettings()
   }
 }

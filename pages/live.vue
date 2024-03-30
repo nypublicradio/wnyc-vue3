@@ -13,10 +13,7 @@ import {
   useIsApp,
 } from "~/composables/states"
 
-import {
-  /* usePendingLocalNotifications, */
-  scheduleLocalNotification,
-} from "~/utilities/local-notifications"
+import { scheduleLocalNotification } from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -31,7 +28,6 @@ const isApp = useIsApp()
 
 const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
-//const pendingLocalNotifications = usePendingLocalNotifications()
 
 // assembles the proper title for the schedule entry
 const getEntryTitle = (entry) => {
@@ -43,22 +39,21 @@ const getEntryTitle = (entry) => {
 // switch the station and track it
 const switchStation = async (station) => {
   if (!isStreamLoading.value) {
-    if (currentEpisode.value !== station) {
+    //if (currentEpisode.value !== station) {
+    if (isEpisodePlaying.value) {
       await updateLiveStream(station.slug)
-
-      //if (isEpisodePlaying.value) {
       togglePlayTrigger.value = !togglePlayTrigger.value
-      currentStreamStation.value = station.slug
       currentEpisode.value = station
-      currentEpisodeHolder.value = station
-      //}
-
-      trackClickEvent(
-        "Click Tracking - Station Button",
-        "Live Page",
-        `switch station ${currentEpisodeHolder.value.name}`
-      )
     }
+    currentStreamStation.value = station.slug
+    currentEpisodeHolder.value = station
+
+    trackClickEvent(
+      "Click Tracking - Station Button",
+      "Live Page",
+      `switch station ${currentEpisodeHolder.value.name}`
+    )
+    //}
   }
 }
 // handle the toggle play button and tracking
@@ -245,7 +240,6 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <!-- <pre class="text-xs">{{ pendingLocalNotifications }}</pre> -->
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex">
           <div
