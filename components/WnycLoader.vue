@@ -32,12 +32,19 @@ const props = defineProps({
     type: Number,
     default: 0.65,
   },
+  paused: {
+    type: Boolean,
+    default: false,
+  },
 })
 const svgWidth = 75
 </script>
 
 <template>
-  <div class="wnyc-loader" :class="[{ bg: props.bg, spinner: props.spinner }]">
+  <div
+    class="wnyc-loader"
+    :class="[{ bg: props.bg, spinner: props.spinner, pause: props.paused }]"
+  >
     <div class="svg-holder flex">
       <i
         v-if="props.spinner"
@@ -88,7 +95,7 @@ const svgWidth = 75
 
   .svg-holder {
     position: relative;
-    width: 100%;
+    width: v-bind(size);
     height: 100%;
     .svg {
       position: absolute;
@@ -139,6 +146,11 @@ const svgWidth = 75
     .svg-holder .svg .st1:nth-child(#{$i}) {
       animation: moveUpAndDown $animationDuration infinite;
       animation-delay: $staggerDelay * ($i - 1) - 2;
+    }
+  }
+  &.pause {
+    .svg-holder .svg .st1 {
+      animation-play-state: paused;
     }
   }
 }
