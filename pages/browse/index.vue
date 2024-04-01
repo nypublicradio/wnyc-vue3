@@ -59,9 +59,18 @@ onMounted(() => {
     page_type: "browse_tab",
     content_group: "app_tab",
   })
-  // init the search in the mounted hook
-  search.value = useFuse(searchFieldValue, shows?.value?.all, options)
 })
+
+watch(
+  shows,
+  () => {
+    // init the search when shoes is populated
+    if (shows) {
+      search.value = useFuse(searchFieldValue, shows?.value?.all, options)
+    }
+  },
+  { once: true }
+)
 </script>
 
 <template>
