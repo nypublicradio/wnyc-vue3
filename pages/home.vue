@@ -32,14 +32,14 @@ const stopWatch = watch(pagedata, () => {
   })
 })
 
-onMounted( () => {
+onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView( {
-    page_title: 'Home',
-    page_type: 'home_page',
-    content_group: 'home',
-  } )
+  $analytics.sendPageView({
+    page_title: "Home",
+    page_type: "home_page",
+    content_group: "home",
+  })
 })
 </script>
 
