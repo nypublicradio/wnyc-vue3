@@ -6,7 +6,6 @@ import { saveRecentlyPlayed } from '~/utilities/helpers'
 export async function updateLiveStream(slug: string, save = true) {
     const config = useRuntimeConfig()
     //BFF
-    console.log("pdating the live stream = ", save)
     try {
         const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
         const currentEpisodeHolder = useCurrentEpisodeHolder()

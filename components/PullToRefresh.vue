@@ -1,4 +1,5 @@
 <template>
+  <!-- THIS COMPONENT IS NOT READY. STILL NEEDS A BUNCH OF WORK TO PERFORM PROPERLY IN ALL INSTANCES -->
   <div ref="ptrRef" class="pull-to-refresh" :style="`top:${visualIndicatorY}px`">
     <i ref="ptrIconRef" class="refresh-indicator pi pi-sync" />
   </div>
@@ -18,6 +19,7 @@ const pStop = ref({ y: 0 })
 const scrollPosition = ref(0)
 const visualIndicatorY = ref(startPosition)
 
+// animate the pull to refresh indicator back to the top
 const backToTop = (delay = 0) => {
   $gsap.to(ptrRef.value, {
     delay,
@@ -26,8 +28,11 @@ const backToTop = (delay = 0) => {
     ease: "power4.in",
   })
 }
+// handle the pull to refresh action
 const refresh = async () => {
+  // refresh all data (still not sure ecactly how this works)
   await refreshNuxtData()
+  // animate the pull to refresh indicator icon
   $gsap.set(ptrIconRef.value, {
     rotate: 0,
     overwrite: true,
@@ -40,6 +45,7 @@ const refresh = async () => {
   })
 }
 
+// handle the pull to refresh START event
 function swipeStart(e) {
   // Check if the page is scrolled to the top
   $gsap.set(ptrIconRef.value, {
@@ -56,6 +62,7 @@ function swipeStart(e) {
   }
 }
 
+// handle the pull to refresh MOVE/UPDATE event to track the offset and move the indicator
 function swipeMove(e) {
   if (typeof e.targetTouches !== "undefined") {
     scrollPosition.value = window.scrollY
@@ -67,6 +74,7 @@ function swipeMove(e) {
   }
 }
 
+// handle the pull to refresh END event, when the user releases the touch
 function swipeEnd(e) {
   if (typeof e.changedTouches !== "undefined") {
     const touch = e.changedTouches[0]
@@ -78,6 +86,12 @@ function swipeEnd(e) {
   swipeCheck()
 }
 
+// determine if the swipe was a pulled down to the max offset - start position (the end)
+function isPullDown(dY) {
+  return Math.abs(dY) >= maxOffset - startPosition
+}
+
+// check if the swipe was a pull down all the way or not
 function swipeCheck() {
   const changeY = pStart.value.y - pStop.value.y
   if (isPullDown(changeY)) {
@@ -86,10 +100,6 @@ function swipeCheck() {
   } else {
     backToTop()
   }
-}
-
-function isPullDown(dY) {
-  return Math.abs(dY) >= maxOffset - startPosition
 }
 
 onMounted(() => {
