@@ -65,6 +65,7 @@ onMounted(() => {
       </div> -->
 
     <section>
+      <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
       <h2 class="mt-4 mb-3">Latest News Updates</h2>
       <LatestNewsUpdates
         :localNewscast="pagedata?.local_newscast"
