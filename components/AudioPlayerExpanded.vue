@@ -307,7 +307,7 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
-
+    <div v-html="currentEpisode.details"></div>
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
@@ -348,7 +348,6 @@ const moreFromClick = () => {
       <h2>Transcript</h2>
       <div v-html="currentEpisode.episodeTranscript" class="html-formatting"></div>
     </div>
-
     <div ref="expandedFooterRef" v-if="currentEpisode.slug" class="expanded-footer">
       <section class="pb-2">
         <hr class="mb-2" />

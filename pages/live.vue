@@ -215,6 +215,8 @@ onMounted(async () => {
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
+  // updates the stream to the current station
+  await updateLiveStream(currentStreamStation.value, false)
 })
 
 onUnmounted(() => {
@@ -316,6 +318,7 @@ onUnmounted(() => {
         />
       </div>
       <section class="current-station-info">
+        <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
       <PlayAndSkipButtons :hideSkip="true" @beforeTogglePlay="togglePlayHere" />
