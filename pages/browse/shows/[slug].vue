@@ -316,7 +316,7 @@ onMounted(() => {
       ref="loadMoreRef"
       spinner
       size="40px"
-      class="mt-8"
+      class="mt-8 flex justify-content-center"
     />
     <!-- <BackToTopButton /> -->
   </section>
