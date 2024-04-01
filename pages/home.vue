@@ -3,11 +3,9 @@ import { goToEpisodePage } from "~/utilities/helpers"
 //import { useUpdateCommentCounts } from "~/composables/comments"
 
 const config = useRuntimeConfig()
-const { data: pagedata } = useLazyFetch(`${config.public.BFF_URL}/api/homepage`)
-const homeTemplate = ref(pagedata?.value?.home_template ?? null)
-const topStories = ref(pagedata?.value?.top_stories ?? null)
-const localNewscast = ref(pagedata?.value?.local_newscast ?? null)
-const nationalNewscast = ref(pagedata?.value?.national_newscast ?? null)
+const { data: pagedata, pending, error, refresh } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepage`
+)
 
 definePageMeta({
   layout: "default",
@@ -19,17 +17,6 @@ useHead({
   bodyAttrs: {
     class: "show-header",
   },
-})
-
-const stopWatch = watch(pagedata, () => {
-  homeTemplate.value = pagedata.value.home_template
-  topStories.value = pagedata.value.top_stories
-  localNewscast.value = pagedata.value.local_newscast
-  nationalNewscast.value = pagedata.value.national_newscast
-  // Stop watching after the first change
-  nextTick(() => {
-    stopWatch()
-  })
 })
 
 onMounted(() => {
@@ -80,14 +67,14 @@ onMounted(() => {
     <section>
       <h2 class="mt-4 mb-3">Latest News Updates</h2>
       <LatestNewsUpdates
-        :localNewscast="localNewscast"
-        :nationalNewscast="nationalNewscast"
+        :localNewscast="pagedata?.local_newscast"
+        :nationalNewscast="pagedata?.national_newscast"
       />
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
       <!-- <pre class="text-xs" v-if="topStories">{{ topStories.body }}</pre> -->
-      <TopStories :articles="topStories" />
+      <TopStories :articles="pagedata?.top_stories" />
     </section>
     <div class="mx-auto mb-6" style="width: 300px">
       <story-htlAd
@@ -96,7 +83,7 @@ onMounted(() => {
         fineprint="Gothamist is funded by sponsors and member donations"
       />
     </div>
-    <div v-for="section in homeTemplate" :key="section.title">
+    <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
           <h2 class="mt-4">{{ section.title }}</h2>

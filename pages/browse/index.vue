@@ -7,8 +7,6 @@ const config = useRuntimeConfig()
 const { data: shows, pending, error, refresh } = useLazyFetch(
   `${config.public.BFF_URL}/api/shows`
 )
-const featuredShows = ref(shows?.value?.featuredShows)
-const allShows = ref(shows?.value?.all)
 
 const router = useRouter()
 const route = useRoute()
@@ -40,16 +38,6 @@ const selectTopic = (topic) => {
   })
 }
 
-const stopWatch = watch(shows, () => {
-  allShows.value = shows.value.all
-  featuredShows.value = shows.value.featuredShows
-
-  // Stop watching after the first change
-  nextTick(() => {
-    stopWatch()
-  })
-})
-
 // handle the active tab for the featured and all shows to set url query
 const handleActiveTab = (e) => {
   router.push({ query: { tab: e.index } })
@@ -72,7 +60,7 @@ onMounted(() => {
     content_group: "app_tab",
   })
   // init the search in the mounted hook
-  search.value = useFuse(searchFieldValue, allShows, options)
+  search.value = useFuse(searchFieldValue, shows?.value?.all, options)
 })
 </script>
 
@@ -147,7 +135,7 @@ onMounted(() => {
               <div class="shows flex flex-column gap-5">
                 <template v-if="!pending">
                   <ShowItem
-                    v-for="show in featuredShows"
+                    v-for="show in shows?.featuredShows"
                     :data="show"
                     :key="show.title"
                     @onClick="goToShowPage(show)"
@@ -164,7 +152,7 @@ onMounted(() => {
               <div class="shows flex flex-column gap-5">
                 <template v-if="!pending">
                   <ShowItem
-                    v-for="show in allShows"
+                    v-for="show in shows?.all"
                     :data="show"
                     :key="show.title"
                     @onClick="goToShowPage(show)"
