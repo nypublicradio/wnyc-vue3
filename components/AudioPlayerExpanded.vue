@@ -307,12 +307,12 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
-    <div v-html="currentEpisode.details"></div>
+    <div class="html-formatting" v-html="currentEpisode.details"></div>
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
       :alt="`${currentEpisode.title} featured image`"
-      :width="421"
+      :width="412"
       :height="275"
       :sizes="[2]"
       class="show-feature-image"

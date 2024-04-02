@@ -299,14 +299,6 @@ onMounted(() => {
         </TabPanel>
       </TabView>
     </div>
-    <!-- <Button
-      v-if="page < maxPages"
-      label="LOAD MORE"
-      class="mx-auto block mt-6"
-      severity="secondary"
-      :disabled="pendingMore"
-      @click="loadMore"
-    /> -->
     <div v-if="pending">
       <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
       <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />

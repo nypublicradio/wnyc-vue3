@@ -80,7 +80,7 @@ const menuClick = (item) => {
   position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 100;
+  z-index: 1001;
   width: 100vw;
   padding-bottom: env(safe-area-inset-bottom);
 
