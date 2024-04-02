@@ -8,8 +8,8 @@ export const WAGTAIL_PAGE_TYPES = {
   'tagpages.TagPage': 'tag_page',
 }
 
-export function normalizePage(page: Record<string, any>): Page {
-  return {
+export async function normalizePage(page: Record<string, any>): Page {
+  return Promise.resolve ({
     id: page.id,
     title: page.title,
     uuid: page.uuid,
@@ -26,5 +26,5 @@ export function normalizePage(page: Record<string, any>): Page {
 
     seoTitle: page.meta?.seoTitle || page.title,
     searchDescription: page.meta?.searchDescription || page.title,
-  }
+  })
 }
