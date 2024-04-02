@@ -22,6 +22,7 @@ const updatePositionState = () => {
 const defaultMimeType = 'image/jpeg'
 const imageSizes = [96, 128, 192, 256, 384, 512]
 
+// fetch the image type from the server
 const fetchMimeType = async (imageUrl) => {
     try {
         const response = await axios(imageUrl, { method: 'HEAD' }) // Use 'HEAD' to avoid downloading the image
@@ -36,6 +37,7 @@ const fetchMimeType = async (imageUrl) => {
     }
 }
 
+// generate an array of artwork objects with different sizes and using an axios call to get the image type
 const generateMediaSessionArtworkArray = async (image) => {
     const format = await fetchMimeType(resizePublisherImageUrl(image, 116, 116))
     const arr = []
@@ -49,6 +51,7 @@ const generateMediaSessionArtworkArray = async (image) => {
     return arr
 }
 
+// initialize the media session with the episode data
 export const initMediaSession = async (episode, skipTime) => {
     currentEpisode = episode
 
