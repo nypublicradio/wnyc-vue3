@@ -20,7 +20,7 @@ const updatePositionState = () => {
 }
 
 const defaultMimeType = 'image/jpeg'
-const imageSizes = [96, 128, 192, 256, 384, 512]
+const imageSizes = [128, 256, 512, 1024]
 
 // fetch the image type from the server
 const fetchMimeType = async (imageUrl) => {
