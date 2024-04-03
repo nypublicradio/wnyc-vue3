@@ -55,6 +55,14 @@ Test build bump
 
 Build an ios app
 
+### ios alpha
+
+```sh
+[bundle exec] fastlane ios alpha
+```
+
+Submits a new WNYC Alpha Build to Apple TestFlight
+
 ### ios beta
 
 ```sh
@@ -70,14 +78,6 @@ Submits a new WNYC Beta Build to Apple TestFlight
 ```
 
 Release a new version of the app to the App Store
-
-### ios aws_device_run_ios
-
-```sh
-[bundle exec] fastlane ios aws_device_run_ios
-```
-
-
 
 ----
 
