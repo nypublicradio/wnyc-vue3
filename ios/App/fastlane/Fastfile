@@ -22,7 +22,7 @@ platform :ios do
 
   desc "certs"
   lane :certificates do
-    match(app_identifier: ["org.wnyc.iphone", "org.wnyc.iphone.ImageNotification"])
+    match(app_identifier: ["org.wnyc.iphone", "org.wnyc.iphone.ImageNotification", "org.nypr.ios.WNYC", "org.nypr.ios.WNYC.ImageNotification"])
   end
 
   desc "Test the ios app"
@@ -72,18 +72,17 @@ platform :ios do
   desc "Submits a new WNYC Alpha Build to Apple TestFlight"
   lane :alpha do
     clear_derived_data # this step required to clear "exit status: 65" errors during testing
-    match(type: "appstore")
+    match(
+      type: "appstore",
+      app_identifier: "org.nypr.ios.WNYC"
+    )
     app_store_connect_api_key
     increment_build_number(
       build_number: "$CIRCLE_BUILD_NUM"
     )
-    update_app_identifier(
-      xcodeproj: "App.xcodeproj",
-      app_identifier: "org.nypr.ios.WNYC"
-    )
     build_app(
       workspace: "App.xcworkspace",
-      scheme: "App",
+      scheme: "AppAlpha",
       clean: true,
       output_name: "WNYC.ipa",
       export_method: "app-store",
