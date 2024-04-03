@@ -215,6 +215,8 @@ onMounted(async () => {
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
+  // updates the stream to the current station
+  await updateLiveStream(currentStreamStation.value, false)
 })
 
 onUnmounted(() => {
@@ -241,7 +243,8 @@ onUnmounted(() => {
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
-        <div class="live-stations flex">
+        <div class="live-stations flex pb-2">
+          1
           <div
             v-for="(station, index) in allCurrentStations"
             class="station-holder"
@@ -268,10 +271,14 @@ onUnmounted(() => {
                 <template #icon>
                   <div v-if="currentEpisode?.station === station.station">
                     <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
-                    <SoundWave
+                    <WnycLoader
                       v-else
-                      class="mr-2"
-                      :class="[{ paused: !isEpisodePlaying }]"
+                      class="pr-2"
+                      :svgYscale="1.25"
+                      :svgXscale="0.5"
+                      :bars="3"
+                      :paused="!isEpisodePlaying"
+                      size="16px"
                     />
                   </div>
                 </template>
@@ -311,6 +318,7 @@ onUnmounted(() => {
         />
       </div>
       <section class="current-station-info">
+        <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
       <PlayAndSkipButtons :hideSkip="true" @beforeTogglePlay="togglePlayHere" />

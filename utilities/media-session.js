@@ -1,6 +1,6 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
 import { getDate, resizePublisherImageUrl } from '~/utilities/helpers'
-
+import axios from 'axios'
 let currentEpisode = null
 let playbackStopped = true
 let audioElement = null
@@ -19,16 +19,50 @@ const updatePositionState = () => {
     })
 }
 
-export const initMediaSession = (episode, skipTime) => {
+const defaultMimeType = 'image/jpeg'
+const imageSizes = [128, 256, 512, 1024]
+
+// fetch the image type from the server
+const fetchMimeType = async (imageUrl) => {
+    try {
+        const response = await axios(imageUrl, { method: 'HEAD' }) // Use 'HEAD' to avoid downloading the image
+
+        if (response.headers["content-type"]) {
+            return response.headers["content-type"]
+        } else {
+            return defaultMimeType
+        }
+    } catch (error) {
+        return defaultMimeType
+    }
+}
+
+// generate an array of artwork objects with different sizes and using an axios call to get the image type
+const generateMediaSessionArtworkArray = async (image) => {
+    const format = await fetchMimeType(resizePublisherImageUrl(image, 116, 116))
+    const arr = []
+    imageSizes.forEach(size => {
+        arr.push({
+            src: resizePublisherImageUrl(image, size, size),
+            sizes: `${size}x${size}`,
+            type: format
+        })
+    })
+    return arr
+}
+
+// initialize the media session with the episode data
+export const initMediaSession = async (episode, skipTime) => {
     currentEpisode = episode
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
-    const artworkImage = currentEpisode?.directoryImage?.uri ? currentEpisode.directoryImage.uri : resizePublisherImageUrl(currentEpisode.image, 512, 512)
+    const artworkImageArray = currentEpisode?.directoryImage?.uri ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.image)
+
     MediaSession.setMetadata({
         title: currentEpisode.title,
         artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
         album: currentEpisode.showTitle,
-        artwork: [{ src: artworkImage }]
+        artwork: artworkImageArray
     })
 
     const mediaProvider = document.querySelector('media-provider')

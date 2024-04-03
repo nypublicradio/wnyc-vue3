@@ -424,6 +424,10 @@ html.style-mode-dark .persistent-player {
         }
         .header-top {
           padding: 0 1.5rem;
+          .show-image {
+            // to prevent a jump when the image finally loads and renders
+            height: 144px;
+          }
           #expandedViewPlayer {
             margin-top: 1rem;
           }

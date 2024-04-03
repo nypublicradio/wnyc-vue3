@@ -37,7 +37,7 @@ const togglePlayHere = () => {
   <div class="live-feature p-ripple" v-ripple>
     <VFlexibleLink raw to="/live" class="flex align-items-center">
       <div class="image-holder">
-        <transition name="fade">
+        <transition name="fade" mode="out-in">
           <VImage
             v-if="currentEpisodeHolder?.image"
             :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
@@ -47,6 +47,7 @@ const togglePlayHere = () => {
             alt="show poster image"
             class="image"
           />
+
           <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
           <!-- <div v-else class="image-loader-anim">
           <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
@@ -128,12 +129,14 @@ $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
     flex: none;
     width: 138px;
     height: 138px;
-    background-color: #ffffff;
+    //background-color: #ffffff;
     .image,
     .image-loader-anim {
-      position: absolute;
       width: 138px;
       height: 138px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
   .content {

@@ -89,8 +89,11 @@ const isLive = computed(() => {
     height: 50px;
     .play-icon,
     .pause-icon {
-      width: 20px;
-      height: 20px;
+      width: 13.53px;
+      height: 18.11px;
+    }
+    .play-icon {
+      margin-left: 2px;
     }
   }
 }

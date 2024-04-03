@@ -164,14 +164,16 @@ onMounted(async () => {
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
       // update user profile when coming back from  the system settings
-      await PushNotifications.checkPermissions().then((result) => {
-        if (result.receive === "denied") {
-          currentUserProfile.value.receive_general_notifications = false
-        }
-        if (result.receive === "granted") {
-          currentUserProfile.value.receive_general_notifications = true
-        }
-      })
+      if (isApp.value) {
+        await PushNotifications.checkPermissions().then((result) => {
+          if (result.receive === "denied") {
+            currentUserProfile.value.receive_general_notifications = false
+          }
+          if (result.receive === "granted") {
+            currentUserProfile.value.receive_general_notifications = true
+          }
+        })
+      }
     }
   })
   //every time the cursor enters the window on desktop only
@@ -275,4 +277,5 @@ watch(globalToast, (optionsObj) => {
   <AudioPlayer />
   <Sidebars class="z-2" />
   <Toast position="top-center" />
+  <!-- <PullToRefresh /> -->
 </template>

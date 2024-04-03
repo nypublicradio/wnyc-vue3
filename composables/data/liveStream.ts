@@ -3,14 +3,14 @@ import { saveRecentlyPlayed } from '~/utilities/helpers'
 
 
 // Get a list of article pages using the Aviary /pages api
-export async function updateLiveStream(slug: string) {
+export async function updateLiveStream(slug: string, save = true) {
     const config = useRuntimeConfig()
     //BFF
     try {
         const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
         const currentEpisodeHolder = useCurrentEpisodeHolder()
         currentEpisodeHolder.value = fetchData
-        saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE)
+        if (save) { saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE) }
     } catch (error) {
         const globalToast = useGlobalToast()
         globalToast.value = {
@@ -31,7 +31,6 @@ export async function updateAllLiveStreams() {
     // BFF
     try {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
-        //console.log('fetchingAll = ', fetchingAll.value)
         // set all streams
         allCurrentStations.value = fetchingAll.filter(Boolean)
         //allCurrentStations.value = allCurrentStationsImport
@@ -48,7 +47,6 @@ export async function updateAllLiveStreams() {
                 }
             }
         )
-
         currentEpisodeHolder.value = initialStation
         //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
     } catch (error) {
