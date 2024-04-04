@@ -26,7 +26,7 @@ platform :android do
     gradle(task: "assemble", build_type: "Release")
   end
 
-  lane :beta do
+  lane :internal do
     # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
     gradle(
       task: 'bundle',
@@ -35,6 +35,19 @@ platform :android do
     upload_to_play_store(
       release_status: 'completed',
       track: 'internal',
+      package_name: 'org.wnyc.android'
+    ) # upload to Google Play Store
+  end
+
+  lane :gamma do
+    # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
+    gradle(
+      task: 'bundle',
+      build_type: 'Release'
+    )
+    upload_to_play_store(
+      release_status: 'completed',
+      track: 'gamma',
       package_name: 'org.wnyc.android'
     ) # upload to Google Play Store
   end
