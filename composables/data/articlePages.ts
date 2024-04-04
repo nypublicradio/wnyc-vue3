@@ -118,7 +118,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
   })
 }
 
-export async function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
+export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
   const duration = article.attributes.estimatedDuration == 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;

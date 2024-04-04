@@ -127,7 +127,7 @@ const getHomeTemplate = async () => {
 	};
 	const res = await axios(options);
 	const resData = humps.camelizeKeys(res.data).data;
-	const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
+	const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: Record<string, any | undefined>) => {
 		// Regex navSlug to extract if it's horizontal or vertical.
 		// This is used to determine the layout of the home page.
 		const componentType = layout.navSlug.match(/(horizontal)/g);
@@ -158,7 +158,7 @@ const getGothamistTopStories = async () => {
 	const res = await axios(options);
 	const resData = humps.camelizeKeys(res.data).items;
 	//console.log('WAGTAIL RESDATA = ', resData[0]);
-	const articles = resData.map((article: any) => {
+	const articles = resData.map((article: Record<string, any | undefined>) => {
 		article.cmsSource = cmsSources.WAGTAIL;
 		article.sortDate = article.publicationDate;
 		return normalizeArticlePage(article);
@@ -175,7 +175,7 @@ const getWNYCTopStories = async () => {
 	const res = await axios(options);
 	const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
 	if (resData) {
-		const articles = resData.map((article: any) => {
+		const articles = resData.map((article: Record<string, any | undefined>) => {
 			article.cmsSource = cmsSources.PUBLISHER;
 			article.sortDate = article.attributes.publishAt;
 			return normalizeArticlePage(article);

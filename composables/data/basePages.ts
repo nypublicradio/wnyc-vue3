@@ -8,7 +8,7 @@ export const WAGTAIL_PAGE_TYPES = {
   'tagpages.TagPage': 'tag_page',
 }
 
-export async function normalizePage(page: Record<string, any>): Page {
+export async function normalizePage(page: Record<string, any>): Promise<Page> {
   return Promise.resolve ({
     id: page.id,
     title: page.title,
