@@ -1,8 +1,4 @@
-interface SocialMediaProfile {
-  id: number
-  service: string
-  profileUrl: string
-}
+import type ISocial from '../types/Social'
 interface IShow {
   title: string
   slug: string
@@ -12,7 +8,7 @@ export default interface Person {
   id?: number
   url?: string
   name?: string
-  socialMediaProfile?: SocialMediaProfile[]
+  socialMediaProfile?: ISocial[]
   photoID?: number
   jobTitle?: string
   biography?: string

@@ -142,8 +142,8 @@ onMounted(() => {
               onStaffPage
             >
               <template #slot-above-bio>
-                <h3 class="mt-2 mb-2">Shows</h3>
-                <div class="flex flex-column gap-2">
+                <h3 class="mt-3 mb-2">Shows</h3>
+                <div class="flex flex-column gap-3">
                   <NuxtLink
                     v-for="show in pagedata.shows"
                     raw
@@ -158,7 +158,6 @@ onMounted(() => {
                       :sizes="[2]"
                       class="flex-none"
                       :ratio="[1, 1]"
-                      style="height: 20px; width: 20px"
                     />
                     <p class="m-0">{{ show.title }}</p>
                   </NuxtLink>

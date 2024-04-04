@@ -1,5 +1,6 @@
 import type Author from '../types/Author'
 import type Person from '../types/Person'
+import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
 import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
@@ -68,7 +69,15 @@ export function normalizeArticlePage(article: Record<string, any | undefined>): 
     return null
 }
 
-// Transform author data from the API into a simpler and typed format
+function normalizePersonSocial(social: Record<string, any>): ISocial {
+  return {
+    id: social.contactString,
+    service: social.service,
+    profileUrl: social.contactString.replace("@", ""),
+  }
+}
+
+// Transform person data from the API into a simpler and typed format
 export function normalizePerson(person: Record<string, any>): Person {
   const pa = person.attributes
   return {
@@ -81,7 +90,7 @@ export function normalizePerson(person: Record<string, any>): Person {
     email: pa.email,
     slug: pa.slug,
     url: pa.slug && `/people/${pa.slug}`,
-    socialMediaProfile: pa.social,
+    socialMediaProfile: pa.social.map(normalizePersonSocial), // Fix: Wrap the normalizePersonSocial result in an array
     shows: pa.shows,
   }
 }
