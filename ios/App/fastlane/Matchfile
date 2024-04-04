@@ -3,6 +3,7 @@ git_url("git@github.com:nypublicradio/wnyc-ios-fastlane-match.git")
 storage_mode("git")
 
 type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
+app_identifier(["org.wnyc.iphone", "org.wnyc.iphone.ImageNotification", "org.nypr.ios.WNYC", "org.nypr.ios.WNYC.ImageNotification"])
 
 # app_identifier(["tools.fastlane.app", "tools.fastlane.app2"])
 # username("user@fastlane.tools") # Your Apple Developer Portal username
