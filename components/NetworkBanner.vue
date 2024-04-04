@@ -13,7 +13,7 @@ watchEffect(() => {
   if (props.connected) {
     setTimeout(() => {
       shouldFadeOut.value = true
-    }, 3000)
+    }, 4000)
   } else {
     shouldFadeOut.value = false
   }
@@ -42,8 +42,7 @@ watchEffect(() => {
   font-size: 0.6rem;
   color: var(--black-500);
   opacity: 1;
-  transition: opacity 5s;
-  transition-delay: 3s;
+  transition: opacity 1s;
   .pi {
     font-size: 0.6rem;
   }
