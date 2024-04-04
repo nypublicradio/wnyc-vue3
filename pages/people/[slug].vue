@@ -1,4 +1,5 @@
 <script setup>
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { trackClickEvent, goToStoryPage } from "~/utilities/helpers"
 //import { useIntersectionObserver } from "@vueuse/core"
@@ -12,15 +13,15 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 const personSlug = route.params.slug
-const newPageData = ref(null)
+//const newPageData = ref(null)
 const { data: pagedata, pending, error, refresh } = await useFetch(
   `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
 )
-newPageData.value = pagedata.value
+//newPageData.value = pagedata.value
 
-const pendingMore = ref(false)
+//const pendingMore = ref(false)
 //const loadMoreRefVisible = ref(false)
-const loadMoreRef = ref(null)
+//const loadMoreRef = ref(null)
 //const isInitialObserver = ref(true)
 // const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
 //   // so it does not trigger on initial load and before we have data
@@ -66,7 +67,7 @@ const loadMoreRef = ref(null)
 //   }
 // }
 console.log("pagedata", pagedata.value)
-const PersonName = pagedata?.attributes?.name
+const PersonName = pagedata?.name
 
 const pageTitle = `Articles by ${PersonName} | Gothamist`
 
@@ -135,11 +136,35 @@ onMounted(() => {
             <hr class="my-4" />
             <!-- <pre>{{ pagedata.authorData }}</pre> -->
             <VPerson
-              v-if="pagedata?.authorData"
-              :profileData="pagedata.authorData[0]"
-              class="text-sm"
+              v-if="pagedata"
+              :profileData="pagedata"
+              class="html-formatting"
               onStaffPage
-            />
+            >
+              <template #slot-above-bio>
+                <h3 class="mt-2 mb-2">Shows</h3>
+                <div class="flex flex-column gap-2">
+                  <NuxtLink
+                    v-for="show in pagedata.shows"
+                    raw
+                    :to="`/browse/shows/${show.slug}`"
+                    class="flex gap-1 align-items-center"
+                  >
+                    <VImage
+                      :src="show.featured.headers.brand.logoImage.template"
+                      :alt="`${show.title} show image`"
+                      :width="20"
+                      :height="20"
+                      :sizes="[2]"
+                      class="flex-none"
+                      :ratio="[1, 1]"
+                      style="height: 20px; width: 20px"
+                    />
+                    <p class="m-0">{{ show.title }}</p>
+                  </NuxtLink>
+                </div>
+              </template>
+            </VPerson>
             <div class="h5" v-else>{{ PersonName }}</div>
             <hr class="my-4" />
           </div>

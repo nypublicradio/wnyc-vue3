@@ -1,4 +1,5 @@
 import type Author from '../types/Author'
+import type Person from '../types/Person'
 import type { ArticlePage } from '../types/Page'
 import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
@@ -66,6 +67,26 @@ export function normalizeArticlePage(article: Record<string, any | undefined>): 
   else
     return null
 }
+
+// Transform author data from the API into a simpler and typed format
+export function normalizePerson(person: Record<string, any>): Person {
+  const pa = person.attributes
+  return {
+    id: person.id,
+    name: pa.name,
+    photoID: pa.image.template,
+    jobTitle: pa.jobTitle,
+    biography: pa.bio,
+    website: pa.website,
+    email: pa.email,
+    slug: pa.slug,
+    url: pa.slug && `/people/${pa.slug}`,
+    socialMediaProfile: pa.social,
+    shows: pa.shows,
+  }
+}
+
+
 // Wagtail: Transform page data from the API into a simpler and typed format
 export function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')

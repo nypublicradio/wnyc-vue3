@@ -134,7 +134,7 @@ onMounted(() => {
             <VPerson
               v-if="pagedata?.authorData"
               :profileData="pagedata.authorData[0]"
-              class="text-sm"
+              class="html-formatting"
               onStaffPage
             />
             <div class="h5" v-else>{{ authorName }}</div>

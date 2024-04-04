@@ -1,7 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { normalizeAuthor, normalizeArticlePage } from '~/composables/data/articlePages'
+import { normalizePerson } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
 
@@ -9,9 +9,9 @@ const getPublisherPersonData = async (personSlug: string) => {
 
     const res = await axios(`${config.public.PUBLISHER_BASE_API}/v3/person/${personSlug}`);
     const resData = humps.camelizeKeys(res.data.data);
-    //const person = normalizeAuthor(resData);
+    const person = normalizePerson(resData);
 
-    return resData
+    return person
 };
 
 const getWagtailPersonData = async (personSlug: string) => {
