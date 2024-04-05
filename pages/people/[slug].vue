@@ -74,7 +74,6 @@ onMounted(() => {
       <div v-if="!pending" class="content">
         <div class="grid mt-4">
           <div class="col-12">
-            <pre class="text-xs overflow-hidden">{{ pagedata.socialMediaProfile }}</pre>
             <VPerson
               v-if="pagedata"
               :profileData="pagedata"
@@ -82,7 +81,7 @@ onMounted(() => {
               onStaffPage
             >
               <template #slot-above-bio>
-                <h3 class="mt-3 mb-2">Shows</h3>
+                <h3 class="mt-3 mb-2" v-if="pagedata.shows.length">Shows</h3>
                 <div class="flex flex-column gap-3">
                   <NuxtLink
                     v-for="show in pagedata.shows"

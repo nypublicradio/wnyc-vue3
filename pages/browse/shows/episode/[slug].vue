@@ -334,7 +334,12 @@ const getEpisodeImage = computed(() => {
             </div>
           </div>
         </div>
-        <div class="episode-page-body html-formatting mt-5" v-html="episodeData?.body" />
+        <!-- <div class="episode-page-body html-formatting mt-5" v-html="episodeData?.body" /> -->
+        <!-- <div
+          class="episode-page-body html-formatting mt-5"
+          v-nuxt-html="episodeData?.body"
+        /> -->
+        <HtmlConvert :htmlContent="episodeData?.body" class="episode-page-body mt-5" />
       </section>
       <section v-if="episodeData?.transcript">
         <h3 class="mb-4">Transcript</h3>
