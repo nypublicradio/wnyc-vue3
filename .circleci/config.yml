@@ -67,9 +67,9 @@ workflows:
           requires:
             - test
       - android:
-          name: Android (beta)
+          name: Android (demo)
           context: android
-          FASTLANE_LANE: beta
+          FASTLANE_LANE: internal
           env: demo
           <<: *filter_demo
           requires:
@@ -81,6 +81,14 @@ workflows:
             - xcode
           FASTLANE_LANE: beta
           env: prod
+          <<: *filter_prod
+          requires:
+            - test
+      - android:
+          name: Android (prod)
+          context: android
+          FASTLANE_LANE: gamma
+          env: demo
           <<: *filter_prod
           requires:
             - test
