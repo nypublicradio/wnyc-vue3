@@ -157,7 +157,6 @@ const getGothamistTopStories = async () => {
 	};
 	const res = await axios(options);
 	const resData = humps.camelizeKeys(res.data).items;
-	console.log('WAGTAIL RESDATA = ', resData[0]);
 	const articles = Promise.all(resData.map((article: any) => {
 		article.cmsSource = cmsSources.WAGTAIL;
 		article.sortDate = article.publicationDate;
