@@ -136,7 +136,7 @@ const getHomeTemplate = async () => {
 			title: layout.title,
 			layout: layout.navSlug,
 			componentType: componentType ? componentType[0] : 'default',
-			data: data,
+			data: data
 		}
 	}));
 	return homeLayout;

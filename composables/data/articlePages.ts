@@ -59,11 +59,16 @@ export function normalizeAuthor(author: Record<string, any>): Author {
   }
 }
 
+/**
+ * Normalize an article page object from Publisher or Wagtail into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
 export async function normalizeArticlePage(article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (article.cmsSource === cmsSources.WAGTAIL)
-    return normalizeWagtailPage(article)
+    return await normalizeWagtailPage(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
-    return normalizePublisherPage(article)
+    return await normalizePublisherPage(article)
   else
     return null
 }
@@ -118,10 +123,15 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
   })
 }
 
-export async function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
+/**
+ * Normalize an article page object from Publisher into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-  const duration = article.attributes.estimatedDuration == 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;
+  const duration = article.attributes.estimatedDuration === 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
