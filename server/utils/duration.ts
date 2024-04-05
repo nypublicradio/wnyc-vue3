@@ -1,4 +1,4 @@
-import * as mm from 'music-metadata';
+import { parseFromTokenizer } from 'music-metadata';
 import { makeTokenizer } from '@tokenizer/http';
 
 /**
@@ -12,7 +12,7 @@ import { makeTokenizer } from '@tokenizer/http';
 export async function estimateMp3Duration(audioTrackUrl: string): Promise<number> {
 	try {
 		const httpTokenizer = await makeTokenizer(audioTrackUrl);
-		const metadata = await mm.parseFromTokenizer(httpTokenizer);
+		const metadata = await parseFromTokenizer(httpTokenizer);
 		const duration = Math.round(metadata.format.duration);
 		return duration;
 	} catch (e) {
