@@ -73,7 +73,7 @@ function normalizePersonSocial(social: Record<string, any>): ISocial {
   return {
     id: social.contactString,
     service: social.service,
-    profileUrl: social.contactString.replace("@", ""),
+    profileUrl: social.contactString.replace("@", "") || null,
   }
 }
 

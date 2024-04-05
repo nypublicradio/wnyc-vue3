@@ -1,12 +1,7 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent, goToStoryPage } from "~/utilities/helpers"
-//import { useIntersectionObserver } from "@vueuse/core"
-//import { useGlobalToast } from "~/composables/states"
-//import { trackClickEvent } from '~/utilities/helpers'
-//import { StaffPage } from '../../composables/types/Page'
-//import { ArticlePage } from '~/composables/types/Page'
+import { trackClickEvent } from "~/utilities/helpers"
 
 const route = useRoute()
 const router = useRouter()
@@ -17,55 +12,7 @@ const personSlug = route.params.slug
 const { data: pagedata, pending, error, refresh } = await useFetch(
   `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
 )
-//newPageData.value = pagedata.value
 
-//const pendingMore = ref(false)
-//const loadMoreRefVisible = ref(false)
-//const loadMoreRef = ref(null)
-//const isInitialObserver = ref(true)
-// const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
-//   // so it does not trigger on initial load and before we have data
-//   if (!isInitialObserver.value && newPageData.value) {
-//     loadMoreRefVisible.value = isIntersecting
-//   } else {
-//     isInitialObserver.value = false
-//   }
-// })
-
-// clean up the useIntersectionObserver
-// onUnmounted(() => {
-//   stop()
-// })
-
-//let offset = 0
-
-// load more articles by the author, triggered by the lazy load observer
-// const loadMore = async () => {
-//   pendingMore.value = true
-//   try {
-//     const additionalPageData = await $fetch(
-//       `${
-//         config.public.BFF_URL
-//       }/api/people/publisher/${personSlug}?offset=${(offset += 10)}`
-//     )
-//     pendingMore.value = false
-//     newPageData.value.articles = [
-//       ...newPageData.value.articles,
-//       ...additionalPageData.articles,
-//     ]
-//     trackClickEvent("Event Tracking - load more articles", "Shows Page", personSlug)
-//   } catch (e) {
-//     const globalToast = useGlobalToast()
-//     globalToast.value = {
-//       severity: "error",
-//       summary:
-//         "Sorry. We are having trouble loading more articles. Please try again later.",
-//       life: null,
-//       closable: true,
-//     }
-//     console.error("error = ", e)
-//   }
-// }
 console.log("pagedata", pagedata.value)
 const PersonName = pagedata?.name
 
@@ -80,14 +27,8 @@ useServerHead({
 
 const routeBack = () => {
   trackClickEvent("People", "People page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
+  router.go(-1)
 }
-
-// watch(loadMoreRefVisible, (val) => {
-//   if (val) {
-//     loadMore()
-//   }
-// })
 
 onMounted(() => {
   // send GA page view
@@ -131,10 +72,9 @@ onMounted(() => {
       />
       <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
       <div v-if="!pending" class="content">
-        <div class="grid">
+        <div class="grid mt-4">
           <div class="col-12">
-            <hr class="my-4" />
-            <!-- <pre>{{ pagedata.authorData }}</pre> -->
+            <pre class="text-xs overflow-hidden">{{ pagedata.socialMediaProfile }}</pre>
             <VPerson
               v-if="pagedata"
               :profileData="pagedata"
@@ -165,7 +105,6 @@ onMounted(() => {
               </template>
             </VPerson>
             <div class="h5" v-else>{{ PersonName }}</div>
-            <hr class="my-4" />
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
