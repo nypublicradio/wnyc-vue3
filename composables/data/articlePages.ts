@@ -59,7 +59,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
   }
 }
 
-export function normalizeArticlePage(article: Record<string, any | undefined>): ArticlePage {
+export async function normalizeArticlePage(article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (article.cmsSource === cmsSources.WAGTAIL)
     return normalizeWagtailPage(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
@@ -68,11 +68,11 @@ export function normalizeArticlePage(article: Record<string, any | undefined>): 
     return null
 }
 // Wagtail: Transform page data from the API into a simpler and typed format
-export function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
+export async function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
 
-  return Object.assign({}, normalizePage(article), {
+  return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     leadImageCaption: article.leadAsset?.[0]?.value?.caption || article.leadAsset?.[0]?.value?.image?.caption,
@@ -122,7 +122,7 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   if (typeof article === 'undefined')
     return null
   const duration = article.attributes.estimatedDuration == 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;
-  return Promise.resolve(Object.assign({}, normalizePage(article), {
+  return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     leadImageCaption: article.attributes.imageCaption,
