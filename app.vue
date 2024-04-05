@@ -105,7 +105,7 @@ const addListeners = async () => {
   })
 
   Network.addListener("networkStatusChange", (status) => {
-    console.log("Network status changed", status)
+    //alert("Network status changed" + JSON.stringify(status))
     isNetworkConnected.value = status.connected
   })
 
@@ -150,8 +150,8 @@ onMounted(async () => {
   await getAndSetUserProfile()
 
   if (isApp.value) {
-    // if APP then add listeners
     await addListeners()
+    // if APP then add listeners
     await checkAppLaunchUrl()
     await initAdvertisingId()
     // init downloads files system for the app
@@ -273,7 +273,7 @@ watch(globalToast, (optionsObj) => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-
+  <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Sidebars class="z-2" />
   <Toast position="top-center" />
