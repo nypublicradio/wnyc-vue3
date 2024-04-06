@@ -18,7 +18,7 @@ const getPublisherPersonData = async (personSlug: string) => {
 const getWagtailPersonData = async (personSlug: string) => {
     //todo: call publisher api to get staff data with article list
     // I don't think we have a wagtail endpoint for this
-    getPublisherPersonData(personSlug);
+    await getPublisherPersonData(personSlug);
 
 };
 
