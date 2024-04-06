@@ -2,7 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizePerson } from '~/composables/data/articlePages'
-import { getUserFallBackImage } from "~/utilities/helpers"
+
 
 const config = useRuntimeConfig();
 

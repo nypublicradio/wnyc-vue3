@@ -14,7 +14,6 @@ const { data: pagedata, pending, error, refresh } = await useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
 
-console.log("pagedata = ", pagedata)
 // set fallback image based on dark or light mode
 if (!pagedata.value.authorData.photoID) {
   pagedata.value.authorData.photoID = getUserFallBackImage()
