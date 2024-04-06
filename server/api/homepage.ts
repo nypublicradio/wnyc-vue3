@@ -109,102 +109,80 @@ const getNYCNowNewscast = async () => {
 }
 
 const getSectionData = async (slug: string) => {
-	try {
-		const option = {
-			method: 'GET',
-			url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
-		};
-		const res = await axios(option);
-		const resData = res.data.included.map((item: any) => {
-			return normalizePublisherPage(humps.camelizeKeys(item));
-		});
-		return resData;
-	} catch (e) {
-		//console.log(e);
-	}
-	return null
+	const option = {
+		method: 'GET',
+		url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
+	};
+	const res = await axios(option);
+	const resData = await Promise.all(res.data.included.map((item: any) => {
+		return normalizePublisherPage(humps.camelizeKeys(item));
+	}));
+	return resData;
 };
 
 const getHomeTemplate = async () => {
-	try {
-		const options = {
-			method: 'GET',
-			url: `${config.public.PUBLISHER_BASE_API}v3/link-roll/navigation-shows-wnyc-app/`,
-		};
-		const res = await axios(options);
-		const resData = humps.camelizeKeys(res.data).data;
-		const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
-			// Regex navSlug to extract if it's horizontal or vertical.
-			// This is used to determine the layout of the home page.
-			const componentType = layout.navSlug.match(/(horizontal)/g);
-			const data = await getSectionData(layout.navSlug);
-			return {
-				title: layout.title,
-				layout: layout.navSlug,
-				componentType: componentType ? componentType[0] : 'default',
-				data: data,
-			}
-		}));
-		return homeLayout;
-	} catch (e) {
-		//console.log(e);
-	}
-	return null
+	const options = {
+		method: 'GET',
+		url: `${config.public.PUBLISHER_BASE_API}v3/link-roll/navigation-shows-wnyc-app/`,
+	};
+	const res = await axios(options);
+	const resData = humps.camelizeKeys(res.data).data;
+	const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
+		// Regex navSlug to extract if it's horizontal or vertical.
+		// This is used to determine the layout of the home page.
+		const componentType = layout.navSlug.match(/(horizontal)/g);
+		const data = await getSectionData(layout.navSlug);
+		return {
+			title: layout.title,
+			layout: layout.navSlug,
+			componentType: componentType ? componentType[0] : 'default',
+			data: data
+		}
+	}));
+	return homeLayout;
 }
 
 const getGothamistTopStories = async () => {
-	try {
-		const options = {
-			method: 'GET',
-			url: `${config.public.AVIARY_BASE_API}pages/`,
-			params: {
-				type: 'news.ArticlePage',
-				fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body,url',
-				order: '-publication_date',
-				show_on_index_listing: true,
-				limit: 3,
-				sponsored_content: false
-			}
-		};
-		const res = await axios(options);
-		const resData = humps.camelizeKeys(res.data).items;
-		//console.log('WAGTAIL RESDATA = ', resData[0]);
-		const articles = resData.map((article: any) => {
-			article.cmsSource = cmsSources.WAGTAIL;
-			article.sortDate = article.publicationDate;
-			return normalizeArticlePage(article);
-		});
-		return articles;
-	} catch (e) {
-		//console.log(e);
-	}
-	return null
+	const options = {
+		method: 'GET',
+		url: `${config.public.AVIARY_BASE_API}pages/`,
+		params: {
+			type: 'news.ArticlePage',
+			fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body,url',
+			order: '-publication_date',
+			show_on_index_listing: true,
+			limit: 3,
+			sponsored_content: false
+		}
+	};
+	const res = await axios(options);
+	const resData = humps.camelizeKeys(res.data).items;
+	const articles = Promise.all(resData.map((article: any) => {
+		article.cmsSource = cmsSources.WAGTAIL;
+		article.sortDate = article.publicationDate;
+		return normalizeArticlePage(article);
+	}));
+	return articles;
 }
 
 //Gets the top stories from the WNYC API and 
 const getWNYCTopStories = async () => {
-	try {
-		const options = {
-			method: 'GET',
-			url: `${config.public.PUBLISHER_BASE_API}v3/buckets/wnyc-home-top`,
-		};
-		const res = await axios(options);
-		const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
-		if (resData) {
-			const articles = resData.map((article: any) => {
-				article.cmsSource = cmsSources.PUBLISHER;
-				article.sortDate = article.attributes.publishAt;
-				return normalizeArticlePage(article);
-			});
-			return articles;
-		} else {
-			return [];
-		}
-	} catch (e) {
-		console.error('getWNYCTopStories error = ', e);
+	const options = {
+		method: 'GET',
+		url: `${config.public.PUBLISHER_BASE_API}v3/buckets/wnyc-home-top`,
+	};
+	const res = await axios(options);
+	const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
+	if (resData) {
+		const articles = Promise.all(resData.map((article: any) => {
+			article.cmsSource = cmsSources.PUBLISHER;
+			article.sortDate = article.attributes.publishAt;
+			return normalizeArticlePage(article);
+		}));
+		return articles;
+	} else {
+		return [];
 	}
-	return null
-
 }
 
 // Write a function that takes in 2 json objects and returns a single array of articles sorted by publication date and then removes any duplicates by title.
