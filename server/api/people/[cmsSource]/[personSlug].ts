@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizePerson } from '~/composables/data/articlePages'
+import { getUserFallBackImage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig();
 
@@ -9,8 +10,7 @@ const getPublisherPersonData = async (personSlug: string) => {
 
     const res = await axios(`${config.public.PUBLISHER_BASE_API}/v3/person/${personSlug}`);
     const resData = humps.camelizeKeys(res.data.data);
-    const person = normalizePerson(resData);
-
+    const person = await normalizePerson(resData);
     return person
 };
 

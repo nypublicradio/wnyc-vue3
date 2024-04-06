@@ -1,7 +1,7 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, getUserFallBackImage } from "~/utilities/helpers"
 
 const route = useRoute()
 const router = useRouter()
@@ -13,7 +13,11 @@ const { data: pagedata, pending, error, refresh } = await useFetch(
   `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
 )
 
-console.log("pagedata", pagedata.value)
+// set fallback image based on dark or light mode
+if (!pagedata.value.photoID) {
+  pagedata.value.photoID = getUserFallBackImage()
+}
+
 const PersonName = pagedata?.name
 
 const pageTitle = `Articles by ${PersonName} | Gothamist`

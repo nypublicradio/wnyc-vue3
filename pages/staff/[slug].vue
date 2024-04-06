@@ -1,11 +1,8 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent, goToStoryPage } from "~/utilities/helpers"
+import { trackClickEvent, goToStoryPage, getUserFallBackImage } from "~/utilities/helpers"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"
-//import { trackClickEvent } from '~/utilities/helpers'
-//import { StaffPage } from '../../composables/types/Page'
-//import { ArticlePage } from '~/composables/types/Page'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,6 +13,13 @@ const newPageData = ref(null)
 const { data: pagedata, pending, error, refresh } = await useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
+
+console.log("pagedata = ", pagedata)
+// set fallback image based on dark or light mode
+if (!pagedata.value.authorData.photoID) {
+  pagedata.value.authorData.photoID = getUserFallBackImage()
+}
+
 newPageData.value = pagedata.value
 
 const pendingMore = ref(false)
@@ -127,9 +131,8 @@ onMounted(() => {
       />
       <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
       <div v-if="!pending" class="content">
-        <div class="grid">
+        <div class="grid mt-4">
           <div class="col-12">
-            <hr class="my-4" />
             <!-- <pre>{{ pagedata.authorData }}</pre> -->
             <VPerson
               v-if="pagedata?.authorData"
@@ -157,28 +160,8 @@ onMounted(() => {
             </div>
           </div>
           <p v-else class="col">No articles available</p>
-          <div class="col-fixed col-fixed-width-330 hidden xl:block">
-            <!-- <HtlAd
-              layout="rectangle"
-              slot="htl-gothamist_interior_midpage_1"
-              fineprint="Gothamist is funded by sponsors and member donations"
-            /> -->
-          </div>
+          <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
-        <!-- <div class="block xl:hidden mb-4">
-           <HtlAd
-            layout="rectangle"
-            slot="htl-gothamist_interior_midpage_2"
-            fineprint="Gothamist is funded by sponsors and member donations"
-          /> 
-        </div> -->
-        <!-- <Button
-          v-if="pagedata?.articles.length < pagedata?.count"
-          class="p-button-rounded"
-          label="Load More"
-          @click="loadMore"
-        >
-        </Button> -->
       </div>
       <div v-else class="text-center">LOADING</div>
       <div v-if="pendingMore">

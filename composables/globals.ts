@@ -35,6 +35,8 @@ export const FALLBACKIMAGEEP = '343750'
 export const FALLBACKIMAGEEPDARK = '344059'
 export const FALLBACKIMAGEEPHEAD = '343751'
 export const FALLBACKIMAGEEPHEADDARK = '344060'
+export const FALLBACKUSER = '344344'
+export const FALLBACKUSERDARK = '344343'
 
 //Global vars for the browser top color
 export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffffff')

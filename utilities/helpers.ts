@@ -17,25 +17,34 @@ import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
-import { mediaTypeRoutes, localUserProfileKey, FALLBACKIMAGEEP, FALLBACKIMAGEEPHEAD, FALLBACKIMAGEEPDARK, FALLBACKIMAGEEPHEADDARK } from "~/composables/globals"
+import {
+  mediaTypeRoutes,
+  localUserProfileKey,
+  FALLBACKIMAGEEP,
+  FALLBACKIMAGEEPHEAD,
+  FALLBACKIMAGEEPDARK,
+  FALLBACKIMAGEEPHEADDARK,
+  FALLBACKUSER,
+  FALLBACKUSERDARK,
+} from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
-import { Share } from '@capacitor/share';
+import { Share } from "@capacitor/share"
 import { FALLBACKIMAGELOCAL } from "../composables/globals"
-import { Clipboard } from '@capacitor/clipboard';
+import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
-    const response = await axios(url, { method: 'HEAD' });
-    return response.status === 404;
+    const response = await axios(url, { method: "HEAD" })
+    return response.status === 404
   } catch (error) {
-    console.error('Error checking URL:', error);
-    return true;
+    console.error("Error checking URL:", error)
+    return true
   }
-};
+}
 
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
@@ -64,18 +73,18 @@ export const formatPublisherImage = (attributes) => {
 
 // Function to strip HTML tags and return text content
 function stripHtmlTags(str) {
-  const parser = new DOMParser();
-  const dom = parser.parseFromString(str, 'text/html');
-  return dom.body.textContent ?? '';
+  const parser = new DOMParser()
+  const dom = parser.parseFromString(str, "text/html")
+  return dom.body.textContent ?? ""
 }
 
 // Computed property to calculate reading time
 export const getReadingTime = (htmlContent) => {
-  const textContent = stripHtmlTags(htmlContent);
-  const wordsPerMinute = 200; // Average reading speed
-  const estimatedWordCount = textContent.split(/\s+/).length;
-  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`;
-};
+  const textContent = stripHtmlTags(htmlContent)
+  const wordsPerMinute = 200 // Average reading speed
+  const estimatedWordCount = textContent.split(/\s+/).length
+  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`
+}
 
 interface ImageAttributes {
   imageMain?: {
@@ -90,7 +99,7 @@ interface ImageAttributes {
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
   const minutes = Math.round(seconds / 60)
-  return Number.isNaN(minutes) || ms === 0 || !ms ? 'Play' : `${minutes} min`
+  return Number.isNaN(minutes) || ms === 0 || !ms ? "Play" : `${minutes} min`
 }
 
 // returns a resized image url when provided the entire image object
@@ -165,7 +174,7 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
     audio_type: audioType,
     audio_title: audioTitle,
     audio_show: audioShow,
-    user_id: currentUser.value?.id
+    user_id: currentUser.value?.id,
   })
 }
 
@@ -177,7 +186,7 @@ export const trackClickEvent = (category, component, label) => {
     event_category: category,
     component: component,
     event_label: label,
-    user_id: currentUser.value?.id
+    user_id: currentUser.value?.id,
   })
 }
 
@@ -204,16 +213,16 @@ export function howLongAgo(date) {
  * to get the desired date format for the header
  */
 export function getDate(date = null, formatString = "EEE, MMM do") {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
   if (date) {
-    const inputDate = new Date(date);
-    const inputYear = inputDate.getFullYear();
+    const inputDate = new Date(date)
+    const inputYear = inputDate.getFullYear()
     if (inputYear !== currentYear) {
-      formatString = `${formatString}, yyyy`; // Update formatString to include the year
+      formatString = `${formatString}, yyyy` // Update formatString to include the year
     }
-    return format(inputDate, formatString);
+    return format(inputDate, formatString)
   } else {
-    return format(new Date(), formatString);
+    return format(new Date(), formatString)
   }
 }
 
@@ -261,15 +270,22 @@ export async function setDarkMode(bool: boolean) {
 }
 
 // function to get the EPISODE fallback image for the episode depending on darkmode
-export const getEpisodefallBackImage = () => {
+export const getEpisodeFallBackImage = () => {
   const isDarkMode = useIsDarkMode()
   return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
 }
 
 // function to get the EPISODE HEADER fallback image for the episode depending on darkmode
-export const getEpisodeHeadfallBackImage = () => {
+export const getEpisodeHeadFallBackImage = () => {
   const isDarkMode = useIsDarkMode()
   return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
+}
+
+// function to get the USER icon fall back image
+export const getUserFallBackImage = () => {
+  const isDarkMode = useIsDarkMode()
+  return isDarkMode.value ? FALLBACKUSERDARK : FALLBACKUSER
+
 }
 
 // helper function to get the pixel size from thr label
@@ -305,11 +321,11 @@ export const toSystemSettings = () => {
   if (Capacitor.getPlatform() === "android") {
     NativeSettings.openAndroid({
       option: AndroidSettings.AppNotification,
-    });
+    })
   } else {
     NativeSettings.openIOS({
       option: IOSSettings.App,
-    });
+    })
   }
 }
 
@@ -335,15 +351,15 @@ export const copyToClipBoard = async (content: string) => {
   const globalToast = useGlobalToast()
   try {
     await Clipboard.write({
-      string: content
-    });
+      string: content,
+    })
     globalToast.value = {
       severity: "info",
       summary: "Copied to clipboard",
       life: 3000,
     }
   } catch (err) {
-    console.error('Failed to copy text: ', err);
+    console.error("Failed to copy text: ", err)
     globalToast.value = {
       severity: "error",
       summary: "Failed to copy to the clipboard",
@@ -353,13 +369,15 @@ export const copyToClipBoard = async (content: string) => {
 }
 
 export const removeHTMLTags = (str) => {
-  const parser = new DOMParser();
-  const parsedHTML = parser.parseFromString(str, 'text/html');
-  return parsedHTML.body.textContent ?? '';
+  const parser = new DOMParser()
+  const parsedHTML = parser.parseFromString(str, "text/html")
+  return parsedHTML.body.textContent ?? ""
 }
 // share API
-export const shareAPI = async (content: object, componentOfOrigin = 'Component of origin not specified') => {
-
+export const shareAPI = async (
+  content: object,
+  componentOfOrigin = "Component of origin not specified"
+) => {
   // DESKTOP sharing is not supported yet
   const shareContent = {
     title: removeHTMLTags(content.title),
@@ -367,28 +385,22 @@ export const shareAPI = async (content: object, componentOfOrigin = 'Component o
     url: content.url,
   }
 
-  trackClickEvent(
-    "Click Tracking - Share",
-    componentOfOrigin,
-    shareContent.title
-  )
+  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
   //console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
       title: shareContent.title,
       text: shareContent.text,
       url: content.url,
-      dialogTitle: 'Share with buddies',
-    });
+      dialogTitle: "Share with buddies",
+    })
   } else {
-
     try {
       await navigator.share(shareContent)
     } catch (error) {
       copyToClipBoard(shareContent.url)
       //console.error('Error sharing', error)
     }
-
   }
 }
 
@@ -416,13 +428,14 @@ export const checkIsFavorited = (slug: string) => {
   if (user.value) {
     const favorites = useCurrentUserFavorites()
     if (favorites.value) {
-      const result = favorites.value.find((item) => item.slug === slug || item.media_id === slug)
+      const result = favorites.value.find(
+        (item) => item.slug === slug || item.media_id === slug
+      )
       return result ? true : false
     }
   }
   return false
 }
-
 
 // time converter
 export const convertTime = (val) => {
@@ -478,13 +491,11 @@ export const getAndSetUserProfile = async () => {
         updateAllLiveStreams()
         setDisplaySettings(data)
       } else {
-
         // set the current user profile state
         currentUserProfile.value = data
         updateAllLiveStreams()
         setDisplaySettings(data)
       }
-
     }
   }
 
@@ -541,7 +552,6 @@ export const getAndSetUserProfile = async () => {
       await getFavoritedItems()
     }
   }
-
 }
 interface SavedItem {
   uid: string
@@ -570,7 +580,7 @@ interface SavedItem {
 //   }
 // }
 
-export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
+export const deleteFavorite = async (media: object, tableArg = "favorited") => {
   // detect if logged in
   const user = useCurrentUser()
   if (user.value) {
@@ -592,10 +602,13 @@ export const deleteFavorite = async (media: object, tableArg = 'favorited') => {
   }
 }
 
-
 // handles saving a favorite or recently played item
 // if a duplicate existingRecord is found, it removes the original and adds the new one
-export const saveFavorite = async (media: object, typeArg: string, tableArg = "favorited") => {
+export const saveFavorite = async (
+  media: object,
+  typeArg: string,
+  tableArg = "favorited"
+) => {
   const user = useCurrentUser()
   if (user.value) {
     const client = useSupabaseClient()
@@ -603,10 +616,10 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     const thisSlug = media?.meta?.slug ?? media?.slug ?? media?.id
     const { data: existingRecord, error: existingError } = await client
       .from(tableArg)
-      .select('*')
+      .select("*")
       .eq("uid", user.value.id)
-      .eq('slug', thisSlug)
-    if (existingError) throw existingError;
+      .eq("slug", thisSlug)
+    if (existingError) throw existingError
     if (existingRecord && existingRecord.length > 0) {
       await deleteFavorite(existingRecord[0], tableArg)
     }
@@ -644,13 +657,10 @@ export const saveFavorite = async (media: object, typeArg: string, tableArg = "f
     //save instance to Supabase
     const { error } = await client.from(tableArg).insert([itemToSave])
     if (error) {
-      console.error('error = ', error)
+      console.error("error = ", error)
     }
   }
 }
-
-
-
 
 export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
@@ -660,13 +670,21 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 export const prepForPlayer = (item, index = null) => {
   const isSegment = index !== null
 
-  const fileValue = item.file?.includes("blob:") ? item.file : isSegment ? item.audio[index] : item.audio
+  const fileValue = item.file?.includes("blob:")
+    ? item.file
+    : isSegment
+      ? item.audio[index]
+      : item.audio
 
   return {
     ...item,
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
-    image: item?.image?.template ?? item?.listingImage?.template ?? item?.showImage ?? FALLBACKIMAGELOCAL,
+    image:
+      item?.image?.template ??
+      item?.listingImage?.template ??
+      item?.showImage ??
+      FALLBACKIMAGELOCAL,
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
@@ -693,13 +711,9 @@ export const togglePlayEpisode = (media, index = 0) => {
 }
 
 export const getCssVar = (name: string, px = false) => {
-
-  const val = getComputedStyle(document.documentElement).getPropertyValue(
-    name
-  )
+  const val = getComputedStyle(document.documentElement).getPropertyValue(name)
 
   return px ? val : Number(parseInt(val))
-
 }
 // ROUTING
 /* centralized function to route to a episode page */
@@ -708,7 +722,9 @@ export const goToEpisodePage = (ep, params, log = true) => {
     path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${ep.meta?.slug ?? ep.slug}`,
     query: params,
   })
-  if (log) { saveRecentlyPlayed(ep) }
+  if (log) {
+    saveRecentlyPlayed(ep)
+  }
 }
 
 /* centralized function to route to a story page */
@@ -717,7 +733,9 @@ export const goToStoryPage = (story, params, log = true) => {
     path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
     query: params,
   })
-  if (log) { saveRecentlyPlayed(story) }
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
@@ -729,8 +747,8 @@ export const goToShowPage = (show, params = null) => {
 
 // return bool if the url has a query param
 export const hasQueryParams = (url) => {
-  const parsedUrl = new URL(url);
-  return parsedUrl.searchParams.toString().length > 0;
+  const parsedUrl = new URL(url)
+  return parsedUrl.searchParams.toString().length > 0
 }
 
 export const hasAudio = (audio) => {
@@ -743,15 +761,13 @@ export const hasAudio = (audio) => {
   // )
   return (
     audio &&
-    (typeof audio === 'string' && audio.trim() !== '' ||
+    ((typeof audio === "string" && audio.trim() !== "") ||
       (Array.isArray(audio) &&
         audio.length > 0 &&
-        audio.every(item => item && typeof item === 'string' && item.trim() !== '')))
-  );
+        audio.every((item) => item && typeof item === "string" && item.trim() !== "")))
+  )
   //return true
 }
-
-
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
@@ -760,13 +776,13 @@ export const getWagtailRawBody = (bodyArr) => {
     if (item.type === "paragraph") {
       return item.value
     } else {
-      return ''
+      return ""
     }
   })
   return rawbody
 }
 
-// function to add to the favorites 
+// function to add to the favorites
 export const addToFavorites = async (bucketItem, isFavorited) => {
   const user = useCurrentUser()
   const accountPromptSideBar = useAccountPromptSideBar()
@@ -798,7 +814,6 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
     accountPromptSideBar.value = true
   }
 }
-
 
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true) => {
@@ -840,7 +855,7 @@ export const askNotificationPermisstions = async () => {
 // handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
 export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
   await nextTick()
-  const permStatus = await PushNotifications.checkPermissions();
+  const permStatus = await PushNotifications.checkPermissions()
   if (
     isEnabled === true &&
     (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")

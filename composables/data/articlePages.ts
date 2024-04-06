@@ -73,7 +73,7 @@ function normalizePersonSocial(social: Record<string, any>): ISocial {
   return {
     id: social.contactString,
     service: social.service,
-    profileUrl: social.contactString.replace("@", "") || null,
+    profileUrl: social?.contactString?.replace("@", "") || null,
   }
 }
 
@@ -83,14 +83,14 @@ export function normalizePerson(person: Record<string, any>): Person {
   return {
     id: person.id,
     name: pa.name,
-    photoID: pa.image.template,
+    photoID: pa.image?.template ?? null,
     jobTitle: pa.jobTitle,
     biography: pa.bio,
     website: pa.website,
     email: pa.email,
     slug: pa.slug,
-    url: pa.slug && `/people/${pa.slug}`,
-    socialMediaProfile: pa.social.map(normalizePersonSocial), // Fix: Wrap the normalizePersonSocial result in an array
+    url: `/people/${pa.slug}`,
+    socialMediaProfile: pa.social.length > 0 ? pa.social.map(normalizePersonSocial) : null, // Fix: Wrap the normalizePersonSocial result in an array
     shows: pa.shows,
   }
 }

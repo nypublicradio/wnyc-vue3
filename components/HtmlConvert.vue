@@ -1,6 +1,10 @@
 <script setup>
 const props = defineProps({
   htmlContent: String,
+  tag: {
+    type: String,
+    default: "p",
+  },
 })
 
 const parsedContent = computed(() => {
@@ -32,7 +36,7 @@ const parsedContent = computed(() => {
 </script>
 
 <template>
-  <div class="html-formatting">
+  <component :is="props.tag" class="html-formatting">
     <template v-for="(part, index) in parsedContent" :key="index">
       <NuxtLink v-if="part.type === 'internal'" :to="part.href">{{ part.text }}</NuxtLink>
       <a
@@ -44,5 +48,5 @@ const parsedContent = computed(() => {
       >
       <span v-else v-html="part.text"></span>
     </template>
-  </div>
+  </component>
 </template>

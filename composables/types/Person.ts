@@ -9,7 +9,7 @@ export default interface Person {
   url?: string
   name?: string
   socialMediaProfile?: ISocial[]
-  photoID?: number
+  photoID?: any
   jobTitle?: string
   biography?: string
   website?: string

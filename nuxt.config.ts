@@ -149,8 +149,7 @@ export default defineNuxtConfig({
     ]
   },
   plugins: [
-    '~/plugins/primevue.js',
-    '~/plugins/nuxt-html.js'
+    '~/plugins/primevue.js'
   ],
 
   experimental: {

@@ -15,7 +15,7 @@ import {
   hasAudio,
   togglePlayEpisode,
   addToFavorites,
-  getEpisodefallBackImage,
+  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import {
@@ -152,7 +152,7 @@ if (props.isDownloaded) {
       props.data?.image?.id ??
       props.data?.image ??
       props.fallbackImage ??
-      getEpisodefallBackImage()
+      getEpisodeFallBackImage()
   )
 }
 
