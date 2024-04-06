@@ -15,7 +15,7 @@ const parsedContent = computed(() => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(props.htmlContent, "text/html")
   const parts = []
-
+  // Process each node recursively
   function processNode(node) {
     if (node.nodeType === Node.ELEMENT_NODE) {
       if (node.tagName.toLowerCase() === "a") {

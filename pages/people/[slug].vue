@@ -29,6 +29,7 @@ useServerHead({
   meta: [{ property: "og:title", content: pageTitle }],
 })
 
+// handle route back
 const routeBack = () => {
   trackClickEvent("People", "People page", "route back")
   router.go(-1)

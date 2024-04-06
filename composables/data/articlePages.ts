@@ -149,7 +149,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
   })
 }
 
-//
+// Publisher: Transform page data from the API into a simpler and typed format
 export function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null

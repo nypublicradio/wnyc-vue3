@@ -15,16 +15,19 @@ const getPublisherPersonData = async (personSlug: string) => {
     return person
 };
 
-// const getWagtailPersonData = async (personSlug: string) => {
-//     //todo: call publisher api to get staff data with article list
-// };
+const getWagtailPersonData = async (personSlug: string) => {
+    //todo: call publisher api to get staff data with article list
+    // I don't think we have a wagtail endpoint for this
+    getPublisherPersonData(personSlug);
+
+};
 
 // get person data from the proper CMS
 const getPersonData = async (personSlug: string, cmsSource: string) => {
 
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-        //return await getWagtailPersonData(personSlug);
+            return await getWagtailPersonData(personSlug);
         case cmsSources.PUBLISHER:
             return await getPublisherPersonData(personSlug);
         default:
