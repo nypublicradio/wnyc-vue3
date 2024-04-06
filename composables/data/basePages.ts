@@ -8,6 +8,11 @@ export const WAGTAIL_PAGE_TYPES = {
   'tagpages.TagPage': 'tag_page',
 }
 
+/**
+ * Normalize a Wagtail page object into a generic Page object.
+ * @param page 
+ * @returns 
+ */
 export function normalizePage(page: Record<string, any>): Page {
   return {
     id: page.id,

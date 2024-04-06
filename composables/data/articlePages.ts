@@ -3,6 +3,7 @@ import type { ArticlePage } from '../types/Page'
 import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
+import { estimateMp3Duration } from '~/server/utils/duration'
 
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
@@ -58,20 +59,25 @@ export function normalizeAuthor(author: Record<string, any>): Author {
   }
 }
 
-export function normalizeArticlePage(article: Record<string, any | undefined>): ArticlePage {
+/**
+ * Normalize an article page object from Publisher or Wagtail into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizeArticlePage(article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (article.cmsSource === cmsSources.WAGTAIL)
-    return normalizeWagtailPage(article)
+    return await normalizeWagtailPage(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
-    return normalizePublisherPage(article)
+    return await normalizePublisherPage(article)
   else
     return null
 }
 // Wagtail: Transform page data from the API into a simpler and typed format
-export function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
+export async function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
 
-  return Object.assign({}, normalizePage(article), {
+  return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     leadImageCaption: article.leadAsset?.[0]?.value?.caption || article.leadAsset?.[0]?.value?.image?.caption,
@@ -117,10 +123,16 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
   })
 }
 
-export function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
+/**
+ * Normalize an article page object from Publisher into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-  return Object.assign({}, normalizePage(article), {
+  const duration = article.attributes.estimatedDuration === 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;
+  return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     leadImageCaption: article.attributes.imageCaption,
@@ -165,7 +177,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     // for comments
     disableComments: undefined,
     commentId: undefined,
-    estimatedDuration: article.attributes.estimatedDuration,
+    estimatedDuration: duration,
     show: article.attributes.show,
     showTitle: article.attributes.showTitle,
     headers: article.attributes.headers,
@@ -173,7 +185,7 @@ export function normalizePublisherPage(article: Record<string, any | undefined>)
     transcript: article.attributes.transcript,
 
     embedCode: article.attributes.embedCode,
-  })
+  }))
 }
 
 // Transform page data from the API into a simpler and typed format
