@@ -6,6 +6,7 @@ import { normalizePerson } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
 
+// getting person data from publisher api
 const getPublisherPersonData = async (personSlug: string) => {
 
     const res = await axios(`${config.public.PUBLISHER_BASE_API}/v3/person/${personSlug}`);
@@ -14,15 +15,16 @@ const getPublisherPersonData = async (personSlug: string) => {
     return person
 };
 
-const getWagtailPersonData = async (personSlug: string) => {
-    //todo: call publisher api to get staff data with article list
-};
+// const getWagtailPersonData = async (personSlug: string) => {
+//     //todo: call publisher api to get staff data with article list
+// };
 
+// get person data from the proper CMS
 const getPersonData = async (personSlug: string, cmsSource: string) => {
 
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-            return await getWagtailPersonData(personSlug);
+        //return await getWagtailPersonData(personSlug);
         case cmsSources.PUBLISHER:
             return await getPublisherPersonData(personSlug);
         default:

@@ -89,6 +89,7 @@ onMounted(() => {
                 <div class="flex flex-column gap-3">
                   <NuxtLink
                     v-for="show in pagedata.shows"
+                    :key="show.slug"
                     raw
                     :to="`/browse/shows/${show.slug}`"
                     class="flex gap-1 align-items-center"

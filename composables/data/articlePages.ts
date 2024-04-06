@@ -60,6 +60,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
   }
 }
 
+// normalize article data based on CMS source
 export function normalizeArticlePage(article: Record<string, any | undefined>): ArticlePage {
   if (article.cmsSource === cmsSources.WAGTAIL)
     return normalizeWagtailPage(article)
@@ -69,6 +70,7 @@ export function normalizeArticlePage(article: Record<string, any | undefined>): 
     return null
 }
 
+// normalize person social media data
 function normalizePersonSocial(social: Record<string, any>): ISocial {
   return {
     id: social.contactString,
@@ -147,6 +149,7 @@ export function normalizeWagtailPage(article: Record<string, any | undefined>): 
   })
 }
 
+//
 export function normalizePublisherPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null

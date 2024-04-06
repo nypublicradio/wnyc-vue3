@@ -1,12 +1,16 @@
 <script setup>
 const props = defineProps({
-  htmlContent: String,
+  htmlContent: {
+    type: String,
+    default: "",
+  },
   tag: {
     type: String,
     default: "p",
   },
 })
 
+// Parse the HTML content and return an array of parts
 const parsedContent = computed(() => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(props.htmlContent, "text/html")

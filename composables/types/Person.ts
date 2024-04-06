@@ -1,4 +1,4 @@
-import type ISocial from '../types/Social'
+import type ISocial from './Social'
 interface IShow {
   title: string
   slug: string
