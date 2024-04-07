@@ -29,11 +29,6 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <!-- <section
-      v-if="props.article.cmsSource === cmsSources.PUBLISHER"
-      v-html="props.article.body"
-      class="html-formatting"
-    /> -->
     <section v-if="props.article.cmsSource === cmsSources.PUBLISHER">
       <HtmlConvert :htmlContent="props.article.body" />
     </section>
@@ -73,11 +68,6 @@ onMounted(() => {
 
       <section v-else>
         <!-- paragraph -->
-        <!-- <p
-          v-if="block.type === 'paragraph'"
-          class="streamfield-paragraph"
-          v-html="block.value"
-        /> -->
         <HtmlConvert
           :htmlContent="block.value"
           v-if="block.type === 'paragraph'"
@@ -88,17 +78,11 @@ onMounted(() => {
         <!-- block-quote -->
         <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
           <blockquote>
-            <!-- <p v-html="block.value.blockQuote" /> -->
             <HtmlConvert :htmlContent="block.value.blockQuote" />
           </blockquote>
         </div>
 
         <!-- code -->
-        <!-- <p
-          v-else-if="block.type === 'code'"
-          class="streamfield-code"
-          v-html="block.value.code"
-        /> -->
         <HtmlConvert
           v-else-if="block.type === 'code'"
           class="streamfield-code"
@@ -106,11 +90,6 @@ onMounted(() => {
         />
 
         <!-- embed -->
-        <!-- <div
-          v-else-if="block.type === 'embed'"
-          class="streamfield-embed"
-          v-html="block.value.embed"
-        /> -->
         <HtmlConvert
           v-else-if="block.type === 'embed'"
           class="streamfield-embed"
@@ -118,12 +97,7 @@ onMounted(() => {
         />
 
         <!-- heading -->
-        <!-- <h2
-          v-else-if="block.type === 'heading'"
-          class="streamfield-heading"
-          v-html="block.value"
-          :aria-label="block.value"
-        /> -->
+
         <HtmlConvert
           v-else-if="block.type === 'heading'"
           class="streamfield-heading"

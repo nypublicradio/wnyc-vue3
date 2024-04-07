@@ -239,7 +239,6 @@ onMounted(() => {
     </div>
     <div v-if="!pending">
       <h2 class="text-lg mt-2">{{ showTitle }}</h2>
-      <!-- <div class="text-sm mt-2 html-formatting" v-html="showTease" /> -->
       <HtmlConvert :htmlContent="showTease" class="text-sm mt-2" />
     </div>
     <div v-else>
