@@ -40,7 +40,8 @@ defineExpose({
           {{ props.item.title }}
         </div>
         <!-- <pre class="text-xs">{{ props.item }}</pre> -->
-        <div class="desc" v-html="props.item.tease" />
+        <HtmlConvert :htmlContent="props.item.tease" class="desc" />
+
         <PipeData class="text-xs">
           <template #left>{{ props.item.headers.brand.title }}</template>
           <template #right>

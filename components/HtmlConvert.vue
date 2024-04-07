@@ -18,10 +18,22 @@ const parseHtml = computed(() => {
         : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
     }
   )
+  console.log("updatedHTML", updatedHTML)
   return updatedHTML
 })
+
+const isHTML = (str) => {
+  const doc = new DOMParser().parseFromString(str, "text/html")
+  return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1)
+}
 </script>
 
 <template>
-  <HTML2Vue :value="parseHtml" :componentsMap="{ NuxtLink }" class="html-formatting" />
+  <HTML2Vue
+    v-if="isHTML(props.htmlContent)"
+    :value="parseHtml"
+    :componentsMap="{ NuxtLink }"
+    class="html-formatting"
+  />
+  <div v-else>{{ props.htmlContent }}</div>
 </template>
