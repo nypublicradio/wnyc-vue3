@@ -18,10 +18,10 @@ const parseHtml = computed(() => {
         : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
     }
   )
-  console.log("updatedHTML", updatedHTML)
   return updatedHTML
 })
 
+// check if the string is HTML
 const isHTML = (str) => {
   const doc = new DOMParser().parseFromString(str, "text/html")
   return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1)
