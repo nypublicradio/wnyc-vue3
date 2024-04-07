@@ -338,10 +338,7 @@ const getEpisodeImage = computed(() => {
       </section>
       <section v-if="episodeData?.transcript">
         <h3 class="mb-4">Transcript</h3>
-        <div
-          class="episode-page-transcript html-formatting"
-          v-html="episodeData?.transcript"
-        />
+        <HtmlConvert :htmlContent="episodeData?.transcript" />
       </section>
     </div>
     <section v-else>

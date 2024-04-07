@@ -307,7 +307,7 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
-    <div class="html-formatting" v-html="currentEpisode.details"></div>
+    <HtmlConvert :htmlContent="currentEpisode.details" />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
@@ -324,9 +324,9 @@ const moreFromClick = () => {
         <div class="text-xs mt-2">
           {{ currentEpisode.onTodaysShowImageCredits }}
         </div>
-        <div
-          class="caption text-sm mt-2 html-formatting"
-          v-html="currentEpisode.episodeBody"
+        <HtmlConvert
+          :htmlContent="currentEpisode.episodeBody"
+          class="caption text-sm mt-2"
         />
       </template>
     </VImage>
@@ -346,7 +346,7 @@ const moreFromClick = () => {
     </div>
     <div v-if="currentEpisode.episodeTranscript">
       <h2>Transcript</h2>
-      <div v-html="currentEpisode.episodeTranscript" class="html-formatting"></div>
+      <HtmlConvert :htmlContent="currentEpisode.episodeTranscript" />
     </div>
     <div ref="expandedFooterRef" v-if="currentEpisode.slug" class="expanded-footer">
       <section class="pb-2">

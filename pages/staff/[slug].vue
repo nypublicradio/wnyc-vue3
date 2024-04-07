@@ -18,7 +18,6 @@ const { data: pagedata, pending, error, refresh } = await useFetch(
 if (!pagedata.value.authorData.photoID) {
   pagedata.value.authorData.photoID = getUserFallBackImage()
 }
-
 newPageData.value = pagedata.value
 
 const pendingMore = ref(false)

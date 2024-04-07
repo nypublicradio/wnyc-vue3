@@ -61,7 +61,7 @@ const user = useCurrentUser()
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.data?.meta.slug)
+  isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
 })
 
 // add item to favorites

@@ -13,11 +13,11 @@ const currentUserProfile = useCurrentUserProfile()
 
 // return the tags as a comma separated string for openWeb comments data-article-tags
 const getArticleTagsString = () => {
-  const tags = props.article.tags || []
+  const tags = props.article?.tags || []
   return tags.map((tag) => tag.name).join(", ")
 }
 const getArticleUrl = () => {
-  const url = props.article.url
+  const url = props.article?.url
   return url
 }
 useHead({
@@ -38,7 +38,7 @@ useHead({
       data-spotim-module="conversation"
       :data-post-url="getArticleUrl()"
       :data-article-tags="getArticleTagsString()"
-      :data-post-id="String(article.legacyId || article.uuid)"
+      :data-post-id="String(article?.legacyId || article?.uuid)"
     ></div>
   </div>
 </template>

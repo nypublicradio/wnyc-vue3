@@ -242,7 +242,11 @@ const togglePlayHere = (story, index = 0) => {
         </div>
       </section>
 
-      <v-streamfield v-if="storyData.body" class="story-page-body" :article="storyData" />
+      <v-streamfield
+        v-if="storyData?.body"
+        class="story-page-body"
+        :article="storyData"
+      />
 
       <story-article-footer :article="storyData" />
     </div>
