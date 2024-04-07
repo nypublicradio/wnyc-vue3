@@ -24,12 +24,11 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
         return author.slug === staffSlug;
     }).map(author => normalizeAuthor(author));
 
-    const articles = resData.map((article: any) => {
+    const articles = await Promise.all(resData.map(async (article: any) => {
         article.cmsSource = cmsSources.WAGTAIL;
         article.sortDate = article.publicationDate;
         return normalizeArticlePage(article);
-    });
-
+    }));
     return {
         authorData: author,
         articles,

@@ -1,7 +1,7 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import { trackClickEvent } from '~/utilities/helpers'
-import { cmsSources } from '~/composables/globals'
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import { trackClickEvent } from "~/utilities/helpers"
+import { cmsSources } from "~/composables/globals"
 //import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 const props = defineProps({
   article: {
@@ -18,10 +18,10 @@ onMounted(() => {
   if (window.twttr) {
     // the script is already loaded, so just reload the embeds
     window.twttr.widgets.load()
-  } else if (!document.getElementById('twttr-widgets')) {
-    const embed = document.createElement('script')
-    embed.id = 'twttr-widgets'
-    embed.src = 'https://platform.twitter.com/widgets.js'
+  } else if (!document.getElementById("twttr-widgets")) {
+    const embed = document.createElement("script")
+    embed.id = "twttr-widgets"
+    embed.src = "https://platform.twitter.com/widgets.js"
     document.body.appendChild(embed)
   }
 })
@@ -29,11 +29,14 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <section
+    <!-- <section
       v-if="props.article.cmsSource === cmsSources.PUBLISHER"
       v-html="props.article.body"
       class="html-formatting"
-    />
+    /> -->
+    <section v-if="props.article.cmsSource === cmsSources.PUBLISHER">
+      <HtmlConvert :htmlContent="props.article.body" />
+    </section>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
@@ -70,42 +73,61 @@ onMounted(() => {
 
       <section v-else>
         <!-- paragraph -->
-        <p
+        <!-- <p
           v-if="block.type === 'paragraph'"
           class="streamfield-paragraph"
           v-html="block.value"
+        /> -->
+        <HtmlConvert
+          :htmlContent="block.value"
+          v-if="block.type === 'paragraph'"
+          class="streamfield-paragraph"
         />
         <!-- image -->
 
         <!-- block-quote -->
-        <div
-          v-else-if="block.type === 'block_quote'"
-          class="streamfield-block-quote"
-        >
+        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
           <blockquote>
-            <p v-html="block.value.blockQuote" />
+            <!-- <p v-html="block.value.blockQuote" /> -->
+            <HtmlConvert :htmlContent="block.value.blockQuote" />
           </blockquote>
         </div>
 
         <!-- code -->
-        <p
+        <!-- <p
           v-else-if="block.type === 'code'"
           class="streamfield-code"
           v-html="block.value.code"
+        /> -->
+        <HtmlConvert
+          v-else-if="block.type === 'code'"
+          class="streamfield-code"
+          :htmlContent="block.value.code"
         />
 
         <!-- embed -->
-        <div
+        <!-- <div
           v-else-if="block.type === 'embed'"
           class="streamfield-embed"
           v-html="block.value.embed"
+        /> -->
+        <HtmlConvert
+          v-else-if="block.type === 'embed'"
+          class="streamfield-embed"
+          :htmlContent="block.value.embed"
         />
 
         <!-- heading -->
-        <h2
+        <!-- <h2
           v-else-if="block.type === 'heading'"
           class="streamfield-heading"
           v-html="block.value"
+          :aria-label="block.value"
+        /> -->
+        <HtmlConvert
+          v-else-if="block.type === 'heading'"
+          class="streamfield-heading"
+          :htmlContent="block.value"
           :aria-label="block.value"
         />
 

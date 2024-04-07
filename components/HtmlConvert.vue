@@ -1,56 +1,27 @@
 <script setup>
+import { HTML2Vue } from "html2vue-renderer"
+import { NuxtLink } from "#components"
 const props = defineProps({
   htmlContent: {
     type: String,
     default: "",
   },
-  tag: {
-    type: String,
-    default: "p",
-  },
 })
 
-// Parse the HTML content and return an array of parts
-const parsedContent = computed(() => {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(props.htmlContent, "text/html")
-  const parts = []
-  // Process each node recursively
-  function processNode(node) {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.tagName.toLowerCase() === "a") {
-        const href = node.getAttribute("href")
-        const text = node.textContent
-        const type = href.startsWith("http") ? "external" : "internal"
-        parts.push({ type, href, text })
-      } else {
-        // Process child nodes recursively
-        Array.from(node.childNodes).forEach((childNode) => processNode(childNode))
-      }
-    } else if (node.nodeType === Node.TEXT_NODE) {
-      // Handle text nodes
-      parts.push({ type: "text", text: node.textContent })
+const parseHtml = computed(() => {
+  const updatedHTML = props.htmlContent.replace(
+    /<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g,
+    (match, href, text) => {
+      const isInternal = !href.startsWith("http")
+      return isInternal
+        ? `<NuxtLink to="${href}">${text}</NuxtLink>`
+        : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
     }
-  }
-
-  processNode(doc.body)
-
-  return parts
+  )
+  return updatedHTML
 })
 </script>
 
 <template>
-  <component :is="props.tag" class="html-formatting">
-    <template v-for="(part, index) in parsedContent" :key="index">
-      <NuxtLink v-if="part.type === 'internal'" :to="part.href">{{ part.text }}</NuxtLink>
-      <a
-        v-else-if="part.type === 'external'"
-        :href="part.href"
-        target="_blank"
-        rel="noopener noreferrer"
-        >{{ part.text }}</a
-      >
-      <span v-else v-html="part.text"></span>
-    </template>
-  </component>
+  <HTML2Vue :value="parseHtml" :componentsMap="{ NuxtLink }" class="html-formatting" />
 </template>
