@@ -1,4 +1,6 @@
 import type Author from '../types/Author'
+import type Person from '../types/Person'
+import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
 import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
@@ -65,6 +67,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
  * @returns 
  */
 export async function normalizeArticlePage(article: Record<string, any | undefined>): Promise<ArticlePage> {
+
   if (article.cmsSource === cmsSources.WAGTAIL)
     return await normalizeWagtailPage(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
@@ -72,6 +75,35 @@ export async function normalizeArticlePage(article: Record<string, any | undefin
   else
     return null
 }
+
+// normalize person social media data
+function normalizePersonSocial(social: Record<string, any>): ISocial {
+  return {
+    id: social.contactString,
+    service: social.service,
+    profileUrl: social?.contactString?.replace("@", "") || null,
+  }
+}
+
+// Transform person data from the API into a simpler and typed format
+export function normalizePerson(person: Record<string, any>): Person {
+  const pa = person.attributes
+  return {
+    id: person.id,
+    name: pa.name,
+    photoID: pa.image?.template ?? null,
+    jobTitle: pa.jobTitle,
+    biography: pa.bio,
+    website: pa.website,
+    email: pa.email,
+    slug: pa.slug,
+    url: `/people/${pa.slug}`,
+    socialMediaProfile: pa.social.length > 0 ? pa.social.map(normalizePersonSocial) : null, // Fix: Wrap the normalizePersonSocial result in an array
+    shows: pa.shows,
+  }
+}
+
+
 // Wagtail: Transform page data from the API into a simpler and typed format
 export async function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
@@ -129,6 +161,7 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
  * @returns 
  */
 export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
+
   if (typeof article === 'undefined')
     return null
   const duration = article.attributes.estimatedDuration === 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;

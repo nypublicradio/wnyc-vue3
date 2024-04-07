@@ -10,7 +10,7 @@ import {
     useCurrentUser
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core';
-import { prepForPlayer, resizePublisherImageUrl, getEpisodefallBackImage } from "~/utilities/helpers"
+import { prepForPlayer, resizePublisherImageUrl, getEpisodeFallBackImage } from "~/utilities/helpers"
 import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
@@ -268,7 +268,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
-                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? getEpisodefallBackImage()
+                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? getEpisodeFallBackImage()
 
                 // create the directory
                 await Filesystem.mkdir({

@@ -13,10 +13,8 @@ const getEpisode = async (slug: string) => {
         };
         const res = await axios(option);
         let resData = humps.camelizeKeys(res.data).data;
-        //console.log('resData', resData)
         // fallback image to show image when no image is available
         resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGELOCAL };
-
         resData.cmsSource = cmsSources.PUBLISHER
         resData = normalizeArticlePage(resData)
 

@@ -16,7 +16,7 @@ import {
   checkIsFavorited,
   shareAPI,
   addToFavorites,
-  getEpisodeHeadfallBackImage,
+  getEpisodeHeadFallBackImage,
 } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
@@ -168,7 +168,7 @@ const isSegment = computed(
 const getEpisodeImage = computed(() => {
   const epImage = episodeData.value?.image?.template
   const showImage = episodeData.value?.headers.brand.logoImage.template
-  return epImage !== showImage ? epImage : getEpisodeHeadfallBackImage()
+  return epImage !== showImage ? epImage : getEpisodeHeadFallBackImage()
 })
 </script>
 
@@ -334,7 +334,7 @@ const getEpisodeImage = computed(() => {
             </div>
           </div>
         </div>
-        <div class="episode-page-body html-formatting mt-5" v-html="episodeData?.body" />
+        <HtmlConvert :htmlContent="episodeData?.body" class="mt-5" />
       </section>
       <section v-if="episodeData?.transcript">
         <h3 class="mb-4">Transcript</h3>
@@ -402,9 +402,5 @@ const getEpisodeImage = computed(() => {
 .episode-page .star-icon {
   height: 28px;
   width: 28px;
-}
-
-.episode-page-body hr {
-  margin: 1.5rem 0;
 }
 </style>
