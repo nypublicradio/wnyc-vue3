@@ -3,6 +3,16 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
+import { estimateMp3Duration } from '~/server/utils/duration'
+
+const getDuration = async (estimatedDuration: number, audioURL: string) => {
+	estimatedDuration;
+	if (estimatedDuration === 0) {
+		return await estimateMp3Duration(audioURL);
+	} else {
+		return estimatedDuration
+	}
+}
 
 const getLocalNewscast = async () => {
 	try {
@@ -14,15 +24,8 @@ const getLocalNewscast = async () => {
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
-		//Fetch the mp3 Content-Length and calculate the duration in seconds
-		//const mp3Res = await axios(resData.attributes.audio);
-		//const mp3Size = mp3Res.headers['content-length'];
-		// Calculate the duration in seconds not converting size into bits. 
-		// The bitrate is 128kps according to vlc and the file size is in bytes.
-		//Multiplying the file size by 8 and dividing by 128000 gives the same 
-		//duration as dividing by 16000 and not multiplying the file size by 8.
-		//const duration = Math.round(mp3Size / 16000) * 1000;
-		//resData.attributes.duration = duration;
+		console.log("getLocalNewscast", resData.attributes.estimatedDuration)
+		//resData.attributes.duration = resData.attributes.estimatedDuration;
 		resData.attributes.cardTitle = 'NYC Headlines';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -44,19 +47,12 @@ const getNationalNewscast = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
-		//console.log('resData = ', resData);
+
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
-		//Fetch the mp3 last modified date
-		//const mp3Res = await axios(resData.attributes.audio);
-		//resData.attributes.newsdate = mp3Res.headers['last-modified'];
-		//const mp3Size = mp3Res.headers['content-length'];
-		// Calculate the duration in seconds not converting size into bits. 
-		// The bitrate is 128kps according to vlc and the file size is in bytes.
-		//Multiplying the file size by 8 and dividing by 128000 gives the same 
-		//duration as dividing by 16000 and not multiplying the file size by 8.
-		//const duration = Math.round(mp3Size / 16000) * 1000;
-		//resData.attributes.duration = duration;
+		console.log("getNationalNewscast", resData.attributes.estimatedDuration)
+		resData.attributes.duration = await getDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
+
 		resData.attributes.cardTitle = 'NPR News Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -86,15 +82,9 @@ const getNYCNowNewscast = async () => {
 		const resData = humps.camelizeKeys(res.data).data[0];
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/NYNOW_WNYC_LOGO_HEX_1400PX.png';
-		//Fetch the mp3 Content-Length and calculate the duration in seconds
-		//const mp3Res = await axios(resData.attributes.audio);
-		//const mp3Size = mp3Res.headers['content-length'];
-		// Calculate the duration in seconds not converting size into bits. 
-		// The bitrate is 128kps according to vlc and the file size is in bytes.
-		//Multiplying the file size by 8 and dividing by 128000 gives the same
-		//duration as dividing by 16000 and not multiplying the file
-		//onst duration = Math.round(mp3Size / 16000) * 1000;
-		//resData.attributes.duration = duration;
+		console.log("getNYCNowNewscast", resData.attributes.estimatedDuration)
+		//resData.attributes.duration = resData.attributes.estimatedDuration;
+
 		resData.attributes.cardTitle = 'NYC Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;

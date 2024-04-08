@@ -23,7 +23,6 @@ export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promis
 		const httpTokenizer = await makeTokenizer(audioTrackUrl);
 		const metadata = await parseFromTokenizer(httpTokenizer);
 		const duration = Math.round(metadata.format.duration);
-		console.log(`Duration of ${audioTrackUrl} is ${duration} seconds`);
 		return duration;
 	} catch (e) {
 		console.error(`Failed to estimate duration of ${audioTrackUrl}`, e);
