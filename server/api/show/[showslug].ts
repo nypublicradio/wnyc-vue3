@@ -25,19 +25,11 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
             }
         };
         const res = await axios(option);
-        const resData = res.data.data
-        for (let i = 0; i < resData.length; i++) {
-
-            // this checks if the audio url is a 404 and removes it by assigning an emptry string to the audio file key, but it slows down the page load
-            // if (await checkUrl404(resData[i].attributes.audio)) {
-            //     console.log('resData[i].attributes.audio = ', resData[i].attributes.audio)
-            //     resData[i].attributes.audio = ''
-            // }
-            resData[i].cmsSource = cmsSources.PUBLISHER
-            resData[i].showImage = showImage
-            resData[i] = await normalizeArticlePage(humps.camelizeKeys(resData[i]))
-        }
-        //console.log(resData[0])
+        const resData = await Promise.all(res.data.data.map(async (item: any) => {
+            item.cmsSource = cmsSources.PUBLISHER;
+            item.showImage = showImage;
+            return await normalizeArticlePage(item)
+        }));
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {
             data: resData,
