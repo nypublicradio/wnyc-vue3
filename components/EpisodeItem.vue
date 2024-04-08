@@ -180,6 +180,7 @@ const handleClick = () => {
       @click.prevent="handleClick"
     ></div>
     <div class="flex gap-3 w-full">
+      <!-- <pre class="text-xs overflow-hidden">{{ props.data }}</pre> -->
       <VImage
         class="flex-none"
         :alt="`${props.data.showTitle} show `"
