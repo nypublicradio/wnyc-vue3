@@ -265,6 +265,7 @@ onUnmounted(() => {
                     : 'secondary'
                 "
                 :label="station.station"
+                :aria-label="`${station.station} button`"
                 :aria-disabled="isStreamLoading"
                 @click="switchStation(station)"
               >
@@ -350,6 +351,7 @@ onUnmounted(() => {
             plain
             rounded
             class="flex-none no-hover"
+            aria-label="set notification button"
             @click="handleScheduleLocalNotification(entry)"
           >
             <template #icon>

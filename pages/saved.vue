@@ -92,6 +92,7 @@ onMounted(() => {
               <Button
                 class="item-btn text-sm white-space-nowrap"
                 :label="item.label"
+                :aria-label="`${item.label} button`"
                 @click="selectMenuItem(item, index)"
                 severity="secondary"
               />

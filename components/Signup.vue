@@ -52,7 +52,13 @@ const closeAll = () => {
     <section>
       <p>
         Already have an account?
-        <Button link label="Log in" class="link" @click="onLoginClick" />
+        <Button
+          link
+          label="Log in"
+          class="link"
+          aria-label="login button"
+          @click="onLoginClick"
+        />
       </p>
       <VLoginWithProvider
         :client="client"

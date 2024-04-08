@@ -212,7 +212,7 @@ onMounted(() => {
       v-if="!pending"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button rounded text plain @click="handleAddToFavorites">
+      <Button rounded text plain aria-label="star button" @click="handleAddToFavorites">
         <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 
@@ -220,6 +220,7 @@ onMounted(() => {
         class="play-btn flex-none"
         severity="secondary"
         rounded
+        aria-label="play toggle button"
         @click="togglePlayMostRecentEpisode"
       >
         <template #icon>
@@ -228,7 +229,7 @@ onMounted(() => {
         </template>
       </Button>
 
-      <Button text plain rounded @click="handleShare">
+      <Button text plain rounded aria-label="share button" @click="handleShare">
         <template #icon> <ShareIcon /></template>
       </Button>
     </div>

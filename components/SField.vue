@@ -2,7 +2,7 @@
 const props = defineProps({
   label: {
     type: String,
-    default: 'Tap to add',
+    default: "Tap to add",
   },
   password: {
     type: Boolean,
@@ -22,13 +22,11 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:data', 'isValid', 'submit', 'onDisabled'])
+const emit = defineEmits(["update:data", "isValid", "submit", "onDisabled"])
 
 const internalData = ref(props.data)
 const error = shallowRef(false)
-const regexEmailFormat = new RegExp(
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-)
+const regexEmailFormat = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
 
 // triggered for ever key when the user types in the input field
 const onUpdate = (val) => {
@@ -36,23 +34,23 @@ const onUpdate = (val) => {
   if (props.email) {
     const isValid = regexEmailFormat.test(val)
     isValid ? (error.value = false) : (error.value = true)
-    emit('isValid', isValid)
+    emit("isValid", isValid)
   }
 }
 
 // triggered when the user clicks the submit button. closes the inplace component
 const onSubmit = () => {
   const closeBtn = document.querySelectorAll(
-    '.s-field .p-inplace-content .p-button-icon-only'
+    ".s-field .p-inplace-content .p-button-icon-only"
   )
   for (let i = 0; i < closeBtn.length; i++) closeBtn[i].click()
-  emit('update:data', internalData.value)
-  emit('submit', internalData.value)
+  emit("update:data", internalData.value)
+  emit("submit", internalData.value)
 }
 // triggered when the user clicks the inplace component. emits the onDisabled event if it is disabled
 const handleDisabledEmit = () => {
   if (props.disabled) {
-    emit('onDisabled')
+    emit("onDisabled")
   }
 }
 </script>
@@ -87,6 +85,7 @@ const handleDisabledEmit = () => {
         class="submit-btn"
         label="Submit"
         size="small"
+        aria-label="submit button"
         @click="onSubmit"
       />
     </template>

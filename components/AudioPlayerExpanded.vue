@@ -249,12 +249,19 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
+          aria-label="add to favoties button"
           @click="handleAddToFavorites"
           v-if="!currentEpisode.hideFavorite"
         >
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
-        <Button text severity="secondary" rounded @click="handleDownload">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="download button"
+          @click="handleDownload"
+        >
           <template #icon> <DownloadIcon /></template>
         </Button>
         <DownloadProgress
@@ -266,7 +273,13 @@ const moreFromClick = () => {
       </div>
 
       <div class="flex gap-1">
-        <Button text severity="secondary" rounded @click="handleShare">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="share button"
+          @click="handleShare"
+        >
           <template #icon> <ShareIcon /></template>
         </Button>
 
@@ -364,6 +377,9 @@ const moreFromClick = () => {
           text
           severity="secondary"
           :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
+          :aria-label="`More from ${
+            currentEpisode.showTitle || currentEpisode.title
+          } button`"
           icon="pi pi-chevron-right"
           iconPos="right"
           class="flex m-auto"

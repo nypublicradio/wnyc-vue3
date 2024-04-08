@@ -107,6 +107,7 @@ watch(
           text
           plain
           icon="pi pi-times"
+          aria-label="clear search field button"
           @click="clearSearchField"
         ></Button>
         <!-- <i class="pi pi-spin pi-spinner" /> -->
@@ -125,6 +126,7 @@ watch(
                   <Button
                     class="topic-btn text-sm white-space-nowrap font-meta"
                     :label="topic.label"
+                    :aria-label="`${topic.label} topic button`"
                     @click="selectTopic(topic)"
                     :style="`background-color: ${topic.color};`"
                   />

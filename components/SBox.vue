@@ -1,10 +1,10 @@
 <script setup>
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
-import { useSettingSideBar } from '~/composables/states.ts'
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+import { useSettingSideBar } from "~/composables/states.ts"
 const props = defineProps({
   label: {
     type: String,
-    default: '',
+    default: "",
     required: true,
   },
   link: {
@@ -17,11 +17,11 @@ const props = defineProps({
   },
 })
 const settingSideBar = useSettingSideBar()
-const emit = defineEmits(['link-click', 'label-click'])
+const emit = defineEmits(["link-click", "label-click"])
 
 // handles when the button is clicked. emits and closes the side panel
 const onClick = () => {
-  emit('link-click', props.link)
+  emit("link-click", props.link)
   if (settingSideBar.value) {
     settingSideBar.value = false
   }
@@ -29,19 +29,17 @@ const onClick = () => {
 </script>
 
 <template>
-  <div
-    class="s-box"
-    :class="[{ 'is-link': props.link, clickable: props.clickable }]"
-  >
+  <div class="s-box" :class="[{ 'is-link': props.link, clickable: props.clickable }]">
     <div class="content flex justify-content-between align-items-center">
       <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
-        <Button :label="label" class="w-full text-left" text />
+        <Button
+          :label="label"
+          class="w-full text-left"
+          text
+          aria-label="menu item button"
+        />
       </VFlexibleLink>
-      <div
-        v-else
-        class="flex h-full align-items-center"
-        @click="emit('label-click')"
-      >
+      <div v-else class="flex h-full align-items-center" @click="emit('label-click')">
         <p class="label white-space-nowrap">
           {{ label }}
         </p>

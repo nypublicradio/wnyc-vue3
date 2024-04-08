@@ -40,7 +40,11 @@ const imageUploadModal = shallowRef(false)
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
   loginSideBar.value = true
-  trackClickEvent("Click Tracking - login button", "Settings Sidebar - user section", "login button")
+  trackClickEvent(
+    "Click Tracking - login button",
+    "Settings Sidebar - user section",
+    "login button"
+  )
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
@@ -75,7 +79,11 @@ const onLogOut = async () => {
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
   signupSideBar.value = true
-  trackClickEvent("Click Tracking - sign up link", "Settings Sidebar - user section", "sign up link")
+  trackClickEvent(
+    "Click Tracking - sign up link",
+    "Settings Sidebar - user section",
+    "sign up link"
+  )
 }
 // handles the modal on avatar image when clicked
 const handleModal = () => {
@@ -147,7 +155,13 @@ const handleModal = () => {
     </div>
     <div v-else class="info flex flex-column gap-3 mt-2">
       <h2>You are logged out.</h2>
-      <Button label="Log in" rounded @click="onLogIn" class="w-9rem" />
+      <Button
+        label="Log in"
+        rounded
+        @click="onLogIn"
+        class="w-9rem"
+        aria-label="login button"
+      />
 
       <p>
         Don't have an account yet?

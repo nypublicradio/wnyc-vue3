@@ -77,6 +77,7 @@ watch(
       severity="secondary"
       @click.prevent="togglePlay"
       :aria-disabled="isStreamLoading"
+      aria-label="play button"
       :class="[{ active: isPlaying }]"
       class="flex align-items-center cursor-pointer"
     >

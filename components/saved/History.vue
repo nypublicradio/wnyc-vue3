@@ -14,6 +14,7 @@ const user = useCurrentUser()
 
           <Button
             label="Listen to the live stream"
+            aria-label="Listen to the live stream"
             text
             severity="secondary"
             class="underline"
