@@ -32,6 +32,7 @@ import {
   templatizePublisherImageUrl,
   getDate,
   hasQueryParams,
+  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
@@ -276,7 +277,9 @@ const handleError = (e) => {
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"
-        :image="templatizePublisherImageUrl(currentEpisode?.image) ?? FALLBACKIMAGELOCAL"
+        :image="
+          templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
+        "
         :file="getConfiguredAudioUrl"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"

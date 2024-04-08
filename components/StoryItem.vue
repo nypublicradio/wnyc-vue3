@@ -13,10 +13,11 @@ import {
   getReadingTime,
   whenTime,
   addToFavorites,
+  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-import { FALLBACKIMAGELOCAL, cmsSources } from "~/composables/globals"
+import { cmsSources } from "~/composables/globals"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -143,7 +144,7 @@ if (props.isDownloaded) {
       props.data?.image?.id ??
       props.data?.image ??
       props.fallbackImage ??
-      FALLBACKIMAGELOCAL
+      getEpisodeFallBackImage()
   )
 }
 

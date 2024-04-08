@@ -8,6 +8,7 @@ import {
   templatizePublisherImageUrl,
   checkIsFavorited,
   addToFavorites,
+  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
@@ -285,7 +286,10 @@ const moreFromClick = () => {
             <div>
               <div class="flex gap-3 px-4 align-items-center">
                 <VImage
-                  :src="templatizePublisherImageUrl(currentEpisode.image)"
+                  :src="
+                    templatizePublisherImageUrl(currentEpisode.image) ??
+                    getEpisodeFallBackImage()
+                  "
                   :alt="`${currentEpisode.title} show image`"
                   :width="116"
                   :height="116"
