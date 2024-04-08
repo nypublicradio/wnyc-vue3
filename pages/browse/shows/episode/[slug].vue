@@ -303,7 +303,6 @@ const getEpisodeImage = computed(() => {
                       :alt="`${episodeData?.title} show image`"
                       :width="116"
                       :height="116"
-                      :sizes="[2]"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
                       style="height: 60px; width: 60px"

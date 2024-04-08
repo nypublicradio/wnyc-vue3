@@ -273,7 +273,6 @@ const handleClick = () => {
                         :height="116"
                         :width="116"
                         :ratio="[1, 1]"
-                        :srcset="[2]"
                         style="
                           height: 60px;
                           width: 60px;

@@ -48,6 +48,7 @@ const props = defineProps({
       size="small"
       severity="secondary"
       class="m-auto mt-3"
+      aria-label="Create Free Account Button"
       @click="
         () => {
           accountPromptSideBar = false

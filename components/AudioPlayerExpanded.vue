@@ -231,7 +231,13 @@ const moreFromClick = () => {
     <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
-        <Button text severity="secondary" rounded @click="handleFollow">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="Create Free Account Button"
+          @click="handleFollow"
+        >
           <template #icon> <FollowIcon /></template>
         </Button>
         <Button text severity="secondary" rounded @click="handleSleepTimer">
@@ -293,7 +299,6 @@ const moreFromClick = () => {
                   :alt="`${currentEpisode.title} show image`"
                   :width="116"
                   :height="116"
-                  :sizes="[2]"
                   class="show-image-in-menu flex-none"
                   :ratio="[1, 1]"
                   style="height: 60px; width: 60px"

@@ -34,6 +34,7 @@ const settingsSideBar = useSettingSideBar()
             icon="pi pi-bars"
             class="p-button-text"
             severity="secondary"
+            aria-label="settings menu"
             @click="
               () => {
                 settingsSideBar = true
