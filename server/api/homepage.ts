@@ -199,6 +199,26 @@ const mergeArticles = (articles1: any, articles2: any) => {
 	})
 }
 
+const getNprStories = async () => {
+	const response = await fetch(`${config.public.NPR_CDS_API}${config.public.NPR_CDS_TOP_STORIES}`, {
+		headers: {
+			Authorization: `Bearer ${config.public.NPR_CDS_API_KEY}`
+		}
+	});
+
+	const json = await response.json();
+	const articles = Object.keys(json.resources[0].assets).map((key) => {
+	  const article = json.resources[0].assets[key];
+	  return {
+		id: key,
+		teaser: article.teaser,
+		title: article.title
+	  };
+	});
+  
+	return articles;
+}
+
 /**
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
@@ -209,6 +229,7 @@ export default defineEventHandler(async (event) => {
 	const publisher = await getWNYCTopStories();
 	const topStories = mergeArticles(aviary, publisher);
 	const homeTemplate = await getHomeTemplate();
+	const nprStories = await getNprStories();
 	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
 	// If it is not available, use the local newscast instead.
 	const requestTime = new Date();
@@ -226,6 +247,7 @@ export default defineEventHandler(async (event) => {
 	return {
 		home_template: homeTemplate,
 		top_stories: topStories,
+		npr_stories: nprStories,
 		local_newscast: local_newscast,
 		national_newscast: national_newscast,
 	}
