@@ -277,8 +277,9 @@ onMounted(() => {
         <TabPanel header="Episodes" v-if="hasEpisodes">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
+              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <EpisodeItem
-                v-if="ep?.type !== 'segment'"
+                v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="getEpisodeFallBackImage()"
@@ -289,8 +290,9 @@ onMounted(() => {
         <TabPanel header="Segments" v-if="hasSegments">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
+              {{ ep?.esitmatedDuration }}
               <EpisodeItem
-                v-if="ep?.type === 'segment'"
+                v-if="ep?.type === 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="getEpisodeFallBackImage()"
