@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { getAndSetUserProfile, askNotificationPermisstions } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
-import { initAdvertisingId } from "~/utilities/advertising-id.js"
-
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
