@@ -51,6 +51,7 @@ COPY --chown=www:www scripts/entrypoint.sh ./scripts/entrypoint.sh
 
 COPY --chown=www:www nginx/*.conf /etc/nginx/
 COPY --chown=www:www public/robots* ./public/
+COPY --chown=www:www public/.well-known ./public/.well-known
 
 COPY --chown=www:www --from=build /code/.output/ ./.output/
 COPY --chown=www:www --from=build /code/.nuxt/ ./.nuxt/
