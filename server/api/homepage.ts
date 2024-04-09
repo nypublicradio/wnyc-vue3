@@ -6,8 +6,8 @@ import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data
 import { estimateMp3Duration } from '~/server/utils/duration'
 
 const getDuration = async (estimatedDuration: number, audioURL: string) => {
-	estimatedDuration;
-	if (estimatedDuration === 0) {
+
+	if (!estimatedDuration || typeof estimatedDuration !== 'number' || estimatedDuration === 0) {
 		return await estimateMp3Duration(audioURL);
 	} else {
 		return estimatedDuration
@@ -25,7 +25,9 @@ const getLocalNewscast = async () => {
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
 		console.log("getLocalNewscast", resData.attributes.estimatedDuration)
-		//resData.attributes.duration = resData.attributes.estimatedDuration;
+		resData.attributes.duration = await getDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
+		console.log("esData.attributes.duration", resData.attributes.duration)
+
 		resData.attributes.cardTitle = 'NYC Headlines';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -83,8 +85,8 @@ const getNYCNowNewscast = async () => {
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/NYNOW_WNYC_LOGO_HEX_1400PX.png';
 		console.log("getNYCNowNewscast", resData.attributes.estimatedDuration)
-		//resData.attributes.duration = resData.attributes.estimatedDuration;
-
+		resData.attributes.duration = await getDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
+		console.log("esData.attributes.duration", resData.attributes.duration)
 		resData.attributes.cardTitle = 'NYC Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
