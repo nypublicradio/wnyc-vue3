@@ -4,7 +4,7 @@ import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
 import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
-import { getWagtailRawBody, getEpisodeFallBackImage } from "~/utilities/helpers"
+import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 
 // Get a list of article pages using the Aviary /pages api
