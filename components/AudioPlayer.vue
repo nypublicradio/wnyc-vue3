@@ -203,9 +203,8 @@ then we merge it all together and return it to the player as the source for the 
 
 const getConfiguredAudioUrl = computed(() => {
   const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
-  if (!isApp.value) {
     const hasQuery = hasQueryParams(url)
-    const adID = advertisingId.value
+    const adID = advertisingId.value ?? "0"
     const userID = currentUser?.value?.id ?? "0"
     const desktop = device.isDesktop || device.isDesktopOrTablet
     const thisDevice = device.isAndroid
@@ -217,12 +216,7 @@ const getConfiguredAudioUrl = computed(() => {
       : "unknown"
     // update restriction when we have the value from setting panel
     const restriction = "0"
-    return `${url}${
-      !isApp.value ? `${hasQuery ? "&" : "?"}listenerid=${adID}` : ""
-    }&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
-  } else {
-    return url
-  }
+    return `${url}${hasQuery ? "&" : "?"}listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
 // function that handles the expanded player from the persistent player emit

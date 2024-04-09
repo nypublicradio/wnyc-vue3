@@ -153,7 +153,6 @@ onMounted(async () => {
     await addListeners()
     // if APP then add listeners
     await checkAppLaunchUrl()
-    await initAdvertisingId()
     // init downloads files system for the app
     await initFileSystem()
     // init local notifications

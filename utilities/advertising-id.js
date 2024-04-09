@@ -1,8 +1,10 @@
-
 import {
-    useAdvertisingId, useCurrentUser
+    useAdvertisingId,
+    useCurrentUser
 } from "~/composables/states"
-import { AdvertisingId } from '@capacitor-community/advertising-id'
+import {
+    AdvertisingId
+} from '@capacitor-community/advertising-id'
 
 // Get the advertising ID
 export const initAdvertisingId = async () => {
@@ -12,12 +14,17 @@ export const initAdvertisingId = async () => {
         await AdvertisingId.requestTracking()
         const id = await AdvertisingId.getAdvertisingId()
         advertisingId.value = id.id
-
-        if (currentUser) {
-            // Save the advertising ID to the deviceId table in supabase here IF the user is logged in
+        if ( currentUser ) {
+            // save the advertising ID to the deviceId table in supabase IF the user is logged in
+            const client = useSupabaseClient()
+            await client
+                .from( 'device_ids' )
+                .upsert( [ {
+                    user_id: currentUser.id,
+                    device_id: advertisingId.value
+                }, ] )
         }
-    } catch (error) {
-        console.error("Error getting advertising ID:", error)
+    } catch ( error ) {
+        console.error( "Error getting advertising ID:", error )
     }
-
 }
