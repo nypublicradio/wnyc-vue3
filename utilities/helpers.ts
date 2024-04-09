@@ -446,15 +446,11 @@ export const convertTime = (val) => {
 export const getAndSetUserProfile = async () => {
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
+  const isApp = useIsApp()
   const localUserProfileDefault = useLocalUserProfileDefault()
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
-
-  // get the advertising id if it's an app and not a browser
-  if (useIsApp().value) {
-    await initAdvertisingId()
-  }
 
   // function that gets a user profile
   const getProfile = async () => {
@@ -554,6 +550,10 @@ export const getAndSetUserProfile = async () => {
     } else {
       // if they are a user, get their profile data
       await getProfile()
+      // get the advertising id if it's an app and not a browser
+      if (isApp.value) {
+        await initAdvertisingId()
+      }
       await getFavoritedItems()
     }
   }

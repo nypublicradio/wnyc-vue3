@@ -14,17 +14,17 @@ export const initAdvertisingId = async () => {
         await AdvertisingId.requestTracking()
         const id = await AdvertisingId.getAdvertisingId()
         advertisingId.value = id.id
-        if ( currentUser ) {
+        if (currentUser.value) {
             // save the advertising ID to the deviceId table in supabase IF the user is logged in
             const client = useSupabaseClient()
             await client
-                .from( 'device_ids' )
-                .upsert( [ {
-                    user_id: currentUser.id,
+                .from('device_ids')
+                .upsert([{
+                    user_id: currentUser.value.id,
                     device_id: advertisingId.value
-                }, ] )
+                },])
         }
-    } catch ( error ) {
-        console.error( "Error getting advertising ID:", error )
+    } catch (error) {
+        console.error("Error getting advertising ID:", error)
     }
 }
