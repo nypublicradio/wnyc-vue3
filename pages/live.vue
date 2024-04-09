@@ -351,7 +351,7 @@ onUnmounted(() => {
             plain
             rounded
             class="flex-none no-hover"
-            aria-label="set notification button"
+            aria-label="set notification"
             @click="handleScheduleLocalNotification(entry)"
           >
             <template #icon>

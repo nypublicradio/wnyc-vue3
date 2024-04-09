@@ -85,7 +85,7 @@ const handleDisabledEmit = () => {
         class="submit-btn"
         label="Submit"
         size="small"
-        aria-label="submit button"
+        aria-label="submit"
         @click="onSubmit"
       />
     </template>

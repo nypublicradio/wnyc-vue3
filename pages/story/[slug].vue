@@ -224,12 +224,12 @@ const togglePlayHere = (story, index = 0) => {
               text
               plain
               rounded
-              aria-label="star button"
+              aria-label="star"
               @click="handleAddToFavorites"
             >
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
-            <Button text plain rounded aria-label="share button" @click="handleShare">
+            <Button text plain rounded aria-label="share" @click="handleShare">
               <template #icon> <ShareIcon /></template>
             </Button>
             <Button
@@ -240,7 +240,7 @@ const togglePlayHere = (story, index = 0) => {
                 commentCount === 1 ? 'comment' : 'comments'
               }`"
               class="comments-btn pl-2 text-xs font-normal"
-              aria-label="comments button"
+              aria-label="comments"
               @click="handleComments()"
             >
               <template #icon> <CommentsIcon /></template>

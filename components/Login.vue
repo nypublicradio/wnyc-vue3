@@ -58,7 +58,7 @@ const openForgotPassword = () => {
           label="Sign up"
           class="link"
           @click="onSignupClick"
-          aria-label="sign up button"
+          aria-label="sign up"
         />
       </p>
       <VLoginWithProvider
@@ -96,7 +96,7 @@ const openForgotPassword = () => {
                 link
                 label="Forgot password?"
                 class="link m-auto block"
-                aria-label="forgot password button"
+                aria-label="forgot password"
                 @click="openForgotPassword"
               />
             </p>

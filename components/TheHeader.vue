@@ -27,7 +27,7 @@ const settingsSideBar = useSettingSideBar()
               )
             "
           >
-            <Button label="Donate" aria-label="donate button" class="px-3 sm:px-5 mr-3" />
+            <Button label="Donate" aria-label="donate" class="px-3 sm:px-5 mr-3" />
           </VFlexibleLink> -->
 
           <Button

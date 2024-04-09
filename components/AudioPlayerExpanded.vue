@@ -235,7 +235,7 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
-          aria-label="Create Free Account Button"
+          aria-label="Create Free Account"
           @click="handleFollow"
         >
           <template #icon> <FollowIcon /></template>
@@ -249,7 +249,7 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
-          aria-label="add to favoties button"
+          aria-label="add to favoties"
           @click="handleAddToFavorites"
           v-if="!currentEpisode.hideFavorite"
         >
@@ -259,7 +259,7 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
-          aria-label="download button"
+          aria-label="download"
           @click="handleDownload"
         >
           <template #icon> <DownloadIcon /></template>
@@ -277,7 +277,7 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
-          aria-label="share button"
+          aria-label="share"
           @click="handleShare"
         >
           <template #icon> <ShareIcon /></template>

@@ -73,7 +73,7 @@ const handleAddToFavorites = () => {
         </p>
       </div>
     </div>
-    <Button text plain rounded class="flex-none z-1" aria-label="star button">
+    <Button text plain rounded class="flex-none z-1" aria-label="star">
       <template #icon>
         <StarIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>

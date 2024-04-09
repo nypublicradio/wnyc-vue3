@@ -333,14 +333,14 @@ const beforeYouLeave = () => {
           </div>
         </div>
         <slot name="aboveSubmit" />
-        <Button label="Save" class="w-full mt-3" aria-label="Save button" type="submit">
+        <Button label="Save" class="w-full mt-3" aria-label="Save" type="submit">
           <template #icon> <slot name="icon"></slot> </template>
         </Button>
         <Button
           label="Cancel"
           link
           class="mt-4 w-full"
-          aria-label="cancel button"
+          aria-label="cancel"
           @click="beforeYouLeave"
         />
       </form>
@@ -359,13 +359,13 @@ const beforeYouLeave = () => {
           <div class="flex justify-content-between">
             <Button
               label="Cancel"
-              aria-label="cancel button"
+              aria-label="cancel"
               @click="beforeYouLeaveDialog = false"
             />
             <Button
               text
               label="Leave"
-              aria-label="leave button"
+              aria-label="leave"
               @click="
                 () => {
                   beforeYouLeaveDialog = false

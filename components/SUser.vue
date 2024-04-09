@@ -160,7 +160,7 @@ const handleModal = () => {
         rounded
         @click="onLogIn"
         class="w-9rem"
-        aria-label="login button"
+        aria-label="login"
       />
 
       <p>

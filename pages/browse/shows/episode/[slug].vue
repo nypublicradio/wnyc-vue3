@@ -271,7 +271,7 @@ const getEpisodeImage = computed(() => {
               text
               plain
               rounded
-              aria-label="star button"
+              aria-label="star"
               @click="handleAddToFavorites(episodeData)"
             >
               <template #icon> <StarIcon :active="isFavorited" /></template>
@@ -281,7 +281,7 @@ const getEpisodeImage = computed(() => {
               text
               plain
               rounded
-              aria-label="download button"
+              aria-label="download"
               @click="handleDownload(episodeData)"
             >
               <template #icon> <DownloadIcon /></template>
@@ -291,7 +291,7 @@ const getEpisodeImage = computed(() => {
               text
               plain
               rounded
-              aria-label="share button"
+              aria-label="share"
               @click="handleShare"
             >
               <template #icon> <ShareIcon /></template>

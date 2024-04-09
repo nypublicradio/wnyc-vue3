@@ -31,7 +31,7 @@ const emit = defineEmits(["on-click"])
     <Button
       severity="secondary"
       @click="emit('on-click')"
-      aria-label="read button"
+      aria-label="read this article"
       class="flex align-items-center cursor-pointer"
     >
       <slot name="icon">

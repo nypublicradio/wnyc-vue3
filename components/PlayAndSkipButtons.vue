@@ -58,7 +58,7 @@ const isLive = computed(() => {
         severity="secondary"
         rounded
         @click="skipBack"
-        aria-label="skip back button"
+        aria-label="skip back"
       >
         <template #icon> <Previous10 /></template>
       </Button>
@@ -67,7 +67,7 @@ const isLive = computed(() => {
       v-if="isEpisodePlaying && !isStreamLoading"
       severity="secondary"
       rounded
-      aria-label="pause button"
+      aria-label="pause"
       @click="togglePlay"
     >
       <template #icon> <PauseIcon /></template>
@@ -76,7 +76,7 @@ const isLive = computed(() => {
       v-else-if="!isStreamLoading"
       severity="secondary"
       rounded
-      aria-label="play button"
+      aria-label="play"
       @click="togglePlay"
     >
       <template #icon> <PlayIcon /></template>
@@ -92,7 +92,7 @@ const isLive = computed(() => {
         v-if="!isLive"
         severity="secondary"
         rounded
-        aria-label="skip ahead button"
+        aria-label="skip ahead"
         @click="skipAhead"
       >
         <template #icon> <Next10 /></template>

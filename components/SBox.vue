@@ -36,7 +36,7 @@ const onClick = () => {
           :label="label"
           class="w-full text-left"
           text
-          aria-label="menu item button"
+          aria-label="menu item"
         />
       </VFlexibleLink>
       <div v-else class="flex h-full align-items-center" @click="emit('label-click')">

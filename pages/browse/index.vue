@@ -107,7 +107,7 @@ watch(
           text
           plain
           icon="pi pi-times"
-          aria-label="clear search field button"
+          aria-label="clear search"
           @click="clearSearchField"
         ></Button>
         <!-- <i class="pi pi-spin pi-spinner" /> -->

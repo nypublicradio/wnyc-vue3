@@ -17,7 +17,7 @@ const emit = defineEmits(["onClick"])
         target="_blank"
         @click="emit('onClick')"
       >
-        <Button label="Donate" aria-label="donate button" />
+        <Button label="Donate" aria-label="donate" />
       </VFlexibleLink>
     </div>
   </div>

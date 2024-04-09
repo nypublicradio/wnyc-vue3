@@ -25,13 +25,13 @@ const handleReloadHome = () => {
       <Button
         label="Try again"
         severity="secondary"
-        aria-label="try again button"
+        aria-label="try again"
         @click="emit('on-click')"
       />
       <Button
         label="Refresh"
         severity="secondary"
-        aria-label="refresh button"
+        aria-label="refresh"
         @click="handleReloadHome"
       />
     </div>

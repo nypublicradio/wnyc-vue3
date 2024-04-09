@@ -251,7 +251,7 @@ const handleClick = () => {
               plain
               rounded
               class="flex-none z-1"
-              aria-label="star button"
+              aria-label="star"
               @click="handleAddToFavorites(props.data)"
             >
               <template #icon>

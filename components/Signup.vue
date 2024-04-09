@@ -56,7 +56,7 @@ const closeAll = () => {
           link
           label="Log in"
           class="link"
-          aria-label="login button"
+          aria-label="login"
           @click="onLoginClick"
         />
       </p>
