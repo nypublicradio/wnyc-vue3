@@ -18,6 +18,7 @@ const user = useCurrentUser()
           </div>
           <Button
             label="Browse Shows"
+            aria-label="Browse Shows"
             text
             severity="secondary"
             class="underline"
@@ -42,6 +43,7 @@ const user = useCurrentUser()
 
       <Button
         label="Listen to the live stream"
+        aria-label="Listen to the live stream"
         text
         severity="secondary"
         class="underline"

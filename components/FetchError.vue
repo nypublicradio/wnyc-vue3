@@ -22,8 +22,18 @@ const handleReloadHome = () => {
   <div class="fetch-error text-center py-4">
     <p>{{ props.msg }}</p>
     <div class="mt-3 flex gap-3 justify-content-center">
-      <Button label="Try again" severity="secondary" @click="emit('on-click')" />
-      <Button label="Refresh" severity="secondary" @click="handleReloadHome" />
+      <Button
+        label="Try again"
+        severity="secondary"
+        aria-label="try again"
+        @click="emit('on-click')"
+      />
+      <Button
+        label="Refresh"
+        severity="secondary"
+        aria-label="refresh"
+        @click="handleReloadHome"
+      />
     </div>
   </div>
 </template>

@@ -53,7 +53,13 @@ const isLive = computed(() => {
 <template>
   <div class="play-and-skip-buttons flex gap-3 justify-content-center">
     <template v-if="!props.hideSkip">
-      <Button v-if="!isLive" severity="secondary" rounded @click="skipBack">
+      <Button
+        v-if="!isLive"
+        severity="secondary"
+        rounded
+        @click="skipBack"
+        aria-label="skip back"
+      >
         <template #icon> <Previous10 /></template>
       </Button>
     </template>
@@ -61,11 +67,18 @@ const isLive = computed(() => {
       v-if="isEpisodePlaying && !isStreamLoading"
       severity="secondary"
       rounded
+      aria-label="pause"
       @click="togglePlay"
     >
       <template #icon> <PauseIcon /></template>
     </Button>
-    <Button v-else-if="!isStreamLoading" severity="secondary" rounded @click="togglePlay">
+    <Button
+      v-else-if="!isStreamLoading"
+      severity="secondary"
+      rounded
+      aria-label="play"
+      @click="togglePlay"
+    >
       <template #icon> <PlayIcon /></template>
     </Button>
     <Button v-if="isStreamLoading" severity="secondary" rounded>
@@ -75,7 +88,13 @@ const isLive = computed(() => {
     </Button>
 
     <template v-if="!props.hideSkip">
-      <Button v-if="!isLive" severity="secondary" rounded @click="skipAhead">
+      <Button
+        v-if="!isLive"
+        severity="secondary"
+        rounded
+        aria-label="skip ahead"
+        @click="skipAhead"
+      >
         <template #icon> <Next10 /></template>
       </Button>
     </template>

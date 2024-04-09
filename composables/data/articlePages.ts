@@ -161,7 +161,6 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
  * @returns 
  */
 export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
-
   if (typeof article === 'undefined')
     return null
   let duration = article.attributes.estimatedDuration;

@@ -42,7 +42,11 @@ const menuClick = (item) => {
     <div class="buttons-holder">
       <template v-for="item in options" :key="item.slug">
         <NuxtLink :to="item.slug" class="w-full" prefetch>
-          <Button @click="menuClick(item)" class="w-full">
+          <Button
+            @click="menuClick(item)"
+            class="w-full"
+            :aria-label="`${item.value} menu button`"
+          >
             <div class="item">
               <component :is="item.icon" :active="bottomMenuState.value == item.value">
               </component>
@@ -52,25 +56,6 @@ const menuClick = (item) => {
         </NuxtLink>
       </template>
     </div>
-    <!-- <SelectButton
-      v-model="bottomMenuState"
-      :options="options"
-      option-label="value"
-      data-key="value"
-      aria-labelledby="custom"
-      unselectable
-      @change="menuClick"
-    >
-      <template #option="slotProps">
-        <div class="item">
-          <component
-            :is="slotProps.option.icon"
-            :active="bottomMenuState.value == slotProps.option.value"
-          ></component>
-          {{ capitalizeFirstLetter(slotProps.option.value) }}
-        </div>
-      </template>
-    </SelectButton> -->
   </div>
 </template>
 

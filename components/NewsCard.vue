@@ -55,7 +55,10 @@ const emit = defineEmits(["on-click"])
       </div>
     </div>
     <div class="flex align-items-center justify-content-between">
-      <PlayButton :label="getMinutes(props.newsData?.duration)" :data="props.newsData" />
+      <PlayButton
+        :label="getMinutes(props.newsData?.duration, 1)"
+        :data="props.newsData"
+      />
       <BarsPlaying class="mr-2" :data="props.newsData" />
     </div>
   </div>

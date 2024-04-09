@@ -27,13 +27,14 @@ const settingsSideBar = useSettingSideBar()
               )
             "
           >
-            <Button label="Donate" class="px-3 sm:px-5 mr-3" />
+            <Button label="Donate" aria-label="donate" class="px-3 sm:px-5 mr-3" />
           </VFlexibleLink> -->
 
           <Button
             icon="pi pi-bars"
             class="p-button-text"
             severity="secondary"
+            aria-label="settings menu"
             @click="
               () => {
                 settingsSideBar = true

@@ -25,6 +25,7 @@ export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promis
 		const duration = Math.round(metadata.format.duration);
 		return duration;
 	} catch (e) {
+		console.error(`Failed to estimate duration of ${audioTrackUrl}`, e);
 		return 0;
 	}
 });

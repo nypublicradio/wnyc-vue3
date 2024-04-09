@@ -1,13 +1,13 @@
 <script async setup>
-import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
-import VLoginWithProvider from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue'
+import VLoginWithEmail from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue"
+import VLoginWithProvider from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue"
 
 import {
   useSignupSideBar,
   useLoginSideBar,
   useSettingSideBar,
   useForgotPasswordSideBar,
-} from '~/composables/states'
+} from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
 
@@ -32,7 +32,7 @@ const onLogin = (provider) => {
 
 // close all sidebars
 const closeAll = () => {
-  onLogin('email')
+  onLogin("email")
   loginSideBar.value = false
   signUpSideBar.value = false
   settingsSideBar.value = false
@@ -53,7 +53,13 @@ const openForgotPassword = () => {
     <section>
       <p>
         Don't have an account yet?
-        <Button link label="Sign up" class="link" @click="onSignupClick" />
+        <Button
+          link
+          label="Sign up"
+          class="link"
+          @click="onSignupClick"
+          aria-label="sign up"
+        />
       </p>
       <VLoginWithProvider
         :client="client"
@@ -90,6 +96,7 @@ const openForgotPassword = () => {
                 link
                 label="Forgot password?"
                 class="link m-auto block"
+                aria-label="forgot password"
                 @click="openForgotPassword"
               />
             </p>

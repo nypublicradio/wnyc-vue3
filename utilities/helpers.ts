@@ -30,7 +30,6 @@ import {
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
-import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
@@ -684,7 +683,7 @@ export const prepForPlayer = (item, index = null) => {
       item?.image?.template ??
       item?.listingImage?.template ??
       item?.showImage ??
-      FALLBACKIMAGELOCAL,
+      getEpisodeFallBackImage(),
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,

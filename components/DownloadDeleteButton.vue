@@ -33,6 +33,7 @@ watch(fileSystem, (value) => {
       )
     "
     icon="pi pi-trash"
+    aria-label="delete audio"
     @click="
       () => {
         deleteDirectory(file)
@@ -43,6 +44,7 @@ watch(fileSystem, (value) => {
   <Button
     v-else-if="!pending"
     icon="pi pi-download"
+    aria-label="download audio"
     @click="
       () => {
         fetchAndStoreMp3(file)

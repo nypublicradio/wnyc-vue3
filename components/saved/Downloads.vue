@@ -12,6 +12,7 @@ const fileSystemLS = useFileSystemLS()
         label="Delete all"
         icon="pi pi-trash"
         size="small"
+        aria-label="delete all downloads"
         @click="deleteAll()"
       />
       <FileSystem v-if="fileSystemLS.length > 0" />
@@ -33,6 +34,7 @@ const fileSystemLS = useFileSystemLS()
           severity="secondary"
           class="underline"
           size="small"
+          aria-label="browse shows"
           @click="navigateTo('/browse')"
         />
       </div>

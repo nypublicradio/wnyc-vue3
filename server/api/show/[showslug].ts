@@ -28,7 +28,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
         const resData = await Promise.all(res.data.data.map(async (item: any) => {
             item.cmsSource = cmsSources.PUBLISHER;
             item.showImage = showImage;
-            return await normalizeArticlePage(item)
+            return await normalizeArticlePage(humps.camelizeKeys(item))
         }));
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {

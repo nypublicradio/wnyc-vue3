@@ -212,7 +212,7 @@ onMounted(() => {
       v-if="!pending"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button rounded text plain @click="handleAddToFavorites">
+      <Button rounded text plain aria-label="star" @click="handleAddToFavorites">
         <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
       </Button>
 
@@ -220,6 +220,7 @@ onMounted(() => {
         class="play-btn flex-none"
         severity="secondary"
         rounded
+        aria-label="play toggle"
         @click="togglePlayMostRecentEpisode"
       >
         <template #icon>
@@ -228,7 +229,7 @@ onMounted(() => {
         </template>
       </Button>
 
-      <Button text plain rounded @click="handleShare">
+      <Button text plain rounded aria-label="share" @click="handleShare">
         <template #icon> <ShareIcon /></template>
       </Button>
     </div>
@@ -268,7 +269,7 @@ onMounted(() => {
       />
     </div>
     <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
-    <!-- <pre class="text-xs">{{ episodes }}</pre> -->
+    <!-- <pre class="text-xs overflow-hidden">{{ episodes }}</pre> -->
 
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">
@@ -276,8 +277,9 @@ onMounted(() => {
         <TabPanel header="Episodes" v-if="hasEpisodes">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
+              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <EpisodeItem
-                v-if="ep?.type !== 'segment'"
+                v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="getEpisodeFallBackImage()"
@@ -288,8 +290,9 @@ onMounted(() => {
         <TabPanel header="Segments" v-if="hasSegments">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
+              {{ ep?.esitmatedDuration }}
               <EpisodeItem
-                v-if="ep?.type === 'segment'"
+                v-if="ep?.type === 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="getEpisodeFallBackImage()"

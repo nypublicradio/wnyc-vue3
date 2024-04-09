@@ -180,6 +180,7 @@ const handleClick = () => {
       @click.prevent="handleClick"
     ></div>
     <div class="flex gap-3 w-full">
+      <!-- <pre class="text-xs overflow-hidden">{{ props.data }}</pre> -->
       <VImage
         class="flex-none"
         :alt="`${props.data.showTitle} show `"
@@ -272,7 +273,6 @@ const handleClick = () => {
                         :height="116"
                         :width="116"
                         :ratio="[1, 1]"
-                        :srcset="[2]"
                         style="
                           height: 60px;
                           width: 60px;
@@ -288,13 +288,17 @@ const handleClick = () => {
                   </div>
                 </template>
               </DotMenu>
-              <Button v-else text plain rounded class="flex-none z-1">
+              <Button
+                v-else
+                text
+                plain
+                rounded
+                class="flex-none z-1"
+                aria-label="star"
+                @click="handleAddToFavorites(props.data)"
+              >
                 <template #icon>
-                  <StarIcon
-                    class="h-2rem"
-                    :active="isFavorited"
-                    @click="handleAddToFavorites(props.data)"
-                  />
+                  <StarIcon class="h-2rem" :active="isFavorited" />
                 </template>
               </Button>
             </div>
