@@ -5,8 +5,7 @@ import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
 import { estimateMp3Duration } from '~/server/utils/duration'
 
-const getDuration = async (estimatedDuration: number, audioURL: string) => {
-
+const handleDuration = async (estimatedDuration: number, audioURL: string) => {
 	if (!estimatedDuration || typeof estimatedDuration !== 'number' || estimatedDuration === 0) {
 		return await estimateMp3Duration(audioURL);
 	} else {
@@ -24,10 +23,7 @@ const getLocalNewscast = async () => {
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
-		console.log("getLocalNewscast", resData.attributes.estimatedDuration)
-		resData.attributes.duration = await getDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
-		console.log("esData.attributes.duration", resData.attributes.duration)
-
+		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
 		resData.attributes.cardTitle = 'NYC Headlines';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -49,12 +45,9 @@ const getNationalNewscast = async () => {
 		};
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
-
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
-		console.log("getNationalNewscast", resData.attributes.estimatedDuration)
-		resData.attributes.duration = await getDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
-
+		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
 		resData.attributes.cardTitle = 'NPR News Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
@@ -84,9 +77,7 @@ const getNYCNowNewscast = async () => {
 		const resData = humps.camelizeKeys(res.data).data[0];
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/NYNOW_WNYC_LOGO_HEX_1400PX.png';
-		console.log("getNYCNowNewscast", resData.attributes.estimatedDuration)
-		resData.attributes.duration = await getDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
-		console.log("esData.attributes.duration", resData.attributes.duration)
+		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
 		resData.attributes.cardTitle = 'NYC Now';
 		resData.attributes.showTitle = resData.attributes.channelTitle;
 		resData.attributes.type = resData.type;
