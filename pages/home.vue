@@ -56,7 +56,7 @@ onMounted(() => {
       />
     </section>
     <section>
-      <h2 class="mb-3">Top stories</h2>
+      <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="pagedata?.top_stories" />
     </section>
     <div class="mx-auto mb-6" style="width: 300px">
