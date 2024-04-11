@@ -205,26 +205,44 @@ const getNprStories = async () => {
 			Authorization: `Bearer ${config.public.NPR_CDS_API_KEY}`
 		}
 	});
-
+	const componentType = "default";
 	const json = await response.json();
 	const articles = json.resources?.map((item) => {
-		const firstImageId = item.images?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/")+1);
-		const firstAsset = item.assets?.[firstImageId];
-		const squareHref = firstAsset?.enclosures?.filter((enclosure) => {
+		const firstImageId = item.images?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
+		const firstImage = item.assets?.[firstImageId];
+
+		const firstAssetId = item.audio?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
+		const firstAsset = item.assets?.[firstAssetId];
+
+		const squareHref = firstImage?.enclosures?.filter((enclosure) => {
 			return enclosure.rels?.includes('image-square');
 		});
-		const wideHref = firstAsset?.enclosures?.filter((enclosure) => {
+		const wideHref = firstImage?.enclosures?.filter((enclosure) => {
 			return enclosure.rels?.includes('image-wide');
+		});
+		console.log('item', item)
+		//const bodyResponse = 
+		const audio = firstAsset?.enclosures?.filter((enclosure) => {
+			return enclosure.type?.includes('audio/mpeg');
+		});
+		const video = firstAsset?.enclosures?.filter((enclosure) => {
+			return enclosure.type?.includes('video/mpeg');
 		});
 		return {
 			title: item.title,
 			publicationDate: item.publishDateTime,
 			teaser: item.teaser,
-			squareImage: squareHref?.[0]?.hrefTemplate,
-			wideImage: wideHref?.[0]?.hrefTemplate,
+			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+			cmsSource: cmsSources.NPR,
+			audio: audio.href,
+			video: video.href,
+
 		};
 	});
-	return articles;
+	return [{
+		componentType,
+		articles,
+	}];
 }
 
 /**

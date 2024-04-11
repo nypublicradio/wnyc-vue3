@@ -11,8 +11,9 @@ import {
   shareAPI,
   hasAudio,
   getReadingTime,
-  whenTime,
   addToFavorites,
+  getOrg,
+  getDate,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
@@ -186,10 +187,10 @@ const handleClick = () => {
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
-                {{ props.data.cmsSource == cmsSources.WAGTAIL ? "Gothamist" : "WNYC" }}
+                {{ getOrg(props.data.cmsSource) }}
               </template>
               <template #right>
-                {{ whenTime(props.data.meta) }}
+                {{ getDate(props.data) }}
               </template>
             </PipeData>
           </div>

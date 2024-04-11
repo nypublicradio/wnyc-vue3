@@ -6,6 +6,7 @@ export const localUserProfileKey = 'localUserProfile'
 export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
+    NPR: 'npr',
 }
 
 export const mediaTypes = {

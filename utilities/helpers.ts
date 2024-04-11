@@ -18,6 +18,7 @@ import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
 import {
+  cmsSources,
   mediaTypeRoutes,
   localUserProfileKey,
   FALLBACKIMAGEEP,
@@ -212,9 +213,33 @@ export function howLongAgo(date) {
 /**
  * to get the desired date format for the header
  */
-export function getDate(date = null, formatString = "EEE, MMM do") {
-  const currentYear = new Date().getFullYear()
+export function getDate(data = null, formatString = "EEE, MMM do") {
+  const date = data?.updatedDate || data?.publicationDate
   if (date) {
+    const currentYear = new Date().getFullYear()
+    const currentDay = new Date().getDate()
+    const inputDate = new Date(date)
+    const inputYear = inputDate.getFullYear()
+    const inputDay = inputDate.getDate()
+    if (inputDay !== currentDay) {
+      if (inputYear !== currentYear) {
+        formatString = `${formatString}, yyyy` // Update formatString to include the year
+      }
+      return format(inputDate, formatString)
+    } else {
+      return whenTime(data)
+    }
+  } else {
+    return format(new Date(), formatString)
+  }
+}
+
+/**
+ * to get the desired date format for the header
+ */
+export function formatDate(date = null, formatString = "EEE, MMM do") {
+  if (date) {
+    const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
     const inputYear = inputDate.getFullYear()
     if (inputYear !== currentYear) {
@@ -863,5 +888,19 @@ export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
     askNotificationPermisstions()
   } else {
     toSystemSettings()
+  }
+}
+
+export const getOrg = (cmsSource) => {
+
+  switch (cmsSource) {
+    case cmsSources.PUBLISHER:
+      return "WNYC"
+    case cmsSources.WAGTAIL:
+      return "Gothamist"
+    case cmsSources.NPR:
+      return "NPR"
+    default:
+      return "WNYC"
   }
 }

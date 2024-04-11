@@ -306,7 +306,7 @@ const handleError = (e) => {
               }}
             </template>
             <template #right>
-              {{ getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate) }}
+              {{ getDate(currentEpisode) }}
             </template>
           </PipeData>
           <div class="expanded-title">{{ currentEpisode.title }}</div>

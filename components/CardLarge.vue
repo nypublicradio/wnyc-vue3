@@ -1,5 +1,5 @@
 <script setup>
-import { whenTime } from "~/utilities/helpers"
+import { getDate } from "~/utilities/helpers"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage"
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 // TEMP fix to make ripple work
@@ -45,7 +45,7 @@ defineExpose({
         <PipeData class="text-xs">
           <template #left>{{ props.item.headers.brand.title }}</template>
           <template #right>
-            {{ whenTime(props.item) }}
+            {{ getDate(props.item) }}
           </template>
         </PipeData>
       </div>

@@ -235,12 +235,7 @@ const getEpisodeImage = computed(() => {
     <div v-if="!pending">
       <section>
         <p class="episode-page-date my-1">
-          {{
-            getDate(
-              episodeData?.updatedDate ?? episodeData?.publicationDate,
-              "LLL d, yyyy"
-            )
-          }}
+          {{ getDate(episodeData, "LLL d, yyyy") }}
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
         <div class="flex align-items-center justify-content-between flex-wrap gap-3">

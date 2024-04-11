@@ -1,5 +1,5 @@
 <script setup>
-import { goToEpisodePage } from "~/utilities/helpers"
+import { goToEpisodePage, hasAudio } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const { data: pagedata, /*  pending, */ error, refresh } = useLazyFetch(
@@ -83,8 +83,37 @@ onMounted(() => {
             />
           </div>
         </section>
-        <WNYCFeatured class="mt-2" v-else :articles="section.data" />
+        <WNYCFeatured v-else class="mt-2" :articles="section.data" />
       </div>
     </div>
+
+    <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre>
+    <section>
+      <h2 class="mb-3">NPR Stories</h2>
+      <div
+        v-for="(section, index) in pagedata?.npr_stories"
+        :key="`NPR-conetnet-${index}`"
+      >
+        <div v-if="section.componentType === 'default'">
+          <div class="flex flex-column gap-4">
+            <div v-for="article in section.articles">
+              <EpisodeItem
+                v-if="hasAudio(article.audio)"
+                :data="article"
+                @on-click="goToEpisodePage(article)"
+                showPlayButton
+              />
+              <StoryItem
+                v-else
+                :data="article"
+                :index="index"
+                @on-click="goToStoryPage(article, { src: article.cmsSource })"
+              />
+            </div>
+          </div>
+        </div>
+        <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
+      </div>
+    </section>
   </div>
 </template>

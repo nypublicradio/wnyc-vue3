@@ -16,6 +16,7 @@ import {
   togglePlayEpisode,
   addToFavorites,
   getEpisodeFallBackImage,
+  whenTime,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import {
@@ -214,7 +215,7 @@ const handleClick = () => {
                 </template>
               </template>
               <template #right>
-                {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
+                {{ getDate(props.data) }}
               </template>
             </PipeData>
           </div>
