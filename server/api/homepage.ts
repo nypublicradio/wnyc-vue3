@@ -207,24 +207,23 @@ const getNprStories = async () => {
 	});
 
 	const json = await response.json();
-	const articles = json.resources.map((item) => {
-	  const firstImageId = item.images[0].href.substring(item.images[0].href.lastIndexOf("/")+1);
-	  const firstAsset = item.assets[firstImageId];
-	  const squareHref = firstAsset.enclosures.filter((enclosure) => {
-		return enclosure.rels.includes('image-square');
-	  });
-	  const wideHref = firstAsset.enclosures.filter((enclosure) => {
-		return enclosure.rels.includes('image-wide');
-	  });
-	  return {
-		title: item.title,
-		publicationDate: item.publishDateTime,
-		teaser: item.teaser,
-		squareImage: squareHref[0].hrefTemplate,
-		wideImage: wideHref[0].hrefTemplate,
-	  };
+	const articles = json.resources?.map((item) => {
+		const firstImageId = item.images?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/")+1);
+		const firstAsset = item.assets?.[firstImageId];
+		const squareHref = firstAsset?.enclosures?.filter((enclosure) => {
+			return enclosure.rels?.includes('image-square');
+		});
+		const wideHref = firstAsset?.enclosures?.filter((enclosure) => {
+			return enclosure.rels?.includes('image-wide');
+		});
+		return {
+			title: item.title,
+			publicationDate: item.publishDateTime,
+			teaser: item.teaser,
+			squareImage: squareHref?.[0]?.hrefTemplate,
+			wideImage: wideHref?.[0]?.hrefTemplate,
+		};
 	});
-  
 	return articles;
 }
 
