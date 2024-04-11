@@ -225,17 +225,13 @@ const getNprStories = async () => {
 		const audio = firstAsset?.enclosures?.filter((enclosure) => {
 			return enclosure.type?.includes('audio/mpeg');
 		});
-		const video = firstAsset?.enclosures?.filter((enclosure) => {
-			return enclosure.type?.includes('video/mpeg');
-		});
 		return {
 			title: item.title,
 			publicationDate: item.publishDateTime,
 			teaser: item.teaser,
 			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
 			cmsSource: cmsSources.NPR,
-			audio: audio.href,
-			video: video.href,
+			audio: audio,
 
 		};
 	});
