@@ -19,13 +19,14 @@ import memoize from 'memoize';
  * @returns 
  */
 export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promise<number> => {
-	try {
-		const httpTokenizer = await makeTokenizer(audioTrackUrl);
-		const metadata = await parseFromTokenizer(httpTokenizer);
-		const duration = Math.round(metadata.format.duration);
-		return duration;
-	} catch (e) {
-		console.error(`Failed to estimate duration of ${audioTrackUrl}`, e);
-		return 0;
-	}
+	return 0
+	/* 	try {
+			const httpTokenizer = await makeTokenizer(audioTrackUrl);
+			const metadata = await parseFromTokenizer(httpTokenizer);
+			const duration = Math.round(metadata.format.duration);
+			return duration;
+		} catch (e) {
+			console.error(`Failed to estimate duration of ${audioTrackUrl}`, e);
+			return 0;
+		} */
 });

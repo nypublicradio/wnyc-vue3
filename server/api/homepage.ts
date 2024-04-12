@@ -222,25 +222,30 @@ const getNprStories = async () => {
 		// if the array is greater that 1 entry keep it as an array, otherwise just make it a string
 		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
 
+
+
 		let textBody = '';
 		for (const layoutItem of Object.values(item.layout)) {
-			console.log('layoutItem = ', layoutItem)
-		}
-		for (const asset of Object.values(item.assets)) {
-			if (asset.profiles[0]?.href === '/v1/profiles/text') {
-				textBody += asset?.text ? `<p>${asset.text}</p>` : '';
+			const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
+				textBody += item.assets[layoutId].text ? `<p>${item.assets[layoutId].text}</p>` : '';
 			}
-			if (asset.profiles[0]?.href === '/v1/profiles/image') {
-				const imageID = asset.id;
-				//console.log('imageID = ', imageID)
-				const imageInfo = item.assets?.[imageID];
-				//console.log('imageInfo.enclosures[0].href = ', imageInfo.enclosures[0].href)
-				const imageHTML = imageInfo.enclosures[0].href ? `<img src="${imageInfo.enclosures[0].href}"/>` : '';
+			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/image') {
+				const imageInfo = item.assets?.[layoutId];
+				const imgSrc = imageInfo.enclosures[0].hrefTemplate.replace('{width}', '400').replace('{quality}', '70').replace('{format}', 'webp');
+				const imageCredits = () => {
+					if (imageInfo.producer && imageInfo.provider) {
+						return `${imageInfo.producer}/${imageInfo.provider}`;
+					} else if (imageInfo.producer && !imageInfo.provider) {
+						return imageInfo.producer;
+					} else if (!imageInfo.producer && imageInfo.provider) {
+						return imageInfo.provider;
+					}
+				}
+				const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><img src="${imgSrc}" width="400" alt="${imageInfo.caption}" class="w-full"/> <p class="my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : '';
 				textBody += imageHTML ? imageHTML : '';
 			}
 		}
-
-
 
 		//console.log('textbody = ', textBody)
 		return {

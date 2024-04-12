@@ -110,7 +110,7 @@ onMounted(() => {
                 :index="index"
                 @on-click="goToStoryPage(article, { src: article.cmsSource })"
               />
-              <HtmlConvert :htmlContent="article.body"></HtmlConvert>
+              <div class="html-formatting" v-html="article.body"></div>
             </div>
           </div>
         </div>

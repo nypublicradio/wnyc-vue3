@@ -1,7 +1,6 @@
 <script setup>
 import { HTML2Vue } from "html2vue-renderer"
 import { NuxtLink } from "#components"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 const props = defineProps({
   htmlContent: {
     type: String,
@@ -33,7 +32,7 @@ const isHTML = (str) => {
   <HTML2Vue
     v-if="isHTML(props.htmlContent)"
     :value="parseHtml"
-    :componentsMap="{ NuxtLink, VImage }"
+    :componentsMap="{ NuxtLink }"
     class="html-formatting"
   />
   <div v-else>{{ props.htmlContent }}</div>
