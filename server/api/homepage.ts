@@ -236,6 +236,9 @@ const getNprStories = async () => {
 				const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><VImageNpr src="${imageInfo.enclosures[0].hrefTemplate}" :width="${400}" alt="${imageInfo.caption}"></VImageNpr> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
 				textBody += imageHTML ? imageHTML : '';
 			}
+
+		}
+		for (const asset of Object.values(item.assets)) {
 			if (asset.profiles[0]?.href === '/v1/profiles/audio') {
 				audioDuration = asset?.duration;
 				const audioID = asset?.id;
@@ -258,7 +261,7 @@ const getNprStories = async () => {
 			cmsSource: cmsSources.NPR,
 			type: 'test',
 			audio: audioURL ? audioURL : null,
-			duration: audioDuration ? audioDuration : null,
+			estimatedDuration: audioDuration ? audioDuration : null,
 			meta: {
 				firstPublishedAt: item.publishDateTime,
 				slug: id,
