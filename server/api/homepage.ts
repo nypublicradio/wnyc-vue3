@@ -220,11 +220,15 @@ const getNprStories = async () => {
 		const wideHref = firstImage?.enclosures?.filter((enclosure) => {
 			return enclosure.rels?.includes('image-wide');
 		});
-		console.log('item', item)
-		//const bodyResponse = 
-		const audio = firstAsset?.enclosures?.filter((enclosure) => {
+		const audioItems = firstAsset?.enclosures?.filter((enclosure) => {
 			return enclosure.type?.includes('audio/mpeg');
 		});
+		let audioHref = audioItems?.map((audioItem) => {
+			return audioItem.href
+		});
+		// if the array is greater that 1 entry keep it as an array, otherwise just make it a string
+		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
+
 		return {
 			title: item.title,
 			publicationDate: item.publishDateTime,
