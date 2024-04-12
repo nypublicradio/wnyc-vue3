@@ -1,5 +1,5 @@
 <script setup>
-import { goToEpisodePage, hasAudio } from "~/utilities/helpers"
+import { goToEpisodePage, hasAudio, getEpisodeFallBackImage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const { data: pagedata, /*  pending, */ error, refresh } = useLazyFetch(
@@ -102,6 +102,7 @@ onMounted(() => {
                 :data="article"
                 @on-click="goToEpisodePage(article)"
                 showPlayButton
+                :fallback-image="getEpisodeFallBackImage()"
               />
               <StoryItem
                 v-else
@@ -109,6 +110,7 @@ onMounted(() => {
                 :index="index"
                 @on-click="goToStoryPage(article, { src: article.cmsSource })"
               />
+              <HtmlConvert :htmlContent="article.body"></HtmlConvert>
             </div>
           </div>
         </div>

@@ -223,11 +223,25 @@ const getNprStories = async () => {
 		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
 
 		let textBody = '';
+		for (const layoutItem of Object.values(item.layout)) {
+			console.log('layoutItem = ', layoutItem)
+		}
 		for (const asset of Object.values(item.assets)) {
 			if (asset.profiles[0]?.href === '/v1/profiles/text') {
-				textBody += asset.text ? asset.text : '';
+				textBody += asset?.text ? `<p>${asset.text}</p>` : '';
+			}
+			if (asset.profiles[0]?.href === '/v1/profiles/image') {
+				const imageID = asset.id;
+				//console.log('imageID = ', imageID)
+				const imageInfo = item.assets?.[imageID];
+				//console.log('imageInfo.enclosures[0].href = ', imageInfo.enclosures[0].href)
+				const imageHTML = imageInfo.enclosures[0].href ? `<img src="${imageInfo.enclosures[0].href}"/>` : '';
+				textBody += imageHTML ? imageHTML : '';
 			}
 		}
+
+
+
 		//console.log('textbody = ', textBody)
 		return {
 			id,
@@ -236,8 +250,7 @@ const getNprStories = async () => {
 			publishAt: item.publishDateTime,
 			tease: item.teaser,
 			description: item.teaser,
-			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.
-				hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
 			leadImageCaption: firstImageCaption,
 			cmsSource: cmsSources.NPR,
 			type: 'test',
@@ -249,6 +262,7 @@ const getNprStories = async () => {
 			showTitle: item.showTitle ?? 'NPR',
 			body: textBody,
 			rawBody: textBody,
+			//authors: article.attributes.appearances?.authors.map(normalizeAuthor),
 		};
 	});
 	return [{
