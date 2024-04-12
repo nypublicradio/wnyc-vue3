@@ -4,6 +4,7 @@ import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
 import { estimateMp3Duration } from '~/server/utils/duration'
+import { au } from '~/android/app/src/main/assets/public/_nuxt/entry.BTAHmFMt'
 
 // handleDuration is a helper function that checks if the estimated duration is available and if not, it estimates it using the audio URL in the estimateMp3Duration function.
 const handleDuration = async (estimatedDuration: number, audioURL: string) => {
@@ -213,18 +214,10 @@ const getNprStories = async () => {
 		const wideHref = firstImage?.enclosures?.filter((enclosure) => {
 			return enclosure.rels?.includes('image-wide');
 		});
-		const audioItems = firstAsset?.enclosures?.filter((enclosure) => {
-			return enclosure.type?.includes('audio/mpeg');
-		});
-		let audioHref = audioItems?.map((audioItem) => {
-			return audioItem.href
-		});
-		// if the array is greater that 1 entry keep it as an array, otherwise just make it a string
-		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
-
-
 
 		let textBody = '';
+		let audioURL;
+		let audioDuration;
 		for (const layoutItem of Object.values(item.layout)) {
 			const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
 			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
@@ -242,14 +235,20 @@ const getNprStories = async () => {
 						return imageInfo.provider;
 					}
 				}
-				/* const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><img src="${imgSrc}" width="400" alt="${imageInfo.caption}" class="w-full"/> <p class="my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : ''; */
 
 				const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><VImageNpr src="${imageInfo.enclosures[0].hrefTemplate}" :width="${400}" alt="${imageInfo.caption}"></VImageNpr> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
 				textBody += imageHTML ? imageHTML : '';
 			}
+			if (asset.profiles[0]?.href === '/v1/profiles/audio') {
+				audioDuration = asset?.duration;
+				const audioID = asset?.id;
+				const audioInfo = item.assets?.[audioID];
+				audioURL = audioInfo.enclosures.filter((enclosure) => {
+					return enclosure.type.includes('audio/mpeg');
+				})[0]?.href;
+			}
 		}
-		textBody = textBody.replace(/'/g, "&#39;");
-		//console.log('textbody = ', textBody)
+
 		return {
 			id,
 			title: item.title,
@@ -261,7 +260,8 @@ const getNprStories = async () => {
 			leadImageCaption: firstImageCaption,
 			cmsSource: cmsSources.NPR,
 			type: 'test',
-			audio: audio,
+			audio: audioURL ? audioURL : null,
+			duration: audioDuration ? audioDuration : null,
 			meta: {
 				firstPublishedAt: item.publishDateTime,
 				slug: id,
