@@ -205,9 +205,6 @@ const getNprStories = async () => {
 		const firstImage = item.assets?.[firstImageId];
 		const firstImageCaption = item.assets?.[firstImageId].caption;
 
-		const firstAssetId = item.audio?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
-		const firstAsset = item.assets?.[firstAssetId];
-
 		const squareHref = firstImage?.enclosures?.filter((enclosure) => {
 			return enclosure.rels?.includes('image-square');
 		});
