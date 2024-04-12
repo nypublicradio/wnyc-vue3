@@ -184,18 +184,25 @@ const mergeArticles = (articles1: any, articles2: any) => {
 }
 
 const getNprStories = async () => {
-	const response = await fetch(`${config.public.NPR_CDS_API}${config.public.NPR_CDS_TOP_STORIES}`, {
-		headers: {
-			Authorization: `Bearer ${config.public.NPR_CDS_API_KEY}`
-		}
-	});
 	const componentType = "default";
-	const json = await response.json();
-	const articles = json.resources?.map((item) => {
+	const options = {
+		method: 'GET',
+		url: `${config.public.NPR_CDS_API}/documents`,
+		params: {
+			collectionIds: '1002',
+			sort: 'publishDateTime:desc',
+		},
+		headers: {
+			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+		},
+	};
+	const response = await axios(options);
+	const articles = response.data.resources.map((item) => {
 		const id = item.id
 
 		const firstImageId = item.images?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
 		const firstImage = item.assets?.[firstImageId];
+		const firstImageCaption = item.assets?.[firstImageId].caption;
 
 		const firstAssetId = item.audio?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
 		const firstAsset = item.assets?.[firstAssetId];
@@ -215,6 +222,13 @@ const getNprStories = async () => {
 		// if the array is greater that 1 entry keep it as an array, otherwise just make it a string
 		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
 
+		let textBody = '';
+		for (const asset of Object.values(item.assets)) {
+			if (asset.profiles[0]?.href === '/v1/profiles/text') {
+				textBody += asset.text ? asset.text : '';
+			}
+		}
+		//console.log('textbody = ', textBody)
 		return {
 			id,
 			title: item.title,
@@ -222,15 +236,19 @@ const getNprStories = async () => {
 			publishAt: item.publishDateTime,
 			tease: item.teaser,
 			description: item.teaser,
-			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.
+				hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+			leadImageCaption: firstImageCaption,
 			cmsSource: cmsSources.NPR,
+			type: 'test',
 			audio: audio,
 			meta: {
 				firstPublishedAt: item.publishDateTime,
 				slug: id,
 			},
 			showTitle: item.showTitle ?? 'NPR',
-
+			body: textBody,
+			rawBody: textBody,
 		};
 	});
 	return [{
