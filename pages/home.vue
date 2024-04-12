@@ -96,6 +96,7 @@ onMounted(() => {
       >
         <div v-if="section.componentType === 'default'">
           <div class="flex flex-column gap-4">
+            <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert>
             <div v-for="article in section.articles" :key="article.id">
               <EpisodeItem
                 v-if="hasAudio(article.audio)"
@@ -110,7 +111,6 @@ onMounted(() => {
                 :index="index"
                 @on-click="goToStoryPage(article, { src: article.cmsSource })"
               />
-              <!--      <HtmlConvert :htmlContent="article.body"></HtmlConvert> -->
             </div>
           </div>
         </div>

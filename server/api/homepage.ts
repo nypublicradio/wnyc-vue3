@@ -184,6 +184,12 @@ const mergeArticles = (articles1: any, articles2: any) => {
 	})
 }
 
+const fetchTweetEmbed = async (tweetId) => {
+	const response = await fetch(`https://publish.twitter.com/oembed?url=https://twitter.com/web/status/${tweetId}`);
+	const data = await response.json();
+	return data.html;
+};
+
 const getNprStories = async () => {
 	const componentType = "default";
 	const options = {
@@ -198,7 +204,7 @@ const getNprStories = async () => {
 		},
 	};
 	const response = await axios(options);
-	const articles = response.data.resources.map((item) => {
+	const articles = await Promise.all(response.data.resources.map(async (item) => {
 		const id = item.id
 
 		const firstImageId = item.images?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
@@ -217,8 +223,22 @@ const getNprStories = async () => {
 		let audioDuration;
 		for (const layoutItem of Object.values(item.layout)) {
 			const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+			console.log('item.assets[layoutId].profiles[0]?.href= ', item.assets[layoutId].profiles[0]?.href)
 			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
 				textBody += item.assets[layoutId].text ? `<p>${item.assets[layoutId].text}</p>` : '';
+			}
+			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
+				textBody += item.assets[layoutId]?.html;
+			}
+			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
+				const videoID = item.assets?.[layoutId].videoId;
+				textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+`
+			}
+			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
+				const tweetInfo = item.assets?.[layoutId];
+				const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId);
+				textBody += tweetHTML ? tweetHTML : '';
 			}
 			if (item.assets[layoutId].profiles[0]?.href === '/v1/profiles/image') {
 				const imageInfo = item.assets?.[layoutId];
@@ -236,7 +256,6 @@ const getNprStories = async () => {
 				const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><VImageNpr src="${imageInfo.enclosures[0].hrefTemplate}" :width="${400}" alt="${imageInfo.caption}"></VImageNpr> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
 				textBody += imageHTML ? imageHTML : '';
 			}
-
 		}
 		for (const asset of Object.values(item.assets)) {
 			if (asset.profiles[0]?.href === '/v1/profiles/audio') {
@@ -271,7 +290,7 @@ const getNprStories = async () => {
 			rawBody: textBody,
 			//authors: article.attributes.appearances?.authors.map(normalizeAuthor),
 		};
-	});
+	}));
 	return [{
 		componentType,
 		articles,
