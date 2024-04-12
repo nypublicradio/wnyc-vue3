@@ -4,6 +4,7 @@ import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
 import { estimateMp3Duration } from '~/server/utils/duration'
+import { au } from '~/android/app/src/main/assets/public/_nuxt/entry.BTAHmFMt'
 
 // handleDuration is a helper function that checks if the estimated duration is available and if not, it estimates it using the audio URL in the estimateMp3Duration function.
 const handleDuration = async (estimatedDuration: number, audioURL: string) => {
@@ -213,18 +214,12 @@ const getNprStories = async () => {
 		const wideHref = firstImage?.enclosures?.filter((enclosure) => {
 			return enclosure.rels?.includes('image-wide');
 		});
-		const audioItems = firstAsset?.enclosures?.filter((enclosure) => {
-			return enclosure.type?.includes('audio/mpeg');
-		});
-		let audioHref = audioItems?.map((audioItem) => {
-			return audioItem.href
-		});
-		// if the array is greater that 1 entry keep it as an array, otherwise just make it a string
-		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
 
 		let textBody = '';
+		let audioURL;
+		let audioDuration;
 		for (const layoutItem of Object.values(item.layout)) {
-			console.log('layoutItem = ', layoutItem)
+			//console.log('layoutItem = ', layoutItem)
 		}
 		for (const asset of Object.values(item.assets)) {
 			if (asset.profiles[0]?.href === '/v1/profiles/text') {
@@ -237,6 +232,14 @@ const getNprStories = async () => {
 				//console.log('imageInfo.enclosures[0].href = ', imageInfo.enclosures[0].href)
 				const imageHTML = imageInfo.enclosures[0].href ? `<img src="${imageInfo.enclosures[0].href}"/>` : '';
 				textBody += imageHTML ? imageHTML : '';
+			}
+			if (asset.profiles[0]?.href === '/v1/profiles/audio') {
+				audioDuration = asset?.duration;
+				const audioID = asset?.id;
+				const audioInfo = item.assets?.[audioID];
+				audioURL = audioInfo.enclosures.filter((enclosure) => {
+					return enclosure.type.includes('audio/mpeg');
+				})[0]?.href;
 			}
 		}
 
@@ -254,7 +257,8 @@ const getNprStories = async () => {
 			leadImageCaption: firstImageCaption,
 			cmsSource: cmsSources.NPR,
 			type: 'test',
-			audio: audio,
+			audio: audioURL ? audioURL : null,
+			duration: audioDuration ? audioDuration : null,
 			meta: {
 				firstPublishedAt: item.publishDateTime,
 				slug: id,
