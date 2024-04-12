@@ -96,7 +96,7 @@ onMounted(() => {
       >
         <div v-if="section.componentType === 'default'">
           <div class="flex flex-column gap-4">
-            <div v-for="article in section.articles">
+            <div v-for="article in section.articles" :key="article.id">
               <EpisodeItem
                 v-if="hasAudio(article.audio)"
                 :data="article"
