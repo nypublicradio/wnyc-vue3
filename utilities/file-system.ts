@@ -11,7 +11,6 @@ import {
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, resizePublisherImageUrl, getEpisodeFallBackImage } from "~/utilities/helpers"
-import { FALLBACKIMAGELOCAL } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
 
@@ -461,7 +460,7 @@ export const getDownloadedImageUri = async (file) => {
 
     } catch (e) {
         console.error("Unable to read file", e)
-        return FALLBACKIMAGELOCAL
+        return getEpisodeFallBackImage()
     }
 }
 

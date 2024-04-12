@@ -37,6 +37,7 @@ const selectedFilterOption = ref(filterOptions.value[0])
           </div>
           <Button
             label="Browse Shows"
+            aria-label="Browse Shows"
             text
             severity="secondary"
             class="underline"

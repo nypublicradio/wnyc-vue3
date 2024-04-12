@@ -8,6 +8,7 @@ import {
   templatizePublisherImageUrl,
   checkIsFavorited,
   addToFavorites,
+  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
@@ -230,7 +231,13 @@ const moreFromClick = () => {
     <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
-        <Button text severity="secondary" rounded @click="handleFollow">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="Create Free Account"
+          @click="handleFollow"
+        >
           <template #icon> <FollowIcon /></template>
         </Button>
         <Button text severity="secondary" rounded @click="handleSleepTimer">
@@ -242,12 +249,19 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
+          aria-label="add to favoties"
           @click="handleAddToFavorites"
           v-if="!currentEpisode.hideFavorite"
         >
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
-        <Button text severity="secondary" rounded @click="handleDownload">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="download"
+          @click="handleDownload"
+        >
           <template #icon> <DownloadIcon /></template>
         </Button>
         <DownloadProgress
@@ -259,7 +273,13 @@ const moreFromClick = () => {
       </div>
 
       <div class="flex gap-1">
-        <Button text severity="secondary" rounded @click="handleShare">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="share"
+          @click="handleShare"
+        >
           <template #icon> <ShareIcon /></template>
         </Button>
 
@@ -285,11 +305,13 @@ const moreFromClick = () => {
             <div>
               <div class="flex gap-3 px-4 align-items-center">
                 <VImage
-                  :src="templatizePublisherImageUrl(currentEpisode.image)"
+                  :src="
+                    templatizePublisherImageUrl(currentEpisode.image) ??
+                    getEpisodeFallBackImage()
+                  "
                   :alt="`${currentEpisode.title} show image`"
                   :width="116"
                   :height="116"
-                  :sizes="[2]"
                   class="show-image-in-menu flex-none"
                   :ratio="[1, 1]"
                   style="height: 60px; width: 60px"
@@ -355,6 +377,9 @@ const moreFromClick = () => {
           text
           severity="secondary"
           :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
+          :aria-label="`More from ${
+            currentEpisode.showTitle || currentEpisode.title
+          } button`"
           icon="pi pi-chevron-right"
           iconPos="right"
           class="flex m-auto"

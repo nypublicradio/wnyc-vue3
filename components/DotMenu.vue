@@ -41,7 +41,7 @@ const emit = defineEmits(["changeEmit"])
         icon="pi pi-ellipsis-v"
         text
         rounded
-        aria-label="menu"
+        aria-label="options menu"
         :size="props.size"
         type="button"
         aria-haspopup="true"

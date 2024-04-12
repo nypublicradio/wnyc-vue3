@@ -31,15 +31,15 @@ const onSkipThis = () => {
 onBeforeMount(() => {
   // this page has the body class "style-mode-dark", so we need to force the status bar to be dark as well
   setStatusDarkMode(true)
-} )
+})
 
-onMounted( () => {
+onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
-    page_title: 'Login',
-    page_type: 'login_page',
-    content_group: 'login',
+    page_title: "Login",
+    page_type: "login_page",
+    content_group: "login",
   })
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader
@@ -90,6 +90,7 @@ onUnmounted(() => {
               <Button
                 class="w-13rem m-auto"
                 label="Create Free Account"
+                aria-label="Create Free Account"
                 rounded
                 size="small"
                 @click="
@@ -104,6 +105,7 @@ onUnmounted(() => {
               <Button
                 class="w-13rem m-auto"
                 label="Log in"
+                aria-label="Log in"
                 rounded
                 size="small"
                 severity="secondary"
@@ -114,8 +116,9 @@ onUnmounted(() => {
                 "
               />
               <p>
-                <VFlexibleLink to="/home" @click.native="onSkipThis">Skip this</VFlexibleLink>,
-                I'll create an account later.
+                <VFlexibleLink to="/home" @click.native="onSkipThis"
+                  >Skip this</VFlexibleLink
+                >, I'll create an account later.
               </p>
             </div>
           </section>

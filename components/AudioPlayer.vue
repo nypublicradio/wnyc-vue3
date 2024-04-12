@@ -22,7 +22,6 @@ import {
   useIsNetworkConnected,
   //useAdvertisingRestriction,
   useAdvertisingId,
-  useIsApp,
   useCurrentUserProfile,
   useGlobalToast,
 } from "~/composables/states"
@@ -32,6 +31,7 @@ import {
   templatizePublisherImageUrl,
   getDate,
   hasQueryParams,
+  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
@@ -67,7 +67,6 @@ const advertisingId = useAdvertisingId()
 //const advertisingRestriction = useAdvertisingRestriction()
 const currentUser = useCurrentUserProfile()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
-const isApp = useIsApp()
 const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
@@ -202,26 +201,22 @@ then we merge it all together and return it to the player as the source for the 
 
 const getConfiguredAudioUrl = computed(() => {
   const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
-  if (!isApp.value) {
-    const hasQuery = hasQueryParams(url)
-    const adID = advertisingId.value
-    const userID = currentUser?.value?.id ?? "0"
-    const desktop = device.isDesktop || device.isDesktopOrTablet
-    const thisDevice = device.isAndroid
-      ? "android"
-      : desktop
-      ? "desktop"
-      : device.isIos
-      ? "ios"
-      : "unknown"
-    // update restriction when we have the value from setting panel
-    const restriction = "0"
-    return `${url}${
-      !isApp.value ? `${hasQuery ? "&" : "?"}listenerid=${adID}` : ""
-    }&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
-  } else {
-    return url
-  }
+  const hasQuery = hasQueryParams(url)
+  const adID = advertisingId.value ?? "0"
+  const userID = currentUser?.value?.id ?? "0"
+  const desktop = device.isDesktop || device.isDesktopOrTablet
+  const thisDevice = device.isAndroid
+    ? "android"
+    : desktop
+    ? "desktop"
+    : device.isIos
+    ? "ios"
+    : "unknown"
+  // update restriction when we have the value from setting panel
+  const restriction = "0"
+  return `${url}${
+    hasQuery ? "&" : "?"
+  }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
 // function that handles the expanded player from the persistent player emit
@@ -276,7 +271,9 @@ const handleError = (e) => {
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"
-        :image="templatizePublisherImageUrl(currentEpisode?.image) ?? FALLBACKIMAGELOCAL"
+        :image="
+          templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
+        "
         :file="getConfiguredAudioUrl"
         :skipAheadTime="skipTime"
         :skipBackTime="skipTime"

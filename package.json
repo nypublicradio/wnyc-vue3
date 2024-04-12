@@ -63,6 +63,7 @@
     "humps": "^2.0.1",
     "ionicons": "^6.1.1",
     "jsdom": "^21.1.2",
+    "memoize": "^10.0.0",
     "music-metadata": "^7.14.0",
     "primeflex": "^3.3.0",
     "primevue": "^3.46.0",

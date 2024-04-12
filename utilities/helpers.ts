@@ -31,9 +31,9 @@ import {
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
-import { FALLBACKIMAGELOCAL } from "../composables/globals"
 import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
+import { initAdvertisingId } from "~/utilities/advertising-id.js"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
@@ -471,6 +471,7 @@ export const convertTime = (val) => {
 export const getAndSetUserProfile = async () => {
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
+  const isApp = useIsApp()
   const localUserProfileDefault = useLocalUserProfileDefault()
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
@@ -574,6 +575,10 @@ export const getAndSetUserProfile = async () => {
     } else {
       // if they are a user, get their profile data
       await getProfile()
+      // get the advertising id if it's an app and not a browser
+      if (isApp.value) {
+        await initAdvertisingId()
+      }
       await getFavoritedItems()
     }
   }
@@ -709,7 +714,7 @@ export const prepForPlayer = (item, index = null) => {
       item?.image?.template ??
       item?.listingImage?.template ??
       item?.showImage ??
-      FALLBACKIMAGELOCAL,
+      getEpisodeFallBackImage(),
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,

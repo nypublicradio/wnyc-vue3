@@ -161,10 +161,12 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
  * @returns 
  */
 export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
-
   if (typeof article === 'undefined')
     return null
-  const duration = article.attributes.estimatedDuration === 0 ? await estimateMp3Duration(article.attributes.audio) : article.attributes.estimatedDuration;
+  let duration = article.attributes.estimatedDuration;
+  if (!duration || typeof duration !== 'number' || duration === 0) {
+    duration = await estimateMp3Duration(article.attributes.audio);
+  }
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
