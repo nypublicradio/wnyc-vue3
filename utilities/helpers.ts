@@ -712,6 +712,7 @@ export const prepForPlayer = (item, index = null) => {
     title: isSegment ? item.segments[index].title : item.title,
     image:
       item?.image?.template ??
+      item?.image ??
       item?.listingImage?.template ??
       item?.showImage ??
       getEpisodeFallBackImage(),
@@ -723,10 +724,12 @@ export const prepForPlayer = (item, index = null) => {
 
 // handles playing episodes and segments
 export const togglePlayEpisode = (media, index = 0) => {
+  console.log('toggle play')
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
+      console.log('current episode changed  =', media)
       currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }

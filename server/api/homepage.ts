@@ -192,6 +192,8 @@ const getNprStories = async () => {
 	const componentType = "default";
 	const json = await response.json();
 	const articles = json.resources?.map((item) => {
+		const id = item.id
+
 		const firstImageId = item.images?.[0]?.href?.substring(item.images[0].href.lastIndexOf("/") + 1);
 		const firstImage = item.assets?.[firstImageId];
 
@@ -214,12 +216,20 @@ const getNprStories = async () => {
 		const audio = audioHref ? audioHref.length > 1 ? audioHref : audioHref[0] : undefined;
 
 		return {
+			id,
 			title: item.title,
 			publicationDate: item.publishDateTime,
-			teaser: item.teaser,
+			publishAt: item.publishDateTime,
+			tease: item.teaser,
+			description: item.teaser,
 			image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
 			cmsSource: cmsSources.NPR,
 			audio: audio,
+			meta: {
+				firstPublishedAt: item.publishDateTime,
+				slug: id,
+			},
+			showTitle: item.showTitle ?? 'NPR',
 
 		};
 	});
