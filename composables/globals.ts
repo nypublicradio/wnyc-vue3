@@ -27,6 +27,7 @@ export const mediaTypeRoutes = {
     [mediaTypes.STORY]: '/story/',
     [mediaTypes.ARTICLE_PAGE]: '/story/',
     [mediaTypes.ARTICLE]: '/story/',
+    [mediaTypes.NPR]: '/npr/',
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'

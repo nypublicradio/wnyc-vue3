@@ -1,5 +1,10 @@
 <script setup>
-import { goToEpisodePage, hasAudio, getEpisodeFallBackImage } from "~/utilities/helpers"
+import {
+  goToEpisodePage,
+  hasAudio,
+  getEpisodeFallBackImage,
+  goToNprPage,
+} from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const { data: pagedata, /*  pending, */ error, refresh } = useLazyFetch(
@@ -87,7 +92,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre>
+    <!-- <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre> -->
     <section>
       <h2 class="mb-3">NPR Stories</h2>
       <div
@@ -96,12 +101,12 @@ onMounted(() => {
       >
         <div v-if="section.componentType === 'default'">
           <div class="flex flex-column gap-4">
-            <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert>
+            <!-- <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert> -->
             <div v-for="article in section.articles" :key="article.id">
               <EpisodeItem
                 v-if="hasAudio(article.audio)"
                 :data="article"
-                @on-click="goToEpisodePage(article)"
+                @on-click="goToNprPage(article)"
                 showPlayButton
                 :fallback-image="getEpisodeFallBackImage()"
               />
@@ -109,7 +114,7 @@ onMounted(() => {
                 v-else
                 :data="article"
                 :index="index"
-                @on-click="goToStoryPage(article, { src: article.cmsSource })"
+                @on-click="goToNprPage(article)"
               />
             </div>
           </div>

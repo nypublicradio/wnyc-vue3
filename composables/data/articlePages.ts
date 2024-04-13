@@ -223,6 +223,10 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   }))
 }
 
+export function normalizeNprPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
+  return null
+}
+
 // Transform page data from the API into a simpler and typed format
 export function normalizeSearchResults(results: Record<string, any | undefined>): ArticlePage {
   return {

@@ -770,6 +770,16 @@ export const goToStoryPage = (story, params, log = true) => {
     saveRecentlyPlayed(story)
   }
 }
+
+/* centralized function to route to a story page */
+export const goToNprPage = (story, log = true) => {
+  navigateTo({
+    path: story.id,
+  })
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
+}
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
   navigateTo({
