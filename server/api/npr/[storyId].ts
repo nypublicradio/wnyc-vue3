@@ -1,5 +1,4 @@
 import axios from 'axios'
-import humps from 'humps'
 import { normalizeNprPage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
@@ -8,10 +7,14 @@ const getNprStoryData = async (id: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${config.public.NPR}documents/${id}`,
+            url: `${config.public.NPR_CDS_API}/documents/${id}`,
+            headers: {
+                Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+            },
         };
         const res = await axios(option);
-        return normalizeNprPage(res.data);
+        console.log('res= ', res.data.resources[0])
+        return normalizeNprPage(res.data.resources[0]);
     } catch (e) {
 
         if (e.response && e.response.status === 404) {
@@ -26,7 +29,7 @@ const getNprStoryData = async (id: string) => {
 // Get story data from CMS
 
 export default defineEventHandler(async (event) => {
-    const id: string | undefined = event?.context?.params?.slug;
+    const id: string | undefined = event?.context?.params?.storyId;
     if (id) {
         const storyData = await getNprStoryData(id);
         return storyData;

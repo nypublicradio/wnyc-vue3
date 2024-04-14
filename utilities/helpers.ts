@@ -774,7 +774,7 @@ export const goToStoryPage = (story, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
   navigateTo({
-    path: story.id,
+    path: `${mediaTypeRoutes[mediaTypes.NPR]}${story.id}`,
   })
   if (log) {
     saveRecentlyPlayed(story)
