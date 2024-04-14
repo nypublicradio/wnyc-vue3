@@ -10,15 +10,17 @@ const props = defineProps({
 })
 
 const parseHtml = computed(() => {
-  const updatedHTML = props.htmlContent.replace(
-    /<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g,
-    (match, href, text) => {
+  const updatedHTML = props.htmlContent
+    .replace(/<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g, (match, href, text) => {
       const isInternal = !href.startsWith("http")
       return isInternal
         ? `<NuxtLink to="${href}">${text}</NuxtLink>`
         : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
-    }
-  )
+    })
+    .replace(/<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"[^>]*>/g, (match, src, alt) => {
+      return `<VImageNpr src="${src}" alt="${alt}" :width="${400}" />`
+    })
+
   return updatedHTML
 })
 

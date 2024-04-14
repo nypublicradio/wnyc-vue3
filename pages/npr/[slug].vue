@@ -1,15 +1,10 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
-import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
-import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import CommentsIcon from "~/components/icons/CommentsIcon.vue"
-import { cmsSources } from "~/composables/globals"
-//import { ArticlePage, GalleryPage } from '~/composables/types/Page'
-import { normalizeGalleryPage } from "~/composables/data/galleryPages"
+
 import {
   checkIsFavorited,
   shareAPI,
@@ -22,8 +17,6 @@ import {
 
 import { useCurrentUser } from "~/composables/states"
 
-// TO DO - replace dummy data with BFF data
-//import storyDataRaw from './story-data.json'
 const route = useRoute()
 const router = useRouter()
 
@@ -39,31 +32,11 @@ const { data: topStoriesData, /*  pending2, */ error2, refresh2 } = useLazyFetch
 
 const storySource = "NPR"
 const topStories = ref(null)
-const gallery = ref(null)
-const topImage = ref(null)
-const topCaption = ref(null)
-const galleryLength = ref(null)
-
-const galleryLink = ref(null)
-
-const commentCounts = ref(useCommentCounts())
-const commentCount = computed(() => {
-  return commentCounts.value[storyData?.value?.commentId]
-})
 
 // navigate back to home and track it
 const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
   window.history.state.back ? router.go(-1) : navigateTo("/home")
-}
-
-const handleComments = () => {
-  const activeStation = document.getElementById("comments")
-  activeStation.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-    inline: "start",
-  })
 }
 
 // if user is logged in, check if item is already favorited
@@ -95,7 +68,7 @@ watch(topStoriesData, () => {
 watch(storyData, async () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
+  /*   $analytics.sendPageView({
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
@@ -106,32 +79,7 @@ watch(storyData, async () => {
       : storyData.value?.publicationDate,
     article_title: storyData.value?.title,
   })
-
-  if (storyData.value?.leadGallery) {
-    gallery.value = await usePageById(
-      storyData.value.leadGallery.gallery
-    ).then(({ data }) => normalizeGalleryPage(data.value))
-  }
-
-  topImage.value =
-    storyData.value?.cmsSource === cmsSources.WAGTAIL
-      ? String(storyData.value?.image?.id)
-      : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
-
-  topCaption.value =
-    storyData.value?.leadImageCaption ??
-    topImage?.caption ??
-    gallery.value?.slides?.[0]?.image.caption ??
-    null
-
-  if (storyData.value?.leadGallery) {
-    galleryLength.value = gallery.value?.slides?.length ?? 0
-    galleryLink.value = String(
-      `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
-    )
-  }
-  // get comment count
-  useUpdateCommentCounts([storyData.value])
+ */
 })
 
 // handle the toggle play button and tracking
@@ -167,32 +115,34 @@ const togglePlayHere = (story, index = 0) => {
     <FetchError v-if="error || error2" />
     <div v-if="!pending">
       <VImage
-        v-if="topImage"
-        :src="topImage"
-        :maxWidth="storyData.image.width"
-        :maxHeight="storyData.image.height"
-        sizes="xs:390px md:768px lg:1024px xl:1920px"
-        density="x1 x2"
-        :alt="storyData.image.alt"
+        v-if="storyData.image"
+        :src="storyData.image"
+        :maxWidth="storyData.width"
+        :maxHeight="storyData.height"
+        :width="390"
+        :alt="storyData.alt"
         class="story-page-image"
       >
         <template #caption>
-          <VImageCaption v-if="storyData.image.caption" :text="storyData.image.caption" />
+          <VImageCaption
+            v-if="storyData.leadImageCaption"
+            :text="storyData.leadImageCaption"
+          />
         </template>
-        <template #gallery>
+        <!--         <template #gallery>
           <VImageGallery
             v-if="gallery?.slides"
             :count="String(gallery.slides.length)"
             :gallery-link="galleryLink"
           />
-        </template>
-        <template #belowImage>
+        </template> -->
+        <!--         <template #belowImage>
           <div>
             <p class="text-left px-4 mt-1 text-xs">
               {{ storyData.image.credit }}
             </p>
           </div>
-        </template>
+        </template> -->
       </VImage>
       <Skeleton
         v-else
@@ -230,23 +180,9 @@ const togglePlayHere = (story, index = 0) => {
             <Button text plain rounded aria-label="share" @click="handleShare">
               <template #icon> <ShareIcon /></template>
             </Button>
-            <Button
-              text
-              plain
-              rounded
-              :label="`&nbsp; ${String(commentCount)} ${
-                commentCount === 1 ? 'comment' : 'comments'
-              }`"
-              class="comments-btn pl-2 text-xs font-normal"
-              aria-label="comments"
-              @click="handleComments()"
-            >
-              <template #icon> <CommentsIcon /></template>
-            </Button>
           </div>
         </div>
       </section>
-
       <v-streamfield
         v-if="storyData?.body"
         class="story-page-body"

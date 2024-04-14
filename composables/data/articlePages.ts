@@ -277,7 +277,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
         }
       }
 
-      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><VImageNpr src="${imageInfo.enclosures[0].hrefTemplate}" :width="${400}" alt="${imageInfo.caption}"></VImageNpr> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"></img> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
       textBody += imageHTML ? imageHTML : '';
     }
   }
