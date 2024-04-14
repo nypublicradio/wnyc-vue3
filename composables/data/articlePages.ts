@@ -266,7 +266,6 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     }
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image') {
       const imageInfo = article.assets?.[layoutId];
-      const imgSrc = imageInfo.enclosures[0].hrefTemplate.replace('{width}', '400').replace('{quality}', '70').replace('{format}', 'webp');
       const imageCredits = () => {
         if (imageInfo.producer && imageInfo.provider) {
           return `${imageInfo.producer}/${imageInfo.provider}`;
@@ -277,8 +276,11 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
         }
       }
 
-      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"></img> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : "";
       textBody += imageHTML ? imageHTML : '';
+
+      const imageHTMLCaption = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-1 mb-6"><p class=" mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+      textBody += imageHTMLCaption ? imageHTMLCaption : '';
     }
   }
   for (const asset of Object.values(article.assets)) {
