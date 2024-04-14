@@ -68,7 +68,7 @@ const mergeArticles = (articles1: any, articles2: any) => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	console.log('event = ', event.node.req.url)
+	//console.log('getting home page TOP STORIES data')
 	let res = event?.node?.res;
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();

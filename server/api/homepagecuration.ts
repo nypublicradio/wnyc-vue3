@@ -65,7 +65,7 @@ const getNprStories = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	console.log('event = ', event.node.req.url)
+	//console.log('getting home page CURATION data')
 	let res = event?.node?.res;
 	const homeTemplate = await getHomeTemplate();
 	const nprStories = await getNprStories();

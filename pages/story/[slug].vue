@@ -29,11 +29,15 @@ const router = useRouter()
 
 const user = useCurrentUser()
 const config = useRuntimeConfig()
+
 const { data: storyData, pending, error, refresh } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
+const { data: topStoriesData, /*  pending2, */ error2, refresh2 } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagetopstories`
+)
+
 const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
-const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
 const topStories = ref(null)
 const gallery = ref(null)
 const topImage = ref(null)
@@ -82,8 +86,8 @@ const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }
 
-watch(stories, () => {
-  topStories.value = stories.value.top_stories.filter(
+watch(topStoriesData, () => {
+  topStories.value = topStoriesData.value.top_stories.filter(
     (item) => item.id !== storyData.value?.id
   )
 })
@@ -160,7 +164,7 @@ const togglePlayHere = (story, index = 0) => {
         />
       </div>
     </section>
-    <FetchError v-if="error || storyData === undefined" @on-click="refresh" />
+    <FetchError v-if="error || error2" />
     <div v-if="!pending">
       <VImage
         v-if="topImage"

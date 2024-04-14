@@ -62,7 +62,7 @@ onMounted(() => {
     <LiveFeature />
 
     <section>
-      <FetchError v-if="error || error2 || error3" @on-click="refresh" />
+      <FetchError v-if="error || error2 || error3" />
       <h2 class="mt-4 mb-3">Latest News Updates</h2>
       <LatestNewsUpdates
         :localNewscast="latestNewsUpdatesData?.local_newscast"

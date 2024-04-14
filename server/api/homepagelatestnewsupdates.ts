@@ -96,6 +96,7 @@ const getNYCNowNewscast = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
+	//console.log('getting home page LATEST NEWS data')
 	let res = event?.node?.res;
 	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
 	// If it is not available, use the local newscast instead.
