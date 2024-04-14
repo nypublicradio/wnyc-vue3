@@ -8,7 +8,7 @@ const getNprStoryData = async (id: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${config.public.NPR}documets/${id}`,
+            url: `${config.public.NPR}documents/${id}`,
         };
         const res = await axios(option);
         return normalizeNprPage(res.data);
@@ -27,7 +27,6 @@ const getNprStoryData = async (id: string) => {
 
 export default defineEventHandler(async (event) => {
     const id: string | undefined = event?.context?.params?.slug;
-    console.log("id = ", id)
     if (id) {
         const storyData = await getNprStoryData(id);
         return storyData;

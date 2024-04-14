@@ -220,13 +220,7 @@ const togglePlayHere = (story, index = 0) => {
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
-            <Button
-              text
-              plain
-              rounded
-              aria-label="star"
-              @click="handleAddToFavorites"
-            >
+            <Button text plain rounded aria-label="star" @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button text plain rounded aria-label="share" @click="handleShare">

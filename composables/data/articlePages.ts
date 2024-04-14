@@ -223,9 +223,122 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   }))
 }
 
-export function normalizeNprPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
-  return null
+const fetchTweetEmbed = async (tweetId) => {
+  const response = await fetch(`https://publish.twitter.com/oembed?url=https://twitter.com/web/status/${tweetId}`);
+  const data = await response.json();
+  return data.html;
+};
+
+export async function normalizeNprPage(article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
+  const id = article.id
+  const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1);
+  const firstImage = article.assets?.[firstImageId];
+  const firstImageCaption = article.assets?.[firstImageId].caption;
+
+  const squareHref = firstImage?.enclosures?.filter((enclosure) => {
+    return enclosure.rels?.includes('image-square');
+  });
+  const wideHref = firstImage?.enclosures?.filter((enclosure) => {
+    return enclosure.rels?.includes('image-wide');
+  });
+
+  let textBody = '';
+  let audioURL;
+  let audioDuration;
+  for (const layoutItem of Object.values(article.layout)) {
+    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+    //console.log('article.assets[layoutId].profiles[0]?.href= ', article.assets[layoutId].profiles[0]?.href)
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
+      textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : '';
+    }
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
+      textBody += article.assets[layoutId]?.html;
+    }
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
+      const videoID = article.assets?.[layoutId].videoId;
+      textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+`
+    }
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
+      const tweetInfo = article.assets?.[layoutId];
+      const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId);
+      textBody += tweetHTML ? tweetHTML : '';
+    }
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image') {
+      const imageInfo = article.assets?.[layoutId];
+      const imgSrc = imageInfo.enclosures[0].hrefTemplate.replace('{width}', '400').replace('{quality}', '70').replace('{format}', 'webp');
+      const imageCredits = () => {
+        if (imageInfo.producer && imageInfo.provider) {
+          return `${imageInfo.producer}/${imageInfo.provider}`;
+        } else if (imageInfo.producer && !imageInfo.provider) {
+          return imageInfo.producer;
+        } else if (!imageInfo.producer && imageInfo.provider) {
+          return imageInfo.provider;
+        }
+      }
+
+      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 mb-6"><VImageNpr src="${imageInfo.enclosures[0].hrefTemplate}" :width="${400}" alt="${imageInfo.caption}"></VImageNpr> <p class="mt-1 mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+      textBody += imageHTML ? imageHTML : '';
+    }
+  }
+  for (const asset of Object.values(article.assets)) {
+    if (asset.profiles[0]?.href === '/v1/profiles/audio') {
+      audioDuration = asset?.duration;
+      const audioID = asset?.id;
+      const audioInfo = article.assets?.[audioID];
+      audioURL = audioInfo.enclosures.filter((enclosure) => {
+        return enclosure.type.includes('audio/mpeg');
+      })[0]?.href;
+    }
+  }
+
+  /*   const getShowTitle = () => {
+      try {
+        const option = {
+          method: 'GET',
+          url: `${article.owners[0].href}`,
+        };
+        const res = await axios(option);
+        return;
+      } catch (e) {
+  
+        if (e.response && e.response.status === 404) {
+          console.error('404 = ', e)
+        } else {
+          console.error(e);
+        }
+      }
+    } */
+
+  return {
+    id,
+    uuid: article.id,
+    title: article.title,
+    publicationDate: article.publishDateTime,
+    publishAt: article.publishDateTime,
+    updatedDate: article.editorialLastModifiedDateTime,
+    tease: article.teaser,
+    description: article.teaser,
+    image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+    leadImageCaption: firstImageCaption,
+    cmsSource: cmsSources.NPR,
+    type: article.nprDisplayType,
+    audio: audioURL ? audioURL : null,
+    estimatedDuration: audioDuration ? audioDuration : null,
+    meta: {
+      firstPublishedAt: article.publishDateTime,
+      slug: id,
+    },
+    showTitle: article.showTitle ?? 'NPR',
+    body: textBody,
+    rawBody: textBody,
+    link: article.webPages[0].href,
+  };
 }
+
+
+
+
 
 // Transform page data from the API into a simpler and typed format
 export function normalizeSearchResults(results: Record<string, any | undefined>): ArticlePage {

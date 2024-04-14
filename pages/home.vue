@@ -7,8 +7,17 @@ import {
 } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
+
+const { data: latestNewsUpdatesData, /*  pending2, */ error2, refresh2 } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
+)
+
+const { data: topStoriesData, /*  pending2, */ error3, refresh3 } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagetopstories`
+)
+
 const { data: pagedata, /*  pending, */ error, refresh } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepage`
+  `${config.public.BFF_URL}/api/homepagecuration`
 )
 
 definePageMeta({
@@ -53,16 +62,16 @@ onMounted(() => {
     <LiveFeature />
 
     <section>
-      <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
+      <FetchError v-if="error || error2 || error3" @on-click="refresh" />
       <h2 class="mt-4 mb-3">Latest News Updates</h2>
       <LatestNewsUpdates
-        :localNewscast="pagedata?.local_newscast"
-        :nationalNewscast="pagedata?.national_newscast"
+        :localNewscast="latestNewsUpdatesData?.local_newscast"
+        :nationalNewscast="latestNewsUpdatesData?.national_newscast"
       />
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
-      <TopStories :articles="pagedata?.top_stories" />
+      <TopStories :articles="topStoriesData?.top_stories" />
     </section>
     <div class="mx-auto mb-6" style="width: 300px">
       <story-htlAd
