@@ -18,7 +18,6 @@ import {
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-import { cmsSources } from "~/composables/globals"
 
 const $primevue = usePrimeVue()
 defineExpose({

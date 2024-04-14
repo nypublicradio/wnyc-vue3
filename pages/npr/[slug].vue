@@ -98,7 +98,7 @@ const togglePlayHere = (story, index = 0) => {
       </Head>
     </Html>
     <section class="">
-      <pre class="text-xs">{{ storyData }}</pre>
+      <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-4"

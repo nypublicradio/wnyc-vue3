@@ -245,6 +245,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
   let textBody = '';
   let audioURL;
   let audioDuration;
+  let index = 0;
   for (const layoutItem of Object.values(article.layout)) {
     const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
     //console.log('article.assets[layoutId].profiles[0]?.href= ', article.assets[layoutId].profiles[0]?.href)
@@ -264,7 +265,8 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
       const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId);
       textBody += tweetHTML ? tweetHTML : '';
     }
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image') {
+    //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
       const imageInfo = article.assets?.[layoutId];
       const imageCredits = () => {
         if (imageInfo.producer && imageInfo.provider) {
@@ -276,12 +278,14 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
         }
       }
 
-      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : "";
+      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 html-img"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : "";
       textBody += imageHTML ? imageHTML : '';
 
-      const imageHTMLCaption = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-1 mb-6"><p class=" mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+      const imageHTMLCaption = imageInfo.caption
+        ? `<div class="mt-1 mb-6"><p class=" mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
       textBody += imageHTMLCaption ? imageHTMLCaption : '';
     }
+    index++;
   }
   for (const asset of Object.values(article.assets)) {
     if (asset.profiles[0]?.href === '/v1/profiles/audio') {
