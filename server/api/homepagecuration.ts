@@ -41,7 +41,7 @@ const getNprStories = async () => {
 	const componentType = "default";
 	const options = {
 		method: 'GET',
-		url: `${config.public.NPR_CDS_API}/documents`,
+		url: `${config.public.NPR_CDS_API}/v1/documents`,
 		params: {
 			collectionIds: '1002',
 			sort: 'publishDateTime:desc',

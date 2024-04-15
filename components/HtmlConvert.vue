@@ -1,7 +1,7 @@
 <script setup>
 import { HTML2Vue } from "html2vue-renderer"
 import { NuxtLink } from "#components"
-import VImageNpr from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageNpr.vue"
+import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 const props = defineProps({
   htmlContent: {
     type: String,
@@ -18,7 +18,7 @@ const parseHtml = computed(() => {
         : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
     })
     .replace(/<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"[^>]*>/g, (match, src, alt) => {
-      return `<VImageNpr src="${src}" alt="${alt}" :width="${400}" />`
+      return `<VImage src="${src}" alt="${alt}" :width="${400}" />`
     })
 
   return updatedHTML
@@ -35,7 +35,7 @@ const isHTML = (str) => {
   <HTML2Vue
     v-if="isHTML(props.htmlContent)"
     :value="parseHtml"
-    :componentsMap="{ NuxtLink, VImageNpr }"
+    :componentsMap="{ NuxtLink, VImage }"
     class="html-formatting"
   />
   <div v-else>{{ props.htmlContent }}</div>

@@ -252,19 +252,23 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
       textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : '';
     }
+    //html blocks
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
       textBody += article.assets[layoutId]?.html;
     }
+    //youtube
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
       const videoID = article.assets?.[layoutId].videoId;
       textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
 `
     }
+    //twitter X
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
       const tweetInfo = article.assets?.[layoutId];
       const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId);
       textBody += tweetHTML ? tweetHTML : '';
     }
+    //images
     //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
       const imageInfo = article.assets?.[layoutId];
@@ -287,6 +291,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     }
     index++;
   }
+  //audio
   for (const asset of Object.values(article.assets)) {
     if (asset.profiles[0]?.href === '/v1/profiles/audio') {
       audioDuration = asset?.duration;
@@ -297,24 +302,10 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
       })[0]?.href;
     }
   }
-
-  /*   const getShowTitle = () => {
-      try {
-        const option = {
-          method: 'GET',
-          url: `${article.owners[0].href}`,
-        };
-        const res = await axios(option);
-        return;
-      } catch (e) {
-  
-        if (e.response && e.response.status === 404) {
-          console.error('404 = ', e)
-        } else {
-          console.error(e);
-        }
-      }
-    } */
+  //authors
+  const authors = () => {
+    return null
+  }
 
   return {
     id,
@@ -339,6 +330,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     body: textBody,
     rawBody: textBody,
     link: article.webPages[0].href,
+    authors,
   };
 }
 

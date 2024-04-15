@@ -424,6 +424,10 @@ html.style-mode-dark .persistent-player {
           .show-image {
             // to prevent a jump when the image finally loads and renders
             height: 144px;
+            .image {
+              width: 144px;
+              height: 144px;
+            }
           }
           #expandedViewPlayer {
             margin-top: 1rem;

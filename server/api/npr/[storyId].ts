@@ -7,13 +7,13 @@ const getNprStoryData = async (id: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${config.public.NPR_CDS_API}/documents/${id}`,
+            url: `${config.public.NPR_CDS_API}/v1/documents/${id}`,
             headers: {
                 Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
             },
         };
         const res = await axios(option);
-        console.log('res= ', res.data.resources[0])
+        //console.log('res= ', res.data.resources[0])
         return normalizeNprPage(res.data.resources[0]);
     } catch (e) {
 
