@@ -774,7 +774,7 @@ export const goToStoryPage = (story, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
   navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.NPR]}${story.id}`,
+    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
   })
   if (log) {
     saveRecentlyPlayed(story)
@@ -874,6 +874,10 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
       break
     case mediaTypes.SHOW:
       goToShowPage(item)
+      break
+    case mediaTypes.NPR_EPISODE:
+    case mediaTypes.NPR_ARTICLE:
+      goToNprPage(item)
       break
     default:
       goToEpisodePage(item, null, isSaveHistory)

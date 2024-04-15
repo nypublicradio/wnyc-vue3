@@ -320,7 +320,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
     audio: audioURL ? audioURL : null,
-    type: audioURL ? mediaTypes.EPISODE : mediaTypes.ARTICLE,
+    type: audioURL ? mediaTypes.NPR_EPISODE : mediaTypes.NPR_ARTICLE,
     estimatedDuration: audioDuration ? audioDuration : null,
     meta: {
       firstPublishedAt: article.publishDateTime,

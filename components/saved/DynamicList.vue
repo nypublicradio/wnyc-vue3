@@ -32,10 +32,12 @@ const loadComponent = async (item) => {
         return "ShowItem"
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
+      case mediaTypes.NPR_EPISODE:
         return "EpisodeItem"
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE_PAGE:
       case mediaTypes.ARTICLE:
+      case mediaTypes.NPR_ARTICLE:
         return item.audio ? "EpisodeItem" : "StoryItem"
       case mediaTypes.LIVE:
         return "LiveItem"
