@@ -286,7 +286,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
       textBody += imageHTML ? imageHTML : '';
 
       const imageHTMLCaption = imageInfo.caption
-        ? `<div class="mt-1 mb-6"><p class=" mb-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+        ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
       textBody += imageHTMLCaption ? imageHTMLCaption : '';
     }
     index++;

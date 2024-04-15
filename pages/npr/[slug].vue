@@ -4,7 +4,7 @@ import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import {
   checkIsFavorited,
   shareAPI,
@@ -37,6 +37,13 @@ const topStories = ref(null)
 const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
   window.history.state.back ? router.go(-1) : navigateTo("/home")
+}
+
+const progress = ref({})
+// handle the download of the audio file or multiple files request and feed the progress
+const handleDownload = async (epD) => {
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+  progress.value = await fetchAndStoreMp3(epD)
 }
 
 // if user is logged in, check if item is already favorited
@@ -166,16 +173,35 @@ const togglePlayHere = (story, index = 0) => {
           <VByline v-if="storyData?.authors?.length > 0" :authors="storyData.authors" />
         </div>
         <div class="flex align-items-center justify-content-between gap-3 flex-wrap">
-          <div v-if="storyData?.estimatedDuration">
+          <div v-if="storyData?.estimatedDuration" class="flex align-items-center gap-2">
             <PlayButton
               :label="getMinutes(storyData?.estimatedDuration, 1)"
               @onClick="togglePlayHere(storyData)"
               :data="storyData"
             />
+            <DownloadProgress
+              v-if="
+                (progress && Object.keys(progress).length > 0) ||
+                isAlreadyDownloaded(storyData)
+              "
+              :isDownloaded="isAlreadyDownloaded(storyData)"
+              :progress="progress"
+            />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
             <Button text plain rounded aria-label="star" @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
+            </Button>
+            <Button
+              v-if="storyData?.estimatedDuration"
+              class="w-2rem h-2rem"
+              text
+              plain
+              rounded
+              aria-label="download"
+              @click="handleDownload(storyData)"
+            >
+              <template #icon> <DownloadIcon /></template>
             </Button>
             <Button text plain rounded aria-label="share" @click="handleShare">
               <template #icon> <ShareIcon /></template>
