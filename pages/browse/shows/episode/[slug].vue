@@ -36,6 +36,7 @@ const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   router.go(-1)
 }
+
 const progress = ref({})
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
@@ -245,7 +246,6 @@ const getEpisodeImage = computed(() => {
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
-              class=""
             />
 
             <DownloadProgress

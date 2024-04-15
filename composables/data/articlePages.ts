@@ -6,7 +6,7 @@ import { cmsSources } from '~/composables/globals'
 import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
-
+import { mediaTypes } from "~/composables/globals"
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
   const defaultParams = {
@@ -319,8 +319,8 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
-    type: article.nprDisplayType,
     audio: audioURL ? audioURL : null,
+    type: audioURL ? mediaTypes.EPISODE : mediaTypes.ARTICLE,
     estimatedDuration: audioDuration ? audioDuration : null,
     meta: {
       firstPublishedAt: article.publishDateTime,
