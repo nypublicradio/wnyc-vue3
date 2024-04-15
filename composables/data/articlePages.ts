@@ -7,6 +7,7 @@ import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import { mediaTypes } from "~/composables/globals"
+import axios from 'axios'
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
   const defaultParams = {
@@ -60,6 +61,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
     socialMediaProfile: author.socialMediaProfile,
   }
 }
+
 
 /**
  * Normalize an article page object from Publisher or Wagtail into a generic ArticlePage object.
@@ -229,6 +231,54 @@ const fetchTweetEmbed = async (tweetId) => {
   return data.html;
 };
 
+// get authors
+const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
+  const config = useRuntimeConfig()
+  const options = {
+    method: 'GET',
+    url: `${config.public.NPR_CDS_API}${url}`,
+    headers: {
+      Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+    },
+  };
+  const response = await axios(options);
+  let image;
+  let biography = '';
+  const res = response.data?.resources[0];
+  if (res.assets !== undefined && res.assets !== null) {
+    for (const asset of Object.values(res.assets)) {
+      if (asset.profiles[0]?.href === '/v1/profiles/image') {
+        image = asset.enclosures.filter((enclosure) => {
+          return enclosure.rels.includes('primary');
+        })[0]?.hrefTemplate;
+      }
+    }
+  }
+  for (const layoutItem of Object.values(res.layout)) {
+    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+    if (res?.profiles[0]?.href === '/v1/profiles/text') {
+      biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : '';
+    }
+  }
+  const author = {
+    id: res?.id,
+    firstName: res?.title?.split(' ')[0],
+    lastName: res?.title?.split(' ')[1],
+    organization: 'NPR',
+    organizationUrl: null,
+    name: res?.title,
+    photoID: image || null,
+    jobTitle: res?.subtitle,
+    biography: biography || null,
+    website: null,
+    email: null,
+    slug: res?.nprWebsitePath,
+    url: null,
+    socialMediaProfile: null,
+  };
+  return author;
+}
+
 export async function normalizeNprPage(article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
   const id = article.id
   const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1);
@@ -302,10 +352,12 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
       })[0]?.href;
     }
   }
-  //authors
-  const authors = () => {
-    return null
-  }
+  // Get Byline 
+  const bylineUrl = article.collections.filter((collection) => {
+    return collection.rels.includes('byline');
+  })[0]?.href ?? null;
+
+  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null;
 
   return {
     id,

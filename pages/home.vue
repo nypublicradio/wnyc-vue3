@@ -80,6 +80,7 @@ onMounted(() => {
         fineprint="Gothamist is funded by sponsors and member donations"
       />
     </div>
+
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
@@ -104,6 +105,7 @@ onMounted(() => {
     <!--     <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre> -->
     <section>
       <h2 class="mb-3">NPR Stories</h2>
+      <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
       <div
         v-for="(section, index) in pagedata?.npr_stories"
         :key="`NPR-conetnet-${index}`"

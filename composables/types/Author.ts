@@ -15,7 +15,7 @@ export default interface Author {
   name?: string
   contributingOrganization?: ContributingOrganization
   socialMediaProfile?: SocialMediaProfile[]
-  photoID?: number
+  photoID?: [number, string]
   jobTitle?: string
   biography?: string
   website?: string
