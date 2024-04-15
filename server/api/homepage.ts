@@ -4,7 +4,8 @@ import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage, normalizePublisherPage } from '~/composables/data/articlePages'
 import { estimateMp3Duration } from '~/server/utils/duration'
-import { au } from '~/android/app/src/main/assets/public/_nuxt/entry.BTAHmFMt'
+import { email, or } from '@vuelidate/validators'
+import { id } from 'date-fns/locale'
 
 // handleDuration is a helper function that checks if the estimated duration is available and if not, it estimates it using the audio URL in the estimateMp3Duration function.
 const handleDuration = async (estimatedDuration: number, audioURL: string) => {
@@ -183,12 +184,57 @@ const mergeArticles = (articles1: any, articles2: any) => {
 		return index === sortedArticles.findIndex((o) => obj.title === o.title)
 	})
 }
-
+// NPR Author 
+const getNPRByline = async (url: string) => {
+	const options = {
+		method: 'GET',
+		url: `${config.public.NPR_CDS_API}${url}`,
+		headers: {
+			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+		},
+	};
+	const response = await axios(options);
+	let image;
+	let biography = '';
+	const res = response.data?.resources[0];
+	if (res.assets !== undefined && res.assets !== null) {
+		for (const asset of Object.values(res.assets)) {
+			if (asset.profiles[0]?.href === '/v1/profiles/image') {
+				image = asset.enclosures.filter((enclosure) => {
+					return enclosure.rels.includes('primary');
+				})[0]?.hrefTemplate;
+			}
+		}
+	}
+	for (const layoutItem of Object.values(res.layout)) {
+		const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+		if (res?.profiles[0]?.href === '/v1/profiles/text') {
+			biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : '';
+		}
+	}
+	const author = {
+		id: res?.id,
+		firstName: res?.title?.split(' ')[0],
+		lastName: res?.title?.split(' ')[1],
+		organization: 'NPR',
+		organizationUrl: null,
+		name: res?.title,
+		photoID: image || null,
+		jobTitle: res?.subtitle,
+		biography: biography || null,
+		website: null,
+		email: null,
+		slug: res?.nprWebsitePath,
+		url: null,
+		socialMediaProfile: null,
+	};
+	return author;
+};
 const getNprStories = async () => {
 	const componentType = "default";
 	const options = {
 		method: 'GET',
-		url: `${config.public.NPR_CDS_API}/documents`,
+		url: `${config.public.NPR_CDS_API}/v1/documents`,
 		params: {
 			collectionIds: '1002',
 			sort: 'publishDateTime:desc',
@@ -248,6 +294,10 @@ const getNprStories = async () => {
 				})[0]?.href;
 			}
 		}
+		// Get Byline 
+		const bylineUrl = item.collections.filter((collection) => {
+			return collection.rels.includes('byline');
+		})[0]?.href ?? null;
 
 		return {
 			id,
@@ -267,10 +317,17 @@ const getNprStories = async () => {
 				slug: id,
 			},
 			showTitle: item.showTitle ?? 'NPR',
+			bylineUrl,
 			body: textBody,
 			rawBody: textBody,
-			//authors: article.attributes.appearances?.authors.map(normalizeAuthor),
 		};
+	});
+	// Get byline for each article
+	articles.map(async (article) => {
+		if (article.bylineUrl !== null){
+			const author = await getNPRByline(article.bylineUrl);
+			article.author = author;
+		}
 	});
 	return [{
 		componentType,
