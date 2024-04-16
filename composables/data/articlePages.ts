@@ -231,6 +231,10 @@ const fetchTweetEmbed = async (tweetId) => {
   return data.html;
 };
 
+function stripHTMLTags(str) {
+  return str.replace(/<[^>]*>?/gm, '');
+}
+
 // get authors
 const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
   const config = useRuntimeConfig()
@@ -270,10 +274,10 @@ const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
     photoID: image || null,
     jobTitle: res?.subtitle,
     biography: biography || null,
-    website: null,
-    email: null,
+    website: '',
+    email: '',
     slug: res?.nprWebsitePath,
-    url: null,
+    url: '',
     socialMediaProfile: null,
   };
   return author;
