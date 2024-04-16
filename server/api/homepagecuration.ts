@@ -4,11 +4,17 @@ import humps from 'humps'
 import { normalizePublisherPage, normalizeNprPage } from '~/composables/data/articlePages'
 
 const getSectionData = async (slug: string) => {
-	const option = {
+	const options = {
 		method: 'GET',
 		url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
 	};
-	const res = await axios(option);
+
+	let res = null
+	try {
+		res = await axios(options);
+	} catch (e) {
+		console.error('getSectionData = ', e);
+	}
 	const resData = await Promise.all(res.data.included.map((item: any) => {
 		return normalizePublisherPage(humps.camelizeKeys(item));
 	}));
@@ -20,7 +26,14 @@ const getHomeTemplate = async () => {
 		method: 'GET',
 		url: `${config.public.PUBLISHER_BASE_API}v3/link-roll/navigation-shows-wnyc-app/`,
 	};
-	const res = await axios(options);
+
+	let res = null
+	try {
+		res = await axios(options);
+	} catch (e) {
+		console.error('getHomeTemplate = ', e);
+	}
+
 	const resData = humps.camelizeKeys(res.data).data;
 	const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
 		// Regex navSlug to extract if it's horizontal or vertical.
@@ -50,7 +63,12 @@ const getNprStories = async () => {
 			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
 		},
 	};
-	const response = await axios(options);
+	let response = null
+	try {
+		response = await axios(options);
+	} catch (e) {
+		console.error('getNprStories = ', e);
+	}
 	const articles = await Promise.all(response.data.resources.map(async (article) => {
 		return normalizeNprPage(article, componentType);
 	}));

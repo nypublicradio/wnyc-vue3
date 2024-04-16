@@ -32,7 +32,7 @@ const getLocalNewscast = async () => {
 		resData.attributes.hideFavorite = true;
 		return resData.attributes;
 	} catch (e) {
-		////console.log(e);
+		console.error('getLocalNewscast = ', e);
 	}
 	return null
 }
@@ -56,7 +56,7 @@ const getNationalNewscast = async () => {
 		resData.attributes.hideFavorite = true;
 		return resData.attributes;
 	} catch (e) {
-		////console.log(e);
+		console.error('getNationalNewscast = ', e);
 	}
 	return null
 }
@@ -86,7 +86,7 @@ const getNYCNowNewscast = async () => {
 		resData.attributes.hideFavorite = true;
 		return resData.attributes;
 	} catch (e) {
-		//console.log(e);
+		console.error('getNYCNowNewscast = ', e);
 	}
 	return null
 }

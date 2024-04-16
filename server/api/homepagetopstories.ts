@@ -17,7 +17,14 @@ const getGothamistTopStories = async () => {
 			sponsored_content: false
 		}
 	};
-	const res = await axios(options);
+
+	let res = null
+	try {
+		res = await axios(options);
+	} catch (e) {
+		console.error('getGothamistTopStories = ', e);
+	}
+
 	const resData = humps.camelizeKeys(res.data).items;
 	const articles = Promise.all(resData.map((article: any) => {
 		article.cmsSource = cmsSources.WAGTAIL;
@@ -33,7 +40,12 @@ const getWNYCTopStories = async () => {
 		method: 'GET',
 		url: `${config.public.PUBLISHER_BASE_API}v3/buckets/wnyc-home-top`,
 	};
-	const res = await axios(options);
+	let res = null
+	try {
+		res = await axios(options);
+	} catch (e) {
+		console.error('getWNYCTopStories = ', e);
+	}
 	const resData = humps.camelizeKeys(res.data.data.attributes["bucket-items"]);
 	if (resData) {
 		const articles = Promise.all(resData.map((article: any) => {

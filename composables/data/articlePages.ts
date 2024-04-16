@@ -245,7 +245,16 @@ const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
       Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
     },
   };
-  const response = await axios(options);
+  let response = null
+  try {
+    response = await axios(options);
+  } catch (e) {
+    if (e.response && e.response.status === 404) {
+      console.error('404 = ', e)
+    } else {
+      console.error(e);
+    }
+  }
   let image;
   let biography = '';
   const res = response.data?.resources[0];

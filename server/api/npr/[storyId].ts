@@ -12,6 +12,7 @@ const getNprStoryData = async (id: string) => {
                 Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
             },
         };
+
         const res = await axios(option);
         //console.log('res= ', res.data.resources[0])
         return normalizeNprPage(res.data.resources[0]);
