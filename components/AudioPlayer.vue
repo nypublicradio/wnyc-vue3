@@ -71,7 +71,7 @@ const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
-const playerHeight = ref(audioPlayerHeight + "px")
+const playerHeight = ref(`${audioPlayerHeight}px`)
 const skipTime = 10
 
 const route = useRoute()

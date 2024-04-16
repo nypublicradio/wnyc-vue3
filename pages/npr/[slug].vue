@@ -72,7 +72,7 @@ watch(topStoriesData, () => {
   )
 })
 
-watch(storyData, async () => {
+watch(storyData, () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({

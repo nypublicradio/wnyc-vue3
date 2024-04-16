@@ -339,6 +339,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
         } else if (!imageInfo.producer && imageInfo.provider) {
           return imageInfo.provider;
         }
+        return 'NPR'
       }
 
       const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 html-img"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : "";

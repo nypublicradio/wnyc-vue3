@@ -47,6 +47,21 @@ export const checkUrl404 = async (url) => {
   }
 }
 
+// rreturn organization name from CMS source
+export const getOrg = (cmsSource) => {
+  switch (cmsSource) {
+    case cmsSources.PUBLISHER:
+      return "WNYC"
+    case cmsSources.WAGTAIL:
+      return "Gothamist"
+    case cmsSources.NPR:
+      return "NPR"
+    default:
+      return "WNYC"
+  }
+}
+
+
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
   const res = data?.updatedDate
@@ -741,6 +756,7 @@ export const togglePlayEpisode = (media, index = 0) => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
+// css var helper to get the css var value or as pixel value
 export const getCssVar = (name: string, px = false) => {
   const val = getComputedStyle(document.documentElement).getPropertyValue(name)
 
@@ -908,19 +924,5 @@ export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
     askNotificationPermisstions()
   } else {
     toSystemSettings()
-  }
-}
-
-export const getOrg = (cmsSource) => {
-
-  switch (cmsSource) {
-    case cmsSources.PUBLISHER:
-      return "WNYC"
-    case cmsSources.WAGTAIL:
-      return "Gothamist"
-    case cmsSources.NPR:
-      return "NPR"
-    default:
-      return "WNYC"
   }
 }
