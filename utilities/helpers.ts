@@ -47,6 +47,18 @@ export const checkUrl404 = async (url) => {
   }
 }
 
+// returns the time since the episode was published, but checks for updated_date first
+export const whenTime = (data) => {
+  const res = data?.updatedDate
+    ? howLongAgo(data?.updatedDate)
+    : data?.publicationDate
+      ? howLongAgo(data?.publicationDate)
+      : data?.publishAt
+        ? howLongAgo(data?.publishAt)
+        : howLongAgo(data?.firstPublishedAt)
+  return res
+}
+
 // format ISO timestamp to return only the time
 export function formatTime(date: any) {
   if (date) {
@@ -359,17 +371,6 @@ export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url })
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
-}
 
 // global funcrtion for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
@@ -411,7 +412,6 @@ export const shareAPI = async (
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
-  //console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
       title: shareContent.title,
@@ -724,12 +724,10 @@ export const prepForPlayer = (item, index = null) => {
 
 // handles playing episodes and segments
 export const togglePlayEpisode = (media, index = 0) => {
-  console.log('toggle play')
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   if (typeof media.audio === "string") {
     if (currentEpisode.value?.audio !== media.audio) {
-      console.log('current episode changed  =', media)
       currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }

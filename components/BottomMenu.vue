@@ -86,6 +86,7 @@ const menuClick = (item) => {
       box-shadow: none;
       flex-grow: 1;
       justify-content: center;
+      text-decoration: none;
       &:not(.p-disabled):not(.p-highlight):hover {
         background: rgba(0, 0, 0, 0);
         border-color: none;
@@ -110,6 +111,7 @@ const menuClick = (item) => {
         line-height: 15px;
         font-weight: var(--font-weight-500);
         font-family: var(--font-family-header);
+        text-decoration: none;
       }
     }
   }

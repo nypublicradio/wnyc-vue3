@@ -231,10 +231,6 @@ const fetchTweetEmbed = async (tweetId) => {
   return data.html;
 };
 
-function stripHTMLTags(str) {
-  return str.replace(/<[^>]*>?/gm, '');
-}
-
 // get authors
 const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
   const config = useRuntimeConfig()

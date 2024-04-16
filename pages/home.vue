@@ -8,15 +8,15 @@ import {
 
 const config = useRuntimeConfig()
 
-const { data: latestNewsUpdatesData, /*  pending2, */ error2, refresh2 } = useLazyFetch(
+const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
 )
 
-const { data: topStoriesData, /*  pending2, */ error3, refresh3 } = useLazyFetch(
+const { data: topStoriesData, error: error3 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
 )
 
-const { data: pagedata, /*  pending, */ error, refresh } = useLazyFetch(
+const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
 )
 
@@ -103,35 +103,37 @@ onMounted(() => {
     </div>
 
     <!--     <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre> -->
-    <section>
-      <h2 class="mb-3">NPR Stories</h2>
-      <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
-      <div
-        v-for="(section, index) in pagedata?.npr_stories"
-        :key="`NPR-conetnet-${index}`"
-      >
-        <div v-if="section.componentType === 'default'">
-          <div class="flex flex-column gap-4">
-            <!-- <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert> -->
-            <div v-for="article in section.articles" :key="article.id">
-              <EpisodeItem
-                v-if="hasAudio(article.audio)"
-                :data="article"
-                @on-click="goToNprPage(article)"
-                showPlayButton
-                :fallback-image="getEpisodeFallBackImage()"
-              />
-              <StoryItem
-                v-else
-                :data="article"
-                :index="index"
-                @on-click="goToNprPage(article)"
-              />
+    <div v-if="pagedata?.npr_stories.length">
+      <section>
+        <h2 class="mb-3">NPR Stories</h2>
+        <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
+        <div
+          v-for="(section, index) in pagedata?.npr_stories"
+          :key="`NPR-conetnet-${index}`"
+        >
+          <div v-if="section.componentType === 'default'">
+            <div class="flex flex-column gap-4">
+              <!-- <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert> -->
+              <div v-for="article in section.articles" :key="article.id">
+                <EpisodeItem
+                  v-if="hasAudio(article.audio)"
+                  :data="article"
+                  @on-click="goToNprPage(article)"
+                  showPlayButton
+                  :fallback-image="getEpisodeFallBackImage()"
+                />
+                <StoryItem
+                  v-else
+                  :data="article"
+                  :index="index"
+                  @on-click="goToNprPage(article)"
+                />
+              </div>
             </div>
           </div>
+          <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
         </div>
-        <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 </template>

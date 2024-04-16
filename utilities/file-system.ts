@@ -77,7 +77,7 @@ export const isAlreadyDownloaded = (file) => {
 const traverseDirectory = async (path) => {
     const result = []
     const files = await Filesystem.readdir({
-        path: path,
+        path,
         directory: directoryToSaveTo,
     })
 
@@ -99,11 +99,10 @@ const traverseDirectory = async (path) => {
 const requestPermissions = async () => {
     try {
         const status = await Filesystem.requestPermissions()
-        console.log("STATUS = ", status)
         if (status.publicStorage === "granted") {
-            console.log("Permission granted")
+            console.info("Permission granted")
         } else {
-            console.log("Permission denied")
+            console.info("Permission denied")
         }
     } catch (error) {
         console.error("Failed to request permissions", error)

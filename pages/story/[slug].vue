@@ -30,10 +30,10 @@ const router = useRouter()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 
-const { data: storyData, pending, error, refresh } = useFetch(
+const { data: storyData, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
-const { data: topStoriesData, /*  pending2, */ error2, refresh2 } = useLazyFetch(
+const { data: topStoriesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
 )
 

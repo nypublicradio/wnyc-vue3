@@ -182,7 +182,7 @@ const handleClick = () => {
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
             </p>
-            <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+            <h2 class="text-sm line-height-2 truncate t3lines">{{ props.data.title }}</h2>
           </div>
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">

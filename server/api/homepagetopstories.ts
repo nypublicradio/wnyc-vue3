@@ -81,7 +81,7 @@ const mergeArticles = (articles1: any, articles2: any) => {
  */
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page TOP STORIES data')
-	let res = event?.node?.res;
+	const res = event?.node?.res;
 	const aviary = await getGothamistTopStories();
 	const publisher = await getWNYCTopStories();
 	const topStories = mergeArticles(aviary, publisher);

@@ -23,10 +23,10 @@ const router = useRouter()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 
-const { data: storyData, pending, error, refresh } = useFetch(
+const { data: storyData, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/npr/${route.params.slug}`
 )
-const { data: topStoriesData, /*  pending2, */ error2, refresh2 } = useLazyFetch(
+const { data: topStoriesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
 )
 
@@ -75,7 +75,7 @@ watch(topStoriesData, () => {
 watch(storyData, async () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
-  /*   $analytics.sendPageView({
+  $analytics.sendPageView({
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
@@ -86,7 +86,6 @@ watch(storyData, async () => {
       : storyData.value?.publicationDate,
     article_title: storyData.value?.title,
   })
- */
 })
 
 // handle the toggle play button and tracking

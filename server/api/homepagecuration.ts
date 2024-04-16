@@ -44,7 +44,7 @@ const getHomeTemplate = async () => {
 			title: layout.title,
 			layout: layout.navSlug,
 			componentType: componentType ? componentType[0] : 'default',
-			data: data
+			data,
 		}
 	}));
 	return homeLayout;
@@ -69,7 +69,7 @@ const getNprStories = async () => {
 	} catch (e) {
 		console.error('getNprStories = ', e);
 	}
-	const articles = await Promise.all(response.data.resources.map(async (article) => {
+	const articles = await Promise.all(response.data.resources.map((article) => {
 		return normalizeNprPage(article, componentType);
 	}));
 	return [{
@@ -84,7 +84,7 @@ const getNprStories = async () => {
  */
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page CURATION data')
-	let res = event?.node?.res;
+	const res = event?.node?.res;
 	const homeTemplate = await getHomeTemplate();
 	const nprStories = await getNprStories();
 

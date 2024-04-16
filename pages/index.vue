@@ -116,9 +116,8 @@ onUnmounted(() => {
                 "
               />
               <p>
-                <VFlexibleLink to="/home" @click.native="onSkipThis"
-                  >Skip this</VFlexibleLink
-                >, I'll create an account later.
+                <VFlexibleLink to="/home" @click="onSkipThis">Skip this</VFlexibleLink>,
+                I'll create an account later.
               </p>
             </div>
           </section>
