@@ -7,6 +7,7 @@ import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
+import memoize from 'memoize';
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
   const defaultParams = {
@@ -232,7 +233,7 @@ const fetchTweetEmbed = async (tweetId) => {
 };
 
 // get authors
-const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
+const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => {
   const config = useRuntimeConfig()
   const options = {
     method: 'GET',
@@ -286,7 +287,7 @@ const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
     socialMediaProfile: null,
   };
   return author;
-}
+})
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
 export async function normalizeNprPage(article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {

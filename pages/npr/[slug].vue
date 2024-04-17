@@ -249,4 +249,8 @@ const togglePlayHere = (story, index = 0) => {
     margin-top: 3px;
   }
 }
+// because it does not saw "read more" right now, we will center the name
+.article-footer .v-person .author-profile {
+  align-items: center !important;
+}
 </style>
