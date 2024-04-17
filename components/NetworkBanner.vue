@@ -23,7 +23,7 @@ watchEffect(() => {
 <template>
   <div class="network-banner" :class="[{ fadeout: shouldFadeOut }]">
     <i :class="`pi ${props.connected ? 'pi-check' : 'pi-exclamation-triangle'} mr-1`" />
-    {{ props.connected ? "NETWORK CONNETED" : "NETWORK DISCONNETED" }}
+    {{ props.connected ? "NETWORK CONNECTED" : "NETWORK DISCONNECTED" }}
   </div>
 </template>
 
