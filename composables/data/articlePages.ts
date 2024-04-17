@@ -2,11 +2,10 @@ import type Author from '../types/Author'
 import type Person from '../types/Person'
 import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
-import { cmsSources } from '~/composables/globals'
+import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
-import { mediaTypes } from "~/composables/globals"
 import axios from 'axios'
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
@@ -225,6 +224,7 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   }))
 }
 
+// fetch tweet/X content from tweetId
 const fetchTweetEmbed = async (tweetId) => {
   const response = await fetch(`https://publish.twitter.com/oembed?url=https://twitter.com/web/status/${tweetId}`);
   const data = await response.json();
@@ -288,6 +288,7 @@ const getAuthorsFromBylineUrl = async (url: string): Promise<Author> => {
   return author;
 }
 
+// Normalize an article page object from NPR into a generic ArticlePage object.
 export async function normalizeNprPage(article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
   const id = article.id
   const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1);
@@ -331,6 +332,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
       const imageInfo = article.assets?.[layoutId];
+      // Get image credits
       const imageCredits = () => {
         if (imageInfo.producer && imageInfo.provider) {
           return `${imageInfo.producer}/${imageInfo.provider}`;

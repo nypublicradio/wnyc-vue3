@@ -60,6 +60,7 @@ const handleDownload = async () => {
   progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
 }
 
+// handle share button
 const handleShare = () => {
   shareAPI(currentEpisode.value, "Expanded Audio Player")
 }
@@ -273,13 +274,7 @@ const moreFromClick = () => {
       </div>
 
       <div class="flex gap-1">
-        <Button
-          text
-          severity="secondary"
-          rounded
-          aria-label="share"
-          @click="handleShare"
-        >
+        <Button text severity="secondary" rounded aria-label="share" @click="handleShare">
           <template #icon> <ShareIcon /></template>
         </Button>
 

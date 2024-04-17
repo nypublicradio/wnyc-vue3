@@ -3,6 +3,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizePublisherPage, normalizeNprPage } from '~/composables/data/articlePages'
 
+// Get curated SHOW content from the WNYC Puplisher API
 const getSectionData = async (slug: string) => {
 	const options = {
 		method: 'GET',
@@ -21,6 +22,7 @@ const getSectionData = async (slug: string) => {
 	return resData;
 };
 
+// get curated content from the WNYC Puplisher API from the navigation-shows-wnyc-app link-roll
 const getHomeTemplate = async () => {
 	const options = {
 		method: 'GET',
@@ -50,6 +52,7 @@ const getHomeTemplate = async () => {
 	return homeLayout;
 }
 
+// Get NPR stories from the NPR API in the 1002 collection
 const getNprStories = async () => {
 	const componentType = "default";
 	const options = {

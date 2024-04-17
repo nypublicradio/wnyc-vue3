@@ -81,7 +81,7 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
-
+// handle share button
 const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }

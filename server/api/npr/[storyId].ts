@@ -3,6 +3,7 @@ import { normalizeNprPage } from '~/composables/data/articlePages'
 
 const config = useRuntimeConfig();
 
+// Get story data from NPR API
 const getNprStoryData = async (id: string) => {
     try {
         const option = {

@@ -61,9 +61,9 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
-
+// handle share button
 const handleShare = () => {
-  shareAPI(storyData.value, "story slug")
+  shareAPI(storyData.value, "NPR story slug")
 }
 
 watch(topStoriesData, () => {

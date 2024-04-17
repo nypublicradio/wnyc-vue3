@@ -12,7 +12,7 @@ const handleDuration = async (estimatedDuration: number, audioURL: string) => {
 		return estimatedDuration
 	}
 }
-
+// Get Local Newscast from the WNYC API
 const getLocalNewscast = async () => {
 	try {
 		const options = {
@@ -36,7 +36,7 @@ const getLocalNewscast = async () => {
 	}
 	return null
 }
-
+// Get National Newscast from the WNYC API
 const getNationalNewscast = async () => {
 	try {
 		const options = {

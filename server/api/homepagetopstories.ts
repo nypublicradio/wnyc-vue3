@@ -4,6 +4,7 @@ import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 
+//Gets the top stories from the Wagtail API (gothamist)
 const getGothamistTopStories = async () => {
 	const options = {
 		method: 'GET',
@@ -34,7 +35,7 @@ const getGothamistTopStories = async () => {
 	return articles;
 }
 
-//Gets the top stories from the WNYC API and 
+//Gets the top stories from the WNYC API
 const getWNYCTopStories = async () => {
 	const options = {
 		method: 'GET',

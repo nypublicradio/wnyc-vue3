@@ -16,7 +16,8 @@ const emit = defineEmits(["on-click"])
 const handleReloadHome = () => {
   window.location.href = props.refreshRoute
 }
-
+//handle try again button
+// refreshes all useFetch calls related to the page
 const handleTryAgain = async () => {
   emit("on-click")
 

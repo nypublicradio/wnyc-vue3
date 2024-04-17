@@ -707,6 +707,7 @@ export const saveFavorite = async (
   }
 }
 
+// handle saving the last played to the history of the user. data is saved in supabase table called recently_viewed
 export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }

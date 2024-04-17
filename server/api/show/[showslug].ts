@@ -41,6 +41,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
     return null
 }
 
+// gets the publisher show data
 const getShow = async (slug: string) => {
     try {
         const option = {
