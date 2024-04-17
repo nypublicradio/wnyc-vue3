@@ -29,7 +29,12 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <section v-if="props.article.cmsSource === cmsSources.PUBLISHER">
+    <section
+      v-if="
+        props.article.cmsSource === cmsSources.PUBLISHER ||
+        props.article.cmsSource === cmsSources.NPR
+      "
+    >
       <HtmlConvert :htmlContent="props.article.body" />
     </section>
     <!-- <pre>{{ props.article }}</pre> -->

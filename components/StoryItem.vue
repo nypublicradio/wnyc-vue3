@@ -11,13 +11,13 @@ import {
   shareAPI,
   hasAudio,
   getReadingTime,
-  whenTime,
   addToFavorites,
+  getOrg,
+  getDate,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-import { cmsSources } from "~/composables/globals"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -182,15 +182,15 @@ const handleClick = () => {
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
             </p>
-            <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+            <h2 class="text-sm line-height-2 truncate t3lines">{{ props.data.title }}</h2>
           </div>
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
-                {{ props.data.cmsSource == cmsSources.WAGTAIL ? "Gothamist" : "WNYC" }}
+                {{ getOrg(props.data.cmsSource) }}
               </template>
               <template #right>
-                {{ whenTime(props.data.meta) }}
+                {{ getDate(props.data) }}
               </template>
             </PipeData>
           </div>

@@ -41,6 +41,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
     return null
 }
 
+// gets the publisher show data
 const getShow = async (slug: string) => {
     try {
         const option = {
@@ -63,7 +64,7 @@ const getShow = async (slug: string) => {
 }
 
 export default defineEventHandler(async (event) => {
-    let res = event?.node?.res;
+    const res = event?.node?.res;
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug;
 
@@ -78,8 +79,8 @@ export default defineEventHandler(async (event) => {
         res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
         //console.log('page = ', page)
         return {
-            show: show,
-            episodes: episodes
+            show,
+            episodes,
         }
     } else {
         return null;

@@ -46,6 +46,7 @@ const togglePlayHere = () => {
             :ratio="[1, 1]"
             alt="show poster image"
             class="image"
+            :key="currentEpisodeHolder?.id"
           />
 
           <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />

@@ -36,6 +36,7 @@ const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   router.go(-1)
 }
+
 const progress = ref({})
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
@@ -235,12 +236,7 @@ const getEpisodeImage = computed(() => {
     <div v-if="!pending">
       <section>
         <p class="episode-page-date my-1">
-          {{
-            getDate(
-              episodeData?.updatedDate ?? episodeData?.publicationDate,
-              "LLL d, yyyy"
-            )
-          }}
+          {{ getDate(episodeData, "LLL d, yyyy") }}
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
         <div class="flex align-items-center justify-content-between flex-wrap gap-3">
@@ -250,7 +246,6 @@ const getEpisodeImage = computed(() => {
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
-              class=""
             />
 
             <DownloadProgress

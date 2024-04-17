@@ -1,9 +1,23 @@
 <script setup>
-import { goToEpisodePage } from "~/utilities/helpers"
+import {
+  goToEpisodePage,
+  hasAudio,
+  getEpisodeFallBackImage,
+  goToNprPage,
+} from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
-const { data: pagedata, /*  pending, */ error, refresh } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepage`
+
+const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
+)
+
+const { data: topStoriesData, error: error3 } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagetopstories`
+)
+
+const { data: pagedata, error } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagecuration`
 )
 
 definePageMeta({
@@ -48,16 +62,16 @@ onMounted(() => {
     <LiveFeature />
 
     <section>
-      <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
+      <FetchError v-if="error || error2 || error3" />
       <h2 class="mt-4 mb-3">Latest News Updates</h2>
       <LatestNewsUpdates
-        :localNewscast="pagedata?.local_newscast"
-        :nationalNewscast="pagedata?.national_newscast"
+        :localNewscast="latestNewsUpdatesData?.local_newscast"
+        :nationalNewscast="latestNewsUpdatesData?.national_newscast"
       />
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
-      <TopStories :articles="pagedata?.top_stories" />
+      <TopStories :articles="topStoriesData?.top_stories" />
     </section>
     <div class="mx-auto mb-6" style="width: 300px">
       <story-htlAd
@@ -66,6 +80,7 @@ onMounted(() => {
         fineprint="Gothamist is funded by sponsors and member donations"
       />
     </div>
+
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
@@ -83,8 +98,42 @@ onMounted(() => {
             />
           </div>
         </section>
-        <WNYCFeatured class="mt-2" v-else :articles="section.data" />
+        <WNYCFeatured v-else class="mt-2" :articles="section.data" />
       </div>
+    </div>
+
+    <!--     <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre> -->
+    <div v-if="pagedata?.npr_stories.length">
+      <section>
+        <h2 class="mb-3">NPR Stories</h2>
+        <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
+        <div
+          v-for="(section, index) in pagedata?.npr_stories"
+          :key="`NPR-conetnet-${index}`"
+        >
+          <div v-if="section.componentType === 'default'">
+            <div class="flex flex-column gap-4">
+              <!-- <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert> -->
+              <div v-for="article in section.articles" :key="article.id">
+                <EpisodeItem
+                  v-if="hasAudio(article.audio)"
+                  :data="article"
+                  @on-click="goToNprPage(article)"
+                  showPlayButton
+                  :fallback-image="getEpisodeFallBackImage()"
+                />
+                <StoryItem
+                  v-else
+                  :data="article"
+                  :index="index"
+                  @on-click="goToNprPage(article)"
+                />
+              </div>
+            </div>
+          </div>
+          <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
+        </div>
+      </section>
     </div>
   </div>
 </template>

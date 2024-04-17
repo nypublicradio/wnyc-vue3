@@ -60,7 +60,7 @@ export const initMediaSession = async (episode, skipTime) => {
 
     MediaSession.setMetadata({
         title: currentEpisode.title,
-        artist: getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate),
+        artist: getDate(currentEpisode),
         album: currentEpisode.showTitle,
         artwork: artworkImageArray
     })

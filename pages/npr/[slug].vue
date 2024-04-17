@@ -1,15 +1,10 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
-import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
 import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
-import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-import CommentsIcon from "~/components/icons/CommentsIcon.vue"
-import { cmsSources } from "~/composables/globals"
-//import { ArticlePage, GalleryPage } from '~/composables/types/Page'
-import { normalizeGalleryPage } from "~/composables/data/galleryPages"
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import {
   checkIsFavorited,
   shareAPI,
@@ -22,8 +17,6 @@ import {
 
 import { useCurrentUser } from "~/composables/states"
 
-// TO DO - replace dummy data with BFF data
-//import storyDataRaw from './story-data.json'
 const route = useRoute()
 const router = useRouter()
 
@@ -31,25 +24,14 @@ const user = useCurrentUser()
 const config = useRuntimeConfig()
 
 const { data: storyData, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
+  `${config.public.BFF_URL}/api/npr/${route.params.slug}`
 )
 const { data: topStoriesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
 )
 
-const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
+const storySource = "NPR"
 const topStories = ref(null)
-const gallery = ref(null)
-const topImage = ref(null)
-const topCaption = ref(null)
-const galleryLength = ref(null)
-
-const galleryLink = ref(null)
-
-const commentCounts = ref(useCommentCounts())
-const commentCount = computed(() => {
-  return commentCounts.value[storyData?.value?.commentId]
-})
 
 // navigate back to home and track it
 const routeBack = () => {
@@ -57,13 +39,11 @@ const routeBack = () => {
   window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
-const handleComments = () => {
-  const activeStation = document.getElementById("comments")
-  activeStation.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-    inline: "start",
-  })
+const progress = ref({})
+// handle the download of the audio file or multiple files request and feed the progress
+const handleDownload = async (epD) => {
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+  progress.value = await fetchAndStoreMp3(epD)
 }
 
 // if user is logged in, check if item is already favorited
@@ -83,7 +63,7 @@ const handleAddToFavorites = () => {
 }
 // handle share button
 const handleShare = () => {
-  shareAPI(storyData.value, "story slug")
+  shareAPI(storyData.value, "NPR story slug")
 }
 
 watch(topStoriesData, () => {
@@ -92,7 +72,7 @@ watch(topStoriesData, () => {
   )
 })
 
-watch(storyData, async () => {
+watch(storyData, () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -106,32 +86,6 @@ watch(storyData, async () => {
       : storyData.value?.publicationDate,
     article_title: storyData.value?.title,
   })
-
-  if (storyData.value?.leadGallery) {
-    gallery.value = await usePageById(
-      storyData.value.leadGallery.gallery
-    ).then(({ data }) => normalizeGalleryPage(data.value))
-  }
-
-  topImage.value =
-    storyData.value?.cmsSource === cmsSources.WAGTAIL
-      ? String(storyData.value?.image?.id)
-      : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
-
-  topCaption.value =
-    storyData.value?.leadImageCaption ??
-    topImage?.caption ??
-    gallery.value?.slides?.[0]?.image.caption ??
-    null
-
-  if (storyData.value?.leadGallery) {
-    galleryLength.value = gallery.value?.slides?.length ?? 0
-    galleryLink.value = String(
-      `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
-    )
-  }
-  // get comment count
-  useUpdateCommentCounts([storyData.value])
 })
 
 // handle the toggle play button and tracking
@@ -167,32 +121,34 @@ const togglePlayHere = (story, index = 0) => {
     <FetchError v-if="error || error2" />
     <div v-if="!pending">
       <VImage
-        v-if="topImage"
-        :src="topImage"
-        :maxWidth="storyData.image.width"
-        :maxHeight="storyData.image.height"
-        sizes="xs:390px md:768px lg:1024px xl:1920px"
-        density="x1 x2"
-        :alt="storyData.image.alt"
+        v-if="storyData.image"
+        :src="storyData.image"
+        :maxWidth="storyData.width"
+        :maxHeight="storyData.height"
+        :width="390"
+        :alt="storyData.alt"
         class="story-page-image"
       >
         <template #caption>
-          <VImageCaption v-if="storyData.image.caption" :text="storyData.image.caption" />
+          <VImageCaption
+            v-if="storyData.leadImageCaption"
+            :text="storyData.leadImageCaption"
+          />
         </template>
-        <template #gallery>
+        <!--         <template #gallery>
           <VImageGallery
             v-if="gallery?.slides"
             :count="String(gallery.slides.length)"
             :gallery-link="galleryLink"
           />
-        </template>
-        <template #belowImage>
+        </template> -->
+        <!--         <template #belowImage>
           <div>
             <p class="text-left px-4 mt-1 text-xs">
               {{ storyData.image.credit }}
             </p>
           </div>
-        </template>
+        </template> -->
       </VImage>
       <Skeleton
         v-else
@@ -216,37 +172,42 @@ const togglePlayHere = (story, index = 0) => {
           <VByline v-if="storyData?.authors?.length > 0" :authors="storyData.authors" />
         </div>
         <div class="flex align-items-center justify-content-between gap-3 flex-wrap">
-          <div v-if="storyData?.estimatedDuration">
+          <div v-if="storyData?.estimatedDuration" class="flex align-items-center gap-2">
             <PlayButton
               :label="getMinutes(storyData?.estimatedDuration, 1)"
               @onClick="togglePlayHere(storyData)"
               :data="storyData"
+            />
+            <DownloadProgress
+              v-if="
+                (progress && Object.keys(progress).length > 0) ||
+                isAlreadyDownloaded(storyData)
+              "
+              :isDownloaded="isAlreadyDownloaded(storyData)"
+              :progress="progress"
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
             <Button text plain rounded aria-label="star" @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
-            <Button text plain rounded aria-label="share" @click="handleShare">
-              <template #icon> <ShareIcon /></template>
-            </Button>
             <Button
+              v-if="storyData?.estimatedDuration"
+              class="w-2rem h-2rem"
               text
               plain
               rounded
-              :label="`&nbsp; ${String(commentCount)} ${
-                commentCount === 1 ? 'comment' : 'comments'
-              }`"
-              class="comments-btn pl-2 text-xs font-normal"
-              aria-label="comments"
-              @click="handleComments()"
+              aria-label="download"
+              @click="handleDownload(storyData)"
             >
-              <template #icon> <CommentsIcon /></template>
+              <template #icon> <DownloadIcon /></template>
+            </Button>
+            <Button text plain rounded aria-label="share" @click="handleShare">
+              <template #icon> <ShareIcon /></template>
             </Button>
           </div>
         </div>
       </section>
-
       <v-streamfield
         v-if="storyData?.body"
         class="story-page-body"
@@ -287,5 +248,9 @@ const togglePlayHere = (story, index = 0) => {
   .comments-icon {
     margin-top: 3px;
   }
+}
+// because it does not saw "read more" right now, we will center the name
+.article-footer .v-person .author-profile {
+  align-items: center !important;
 }
 </style>

@@ -71,7 +71,7 @@ const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
-const playerHeight = ref(audioPlayerHeight + "px")
+const playerHeight = ref(`${audioPlayerHeight}px`)
 const skipTime = 10
 
 const route = useRoute()
@@ -303,7 +303,7 @@ const handleError = (e) => {
               }}
             </template>
             <template #right>
-              {{ getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate) }}
+              {{ getDate(currentEpisode) }}
             </template>
           </PipeData>
           <div class="expanded-title">{{ currentEpisode.title }}</div>
@@ -424,6 +424,10 @@ html.style-mode-dark .persistent-player {
           .show-image {
             // to prevent a jump when the image finally loads and renders
             height: 144px;
+            .image {
+              width: 144px;
+              height: 144px;
+            }
           }
           #expandedViewPlayer {
             margin-top: 1rem;

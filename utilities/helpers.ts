@@ -18,6 +18,7 @@ import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
 import {
+  cmsSources,
   mediaTypeRoutes,
   localUserProfileKey,
   FALLBACKIMAGEEP,
@@ -44,6 +45,33 @@ export const checkUrl404 = async (url) => {
     console.error("Error checking URL:", error)
     return true
   }
+}
+
+// rreturn organization name from CMS source
+export const getOrg = (cmsSource) => {
+  switch (cmsSource) {
+    case cmsSources.PUBLISHER:
+      return "WNYC"
+    case cmsSources.WAGTAIL:
+      return "Gothamist"
+    case cmsSources.NPR:
+      return "NPR"
+    default:
+      return "WNYC"
+  }
+}
+
+
+// returns the time since the episode was published, but checks for updated_date first
+export const whenTime = (data) => {
+  const res = data?.updatedDate
+    ? howLongAgo(data?.updatedDate)
+    : data?.publicationDate
+      ? howLongAgo(data?.publicationDate)
+      : data?.publishAt
+        ? howLongAgo(data?.publishAt)
+        : howLongAgo(data?.firstPublishedAt)
+  return res
 }
 
 // format ISO timestamp to return only the time
@@ -212,9 +240,33 @@ export function howLongAgo(date) {
 /**
  * to get the desired date format for the header
  */
-export function getDate(date = null, formatString = "EEE, MMM do") {
-  const currentYear = new Date().getFullYear()
+export function getDate(data = null, formatString = "EEE, MMM do") {
+  const date = data?.updatedDate || data?.publicationDate
   if (date) {
+    const currentYear = new Date().getFullYear()
+    const currentDay = new Date().getDate()
+    const inputDate = new Date(date)
+    const inputYear = inputDate.getFullYear()
+    const inputDay = inputDate.getDate()
+    if (inputDay !== currentDay) {
+      if (inputYear !== currentYear) {
+        formatString = `${formatString}, yyyy` // Update formatString to include the year
+      }
+      return format(inputDate, formatString)
+    } else {
+      return whenTime(data)
+    }
+  } else {
+    return format(new Date(), formatString)
+  }
+}
+
+/**
+ * to get the desired date format for the header
+ */
+export function formatDate(date = null, formatString = "EEE, MMM do") {
+  if (date) {
+    const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
     const inputYear = inputDate.getFullYear()
     if (inputYear !== currentYear) {
@@ -334,17 +386,6 @@ export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url })
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
-}
 
 // global funcrtion for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
@@ -386,7 +427,6 @@ export const shareAPI = async (
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
-  //console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
       title: shareContent.title,
@@ -667,6 +707,7 @@ export const saveFavorite = async (
   }
 }
 
+// handle saving the last played to the history of the user. data is saved in supabase table called recently_viewed
 export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }
@@ -687,6 +728,7 @@ export const prepForPlayer = (item, index = null) => {
     title: isSegment ? item.segments[index].title : item.title,
     image:
       item?.image?.template ??
+      item?.image ??
       item?.listingImage?.template ??
       item?.showImage ??
       getEpisodeFallBackImage(),
@@ -715,6 +757,7 @@ export const togglePlayEpisode = (media, index = 0) => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
+// css var helper to get the css var value or as pixel value
 export const getCssVar = (name: string, px = false) => {
   const val = getComputedStyle(document.documentElement).getPropertyValue(name)
 
@@ -737,6 +780,16 @@ export const goToStoryPage = (story, params, log = true) => {
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
     query: params,
+  })
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
+}
+
+/* centralized function to route to a story page */
+export const goToNprPage = (story, log = true) => {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
   })
   if (log) {
     saveRecentlyPlayed(story)
@@ -836,6 +889,10 @@ export const dynamicNavigation = (item, isSaveHistory = true) => {
       break
     case mediaTypes.SHOW:
       goToShowPage(item)
+      break
+    case mediaTypes.NPR_EPISODE:
+    case mediaTypes.NPR_ARTICLE:
+      goToNprPage(item)
       break
     default:
       goToEpisodePage(item, null, isSaveHistory)

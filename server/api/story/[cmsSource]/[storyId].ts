@@ -54,6 +54,7 @@ const getStoryData = async (id: string, cmsSource: string) => {
 // Get story data from CMS
 
 export default defineEventHandler(async (event) => {
+    //console.log("getting story data")
     const id: string | undefined = event?.context?.params?.storyId;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (id && cmsSource) {

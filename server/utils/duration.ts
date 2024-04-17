@@ -19,6 +19,7 @@ import memoize from 'memoize';
  * @returns 
  */
 export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promise<number> => {
+	//return 0
 	try {
 		const httpTokenizer = await makeTokenizer(audioTrackUrl);
 		const metadata = await parseFromTokenizer(httpTokenizer);

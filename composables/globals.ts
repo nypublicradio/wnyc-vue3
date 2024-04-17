@@ -6,6 +6,7 @@ export const localUserProfileKey = 'localUserProfile'
 export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
+    NPR: 'npr',
 }
 
 export const mediaTypes = {
@@ -16,6 +17,8 @@ export const mediaTypes = {
     STORY: 'story',
     ARTICLE_PAGE: 'article_page',
     ARTICLE: 'article',
+    NPR_EPISODE: 'npr_episode',
+    NPR_ARTICLE: 'npr_article',
 }
 
 export const mediaTypeRoutes = {
@@ -26,6 +29,8 @@ export const mediaTypeRoutes = {
     [mediaTypes.STORY]: '/story/',
     [mediaTypes.ARTICLE_PAGE]: '/story/',
     [mediaTypes.ARTICLE]: '/story/',
+    [mediaTypes.NPR_EPISODE]: '/npr/',
+    [mediaTypes.NPR_ARTICLE]: '/npr/',
 }
 
 export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'

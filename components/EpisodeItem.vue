@@ -215,7 +215,7 @@ const handleClick = () => {
                 </template>
               </template>
               <template #right>
-                {{ getDate(props.data.updatedDate ?? props.data.publicationDate) }}
+                {{ getDate(props.data) }}
               </template>
             </PipeData>
           </div>

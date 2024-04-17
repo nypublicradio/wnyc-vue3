@@ -347,7 +347,7 @@ a:visited {
 }
 
 .p-button.p-button-text.p-button-plain:enabled:hover {
-  background: #e8e8e8;
+  background: var(--button-hover-plain-background);
   color: var(--text-color);
 }
 

@@ -1,6 +1,6 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
 import { useGlobalToast, useCurrentUserProfile } from "~/composables/states"
-import { getDate, toggleAskNotificationPermisstions } from "~/utilities/helpers"
+import { formatDate, toggleAskNotificationPermisstions } from "~/utilities/helpers"
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
@@ -53,7 +53,7 @@ export const scheduleLocalNotification = async (entry) => {
             setPendingLocalNotifications()
             globalToast.value = {
                 severity: "success",
-                summary: `Notification set for ${getDate(
+                summary: `Notification set for ${formatDate(
                     entry.attributes.start,
                     "h:mm a EEE, MMM do "
                 )}`,

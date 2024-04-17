@@ -23,6 +23,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 
     --v-caption-bg-color: 17, 17, 17; //#111111
     --v-caption-bg-color-opacity: 0.9;
+    --button-hover-plain-background: #e8e8e8;
 }
 
 // component cssvar theme control and base component overrides
@@ -62,6 +63,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --backgroundSimple: var(--background2) !important;
 
     --persistent-player-slider-progress: #000;
+    --button-hover-plain-background: #e8e8e826;
 }
 html.style-mode-dark {
     [data-style-mode='dark'],

@@ -44,6 +44,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
             :imageSize="60"
             imageFlexBasis="60px"
             class="mb-4 text-sm gap-4"
+            :onStaffPage="!profile.url"
           />
         </section>
         <hr class="black mb-6" />
