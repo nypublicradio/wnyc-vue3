@@ -174,6 +174,30 @@ export const resizePublisherImageUrl = (
   })
   return finalUrlArr.join("/")
 }
+
+// returns a resized image url when provided just the image URL
+export const resizeNprImageUrl = (
+  url: string,
+  w: number,
+  q = 80,
+  format = "webp"
+): string => {
+  const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
+  return finalUrl
+}
+
+// returns a resized image url when provided just the image URL
+export const resizeWagtailImageUrl = (
+  id: string,
+  w: number,
+  h: number,
+  q = 80,
+  format = "webp"
+): string => {
+  const config = useRuntimeConfig()
+  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|webpquality-${q}`
+  return finalUrl
+}
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
   if (url?.includes("media.wnyc.org")) {
@@ -193,6 +217,25 @@ export const templatizePublisherImageUrl = (url: string): string => {
     return url
   }
 }
+
+// central spot to handle image formatting from diff sources
+export const imageSolver = (url, options = {}) => {
+  // Default values for width, height, quality, and format
+  const { w = 288, h = 288, q = 80, format = "webp" }: { w?: number, h?: number, q?: number, format?: string } = options
+
+  let imgUrl = ""
+  if (/^\d+$/.test(url)) {
+    imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
+  } else if (url.includes("media.wnyc.org")) {
+    imgUrl = resizePublisherImageUrl(url, w, h, q)
+  } else if (url.includes("media.npr.org")) {
+    imgUrl = resizeNprImageUrl(url, w, q, format)
+  } else {
+    imgUrl = url
+  }
+  return imgUrl
+}
+
 
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {

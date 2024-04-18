@@ -1,5 +1,5 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
-import { getDate, resizePublisherImageUrl } from '~/utilities/helpers'
+import { getDate, resizePublisherImageUrl, imageSolver } from '~/utilities/helpers'
 import axios from 'axios'
 let currentEpisode = null
 let playbackStopped = true
@@ -39,11 +39,13 @@ const fetchMimeType = async (imageUrl) => {
 
 // generate an array of artwork objects with different sizes and using an axios call to get the image type
 const generateMediaSessionArtworkArray = async (image) => {
-    const format = await fetchMimeType(resizePublisherImageUrl(image, 116, 116))
+
+    //have to get the format for publisher images
+    const format = await fetchMimeType(imageSolver(image, { w: 116, h: 116, q: 80, format: 'jpeg' }))
     const arr = []
     imageSizes.forEach(size => {
         arr.push({
-            src: resizePublisherImageUrl(image, size, size),
+            src: imageSolver(image, { w: size, h: size, q: 80 }),
             sizes: `${size}x${size}`,
             type: format
         })
