@@ -20,8 +20,7 @@ import {
   useSkipBackTrigger,
   //usePlayerSeek,
   useIsNetworkConnected,
-  //useAdvertisingRestriction,
-  useAdvertisingId,
+  useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
 } from "~/composables/states"
@@ -63,8 +62,7 @@ const skipBackTrigger = useSkipBackTrigger()
 //const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const isNetworkConnected = useIsNetworkConnected()
-const advertisingId = useAdvertisingId()
-//const advertisingRestriction = useAdvertisingRestriction()
+const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const globalToast = useGlobalToast()
@@ -202,7 +200,7 @@ then we merge it all together and return it to the player as the source for the 
 const getConfiguredAudioUrl = computed(() => {
   const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
   const hasQuery = hasQueryParams(url)
-  const adID = advertisingId.value ?? "0"
+  const adID = deviceId.value ?? "0"
   const userID = currentUser?.value?.id ?? "0"
   const desktop = device.isDesktop || device.isDesktopOrTablet
   const thisDevice = device.isAndroid
