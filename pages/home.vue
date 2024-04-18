@@ -120,12 +120,14 @@ onMounted(() => {
                   @on-click="goToNprPage(article)"
                   showPlayButton
                   :fallback-image="getEpisodeFallBackImage()"
+                  :showShare="false"
                 />
                 <StoryItem
                   v-else
                   :data="article"
                   :index="index"
                   @on-click="goToNprPage(article)"
+                  :showShare="false"
                 />
               </div>
             </div>

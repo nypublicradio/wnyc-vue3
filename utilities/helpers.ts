@@ -757,7 +757,6 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
-  console.log("item", item)
   const isSegment = index !== null
 
   const fileValue = item.file?.includes("blob:")

@@ -1,7 +1,7 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
-
+import { cmsSources } from "~/composables/globals"
 import {
   trackClickEvent,
   shareAPI,
@@ -60,6 +60,13 @@ const handleDownload = async () => {
   progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
 }
 
+// hide share if it is a NPR story... for now
+const showShare = ref(true)
+if (currentEpisode.value?.cmsSource === cmsSources.NPR) {
+  showShare.value = false
+}
+console.log("currentEpisode.value", currentEpisode.value)
+
 // handle share button
 const handleShare = () => {
   shareAPI(currentEpisode.value, "Expanded Audio Player")
@@ -113,40 +120,44 @@ const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-          {
-            label: `Follow ${currentEpisode.value.title}`,
-            customIcon: FollowIcon,
-            active: true,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleFollow()
-            },
-          },
-          {
-            label: "Sleep Timer",
-            customIcon: SleepIcon,
-            active: true,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleSleepTimer()
-            },
-          },
-          {
-            label: "Share",
-            customIcon: ShareIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleShare()
-            },
-          },
-          {
-            label: "More Episodes",
-            customIcon: MoreEpisodesIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleMoreEpisodes()
-            },
-          },
+          // {
+          //   label: `Follow ${currentEpisode.value.title}`,
+          //   customIcon: FollowIcon,
+          //   active: true,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleFollow()
+          //   },
+          // },
+          // {
+          //   label: "Sleep Timer",
+          //   customIcon: SleepIcon,
+          //   active: true,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleSleepTimer()
+          //   },
+          // },
+          ...(showShare.value
+            ? [
+                {
+                  label: "Share",
+                  customIcon: ShareIcon,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleShare()
+                  },
+                },
+              ]
+            : []),
+          // {
+          //   label: "More Episodes",
+          //   customIcon: MoreEpisodesIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleMoreEpisodes()
+          //   },
+          // },
         ]
       : [
           ...(!currentEpisode.value.hideFavorite
@@ -170,14 +181,18 @@ const getDotMenuItems = () => {
               handleDownload()
             },
           },
-          {
-            label: "Share",
-            customIcon: ShareIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleShare()
-            },
-          },
+          ...(showShare.value
+            ? [
+                {
+                  label: "Share",
+                  customIcon: ShareIcon,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleShare()
+                  },
+                },
+              ]
+            : []),
           // {
           //   label: "Add to Queue",
           //   active: true,
@@ -187,23 +202,23 @@ const getDotMenuItems = () => {
           //     handleAddToQueue()
           //   },
           // },
-          {
-            label: "More Episodes",
-            customIcon: MoreEpisodesIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleMoreEpisodes()
-            },
-          },
-          {
-            label: `Follow ${currentEpisode.value.title}`,
-            customIcon: FollowIcon,
-            active: true,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleFollow()
-            },
-          },
+          // {
+          //   label: "More Episodes",
+          //   customIcon: MoreEpisodesIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleMoreEpisodes()
+          //   },
+          // },
+          // {
+          //   label: `Follow ${currentEpisode.value.title}`,
+          //   customIcon: FollowIcon,
+          //   active: true,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleFollow()
+          //   },
+          // },
         ]),
   ]
 }
@@ -274,7 +289,14 @@ const moreFromClick = () => {
       </div>
 
       <div class="flex gap-1">
-        <Button text severity="secondary" rounded aria-label="share" @click="handleShare">
+        <Button
+          v-if="showShare"
+          text
+          severity="secondary"
+          rounded
+          aria-label="share"
+          @click="handleShare"
+        >
           <template #icon> <ShareIcon /></template>
         </Button>
 
