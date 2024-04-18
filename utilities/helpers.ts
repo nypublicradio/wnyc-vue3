@@ -12,6 +12,7 @@ import {
   useGlobalToast,
   useAccountPromptSideBar,
   useIsDarkMode,
+  useIsNetworkConnected,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -917,28 +918,39 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
 }
 
 // handles how to use the correct navigate method based on the item type
-export const dynamicNavigation = (item, isSaveHistory = true) => {
-  switch (item.type) {
-    case mediaTypes.EPISODE:
-    case mediaTypes.SEGMENT:
-      goToEpisodePage(item, null, isSaveHistory)
-      break
-    case mediaTypes.STORY:
-    case mediaTypes.ARTICLE:
-    case mediaTypes.ARTICLE_PAGE:
-      item.audio
-        ? goToEpisodePage(item, null, isSaveHistory)
-        : goToStoryPage(item, { src: item.cmsSource }, isSaveHistory)
-      break
-    case mediaTypes.SHOW:
-      goToShowPage(item)
-      break
-    case mediaTypes.NPR_EPISODE:
-    case mediaTypes.NPR_ARTICLE:
-      goToNprPage(item)
-      break
-    default:
-      goToEpisodePage(item, null, isSaveHistory)
+export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
+  const isNetworkConnected = useIsNetworkConnected()
+  if (isNetworkConnected.value) {
+    switch (item.type) {
+      case mediaTypes.EPISODE:
+      case mediaTypes.SEGMENT:
+        goToEpisodePage(item, null, isSaveHistory)
+        break
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE:
+      case mediaTypes.ARTICLE_PAGE:
+        item.audio
+          ? goToEpisodePage(item, null, isSaveHistory)
+          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory)
+        break
+      case mediaTypes.SHOW:
+        goToShowPage(item)
+        break
+      case mediaTypes.NPR_EPISODE:
+      case mediaTypes.NPR_ARTICLE:
+        goToNprPage(item)
+        break
+      default:
+        goToEpisodePage(item, null, isSaveHistory)
+    }
+  } else {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary: "Not connected. Try again later.",
+      life: 3000,
+      closable: true,
+    }
   }
 }
 
