@@ -757,6 +757,7 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
+  console.log("item", item)
   const isSegment = index !== null
 
   const fileValue = item.file?.includes("blob:")
@@ -770,10 +771,10 @@ export const prepForPlayer = (item, index = null) => {
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
     image:
-      item?.image?.template ??
-      item?.image ??
-      item?.listingImage?.template ??
-      item?.showImage ??
+      item.image.template ??
+      item.image ??
+      item.listingImage.template ??
+      item.showImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
