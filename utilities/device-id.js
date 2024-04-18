@@ -1,29 +1,29 @@
 import {
-    useAdvertisingId,
+    useDeviceId,
     useCurrentUser
 } from "~/composables/states"
 import {
     Device
 } from '@capacitor/device';
 
-// Get the advertising ID
-export const initAdvertisingId = async () => {
-    const advertisingId = useAdvertisingId()
+// Get the device ID
+export const initDeviceId = async () => {
+    const deviceId = useDeviceId()
     const currentUser = useCurrentUser()
     try {
         const id = await Device.getId()
-        advertisingId.value = id
+        deviceId.value = id
         if ( currentUser.value ) {
-            // save the advertising ID to the deviceId table in supabase IF the user is logged in
+            // save the device ID to the deviceId table in supabase IF the user is logged in
             const client = useSupabaseClient()
             await client
                 .from( 'device_ids' )
                 .upsert( [ {
                     user_id: currentUser.value.id,
-                    device_id: advertisingId.value
+                    device_id: deviceId.value
                 }, ] )
         }
     } catch ( error ) {
-        console.error( "Error getting advertising ID:", error )
+        console.error( "Error getting device ID:", error )
     }
 }
