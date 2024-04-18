@@ -61,6 +61,7 @@ const getNprStories = async () => {
 		params: {
 			collectionIds: '1002',
 			sort: 'publishDateTime:desc',
+			limit: 5,
 		},
 		headers: {
 			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`

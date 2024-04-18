@@ -62,9 +62,9 @@ const handleAddToFavorites = () => {
   }
 }
 // handle share button
-const handleShare = () => {
+/* const handleShare = () => {
   shareAPI(storyData.value, "NPR story slug")
-}
+} */
 
 watch(topStoriesData, () => {
   topStories.value = topStoriesData.value.top_stories.filter(
@@ -202,9 +202,9 @@ const togglePlayHere = (story, index = 0) => {
             >
               <template #icon> <DownloadIcon /></template>
             </Button>
-            <Button text plain rounded aria-label="share" @click="handleShare">
+            <!--      <Button text plain rounded aria-label="share" @click="handleShare">
               <template #icon> <ShareIcon /></template>
-            </Button>
+            </Button> -->
           </div>
         </div>
       </section>
@@ -214,7 +214,7 @@ const togglePlayHere = (story, index = 0) => {
         :article="storyData"
       />
 
-      <story-article-footer :article="storyData" />
+      <story-article-footer :article="storyData" :isDisableComments="true" />
     </div>
     <div v-else>
       <skeleton-article />
