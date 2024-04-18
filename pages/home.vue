@@ -58,8 +58,6 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    {{ theUrl }}
-    {{ theTitle }}
     <LiveFeature />
 
     <section>
