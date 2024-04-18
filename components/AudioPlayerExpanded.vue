@@ -17,7 +17,7 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+//import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 
@@ -65,7 +65,7 @@ const showShare = ref(true)
 if (currentEpisode.value?.cmsSource === cmsSources.NPR) {
   showShare.value = false
 }
-console.log("currentEpisode.value", currentEpisode.value)
+//console.log("currentEpisode.value", currentEpisode.value)
 
 // handle share button
 const handleShare = () => {
@@ -82,14 +82,14 @@ const handleShare = () => {
 //   )
 // }
 
-const handleMoreEpisodes = () => {
-  // navitget to show page
-  trackClickEvent(
-    "Click Tracking - More Episodes",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
+// const handleMoreEpisodes = () => {
+//   // navitget to show page
+//   trackClickEvent(
+//     "Click Tracking - More Episodes",
+//     "Expanded Audio Player",
+//     currentEpisode.value.title
+//   )
+// }
 
 const handleFollow = () => {
   // toggle active state

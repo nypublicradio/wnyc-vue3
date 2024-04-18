@@ -1,5 +1,5 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
-import { getDate, resizePublisherImageUrl, imageSolver } from '~/utilities/helpers'
+import { getDate, imageSolver } from '~/utilities/helpers'
 import axios from 'axios'
 let currentEpisode = null
 let playbackStopped = true
