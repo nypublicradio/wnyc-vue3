@@ -33,7 +33,7 @@ import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
-import { initAdvertisingId } from "~/utilities/advertising-id.js"
+import { initDeviceId } from "~/utilities/device-id.js"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
@@ -633,9 +633,9 @@ export const getAndSetUserProfile = async () => {
     } else {
       // if they are a user, get their profile data
       await getProfile()
-      // get the advertising id if it's an app and not a browser
+      // get the device id if it's an app and not a browser
       if (isApp.value) {
-        await initAdvertisingId()
+        await initDeviceId()
       }
       await getFavoritedItems()
     }
