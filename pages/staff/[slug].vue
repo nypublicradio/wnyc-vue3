@@ -96,8 +96,6 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
-
-watch(pagedata, () => {}, { once: true })
 </script>
 
 <template>

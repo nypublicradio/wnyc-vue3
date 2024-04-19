@@ -5,7 +5,7 @@
       <div class="w-full flex flex-column gap-3">
         <Skeleton height="24px" width="42%" borderRadius="16px" />
         <div class="flex gap-2 mb-2">
-          <div v-for="n of 4">
+          <div v-for="n of 4" :key="`staff-sk-${n}`">
             <Skeleton height="20px" width="20px" borderRadius="4px" />
           </div>
         </div>
