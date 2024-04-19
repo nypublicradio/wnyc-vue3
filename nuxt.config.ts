@@ -149,7 +149,8 @@ export default defineNuxtConfig({
     ]
   },
   plugins: [
-    '~/plugins/primevue.js'
+    '~/plugins/primevue.js',
+    '~/plugins/router-guards.js',
   ],
 
   experimental: {
