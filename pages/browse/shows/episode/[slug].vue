@@ -48,9 +48,9 @@ const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }
 
-const handleFollow = () => {
-  // follow the show
-}
+// const handleFollow = () => {
+//   // follow the show
+// }
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
