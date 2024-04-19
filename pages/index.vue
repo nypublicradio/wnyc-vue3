@@ -44,6 +44,7 @@ onMounted(() => {
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader
     isLoading.value = false
+    //showError("home Fatal error")
   }, 1500)
 })
 onUnmounted(() => {

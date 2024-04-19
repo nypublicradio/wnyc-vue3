@@ -40,9 +40,8 @@ const handleTryAgain = async () => {
         @click="handleTryAgain"
       />
       <Button
-        label="Refresh"
-        severity="secondary"
-        aria-label="refresh"
+        label="Navigate Home"
+        aria-label="Navigate Home"
         @click="handleReloadHome"
       />
     </div>
