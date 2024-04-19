@@ -2,6 +2,7 @@ import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
+  useDeviceId,
   useTextSizeOption,
   useIsApp,
   useCurrentUser,
@@ -254,11 +255,12 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
+  const deviceId = useDeviceId()
   $analytics.sendEvent("click_tracking", {
     event_category: category,
     component: component,
     event_label: label,
-    user_id: currentUser.value?.id,
+    user_id: currentUser.value?.id ?? deviceId.value,
   })
 }
 
