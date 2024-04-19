@@ -1,5 +1,6 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
+import { useIsNetworkConnected } from "~/composables/states"
 import axios from 'axios'
 let currentEpisode = null
 let playbackStopped = true
@@ -55,6 +56,8 @@ const generateMediaSessionArtworkArray = async (image) => {
 
 // initialize the media session with the episode data
 export const initMediaSession = async (episode, skipTime) => {
+    const isNetworkConnected = useIsNetworkConnected()
+    if (!isNetworkConnected.value) return
     currentEpisode = episode
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
