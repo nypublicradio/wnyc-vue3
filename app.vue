@@ -204,6 +204,18 @@ watch(globalToast, (optionsObj) => {
     toast.add(optionsObj)
   }
 })
+
+const globalError = useError()
+
+watch(globalError, (error) => {
+  if (error) {
+    toast.add({
+      severity: "error",
+      summary: error,
+      life: 6000,
+    })
+  }
+})
 </script>
 
 <template>

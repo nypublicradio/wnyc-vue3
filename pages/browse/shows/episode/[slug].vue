@@ -197,7 +197,6 @@ const getEpisodeImage = computed(() => {
         />
       </div>
     </section>
-    error:{{ error }}
     <FetchError v-if="error" />
     <div class="relative mb-4">
       <v-image
