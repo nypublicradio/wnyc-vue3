@@ -10,7 +10,7 @@ const user = useCurrentUser()
           <div class="max-w-15rem m-auto">
             <p class="line-height-3">
               Use the <strong>follow</strong> button
-              <FollowIcon class="w-2rem -mb-2" />
+              <StarIcon class="w-2rem -mb-2" />
             </p>
             <p class="line-height-3">
               to follow your favorite shows — the latest episodes will appear here.
