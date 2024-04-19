@@ -13,13 +13,15 @@ const getSectionData = async (slug: string) => {
 	let res = null
 	try {
 		res = await axios(options);
+
+		const resData = await Promise.all(res.data.included.map((item: any) => {
+			return normalizePublisherPage(humps.camelizeKeys(item));
+		}));
+		return resData;
 	} catch (e) {
 		console.error('getSectionData = ', e);
+		return null;
 	}
-	const resData = await Promise.all(res.data.included.map((item: any) => {
-		return normalizePublisherPage(humps.camelizeKeys(item));
-	}));
-	return resData;
 };
 
 // get curated content from the WNYC Puplisher API from the navigation-shows-wnyc-app link-roll
@@ -32,24 +34,24 @@ const getHomeTemplate = async () => {
 	let res = null
 	try {
 		res = await axios(options);
+		const resData = humps.camelizeKeys(res.data).data;
+		const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
+			// Regex navSlug to extract if it's horizontal or vertical.
+			// This is used to determine the layout of the home page.
+			const componentType = layout.navSlug.match(/(horizontal)/g);
+			const data = await getSectionData(layout.navSlug);
+			return {
+				title: layout.title,
+				layout: layout.navSlug,
+				componentType: componentType ? componentType[0] : 'default',
+				data,
+			}
+		}));
+		return homeLayout;
 	} catch (e) {
 		console.error('getHomeTemplate = ', e);
+		return null;
 	}
-
-	const resData = humps.camelizeKeys(res.data).data;
-	const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
-		// Regex navSlug to extract if it's horizontal or vertical.
-		// This is used to determine the layout of the home page.
-		const componentType = layout.navSlug.match(/(horizontal)/g);
-		const data = await getSectionData(layout.navSlug);
-		return {
-			title: layout.title,
-			layout: layout.navSlug,
-			componentType: componentType ? componentType[0] : 'default',
-			data,
-		}
-	}));
-	return homeLayout;
 }
 
 // Get NPR stories from the NPR API in the 1002 collection
@@ -61,6 +63,7 @@ const getNprStories = async () => {
 		params: {
 			collectionIds: '1002',
 			sort: 'publishDateTime:desc',
+			limit: 5,
 		},
 		headers: {
 			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
@@ -69,16 +72,17 @@ const getNprStories = async () => {
 	let response = null
 	try {
 		response = await axios(options);
+
+		const articles = await Promise.all(response.data.resources.map((article) => {
+			return normalizeNprPage(article, componentType);
+		}));
+		return [{
+			componentType,
+			articles,
+		}];
 	} catch (e) {
 		console.error('getNprStories = ', e);
-	}
-	const articles = await Promise.all(response.data.resources.map((article) => {
-		return normalizeNprPage(article, componentType);
-	}));
-	return [{
-		componentType,
-		articles,
-	}];
+	} return null;
 }
 
 /**

@@ -58,7 +58,6 @@ onMounted(() => {
         />
       </Head>
     </Html>
-
     <LiveFeature />
 
     <section>
@@ -102,8 +101,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <!--     <pre class="text-xs overflow-hidden">{{ pagedata?.npr_stories }}</pre> -->
-    <div v-if="pagedata?.npr_stories.length">
+    <!-- <pre class="text-xs overflow-hidden">pagedata = {{ pagedata?.npr_stories }}</pre> -->
+    <div v-if="pagedata?.npr_stories?.length">
       <section>
         <h2 class="mb-3">NPR Stories</h2>
         <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
@@ -121,12 +120,14 @@ onMounted(() => {
                   @on-click="goToNprPage(article)"
                   showPlayButton
                   :fallback-image="getEpisodeFallBackImage()"
+                  :showShare="false"
                 />
                 <StoryItem
                   v-else
                   :data="article"
                   :index="index"
                   @on-click="goToNprPage(article)"
+                  :showShare="false"
                 />
               </div>
             </div>

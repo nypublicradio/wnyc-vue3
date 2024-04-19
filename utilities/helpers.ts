@@ -12,6 +12,7 @@ import {
   useGlobalToast,
   useAccountPromptSideBar,
   useIsDarkMode,
+  useIsNetworkConnected,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -174,6 +175,30 @@ export const resizePublisherImageUrl = (
   })
   return finalUrlArr.join("/")
 }
+
+// returns a resized image url when provided just the image URL
+export const resizeNprImageUrl = (
+  url: string,
+  w: number,
+  q = 80,
+  format = "webp"
+): string => {
+  const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
+  return finalUrl
+}
+
+// returns a resized image url when provided just the image URL
+export const resizeWagtailImageUrl = (
+  id: string,
+  w: number,
+  h: number,
+  q = 80,
+  format = "webp"
+): string => {
+  const config = useRuntimeConfig()
+  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|webpquality-${q}`
+  return finalUrl
+}
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
   if (url?.includes("media.wnyc.org")) {
@@ -193,6 +218,25 @@ export const templatizePublisherImageUrl = (url: string): string => {
     return url
   }
 }
+
+// central spot to handle image formatting from diff sources
+export const imageSolver = (url, options = {}) => {
+  // Default values for width, height, quality, and format
+  const { w = 288, h = 288, q = 80, format = "webp" }: { w?: number, h?: number, q?: number, format?: string } = options
+
+  let imgUrl = ""
+  if (/^\d+$/.test(url)) {
+    imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
+  } else if (url.includes("media.wnyc.org")) {
+    imgUrl = resizePublisherImageUrl(url, w, h, q)
+  } else if (url.includes("media.npr.org")) {
+    imgUrl = resizeNprImageUrl(url, w, q, format)
+  } else {
+    imgUrl = url
+  }
+  return imgUrl
+}
+
 
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
@@ -727,10 +771,10 @@ export const prepForPlayer = (item, index = null) => {
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
     image:
-      item?.image?.template ??
-      item?.image ??
-      item?.listingImage?.template ??
-      item?.showImage ??
+      item.image.template ??
+      item.image ??
+      item.listingImage.template ??
+      item.showImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
@@ -874,28 +918,39 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
 }
 
 // handles how to use the correct navigate method based on the item type
-export const dynamicNavigation = (item, isSaveHistory = true) => {
-  switch (item.type) {
-    case mediaTypes.EPISODE:
-    case mediaTypes.SEGMENT:
-      goToEpisodePage(item, null, isSaveHistory)
-      break
-    case mediaTypes.STORY:
-    case mediaTypes.ARTICLE:
-    case mediaTypes.ARTICLE_PAGE:
-      item.audio
-        ? goToEpisodePage(item, null, isSaveHistory)
-        : goToStoryPage(item, { src: item.cmsSource }, isSaveHistory)
-      break
-    case mediaTypes.SHOW:
-      goToShowPage(item)
-      break
-    case mediaTypes.NPR_EPISODE:
-    case mediaTypes.NPR_ARTICLE:
-      goToNprPage(item)
-      break
-    default:
-      goToEpisodePage(item, null, isSaveHistory)
+export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
+  const isNetworkConnected = useIsNetworkConnected()
+  if (isNetworkConnected.value) {
+    switch (item.type) {
+      case mediaTypes.EPISODE:
+      case mediaTypes.SEGMENT:
+        goToEpisodePage(item, null, isSaveHistory)
+        break
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE:
+      case mediaTypes.ARTICLE_PAGE:
+        item.audio
+          ? goToEpisodePage(item, null, isSaveHistory)
+          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory)
+        break
+      case mediaTypes.SHOW:
+        goToShowPage(item)
+        break
+      case mediaTypes.NPR_EPISODE:
+      case mediaTypes.NPR_ARTICLE:
+        goToNprPage(item)
+        break
+      default:
+        goToEpisodePage(item, null, isSaveHistory)
+    }
+  } else {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary: "Not connected. Try again later.",
+      life: 3000,
+      closable: true,
+    }
   }
 }
 

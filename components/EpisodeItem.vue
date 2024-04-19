@@ -54,6 +54,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showShare: {
+    type: Boolean,
+    default: true,
+  },
   saved: {
     type: Boolean,
     default: false,
@@ -117,14 +121,18 @@ const getDotMenuItems = (bucketItem) => {
         handleDownload(bucketItem)
       },
     },
-    {
-      label: "Share",
-      customIcon: ShareIcon,
-      title: bucketItem.title,
-      command: () => {
-        shareAPI(bucketItem, "Episode Item")
-      },
-    },
+    ...(props.showShare
+      ? [
+          {
+            label: "Share",
+            customIcon: ShareIcon,
+            title: bucketItem.title,
+            command: () => {
+              shareAPI(bucketItem, "Episode Item")
+            },
+          },
+        ]
+      : []),
     // {
     //   label: "Add to Queue",
     //   active: true,

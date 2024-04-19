@@ -264,10 +264,12 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
       }
     }
   }
-  for (const layoutItem of Object.values(res.layout)) {
-    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
-    if (res?.profiles[0]?.href === '/v1/profiles/text') {
-      biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : '';
+  if (res.layout !== undefined && res.layout !== null) {
+    for (const layoutItem of Object.values(res.layout)) {
+      const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+      if (res?.profiles[0]?.href === '/v1/profiles/text') {
+        biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : '';
+      }
     }
   }
   const author = {
@@ -294,7 +296,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
   const id = article.id
   const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1);
   const firstImage = article.assets?.[firstImageId];
-  const firstImageCaption = article.assets?.[firstImageId].caption;
+  const firstImageCaption = article.assets?.[firstImageId]?.caption;
 
   const squareHref = firstImage?.enclosures?.filter((enclosure) => {
     return enclosure.rels?.includes('image-square');

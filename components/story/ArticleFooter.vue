@@ -8,6 +8,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  isDisableComments: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 //const tags = ref(props.article.tags)
@@ -55,7 +59,11 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
             fineprint="Gothamist is funded by sponsors and member donations"
           />
         </div>
-        <div v-if="!isDisableComments" id="comments" class="mb-4">
+        <div
+          v-if="!isDisableComments && !props.isDisableComments"
+          id="comments"
+          class="mb-4"
+        >
           <hr class="black mb-4" />
           <section>
             <story-comments-section :article="props.article" />

@@ -1,18 +1,13 @@
 <script setup>
-import { goToEpisodePage, goToStoryPage, trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
 import { deleteDirectory } from "~/utilities/file-system"
 import {
   //useFileSystem,
   useFileSystemLS,
-  useIsNetworkConnected,
-  useGlobalToast,
 } from "~/composables/states"
-
-import { mediaTypes } from "~/composables/globals"
 
 //const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
-const isNetworkConnected = useIsNetworkConnected()
 
 // const used = ref(0)
 // const granted = ref(0)
@@ -32,32 +27,7 @@ const isNetworkConnected = useIsNetworkConnected()
 
 // handle the routing of the stored audio file IF network is connected
 const handleRoute = (file) => {
-  if (isNetworkConnected.value) {
-    switch (file.type) {
-      case mediaTypes.SHOW:
-        goToStoryPage(file, { downloaded: "true", id: file.id, src: file.cmsSource })
-        break
-      case mediaTypes.EPISODE:
-      case mediaTypes.SEGMENT:
-        goToEpisodePage(file)
-        break
-      case mediaTypes.STORY:
-      case mediaTypes.ARTICLE_PAGE:
-      case mediaTypes.ARTICLE:
-        goToStoryPage(file, { downloaded: "true", id: file.id, src: file.cmsSource })
-        break
-      default:
-        goToEpisodePage(file)
-    }
-  } else {
-    const globalToast = useGlobalToast()
-    globalToast.value = {
-      severity: "error",
-      summary: "Not connected. Try again later.",
-      life: 3000,
-      closable: true,
-    }
-  }
+  dynamicNavigation(file, true, true)
 }
 
 // handle the delete of the stored audio file and GA tracking
