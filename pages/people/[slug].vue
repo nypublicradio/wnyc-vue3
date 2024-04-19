@@ -1,7 +1,11 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-import { trackClickEvent, getUserFallBackImage } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  getUserFallBackImage,
+  getEpisodeFallBackImage,
+} from "~/utilities/helpers"
 
 const route = useRoute()
 const router = useRouter()
@@ -9,12 +13,12 @@ const config = useRuntimeConfig()
 
 const personSlug = route.params.slug
 //const newPageData = ref(null)
-const { data: pagedata, pending, error, refresh } = await useFetch(
+const { data: pagedata, pending, error } = await useFetch(
   `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
 )
 
 // set fallback image based on dark or light mode
-if (!pagedata.value.photoID) {
+if (pagedata.value && !pagedata.value.photoID) {
   pagedata.value.photoID = getUserFallBackImage()
 }
 
@@ -75,8 +79,12 @@ onMounted(() => {
         @click="routeBack"
         label="Back"
       />
-      <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
-      <div v-if="!pending" class="content">
+
+      <FetchError
+        v-if="error"
+        msg="An error occured while loading this persons profile."
+      />
+      <div v-if="!pending && pagedata !== null" class="content">
         <div class="grid mt-4">
           <div class="col-12">
             <VPerson
@@ -96,11 +104,13 @@ onMounted(() => {
                     class="flex gap-1 align-items-center"
                   >
                     <VImage
-                      :src="show.featured.headers.brand.logoImage.template"
+                      :src="
+                        show.featured?.headers.brand.logoImage.template ??
+                        getEpisodeFallBackImage()
+                      "
                       :alt="`${show.title} show image`"
                       :width="20"
                       :height="20"
-                      :sizes="[2]"
                       class="flex-none"
                       :ratio="[1, 1]"
                     />
@@ -113,6 +123,10 @@ onMounted(() => {
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
+      </div>
+      <div v-else>
+        <skeleton-people-page />
+        <div class="text-center">LOADING</div>
       </div>
     </div>
     <BackToTopButton />

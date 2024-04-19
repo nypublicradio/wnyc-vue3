@@ -73,6 +73,8 @@ const svgWidth = 75
 
 <style lang="scss" scoped>
 .wnyc-loader {
+  display: flex;
+  justify-content: center;
   &.bg {
     background: -moz-radial-gradient(
       center,
