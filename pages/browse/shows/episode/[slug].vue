@@ -6,8 +6,8 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import FollowIcon from "~/components/icons/FollowIcon.vue"
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+//import FollowIcon from "~/components/icons/FollowIcon.vue"
+//import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
   trackClickEvent,
@@ -48,9 +48,9 @@ const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }
 
-const handleFollow = () => {
-  // follow the show
-}
+// const handleFollow = () => {
+//   // follow the show
+// }
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -104,14 +104,14 @@ const getDotMenuItems = (bucketItem) => {
         handleShare()
       },
     },
-    {
-      label: "Follow",
-      customIcon: FollowIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleFollow()
-      },
-    },
+    // {
+    //   label: "Follow",
+    //   customIcon: FollowIcon,
+    //   title: bucketItem?.title,
+    //   command: () => {
+    //     handleFollow()
+    //   },
+    // },
     // {
     //   label: "Add to Queue",
     //   active: true,
@@ -121,14 +121,14 @@ const getDotMenuItems = (bucketItem) => {
     //     handleAddToQueue(bucketItem)
     //   },
     // },
-    {
-      label: "More episodes",
-      customIcon: MoreEpisodesIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleFollow()
-      },
-    },
+    // {
+    //   label: "More episodes",
+    //   customIcon: MoreEpisodesIcon,
+    //   title: bucketItem?.title,
+    //   command: () => {
+    //     handleFollow()
+    //   },
+    // },
   ]
 }
 
