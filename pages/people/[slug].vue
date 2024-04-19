@@ -91,35 +91,38 @@ onMounted(() => {
               v-if="pagedata"
               :profileData="pagedata"
               class="html-formatting"
+              :showBio="false"
               onStaffPage
-            >
-              <template #slot-above-bio>
-                <h3 class="mt-3 mb-2" v-if="pagedata.shows.length">Shows</h3>
-                <div class="flex flex-column gap-3">
-                  <NuxtLink
-                    v-for="show in pagedata.shows"
-                    :key="show.slug"
-                    raw
-                    :to="`/browse/shows/${show.slug}`"
-                    class="flex gap-1 align-items-center"
-                  >
-                    <VImage
-                      :src="
-                        show.featured?.headers.brand.logoImage.template ??
-                        getEpisodeFallBackImage()
-                      "
-                      :alt="`${show.title} show image`"
-                      :width="20"
-                      :height="20"
-                      class="flex-none"
-                      :ratio="[1, 1]"
-                    />
-                    <p class="m-0">{{ show.title }}</p>
-                  </NuxtLink>
-                </div>
-              </template>
-            </VPerson>
+            />
             <div class="h5" v-else>{{ PersonName }}</div>
+            <h3 class="mt-3 mb-2" v-if="pagedata.shows.length">Shows</h3>
+            <div class="flex flex-column gap-3">
+              <NuxtLink
+                v-for="show in pagedata.shows"
+                :key="show.slug"
+                raw
+                :to="`/browse/shows/${show.slug}`"
+                class="flex gap-1 align-items-center"
+              >
+                <VImage
+                  :src="
+                    show.featured?.headers.brand.logoImage.template ??
+                    getEpisodeFallBackImage()
+                  "
+                  :alt="`${show.title} show image`"
+                  :width="20"
+                  :height="20"
+                  class="flex-none"
+                  :ratio="[1, 1]"
+                />
+                <p class="m-0">{{ show.title }}</p>
+              </NuxtLink>
+            </div>
+            <HtmlConvert
+              v-if="pagedata.biography"
+              :htmlContent="pagedata.biography"
+              class="mt-4"
+            />
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
