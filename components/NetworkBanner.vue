@@ -21,33 +21,40 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="network-banner" :class="[{ fadeout: shouldFadeOut }]">
-    <i :class="`pi ${props.connected ? 'pi-check' : 'pi-exclamation-triangle'} mr-1`" />
-    {{ props.connected ? "NETWORK CONNECTED" : "NETWORK DISCONNECTED" }}
+  <div
+    class="network-banner flex justify-content-center"
+    :class="[{ fadeout: shouldFadeOut }]"
+  >
+    <div class="bar flex align-items-center justify-content-center">
+      <i :class="`pi ${props.connected ? 'pi-check' : 'pi-exclamation-triangle'} mr-1`" />
+      {{ props.connected ? "NETWORK CONNECTED" : "NETWORK DISCONNECTED" }}
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .network-banner {
   pointer-events: none;
-  background-color: v-bind(bgColor);
-  font-weight: bold;
-  padding: 2px $padding;
+
   position: absolute;
   top: 0;
-  left: 0;
   width: 100%;
-  text-align: center;
   z-index: 5000;
-  font-size: 0.6rem;
-  color: var(--black-500);
   opacity: 1;
   transition: opacity 1s;
   .pi {
     font-size: 0.6rem;
+    line-height: 0.2rem;
   }
   &.fadeout {
     opacity: 0;
+  }
+  .bar {
+    padding: 2px $padding;
+    background-color: v-bind(bgColor);
+    font-weight: bold;
+    font-size: 0.6rem;
+    color: var(--black-500);
   }
 }
 </style>

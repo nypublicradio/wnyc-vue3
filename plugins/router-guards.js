@@ -5,8 +5,11 @@ export default defineNuxtPlugin(nuxtApp => {
     const globalToast = useGlobalToast()
     router.beforeEach((to, from, next) => {
         // Perform pre-navigation checks
+        console.log('to = ', to)
         if (isNetworkConnected.value) {
             next() // Continue with navigation
+        } else if (to.path === '/saved') {
+            next() // continue with navigation to saved page only
         } else {
             console.log('no good')
             globalToast.value = {
