@@ -118,7 +118,7 @@ const togglePlayHere = (story, index = 0) => {
         />
       </div>
     </section>
-    <FetchError v-if="error || error2 || !storyData || !topStoriesData" />
+    <FetchError v-if="error || error2" />
     <div v-if="!pending">
       <VImage
         v-if="storyData.image"
