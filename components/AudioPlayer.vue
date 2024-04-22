@@ -35,7 +35,7 @@ import {
 
 import { initMediaSession } from "~/utilities/media-session.js"
 import "vidstack/bundle"
-import { MediaRemoteControl } from "vidstack"
+//import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
@@ -47,7 +47,7 @@ const device = useDevice()
 //   })
 // }
 
-const remoteControl = new MediaRemoteControl()
+//const remoteControl = new MediaRemoteControl()
 //let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -91,8 +91,15 @@ const updateUseIsPlayerMinimized = (e) => {
 
 /*function that fires when the episode has ended/completed */
 const episodeEnded = () => {
-  // TO DO
-  // trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+  // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
+  if (currentEpisodeProgress.value > 0) {
+    trackAudioEvent(
+      "ended",
+      "on_demand",
+      currentEpisode.value.title,
+      getDescription.value
+    )
+  }
 }
 
 let delay = 250
@@ -111,7 +118,7 @@ const switchEpisode = () => {
 watch(currentEpisode, async () => {
   //console.log("currentEpisode.value changed = ", currentEpisode.value)
   await switchEpisode()
-  remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
+  //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
   //remotePlayer = remoteControl.getPlayer()
 })
 

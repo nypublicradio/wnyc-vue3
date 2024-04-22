@@ -35,8 +35,7 @@ watchEffect(() => {
 <style lang="scss" scoped>
 .network-banner {
   pointer-events: none;
-
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 100%;
   z-index: 5000;
