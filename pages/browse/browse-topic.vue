@@ -2,7 +2,7 @@
 const router = useRouter()
 const route = useRoute()
 const config = useRuntimeConfig()
-const { data: categoryData, pending, error, refresh } = useFetch(
+const { data: categoryData, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`,
   {
     params: {

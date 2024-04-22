@@ -1,12 +1,19 @@
 <script setup lang="ts">
 defineProps({
-  error: Object,
+  error: {
+    type: Object,
+    default: null,
+  },
 })
-
+//clear error and route home
 function handleGoHome() {
+  //nuxt global
   clearError({ redirect: "/home" })
 }
+
+//clear error and try again
 function handleTryAgain() {
+  //nuxt global
   clearError()
 }
 </script>

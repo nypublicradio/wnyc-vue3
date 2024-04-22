@@ -20,7 +20,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
-const { data: show, pending, error, refresh } = useFetch(
+const { data: show, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/show/${route.params.slug}`
 )
 

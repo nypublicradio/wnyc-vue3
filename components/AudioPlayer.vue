@@ -35,7 +35,6 @@ import {
 
 import { initMediaSession } from "~/utilities/media-session.js"
 import "vidstack/bundle"
-import { set } from "date-fns"
 //import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()
@@ -88,24 +87,6 @@ const updateUseIsPlayerMinimized = (e) => {
     `minimized = ${e}`
   )
   isPlayerMinimized.value = e
-}
-
-/*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
-  // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
-  if (currentEpisodeProgress.value > 0) {
-    if (isPlayerExpanded.value) {
-      playerRef.value.toggleExpanded()
-      setTimeout(() => {
-        showPlayer.value = false
-        currentEpisode.value = null
-      }, 500)
-    } else {
-      showPlayer.value = false
-      currentEpisode.value = null
-    }
-    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
-  }
 }
 
 let delay = 250
@@ -264,6 +245,25 @@ const handleError = (e) => {
     )
   }
 }
+
+/*function that fires when the episode has ended/completed */
+const episodeEnded = () => {
+  // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
+  if (currentEpisodeProgress.value > 0) {
+    if (isPlayerExpanded.value) {
+      playerRef.value.toggleExpanded()
+      setTimeout(() => {
+        showPlayer.value = false
+        currentEpisode.value = null
+      }, 500)
+    } else {
+      showPlayer.value = false
+      currentEpisode.value = null
+    }
+    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+  }
+}
+
 // resume the player if the network is connected where they left off
 watch(isNetworkConnected, () => {
   const tempEpisode = currentEpisode.value
