@@ -247,8 +247,9 @@ const handleError = (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
+const episodeEnded = (e) => {
   // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
+  console.log("ended event = ", e)
   if (currentEpisodeProgress.value > 0) {
     if (isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
