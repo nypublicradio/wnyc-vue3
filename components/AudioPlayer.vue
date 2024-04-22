@@ -249,8 +249,14 @@ const handleError = (e) => {
 /*function that fires when the episode has ended/completed */
 const episodeEnded = (e) => {
   // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
+  // unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full duiration
   console.log("ended event = ", e)
-  if (currentEpisodeProgress.value > 0) {
+  console.log(
+    "currentEpisode.value.estimatedDuration = ",
+    currentEpisode.value.estimatedDuration
+  )
+  console.log("currentEpisodeProgress.value = ", currentEpisodeProgress.value)
+  if (e && currentEpisodeProgress.value > currentEpisode.value.estimatedDuration - 5) {
     if (isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
       setTimeout(() => {
