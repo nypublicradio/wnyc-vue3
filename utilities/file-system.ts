@@ -293,7 +293,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     directory: directoryToSaveTo,
                 })
                     .then(() => {
-                        console.log("image saved")
+                        console.info("image saved")
                     })
                     .catch((e) => {
                         console.error("Unable to write file", e)

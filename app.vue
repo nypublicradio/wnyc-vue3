@@ -102,11 +102,6 @@ const addListeners = async () => {
     //alert("App state changed. ", JSON.stringify(isActive))
   })
 
-  Network.addListener("networkStatusChange", (status) => {
-    //alert("Network status changed" + JSON.stringify(status))
-    isNetworkConnected.value = status.connected
-  })
-
   // this is for deep links
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
@@ -135,6 +130,11 @@ const addListeners = async () => {
     }
   })
 }
+
+Network.addListener("networkStatusChange", (status) => {
+  //alert("Network status changed" + JSON.stringify(status))
+  isNetworkConnected.value = status.connected
+})
 
 // get the URL the app was loaded from (if any)
 const checkAppLaunchUrl = async () => {
@@ -202,6 +202,18 @@ useHead({
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {
     toast.add(optionsObj)
+  }
+})
+
+const globalError = useError()
+
+watch(globalError, (error) => {
+  if (error) {
+    toast.add({
+      severity: "error",
+      summary: error,
+      life: 6000,
+    })
   }
 })
 </script>

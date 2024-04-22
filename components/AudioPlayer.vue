@@ -35,7 +35,7 @@ import {
 
 import { initMediaSession } from "~/utilities/media-session.js"
 import "vidstack/bundle"
-import { MediaRemoteControl } from "vidstack"
+//import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
@@ -47,7 +47,7 @@ const device = useDevice()
 //   })
 // }
 
-const remoteControl = new MediaRemoteControl()
+//const remoteControl = new MediaRemoteControl()
 //let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -89,12 +89,6 @@ const updateUseIsPlayerMinimized = (e) => {
   isPlayerMinimized.value = e
 }
 
-/*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
-  // TO DO
-  // trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
-}
-
 let delay = 250
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
@@ -108,10 +102,11 @@ const switchEpisode = () => {
   }, delay)
 }
 
-watch(currentEpisode, async () => {
-  //console.log("currentEpisode.value changed = ", currentEpisode.value)
-  await switchEpisode()
-  remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
+watch(currentEpisode, () => {
+  if (currentEpisode.value !== null) {
+    switchEpisode()
+  }
+  //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
   //remotePlayer = remoteControl.getPlayer()
 })
 
@@ -236,10 +231,11 @@ const handleError = (e) => {
       life: 6000,
       closable: true,
     }
-    setTimeout(() => {
+
+    if (isEpisodePlaying.value) {
+      playerRef.value.togglePlay()
       isEpisodePlaying.value = false
-      showPlayer.value = false
-    }, 500)
+    }
 
     trackAudioEvent(
       "audio error",
@@ -249,6 +245,40 @@ const handleError = (e) => {
     )
   }
 }
+
+/*function that fires when the episode has ended/completed */
+const episodeEnded = () => {
+  // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
+  if (currentEpisodeProgress.value > 0) {
+    if (isPlayerExpanded.value) {
+      playerRef.value.toggleExpanded()
+      setTimeout(() => {
+        showPlayer.value = false
+        currentEpisode.value = null
+      }, 500)
+    } else {
+      showPlayer.value = false
+      currentEpisode.value = null
+    }
+    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+  }
+}
+
+// resume the player if the network is connected where they left off
+watch(isNetworkConnected, () => {
+  const tempEpisode = currentEpisode.value
+  const tempTime = currentEpisodeProgress.value
+  if (currentEpisode.value && !isEpisodePlaying.value && isNetworkConnected.value) {
+    // the current episode does not resume, so we have to null it out and then set it back
+    currentEpisode.value = null
+    setTimeout(() => {
+      currentEpisode.value = tempEpisode
+    }, 500)
+    setTimeout(() => {
+      playerRef.value.jumpToTime(tempTime)
+    }, 1500)
+  }
+})
 </script>
 
 <template>

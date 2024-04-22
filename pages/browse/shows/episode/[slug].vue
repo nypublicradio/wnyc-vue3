@@ -23,7 +23,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
-const { data: episode, pending, error, refresh } = useFetch(
+const { data: episode, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
@@ -197,7 +197,7 @@ const getEpisodeImage = computed(() => {
         />
       </div>
     </section>
-    <FetchError v-if="error || episode === undefined" @on-click="refresh" />
+    <FetchError v-if="error || !episodeData || episodeData === undefined" />
     <div class="relative mb-4">
       <v-image
         v-if="!pending"

@@ -20,7 +20,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
-const { data: show, pending, error, refresh } = useFetch(
+const { data: show, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/show/${route.params.slug}`
 )
 
@@ -189,7 +189,7 @@ onMounted(() => {
         label="Back"
       />
     </div>
-    <FetchError v-if="error || show === undefined" @on-click="refresh" />
+    <FetchError v-if="error || !show || show === undefined" />
     <VImage
       v-if="showImage"
       :src="showImage"

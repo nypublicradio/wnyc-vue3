@@ -773,9 +773,9 @@ export const prepForPlayer = (item, index = null) => {
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
     image:
-      item.image.template ??
+      item.image?.template ??
       item.image ??
-      item.listingImage.template ??
+      item.listingImage?.template ??
       item.showImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration,
