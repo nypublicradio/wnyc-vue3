@@ -4,9 +4,7 @@ import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error, refresh } = useLazyFetch(
-  `${config.public.BFF_URL}/api/shows`
-)
+const { data: shows, pending, error } = useLazyFetch(`${config.public.BFF_URL}/api/shows`)
 
 const router = useRouter()
 const route = useRoute()
@@ -135,7 +133,7 @@ watch(
             </div>
           </HorizontalScrollFeature>
         </div>
-        <FetchError v-if="error || shows === undefined" @on-click="refresh" />
+        <FetchError v-if="error || !shows || shows === undefined" />
         <section class="tabs mt-2">
           <TabView
             :lazy="true"

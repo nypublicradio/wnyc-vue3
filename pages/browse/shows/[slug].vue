@@ -269,7 +269,7 @@ onMounted(() => {
       />
     </div>
     <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
-    <!-- <pre class="text-xs overflow-hidden">{{ episodes }}</pre> -->
+    <pre class="text-xs overflow-hidden">{{ episodes }}</pre>
 
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">
