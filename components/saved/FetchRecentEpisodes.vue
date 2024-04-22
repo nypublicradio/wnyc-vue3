@@ -13,7 +13,7 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 
-const { data, pending, error, refresh } = useFetch(
+const { data, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/show/${props.show.slug}`,
   {
     params: {
@@ -36,5 +36,5 @@ const { data, pending, error, refresh } = useFetch(
   <div v-else>
     <skeleton-episode-item v-for="i in props.episodesPerShow" :key="i" class="my-5" />
   </div>
-  <FetchError v-if="error || data === undefined" @on-click="refresh" />
+  <FetchError v-if="error || !data || data === undefined" />
 </template>

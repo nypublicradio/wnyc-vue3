@@ -128,7 +128,7 @@ onMounted(() => {
         label="Back"
       />
       <FetchError
-        v-if="error"
+        v-if="error || !pagedata"
         msg="An error occured while loading this persons profile."
       />
       <div v-if="!pending" class="content">
