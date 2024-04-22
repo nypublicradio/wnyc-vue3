@@ -36,7 +36,7 @@ watchEffect(() => {
 .network-banner {
   pointer-events: none;
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top);
   width: 100%;
   z-index: 5000;
   opacity: 1;
