@@ -264,6 +264,21 @@ const handleError = (e) => {
     )
   }
 }
+// resume the player if the network is connected where they left off
+watch(isNetworkConnected, () => {
+  const tempEpisode = currentEpisode.value
+  const tempTime = currentEpisodeProgress.value
+  if (currentEpisode.value && !isEpisodePlaying.value && isNetworkConnected.value) {
+    // the current episode does not resume, so we have to null it out and then set it back
+    currentEpisode.value = null
+    setTimeout(() => {
+      currentEpisode.value = tempEpisode
+    }, 500)
+    setTimeout(() => {
+      playerRef.value.jumpToTime(tempTime)
+    }, 1500)
+  }
+})
 </script>
 
 <template>
