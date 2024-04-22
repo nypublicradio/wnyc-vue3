@@ -35,6 +35,7 @@ import {
 
 import { initMediaSession } from "~/utilities/media-session.js"
 import "vidstack/bundle"
+import { set } from "date-fns"
 //import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()
@@ -93,12 +94,17 @@ const updateUseIsPlayerMinimized = (e) => {
 const episodeEnded = () => {
   // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
   if (currentEpisodeProgress.value > 0) {
-    trackAudioEvent(
-      "ended",
-      "on_demand",
-      currentEpisode.value.title,
-      getDescription.value
-    )
+    if (isPlayerExpanded.value) {
+      playerRef.value.toggleExpanded()
+      setTimeout(() => {
+        showPlayer.value = false
+        currentEpisode.value = null
+      }, 500)
+    } else {
+      showPlayer.value = false
+      currentEpisode.value = null
+    }
+    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
   }
 }
 
@@ -115,9 +121,10 @@ const switchEpisode = () => {
   }, delay)
 }
 
-watch(currentEpisode, async () => {
-  //console.log("currentEpisode.value changed = ", currentEpisode.value)
-  await switchEpisode()
+watch(currentEpisode, () => {
+  if (currentEpisode.value !== null) {
+    switchEpisode()
+  }
   //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
   //remotePlayer = remoteControl.getPlayer()
 })
@@ -243,10 +250,11 @@ const handleError = (e) => {
       life: 6000,
       closable: true,
     }
-    setTimeout(() => {
+
+    if (isEpisodePlaying.value) {
+      playerRef.value.togglePlay()
       isEpisodePlaying.value = false
-      showPlayer.value = false
-    }, 500)
+    }
 
     trackAudioEvent(
       "audio error",
