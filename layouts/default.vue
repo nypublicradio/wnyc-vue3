@@ -11,8 +11,8 @@ useHead({
 <template>
   <div class="page" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
-
-    <header v-if="route.name === 'home'">
+    <!-- v-if="route.name === 'home'"  -->
+    <header :class="[{ show: route.name === 'home' }]">
       <VSmartHeader :hero-buffer="400" :resume-delay="0">
         <TheHeader />
       </VSmartHeader>
@@ -27,6 +27,19 @@ useHead({
   </div>
 </template>
 
+<style lang="scss">
+header {
+  .v-smart-header {
+    margin-top: -$headerHeight !important;
+    transition: all $transitionDuration ease;
+  }
+}
+header.show {
+  .v-smart-header {
+    margin-top: 0 !important;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .content {
   z-index: 10;

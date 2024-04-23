@@ -54,7 +54,10 @@ export default defineNuxtConfig({
 
   app: {
     //pageTransition: { name: 'rotate', mode: 'out-in' },
-    pageTransition: true,
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in' // default
+    },
     layoutTransition: true,
     head: {
       title: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News',

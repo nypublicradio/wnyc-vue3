@@ -41,7 +41,7 @@ const menuClick = (item) => {
   <div class="bottom-menu">
     <div class="buttons-holder">
       <template v-for="item in options" :key="item.slug">
-        <NuxtLink :to="item.slug" class="w-full" prefetch>
+        <NuxtLink :to="item.slug" class="link w-full" prefetch>
           <Button
             @click="menuClick(item)"
             class="w-full"
@@ -68,50 +68,46 @@ const menuClick = (item) => {
   z-index: 1001;
   width: 100vw;
   padding-bottom: env(safe-area-inset-bottom);
-
   .buttons-holder {
     height: var(--bottom-menu-height);
     width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    .p-button {
-      border-radius: 0 !important;
-      background-color: rgba(0, 0, 0, 0);
-      color: #ffffff;
-      border-color: rgba(0, 0, 0, 0);
-      border: none;
-      opacity: 0.6;
-      text-align: center;
-      box-shadow: none;
-      flex-grow: 1;
-      justify-content: center;
+    .link {
       text-decoration: none;
-      &:not(.p-disabled):not(.p-highlight):hover {
-        background: rgba(0, 0, 0, 0);
-        border-color: none;
+      .p-button {
+        border-radius: 0 !important;
+        background-color: rgba(0, 0, 0, 0);
         color: #ffffff;
-      }
-      &.p-highlight {
-        opacity: 1;
-        background: rgba(0, 0, 0, 0);
-        border-color: unset;
-        pointer-events: none;
-      }
-      .o-icon {
-        flex: none;
-        width: 28px;
-        height: 28px;
-      }
-      .item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 12px;
-        line-height: 15px;
-        font-weight: var(--font-weight-500);
-        font-family: var(--font-family-header);
+        border-color: rgba(0, 0, 0, 0);
+        border: none;
+        opacity: 0.6;
+        text-align: center;
+        box-shadow: none;
+        flex-grow: 1;
+        justify-content: center;
         text-decoration: none;
+        .o-icon {
+          flex: none;
+          width: 28px;
+          height: 28px;
+        }
+        .item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: 12px;
+          line-height: 15px;
+          font-weight: var(--font-weight-500);
+          font-family: var(--font-family-header);
+          text-decoration: none;
+        }
+      }
+      &.router-link-active {
+        .p-button {
+          opacity: 1;
+        }
       }
     }
   }

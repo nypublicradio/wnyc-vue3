@@ -13,6 +13,17 @@
     transform: translateX(100%);
 }
 
+.page-enter-active {
+    transition: opacity $transitionDuration ease-out;
+}
+.page-leave-active {
+    transition: opacity $transitionDuration ease-in;
+}
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+}
+
 .refresh-enter-active,
 .refresh-leave-active {
     transition: opacity 0.5s ease;
