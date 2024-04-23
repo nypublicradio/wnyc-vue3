@@ -136,5 +136,6 @@ onMounted(() => {
         </div>
       </section>
     </div>
+    <SponsorBanner class="mt-4" />
   </div>
 </template>
