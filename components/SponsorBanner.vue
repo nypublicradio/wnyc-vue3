@@ -9,7 +9,7 @@ const props = defineProps({
 
 <template>
   <div class="sponsor-banner" data-style-mode="light">
-    <p class="msg">{{ msg }}</p>
+    <p class="msg">{{ props.msg }}</p>
     <img class="sponsor" src="/sponsors/jlgreene.svg" alt="JL Greene Logo" />
   </div>
 </template>
