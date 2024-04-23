@@ -36,5 +36,5 @@ const { data, pending, error } = useFetch(
   <div v-else>
     <skeleton-episode-item v-for="i in props.episodesPerShow" :key="i" class="my-5" />
   </div>
-  <FetchError v-if="error || !data || data === undefined" />
+  <FetchError v-if="error" />
 </template>

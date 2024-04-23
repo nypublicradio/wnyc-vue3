@@ -96,10 +96,13 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
+  //separagte delay for the media session to init
+  setTimeout(() => {
+    // initiallizes the media session in ~/utilities/media-session.js
+    initMediaSession(currentEpisode.value, skipTime)
+  }, 1500)
 }
 
 watch(currentEpisode, () => {
@@ -134,7 +137,7 @@ watch(skipBackTrigger, () => {
 watch(
   () => route.name,
   () => {
-    if (playerRef.value && !isPlayerMinimized.value) {
+    if (playerRef.value && isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
     }
   }
@@ -216,9 +219,11 @@ const getConfiguredAudioUrl = computed(() => {
 const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
   // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player
+  // it hs to be on a delay, because then the media session artwork image does not show up sometimes
+
   setTimeout(() => {
     initMediaSession(currentEpisode.value, skipTime)
-  }, 300)
+  }, 1500)
 }
 
 // function that handles the error event from the persistent player emit
@@ -247,9 +252,9 @@ const handleError = (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
-  // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
-  if (currentEpisodeProgress.value > 0) {
+const episodeEnded = (e) => {
+  // for some reason the event fires on initial load, so we need to check if the event is true and unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full estimatedDuration
+  if (e && currentEpisodeProgress.value > currentEpisode.value.estimatedDuration - 5) {
     if (isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
       setTimeout(() => {
@@ -268,7 +273,7 @@ const episodeEnded = () => {
 watch(isNetworkConnected, () => {
   const tempEpisode = currentEpisode.value
   const tempTime = currentEpisodeProgress.value
-  if (currentEpisode.value && !isEpisodePlaying.value && isNetworkConnected.value) {
+  if (currentEpisode.value && isNetworkConnected.value) {
     // the current episode does not resume, so we have to null it out and then set it back
     currentEpisode.value = null
     setTimeout(() => {

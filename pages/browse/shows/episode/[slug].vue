@@ -197,7 +197,7 @@ const getEpisodeImage = computed(() => {
         />
       </div>
     </section>
-    <FetchError v-if="error || !episodeData || episodeData === undefined" />
+    <FetchError v-if="error" />
     <div class="relative mb-4">
       <v-image
         v-if="!pending"

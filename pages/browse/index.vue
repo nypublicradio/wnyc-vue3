@@ -133,7 +133,7 @@ watch(
             </div>
           </HorizontalScrollFeature>
         </div>
-        <FetchError v-if="error || !shows || shows === undefined" />
+        <FetchError v-if="error" />
         <section class="tabs mt-2">
           <TabView
             :lazy="true"
