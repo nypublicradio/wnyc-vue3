@@ -133,7 +133,8 @@ export default defineNuxtConfig({
   },
   components: [
     '~/components',
-    '~/components/icons'
+    '~/components/icons',
+    '~/components/logos'
   ],
   imports: {
     dirs: [

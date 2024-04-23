@@ -8,30 +8,37 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="sponsor-banner" data-style-mode="light">
-    <p class="msg">{{ props.msg }}</p>
-    <img class="sponsor" src="/sponsors/jlgreene.svg" alt="JL Greene Logo" />
+  <div class="sponsor-banner" data-style-mode="dark">
+    <div class="content">
+      <p class="msg">{{ props.msg }}</p>
+      <JLGreene class="sponsor" />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .sponsor-banner {
-  background-color: #ffffff;
+  background-color: #000000;
   padding: 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.75rem;
   color: var(--text-color);
-  .msg {
-    font-size: 1rem;
-    text-align: center;
-  }
-  .sponsor {
-    width: 100%;
-    max-width: 180px;
-    margin: 0 auto;
-    fill: var(--text-color);
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    opacity: 0.8;
+    .msg {
+      font-size: 1rem;
+      text-align: center;
+    }
+    .sponsor {
+      width: 100%;
+      max-width: 180px;
+      margin: 0 auto;
+      svg {
+        fill: var(--text-color);
+      }
+    }
   }
 }
 </style>

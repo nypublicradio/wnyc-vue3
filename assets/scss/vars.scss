@@ -14,6 +14,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 :root {
     --header-height: #{$headerHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
+    --bottom-menu-icon-color: var(--white, #ffffff) !important;
     --player-height: #{$playerHeight};
     --header-z-index: 900;
     --line-clamp: 3;
@@ -32,7 +33,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 .style-mode-light {
     --persistent-player-slider-thumb-border: var(--night-500);
     --wnyc-logo-color: var(--red, #de1e3d) !important;
-    --bottom-menu-icon-color: var(--night, #101012) !important;
+    --bottom-menu-bg-color: var(--night-500, #101012) !important;
     --v-card-title-hover-color: var(--link-button-hover-color) !important;
     --s-box-background-color: var(--background) !important;
     --s-box-stroke-color: var(--background) !important;
@@ -50,7 +51,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 [data-style-mode='dark'],
 .style-mode-dark {
     --wnyc-logo-color: var(--white, #ffffff) !important;
-    --bottom-menu-icon-color: var(--white, #ffffff) !important;
+    --bottom-menu-bg-color: var(--dark-blue-500, #101012) !important;
     --v-card-title-hover-color: var(--link-button-hover-color) !important;
     --s-box-background-color: #32384f !important;
     --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;

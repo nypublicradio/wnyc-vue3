@@ -69,14 +69,14 @@ export default defineNuxtRouteMiddleware(async () => {
       // if the app has been launched before (set the local user profile), redirect to the home page
       const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
       if (userLocalStorage.value) {
-        // a delay is needed
+        // a delay is needed for an unknown reason
         setTimeout(() => {
           navigateTo(redirectSlug)
         }, 1000)
       }
     }
 
-    // if not logged in and no local user profile is set, this is the first time the user has launched the app
+    // if not logged in and no local user profile is set, this is the first time the user has launched the app and they see the index page
   }
 
 })
