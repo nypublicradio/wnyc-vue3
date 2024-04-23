@@ -96,10 +96,13 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
+  //separagte delay for the media session to init
+  setTimeout(() => {
+    // initiallizes the media session in ~/utilities/media-session.js
+    initMediaSession(currentEpisode.value, skipTime)
+  }, 1500)
 }
 
 watch(currentEpisode, () => {
@@ -216,9 +219,11 @@ const getConfiguredAudioUrl = computed(() => {
 const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
   // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player
+  // it hs to be on a delay, because then the media session artwork image does not show up sometimes
+
   setTimeout(() => {
     initMediaSession(currentEpisode.value, skipTime)
-  }, 300)
+  }, 1500)
 }
 
 // function that handles the error event from the persistent player emit

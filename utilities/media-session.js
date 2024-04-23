@@ -63,6 +63,7 @@ export const initMediaSession = async (episode, skipTime) => {
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     const artworkImageArray = currentEpisode?.directoryImage?.uri ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.image)
 
+    await nextTick()
     MediaSession.setMetadata({
         title: currentEpisode.title,
         artist: getDate(currentEpisode),
