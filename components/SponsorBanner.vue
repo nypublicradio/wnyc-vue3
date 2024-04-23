@@ -1,17 +1,10 @@
 <script setup>
-import { ref, computed, onMounted } from "vue"
-
 const props = defineProps({
   msg: {
     type: String,
     default: "WNYC is supported by",
   },
 })
-
-//const emit = defineEmits(["change", "click"]);
-
-// lifecycle hooks
-onMounted(() => {})
 </script>
 
 <template>
