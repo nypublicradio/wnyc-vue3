@@ -38,7 +38,7 @@ const menuClick = (item) => {
 </script>
 
 <template>
-  <div class="bottom-menu" data-style-mode="dark">
+  <div class="bottom-menu">
     <div class="buttons-holder">
       <template v-for="item in options" :key="item.slug">
         <NuxtLink :to="item.slug" class="w-full" prefetch>
@@ -61,7 +61,7 @@ const menuClick = (item) => {
 
 <style lang="scss">
 .bottom-menu {
-  background-color: var(--night-500);
+  background-color: var(--bottom-menu-bg-color);
   position: fixed;
   bottom: 0;
   left: 0;
