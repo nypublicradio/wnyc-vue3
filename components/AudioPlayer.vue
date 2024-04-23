@@ -134,7 +134,7 @@ watch(skipBackTrigger, () => {
 watch(
   () => route.name,
   () => {
-    if (playerRef.value && !isPlayerMinimized.value) {
+    if (playerRef.value && isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
     }
   }
