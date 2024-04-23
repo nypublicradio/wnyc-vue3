@@ -248,14 +248,7 @@ const handleError = (e) => {
 
 /*function that fires when the episode has ended/completed */
 const episodeEnded = (e) => {
-  // for some reason the event fires on initial load, so we need to check if the progress is greater than 0
-  // unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full duiration
-  console.log("ended event = ", e)
-  console.log(
-    "currentEpisode.value.estimatedDuration = ",
-    currentEpisode.value.estimatedDuration
-  )
-  console.log("currentEpisodeProgress.value = ", currentEpisodeProgress.value)
+  // for some reason the event fires on initial load, so we need to check if the event is true and unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full estimatedDuration
   if (e && currentEpisodeProgress.value > currentEpisode.value.estimatedDuration - 5) {
     if (isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
@@ -275,7 +268,7 @@ const episodeEnded = (e) => {
 watch(isNetworkConnected, () => {
   const tempEpisode = currentEpisode.value
   const tempTime = currentEpisodeProgress.value
-  if (currentEpisode.value && !isEpisodePlaying.value && isNetworkConnected.value) {
+  if (currentEpisode.value && isNetworkConnected.value) {
     // the current episode does not resume, so we have to null it out and then set it back
     currentEpisode.value = null
     setTimeout(() => {
