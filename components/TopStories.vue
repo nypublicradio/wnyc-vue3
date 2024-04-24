@@ -7,6 +7,10 @@ const props = defineProps({
     type: Array,
     default: null,
   },
+  responsive: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // TEMP fix to make ripple work
@@ -17,8 +21,12 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="articles" class="top-stories">
-    <div v-for="(article, index) in articles" :key="article.id" class="mb-5">
+  <div v-if="articles" class="top-stories" :class="props.responsive ? 'grid' : ''">
+    <div
+      v-for="(article, index) in articles"
+      :key="article.id"
+      :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
+    >
       <!-- <pre class="text-xs">{{ article.url }}</pre> -->
       <EpisodeItem
         v-if="hasAudio(article.audio)"
@@ -42,7 +50,8 @@ defineExpose({
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+$container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 .top-stories {
 }
 </style>

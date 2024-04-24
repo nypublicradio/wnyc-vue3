@@ -5,8 +5,9 @@ import {
   getEpisodeFallBackImage,
   goToNprPage,
 } from "~/utilities/helpers"
-
+import { useCurrentEpisode } from "~/composables/states"
 const config = useRuntimeConfig()
+const currentEpisode = useCurrentEpisode()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
@@ -70,23 +71,24 @@ onMounted(() => {
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
-      <TopStories :articles="topStoriesData?.top_stories" />
+      <section class="col-12 md:col">
+        <TopStories :articles="topStoriesData?.top_stories" />
+      </section>
+      <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
+        <story-htlAd
+          layout="rectangle"
+          slotClass="htlad-wnyc_homepage_rectangle"
+          fineprint="Gothamist is funded by sponsors and member donations"
+        />
+      </div>
     </section>
-    <div class="mx-auto mb-6" style="width: 300px">
-      <story-htlAd
-        layout="rectangle"
-        slotClass="htlad-wnyc_homepage_rectangle"
-        fineprint="Gothamist is funded by sponsors and member donations"
-      />
-    </div>
-
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
           <h2 class="mt-4">{{ section.title }}</h2>
         </section>
         <section v-if="section.componentType === 'default'">
-          <div class="flex flex-column gap-4">
+          <div class="grid">
             <EpisodeItem
               v-for="ep in section.data"
               :data="ep"
@@ -94,6 +96,7 @@ onMounted(() => {
               @onClick="goToEpisodePage(ep)"
               showPlayButton
               :fallback-image="ep.headers.brand.logoImage.template"
+              class="col-12 md:col-6 mb-3"
             />
           </div>
         </section>
@@ -111,9 +114,12 @@ onMounted(() => {
           :key="`NPR-conetnet-${index}`"
         >
           <div v-if="section.componentType === 'default'">
-            <div class="flex flex-column gap-4">
-              <!-- <HtmlConvert :htmlContent="section.articles[2].body"></HtmlConvert> -->
-              <div v-for="article in section.articles" :key="article.id">
+            <div class="grid">
+              <div
+                class="col-12 md:col-6 mb-3"
+                v-for="article in section.articles"
+                :key="article.id"
+              >
                 <EpisodeItem
                   v-if="hasAudio(article.audio)"
                   :data="article"
@@ -136,6 +142,9 @@ onMounted(() => {
         </div>
       </section>
     </div>
-    <SponsorBanner class="mt-4 -mb-8" />
+    <SponsorBanner
+      class="mt-4"
+      :style="`margin-bottom:${currentEpisode ? '-20px' : '-5rem'}`"
+    />
   </div>
 </template>

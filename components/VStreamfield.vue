@@ -40,7 +40,7 @@ onMounted(() => {
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
-      <div v-if="block.type === 'image'" class="streamfield-image my-4">
+      <section v-if="block.type === 'image'" class="streamfield-image my-4 mx-auto">
         <!--     :width="block.value.image.width"
           :height="block.value.image.height" -->
         <VImage
@@ -69,7 +69,7 @@ onMounted(() => {
             </div>
           </template>
         </VImage>
-      </div>
+      </section>
 
       <section v-else>
         <!-- paragraph -->

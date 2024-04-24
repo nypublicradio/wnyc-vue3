@@ -11,7 +11,7 @@ useHead({
 <template>
   <div class="page" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
-    <!-- v-if="route.name === 'home'"  -->
+
     <header :class="[{ show: route.name === 'home' }]">
       <VSmartHeader :hero-buffer="400" :resume-delay="0">
         <TheHeader />

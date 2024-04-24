@@ -146,12 +146,12 @@ onMounted(() => {
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
-        <div id="articleList" class="grid">
-          <div v-if="pagedata?.articles.length > 0" class="col staff-articles">
+        <div id="articleList">
+          <div v-if="pagedata?.articles.length > 0" class="staff-articles grid">
             <div
               v-for="(article, index) in newPageData?.articles"
               :key="article?.uuid"
-              class="mb-5"
+              class="col-12 md:col-12 mb-3 md:px-8"
             >
               <StoryItem
                 :data="article"
