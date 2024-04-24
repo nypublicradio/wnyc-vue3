@@ -3,7 +3,7 @@ import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 const emit = defineEmits(["onClick"])
 </script>
 <template>
-  <div class="streamfield-donation p-4 pb-5 my-2">
+  <div class="streamfield-donation p-4 pb-5 my-6">
     <section class="holder">
       <h2 class="mb-3">We rely on <span class="no-wrap">your support</span></h2>
       <p class="mb-3">
