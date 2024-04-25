@@ -62,7 +62,7 @@ export const initMediaSession = async (episode, skipTime) => {
     // Wait for the images to load before setting the media session metadata
     // this fixes the bug where the images sometimes do not load initially
     await Promise.all(artworkImageArray.map(image => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const img = new Image()
             img.src = image.src
             img.onload = () => resolve()
