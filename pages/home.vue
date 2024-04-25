@@ -71,9 +71,9 @@ onMounted(() => {
     </section>
     <section>
       <h2 class="mb-3">Top stories</h2>
-      <section class="col-12 md:col">
-        <TopStories :articles="topStoriesData?.top_stories" />
-      </section>
+
+      <TopStories :articles="topStoriesData?.top_stories" />
+
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
         <story-htlAd
           layout="rectangle"
