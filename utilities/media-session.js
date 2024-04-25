@@ -1,6 +1,7 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
 import { useIsNetworkConnected } from "~/composables/states"
+import { FALLBACKIMAGE } from "~/composables/globals"
 import axios from 'axios'
 let currentEpisode = null
 let playbackStopped = true
@@ -65,7 +66,10 @@ export const initMediaSession = async (episode, skipTime) => {
             const img = new Image()
             img.src = image.src
             img.onload = () => resolve()
-            img.onerror = () => reject()
+            img.onerror = () => {
+                img.src = FALLBACKIMAGE // Set your fallback image URL here
+                resolve(img) // Resolve the promise with the fallback image
+            }
         })
     }))
 
