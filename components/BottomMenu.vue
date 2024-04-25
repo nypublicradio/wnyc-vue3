@@ -6,7 +6,7 @@ import LiveIcon from "./icons/LiveIcon.vue"
 import BrowseIcon from "./icons/BrowseIcon.vue"
 import StarIcon from "./icons/StarIcon.vue"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
-
+const { $gsap } = useNuxtApp()
 const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
@@ -35,6 +35,10 @@ const menuClick = (item) => {
   trackClickEvent("Click Tracking - Bottom Menu", "Bottom Menu", item.slug)
   bottomMenuState.value = { value: item.value }
 }
+onMounted(() => {
+  // initial animation to catched users eye.
+  $gsap.from(".bottom-menu", { delay: 1, y: 60, duration: 0.5 })
+})
 </script>
 
 <template>
