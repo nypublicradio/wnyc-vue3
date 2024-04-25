@@ -29,6 +29,7 @@ const formatShowData = (apiResponse: any) => {
 		}
 	}
 	let title = showData ? showData.attributes.title : null
+	const showSlug = showData ? showData.attributes.slug : null
 	let details = showData ? showData.attributes.tease : null
 	let titleLink = showData ? showData.attributes.url : null
 	const id = showData ? showData.id : null
@@ -60,6 +61,7 @@ const formatShowData = (apiResponse: any) => {
 		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
 		title,
 		titleLink,
+		showSlug,
 		updated_date: null,
 		publishAt: null,
 		first_published_at: null,
