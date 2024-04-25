@@ -15,6 +15,7 @@ definePageMeta({
   layout: "default",
   middleware: ["check-auth-provider"],
 })
+
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
 

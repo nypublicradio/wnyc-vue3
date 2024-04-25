@@ -35,74 +35,76 @@ const togglePlayHere = () => {
 
 <template>
   <div class="live-feature p-ripple" v-ripple>
-    <VFlexibleLink raw to="/live" class="flex align-items-center">
-      <div class="image-holder">
-        <transition name="fade" mode="out-in">
-          <VImage
-            v-if="currentEpisodeHolder?.image"
-            :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
-            :width="138"
-            :height="138"
-            :ratio="[1, 1]"
-            alt="show poster image"
-            class="image"
-            :key="currentEpisodeHolder?.id"
-          />
+    <div class="holder">
+      <VFlexibleLink raw to="/live" class="flex align-items-center">
+        <div class="image-holder">
+          <transition name="fade" mode="out-in">
+            <VImage
+              v-if="currentEpisodeHolder?.image"
+              :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
+              :width="138"
+              :height="138"
+              :ratio="[1, 1]"
+              alt="show poster image"
+              class="image"
+              :key="currentEpisodeHolder?.id"
+            />
 
-          <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
-          <!-- <div v-else class="image-loader-anim">
+            <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
+            <!-- <div v-else class="image-loader-anim">
           <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
         </div> -->
-        </transition>
-      </div>
-      <div class="content w-full relative">
-        <transition name="fade">
-          <div
-            v-if="currentEpisodeHolder"
-            class="flex flex-column gap-2 justify-content-center p-3"
-          >
-            <h2>{{ currentEpisodeHolder?.title }}</h2>
+          </transition>
+        </div>
+        <div class="content w-full relative">
+          <transition name="fade">
             <div
-              class="blurb truncate t2lines"
-              v-html="
-                currentEpisodeHolder?.onTodaysShowHeadline ??
-                currentEpisodeHolder?.details
-              "
-            ></div>
-            <div class="flex align-items-center justify-content-between">
-              <PlayButton
-                :label="currentEpisodeHolder?.station"
-                live
-                :data="currentEpisodeHolder"
-                @onClick="togglePlayHere"
-              />
-              <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />
+              v-if="currentEpisodeHolder"
+              class="flex flex-column gap-2 justify-content-center p-3"
+            >
+              <h2>{{ currentEpisodeHolder?.title }}</h2>
+              <div
+                class="blurb truncate t2lines"
+                v-html="
+                  currentEpisodeHolder?.onTodaysShowHeadline ??
+                  currentEpisodeHolder?.details
+                "
+              ></div>
+              <div class="flex align-items-center justify-content-between">
+                <PlayButton
+                  :label="currentEpisodeHolder?.station"
+                  live
+                  :data="currentEpisodeHolder"
+                  @onClick="togglePlayHere"
+                />
+                <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />
+              </div>
             </div>
-          </div>
-          <div
-            class="skeleton-holder flex flex-column justify-content-center w-full absolute p-3"
-            v-else
-          >
-            <Skeleton
-              height="20px"
-              width="6rem"
-              borderRadius="16px"
-              style="margin-bottom: 6px"
-            />
-            <div class="w-full desc">
+            <div
+              class="skeleton-holder flex flex-column justify-content-center w-full absolute p-3"
+              v-else
+            >
               <Skeleton
-                height="13px"
-                width="85%"
+                height="20px"
+                width="6rem"
                 borderRadius="16px"
                 style="margin-bottom: 6px"
               />
-              <Skeleton height="13px" width="90%" borderRadius="16px" />
+              <div class="w-full desc">
+                <Skeleton
+                  height="13px"
+                  width="85%"
+                  borderRadius="16px"
+                  style="margin-bottom: 6px"
+                />
+                <Skeleton height="13px" width="90%" borderRadius="16px" />
+              </div>
+              <Skeleton height="28px" width="9rem" borderRadius="16px" />
             </div>
-            <Skeleton height="28px" width="9rem" borderRadius="16px" />
-          </div>
-        </transition>
-      </div>
-    </VFlexibleLink>
+          </transition>
+        </div>
+      </VFlexibleLink>
+    </div>
   </div>
 </template>
 
@@ -120,6 +122,7 @@ const togglePlayHere = () => {
 
 <style lang="scss" scoped>
 $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
+$container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 .live-feature {
   container-type: inline-size;
   position: relative;
@@ -147,29 +150,33 @@ $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
     }
   }
 }
+@container (min-width: #{$container-breakpoint-md}) {
+  .live-feature .holder {
+    max-width: 668px !important;
+    margin: 0 auto;
+  }
+}
 
 @container (max-width: #{$container-breakpoint-xs}) {
   .live-feature {
-    .inner {
-      .image-holder {
-        flex: none;
+    .image-holder {
+      flex: none;
+      width: 90px;
+      height: 90px;
+      .image,
+      .image-loader-anim {
         width: 90px;
         height: 90px;
-        .image,
-        .image-loader-anim {
-          width: 90px;
-          height: 90px;
-        }
       }
-      .content {
-        min-height: 90px;
-        .blurb {
+    }
+    .content {
+      min-height: 90px;
+      .blurb {
+        display: none;
+      }
+      .skeleton-holder {
+        .desc {
           display: none;
-        }
-        .skeleton-holder {
-          .desc {
-            display: none;
-          }
         }
       }
     }

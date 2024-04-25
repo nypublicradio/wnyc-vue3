@@ -21,6 +21,8 @@ body {
   background-attachment: fixed;
   max-height: unset !important;
   position: relative !important;
+  margin: auto;
+
   &.show-header {
     main {
       padding-top: $headerHeight;
@@ -52,6 +54,7 @@ body {
     position: relative !important;
   }
   main {
+    transition: padding-top $transitionDuration ease;
     padding-bottom: calc(
       $bottomMenuHeight + $playerHeight + env(safe-area-inset-bottom) + 20px
     ); // account for the sticky bottom menu
@@ -257,8 +260,13 @@ section {
   &.full-width {
     max-width: 100%;
   }
+  @include media('>=md') {
+    padding: 0.75rem 3rem;
+  }
 }
-
+.no-wrap {
+  white-space: nowrap;
+}
 .col-fixed {
   &.ad300 {
     max-width: 316px;
