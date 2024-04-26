@@ -193,7 +193,12 @@ const handleNotificationChange = async (e) => {
         <i :class="`${accountHeader.icon}`"></i>
         <div class="s-title">{{ accountHeader.label }}</div>
       </div>
-      <SBox label="Name" @click="editField('name')" :clickable="!isDisabled">
+      <SBox
+        v-if="currentUserProfile?.name"
+        label="Name"
+        @click="editField('name')"
+        :clickable="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
       <SBox label="Email" @click="editField('email')" :clickable="!isDisabled">
