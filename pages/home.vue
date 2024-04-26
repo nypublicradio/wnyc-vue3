@@ -69,6 +69,15 @@ onMounted(() => {
         :nationalNewscast="latestNewsUpdatesData?.national_newscast"
       />
     </section>
+
+    <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
+      <story-htlAd
+        layout="rectangle"
+        slotClass="htlad-wnyc_homepage_banner"
+        fineprint="Gothamist is funded by sponsors and member donations"
+      />
+    </div>
+
     <section>
       <h2 class="mb-3">Top stories</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
