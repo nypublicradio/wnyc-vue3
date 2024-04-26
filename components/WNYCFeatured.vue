@@ -75,12 +75,7 @@ const togglePlayHere = (item) => {
     <div class="wnyc-featured">
       <!-- <pre class="text-xs">{{ props.articles[0] }}</pre> -->
       <HorizontalScrollFeature>
-        <CardLarge
-          v-for="item in props.articles"
-          :key="item.label"
-          :item="item"
-          style="min-width: 248px"
-        >
+        <CardLarge v-for="(item, index) in props.articles" :key="item.label" :item="item">
           <template #play>
             <PlayButton
               v-if="item.audio"
@@ -164,6 +159,14 @@ const togglePlayHere = (item) => {
 
 <style lang="scss" scoped>
 .wnyc-featured {
+  .card-large {
+    min-width: 248px;
+    &:first-child {
+      @include media(">=md") {
+        margin-left: calc(((100% - 768px) / 2) + 40px);
+      }
+    }
+  }
   .skeleton-holder {
     display: flex;
     flex-direction: column;

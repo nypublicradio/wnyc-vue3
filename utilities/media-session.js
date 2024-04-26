@@ -1,6 +1,7 @@
 import { MediaSession } from '@jofr/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
 import { useIsNetworkConnected } from "~/composables/states"
+import { FALLBACKIMAGE } from "~/composables/globals"
 import axios from 'axios'
 let currentEpisode = null
 let playbackStopped = true
@@ -27,12 +28,7 @@ const imageSizes = [128, 256, 512, 1024]
 const fetchMimeType = async (imageUrl) => {
     try {
         const response = await axios(imageUrl, { method: 'HEAD' }) // Use 'HEAD' to avoid downloading the image
-
-        if (response.headers["content-type"]) {
-            return response.headers["content-type"]
-        } else {
-            return defaultMimeType
-        }
+        return response.headers["content-type"] || defaultMimeType
     } catch (error) {
         return defaultMimeType
     }
@@ -62,6 +58,20 @@ export const initMediaSession = async (episode, skipTime) => {
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     const artworkImageArray = currentEpisode?.directoryImage?.uri ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.image)
+
+    // Wait for the images to load before setting the media session metadata
+    // this fixes the bug where the images sometimes do not load initially
+    await Promise.all(artworkImageArray.map(image => {
+        return new Promise((resolve) => {
+            const img = new Image()
+            img.src = image.src
+            img.onload = () => resolve()
+            img.onerror = () => {
+                img.src = FALLBACKIMAGE // Set your fallback image URL here
+                resolve(img) // Resolve the promise with the fallback image
+            }
+        })
+    }))
 
     await nextTick()
     MediaSession.setMetadata({
