@@ -13,6 +13,7 @@ const isHTML = (str) => {
   const doc = new DOMParser().parseFromString(str, "text/html")
   return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1)
 }
+// check if the image is a gif
 const isGif = (imageUrl) => {
   const extension = imageUrl.split(".").pop()?.toLowerCase()
   return extension === "gif"
