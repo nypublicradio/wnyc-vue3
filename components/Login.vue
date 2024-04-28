@@ -69,7 +69,6 @@ const openForgotPassword = () => {
         severity="secondary"
         class="center my-3"
         @submit-success="onLogin('google')"
-        redirectUrl="https://demo.native-app.wnyc.org"
       />
       <VLoginWithProvider
         :client="client"
@@ -79,7 +78,7 @@ const openForgotPassword = () => {
         severity="secondary"
         class="center"
         @submit-success="onLogin('apple')"
-        redirectUrl="https://demo.native-app.wnyc.org"
+        redirectUrl="wnycalpha://"
       />
       <Divider class="my-4" align="center">
         <b>or</b>

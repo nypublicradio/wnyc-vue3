@@ -77,7 +77,7 @@ const closeAll = () => {
         class="center"
         label="Sign up with Apple"
         @login-success="onSignup('apple')"
-        redirectUrl="https://demo.native-app.wnyc.org"
+        redirectUrl="wnycalpha://"
       />
       <Divider class="my-4" align="center">
         <b>or</b>
