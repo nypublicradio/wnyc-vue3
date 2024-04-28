@@ -71,7 +71,6 @@ export default defineNuxtRouteMiddleware(async () => {
       if (userLocalStorage.value) {
         // a delay is needed for an unknown reason
         setTimeout(async () => {
-          await updateUser()
           navigateTo(redirectSlug)
         }, 1000)
       }
