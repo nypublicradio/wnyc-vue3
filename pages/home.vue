@@ -72,7 +72,7 @@ onMounted(() => {
 
     <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
       <story-htlAd
-        layout="rectangle"
+        layout="leaderboard"
         slotClass="htlad-wnyc_homepage_banner"
         fineprint="Gothamist is funded by sponsors and member donations"
       />
