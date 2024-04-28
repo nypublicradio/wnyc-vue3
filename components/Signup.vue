@@ -87,6 +87,7 @@ const closeAll = () => {
         label="Sign up"
         slug="/confirm"
         @login-success="closeAll"
+        redirectUrl="https://demo.native-app.wnyc.org"
       >
         <template #aboveSubmit>
           <p class="mb-3">

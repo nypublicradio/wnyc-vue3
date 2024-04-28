@@ -37,7 +37,7 @@ const menuClick = (item) => {
 }
 onMounted(() => {
   // initial animation to catched users eye.
-  $gsap.from(".bottom-menu", { delay: 1, y: 60, duration: 0.5 })
+  $gsap.from(".bottom-menu", { delay: 1.5, y: 60, duration: 0.5 })
 })
 </script>
 
