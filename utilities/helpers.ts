@@ -470,7 +470,7 @@ export const shareAPI = async (
   const shareContent = {
     title: removeHTMLTags(content.title),
     text: removeHTMLTags(content.details || content.description || content.title),
-    url: content.url,
+    url: content.url || content.titleLink,
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
