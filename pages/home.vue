@@ -70,13 +70,15 @@ onMounted(() => {
       />
     </section>
 
-    <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
-      <story-htlAd
-        layout="leaderboard"
-        slotClass="htlad-wnyc_homepage_banner"
-        fineprint="Gothamist is funded by sponsors and member donations"
-      />
-    </div>
+    <section>
+      <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
+        <story-htlAd
+          layout="leaderboard"
+          slotClass="htlad-wnyc_homepage_banner"
+          fineprint="Gothamist is funded by sponsors and member donations"
+        />
+      </div>
+    </section>
 
     <section>
       <h2 class="mb-3">Top stories</h2>
