@@ -193,8 +193,13 @@ const handleNotificationChange = async (e) => {
         <i :class="`${accountHeader.icon}`"></i>
         <div class="s-title">{{ accountHeader.label }}</div>
       </div>
-      <SBox label="Name" @click="editField('name')" :clickable="!isDisabled">
-        <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile.name }}</p>
+      <SBox
+        v-if="currentUserProfile?.name"
+        label="Name"
+        @click="editField('name')"
+        :clickable="!isDisabled"
+      >
+        <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
       <SBox label="Email" @click="editField('email')" :clickable="!isDisabled">
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
@@ -359,6 +364,9 @@ const handleNotificationChange = async (e) => {
       font-size: 13px;
       text-transform: uppercase;
       opacity: 0.7;
+      color: var(--text-color);
+    }
+    .pi {
       color: var(--text-color);
     }
   }
