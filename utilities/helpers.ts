@@ -465,21 +465,26 @@ export const shareAPI = async (
   content: object,
   componentOfOrigin = "Component of origin not specified"
 ) => {
+  console.log('content = ', content)
   // DESKTOP sharing is not supported yet
   const shareContent = {
     title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details || content.description),
+    text: removeHTMLTags(content.details || content.description || content.title),
     url: content.url,
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
-    await Share.share({
-      title: shareContent.title,
-      text: shareContent.text,
-      url: content.url,
-      dialogTitle: "Share with buddies",
-    })
+    try {
+      await Share.share({
+        title: shareContent.title,
+        text: shareContent.text,
+        url: shareContent.url,
+        dialogTitle: "Share with buddies",
+      })
+    } catch (error) {
+      console.error('Error sharing', error);
+    }
   } else {
     try {
       await navigator.share(shareContent)
