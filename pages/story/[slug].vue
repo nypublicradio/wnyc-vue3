@@ -171,7 +171,7 @@ const togglePlayHere = (story, index = 0) => {
         :src="topImage"
         :maxWidth="storyData.image.width"
         :maxHeight="storyData.image.height"
-        sizes="xs:390px md:768px lg:1024px xl:1920px"
+        sizes="xs:390px md:768px"
         density="x1 x2"
         :alt="storyData.image.alt"
         class="story-page-image"

@@ -49,7 +49,7 @@ onMounted(() => {
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
-          sizes="xs:390px md:768px lg:1024px xl:1920px"
+          sizes="xs:390px md:768px"
           density="x1 x2"
         >
           <!--           <template #caption>
