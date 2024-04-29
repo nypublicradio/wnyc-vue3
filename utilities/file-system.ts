@@ -10,7 +10,7 @@ import {
     useCurrentUser
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core';
-import { prepForPlayer, resizePublisherImageUrl, getEpisodeFallBackImage } from "~/utilities/helpers"
+import { prepForPlayer, getEpisodeFallBackImage, imageSolver } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
 
@@ -77,7 +77,7 @@ export const isAlreadyDownloaded = (file) => {
 const traverseDirectory = async (path) => {
     const result = []
     const files = await Filesystem.readdir({
-        path: path,
+        path,
         directory: directoryToSaveTo,
     })
 
@@ -99,11 +99,10 @@ const traverseDirectory = async (path) => {
 const requestPermissions = async () => {
     try {
         const status = await Filesystem.requestPermissions()
-        console.log("STATUS = ", status)
         if (status.publicStorage === "granted") {
-            console.log("Permission granted")
+            console.info("Permission granted")
         } else {
-            console.log("Permission denied")
+            console.info("Permission denied")
         }
     } catch (error) {
         console.error("Failed to request permissions", error)
@@ -277,16 +276,13 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     console.error("Unable to create directory", e)
                 })
 
-                // prep image based on publisher or wagtail
-                let imgUrl = null
-                let imgNameFromUrl = null
-                // check if the image is a wagtail image by checking if it is all numbers only
+                // prep image based on publisher, wagtail, or NPR with the image solver
+                const imgUrl = imageSolver(fileImage, { w: 288, h: 288, q: 80, format: 'jpeg' })
+                let imgNameFromUrl = ''
+
                 if (/^\d+$/.test(fileImage)) {
-                    const config = useRuntimeConfig()
-                    imgUrl = `${config.public.IMAGE_BASE_URL}${fileImage}/fill-288x288-c0|format-jpeg|webpquality-80`
                     imgNameFromUrl = `${fileImage}.jpg`
                 } else {
-                    imgUrl = resizePublisherImageUrl(fileImage, 288, 288, 80)
                     imgNameFromUrl = await fileNameFromURL(imgUrl)
                 }
 
@@ -297,7 +293,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     directory: directoryToSaveTo,
                 })
                     .then(() => {
-                        console.log("image saved")
+                        console.info("image saved")
                     })
                     .catch((e) => {
                         console.error("Unable to write file", e)

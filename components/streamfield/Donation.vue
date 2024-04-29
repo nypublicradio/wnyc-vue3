@@ -3,23 +3,25 @@ import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/compone
 const emit = defineEmits(["onClick"])
 </script>
 <template>
-  <div class="streamfield-donation p-4 pb-5 my-2">
-    <h2 class="mb-3">We rely on your support</h2>
-    <p class="mb-3">
-      Donations from listeners are the largest source of WNYC's funding for all the
-      reporting and programs that keep you informed, engaged, and entertained.
-    </p>
-    <div class="text-center">
-      <!-- maybe consider opening in a in app browser -->
-      <VFlexibleLink
-        raw
-        to="https://pledge.wnyc.org/support/wnyc?utm_source=wnyc_app&utm_medium=wnyc&utm_campaign=story-donate-button"
-        target="_blank"
-        @click="emit('onClick')"
-      >
-        <Button label="Donate" aria-label="donate" />
-      </VFlexibleLink>
-    </div>
+  <div class="streamfield-donation p-4 pb-5 my-6">
+    <section class="holder">
+      <h2 class="mb-3">We rely on <span class="no-wrap">your support</span></h2>
+      <p class="mb-3">
+        Donations from listeners are the largest source of WNYC's funding for all the
+        reporting and programs that keep you informed, engaged, and entertained.
+      </p>
+      <div class="text-center mt-6">
+        <!-- maybe consider opening in a in app browser -->
+        <VFlexibleLink
+          raw
+          to="https://pledge.wnyc.org/support/wnyc?utm_source=wnyc_app&utm_medium=wnyc&utm_campaign=story-donate-button"
+          target="_blank"
+          @click="emit('onClick')"
+        >
+          <Button label="Donate" aria-label="donate" />
+        </VFlexibleLink>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -27,6 +29,9 @@ const emit = defineEmits(["onClick"])
 .streamfield-donation {
   background: var(--donation-bg);
   //background: $backgroundGradient1;
+  .holder {
+    max-width: 650px;
+  }
 }
 .streamfield-donation h2 {
   font-family: var(--font-family-tisa);

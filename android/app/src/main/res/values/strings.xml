@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">App</string>
-    <string name="title_activity_main">App</string>
+    <string name="app_name">WNYC</string>
+    <string name="title_activity_main">WNYC</string>
     <string name="package_name">org.wnyc.android</string>
     <string name="custom_url_scheme">org.wnyc.android</string>
 </resources>

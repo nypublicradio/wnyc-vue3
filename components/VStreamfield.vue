@@ -29,13 +29,18 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <section v-if="props.article.cmsSource === cmsSources.PUBLISHER">
+    <section
+      v-if="
+        props.article.cmsSource === cmsSources.PUBLISHER ||
+        props.article.cmsSource === cmsSources.NPR
+      "
+    >
       <HtmlConvert :htmlContent="props.article.body" />
     </section>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
-      <div v-if="block.type === 'image'" class="streamfield-image my-4">
+      <section v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
         <!--     :width="block.value.image.width"
           :height="block.value.image.height" -->
         <VImage
@@ -44,7 +49,7 @@ onMounted(() => {
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
-          sizes="xs:390px md:768px lg:1024px xl:1920px"
+          sizes="xs:390px md:768px"
           density="x1 x2"
         >
           <!--           <template #caption>
@@ -55,16 +60,16 @@ onMounted(() => {
           </template> -->
           <template #belowImage>
             <div>
-              <p class="px-4 text-sm mt-1">
+              <p class="text-sm mt-1">
                 {{ block.value.image.caption }}
               </p>
-              <p class="px-4 text-xs mt-2">
+              <p class="text-xs mt-2">
                 {{ block.value.image.credit }}
               </p>
             </div>
           </template>
         </VImage>
-      </div>
+      </section>
 
       <section v-else>
         <!-- paragraph -->

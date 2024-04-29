@@ -199,11 +199,5 @@ export const useGlobalToast = () => useState<object>('globalToast', () => null)
 // saved page tab state
 export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)
 
-
-// store Advertising Id
-export const useAdvertisingId = () => useState<string>('useAdvertisingId', () => null)
-
-// store Advertising restriction preference 
-// 0 = allow
-// 1 = restrict
-export const useAdvertisingRestriction = () => useState<string>('useAdvertisingId', () => '0')
+// store Device Id
+export const useDeviceId = () => useState<string>('useDeviceId', () => null)

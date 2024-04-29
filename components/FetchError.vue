@@ -16,6 +16,17 @@ const emit = defineEmits(["on-click"])
 const handleReloadHome = () => {
   window.location.href = props.refreshRoute
 }
+//handle try again button
+// refreshes all useFetch calls related to the page
+const handleTryAgain = async () => {
+  emit("on-click")
+
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
@@ -26,12 +37,11 @@ const handleReloadHome = () => {
         label="Try again"
         severity="secondary"
         aria-label="try again"
-        @click="emit('on-click')"
+        @click="handleTryAgain"
       />
       <Button
-        label="Refresh"
-        severity="secondary"
-        aria-label="refresh"
+        label="Navigate Home"
+        aria-label="Navigate Home"
         @click="handleReloadHome"
       />
     </div>

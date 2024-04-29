@@ -1,12 +1,16 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
-//import { trackClickEvent } from "~/utilities/helpers"
+import { getUserFallBackImage } from "~/utilities/helpers"
 import { ref } from "vue"
 
 const props = defineProps({
   article: {
     type: Object,
     default: null,
+  },
+  isDisableComments: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -36,6 +40,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
     <hr class="black mb-4" />
     <div class="grid grid-nogutter">
       <div class="profile-col col-12">
+        <!-- <pre>{{ profileData }}</pre> -->
         <section>
           <VPerson
             v-for="profile in profileData"
@@ -44,6 +49,8 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
             :imageSize="60"
             imageFlexBasis="60px"
             class="mb-4 text-sm gap-4"
+            :imageFallbackPath="!profile.photoID ? getUserFallBackImage() : null"
+            :onStaffPage="!profile.url"
           />
         </section>
         <hr class="black mb-6" />
@@ -54,7 +61,11 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
             fineprint="Gothamist is funded by sponsors and member donations"
           />
         </div>
-        <div v-if="!isDisableComments" id="comments" class="mb-4">
+        <div
+          v-if="!isDisableComments && !props.isDisableComments"
+          id="comments"
+          class="mb-4"
+        >
           <hr class="black mb-4" />
           <section>
             <story-comments-section :article="props.article" />

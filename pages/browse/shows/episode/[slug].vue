@@ -6,8 +6,8 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import FollowIcon from "~/components/icons/FollowIcon.vue"
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+//import FollowIcon from "~/components/icons/FollowIcon.vue"
+//import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
   trackClickEvent,
@@ -23,7 +23,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
-const { data: episode, pending, error, refresh } = useFetch(
+const { data: episode, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
 )
 
@@ -36,6 +36,7 @@ const backHome = () => {
   trackClickEvent("episode", "episode page", "back show page")
   router.go(-1)
 }
+
 const progress = ref({})
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
@@ -47,9 +48,9 @@ const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }
 
-const handleFollow = () => {
-  // follow the show
-}
+// const handleFollow = () => {
+//   // follow the show
+// }
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -103,14 +104,14 @@ const getDotMenuItems = (bucketItem) => {
         handleShare()
       },
     },
-    {
-      label: "Follow",
-      customIcon: FollowIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleFollow()
-      },
-    },
+    // {
+    //   label: "Follow",
+    //   customIcon: FollowIcon,
+    //   title: bucketItem?.title,
+    //   command: () => {
+    //     handleFollow()
+    //   },
+    // },
     // {
     //   label: "Add to Queue",
     //   active: true,
@@ -120,14 +121,14 @@ const getDotMenuItems = (bucketItem) => {
     //     handleAddToQueue(bucketItem)
     //   },
     // },
-    {
-      label: "More episodes",
-      customIcon: MoreEpisodesIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleFollow()
-      },
-    },
+    // {
+    //   label: "More episodes",
+    //   customIcon: MoreEpisodesIcon,
+    //   title: bucketItem?.title,
+    //   command: () => {
+    //     handleFollow()
+    //   },
+    // },
   ]
 }
 
@@ -196,7 +197,7 @@ const getEpisodeImage = computed(() => {
         />
       </div>
     </section>
-    <FetchError v-if="error || episode === undefined" @on-click="refresh" />
+    <FetchError v-if="error" />
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
@@ -235,12 +236,7 @@ const getEpisodeImage = computed(() => {
     <div v-if="!pending">
       <section>
         <p class="episode-page-date my-1">
-          {{
-            getDate(
-              episodeData?.updatedDate ?? episodeData?.publicationDate,
-              "LLL d, yyyy"
-            )
-          }}
+          {{ getDate(episodeData, "LLL d, yyyy") }}
         </p>
         <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
         <div class="flex align-items-center justify-content-between flex-wrap gap-3">
@@ -250,7 +246,6 @@ const getEpisodeImage = computed(() => {
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
-              class=""
             />
 
             <DownloadProgress

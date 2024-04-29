@@ -54,7 +54,10 @@ export default defineNuxtConfig({
 
   app: {
     //pageTransition: { name: 'rotate', mode: 'out-in' },
-    pageTransition: true,
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in' // default
+    },
     layoutTransition: true,
     head: {
       title: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News',
@@ -133,7 +136,8 @@ export default defineNuxtConfig({
   },
   components: [
     '~/components',
-    '~/components/icons'
+    '~/components/icons',
+    '~/components/logos'
   ],
   imports: {
     dirs: [
@@ -149,7 +153,9 @@ export default defineNuxtConfig({
     ]
   },
   plugins: [
-    '~/plugins/primevue.js'
+    '~/plugins/primevue.js',
+    '~/plugins/router-guards.js',
+    '~/plugins/error-handler.js',
   ],
 
   experimental: {
@@ -178,7 +184,8 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_KEY,
       supabaseAuthSignInRedirectTo: process.env.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO,
       supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
-      OPENWEB_SPOT_ID: process.env['OPENWEB_SPOT_ID'] ?? 'sp_U3rk7ZAf',
+      OPENWEB_SPOT_ID: process.env['OPENWEB_SPOT_ID'],
+      NPR_CDS_API: process.env.NPR_CDS_API ?? 'https://content.api.npr.org',
     }
   },
 })

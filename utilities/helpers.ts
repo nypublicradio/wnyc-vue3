@@ -2,6 +2,7 @@ import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
+  useDeviceId,
   useTextSizeOption,
   useIsApp,
   useCurrentUser,
@@ -12,12 +13,14 @@ import {
   useGlobalToast,
   useAccountPromptSideBar,
   useIsDarkMode,
+  useIsNetworkConnected,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
 import {
+  cmsSources,
   mediaTypeRoutes,
   localUserProfileKey,
   FALLBACKIMAGEEP,
@@ -32,7 +35,7 @@ import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
-import { initAdvertisingId } from "~/utilities/advertising-id.js"
+import { initDeviceId } from "~/utilities/device-id.js"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 
 // function to check if a URL returns a 404
@@ -44,6 +47,33 @@ export const checkUrl404 = async (url) => {
     console.error("Error checking URL:", error)
     return true
   }
+}
+
+// rreturn organization name from CMS source
+export const getOrg = (cmsSource) => {
+  switch (cmsSource) {
+    case cmsSources.PUBLISHER:
+      return "WNYC"
+    case cmsSources.WAGTAIL:
+      return "Gothamist"
+    case cmsSources.NPR:
+      return "NPR"
+    default:
+      return "WNYC"
+  }
+}
+
+
+// returns the time since the episode was published, but checks for updated_date first
+export const whenTime = (data) => {
+  const res = data?.updatedDate
+    ? howLongAgo(data?.updatedDate)
+    : data?.publicationDate
+      ? howLongAgo(data?.publicationDate)
+      : data?.publishAt
+        ? howLongAgo(data?.publishAt)
+        : howLongAgo(data?.firstPublishedAt)
+  return res
 }
 
 // format ISO timestamp to return only the time
@@ -146,6 +176,30 @@ export const resizePublisherImageUrl = (
   })
   return finalUrlArr.join("/")
 }
+
+// returns a resized image url when provided just the image URL
+export const resizeNprImageUrl = (
+  url: string,
+  w: number,
+  q = 80,
+  format = "webp"
+): string => {
+  const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
+  return finalUrl
+}
+
+// returns a resized image url when provided just the image URL
+export const resizeWagtailImageUrl = (
+  id: string,
+  w: number,
+  h: number,
+  q = 80,
+  format = "webp"
+): string => {
+  const config = useRuntimeConfig()
+  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|webpquality-${q}`
+  return finalUrl
+}
 // returns a templated image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
   if (url?.includes("media.wnyc.org")) {
@@ -166,6 +220,25 @@ export const templatizePublisherImageUrl = (url: string): string => {
   }
 }
 
+// central spot to handle image formatting from diff sources
+export const imageSolver = (url, options = {}) => {
+  // Default values for width, height, quality, and format
+  const { w = 288, h = 288, q = 80, format = "webp" }: { w?: number, h?: number, q?: number, format?: string } = options
+
+  let imgUrl = ""
+  if (/^\d+$/.test(url)) {
+    imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
+  } else if (url.includes("media.wnyc.org")) {
+    imgUrl = resizePublisherImageUrl(url, w, h, q)
+  } else if (url.includes("media.npr.org")) {
+    imgUrl = resizeNprImageUrl(url, w, q, format)
+  } else {
+    imgUrl = url
+  }
+  return imgUrl
+}
+
+
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
   const { $analytics } = useNuxtApp()
@@ -182,11 +255,12 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
 export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
+  const deviceId = useDeviceId()
   $analytics.sendEvent("click_tracking", {
     event_category: category,
     component: component,
     event_label: label,
-    user_id: currentUser.value?.id,
+    user_id: currentUser.value?.id ?? deviceId.value,
   })
 }
 
@@ -212,9 +286,33 @@ export function howLongAgo(date) {
 /**
  * to get the desired date format for the header
  */
-export function getDate(date = null, formatString = "EEE, MMM do") {
-  const currentYear = new Date().getFullYear()
+export function getDate(data = null, formatString = "EEE, MMM do") {
+  const date = data?.updatedDate || data?.publicationDate
   if (date) {
+    const currentYear = new Date().getFullYear()
+    const currentDay = new Date().getDate()
+    const inputDate = new Date(date)
+    const inputYear = inputDate.getFullYear()
+    const inputDay = inputDate.getDate()
+    if (inputDay !== currentDay) {
+      if (inputYear !== currentYear) {
+        formatString = `${formatString}, yyyy` // Update formatString to include the year
+      }
+      return format(inputDate, formatString)
+    } else {
+      return whenTime(data)
+    }
+  } else {
+    return format(new Date(), formatString)
+  }
+}
+
+/**
+ * to get the desired date format for the header
+ */
+export function formatDate(date = null, formatString = "EEE, MMM do") {
+  if (date) {
+    const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
     const inputYear = inputDate.getFullYear()
     if (inputYear !== currentYear) {
@@ -334,17 +432,6 @@ export async function openLinkInAppBrowser(url: string) {
   await Browser.open({ url })
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
-}
 
 // global funcrtion for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
@@ -386,7 +473,6 @@ export const shareAPI = async (
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
-  //console.log('Capacitor.getPlatform() = ', Capacitor.getPlatform())
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
       title: shareContent.title,
@@ -550,9 +636,9 @@ export const getAndSetUserProfile = async () => {
     } else {
       // if they are a user, get their profile data
       await getProfile()
-      // get the advertising id if it's an app and not a browser
+      // get the device id if it's an app and not a browser
       if (isApp.value) {
-        await initAdvertisingId()
+        await initDeviceId()
       }
       await getFavoritedItems()
     }
@@ -667,6 +753,7 @@ export const saveFavorite = async (
   }
 }
 
+// handle saving the last played to the history of the user. data is saved in supabase table called recently_viewed
 export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
   saveFavorite(media, typeArg, "recently_viewed")
 }
@@ -686,9 +773,10 @@ export const prepForPlayer = (item, index = null) => {
     file: fileValue,
     title: isSegment ? item.segments[index].title : item.title,
     image:
-      item?.image?.template ??
-      item?.listingImage?.template ??
-      item?.showImage ??
+      item.image?.template ??
+      item.image ??
+      item.listingImage?.template ??
+      item.showImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration,
     details: isSegment ? item.segments[index].tease : item.body,
@@ -715,6 +803,7 @@ export const togglePlayEpisode = (media, index = 0) => {
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
+// css var helper to get the css var value or as pixel value
 export const getCssVar = (name: string, px = false) => {
   const val = getComputedStyle(document.documentElement).getPropertyValue(name)
 
@@ -737,6 +826,16 @@ export const goToStoryPage = (story, params, log = true) => {
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
     query: params,
+  })
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
+}
+
+/* centralized function to route to a story page */
+export const goToNprPage = (story, log = true) => {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
   })
   if (log) {
     saveRecentlyPlayed(story)
@@ -821,24 +920,39 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
 }
 
 // handles how to use the correct navigate method based on the item type
-export const dynamicNavigation = (item, isSaveHistory = true) => {
-  switch (item.type) {
-    case mediaTypes.EPISODE:
-    case mediaTypes.SEGMENT:
-      goToEpisodePage(item, null, isSaveHistory)
-      break
-    case mediaTypes.STORY:
-    case mediaTypes.ARTICLE:
-    case mediaTypes.ARTICLE_PAGE:
-      item.audio
-        ? goToEpisodePage(item, null, isSaveHistory)
-        : goToStoryPage(item, { src: item.cmsSource }, isSaveHistory)
-      break
-    case mediaTypes.SHOW:
-      goToShowPage(item)
-      break
-    default:
-      goToEpisodePage(item, null, isSaveHistory)
+export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
+  const isNetworkConnected = useIsNetworkConnected()
+  if (isNetworkConnected.value) {
+    switch (item.type) {
+      case mediaTypes.EPISODE:
+      case mediaTypes.SEGMENT:
+        goToEpisodePage(item, null, isSaveHistory)
+        break
+      case mediaTypes.STORY:
+      case mediaTypes.ARTICLE:
+      case mediaTypes.ARTICLE_PAGE:
+        item.audio
+          ? goToEpisodePage(item, null, isSaveHistory)
+          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory)
+        break
+      case mediaTypes.SHOW:
+        goToShowPage(item)
+        break
+      case mediaTypes.NPR_EPISODE:
+      case mediaTypes.NPR_ARTICLE:
+        goToNprPage(item)
+        break
+      default:
+        goToEpisodePage(item, null, isSaveHistory)
+    }
+  } else {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary: "Not connected. Try again later.",
+      life: 3000,
+      closable: true,
+    }
   }
 }
 

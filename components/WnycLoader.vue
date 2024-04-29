@@ -44,14 +44,23 @@ const svgWidth = 75
   <div
     class="wnyc-loader"
     :class="[{ bg: props.bg, spinner: props.spinner, pause: props.paused }]"
+    aria-label="loading and audio indicator"
   >
     <div class="svg-holder flex">
       <i
         v-if="props.spinner"
         class="pi pi-spin pi-spinner"
         :style="`font-size: ${props.size}; color: ${props.color};`"
+        aria-label="spinning loader"
       ></i>
-      <svg v-else class="svg" x="0px" y="0px" viewBox="0 0 75.1 30">
+      <svg
+        v-else
+        class="svg"
+        x="0px"
+        y="0px"
+        viewBox="0 0 75.1 30"
+        aria-label="animated sound bars loader and/or audio is playing indicator"
+      >
         <!-- <rect id="b4" x="58.1" y="22" class="st1" width="16.9" height="30" />
         <rect id="b3" x="38.7" y="22" class="st1" width="16.9" height="30" />
         <rect id="b2" x="19.4" y="22" class="st1" width="16.9" height="30" />
@@ -73,6 +82,8 @@ const svgWidth = 75
 
 <style lang="scss" scoped>
 .wnyc-loader {
+  display: flex;
+  justify-content: center;
   &.bg {
     background: -moz-radial-gradient(
       center,

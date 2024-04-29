@@ -2,11 +2,12 @@ import type Author from '../types/Author'
 import type Person from '../types/Person'
 import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
-import { cmsSources } from '~/composables/globals'
+import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
-
+import axios from 'axios'
+import memoize from 'memoize';
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
   const defaultParams = {
@@ -60,6 +61,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
     socialMediaProfile: author.socialMediaProfile,
   }
 }
+
 
 /**
  * Normalize an article page object from Publisher or Wagtail into a generic ArticlePage object.
@@ -222,6 +224,186 @@ export async function normalizePublisherPage(article: Record<string, any | undef
     embedCode: article.attributes.embedCode,
   }))
 }
+
+// fetch tweet/X content from tweetId
+const fetchTweetEmbed = async (tweetId) => {
+  const response = await fetch(`https://publish.twitter.com/oembed?url=https://twitter.com/web/status/${tweetId}`);
+  const data = await response.json();
+  return data.html;
+};
+
+// get authors
+const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => {
+  const config = useRuntimeConfig()
+  const options = {
+    method: 'GET',
+    url: `${config.public.NPR_CDS_API}${url}`,
+    headers: {
+      Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+    },
+  };
+  let response = null
+  try {
+    response = await axios(options);
+  } catch (e) {
+    if (e.response && e.response.status === 404) {
+      console.error('404 = ', e)
+    } else {
+      console.error(e);
+    }
+  }
+  let image;
+  let biography = '';
+  const res = response.data?.resources[0];
+  if (res.assets !== undefined && res.assets !== null) {
+    for (const asset of Object.values(res.assets)) {
+      if (asset.profiles[0]?.href === '/v1/profiles/image') {
+        image = asset.enclosures.filter((enclosure) => {
+          return enclosure.rels.includes('primary');
+        })[0]?.hrefTemplate;
+      }
+    }
+  }
+  if (res.layout !== undefined && res.layout !== null) {
+    for (const layoutItem of Object.values(res.layout)) {
+      const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+      if (res?.profiles[0]?.href === '/v1/profiles/text') {
+        biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : '';
+      }
+    }
+  }
+  const author = {
+    id: res?.id,
+    firstName: res?.title?.split(' ')[0],
+    lastName: res?.title?.split(' ')[1],
+    organization: 'NPR',
+    organizationUrl: null,
+    name: res?.title,
+    photoID: image || null,
+    jobTitle: res?.subtitle,
+    biography: biography || null,
+    website: '',
+    email: '',
+    slug: res?.nprWebsitePath,
+    url: '',
+    socialMediaProfile: null,
+  };
+  return author;
+})
+
+// Normalize an article page object from NPR into a generic ArticlePage object.
+export async function normalizeNprPage(article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
+  const id = article.id
+  const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1);
+  const firstImage = article.assets?.[firstImageId];
+  const firstImageCaption = article.assets?.[firstImageId]?.caption;
+
+  const squareHref = firstImage?.enclosures?.filter((enclosure) => {
+    return enclosure.rels?.includes('image-square');
+  });
+  const wideHref = firstImage?.enclosures?.filter((enclosure) => {
+    return enclosure.rels?.includes('image-wide');
+  });
+
+  let textBody = '';
+  let audioURL;
+  let audioDuration;
+  let index = 0;
+  for (const layoutItem of Object.values(article.layout)) {
+    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+    //console.log('article.assets[layoutId].profiles[0]?.href= ', article.assets[layoutId].profiles[0]?.href)
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
+      textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : '';
+    }
+    //html blocks
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
+      textBody += article.assets[layoutId]?.html;
+    }
+    //youtube
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
+      const videoID = article.assets?.[layoutId].videoId;
+      textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+`
+    }
+    //twitter X
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
+      const tweetInfo = article.assets?.[layoutId];
+      const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId);
+      textBody += tweetHTML ? tweetHTML : '';
+    }
+    //images
+    //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
+    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
+      const imageInfo = article.assets?.[layoutId];
+      // Get image credits
+      const imageCredits = () => {
+        if (imageInfo.producer && imageInfo.provider) {
+          return `${imageInfo.producer}/${imageInfo.provider}`;
+        } else if (imageInfo.producer && !imageInfo.provider) {
+          return imageInfo.producer;
+        } else if (!imageInfo.producer && imageInfo.provider) {
+          return imageInfo.provider;
+        }
+        return 'NPR'
+      }
+
+      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 html-img"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : "";
+      textBody += imageHTML ? imageHTML : '';
+
+      const imageHTMLCaption = imageInfo.caption
+        ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
+      textBody += imageHTMLCaption ? imageHTMLCaption : '';
+    }
+    index++;
+  }
+  //audio
+  for (const asset of Object.values(article.assets)) {
+    if (asset.profiles[0]?.href === '/v1/profiles/audio') {
+      audioDuration = asset?.duration;
+      const audioID = asset?.id;
+      const audioInfo = article.assets?.[audioID];
+      audioURL = audioInfo.enclosures.filter((enclosure) => {
+        return enclosure.type.includes('audio/mpeg');
+      })[0]?.href;
+    }
+  }
+  // Get Byline 
+  const bylineUrl = article.collections.filter((collection) => {
+    return collection.rels.includes('byline');
+  })[0]?.href ?? null;
+
+  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null;
+
+  return {
+    id,
+    uuid: article.id,
+    title: article.title,
+    publicationDate: article.publishDateTime,
+    publishAt: article.publishDateTime,
+    updatedDate: article.editorialLastModifiedDateTime,
+    tease: article.teaser,
+    description: article.teaser,
+    image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+    leadImageCaption: firstImageCaption,
+    cmsSource: cmsSources.NPR,
+    audio: audioURL ? audioURL : null,
+    type: audioURL ? mediaTypes.NPR_EPISODE : mediaTypes.NPR_ARTICLE,
+    estimatedDuration: audioDuration ? audioDuration : null,
+    meta: {
+      firstPublishedAt: article.publishDateTime,
+      slug: id,
+    },
+    showTitle: article.showTitle ?? 'NPR',
+    body: textBody,
+    rawBody: textBody,
+    link: article.webPages[0].href,
+    authors,
+  };
+}
+
+
+
+
 
 // Transform page data from the API into a simpler and typed format
 export function normalizeSearchResults(results: Record<string, any | undefined>): ArticlePage {

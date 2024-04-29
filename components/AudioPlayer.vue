@@ -20,8 +20,7 @@ import {
   useSkipBackTrigger,
   //usePlayerSeek,
   useIsNetworkConnected,
-  //useAdvertisingRestriction,
-  useAdvertisingId,
+  useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
 } from "~/composables/states"
@@ -36,7 +35,7 @@ import {
 
 import { initMediaSession } from "~/utilities/media-session.js"
 import "vidstack/bundle"
-import { MediaRemoteControl } from "vidstack"
+//import { MediaRemoteControl } from "vidstack"
 
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
@@ -48,7 +47,7 @@ const device = useDevice()
 //   })
 // }
 
-const remoteControl = new MediaRemoteControl()
+//const remoteControl = new MediaRemoteControl()
 //let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -63,15 +62,14 @@ const skipBackTrigger = useSkipBackTrigger()
 //const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const isNetworkConnected = useIsNetworkConnected()
-const advertisingId = useAdvertisingId()
-//const advertisingRestriction = useAdvertisingRestriction()
+const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
-const playerHeight = ref(audioPlayerHeight + "px")
+const playerHeight = ref(`${audioPlayerHeight}px`)
 const skipTime = 10
 
 const route = useRoute()
@@ -91,12 +89,6 @@ const updateUseIsPlayerMinimized = (e) => {
   isPlayerMinimized.value = e
 }
 
-/*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
-  // TO DO
-  // trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
-}
-
 let delay = 250
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
@@ -104,16 +96,20 @@ const switchEpisode = () => {
   showPlayer.value = false
   setTimeout(() => {
     showPlayer.value = true
-    // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
     delay = 250
   }, delay)
+  //separagte delay for the media session to init
+  setTimeout(() => {
+    // initiallizes the media session in ~/utilities/media-session.js
+    initMediaSession(currentEpisode.value, skipTime)
+  }, 1500)
 }
 
-watch(currentEpisode, async () => {
-  //console.log("currentEpisode.value changed = ", currentEpisode.value)
-  await switchEpisode()
-  remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
+watch(currentEpisode, () => {
+  if (currentEpisode.value !== null) {
+    switchEpisode()
+  }
+  //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
   //remotePlayer = remoteControl.getPlayer()
 })
 
@@ -141,7 +137,7 @@ watch(skipBackTrigger, () => {
 watch(
   () => route.name,
   () => {
-    if (playerRef.value && !isPlayerMinimized.value) {
+    if (playerRef.value && isPlayerExpanded.value) {
       playerRef.value.toggleExpanded()
     }
   }
@@ -202,7 +198,7 @@ then we merge it all together and return it to the player as the source for the 
 const getConfiguredAudioUrl = computed(() => {
   const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
   const hasQuery = hasQueryParams(url)
-  const adID = advertisingId.value ?? "0"
+  const adID = deviceId.value ?? "0"
   const userID = currentUser?.value?.id ?? "0"
   const desktop = device.isDesktop || device.isDesktopOrTablet
   const thisDevice = device.isAndroid
@@ -223,9 +219,11 @@ const getConfiguredAudioUrl = computed(() => {
 const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
   // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player
+  // it hs to be on a delay, because then the media session artwork image does not show up sometimes
+
   setTimeout(() => {
     initMediaSession(currentEpisode.value, skipTime)
-  }, 300)
+  }, 1500)
 }
 
 // function that handles the error event from the persistent player emit
@@ -238,10 +236,11 @@ const handleError = (e) => {
       life: 6000,
       closable: true,
     }
-    setTimeout(() => {
+
+    if (isEpisodePlaying.value) {
+      playerRef.value.togglePlay()
       isEpisodePlaying.value = false
-      showPlayer.value = false
-    }, 500)
+    }
 
     trackAudioEvent(
       "audio error",
@@ -251,6 +250,40 @@ const handleError = (e) => {
     )
   }
 }
+
+/*function that fires when the episode has ended/completed */
+const episodeEnded = (e) => {
+  // for some reason the event fires on initial load, so we need to check if the event is true and unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full estimatedDuration
+  if (e && currentEpisodeProgress.value > currentEpisode.value.estimatedDuration - 5) {
+    if (isPlayerExpanded.value) {
+      playerRef.value.toggleExpanded()
+      setTimeout(() => {
+        showPlayer.value = false
+        currentEpisode.value = null
+      }, 500)
+    } else {
+      showPlayer.value = false
+      currentEpisode.value = null
+    }
+    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+  }
+}
+
+// resume the player if the network is connected where they left off
+watch(isNetworkConnected, () => {
+  const tempEpisode = currentEpisode.value
+  const tempTime = currentEpisodeProgress.value
+  if (currentEpisode.value && isNetworkConnected.value) {
+    // the current episode does not resume, so we have to null it out and then set it back
+    currentEpisode.value = null
+    setTimeout(() => {
+      currentEpisode.value = tempEpisode
+    }, 500)
+    setTimeout(() => {
+      playerRef.value.jumpToTime(tempTime)
+    }, 1500)
+  }
+})
 </script>
 
 <template>
@@ -303,7 +336,7 @@ const handleError = (e) => {
               }}
             </template>
             <template #right>
-              {{ getDate(currentEpisode.updatedDate ?? currentEpisode.publicationDate) }}
+              {{ getDate(currentEpisode) }}
             </template>
           </PipeData>
           <div class="expanded-title">{{ currentEpisode.title }}</div>
@@ -424,6 +457,10 @@ html.style-mode-dark .persistent-player {
           .show-image {
             // to prevent a jump when the image finally loads and renders
             height: 144px;
+            .image {
+              width: 144px;
+              height: 144px;
+            }
           }
           #expandedViewPlayer {
             margin-top: 1rem;

@@ -10,12 +10,12 @@ const config = useRuntimeConfig()
 
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const { data: pagedata, pending, error, refresh } = await useFetch(
+const { data: pagedata, pending, error } = await useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
 
 // set fallback image based on dark or light mode
-if (!pagedata.value.authorData.photoID) {
+if (pagedata.value && !pagedata.value.authorData.photoID) {
   pagedata.value.authorData.photoID = getUserFallBackImage()
 }
 newPageData.value = pagedata.value
@@ -127,7 +127,10 @@ onMounted(() => {
         @click="routeBack"
         label="Back"
       />
-      <FetchError v-if="error || pagedata === undefined" @on-click="refresh" />
+      <FetchError
+        v-if="error"
+        msg="An error occured while loading this persons profile."
+      />
       <div v-if="!pending" class="content">
         <div class="grid mt-4">
           <div class="col-12">
@@ -143,12 +146,12 @@ onMounted(() => {
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
-        <div id="articleList" class="grid">
-          <div v-if="pagedata?.articles.length > 0" class="col staff-articles">
+        <div id="articleList">
+          <div v-if="pagedata?.articles.length > 0" class="staff-articles grid">
             <div
               v-for="(article, index) in newPageData?.articles"
               :key="article?.uuid"
-              class="mb-5"
+              class="col-12 md:col-12 mb-3 md:px-8"
             >
               <StoryItem
                 :data="article"
@@ -161,7 +164,10 @@ onMounted(() => {
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
         </div>
       </div>
-      <div v-else class="text-center">LOADING</div>
+      <div v-else>
+        <skeleton-staff-page />
+        <div class="text-center">LOADING</div>
+      </div>
       <div v-if="pendingMore">
         <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
       </div>

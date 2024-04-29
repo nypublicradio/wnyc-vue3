@@ -29,11 +29,15 @@ const router = useRouter()
 
 const user = useCurrentUser()
 const config = useRuntimeConfig()
-const { data: storyData, pending, error, refresh } = useFetch(
+
+const { data: storyData, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
+const { data: topStoriesData, error: error2 } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagetopstories`
+)
+
 const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
-const { data: stories } = useFetch(`${config.public.BFF_URL}/api/homepage`)
 const topStories = ref(null)
 const gallery = ref(null)
 const topImage = ref(null)
@@ -77,13 +81,13 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
-
+// handle share button
 const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }
 
-watch(stories, () => {
-  topStories.value = stories.value.top_stories.filter(
+watch(topStoriesData, () => {
+  topStories.value = topStoriesData.value.top_stories.filter(
     (item) => item.id !== storyData.value?.id
   )
 })
@@ -160,14 +164,14 @@ const togglePlayHere = (story, index = 0) => {
         />
       </div>
     </section>
-    <FetchError v-if="error || storyData === undefined" @on-click="refresh" />
+    <FetchError v-if="error || error2" />
     <div v-if="!pending">
       <VImage
         v-if="topImage"
         :src="topImage"
         :maxWidth="storyData.image.width"
         :maxHeight="storyData.image.height"
-        sizes="xs:390px md:768px lg:1024px xl:1920px"
+        sizes="xs:390px md:768px"
         density="x1 x2"
         :alt="storyData.image.alt"
         class="story-page-image"
@@ -220,13 +224,7 @@ const togglePlayHere = (story, index = 0) => {
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
-            <Button
-              text
-              plain
-              rounded
-              aria-label="star"
-              @click="handleAddToFavorites"
-            >
+            <Button text plain rounded aria-label="star" @click="handleAddToFavorites">
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button text plain rounded aria-label="share" @click="handleShare">

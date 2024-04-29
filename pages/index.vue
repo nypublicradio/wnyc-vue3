@@ -15,6 +15,7 @@ definePageMeta({
   layout: "default",
   middleware: ["check-auth-provider"],
 })
+
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
 
@@ -44,6 +45,7 @@ onMounted(() => {
   setTimeout(() => {
     // if no redirect has happened, we can hide the loader
     isLoading.value = false
+    //showError("home Fatal error")
   }, 1500)
 })
 onUnmounted(() => {
@@ -116,9 +118,8 @@ onUnmounted(() => {
                 "
               />
               <p>
-                <VFlexibleLink to="/home" @click.native="onSkipThis"
-                  >Skip this</VFlexibleLink
-                >, I'll create an account later.
+                <VFlexibleLink to="/home" @click="onSkipThis">Skip this</VFlexibleLink>,
+                I'll create an account later.
               </p>
             </div>
           </section>

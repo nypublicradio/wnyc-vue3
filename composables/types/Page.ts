@@ -13,15 +13,15 @@ export interface Page {
   uuid: string
   type: string
 
-  listingTitle: string
-  listingDescription: string
-  listingImage: Image
+  listingTitle?: string
+  listingDescription?: string
+  listingImage?: Image
 
-  preventSearchIndexing: boolean
+  preventSearchIndexing?: boolean
 
-  socialTitle: string
-  socialDescription: string
-  socialImage: Image
+  socialTitle?: string
+  socialDescription?: string
+  socialImage?: Image
 
   seoTitle?: string
   searchDescription?: string
@@ -29,6 +29,7 @@ export interface Page {
 
 export interface ArticlePage extends Page {
   description: string
+  tease: string
   image?: Image
   link: string
   leadImageCaption?: string
@@ -39,31 +40,36 @@ export interface ArticlePage extends Page {
   leadImage?: Image
   leadGallery?: any
   gallerySlides?: any[]
-  legacyId: string
+  legacyId?: string
+  meta: {
+    firstPublishedAt: string;
+    slug: string;
+  };
   publicationDate: Date
+  publishAt: Date
   updatedDate: Date | null
-  showAsFeature: boolean
+  showAsFeature?: boolean
   show?: string
   showTitle?: string
-  sensitiveContent: boolean
-  provocativeContent: boolean
-  sponsoredContent: boolean
-  relatedLinks: NavigationLink[]
-  tags: Tag[]
-  url: string
+  sensitiveContent?: boolean
+  provocativeContent?: boolean
+  sponsoredContent?: boolean
+  relatedLinks?: NavigationLink[]
+  tags?: Tag[]
+  url?: string
   uuid: string
-  section: Tag
-  body?: StreamfieldBlock[]
+  section?: Tag
+  body?: StreamfieldBlock[] | string
   rawBody?: string
   audio?: string
-
+  estimatedDuration?: number
   authors?: Author[]
   relatedAuthors?: Author[]
-  contributingOrganizations: ContributingOrganization[]
-  sponsors: Sponsor[]
+  contributingOrganizations?: ContributingOrganization[]
+  sponsors?: Sponsor[]
 
   disableComments?: string
-  commentId: string
+  commentId?: string
   headers?: any
   segments?: any
   transcript?: string

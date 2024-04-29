@@ -11,13 +11,13 @@ import {
   shareAPI,
   hasAudio,
   getReadingTime,
-  whenTime,
   addToFavorites,
+  getOrg,
+  getDate,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-import { cmsSources } from "~/composables/globals"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -46,6 +46,10 @@ const props = defineProps({
   showPlayButton: {
     type: Boolean,
     default: false,
+  },
+  showShare: {
+    type: Boolean,
+    default: true,
   },
   saved: {
     type: Boolean,
@@ -110,14 +114,18 @@ const getDotMenuItems = (bucketItem) => {
     //     handleDownload(bucketItem)
     //   },
     // },
-    {
-      label: "Share",
-      customIcon: ShareIcon,
-      title: bucketItem.title,
-      command: () => {
-        shareAPI(bucketItem, "Episode Item")
-      },
-    },
+    ...(props.showShare
+      ? [
+          {
+            label: "Share",
+            customIcon: ShareIcon,
+            title: bucketItem.title,
+            command: () => {
+              shareAPI(bucketItem, "Story Item")
+            },
+          },
+        ]
+      : []),
     // {
     //   label: "Add to Queue",
     //   active: true,
@@ -182,15 +190,15 @@ const handleClick = () => {
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
             </p>
-            <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+            <h2 class="text-sm line-height-2 truncate t3lines">{{ props.data.title }}</h2>
           </div>
           <div class="article-metadata">
             <PipeData class="text-xs" :hide-pipe="!hasAudio">
               <template #left>
-                {{ props.data.cmsSource == cmsSources.WAGTAIL ? "Gothamist" : "WNYC" }}
+                {{ getOrg(props.data.cmsSource) }}
               </template>
               <template #right>
-                {{ whenTime(props.data.meta) }}
+                {{ getDate(props.data) }}
               </template>
             </PipeData>
           </div>

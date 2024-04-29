@@ -18,7 +18,7 @@ import {
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
-
+import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
@@ -102,11 +102,6 @@ const addListeners = async () => {
     //alert("App state changed. ", JSON.stringify(isActive))
   })
 
-  Network.addListener("networkStatusChange", (status) => {
-    //alert("Network status changed" + JSON.stringify(status))
-    isNetworkConnected.value = status.connected
-  })
-
   // this is for deep links
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
@@ -135,6 +130,11 @@ const addListeners = async () => {
     }
   })
 }
+
+Network.addListener("networkStatusChange", (status) => {
+  //alert("Network status changed" + JSON.stringify(status))
+  isNetworkConnected.value = status.connected
+})
 
 // get the URL the app was loaded from (if any)
 const checkAppLaunchUrl = async () => {
@@ -171,6 +171,13 @@ onMounted(async () => {
           }
         })
       }
+      // refresh data here
+      updateAllLiveStreams()
+      try {
+        await refreshNuxtData()
+      } catch (error) {
+        console.error(error)
+      }
     }
   })
   //every time the cursor enters the window on desktop only
@@ -202,6 +209,18 @@ useHead({
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {
     toast.add(optionsObj)
+  }
+})
+
+const globalError = useError()
+
+watch(globalError, (error) => {
+  if (error) {
+    toast.add({
+      severity: "error",
+      summary: error,
+      life: 6000,
+    })
   }
 })
 </script>
