@@ -25,12 +25,8 @@ const sensitiveContent = useSensitiveContent()
 </template>
 <style lang="scss">
 .ad-wrapper.leaderboard {
-  min-width: 300px;
+  min-width: 320px;
   min-height: 50px;
-  @include media(">sm") {
-    min-width: 728px;
-    min-height: 90px;
-  }
 }
 
 .ad-wrapper.wide {
