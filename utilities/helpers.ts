@@ -465,7 +465,6 @@ export const shareAPI = async (
   content: object,
   componentOfOrigin = "Component of origin not specified"
 ) => {
-  console.log('content = ', content)
   // DESKTOP sharing is not supported yet
   const shareContent = {
     title: removeHTMLTags(content.title),
