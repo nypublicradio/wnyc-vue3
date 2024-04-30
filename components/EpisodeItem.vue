@@ -179,6 +179,14 @@ const toggleDownloadedPlay = (file) => {
 const handleClick = () => {
   emit("on-click")
 }
+
+// handle the play button render
+const handleHasAudio = computed(() => {
+  if (props.showPlayButton && hasAudio(props.data.audio)) {
+    return true
+  }
+  return false
+})
 </script>
 
 <template>
@@ -210,17 +218,9 @@ const handleClick = () => {
             </h2>
           </div>
           <div class="article-metadata">
-            <PipeData class="text-xs" :hide-pipe="!hasAudio">
+            <PipeData class="text-xs">
               <template #left>
-                <template v-if="hasAudio && !showPlayButton">
-                  <template v-if="props.data.estimatedDuration > 0">
-                    {{ getMinutes(props.data.estimatedDuration) }}
-                  </template>
-                  <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.75rem"></i>
-                </template>
-                <template v-else>
-                  {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
-                </template>
+                {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
               </template>
               <template #right>
                 {{ getDate(props.data) }}
@@ -238,7 +238,7 @@ const handleClick = () => {
         </div>
         <div class="flex justify-content-between align-items-center flex-wrap">
           <PlayButton
-            v-if="props.showPlayButton"
+            v-if="handleHasAudio"
             :data="props.data"
             class="z-1"
             :label="getMinutes(props.data.estimatedDuration, 1)"
@@ -249,6 +249,7 @@ const handleClick = () => {
             "
           >
           </PlayButton>
+          <div v-else></div>
           <slot>
             <div class="flex gap-1 align-items-center">
               <DownloadProgress

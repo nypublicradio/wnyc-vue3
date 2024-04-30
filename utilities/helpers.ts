@@ -856,13 +856,6 @@ export const hasQueryParams = (url) => {
 }
 
 export const hasAudio = (audio) => {
-  // return (
-  //   audio !== undefined &&
-  //   audio !== null &&
-  //   audio !== "" &&
-  //   (Array.isArray(audio) && audio.length !== 0) &&
-  //   audio[0] !== null
-  // )
   return (
     audio &&
     ((typeof audio === "string" && audio.trim() !== "") ||
@@ -870,7 +863,6 @@ export const hasAudio = (audio) => {
         audio.length > 0 &&
         audio.every((item) => item && typeof item === "string" && item.trim() !== "")))
   )
-  //return true
 }
 
 // Function to get the raw body from a wagtail body array

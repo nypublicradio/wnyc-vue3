@@ -92,6 +92,7 @@ onMounted(() => {
         <section>
           <h2 class="mt-4">{{ section.title }}</h2>
         </section>
+        <!-- <pre class="text-xs overflox-hidden">{{ section.data }}</pre> -->
         <section v-if="section.componentType === 'default'">
           <div class="grid">
             <EpisodeItem
