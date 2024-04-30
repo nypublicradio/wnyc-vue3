@@ -855,6 +855,7 @@ export const hasQueryParams = (url) => {
   return parsedUrl.searchParams.toString().length > 0
 }
 
+// checks if the audio key has a valid value for having audio
 export const hasAudio = (audio) => {
   return (
     audio &&

@@ -131,7 +131,7 @@ const hasEpisodes = computed(() => {
 const hasSegments = computed(() => {
   return episodes.value?.some((ep) => ep?.type === "segment")
 })
-watch(show, async () => {
+watch(show, () => {
   page.value = show?.value?.episodes?.meta.pagination.page
   maxPages = show.value.episodes?.meta.pagination.pages
   episodes.value = show.value.episodes?.data

@@ -182,10 +182,7 @@ const handleClick = () => {
 
 // handle the play button render
 const handleHasAudio = computed(() => {
-  if (props.showPlayButton && hasAudio(props.data.audio)) {
-    return true
-  }
-  return false
+  return props.showPlayButton && hasAudio(props.data.audio)
 })
 </script>
 
