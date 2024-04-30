@@ -110,7 +110,7 @@ export default defineEventHandler(async (event) => {
 		local_newscast = await getLocalNewscast();
 	}
 	const national_newscast = await getNationalNewscast();
-	res.setHeader('Cache-Control', 'maxage=900, stale-while-revalidate');
+	res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
 
 	return {
 		local_newscast,

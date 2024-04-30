@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
 	const publisher = await getWNYCTopStories();
 	const topStories = mergeArticles(aviary, publisher);
 
-	res.setHeader('Cache-Control', 'maxage=900, stale-while-revalidate');
+	res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
 
 	return {
 		top_stories: topStories,
