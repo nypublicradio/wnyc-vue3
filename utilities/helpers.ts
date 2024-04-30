@@ -468,8 +468,8 @@ export const shareAPI = async (
   // DESKTOP sharing is not supported yet
   const shareContent = {
     title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details || content.description),
-    url: content.url,
+    text: removeHTMLTags(content.details || content.description || content.title),
+    url: content.url || content.titleLink,
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
