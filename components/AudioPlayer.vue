@@ -99,14 +99,16 @@ const switchEpisode = () => {
     delay = 250
   }, delay)
   //separagte delay for the media session to init
+  // 2x to fix the initial play not doing it's thing
+  initMediaSession(currentEpisode.value, skipTime)
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
   }, 1500)
 }
 
-watch(currentEpisode, () => {
-  if (currentEpisode.value !== null) {
+watch(currentEpisode, (val) => {
+  if (val !== null) {
     switchEpisode()
   }
   //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
