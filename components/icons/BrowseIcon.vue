@@ -42,8 +42,8 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.browse-icon path {
-  fill: var(--bottom-menu-icon-color);
+.browse-icon {
+  fill: var(--text-color);
   height: 52px;
 }
 </style>
