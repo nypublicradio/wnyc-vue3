@@ -96,6 +96,7 @@ onMounted(() => {
           flex: none;
           width: 28px;
           height: 28px;
+          fill: var(--bottom-menu-icon-color);
         }
         .item {
           display: flex;

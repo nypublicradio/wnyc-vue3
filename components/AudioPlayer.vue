@@ -105,8 +105,8 @@ const switchEpisode = () => {
   }, 1500)
 }
 
-watch(currentEpisode, () => {
-  if (currentEpisode.value !== null) {
+watch(currentEpisode, (val) => {
+  if (val !== null) {
     switchEpisode()
   }
   //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
