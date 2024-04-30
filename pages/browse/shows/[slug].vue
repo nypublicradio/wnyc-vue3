@@ -49,11 +49,9 @@ const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => 
 onUnmounted(() => {
   stop()
 })
-
 // load more episodes and track it
 const loadMore = async () => {
   page.value += 1
-  //console.log("page.value", page.value)
   pendingMore.value = true
   try {
     const moreShows = await $fetch(
@@ -67,6 +65,7 @@ const loadMore = async () => {
       show.value.show.title
     )
   } catch (e) {
+    pendingMore.value = false
     const globalToast = useGlobalToast()
     globalToast.value = {
       severity: "error",
@@ -132,8 +131,7 @@ const hasEpisodes = computed(() => {
 const hasSegments = computed(() => {
   return episodes.value?.some((ep) => ep?.type === "segment")
 })
-
-watch(show, () => {
+watch(show, async () => {
   page.value = show?.value?.episodes?.meta.pagination.page
   maxPages = show.value.episodes?.meta.pagination.pages
   episodes.value = show.value.episodes?.data

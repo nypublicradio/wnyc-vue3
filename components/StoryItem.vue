@@ -9,7 +9,6 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 import {
   checkIsFavorited,
   shareAPI,
-  hasAudio,
   getReadingTime,
   addToFavorites,
   getOrg,
