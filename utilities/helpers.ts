@@ -475,8 +475,8 @@ export const shareAPI = async (
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
-      title: shareContent.title,
-      text: shareContent.text,
+      // title: shareContent.title,
+      // text: shareContent.text,
       url: content.url,
       dialogTitle: "Share with buddies",
     })
