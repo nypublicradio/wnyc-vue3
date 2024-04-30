@@ -299,12 +299,12 @@ const handleNotificationChange = async (e) => {
         "
       ></SBox>
       <SBox
-        label="Submit Feedback"
-        link="https://newyorkpublicradio.my.site.com/wnyc/s/"
+        label="Member Center"
+        link="https://pledge.wnyc.org/user/email-link "
         @linkClick="
           (link) => {
             trackClickEvent(
-              'Click Tracking - Submit Feedback',
+              'Click Tracking - Member Center',
               'Settings Sidebar - links',
               link
             )
@@ -337,7 +337,7 @@ const handleNotificationChange = async (e) => {
     <section class="footer mb-4">
       <WnycLogo style="fill: var(--night)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
-      <p>Version X.X.XX (XXXXXX)</p>
+      <p>Version 1.0.0</p>
     </section>
     <Transition name="zoom">
       <Message
