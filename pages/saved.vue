@@ -80,8 +80,8 @@ onMounted(() => {
       ></Button> -->
     </section>
     <div v-if="user">
-      <HorizontalScrollFeature class="items-holder mt-3">
-        <div class="flex">
+      <HorizontalScrollFeature class="items-holder my-3">
+        <div class="flex w-full">
           <div
             v-for="(item, index) in savedMenuItems"
             class="item-holder"
@@ -124,6 +124,11 @@ onMounted(() => {
       &.selected .item-btn {
         background-color: var(--red);
         color: #ffffff;
+      }
+      &:first-child {
+        @include media(">=md") {
+          margin-left: calc(((100% - 768px) / 2) + 40px);
+        }
       }
     }
   }
