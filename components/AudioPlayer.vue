@@ -465,6 +465,7 @@ html.style-mode-dark .persistent-player {
           #expandedViewPlayer {
             margin-top: 1rem;
           }
+          @include content-formatting();
         }
         .expanded-title {
           font-size: 18px;
