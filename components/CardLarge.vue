@@ -10,6 +10,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  hideDate: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const $primevue = usePrimeVue()
@@ -42,9 +46,9 @@ defineExpose({
         <!-- <pre class="text-xs">{{ props.item }}</pre> -->
         <HtmlConvert :htmlContent="props.item.tease" class="desc" />
 
-        <PipeData class="text-xs">
+        <PipeData class="text-xs" :hidePipe="props.hideDate">
           <template #left>{{ props.item.headers.brand.title }}</template>
-          <template #right>
+          <template #right v-if="!props.hideDate">
             {{ getDate(props.item) }}
           </template>
         </PipeData>

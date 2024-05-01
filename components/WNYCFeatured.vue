@@ -75,7 +75,12 @@ const togglePlayHere = (item) => {
     <div class="wnyc-featured">
       <!-- <pre class="text-xs">{{ props.articles[0] }}</pre> -->
       <HorizontalScrollFeature>
-        <CardLarge v-for="(item, index) in props.articles" :key="item.label" :item="item">
+        <CardLarge
+          v-for="(item, index) in props.articles"
+          :key="item.label"
+          :item="item"
+          :hide-date="true"
+        >
           <template #play>
             <PlayButton
               v-if="item.audio"
