@@ -36,7 +36,7 @@ watch(
 <style lang="scss" scoped>
 .back-to-top-button {
   .p-scrolltop {
-    margin-bottom: v-bind(bottomBuffer);
+    margin-bottom: calc(env(safe-area-inset-bottom) + v-bind(bottomBuffer));
     border-radius: 50%;
   }
 }
