@@ -65,6 +65,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def processManifestTask = tasks.getByName("process${output.name.capitalize()}Manifest")
+            processManifestTask.doLast {
+                def manifestFile = output.processManifest.manifestOutputFile
+                def manifestContent = manifestFile.text
+                def updatedContent = manifestContent.replaceAll(/<uses-permission android:name="com.google.android.gms.permission.AD_ID"\/>/, '')
+                manifestFile.write(updatedContent)
+            }
+        }
+    }
 }
 
 
