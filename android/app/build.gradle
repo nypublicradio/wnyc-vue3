@@ -67,19 +67,19 @@ android {
     }
 
     android.applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            output.processManifest.doLast {
-                // Stores the path to the manifest.
-                String manifestPath = "$manifestOutputDirectory/AndroidManifest.xml"
-                // Stores the contents of the manifest.
-                def manifestContent = file(manifestPath).getText()
-                // Removes the AD_ID permission from the stored text.
-                manifestContent = manifestContent.replaceAll(/<uses-permission android:name="com.google.android.gms.permission.AD_ID"\/>/, '')
-                // Overwrites the manifest with the new text.
-                file(manifestPath).write(manifestContent)
-            }
+    variant.outputs.all { output ->
+        output.processManifest.doLast {
+            // Access the manifest file directly from the output.
+            def manifestFile = output.processManifest.manifestOutputFile
+            // Read the manifest content.
+            def manifestContent = manifestFile.getText()
+            // Remove the AD_ID permission.
+            def updatedContent = manifestContent.replaceAll(/<uses-permission android:name="com.google.android.gms.permission.AD_ID"\/>/, '')
+            // Write the updated content back to the manifest file.
+            manifestFile.write(updatedContent)
         }
     }
+}
 }
 
 
