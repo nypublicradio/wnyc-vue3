@@ -46,7 +46,7 @@ const getNationalNewscast = async () => {
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
 		const mp3Res = await axios(resData.attributes.audio);
-		resData.attributes.newsdate = mp3Res.headers.lastModified;
+		resData.attributes.newsdate = mp3Res.headers['last-modified'];
 		resData.attributes.file = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
 		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
