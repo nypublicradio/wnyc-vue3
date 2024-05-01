@@ -6,7 +6,6 @@ import LiveIcon from "./icons/LiveIcon.vue"
 import BrowseIcon from "./icons/BrowseIcon.vue"
 import StarIcon from "./icons/StarIcon.vue"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
-const { $gsap } = useNuxtApp()
 const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
@@ -23,9 +22,7 @@ watch(
   (e) => {
     bottomMenuState.value = { value: null }
     options.value.forEach((item) => {
-      //console.log('item =', item.value, 'route =', e)
       if (e.includes(item.value)) bottomMenuState.value = { value: item.value }
-      //if (e === 'index') bottomMenuState.value = { value: 'home' }
     })
   },
   { immediate: true }
@@ -35,10 +32,6 @@ const menuClick = (item) => {
   trackClickEvent("Click Tracking - Bottom Menu", "Bottom Menu", item.slug)
   bottomMenuState.value = { value: item.value }
 }
-onMounted(() => {
-  // initial animation to catched users eye.
-  $gsap.from(".bottom-menu", { delay: 1.5, y: 60, duration: 0.5 })
-})
 </script>
 
 <template>
@@ -64,6 +57,15 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+@keyframes liftBottomMenu {
+  0%,
+  66% {
+    transform: translateY(calc(var(--bottom-menu-height) + env(safe-area-inset-bottom)));
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 .bottom-menu {
   background-color: var(--bottom-menu-bg-color);
   position: fixed;
@@ -72,6 +74,7 @@ onMounted(() => {
   z-index: 1001;
   width: 100vw;
   padding-bottom: env(safe-area-inset-bottom);
+  animation: liftBottomMenu 1.5s ease-out;
   .buttons-holder {
     height: var(--bottom-menu-height);
     width: 100%;
