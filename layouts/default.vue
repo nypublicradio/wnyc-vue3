@@ -30,8 +30,8 @@ useHead({
 <style lang="scss">
 header {
   .v-smart-header {
-    margin-top: -$headerHeight !important;
-    transition: all $transitionDuration ease;
+    margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -1) !important;
+    transition: margin-top $transitionDuration ease;
   }
 }
 header.show {
