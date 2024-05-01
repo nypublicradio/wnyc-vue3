@@ -24,9 +24,21 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
 const isLoading = shallowRef(true)
 
-/* adding tracking to the skip this button */
+/* track the skip this button */
 const onSkipThis = () => {
-  trackClickEvent("Click Tracking - Skip This button", "index page", "Skip Login")
+  trackClickEvent("Click Tracking - Skip This button", "welcome screen", "skip-button")
+}
+
+/* track the create free account button and open the signup side bar */
+const createFreeAccount = () => {
+  trackClickEvent( "Click Tracking - Create Free Account button", "welcome screen", "signup-button" )
+  signupSideBar.value = true
+}
+
+/* track the login button and open the login side bar */
+const login = () => {
+  trackClickEvent( "Click Tracking - Login button", "welcome screen", "login-button" )
+  loginSideBar.value = true
 }
 
 onBeforeMount(() => {
@@ -95,11 +107,7 @@ onUnmounted(() => {
                 aria-label="Create Free Account"
                 rounded
                 size="small"
-                @click="
-                  () => {
-                    signupSideBar = true
-                  }
-                "
+                @click="createFreeAccount"
               />
 
               <p>or</p>
@@ -111,11 +119,7 @@ onUnmounted(() => {
                 rounded
                 size="small"
                 severity="secondary"
-                @click="
-                  () => {
-                    loginSideBar = true
-                  }
-                "
+                @click="login"
               />
               <p>
                 <VFlexibleLink to="/home" @click="onSkipThis">Skip this</VFlexibleLink>,
