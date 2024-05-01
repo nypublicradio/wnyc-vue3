@@ -30,7 +30,7 @@ useHead({
 <style lang="scss">
 header {
   .v-smart-header {
-    margin-top: calc(var(--header-height) * -1 + env(safe-area-inset-top)) !important;
+    margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -1) !important;
     transition: margin-top $transitionDuration ease;
   }
 }
