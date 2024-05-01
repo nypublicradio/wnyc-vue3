@@ -1,5 +1,6 @@
 <script setup>
 import { useCurrentUserProfile } from "~/composables/states"
+
 const config = useRuntimeConfig()
 
 const props = defineProps({

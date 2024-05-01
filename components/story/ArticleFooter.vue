@@ -1,6 +1,7 @@
 <script setup>
 import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { getUserFallBackImage } from "~/utilities/helpers"
+import { cmsSources } from "~/composables/globals"
 import { ref } from "vue"
 
 const props = defineProps({
@@ -67,7 +68,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
           class="mb-4"
         >
           <hr class="black mb-4" />
-          <section>
+          <section v-if="props.article.cmsSource === cmsSources.WAGTAIL">
             <story-comments-section :article="props.article" />
           </section>
         </div>

@@ -234,7 +234,7 @@ const togglePlayHere = (story, index = 0) => {
               <template #icon> <ShareIcon /></template>
             </Button>
             <Button
-              v-if="isWagtail"
+              v-if="isWagtail && commentCount > 0"
               text
               plain
               rounded
