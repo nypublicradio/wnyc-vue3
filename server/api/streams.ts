@@ -35,7 +35,7 @@ const getLivestreams = async () => {
  */
 export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
-    res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
+    res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
     const streams = await getLivestreams();
     return streams
 })

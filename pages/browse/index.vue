@@ -118,7 +118,7 @@ watch(
             <h2>Browse By Topic</h2>
           </section>
           <HorizontalScrollFeature class="topics-holder">
-            <div class="flex gap-3">
+            <div class="flex gap-3 w-full">
               <div v-for="topic in showTopics" class="station-holder" :key="topic.label">
                 <div class="relative topic-btn-holder">
                   <Button
@@ -237,6 +237,15 @@ watch(
     top: 50%;
     margin-top: -1.25rem;
     margin-left: -2.5rem;
+  }
+  .topics-holder {
+    .station-holder {
+      &:first-child {
+        @include media(">=md") {
+          margin-left: calc(((100% - 768px) / 2) + 48px);
+        }
+      }
+    }
   }
   .content-holder {
     .topics {

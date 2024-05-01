@@ -9,7 +9,6 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 import {
   checkIsFavorited,
   shareAPI,
-  hasAudio,
   getReadingTime,
   addToFavorites,
   getOrg,
@@ -193,7 +192,7 @@ const handleClick = () => {
             <h2 class="text-sm line-height-2 truncate t3lines">{{ props.data.title }}</h2>
           </div>
           <div class="article-metadata">
-            <PipeData class="text-xs" :hide-pipe="!hasAudio">
+            <PipeData class="text-xs">
               <template #left>
                 {{ getOrg(props.data.cmsSource) }}
               </template>

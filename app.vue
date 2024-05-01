@@ -18,7 +18,7 @@ import {
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
-
+import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
@@ -170,6 +170,13 @@ onMounted(async () => {
             currentUserProfile.value.receive_general_notifications = true
           }
         })
+      }
+      // refresh data here
+      updateAllLiveStreams()
+      try {
+        await refreshNuxtData()
+      } catch (error) {
+        console.error(error)
       }
     }
   })

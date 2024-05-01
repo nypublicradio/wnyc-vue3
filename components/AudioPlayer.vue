@@ -105,8 +105,8 @@ const switchEpisode = () => {
   }, 1500)
 }
 
-watch(currentEpisode, () => {
-  if (currentEpisode.value !== null) {
+watch(currentEpisode, (val) => {
+  if (val !== null) {
     switchEpisode()
   }
   //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
@@ -465,6 +465,7 @@ html.style-mode-dark .persistent-player {
           #expandedViewPlayer {
             margin-top: 1rem;
           }
+          @include content-formatting();
         }
         .expanded-title {
           font-size: 18px;

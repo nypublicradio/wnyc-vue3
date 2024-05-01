@@ -246,7 +246,7 @@ hr {
   width: 100vw;
 }
 
-section {
+@mixin content-formatting() {
   width: 100%;
   max-width: $contentWidth;
   padding: 0.75rem $padding;
@@ -263,6 +263,10 @@ section {
   @include media('>=md') {
     padding: 0.75rem 3rem;
   }
+}
+
+section {
+  @include content-formatting();
 }
 .no-wrap {
   white-space: nowrap;

@@ -468,15 +468,15 @@ export const shareAPI = async (
   // DESKTOP sharing is not supported yet
   const shareContent = {
     title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details || content.description),
-    url: content.url,
+    text: removeHTMLTags(content.details || content.description || content.title),
+    url: content.url || content.titleLink, // titleLink is for live streams
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
   if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
     await Share.share({
-      title: shareContent.title,
-      text: shareContent.text,
+      // title: shareContent.title,
+      // text: shareContent.text,
       url: content.url,
       dialogTitle: "Share with buddies",
     })
@@ -855,14 +855,8 @@ export const hasQueryParams = (url) => {
   return parsedUrl.searchParams.toString().length > 0
 }
 
+// checks if the audio key has a valid value for having audio
 export const hasAudio = (audio) => {
-  // return (
-  //   audio !== undefined &&
-  //   audio !== null &&
-  //   audio !== "" &&
-  //   (Array.isArray(audio) && audio.length !== 0) &&
-  //   audio[0] !== null
-  // )
   return (
     audio &&
     ((typeof audio === "string" && audio.trim() !== "") ||
@@ -870,7 +864,6 @@ export const hasAudio = (audio) => {
         audio.length > 0 &&
         audio.every((item) => item && typeof item === "string" && item.trim() !== "")))
   )
-  //return true
 }
 
 // Function to get the raw body from a wagtail body array

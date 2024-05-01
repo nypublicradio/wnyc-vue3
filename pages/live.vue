@@ -44,9 +44,11 @@ const switchStation = async (station) => {
       await updateLiveStream(station.slug)
       togglePlayTrigger.value = !togglePlayTrigger.value
       currentEpisode.value = station
+    } else {
+      currentEpisode.value = null
+      currentStreamStation.value = station.slug
+      currentEpisodeHolder.value = station
     }
-    currentStreamStation.value = station.slug
-    currentEpisodeHolder.value = station
 
     trackClickEvent(
       "Click Tracking - Station Button",

@@ -72,15 +72,12 @@ onMounted(() => {
 
     <section>
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
-        <story-htlAd
-          layout="leaderboard"
-          slotClass="htlad-wnyc_homepage_banner"
-        />
+        <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
       </div>
     </section>
 
     <section>
-      <h2 class="mb-3">Top stories</h2>
+      <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
         <story-htlAd
@@ -95,6 +92,7 @@ onMounted(() => {
         <section>
           <h2 class="mt-4">{{ section.title }}</h2>
         </section>
+        <!-- <pre class="text-xs overflox-hidden">{{ section.data }}</pre> -->
         <section v-if="section.componentType === 'default'">
           <div class="grid">
             <EpisodeItem
