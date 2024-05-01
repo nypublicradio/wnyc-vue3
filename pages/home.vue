@@ -70,11 +70,7 @@ onMounted(() => {
       />
     </section>
 
-    <section>
-      <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
-        <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
-      </div>
-    </section>
+    <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
     <section>
       <h2 class="mb-3">WNYC Picks</h2>

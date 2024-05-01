@@ -24,9 +24,10 @@ const sensitiveContent = useSensitiveContent()
   </div>
 </template>
 <style lang="scss">
-.ad-wrapper.leaderboard {
+.ad-wrapper.leaderboard .htl-ad {
   min-width: 320px;
   min-height: 50px;
+  margin: 40px auto;
 }
 
 .ad-wrapper.wide {
