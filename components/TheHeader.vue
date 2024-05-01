@@ -1,6 +1,6 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
-//import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { useSettingSideBar } from "~/composables/states.ts"
 
 const settingsSideBar = useSettingSideBar()
@@ -13,10 +13,10 @@ const settingsSideBar = useSettingSideBar()
         <div class="flex align-items-center">
           <WnycLogo class="w-5rem mr-3" />
 
-          <span class="font-meta">{{ getDate() }}</span>
+          <span class="head-date font-meta">{{ getDate() }}</span>
         </div>
         <div class="flex">
-          <!-- <VFlexibleLink
+          <VFlexibleLink
             raw
             to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
             @flexible-link-click="
@@ -28,7 +28,7 @@ const settingsSideBar = useSettingSideBar()
             "
           >
             <Button label="Donate" aria-label="donate" class="px-3 sm:px-5 mr-3" />
-          </VFlexibleLink> -->
+          </VFlexibleLink>
 
           <Button
             icon="pi pi-bars"
@@ -61,6 +61,11 @@ const settingsSideBar = useSettingSideBar()
   display: flex;
   .pi-bars {
     font-size: var(--font-size-8);
+  }
+  .head-date {
+    font-family: var(--font-family-header);
+    line-height: 1rem;
+    font-size: 0.9rem;
   }
 }
 </style>
