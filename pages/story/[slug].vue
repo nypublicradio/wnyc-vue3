@@ -36,8 +36,8 @@ const { data: storyData, pending, error } = useFetch(
 const { data: topStoriesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
 )
-
-const storySource = route.query.src === cmsSources.WAGTAIL ? "Gothamist" : "WNYC"
+const isWagtail = route.query.src === cmsSources.WAGTAIL
+const storySource = isWagtail ? "Gothamist" : "WNYC"
 const topStories = ref(null)
 const gallery = ref(null)
 const topImage = ref(null)
@@ -48,7 +48,8 @@ const galleryLink = ref(null)
 
 const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
-  return commentCounts.value[storyData?.value?.commentId]
+  const result = commentCounts.value[storyData?.value?.commentId]
+  return result ?? 0
 })
 
 // navigate back to home and track it
@@ -130,8 +131,10 @@ watch(storyData, async () => {
       `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
     )
   }
-  // get comment count
-  useUpdateCommentCounts([storyData.value])
+  if (isWagtail) {
+    // get comment count if Wagtail only
+    useUpdateCommentCounts([storyData.value])
+  }
 })
 
 // handle the toggle play button and tracking
@@ -231,6 +234,7 @@ const togglePlayHere = (story, index = 0) => {
               <template #icon> <ShareIcon /></template>
             </Button>
             <Button
+              v-if="isWagtail"
               text
               plain
               rounded
