@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
 	const homeTemplate = await getHomeTemplate();
 	const nprStories = await getNprStories();
 
-	res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
+	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate');
 
 	return {
 		home_template: homeTemplate,
