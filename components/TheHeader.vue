@@ -1,9 +1,26 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
-//import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
+import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { useSettingSideBar } from "~/composables/states.ts"
 
+const config = useRuntimeConfig()
 const settingsSideBar = useSettingSideBar()
+
+const donateButtonText = ref(null)
+const donateButtonLink = ref(null)
+
+// check if donate button should be visible and get the button link and text
+const { data:messageData } = await useFetch(
+  `${config.public.SYSTEM_MESSAGES_API}`
+)
+if (messageData.value?.product_banners?.length > 0) {
+  messageData.value.product_banners.forEach( ( banner ) => {
+    if ( banner.value?.title === 'WNYC App Donate Button' ) {
+      donateButtonText.value = banner.value?.button_text
+      donateButtonLink.value = banner.value?.button_link
+    }
+  });
+}
 </script>
 
 <template>
@@ -13,22 +30,23 @@ const settingsSideBar = useSettingSideBar()
         <div class="flex align-items-center">
           <WnycLogo class="w-5rem mr-3" />
 
-          <span class="font-meta">{{ getDate() }}</span>
+          <span class="head-date font-meta">{{ getDate() }}</span>
         </div>
         <div class="flex">
-          <!-- <VFlexibleLink
+          <VFlexibleLink
+            v-if="donateButtonText && donateButtonLink"
             raw
-            to="https://pledge3.wnyc.org/donate/main/onestep/?utm_medium=partnersite&utm_source=w3k&utm_campaign=brandheader"
+            :to="donateButtonLink"
             @flexible-link-click="
               trackClickEvent(
                 `Click Tracking - Header Donate Button`,
-                'Header Donate Button',
-                ''
+                'Header',
+                'Donate Button'
               )
             "
           >
-            <Button label="Donate" aria-label="donate" class="px-3 sm:px-5 mr-3" />
-          </VFlexibleLink> -->
+            <Button :label="donateButtonText" aria-label="donate" class="px-3 sm:px-5 mr-3" />
+          </VFlexibleLink>
 
           <Button
             icon="pi pi-bars"
@@ -39,9 +57,9 @@ const settingsSideBar = useSettingSideBar()
               () => {
                 settingsSideBar = true
                 trackClickEvent(
-                  'Click Tracking - Hamburger Menu',
-                  'Hamburger Menu',
-                  `open sidebar`
+                  'Click Tracking - Header Hamburger Menu',
+                  'Header',
+                  `Open Sidebar`
                 )
               }
             "
@@ -61,6 +79,11 @@ const settingsSideBar = useSettingSideBar()
   display: flex;
   .pi-bars {
     font-size: var(--font-size-8);
+  }
+  .head-date {
+    font-family: var(--font-family-header);
+    line-height: 1rem;
+    font-size: 0.9rem;
   }
 }
 </style>
