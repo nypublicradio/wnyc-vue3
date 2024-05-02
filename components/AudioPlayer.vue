@@ -77,22 +77,21 @@ const route = useRoute()
 let onceMediaSessionFlag = true
 
 /*function that updated the global useIsEpisodePlaying */
-const updateUseIsEpisodePlaying = (e) => {
+const updateUseIsEpisodePlaying = async (e) => {
   isEpisodePlaying.value = e
 
+  // HACK: for some reason the media session does not show up on initial play, so we have to toggle the play button twice to somehow enable the initial media session to show up. It is not needed for subsequent plays, hence the once flag
   if (onceMediaSessionFlag) {
     onceMediaSessionFlag = false
-    //initial media session set has to init when the player is playing, then we trigger the exposed function of skip ahead, for some reason this may be fixing the issue with medai session not showing on initial play
-    playerRef.value.skipAhead()
+    await nextTick()
+    playerRef.value.togglePlay()
     setTimeout(async () => {
-      playerRef.value.skipBack()
       await nextTick()
-      playerRef.value.skipAhead()
+      playerRef.value.togglePlay()
       await nextTick()
-      playerRef.value.skipBack()
       // initiallizes the media session in ~/utilities/media-session.js
       initMediaSession(currentEpisode.value, skipTime)
-    }, 1000)
+    }, 1500)
   }
 }
 
