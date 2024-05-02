@@ -40,8 +40,8 @@ if (messageData.value?.product_banners?.length > 0) {
             @flexible-link-click="
               trackClickEvent(
                 `Click Tracking - Header Donate Button`,
-                'Header Donate Button',
-                ''
+                'Header',
+                'Donate Button'
               )
             "
           >
@@ -57,9 +57,9 @@ if (messageData.value?.product_banners?.length > 0) {
               () => {
                 settingsSideBar = true
                 trackClickEvent(
-                  'Click Tracking - Hamburger Menu',
-                  'Hamburger Menu',
-                  `open sidebar`
+                  'Click Tracking - Header Hamburger Menu',
+                  'Header',
+                  `Open Sidebar`
                 )
               }
             "
