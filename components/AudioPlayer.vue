@@ -88,7 +88,8 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
-
+// once flag to prevent the media session from initing multiple times
+let onceMediaSessionFlag = true
 let delay = 250
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
@@ -102,7 +103,18 @@ const switchEpisode = () => {
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
-  }, 1500)
+  }, 1000)
+  if (onceMediaSessionFlag) {
+    onceMediaSessionFlag = false
+    setTimeout(() => {
+      // initiallizes the media session in ~/utilities/media-session.js
+      initMediaSession(currentEpisode.value, skipTime)
+    }, 1500)
+    setTimeout(() => {
+      // initiallizes the media session in ~/utilities/media-session.js
+      initMediaSession(currentEpisode.value, skipTime)
+    }, 3000)
+  }
 }
 
 watch(currentEpisode, (val) => {
