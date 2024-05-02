@@ -78,13 +78,18 @@ let onceMediaSessionFlag = true
 
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
-  console.log("updateUseIsEpisodePlaying = ", e)
   isEpisodePlaying.value = e
 
   if (onceMediaSessionFlag) {
     onceMediaSessionFlag = false
-    //initial media session set has to init when the player is playing
+    //initial media session set has to init when the player is playing, then we trigger the exposed function of skip ahead, for some reason this may be fixing the issue with medai session not showing on initial play
+    playerRef.value.skipAhead()
     setTimeout(async () => {
+      playerRef.value.skipBack()
+      await nextTick()
+      playerRef.value.skipAhead()
+      await nextTick()
+      playerRef.value.skipBack()
       // initiallizes the media session in ~/utilities/media-session.js
       initMediaSession(currentEpisode.value, skipTime)
     }, 1000)
