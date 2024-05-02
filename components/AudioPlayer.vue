@@ -73,10 +73,22 @@ const playerHeight = ref(`${audioPlayerHeight}px`)
 const skipTime = 10
 
 const route = useRoute()
+// once flag to prevent the media session from initing multiple times
+let onceMediaSessionFlag = true
 
 /*function that updated the global useIsEpisodePlaying */
 const updateUseIsEpisodePlaying = (e) => {
+  console.log("updateUseIsEpisodePlaying = ", e)
   isEpisodePlaying.value = e
+
+  if (onceMediaSessionFlag) {
+    onceMediaSessionFlag = false
+    //initial media session set has to init when the player is playing
+    setTimeout(async () => {
+      // initiallizes the media session in ~/utilities/media-session.js
+      initMediaSession(currentEpisode.value, skipTime)
+    }, 1000)
+  }
 }
 
 /*function that updated the global useIsPlayerMinimized */
@@ -88,8 +100,6 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
-// once flag to prevent the media session from initing multiple times
-let onceMediaSessionFlag = true
 let delay = 250
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = () => {
@@ -103,20 +113,7 @@ const switchEpisode = () => {
   setTimeout(async () => {
     // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
-    // hack to get the media session to work on initial play
-    if (onceMediaSessionFlag) {
-      onceMediaSessionFlag = false
-      //pause it
-      playerRef.value.togglePlay()
-      await nextTick()
-      playerRef.value.togglePlay()
-      await nextTick()
-      setTimeout(() => {
-        //play it if paused
-        !isEpisodePlaying.value ? playerRef.value.togglePlay() : null
-      }, 100)
-    }
-  }, 100)
+  }, 1000)
 }
 
 watch(currentEpisode, (val) => {
