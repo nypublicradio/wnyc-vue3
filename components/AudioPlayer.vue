@@ -100,21 +100,23 @@ const switchEpisode = () => {
     delay = 250
   }, delay)
   //separagte delay for the media session to init
-  setTimeout(() => {
+  setTimeout(async () => {
     // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
-  }, 1000)
-  if (onceMediaSessionFlag) {
-    onceMediaSessionFlag = false
-    setTimeout(() => {
-      // initiallizes the media session in ~/utilities/media-session.js
-      initMediaSession(currentEpisode.value, skipTime)
-    }, 1500)
-    setTimeout(() => {
-      // initiallizes the media session in ~/utilities/media-session.js
-      initMediaSession(currentEpisode.value, skipTime)
-    }, 3000)
-  }
+    // hack to get the media session to work on initial play
+    if (onceMediaSessionFlag) {
+      onceMediaSessionFlag = false
+      //pause it
+      playerRef.value.togglePlay()
+      await nextTick()
+      playerRef.value.togglePlay()
+      await nextTick()
+      setTimeout(() => {
+        //play it if paused
+        !isEpisodePlaying.value ? playerRef.value.togglePlay() : null
+      }, 100)
+    }
+  }, 100)
 }
 
 watch(currentEpisode, (val) => {
