@@ -114,7 +114,7 @@ const switchEpisode = () => {
     delay = 250
   }, delay)
   //separagte delay for the media session to init
-  setTimeout(async () => {
+  setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
     initMediaSession(currentEpisode.value, skipTime)
   }, 1000)
