@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     default: "WNYC is supported by",
   },
+  color: {
+    type: String,
+    default: "#ab5491",
+  },
 })
 </script>
 
@@ -35,9 +39,7 @@ const props = defineProps({
       width: 100%;
       max-width: 180px;
       margin: 0 auto;
-      svg {
-        fill: var(--text-color);
-      }
+      color: v-bind(color);
     }
   }
 }
