@@ -223,6 +223,8 @@ watch(globalError, (error) => {
     })
   }
 })
+
+console.log("navigator.userAgent = ", navigator.userAgent)
 </script>
 
 <template>
