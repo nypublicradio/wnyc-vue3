@@ -67,8 +67,7 @@ const getNationalNewscast = async () => {
 // Get NYC-NOW newscast from rss feed
 const getNYCNowNewscast = async () => { 
 	try {
-		const url = 'https://feeds.simplecast.com/ysE9ORt_-VYpSuDO';
-		const feedItems = await getPodcastFromURL(url);
+		const feedItems = await getPodcastFromURL(config.public.WNYC_NOW_FEED_URL);
 		const item = feedItems.episodes[0];
 		const episode = {
 			file: item.enclosure.url,

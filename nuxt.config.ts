@@ -187,6 +187,7 @@ export default defineNuxtConfig({
       supabaseAuthTokenName: process.env.SUPABASE_AUTH_TOKEN_NAME,
       OPENWEB_SPOT_ID: process.env['OPENWEB_SPOT_ID'],
       NPR_CDS_API: process.env.NPR_CDS_API ?? 'https://content.api.npr.org',
+      WNYC_NOW_FEED_URL: process.env.WNYC_NOW_FEED_URL,
     }
   },
 })
