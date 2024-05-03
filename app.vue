@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { getAndSetUserProfile, askNotificationPermisstions } from "~/utilities/helpers"
+import {
+  getAndSetUserProfile,
+  askNotificationPermisstions,
+  askTrackingPermissions,
+} from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -63,7 +67,10 @@ useHead({
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
+  // Ask for notification permissions
   await askNotificationPermisstions()
+  // Ask for tracking permissions (iOS only)
+  await askTrackingPermissions()
 
   // On success, we should be able to receive notifications
   await PushNotifications.addListener("registration", (token: Token) => {

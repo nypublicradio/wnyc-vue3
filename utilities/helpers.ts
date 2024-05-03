@@ -37,6 +37,13 @@ import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
 import { initDeviceId } from "~/utilities/device-id.js"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
+import {
+  AppTrackingTransparency,
+} from "capacitor-plugin-app-tracking-transparency"
+import {
+  type AppTrackingStatusResponse,
+} from "capacitor-plugin-app-tracking-transparency"
+
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -962,6 +969,28 @@ export const askNotificationPermisstions = async () => {
       currentUserProfile.value.receive_general_notifications = false
     }
   })
+}
+
+// handles iOS asking permission for tracking
+export const askTrackingPermissions = async () => {
+  if (Capacitor.getPlatform() === "ios") {
+    await AppTrackingTransparency.requestPermission().then(
+      (response: AppTrackingStatusResponse) => {
+        // we are currently not doing anything with the response
+        if (response.status === "authorized") {
+          // User has authorized
+          // eventualy add this preference to the users profile
+          // attach it to a toggle switch in the settings that triggerss the request again
+        }
+      }
+    )
+    // AppTrackingTransparency.getStatus().then((response: AppTrackingStatusResponse) => {
+    //   console.log("getStatus response: ", response)
+    //   if (response.status === "authorized") {
+    //     // User has authorized
+    //   }
+    // })
+  }
 }
 
 // handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
