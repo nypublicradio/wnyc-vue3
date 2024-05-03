@@ -65,6 +65,7 @@
     "jsdom": "^21.1.2",
     "memoize": "^10.0.0",
     "music-metadata": "^7.14.0",
+    "podcast-feed-parser": "^1.0.4",
     "primeflex": "^3.3.0",
     "primevue": "^3.46.0",
     "vidstack": "^1.10.9",

@@ -7,6 +7,7 @@ export const cmsSources = {
     PUBLISHER: 'publisher',
     WAGTAIL: 'wagtail',
     NPR: 'npr',
+    SIMPLECAST: 'simplecast',
 }
 
 export const mediaTypes = {

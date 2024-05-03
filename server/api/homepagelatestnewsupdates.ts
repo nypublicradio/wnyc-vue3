@@ -1,6 +1,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { getPodcastFromURL } from 'podcast-feed-parser'
 import { cmsSources } from '~/composables/globals'
 import { estimateMp3Duration } from '~/server/utils/duration'
 
@@ -63,30 +64,22 @@ const getNationalNewscast = async () => {
 	return null
 }
 
-// Get NYC-NOW newscast from the WNYC API
-const getNYCNowNewscast = async () => {
+// Get NYC-NOW newscast from rss feed
+const getNYCNowNewscast = async () => { 
 	try {
-		const options = {
-			method: 'GET',
-			url: `${config.public.PUBLISHER_BASE_API}v3/story/`,
-			params: {
-				'channel': 'nyc-now-podcast',
-				'ordering': '-newsdate',
-				'page_size': '1',
-			},
+		const feedItems = await getPodcastFromURL(config.public.WNYC_NOW_FEED_URL);
+		const item = feedItems.episodes[0];
+		const episode = {
+			file: item.enclosure.url,
+			duration: item.duration,
+			image: feedItems.meta.imageURL,
+			cardTitle: feedItems.meta.title,
+			showTitle: feedItems.meta.title,
+			cmsSource: cmsSources.SIMPLECAST,
+			hideFavorite: true,
+			newsdate: item.pubDate,
 		};
-		const res = await axios(options);
-		const resData = humps.camelizeKeys(res.data).data[0];
-		resData.attributes.file = resData.attributes.audio;
-		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/NYNOW_WNYC_LOGO_HEX_1400PX.png';
-		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
-		resData.attributes.cardTitle = 'NYC Now';
-		resData.attributes.showTitle = resData.attributes.channelTitle;
-		resData.attributes.type = resData.type;
-		resData.attributes.id = resData.id;
-		resData.attributes.cmsSource = cmsSources.PUBLISHER;
-		resData.attributes.hideFavorite = true;
-		return resData.attributes;
+		return episode;
 	} catch (e) {
 		console.error('getNYCNowNewscast = ', e);
 	}
@@ -113,7 +106,6 @@ export default defineEventHandler(async (event) => {
 	}
 	const national_newscast = await getNationalNewscast();
 	res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
-
 	return {
 		local_newscast,
 		national_newscast,
