@@ -105,9 +105,8 @@ onMounted(() => {
         <WNYCFeatured v-else class="mt-2" :articles="section.data" />
       </div>
     </div>
-
-    <!-- <pre class="text-xs overflow-hidden">pagedata = {{ pagedata?.npr_stories }}</pre> -->
     <div v-if="pagedata?.npr_stories?.length">
+      <!-- <pre class="text-xs overflow-hidden">npr_stories = {{ pagedata?.npr_stories }}</pre> -->
       <section>
         <h2 class="mb-3">NPR Stories</h2>
         <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
