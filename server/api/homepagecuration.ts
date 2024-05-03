@@ -72,13 +72,15 @@ const getNprStories = async () => {
 	let response = null
 	try {
 		response = await axios(options);
-
-		const articles = await Promise.all(response.data.resources.map((article) => {
+		const normalizeArticles = await Promise.all(response.data.resources.map((article) => {
 			return normalizeNprPage(article, componentType);
 		}));
 
+		// remove articles with no body content or empty body content
+		const filteredArticles = normalizeArticles.filter((article) => article.body !== null && article.body !== '');
+
 		// Sort articles by "updatedDate" if it exists, otherwise by "publicationDate" in reverse cronological order
-		articles.sort((a, b) => {
+		const articles = filteredArticles.sort((a, b) => {
 			const dateA = new Date(a.updatedDate ?? a.publicationDate);
 			const dateB = new Date(b.updatedDate ?? b.publicationDate);
 			return dateB - dateA; // Descending order
