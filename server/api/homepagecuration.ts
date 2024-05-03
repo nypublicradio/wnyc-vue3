@@ -76,6 +76,14 @@ const getNprStories = async () => {
 		const articles = await Promise.all(response.data.resources.map((article) => {
 			return normalizeNprPage(article, componentType);
 		}));
+
+		// Sort articles by "updatedDate" if it exists, otherwise by "publicationDate" in reverse cronological order
+		articles.sort((a, b) => {
+			const dateA = new Date(a.updatedDate ?? a.publicationDate);
+			const dateB = new Date(b.updatedDate ?? b.publicationDate);
+			return dateB - dateA; // Descending order
+		});
+
 		return [{
 			componentType,
 			articles,
