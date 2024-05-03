@@ -73,9 +73,9 @@ const getNYCNowNewscast = async () => {
 		const episode = {
 			file: item.enclosure.url,
 			duration: item.duration,
-			image: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/04/NYNOW_WNYC_LOGO_HEX_1400PX.png',
-			cardTitle: 'NYC Now',
-			showTitle: 'NYC NOW Podcast',
+			image: feedItems.meta.imageURL,
+			cardTitle: feedItems.meta.title,
+			showTitle: feedItems.meta.title,
 			cmsSource: cmsSources.SIMPLECAST,
 			hideFavorite: true,
 			newsdate: item.pubDate,
