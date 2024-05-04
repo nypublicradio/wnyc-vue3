@@ -41,9 +41,10 @@ defineExpose({
       />
     </div>
   </div>
-  <div v-else>
+  <div v-else :class="props.responsive ? 'grid' : ''">
     <skeleton-top-story
-      class="skeleton-holder flex gap-3 mb-5"
+      class="skeleton-holder"
+      :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
       v-for="(article, index) in 6"
       :key="`skeleton-${index}`"
     />
