@@ -63,7 +63,7 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Your data will be used to deliver personalized ads to you.</string>
+	<string>Your data will be used to personalize your experience.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
