@@ -30,8 +30,8 @@ onMounted(() => {
     <Html lang="en">
       <Head>
         <Title>{{ shareTitle }} | WNYC</Title>
-        <Meta name="og:title" content="{{shareTitle}} | WNYC" />
-        <Meta name="twitter:title" content="{{shareTitle}} | WNYC" />
+        <Meta name="og:title" :content="`${shareTitle} | WNYC`" />
+        <Meta name="twitter:title" :content="`${shareTitle} | WNYC`" />
       </Head>
     </Html>
     <section class="header flex align-items-center justify-content-between">

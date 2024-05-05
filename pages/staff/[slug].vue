@@ -7,18 +7,39 @@ import { useGlobalToast } from "~/composables/states"
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
-
+const authorName = ref(null)
+const pageTitle = ref(null)
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const { data: pagedata, pending, error } = await useFetch(
+const { data: pagedata, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
 
-// set fallback image based on dark or light mode
-if (pagedata.value && !pagedata.value.authorData.photoID) {
-  pagedata.value.authorData.photoID = getUserFallBackImage()
-}
-newPageData.value = pagedata.value
+watch(pagedata, (val) => {
+  if (val) {
+    authorName.value = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
+    pageTitle.value = `Articles by ${authorName.value} | Gothamist`
+    // set fallback image based on dark or light mode
+    if (pagedata.value && !pagedata.value.authorData.photoID) {
+      pagedata.value.authorData.photoID = getUserFallBackImage()
+    }
+    newPageData.value = pagedata.value
+  }
+})
+watch(
+  pagedata,
+  () => {
+    // send GA page view
+    console.log("mounted ", authorName.value)
+    const { $analytics } = useNuxtApp()
+    $analytics.sendPageView({
+      page_title: authorName.value,
+      page_type: "author_page",
+      content_group: "app_tab",
+    })
+  },
+  { once: true }
+)
 
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
@@ -65,15 +86,12 @@ const loadMore = async () => {
     console.error("error = ", e)
   }
 }
-const authorName = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
-
-const pageTitle = `Articles by ${authorName} | Gothamist`
 
 useHead({
-  title: pageTitle,
+  title: pageTitle.value,
 })
 useServerHead({
-  meta: [{ property: "og:title", content: pageTitle }],
+  meta: [{ property: "og:title", content: pageTitle.value }],
 })
 
 const routeBack = () => {
@@ -85,16 +103,6 @@ watch(loadMoreRefVisible, (val) => {
   if (val) {
     loadMore()
   }
-})
-
-onMounted(() => {
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: authorName,
-    page_type: "author_page",
-    content_group: "app_tab",
-  })
 })
 </script>
 
@@ -108,11 +116,11 @@ onMounted(() => {
         >
         <Meta
           name="og:title"
-          content="{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+          :content="`${authorName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
         />
         <Meta
           name="twitter:title"
-          content="{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+          :content="`${authorName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
         />
       </Head>
     </Html>
@@ -166,7 +174,10 @@ onMounted(() => {
       </div>
       <div v-else>
         <skeleton-staff-page />
-        <div class="text-center">LOADING</div>
+        <hr class="my-4" />
+        <div>
+          <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+        </div>
       </div>
       <div v-if="pendingMore">
         <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
