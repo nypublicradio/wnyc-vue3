@@ -30,7 +30,6 @@ watch(
   pagedata,
   () => {
     // send GA page view
-    console.log("mounted ", authorName.value)
     const { $analytics } = useNuxtApp()
     $analytics.sendPageView({
       page_title: authorName.value,
