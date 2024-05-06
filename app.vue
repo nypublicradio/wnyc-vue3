@@ -36,7 +36,6 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
-const isReady = ref(false)
 const isApp = useIsApp()
 
 const fcmToken = ref("")

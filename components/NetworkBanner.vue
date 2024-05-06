@@ -8,8 +8,8 @@ const props = defineProps({
 
 // dont refreshNuxtData the first time
 let refreshDataflag = false
+// refreshNuxtData() is called when the network is re-cconnected
 const refreshData = async () => {
-  console.log("refreshing data")
   // refresh data here
   try {
     await refreshNuxtData()
