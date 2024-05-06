@@ -79,7 +79,7 @@ onMounted(() => {
         <story-htlAd
           layout="rectangle"
           slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="Gothamist is funded by sponsors and member donations"
+          fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
     </section>

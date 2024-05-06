@@ -286,19 +286,6 @@ const handleNotificationChange = async (e) => {
         <div class="s-title">WNYC</div>
       </div>
       <SBox
-        label="About WNYC"
-        link="/about"
-        @linkClick="
-          (link) => {
-            trackClickEvent(
-              'Click Tracking - About WNYC',
-              'Settings Sidebar - links',
-              link
-            )
-          }
-        "
-      ></SBox>
-      <SBox
         label="Member Center"
         link="https://pledge.wnyc.org/user/email-link "
         @linkClick="
