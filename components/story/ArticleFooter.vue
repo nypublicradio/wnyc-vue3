@@ -59,7 +59,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_article_rectangle"
-            fineprint="Gothamist is funded by sponsors and member donations"
+            fineprint="WNYC is funded by sponsors and member donations"
           />
         </div>
         <div
