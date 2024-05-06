@@ -72,7 +72,6 @@ await Network.addListener("networkStatusChange", (status) => {
 })
 // set the initial network status
 isNetworkConnected.value = (await Network.getStatus()).connected
-alert("isNetworkConnected.value  = " + JSON.stringify(isNetworkConnected.value))
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
