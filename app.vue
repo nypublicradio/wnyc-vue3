@@ -66,6 +66,14 @@ useHead({
   // },
 })
 
+// init the Network listener
+await Network.addListener("networkStatusChange", (status) => {
+  isNetworkConnected.value = status.connected
+})
+// set the initial network status
+isNetworkConnected.value = (await Network.getStatus()).connected
+alert("isNetworkConnected.value  = " + JSON.stringify(isNetworkConnected.value))
+
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   // Ask for notification permissions
@@ -184,14 +192,6 @@ onMounted(async () => {
     }
   })
 
-  // init the Network listener
-  await Network.addListener("networkStatusChange", (status) => {
-    isNetworkConnected.value = status.connected
-  })
-  // set the initial network status
-  isNetworkConnected.value = (await Network.getStatus()).connected
-  console.log("Network status: ", isNetworkConnected.value)
-
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {
   //   document.addEventListener("pointerenter", () => {})
@@ -207,8 +207,6 @@ onMounted(async () => {
     htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
     htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
   })
-
-  isReady.value = true
 })
 
 useHead({
@@ -303,7 +301,7 @@ watch(globalError, (error) => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <NetworkBanner v-if="isReady" :connected="isNetworkConnected" />
+  <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Sidebars class="z-2" />
   <Toast position="top-center" />

@@ -11,7 +11,6 @@ let refreshDataflag = false
 const refreshData = async () => {
   console.log("refreshing data")
   // refresh data here
-  //updateAllLiveStreams()
   try {
     await refreshNuxtData()
   } catch (error) {
