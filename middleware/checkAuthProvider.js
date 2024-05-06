@@ -25,7 +25,6 @@ export default defineNuxtRouteMiddleware(async () => {
         .match({ id: user.data.session.user.id })
     }
   }
-
   if (process.client) {
     if (currentUser.value) {
       // check local storage for the auth token
@@ -65,7 +64,6 @@ export default defineNuxtRouteMiddleware(async () => {
 
       }, 1000)
     } else {
-
       // if the app has been launched before (set the local user profile), redirect to the home page
       const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
       if (userLocalStorage.value) {
