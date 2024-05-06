@@ -184,7 +184,7 @@ const handleNotificationChange = async (e) => {
 </script>
 
 <template>
-  <div class="settings">
+  <div class="settings -mt-2">
     <section class="user">
       <SUser :disabled="isDisabled" :isEmail="isEmail" />
     </section>
