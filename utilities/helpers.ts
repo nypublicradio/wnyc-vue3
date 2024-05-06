@@ -135,7 +135,9 @@ interface ImageAttributes {
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
-  const minutes = Math.round(seconds / 60)
+  let minutes = Math.round(seconds / 60)
+  // if the duration is less than a minute, return 1 minute
+  if(minutes === 0) {minutes = 1}
   return Number.isNaN(minutes) || ms === 0 || !ms ? "Play" : `${minutes} min`
 }
 

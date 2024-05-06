@@ -42,7 +42,7 @@ const togglePlayHere = (media) => {
         <NewsCard
           :newsData="props.localNewscast"
           sourceLabel="WNYC"
-          badgeLabel="Local News"
+          badgeLabel="From WNYC"
           @onClick="togglePlayHere(props.localNewscast)"
         />
       </div>
@@ -51,7 +51,7 @@ const togglePlayHere = (media) => {
         <NewsCard
           :newsData="props.nationalNewscast"
           sourceLabel="NPR"
-          badgeLabel="National News"
+          badgeLabel="From NPR"
           bagdeColor="var(--background-500)"
           badgeBgColor="var(--indigo-500)"
           @onClick="togglePlayHere(props.nationalNewscast)"
