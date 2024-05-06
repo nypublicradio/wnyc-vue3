@@ -6,6 +6,19 @@ const props = defineProps({
   },
 })
 
+// dont refreshNuxtData the first time
+let refreshDataflag = false
+const refreshData = async () => {
+  console.log("refreshing data")
+  // refresh data here
+  //updateAllLiveStreams()
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const bgColor = ref(props.connected ? "var(--success)" : "var(--error)")
 const shouldFadeOut = ref(false)
 watchEffect(() => {
@@ -14,6 +27,7 @@ watchEffect(() => {
     setTimeout(() => {
       shouldFadeOut.value = true
     }, 4000)
+    refreshDataflag ? refreshData() : (refreshDataflag = true)
   } else {
     shouldFadeOut.value = false
   }

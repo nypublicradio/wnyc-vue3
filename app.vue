@@ -36,6 +36,7 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
+const isReady = ref(false)
 const isApp = useIsApp()
 
 const fcmToken = ref("")
@@ -138,11 +139,6 @@ const addListeners = async () => {
   })
 }
 
-Network.addListener("networkStatusChange", (status) => {
-  //alert("Network status changed" + JSON.stringify(status))
-  isNetworkConnected.value = status.connected
-})
-
 // get the URL the app was loaded from (if any)
 const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
@@ -187,6 +183,15 @@ onMounted(async () => {
       }
     }
   })
+
+  // init the Network listener
+  await Network.addListener("networkStatusChange", (status) => {
+    isNetworkConnected.value = status.connected
+  })
+  // set the initial network status
+  isNetworkConnected.value = (await Network.getStatus()).connected
+  console.log("Network status: ", isNetworkConnected.value)
+
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {
   //   document.addEventListener("pointerenter", () => {})
@@ -202,6 +207,8 @@ onMounted(async () => {
     htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
     htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
   })
+
+  isReady.value = true
 })
 
 useHead({
@@ -296,7 +303,7 @@ watch(globalError, (error) => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <NetworkBanner :connected="isNetworkConnected" />
+  <NetworkBanner v-if="isReady" :connected="isNetworkConnected" />
   <AudioPlayer />
   <Sidebars class="z-2" />
   <Toast position="top-center" />
