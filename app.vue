@@ -65,6 +65,13 @@ useHead({
   // },
 })
 
+// init the Network listener
+await Network.addListener("networkStatusChange", (status) => {
+  isNetworkConnected.value = status.connected
+})
+// set the initial network status
+isNetworkConnected.value = (await Network.getStatus()).connected
+
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   // Ask for notification permissions
@@ -138,11 +145,6 @@ const addListeners = async () => {
   })
 }
 
-Network.addListener("networkStatusChange", (status) => {
-  //alert("Network status changed" + JSON.stringify(status))
-  isNetworkConnected.value = status.connected
-})
-
 // get the URL the app was loaded from (if any)
 const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
@@ -187,6 +189,7 @@ onMounted(async () => {
       }
     }
   })
+
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {
   //   document.addEventListener("pointerenter", () => {})

@@ -6,6 +6,18 @@ const props = defineProps({
   },
 })
 
+// dont refreshNuxtData the first time
+let refreshDataflag = false
+// refreshNuxtData() is called when the network is re-cconnected
+const refreshData = async () => {
+  // refresh data here
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const bgColor = ref(props.connected ? "var(--success)" : "var(--error)")
 const shouldFadeOut = ref(false)
 watchEffect(() => {
@@ -14,6 +26,7 @@ watchEffect(() => {
     setTimeout(() => {
       shouldFadeOut.value = true
     }, 4000)
+    refreshDataflag ? refreshData() : (refreshDataflag = true)
   } else {
     shouldFadeOut.value = false
   }
