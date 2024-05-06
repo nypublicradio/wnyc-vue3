@@ -2,9 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Your location will be used to personalize and improve your experience.</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-    	<string>org.wnyc.android.localnotificationstask</string>
+		<string>org.wnyc.android.localnotificationstask</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
