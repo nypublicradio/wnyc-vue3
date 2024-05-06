@@ -99,8 +99,8 @@ const togglePlayHere = (story, index = 0) => {
     <Html lang="en">
       <Head>
         <Title>{{ storyData?.title }} | WNYC</Title>
-        <Meta name="og:title" content="{{storyData?.title}} | WNYC" />
-        <Meta name="twitter:title" content="{{storyData?.title}} | WNYC" />
+        <Meta name="og:title" :content="`${storyData?.title} | WNYC`" />
+        <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
       </Head>
     </Html>
     <section class="">

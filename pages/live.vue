@@ -245,8 +245,7 @@ onUnmounted(() => {
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
-        <div class="live-stations flex pb-2">
-          1
+        <div class="live-stations flex pb-2 w-full">
           <div
             v-for="(station, index) in allCurrentStations"
             class="station-holder"
@@ -460,6 +459,11 @@ html {
         margin-left: 1rem;
         &:first-child {
           margin-left: 1.25rem;
+        }
+      }
+      &:first-child {
+        @include media(">=md") {
+          margin-left: calc(((100% - 768px) / 2) + 48px);
         }
       }
     }

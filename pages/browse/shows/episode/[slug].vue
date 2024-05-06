@@ -178,8 +178,8 @@ const getEpisodeImage = computed(() => {
     <Html lang="en">
       <Head>
         <Title>{{ episodeData?.title }} | WNYC</Title>
-        <Meta name="og:title" content="{{episodeData?.title}} | WNYC" />
-        <Meta name="twitter:title" content="{{episodeData?.title}} | WNYC" />
+        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
+        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
       </Head>
     </Html>
     <!--  <pre class="text-xs">{{ episodeData }}</pre> -->
