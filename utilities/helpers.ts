@@ -136,7 +136,7 @@ interface ImageAttributes {
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
   let minutes = Math.floor(seconds / 60)
-  let hours = Math.floor(minutes / 60)
+  const hours = Math.floor(minutes / 60)
   minutes %= 60
 
   let duration = ""

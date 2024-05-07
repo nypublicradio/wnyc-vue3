@@ -19,7 +19,7 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 //import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
-import SleepIcon from "~/components/icons/SleepIcon.vue"
+//import SleepIcon from "~/components/icons/SleepIcon.vue"
 
 const emit = defineEmits(["close-panel"])
 
