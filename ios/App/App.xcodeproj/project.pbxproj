@@ -16,6 +16,8 @@
 		282EE5EF2BBDAABB0023D302 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		282EE5F02BBDAABB0023D302 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED4757F129D3595D00668579 /* GoogleService-Info.plist */; };
 		282EE5FB2BBDAC6C0023D302 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00331129F07F69001B53A0 /* NotificationService.swift */; };
+		283AAB732BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 283AAB722BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy */; };
+		283AAB742BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 283AAB722BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy */; };
 		284C6C5B2BBDD5A300B5406E /* Pods_AppAlpha.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 284C6C5A2BBDD5A300B5406E /* Pods_AppAlpha.framework */; };
 		284C6C5E2BBDFD8B00B5406E /* ImageNotificationExtensionAlpha.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 282EE6012BBDAC6C0023D302 /* ImageNotificationExtensionAlpha.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2864D55F2A72EB5E0066A775 /* AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2864D55E2A72EB5E0066A775 /* AppTests.swift */; };
@@ -88,6 +90,7 @@
 		282EE5F82BBDAABC0023D302 /* AppAlpha-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "AppAlpha-Info.plist"; path = "/Users/wilfredocolon/Documents/Github/wnyc-vue3/ios/App/AppAlpha-Info.plist"; sourceTree = "<absolute>"; };
 		282EE6012BBDAC6C0023D302 /* ImageNotificationExtensionAlpha.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ImageNotificationExtensionAlpha.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		282EE6022BBDAC6C0023D302 /* ImageNotificationExtensionAlpha-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ImageNotificationExtensionAlpha-Info.plist"; path = "/Users/wilfredocolon/Documents/Github/wnyc-vue3/ios/App/ImageNotificationExtensionAlpha-Info.plist"; sourceTree = "<absolute>"; };
+		283AAB722BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		284C6C5A2BBDD5A300B5406E /* Pods_AppAlpha.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_AppAlpha.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2864D55C2A72EB5D0066A775 /* AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2864D55E2A72EB5E0066A775 /* AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTests.swift; sourceTree = "<group>"; };
@@ -215,6 +218,7 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				283AAB722BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -400,6 +404,7 @@
 				282EE5ED2BBDAABB0023D302 /* capacitor.config.json in Resources */,
 				282EE5EE2BBDAABB0023D302 /* Main.storyboard in Resources */,
 				282EE5EF2BBDAABB0023D302 /* config.xml in Resources */,
+				283AAB742BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy in Resources */,
 				282EE5F02BBDAABB0023D302 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,6 +433,7 @@
 				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
+				283AAB732BEA5A1F00AC7E4E /* PrivacyInfo.xcprivacy in Resources */,
 				ED4757F229D3595D00668579 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
