@@ -23,6 +23,7 @@ const getLocalNewscast = async () => {
 		const res = await axios(options);
 		const resData = humps.camelizeKeys(res.data).data;
 		resData.attributes.file = resData.attributes.audio;
+		resData.attributes.audio = resData.attributes.audio;
 		resData.attributes.image = resData.attributes.headers.brand.logoImage.template;
 		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
 		resData.attributes.cardTitle = 'NYC Headlines';
@@ -49,6 +50,7 @@ const getNationalNewscast = async () => {
 		const mp3Res = await axios(resData.attributes.audio);
 		resData.attributes.newsdate = mp3Res.headers['last-modified'];
 		resData.attributes.file = resData.attributes.audio;
+		resData.attributes.audio = resData.attributes.audio;
 		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg';
 		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio);
 		resData.attributes.cardTitle = 'NPR News Now';
@@ -65,12 +67,14 @@ const getNationalNewscast = async () => {
 }
 
 // Get NYC-NOW newscast from rss feed
-const getNYCNowNewscast = async () => { 
+const getNYCNowNewscast = async () => {
 	try {
 		const feedItems = await getPodcastFromURL(config.public.WNYC_NOW_FEED_URL);
 		const item = feedItems.episodes[0];
 		const episode = {
+			id: 1234567890, // hardcoded ID needed
 			file: item.enclosure.url,
+			audio: item.enclosure.url,
 			duration: item.duration,
 			image: feedItems.meta.imageURL,
 			cardTitle: feedItems.meta.title,

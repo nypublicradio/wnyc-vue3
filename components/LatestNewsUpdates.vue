@@ -26,6 +26,7 @@ const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
 const togglePlayHere = (media) => {
+  console.log("media = ", media)
   if (currentEpisode.value?.file !== media.file) {
     currentEpisode.value = media
     saveRecentlyPlayed(media, mediaTypes.EPISODE)
