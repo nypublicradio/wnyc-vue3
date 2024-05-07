@@ -135,8 +135,21 @@ interface ImageAttributes {
 // returns the rounded up minutes duration of the episode
 export const getMinutes = (ms, mult = 1000) => {
   const seconds = Math.round(ms / mult)
-  const minutes = Math.round(seconds / 60)
-  return Number.isNaN(minutes) || ms === 0 || !ms ? "Play" : `${minutes} min`
+  let minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  minutes %= 60
+
+  let duration = ""
+  if (hours > 0) {
+    duration += `${hours} hr`
+  }
+  if (minutes > 0) {
+    duration += ` ${minutes} min`
+  }
+  if (duration === "") {
+    duration = "Play"
+  }
+  return duration
 }
 
 // returns a resized image url when provided the entire image object

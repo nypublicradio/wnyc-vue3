@@ -19,7 +19,7 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 //import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
-import SleepIcon from "~/components/icons/SleepIcon.vue"
+//import SleepIcon from "~/components/icons/SleepIcon.vue"
 
 const emit = defineEmits(["close-panel"])
 
@@ -101,15 +101,15 @@ const handleFollow = () => {
   )
 }
 
-const handleSleepTimer = () => {
-  // toggle active state
-  // show sleep timer interface
-  trackClickEvent(
-    "Click Tracking - Sleep Timer",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
+// const handleSleepTimer = () => {
+//   // toggle active state
+//   // show sleep timer interface
+//   trackClickEvent(
+//     "Click Tracking - Sleep Timer",
+//     "Expanded Audio Player",
+//     currentEpisode.value.title
+//   )
+// }
 
 const isLive = computed(() => {
   return isLiveStream.value
@@ -231,13 +231,14 @@ const onMenuChange = (e) => {
 // handles the click on the bottom fixed footer
 const moreFromClick = () => {
   const title = currentEpisode.value.showTitle || currentEpisode.value.title
+  const slug = currentEpisode.value.showSlug || currentEpisode.value.show
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",
     title
   )
   emit("close-panel")
-  navigateTo(`/browse/shows/${currentEpisode.value.showSlug}`)
+  navigateTo(`/browse/shows/${slug}`)
 }
 </script>
 
@@ -255,9 +256,9 @@ const moreFromClick = () => {
         >
           <template #icon> <FollowIcon /></template>
         </Button>
-        <Button text severity="secondary" rounded @click="handleSleepTimer">
+        <!--   <Button text severity="secondary" rounded @click="handleSleepTimer">
           <template #icon> <SleepIcon /></template>
-        </Button>
+        </Button> -->
       </div>
       <div v-else class="flex gap-3">
         <Button
@@ -386,7 +387,11 @@ const moreFromClick = () => {
       <h2>Transcript</h2>
       <HtmlConvert :htmlContent="currentEpisode.episodeTranscript" />
     </div>
-    <div ref="expandedFooterRef" v-if="currentEpisode.showSlug" class="expanded-footer">
+    <div
+      ref="expandedFooterRef"
+      v-if="currentEpisode.showSlug || currentEpisode.show"
+      class="expanded-footer"
+    >
       <section class="pb-2">
         <hr class="mb-2" />
         <Button

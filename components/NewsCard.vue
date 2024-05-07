@@ -32,8 +32,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["on-click"])
-
-//console.log("newsData" + props.sourceLabel, props.newsData)
 </script>
 
 <template>
@@ -45,7 +43,7 @@ const emit = defineEmits(["on-click"])
         :bg-color="props.badgeBgColor"
       />
       <div class="news-title mt-2">
-        <div class="font-bold">{{ props.newsData?.cardTitle }}</div>
+        <h2 class="text-sm">{{ props.newsData?.cardTitle }}</h2>
         <PipeData>
           <template #left>{{ props.sourceLabel }}</template>
           <template #right>

@@ -17,6 +17,7 @@ import {
   shareAPI,
   addToFavorites,
   getEpisodeHeadFallBackImage,
+  hasAudio,
 } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
@@ -85,17 +86,21 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    {
-      label: `Download ${
-        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
-      }`,
-      //icon: 'pi pi-google',
-      customIcon: DownloadIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleDownload(bucketItem)
-      },
-    },
+    ...(hasAudio(bucketItem.audio)
+      ? [
+          {
+            label: `Download ${
+              bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+            }`,
+            //icon: 'pi pi-google',
+            customIcon: DownloadIcon,
+            title: bucketItem?.title,
+            command: () => {
+              handleDownload(bucketItem)
+            },
+          },
+        ]
+      : []),
     {
       label: "Share",
       customIcon: ShareIcon,
@@ -272,6 +277,7 @@ const getEpisodeImage = computed(() => {
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button
+              v-if="hasAudio(episodeData.audio)"
               class="w-2rem h-2rem"
               text
               plain

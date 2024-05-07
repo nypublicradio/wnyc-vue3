@@ -110,17 +110,21 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    {
-      label: `Download ${
-        bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
-      }`,
-      //icon: 'pi pi-google',
-      customIcon: DownloadIcon,
-      title: bucketItem.title,
-      command: () => {
-        handleDownload(bucketItem)
-      },
-    },
+    ...(hasAudio(bucketItem.audio)
+      ? [
+          {
+            label: `Download ${
+              bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+            }`,
+            //icon: 'pi pi-google',
+            customIcon: DownloadIcon,
+            title: bucketItem.title,
+            command: () => {
+              handleDownload(bucketItem)
+            },
+          },
+        ]
+      : []),
     ...(props.showShare
       ? [
           {

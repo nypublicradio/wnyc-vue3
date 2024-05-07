@@ -94,7 +94,9 @@ onMounted(() => {
                 :label="item.label"
                 :aria-label="`${item.label} button`"
                 @click="selectMenuItem(item, index)"
-                severity="secondary"
+                :severity="
+                  selectedMenuItem.value === item.value ? 'primary' : 'secondary'
+                "
               />
             </div>
           </div>
@@ -116,6 +118,7 @@ onMounted(() => {
   .items-holder {
     .item-holder {
       .item-btn {
+        min-width: 130px;
         margin-left: 1rem;
         &:first-child {
           margin-left: 1.25rem;

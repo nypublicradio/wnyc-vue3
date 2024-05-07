@@ -184,7 +184,7 @@ const handleNotificationChange = async (e) => {
 </script>
 
 <template>
-  <div class="settings">
+  <div class="settings -mt-2">
     <section class="user">
       <SUser :disabled="isDisabled" :isEmail="isEmail" />
     </section>
@@ -285,9 +285,9 @@ const handleNotificationChange = async (e) => {
       <div class="flex s-title-holder">
         <div class="s-title">WNYC</div>
       </div>
-      <SBox
+      <!-- <SBox
         label="Member Center"
-        link="https://pledge.wnyc.org/user/email-link "
+        link="https://pledge.wnyc.org/user/email-link"
         @linkClick="
           (link) => {
             trackClickEvent(
@@ -297,7 +297,7 @@ const handleNotificationChange = async (e) => {
             )
           }
         "
-      ></SBox>
+      ></SBox> -->
       <SBox
         label="Contact Us"
         link="https://newyorkpublicradio.my.site.com/wnyc/s/"

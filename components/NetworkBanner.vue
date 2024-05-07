@@ -6,8 +6,9 @@ const props = defineProps({
   },
 })
 
-// dont refreshNuxtData the first time
-let refreshDataflag = false
+// ship init flag
+let skipInit = true
+
 // refreshNuxtData() is called when the network is re-cconnected
 const refreshData = async () => {
   // refresh data here
@@ -19,24 +20,35 @@ const refreshData = async () => {
 }
 
 const bgColor = ref(props.connected ? "var(--success)" : "var(--error)")
-const shouldFadeOut = ref(false)
-watchEffect(() => {
-  bgColor.value = props.connected ? "var(--success)" : "var(--error)"
-  if (props.connected) {
-    setTimeout(() => {
-      shouldFadeOut.value = true
-    }, 4000)
-    refreshDataflag ? refreshData() : (refreshDataflag = true)
-  } else {
-    shouldFadeOut.value = false
-  }
-})
+const shouldFadeIn = ref(false)
+
+watch(
+  () => props.connected,
+  (newValue) => {
+    // skip initial connected banner if its connected
+    if (skipInit && newValue) {
+      skipInit = false
+      return
+    }
+    bgColor.value = newValue ? "var(--success)" : "var(--error)"
+    if (newValue) {
+      shouldFadeIn.value = true
+      setTimeout(() => {
+        shouldFadeIn.value = false
+      }, 4000)
+      refreshData()
+    } else {
+      shouldFadeIn.value = true
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
   <div
     class="network-banner flex justify-content-center"
-    :class="[{ fadeout: shouldFadeOut }]"
+    :class="[{ fadein: shouldFadeIn }]"
   >
     <div class="bar flex align-items-center justify-content-center">
       <i :class="`pi ${props.connected ? 'pi-check' : 'pi-exclamation-triangle'} mr-1`" />
@@ -52,14 +64,14 @@ watchEffect(() => {
   top: env(safe-area-inset-top);
   width: 100%;
   z-index: 5000;
-  opacity: 1;
+  opacity: 0;
   transition: opacity 1s;
   .pi {
     font-size: 0.6rem;
     line-height: 0.2rem;
   }
-  &.fadeout {
-    opacity: 0;
+  &.fadein {
+    opacity: 1;
   }
   .bar {
     padding: 2px $padding;

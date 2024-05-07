@@ -36,7 +36,7 @@ const accountPromptSideBar = useAccountPromptSideBar()
         }
       "
     >
-      <template #header><h1 class="font-medium">Settings</h1></template>
+      <template #header><span></span></template>
       <Settings />
     </Sidebar>
     <Sidebar

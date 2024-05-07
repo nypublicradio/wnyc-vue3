@@ -8,11 +8,7 @@ const props = defineProps({
     default: "",
   },
 })
-// check if the string is HTML
-const isHTML = (str) => {
-  const doc = new DOMParser().parseFromString(str, "text/html")
-  return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1)
-}
+
 // check if the image is a gif
 const isGif = (imageUrl) => {
   const extension = imageUrl.split(".").pop()?.toLowerCase()
@@ -20,9 +16,11 @@ const isGif = (imageUrl) => {
 }
 
 const imgWidth = ref(null)
+// make it HTML bny wrapping it in a div
+const asHtml = `<div class="html-convert">${props.htmlContent}</div>`
 
 const parseHtml = computed(() => {
-  const updatedHTML = props.htmlContent
+  const updatedHTML = asHtml
     .replace(/<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g, (match, href, text) => {
       const isInternal = !href.startsWith("http")
       return isInternal
@@ -46,10 +44,8 @@ onMounted(() => {
 
 <template>
   <HTML2Vue
-    v-if="isHTML(props.htmlContent)"
     :value="parseHtml"
     :componentsMap="{ NuxtLink, VImage }"
     class="html-formatting"
   />
-  <div v-else>{{ props.htmlContent }}</div>
 </template>
