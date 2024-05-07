@@ -1,7 +1,7 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import StarIcon from "~/components/icons/StarIcon.vue"
+import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import {
@@ -210,8 +210,10 @@ onMounted(() => {
       v-if="!pending"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
-      <Button rounded text plain aria-label="star" @click="handleAddToFavorites">
-        <template #icon> <StarIcon :active="isFavorited" class="w-2rem" /></template>
+      <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
+        <template #icon>
+          <FollowIcon :active="isFavorited" class="w-2rem mt-1"
+        /></template>
       </Button>
 
       <Button

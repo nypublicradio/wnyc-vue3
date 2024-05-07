@@ -3,6 +3,7 @@ const user = useCurrentUser()
 </script>
 <template>
   <section v-if="user" class="followed-shows">
+    <h2 class="mb-4 mt-3">Latest From My Followed Shows</h2>
     <saved-dynamic-list typeFilter="show" table="favorited">
       <template #empty>
         <div class="empty flex flex-column gap-3 text-center mt-8">
@@ -32,7 +33,7 @@ const user = useCurrentUser()
       </template>
     </saved-dynamic-list>
 
-    <div class="up-to-date flex flex-column gap-3 text-center mt-8">
+    <!-- <div class="up-to-date flex flex-column gap-3 text-center mt-8">
       <h2>You're up to date!</h2>
 
       <FaceGraphic alt="happy face illustration" class="w-6rem m-auto my-4" />
@@ -50,14 +51,9 @@ const user = useCurrentUser()
         size="small"
         @click="navigateTo('/live')"
       />
-    </div>
+    </div> -->
   </section>
   <section v-else class="followed-shows">
     You must be logged in to see your followed shows.
   </section>
 </template>
-
-<style lang="scss" scoped>
-.followed-shows {
-}
-</style>

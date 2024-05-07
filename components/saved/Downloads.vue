@@ -7,14 +7,14 @@ const fileSystemLS = useFileSystemLS()
 <template>
   <section class="downloads">
     <div class="empty flex flex-column gap-3">
-      <Button
+      <!-- <Button
         class="w-3 ml-auto"
         label="Delete all"
         icon="pi pi-trash"
         size="small"
         aria-label="delete all downloads"
         @click="deleteAll()"
-      />
+      /> -->
       <FileSystem v-if="fileSystemLS.length > 0" />
 
       <div v-else class="text-center">

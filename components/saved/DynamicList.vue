@@ -120,7 +120,7 @@ watch(
 </script>
 
 <template>
-  <div v-if="savedItems" class="flex flex-column gap-4">
+  <div v-if="savedItems" class="flex flex-column gap-5">
     <div v-for="(item, index) in savedItems" :key="index">
       <component
         :is="item.component"

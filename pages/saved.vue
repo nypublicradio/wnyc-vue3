@@ -118,6 +118,7 @@ onMounted(() => {
   .items-holder {
     .item-holder {
       .item-btn {
+        min-width: 130px;
         margin-left: 1rem;
         &:first-child {
           margin-left: 1.25rem;

@@ -8,7 +8,7 @@ const filterOptions = ref([
     label: "Articles",
     value: [mediaTypes.ARTICLE_PAGE, mediaTypes.ARTICLE, mediaTypes.STORY],
   },
-  { label: "Shows", value: mediaTypes.SHOW },
+  /*  { label: "Shows", value: mediaTypes.SHOW }, */
 ])
 const selectedFilterOption = ref(filterOptions.value[0])
 </script>
