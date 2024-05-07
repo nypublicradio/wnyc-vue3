@@ -94,7 +94,9 @@ onMounted(() => {
                 :label="item.label"
                 :aria-label="`${item.label} button`"
                 @click="selectMenuItem(item, index)"
-                severity="secondary"
+                :severity="
+                  selectedMenuItem.value === item.value ? 'primary' : 'secondary'
+                "
               />
             </div>
           </div>
