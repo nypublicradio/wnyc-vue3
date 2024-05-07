@@ -231,13 +231,14 @@ const onMenuChange = (e) => {
 // handles the click on the bottom fixed footer
 const moreFromClick = () => {
   const title = currentEpisode.value.showTitle || currentEpisode.value.title
+  const slug = currentEpisode.value.showSlug || currentEpisode.value.show
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",
     title
   )
   emit("close-panel")
-  navigateTo(`/browse/shows/${currentEpisode.value.showSlug}`)
+  navigateTo(`/browse/shows/${slug}`)
 }
 </script>
 
@@ -386,7 +387,11 @@ const moreFromClick = () => {
       <h2>Transcript</h2>
       <HtmlConvert :htmlContent="currentEpisode.episodeTranscript" />
     </div>
-    <div ref="expandedFooterRef" v-if="currentEpisode.showSlug" class="expanded-footer">
+    <div
+      ref="expandedFooterRef"
+      v-if="currentEpisode.showSlug || currentEpisode.show"
+      class="expanded-footer"
+    >
       <section class="pb-2">
         <hr class="mb-2" />
         <Button
