@@ -101,15 +101,15 @@ const handleFollow = () => {
   )
 }
 
-const handleSleepTimer = () => {
-  // toggle active state
-  // show sleep timer interface
-  trackClickEvent(
-    "Click Tracking - Sleep Timer",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
+// const handleSleepTimer = () => {
+//   // toggle active state
+//   // show sleep timer interface
+//   trackClickEvent(
+//     "Click Tracking - Sleep Timer",
+//     "Expanded Audio Player",
+//     currentEpisode.value.title
+//   )
+// }
 
 const isLive = computed(() => {
   return isLiveStream.value
@@ -256,9 +256,9 @@ const moreFromClick = () => {
         >
           <template #icon> <FollowIcon /></template>
         </Button>
-        <Button text severity="secondary" rounded @click="handleSleepTimer">
+        <!--   <Button text severity="secondary" rounded @click="handleSleepTimer">
           <template #icon> <SleepIcon /></template>
-        </Button>
+        </Button> -->
       </div>
       <div v-else class="flex gap-3">
         <Button
