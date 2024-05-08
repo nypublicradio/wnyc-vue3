@@ -21,7 +21,11 @@ const selectedFilterOption = ref(filterOptions.value[0])
       placeholder="Select a filter"
       class="mb-2 -ml-3"
     />
-    <saved-dynamic-list table="favorited" :typeFilter="selectedFilterOption.value">
+    <saved-dynamic-list
+      table="favorited"
+      :typeFilter="selectedFilterOption.value"
+      :excludeFilter="mediaTypes.SHOW"
+    >
       <template #empty>
         <div class="empty flex flex-column gap-3 text-center mt-8">
           <h2>Favorites will appear here!</h2>

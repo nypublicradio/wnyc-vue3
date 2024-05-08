@@ -11,6 +11,10 @@ const props = defineProps({
     type: [String, Array],
     default: null,
   },
+  excludeFilter: {
+    type: [String, Array],
+    default: null,
+  },
   isSaveHistory: {
     type: Boolean,
     default: true,
@@ -69,6 +73,7 @@ const getFilteredItemsData = computed(() => {
     .select("*")
     .eq("uid", user.value.id)
     .or(typeFilterCondition)
+    .neq("type", props.excludeFilter ?? null)
     .order("created_at", { ascending: false })
 
   return query
@@ -84,6 +89,7 @@ const getItemsData = async () => {
           .from(props.table)
           .select("*")
           .eq("uid", user.value.id)
+          .neq("type", props.excludeFilter ?? null)
           .order("created_at", { ascending: false })
     if (data?.length > 0) {
       savedItems.value = await Promise.all(
