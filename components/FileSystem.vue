@@ -1,6 +1,5 @@
 <script setup>
-import { trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
-import { deleteDirectory } from "~/utilities/file-system"
+import { dynamicNavigation } from "~/utilities/helpers"
 import {
   //useFileSystem,
   useFileSystemLS,
@@ -29,17 +28,6 @@ const fileSystemLS = useFileSystemLS()
 const handleRoute = (file) => {
   dynamicNavigation(file, true, true)
 }
-
-// handle the delete of the stored audio file and GA tracking
-const handleDelete = (file) => {
-  deleteDirectory(file)
-  // GA tracking
-  trackClickEvent(
-    "Click Tracking - Audio file delete",
-    "Episode Item",
-    `deleting = ${file.directoryAudio.name}`
-  )
-}
 </script>
 
 <template>
@@ -55,7 +43,7 @@ const handleDelete = (file) => {
             isDownloaded
             @on-click="handleRoute(file)"
           >
-            <div class="flex gap-2 z-2 align-items-center">
+            <!-- <div class="flex gap-2 z-2 align-items-center">
               <DownloadProgress class="mr-2" :isDownloaded="true" :progress="1" small />
               <Button
                 icon="pi pi-trash"
@@ -64,7 +52,7 @@ const handleDelete = (file) => {
                 aria-label="delete"
                 @click="handleDelete(file)"
               />
-            </div>
+            </div> -->
           </EpisodeItem>
         </div>
       </div>

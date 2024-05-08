@@ -36,6 +36,7 @@ import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
 import { initDeviceId } from "~/utilities/device-id.js"
+import { deleteDirectory } from "~/utilities/file-system"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 import {
   AppTrackingTransparency,
@@ -508,6 +509,17 @@ export const shareAPI = async (
       //console.error('Error sharing', error)
     }
   }
+}
+
+// handle the delete of the stored audio file and GA tracking
+export const handleDelete = (file) => {
+  deleteDirectory(file)
+  // GA tracking
+  trackClickEvent(
+    "Click Tracking - Audio file delete",
+    "Episode Item",
+    `deleting = ${file.directoryAudio.name}`
+  )
 }
 
 // get the current user's favorited items
