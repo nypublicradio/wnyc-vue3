@@ -129,7 +129,7 @@ const getDotMenuItems = (bucketItem) => {
     ...(props.isDownloaded
       ? [
           {
-            label: "Delete Download",
+            label: "Remove from Download",
             icon: "pi pi-trash",
             command: () => {
               handleDelete(bucketItem)

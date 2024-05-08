@@ -48,8 +48,8 @@ const handleClick = () => {
         <LiveBadge v-if="!props.saved" class="align-self-start" />
         <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
         <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
-        <p
-          class="blurb truncate t3lines"
+        <div
+          class="blurb truncate t3lines html-formating"
           v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
         />
       </div>
