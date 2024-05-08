@@ -55,7 +55,7 @@ const handleDelete = (file) => {
             isDownloaded
             @on-click="handleRoute(file)"
           >
-            <div class="flex gap-2 z-2">
+            <div class="flex gap-2 z-2 align-items-center">
               <DownloadProgress class="mr-2" :isDownloaded="true" :progress="1" small />
               <Button
                 icon="pi pi-trash"
