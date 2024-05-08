@@ -134,6 +134,8 @@ watch(
         :saved="true"
         @onDeleteFavorite="getItemsData"
         @onClick="dynamicNavigation(item, props.isSaveHistory)"
+        :class="item.type"
+        :menu="true"
       />
       <slot name="recent-episodes" :show="item" />
     </div>
