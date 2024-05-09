@@ -1,7 +1,6 @@
 <script setup>
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import ReadIcon from "~/components/icons/ReadIcon.vue"
-import FollowIcon from "~/components/icons/FollowIcon.vue"
 const user = useCurrentUser()
 const filterOptions = ref([
   { label: "All", value: null },
