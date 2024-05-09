@@ -48,6 +48,7 @@ const handleIsLiveIndicator = computed(() => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
+  console.log("props.data", props.data)
   addToFavorites(props.data, isFavorited.value, () => {
     emit("on-delete-favorite")
   })

@@ -912,7 +912,7 @@ export const getWagtailRawBody = (bodyArr) => {
 }
 
 // function to add to the favorites
-export const addToFavorites = async (bucketItem, isFavorited, callback) => {
+export const addToFavorites = async (bucketItem, isFavorited, callback?) => {
   const user = useCurrentUser()
   const accountPromptSideBar = useAccountPromptSideBar()
   if (user.value) {
@@ -925,11 +925,11 @@ export const addToFavorites = async (bucketItem, isFavorited, callback) => {
     if (isFavorited) {
       await deleteFavorite(episode)
       getFavoritedItems()
-      callback()
+      callback ? callback() : null
     } else {
       await saveFavorite(episode, episode.type)
       getFavoritedItems()
-      callback()
+      callback ? callback() : null
     }
     globalToast.value = {
       severity: "info",
