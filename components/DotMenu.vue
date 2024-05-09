@@ -21,6 +21,10 @@ const props = defineProps({
     type: String,
     default: "42px",
   },
+  customButton: {
+    type: Boolean,
+    default: true,
+  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -31,22 +35,24 @@ const emit = defineEmits(["changeEmit"])
     :options="props.menuItems"
     :label="props.label"
     @change="emit('changeEmit', $event)"
-    :customButton="true"
+    :customButton="props.customButton"
     :width="props.width"
     :height="props.height"
   >
     <template #customButton="slotProps">
-      <Button
-        class="text-cyan-500 hover:bg-cyan-50 rounded"
-        icon="pi pi-ellipsis-v"
-        text
-        rounded
-        aria-label="options menu"
-        :size="props.size"
-        type="button"
-        aria-haspopup="true"
-        aria-controls="overlay_menu"
-      />
+      <slot name="myCustomButton" label="">
+        <Button
+          class="text-cyan-500 hover:bg-cyan-50 rounded"
+          icon="pi pi-ellipsis-v"
+          text
+          rounded
+          aria-label="options menu"
+          :size="props.size"
+          type="button"
+          aria-haspopup="true"
+          aria-controls="overlay_menu"
+        />
+      </slot>
     </template>
     <template #header="slotProps">
       <div class="style-mode-dark">

@@ -1,5 +1,6 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import FollowIcon from "~/components/icons/FollowIcon.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 import { checkIsFavorited, addToFavorites } from "~/utilities/helpers"
@@ -10,7 +11,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click"])
+const emit = defineEmits(["on-click, on-delete-favorite"])
 
 const props = defineProps({
   data: {
@@ -21,11 +22,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  menu: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const user = useCurrentUser()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
+
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -42,10 +48,31 @@ const handleIsLiveIndicator = computed(() => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(props.data, isFavorited.value)
+  addToFavorites(props.data, isFavorited.value, () => {
+    emit("on-delete-favorite")
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }
+}
+// fire the command located in the menuItems data object above when the user clicks on the menu item
+const onMenuChange = (e) => {
+  e.value.command()
+}
+
+// set the items for the Dot menu
+const getDotMenuItems = (bucketItem) => {
+  return [
+    {
+      label: "Unfollow show",
+      customIcon: FollowIcon,
+      active: isFavorited.value,
+      title: bucketItem.title,
+      command: () => {
+        handleAddToFavorites()
+      },
+    },
+  ]
 }
 </script>
 
@@ -73,7 +100,23 @@ const handleAddToFavorites = () => {
         </p>
       </div>
     </div>
-    <Button text plain rounded class="flex-none z-1" aria-label="star">
+    <DotMenu
+      v-if="props.menu"
+      :menuItems="getDotMenuItems(props.data)"
+      label=""
+      @changeEmit="onMenuChange"
+      class="z-1"
+      height="32px"
+      width="32px"
+    />
+    <Button
+      v-else
+      text
+      plain
+      rounded
+      class="flex-none z-1 flex-row-reverse"
+      aria-label="follow"
+    >
       <template #icon>
         <FollowIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
       </template>

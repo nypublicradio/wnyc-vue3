@@ -64,7 +64,7 @@ const togglePlayHere = () => {
             >
               <h2>{{ currentEpisodeHolder?.title }}</h2>
               <div
-                class="blurb truncate t2lines"
+                class="blurb truncate t2lines html-formating"
                 v-html="
                   currentEpisodeHolder?.onTodaysShowHeadline ??
                   currentEpisodeHolder?.details

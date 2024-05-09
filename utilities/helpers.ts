@@ -36,6 +36,7 @@ import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { PushNotifications } from "@capacitor/push-notifications"
 import { initDeviceId } from "~/utilities/device-id.js"
+import { deleteDirectory } from "~/utilities/file-system"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 import {
   AppTrackingTransparency,
@@ -510,6 +511,17 @@ export const shareAPI = async (
   }
 }
 
+// handle the delete of the stored audio file and GA tracking
+export const handleDelete = (file) => {
+  deleteDirectory(file)
+  // GA tracking
+  trackClickEvent(
+    "Click Tracking - Audio file delete",
+    "Episode Item",
+    `deleting = ${file.directoryAudio.name}`
+  )
+}
+
 // get the current user's favorited items
 export const getFavoritedItems = async () => {
   const favorites = useCurrentUserFavorites()
@@ -900,7 +912,7 @@ export const getWagtailRawBody = (bodyArr) => {
 }
 
 // function to add to the favorites
-export const addToFavorites = async (bucketItem, isFavorited) => {
+export const addToFavorites = async (bucketItem, isFavorited, callback) => {
   const user = useCurrentUser()
   const accountPromptSideBar = useAccountPromptSideBar()
   if (user.value) {
@@ -913,9 +925,11 @@ export const addToFavorites = async (bucketItem, isFavorited) => {
     if (isFavorited) {
       await deleteFavorite(episode)
       getFavoritedItems()
+      callback()
     } else {
       await saveFavorite(episode, episode.type)
       getFavoritedItems()
+      callback()
     }
     globalToast.value = {
       severity: "info",

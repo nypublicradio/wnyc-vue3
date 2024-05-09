@@ -57,3 +57,17 @@ const user = useCurrentUser()
     You must be logged in to see your followed shows.
   </section>
 </template>
+
+<style lang="scss">
+.followed-shows {
+  .show {
+    .flex {
+      align-items: center;
+    }
+    .v-image {
+      width: 40px !important;
+      height: 40px !important;
+    }
+  }
+}
+</style>

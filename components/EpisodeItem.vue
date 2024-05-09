@@ -16,6 +16,7 @@ import {
   togglePlayEpisode,
   addToFavorites,
   getEpisodeFallBackImage,
+  handleDelete,
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import {
@@ -110,7 +111,7 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio)
+    ...(hasAudio(bucketItem.audio) && !props.isDownloaded
       ? [
           {
             label: `Download ${
@@ -121,6 +122,17 @@ const getDotMenuItems = (bucketItem) => {
             title: bucketItem.title,
             command: () => {
               handleDownload(bucketItem)
+            },
+          },
+        ]
+      : []),
+    ...(props.isDownloaded
+      ? [
+          {
+            label: "Remove from Download",
+            icon: "pi pi-trash",
+            command: () => {
+              handleDelete(bucketItem)
             },
           },
         ]
