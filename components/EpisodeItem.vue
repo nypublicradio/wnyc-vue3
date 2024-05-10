@@ -103,7 +103,7 @@ const handleDownload = async (bucketItem) => {
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: "Favorite Episode",
+      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
       customIcon: StarIcon,
       active: isFavorited.value,
       title: bucketItem.title,

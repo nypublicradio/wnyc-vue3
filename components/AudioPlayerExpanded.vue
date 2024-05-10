@@ -169,7 +169,9 @@ const getDotMenuItems = () => {
           ...(!currentEpisode.value.hideFavorite
             ? [
                 {
-                  label: "Favorite Episode",
+                  label: `${
+                    isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
+                  }`,
                   customIcon: StarIcon,
                   active: isFavorited.value,
                   title: currentEpisode.value.title,

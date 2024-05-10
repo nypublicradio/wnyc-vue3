@@ -94,7 +94,7 @@ const handleAddToFavorites = (bucketItem) => {
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: "Favorite Story",
+      label: `${isFavorited.value ? "Unfavorite Story" : "Favorite Story"}`,
       customIcon: StarIcon,
       active: isFavorited.value,
       title: bucketItem.title,
