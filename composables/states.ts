@@ -201,3 +201,6 @@ export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab',
 
 // store Device Id
 export const useDeviceId = () => useState<string>('useDeviceId', () => null)
+
+// track if it's the initial play or not
+export const useIsInitialPlay = () => useState<boolean>('useIsInitialPlay', () => true)
