@@ -23,6 +23,7 @@ import {
   useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
+  useIsInitialPlay,
 } from "~/composables/states"
 import {
   trackAudioEvent,
@@ -66,6 +67,7 @@ const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const globalToast = useGlobalToast()
+const isInitialPlay = useIsInitialPlay()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
@@ -90,7 +92,7 @@ const updateUseIsEpisodePlaying = async (e) => {
       playerRef.value.togglePlay()
       await nextTick()
       // initiallizes the media session in ~/utilities/media-session.js
-      initMediaSession(currentEpisode.value, skipTime)
+      initMediaSession( currentEpisode.value, skipTime )
     }, 1500)
   }
 }
@@ -177,19 +179,26 @@ const getDescription = computed(() => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = (e) => {
-  // prevent the player from toggling twice
+  // prevent the player from toggling twice kim
   if (isEpisodePlaying.value === e) return
   updateUseIsEpisodePlaying(e)
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
   if (isNewEpisode.value) {
     eventType = "play"
   }
-  trackAudioEvent(
-    eventType,
-    isLiveStream.value ? "live" : "on_demand",
-    getTitle.value,
-    getDescription.value
-  )
+  // don't track the initial play hack above
+  if (isInitialPlay.value && eventType === "resume" ) {
+    isInitialPlay.value = false
+    eventType = "play"
+  }
+  if (!isInitialPlay.value) {
+    trackAudioEvent(
+      eventType,
+      isLiveStream.value ? "live" : "on_demand",
+      getTitle.value,
+      getDescription.value
+    )
+  }
   isNewEpisode.value = false
 }
 
