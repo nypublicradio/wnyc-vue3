@@ -76,7 +76,6 @@ const isFavorited = ref(false)
 watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
 })
-
 // const handleAddToQueue = (bucketItem) => {
 //   // toggle active state
 //   // update SB and LS with new state
@@ -113,7 +112,9 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio) && !props.isDownloaded
+    ...(hasAudio(bucketItem.audio) &&
+    !props.isDownloaded &&
+    !isAlreadyDownloaded(props.data)
       ? [
           {
             label: `Download ${
@@ -128,7 +129,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(props.isDownloaded
+    ...(props.isDownloaded || isAlreadyDownloaded(props.data)
       ? [
           {
             label: "Remove from Download",
@@ -275,7 +276,7 @@ const handleHasAudio = computed(() => {
                 "
                 :isDownloaded="isAlreadyDownloaded(props.data)"
                 :progress="progress"
-                :animateComplete="!props.isDownloaded"
+                :animateComplete="!props.isDownloaded && !isAlreadyDownloaded(props.data)"
                 small
               />
               <BarsPlaying :data="props.data" />

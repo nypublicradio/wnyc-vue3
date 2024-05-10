@@ -1,7 +1,7 @@
 <script setup>
 import { usePrimeVue } from "primevue/config"
 import { hasAudio, goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
-
+import { isAlreadyDownloaded } from "~/utilities/file-system"
 const props = defineProps({
   articles: {
     type: Array,
@@ -32,6 +32,7 @@ defineExpose({
         v-if="hasAudio(article.audio)"
         :data="article"
         @on-click="goToEpisodePage(article)"
+        :isDownloaded="isAlreadyDownloaded(article)"
       />
       <StoryItem
         v-else
