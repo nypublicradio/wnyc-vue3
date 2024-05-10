@@ -222,6 +222,7 @@ onMounted(() => {
         severity="secondary"
         rounded
         aria-label="play toggle"
+        :disabled="!hasEpisodes"
         @click="togglePlayMostRecentEpisode"
       >
         <template #icon>
