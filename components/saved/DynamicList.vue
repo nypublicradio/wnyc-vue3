@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  headerTitle: {
+    type: String,
+    default: null,
+  },
 })
 
 // if user is logged in, get all their favorited shows
@@ -126,18 +130,21 @@ watch(
 </script>
 
 <template>
-  <div v-if="savedItems" class="flex flex-column gap-5">
-    <div v-for="(item, index) in savedItems" :key="index">
-      <component
-        :is="item.component"
-        :data="item.data"
-        :saved="true"
-        @onDeleteFavorite="getItemsData"
-        @onClick="dynamicNavigation(item, props.isSaveHistory)"
-        :class="item.type"
-        :menu="true"
-      />
-      <slot name="recent-episodes" :show="item" />
+  <div v-if="savedItems">
+    <h2 v-if="headerTitle" class="mb-4 mt-3">{{ headerTitle }}</h2>
+    <div class="flex flex-column gap-5">
+      <div v-for="(item, index) in savedItems" :key="index">
+        <component
+          :is="item.component"
+          :data="item.data"
+          :saved="true"
+          @onDeleteFavorite="getItemsData"
+          @onClick="dynamicNavigation(item, props.isSaveHistory)"
+          :class="item.type"
+          :menu="true"
+        />
+        <slot name="recent-episodes" :show="item" />
+      </div>
     </div>
   </div>
   <slot v-if="!savedItems && !pending" name="empty" />

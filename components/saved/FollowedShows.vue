@@ -4,8 +4,11 @@ const user = useCurrentUser()
 </script>
 <template>
   <section v-if="user" class="followed-shows">
-    <h2 class="mb-4 mt-3">Latest From My Followed Shows</h2>
-    <saved-dynamic-list typeFilter="show" table="favorited">
+    <saved-dynamic-list
+      typeFilter="show"
+      table="favorited"
+      headerTitle="Latest From My Followed Shows"
+    >
       <template #empty>
         <div class="empty flex flex-column gap-3 text-center mt-8">
           <h2>Followed shows will appear here!</h2>
