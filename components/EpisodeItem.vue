@@ -32,7 +32,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click"])
+const emit = defineEmits(["on-click, on-delete-favorite"])
 
 const props = defineProps({
   data: {
@@ -86,7 +86,9 @@ watchEffect(async () => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(bucketItem, isFavorited.value)
+  addToFavorites(bucketItem, isFavorited.value, () => {
+    emit("on-delete-favorite")
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }

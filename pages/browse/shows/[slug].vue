@@ -121,7 +121,8 @@ const handleAddToFavorites = () => {
 }
 
 const handleShare = () => {
-  shareAPI(show.value.show, "shows slug")
+  console.log("show.value.show = ", show.value.show)
+  shareAPI(show.value.show, "shows page")
 }
 
 const hasEpisodes = computed(() => {
