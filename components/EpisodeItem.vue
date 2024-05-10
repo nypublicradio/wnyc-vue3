@@ -275,6 +275,7 @@ const handleHasAudio = computed(() => {
                 "
                 :isDownloaded="isAlreadyDownloaded(props.data)"
                 :progress="progress"
+                :animateComplete="!props.isDownloaded"
                 small
               />
               <BarsPlaying :data="props.data" />

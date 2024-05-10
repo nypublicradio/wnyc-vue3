@@ -12,6 +12,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  animateComplete: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const theProgress = computed(() => {
@@ -24,6 +28,7 @@ const theProgress = computed(() => {
     <DownloadedSmallIcon
       class="check-icon"
       v-if="theProgress === 100 || props.isDownloaded"
+      :animate="animateComplete"
     />
     <div v-else class="spin-holder">
       <i class="pi pi-spin pi-spinner"></i>
