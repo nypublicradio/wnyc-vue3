@@ -22,7 +22,6 @@ import { useCurrentUser } from "~/composables/states"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
-  isAlreadyDownloaded,
   playStoredMp3,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
@@ -64,6 +63,10 @@ const props = defineProps({
     default: false,
   },
   isDownloaded: {
+    type: Boolean,
+    default: false,
+  },
+  isInDownloads: {
     type: Boolean,
     default: false,
   },
@@ -112,9 +115,7 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio) &&
-    !props.isDownloaded &&
-    !isAlreadyDownloaded(props.data)
+    ...(hasAudio(bucketItem.audio) && !props.isDownloaded
       ? [
           {
             label: `Download ${
@@ -129,7 +130,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(props.isDownloaded || isAlreadyDownloaded(props.data)
+    ...(props.isDownloaded
       ? [
           {
             label: "Remove from Download",
@@ -171,7 +172,7 @@ const onMenuChange = (e) => {
 
 const imgSrcUrl = ref("")
 
-if (props.isDownloaded) {
+if (props.isInDownloads) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
   imgSrcUrl.value = String(
@@ -271,12 +272,11 @@ const handleHasAudio = computed(() => {
               <DownloadProgress
                 class="mr-2"
                 v-if="
-                  (progress && Object.keys(progress).length > 0) ||
-                  isAlreadyDownloaded(props.data)
+                  (progress && Object.keys(progress).length > 0) || props.isDownloaded
                 "
-                :isDownloaded="isAlreadyDownloaded(props.data)"
+                :isDownloaded="props.isDownloaded"
                 :progress="progress"
-                :animateComplete="!props.isDownloaded && !isAlreadyDownloaded(props.data)"
+                :animateComplete="!props.isDownloaded"
                 small
               />
               <BarsPlaying :data="props.data" />

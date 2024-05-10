@@ -520,6 +520,12 @@ export const handleDelete = (file) => {
     "Episode Item",
     `deleting = ${file.directoryAudio.name}`
   )
+  const globalToast = useGlobalToast()
+  globalToast.value = {
+    severity: "success",
+    summary: "Removed download.",
+    life: 3000,
+  }
 }
 
 // get the current user's favorited items

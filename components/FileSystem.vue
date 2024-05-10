@@ -41,6 +41,7 @@ const handleRoute = (file) => {
             :data="file"
             :key="`EI-${file.id}`"
             isDownloaded
+            isInDownloads
             @on-click="handleRoute(file)"
           >
             <!-- <div class="flex gap-2 z-2 align-items-center">
