@@ -169,6 +169,18 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   if (!duration || typeof duration !== 'number' || duration === 0) {
     duration = await estimateMp3Duration(article.attributes.audio);
   }
+
+  //segment audio duration
+  let segments = article.attributes.segments;
+  if (segments && segments.length > 0) {
+    segments.forEach(async (segment, index) => {
+      if (!segment.audioDurationReadable) {
+        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]);
+        console.log('article.attributes.segments[index].audioDurationReadable = ', article.attributes.segments[index].audioDurationReadable)
+      }
+    });
+  }
+
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,

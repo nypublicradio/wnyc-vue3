@@ -150,6 +150,8 @@ const togglePlayHere = (epData, index = 0) => {
 watch(episode, () => {
   episodeData.value = episode.value
 
+  console.log("episodeData = ", episodeData.value)
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -334,7 +336,7 @@ const getEpisodeImage = computed(() => {
           <div v-for="(segment, index) in episodeData?.segments" :key="segment.title">
             <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton
-                :label="segment.audioDurationReadable"
+                :label="getMinutes(segment.audioDurationReadable, 1)"
                 :data="episodeData"
                 :index="index"
                 @onClick="togglePlayHere(episodeData, index)"
