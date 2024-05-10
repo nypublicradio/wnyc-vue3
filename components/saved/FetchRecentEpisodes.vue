@@ -31,7 +31,7 @@ const { data, pending, error } = useFetch(
       :key="episode.id"
       class="my-5"
       @on-click="dynamicNavigation(episode)"
-      :isDownloaded="isAlreadyDownloaded(article)"
+      :isDownloaded="isAlreadyDownloaded(episode)"
     />
     <hr />
   </div>
