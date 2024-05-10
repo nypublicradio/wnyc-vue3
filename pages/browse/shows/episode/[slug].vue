@@ -149,9 +149,6 @@ const togglePlayHere = (epData, index = 0) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
-
-  console.log("episodeData = ", episodeData.value)
-
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({

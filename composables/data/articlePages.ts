@@ -176,7 +176,6 @@ export async function normalizePublisherPage(article: Record<string, any | undef
     segments.forEach(async (segment, index) => {
       if (!segment.audioDurationReadable) {
         article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]);
-        console.log('article.attributes.segments[index].audioDurationReadable = ', article.attributes.segments[index].audioDurationReadable)
       }
     });
   }
