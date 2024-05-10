@@ -175,10 +175,15 @@ const getDescription = computed(() => {
   } else {
     return "..."
   }
+} )
+
+const getMediaType = computed( () => {
+  // if the hls value is set, then it is a live stream
+  return currentEpisode?.value?.hls ? "live" : "on_demand"
 })
 
 // handle the toggle play button and tracking
-const togglePlayHere = (e) => {
+const togglePlayHere = async (e) => {
   // prevent the player from toggling twice kim
   if (isEpisodePlaying.value === e) return
   updateUseIsEpisodePlaying(e)
@@ -191,10 +196,11 @@ const togglePlayHere = (e) => {
     isInitialPlay.value = false
     eventType = "play"
   }
+  await nextTick()
   if (!isInitialPlay.value) {
     trackAudioEvent(
       eventType,
-      isLiveStream.value ? "live" : "on_demand",
+      getMediaType.value,
       getTitle.value,
       getDescription.value
     )
