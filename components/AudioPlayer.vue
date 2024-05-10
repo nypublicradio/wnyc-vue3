@@ -184,7 +184,7 @@ const getMediaType = computed( () => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
-  // prevent the player from toggling twice kim
+  // prevent the player from toggling twice
   if (isEpisodePlaying.value === e) return
   updateUseIsEpisodePlaying(e)
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
