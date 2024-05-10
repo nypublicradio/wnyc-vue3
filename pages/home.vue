@@ -5,6 +5,7 @@ import {
   getEpisodeFallBackImage,
   goToNprPage,
 } from "~/utilities/helpers"
+import { isAlreadyDownloaded } from "~/utilities/file-system"
 import { useCurrentEpisode } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
@@ -99,6 +100,7 @@ onMounted(() => {
               showPlayButton
               :fallback-image="ep.headers.brand.logoImage.template"
               class="col-12 md:col-6 mb-3"
+              :isDownloaded="isAlreadyDownloaded(ep)"
             />
           </div>
         </section>
@@ -127,6 +129,7 @@ onMounted(() => {
                   @on-click="goToNprPage(article)"
                   showPlayButton
                   :fallback-image="getEpisodeFallBackImage()"
+                  :isDownloaded="isAlreadyDownloaded(article)"
                   :showShare="false"
                 />
                 <StoryItem

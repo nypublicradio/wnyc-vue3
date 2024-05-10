@@ -14,6 +14,7 @@ import {
   addToFavorites,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
+import { isAlreadyDownloaded } from "~/utilities/file-system"
 import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -285,6 +286,7 @@ onMounted(() => {
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="getEpisodeFallBackImage()"
+                :isDownloaded="isAlreadyDownloaded(ep)"
               />
             </template>
           </div>
@@ -298,6 +300,7 @@ onMounted(() => {
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
                 :fallback-image="getEpisodeFallBackImage()"
+                :isDownloaded="isAlreadyDownloaded(ep)"
               />
             </template>
           </div>
