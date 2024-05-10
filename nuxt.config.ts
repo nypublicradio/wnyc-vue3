@@ -189,6 +189,7 @@ export default defineNuxtConfig({
       NPR_CDS_API: process.env.NPR_CDS_API ?? 'https://content.api.npr.org',
       WNYC_NOW_FEED_URL: process.env.WNYC_NOW_FEED_URL ?? 'https://feeds.simplecast.com/ysE9ORt_-VYpSuDO',
       WNYC_SHOW_SHARE_BASE_URL: process.env.WNYC_SHOW_SHARE_BASE_URL ?? 'https://www.wnyc.org/shows/',
+      ARTICLE_STREAMFIELD_DONATION_URL: process.env.ARTICLE_STREAMFIELD_DONATION_URL ?? 'https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-block&utm_campaign=article-block',
     }
   },
 })
