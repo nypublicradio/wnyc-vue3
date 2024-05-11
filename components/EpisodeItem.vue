@@ -279,7 +279,6 @@ const handleHasAudio = computed(() => {
                 v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
                 :isDownloaded="isDownloaded"
                 :progress="progress"
-                :animateComplete="!isDownloaded"
                 small
               />
               <BarsPlaying :data="props.data" />

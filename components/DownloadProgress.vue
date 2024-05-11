@@ -12,11 +12,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  animateComplete: {
-    type: Boolean,
-    default: true,
-  },
 })
+
+const animateComplete = ref(!props.isDownloaded)
 
 const theProgress = computed(() => {
   return Math.round(props.progress?.percentage)

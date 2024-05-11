@@ -185,6 +185,7 @@ const togglePlayHere = (story, index = 0) => {
               "
               :isDownloaded="isAlreadyDownloaded(storyData)"
               :progress="progress"
+              :animateComplete="!isAlreadyDownloaded(currentEpisode)"
             />
           </div>
           <div class="flex align-items-center gap-2 -ml-2">
