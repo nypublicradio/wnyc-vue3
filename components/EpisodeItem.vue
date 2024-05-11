@@ -19,7 +19,7 @@ import {
   getEpisodeFallBackImage,
   handleDelete,
 } from "~/utilities/helpers"
-import { useCurrentUser, useIsApp } from "~/composables/states"
+import { useCurrentUser } from "~/composables/states"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
