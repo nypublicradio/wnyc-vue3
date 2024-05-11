@@ -4,6 +4,7 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
@@ -77,7 +78,6 @@ const user = useCurrentUser()
 const isApp = useIsApp()
 //handle if it this is downloaded
 const isDownloaded = ref(false)
-
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -139,7 +139,7 @@ const getDotMenuItems = (bucketItem) => {
       ? [
           {
             label: "Remove from Download",
-            icon: "pi pi-trash",
+            customIcon: TrashIcon,
             command: () => {
               handleDelete(bucketItem)
             },

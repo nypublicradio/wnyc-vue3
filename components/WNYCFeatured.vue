@@ -8,6 +8,7 @@ import {
   shareAPI,
   checkIsFavorited,
   addToFavorites,
+  handleDelete,
 } from "~/utilities/helpers"
 import {
   useTogglePlayTrigger,
@@ -18,6 +19,7 @@ import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
+import TrashIcon from "~/components/icons/TrashIcon.vue"
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
@@ -30,8 +32,10 @@ const props = defineProps({
 
 const progress = ref({})
 const isFavorited = ref({})
-watchEffect(async () => {
+const isDownloaded = ref({})
+watchEffect(() => {
   props.articles.map(async (bucketItem) => {
+    isDownloaded.value[bucketItem.id] = isAlreadyDownloaded(bucketItem)
     isFavorited.value[bucketItem.id] = await checkIsFavorited(
       bucketItem.meta.slug ?? bucketItem.slug
     )
@@ -69,14 +73,29 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    {
-      label: "Download",
-      title: bucketItem.title,
-      customIcon: DownloadIcon,
-      command: () => {
-        handleDownload(bucketItem)
-      },
-    },
+    ...(!isDownloaded.value[bucketItem.id]
+      ? [
+          {
+            label: "Download",
+            title: bucketItem.title,
+            customIcon: DownloadIcon,
+            command: () => {
+              handleDownload(bucketItem)
+            },
+          },
+        ]
+      : []),
+    ...(isDownloaded.value[bucketItem.id]
+      ? [
+          {
+            label: "Remove from Download",
+            customIcon: TrashIcon,
+            command: () => {
+              handleDelete(bucketItem)
+            },
+          },
+        ]
+      : []),
     {
       label: "Share",
       customIcon: ShareIcon,
@@ -140,9 +159,9 @@ const togglePlayHere = (item) => {
           <template #menu>
             <div class="flex align-items-center">
               <DownloadProgress
-                v-if="progress[item.id] || isAlreadyDownloaded(item)"
+                v-if="progress[item.id] || isDownloaded[item.id]"
                 class="mr-2"
-                :isDownloaded="isAlreadyDownloaded(item)"
+                :isDownloaded="isDownloaded[item.id]"
                 :progress="progress[item.id]"
               />
               <BarsPlaying :data="item" />
