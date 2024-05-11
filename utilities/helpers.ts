@@ -931,11 +931,15 @@ export const addToFavorites = async (bucketItem, isFavorited, callback?) => {
     if (isFavorited) {
       await deleteFavorite(episode)
       getFavoritedItems()
-      callback ? callback() : null
+      if (callback) {
+        callback()
+      }
     } else {
       await saveFavorite(episode, episode.type)
       getFavoritedItems()
-      callback ? callback() : null
+      if (callback) {
+        callback()
+      }
     }
     globalToast.value = {
       severity: "info",

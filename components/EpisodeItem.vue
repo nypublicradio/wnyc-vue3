@@ -64,10 +64,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  // isDownloaded: {
-  //   type: Boolean,
-  //   default: false,
-  // },
   isInDownloads: {
     type: Boolean,
     default: false,
@@ -75,7 +71,6 @@ const props = defineProps({
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
-const isApp = useIsApp()
 //handle if it this is downloaded
 const isDownloaded = ref(false)
 // check if item is already favorited

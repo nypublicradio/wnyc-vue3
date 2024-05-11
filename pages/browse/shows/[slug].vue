@@ -121,7 +121,6 @@ const handleAddToFavorites = () => {
 }
 
 const handleShare = () => {
-  console.log("show.value.show = ", show.value.show)
   shareAPI(show.value.show, "shows page")
 }
 

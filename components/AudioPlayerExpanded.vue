@@ -53,13 +53,16 @@ const handleAddToFavorites = () => {
 }
 // add show to favorites
 const handleFollow = async (showSlug) => {
-  const { data: show, pending, error } = await useLazyFetch(
+  const { data: show, error } = await useLazyFetch(
     `${config.public.BFF_URL}/api/show/${showSlug}`
   )
-  console.log("show = ", show.value.show)
-  addToFavorites(show.value.show, isFavorited.value)
-  if (user.value) {
-    isFavorited.value = !isFavorited.value
+  if (!error) {
+    addToFavorites(show.value.show, isFavorited.value)
+    if (user.value) {
+      isFavorited.value = !isFavorited.value
+    }
+  } else {
+    console.error(`Error following this show: ${error}`)
   }
 }
 const progress = ref({})

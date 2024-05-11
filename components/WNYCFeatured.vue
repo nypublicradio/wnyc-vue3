@@ -2,7 +2,7 @@
 import {
   getMinutes,
   trackClickEvent,
-  copyToClipBoard,
+  //copyToClipBoard,
   saveRecentlyPlayed,
   prepForPlayer,
   shareAPI,
@@ -34,7 +34,7 @@ const progress = ref({})
 const isFavorited = ref({})
 const isDownloaded = ref({})
 watchEffect(() => {
-  props.articles.map(async (bucketItem) => {
+  props.articles.forEach(async (bucketItem) => {
     isDownloaded.value[bucketItem.id] = isAlreadyDownloaded(bucketItem)
     isFavorited.value[bucketItem.id] = await checkIsFavorited(
       bucketItem.meta.slug ?? bucketItem.slug
@@ -50,8 +50,7 @@ const handleDownload = async (bucketItem) => {
 }
 
 // add item to favorites
-const handleAddToFavorites = async (bucketItem) => {
-  //isFavorited.value[bucketItem.id] = await checkIsFavorited(bucketItem.slug)
+const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites(bucketItem, isFavorited.value[bucketItem.id])
   if (user.value) {

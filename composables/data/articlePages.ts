@@ -171,7 +171,7 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   }
 
   //segment audio duration
-  let segments = article.attributes.segments;
+  const segments = article.attributes.segments;
   if (segments && segments.length > 0) {
     segments.forEach(async (segment, index) => {
       if (!segment.audioDurationReadable) {
