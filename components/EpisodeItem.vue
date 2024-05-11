@@ -18,11 +18,12 @@ import {
   getEpisodeFallBackImage,
   handleDelete,
 } from "~/utilities/helpers"
-import { useCurrentUser } from "~/composables/states"
+import { useCurrentUser, useIsApp } from "~/composables/states"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
   playStoredMp3,
+  isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 
@@ -62,10 +63,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isDownloaded: {
-    type: Boolean,
-    default: false,
-  },
+  // isDownloaded: {
+  //   type: Boolean,
+  //   default: false,
+  // },
   isInDownloads: {
     type: Boolean,
     default: false,
@@ -73,10 +74,14 @@ const props = defineProps({
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
+const isApp = useIsApp()
+//handle if it this is downloaded
+const isDownloaded = ref(false)
 
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
+  isDownloaded.value = isAlreadyDownloaded(props.data)
   isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
 })
 // const handleAddToQueue = (bucketItem) => {
@@ -115,7 +120,7 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio) && !props.isDownloaded
+    ...(hasAudio(bucketItem.audio) && !isDownloaded.value
       ? [
           {
             label: `Download ${
@@ -130,7 +135,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(props.isDownloaded
+    ...(isDownloaded.value
       ? [
           {
             label: "Remove from Download",
@@ -260,7 +265,7 @@ const handleHasAudio = computed(() => {
             class="z-1"
             :label="getMinutes(props.data.estimatedDuration, 1)"
             @onClick="
-              props.isDownloaded
+              isDownloaded
                 ? toggleDownloadedPlay(props.data)
                 : togglePlayEpisode(props.data)
             "
@@ -271,12 +276,10 @@ const handleHasAudio = computed(() => {
             <div class="flex gap-1 align-items-center">
               <DownloadProgress
                 class="mr-2"
-                v-if="
-                  (progress && Object.keys(progress).length > 0) || props.isDownloaded
-                "
-                :isDownloaded="props.isDownloaded"
+                v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
+                :isDownloaded="isDownloaded"
                 :progress="progress"
-                :animateComplete="!props.isDownloaded"
+                :animateComplete="!isDownloaded"
                 small
               />
               <BarsPlaying :data="props.data" />

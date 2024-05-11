@@ -513,19 +513,19 @@ export const shareAPI = async (
 
 // handle the delete of the stored audio file and GA tracking
 export const handleDelete = (file) => {
+  const globalToast = useGlobalToast()
   deleteDirectory(file)
+  globalToast.value = {
+    severity: "info",
+    summary: "Removed download.",
+    life: 3000,
+  }
   // GA tracking
   trackClickEvent(
     "Click Tracking - Audio file delete",
     "Episode Item",
     `deleting = ${file.directoryAudio.name}`
   )
-  const globalToast = useGlobalToast()
-  globalToast.value = {
-    severity: "success",
-    summary: "Removed download.",
-    life: 3000,
-  }
 }
 
 // get the current user's favorited items

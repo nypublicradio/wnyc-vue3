@@ -40,7 +40,6 @@ const handleRoute = (file) => {
             v-for="file in fileSystemLS"
             :data="file"
             :key="`EI-${file.id}`"
-            isDownloaded
             isInDownloads
             @on-click="handleRoute(file)"
           >

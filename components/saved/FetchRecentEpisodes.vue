@@ -1,6 +1,5 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
-import { isAlreadyDownloaded } from "~/utilities/file-system"
 const props = defineProps({
   episodesPerShow: {
     type: Number,
@@ -31,7 +30,6 @@ const { data, pending, error } = useFetch(
       :key="episode.id"
       class="my-5"
       @on-click="dynamicNavigation(episode)"
-      :isDownloaded="isAlreadyDownloaded(episode)"
     />
     <hr />
   </div>
