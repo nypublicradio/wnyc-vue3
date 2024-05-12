@@ -264,8 +264,8 @@ const togglePlayHere = (story, index = 0) => {
     </div>
     <section>
       <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">Top Stories From Gothamist</h2>
-      <TopStories :articles="topStories" />
+      <h2 class="mb-3">WNYC Picks</h2>
+      <TopStories v-if="topStories" :articles="topStories" />
     </section>
     <BackToTopButton />
   </div>
