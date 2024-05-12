@@ -33,9 +33,6 @@ const config = useRuntimeConfig()
 const { data: storyData, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
 )
-const { data: topStoriesData, error: error2 } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepagetopstories`
-)
 const isWagtail = route.query.src === cmsSources.WAGTAIL
 const storySource = isWagtail ? "Gothamist" : "WNYC"
 const topStories = ref(null)
@@ -87,55 +84,59 @@ const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }
 
-watch(topStoriesData, () => {
-  topStories.value = topStoriesData.value.top_stories.filter(
-    (item) => item.id !== storyData.value?.id
-  )
-})
+watch(
+  storyData,
+  async () => {
+    // send GA page view
+    const { $analytics } = useNuxtApp()
+    $analytics.sendPageView({
+      page_title: storyData.value?.title,
+      page_type: "article",
+      content_group: `${storySource}_article`,
+      article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
+      article_publish_date: storyData.value?.publicationDate,
+      article_updated_date: storyData.value?.updatedDate
+        ? storyData.value?.updatedDate
+        : storyData.value?.publicationDate,
+      article_title: storyData.value?.title,
+    })
 
-watch(storyData, async () => {
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: storyData.value?.title,
-    page_type: "article",
-    content_group: `${storySource}_article`,
-    article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
-    article_publish_date: storyData.value?.publicationDate,
-    article_updated_date: storyData.value?.updatedDate
-      ? storyData.value?.updatedDate
-      : storyData.value?.publicationDate,
-    article_title: storyData.value?.title,
-  })
+    if (storyData.value?.leadGallery) {
+      gallery.value = await usePageById(
+        storyData.value.leadGallery.gallery
+      ).then(({ data }) => normalizeGalleryPage(data.value))
+    }
 
-  if (storyData.value?.leadGallery) {
-    gallery.value = await usePageById(
-      storyData.value.leadGallery.gallery
-    ).then(({ data }) => normalizeGalleryPage(data.value))
-  }
+    topImage.value =
+      storyData.value?.cmsSource === cmsSources.WAGTAIL
+        ? String(storyData.value?.image?.id)
+        : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
 
-  topImage.value =
-    storyData.value?.cmsSource === cmsSources.WAGTAIL
-      ? String(storyData.value?.image?.id)
-      : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
+    topCaption.value =
+      storyData.value?.leadImageCaption ??
+      topImage?.caption ??
+      gallery.value?.slides?.[0]?.image.caption ??
+      null
 
-  topCaption.value =
-    storyData.value?.leadImageCaption ??
-    topImage?.caption ??
-    gallery.value?.slides?.[0]?.image.caption ??
-    null
+    if (storyData.value?.leadGallery) {
+      galleryLength.value = gallery.value?.slides?.length ?? 0
+      galleryLink.value = String(
+        `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
+      )
+    }
+    if (isWagtail) {
+      // get comment count if Wagtail only
+      useUpdateCommentCounts([storyData.value])
+    }
 
-  if (storyData.value?.leadGallery) {
-    galleryLength.value = gallery.value?.slides?.length ?? 0
-    galleryLink.value = String(
-      `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
+    // handle top storied data
+    const topStoriesData = await $fetch(`${config.public.BFF_URL}/api/homepagetopstories`)
+    topStories.value = topStoriesData.top_stories.filter(
+      (item) => item.id !== storyData.value?.id
     )
-  }
-  if (isWagtail) {
-    // get comment count if Wagtail only
-    useUpdateCommentCounts([storyData.value])
-  }
-})
+  },
+  { once: true }
+)
 
 // handle the toggle play button and tracking
 const togglePlayHere = (story, index = 0) => {
@@ -167,7 +168,7 @@ const togglePlayHere = (story, index = 0) => {
         />
       </div>
     </section>
-    <FetchError v-if="error || error2" />
+    <FetchError v-if="error" />
     <div v-if="!pending">
       <VImage
         v-if="topImage"
@@ -262,10 +263,10 @@ const togglePlayHere = (story, index = 0) => {
     <div v-else>
       <skeleton-article />
     </div>
-    <section>
+    <section v-if="topStories">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">WNYC Picks</h2>
-      <TopStories v-if="topStories" :articles="topStories" />
+      <TopStories :articles="topStories" />
     </section>
     <BackToTopButton />
   </div>
