@@ -1,13 +1,22 @@
 <script setup lang="ts">
+const props = defineProps({
+  animate: {
+    type: Boolean,
+    default: true,
+  },
+})
+
 const { $gsap } = useNuxtApp()
 const svgRef = ref<SVGElement | null>(null)
 onMounted(() => {
-  $gsap.from(svgRef.value, {
-    opacity: 0,
-    y: -20,
-    duration: 1,
-    ease: "bounce.out",
-  })
+  if (props.animate) {
+    $gsap.from(svgRef.value, {
+      opacity: 0,
+      y: -20,
+      duration: 1,
+      ease: "bounce.out",
+    })
+  }
 })
 </script>
 

@@ -4,6 +4,7 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
@@ -22,8 +23,8 @@ import { useCurrentUser } from "~/composables/states"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
-  isAlreadyDownloaded,
   playStoredMp3,
+  isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 
@@ -32,7 +33,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click"])
+const emit = defineEmits(["on-click, on-delete-favorite"])
 
 const props = defineProps({
   data: {
@@ -63,20 +64,21 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isDownloaded: {
+  isInDownloads: {
     type: Boolean,
     default: false,
   },
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
-
+//handle if it this is downloaded
+const isDownloaded = ref(false)
 // check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
+  isDownloaded.value = isAlreadyDownloaded(props.data)
   isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
 })
-
 // const handleAddToQueue = (bucketItem) => {
 //   // toggle active state
 //   // update SB and LS with new state
@@ -86,7 +88,9 @@ watchEffect(async () => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(bucketItem, isFavorited.value)
+  addToFavorites(bucketItem, isFavorited.value, () => {
+    emit("on-delete-favorite")
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }
@@ -103,7 +107,7 @@ const handleDownload = async (bucketItem) => {
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: "Favorite Episode",
+      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
       customIcon: StarIcon,
       active: isFavorited.value,
       title: bucketItem.title,
@@ -111,7 +115,7 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio) && !props.isDownloaded
+    ...(hasAudio(bucketItem.audio) && !isDownloaded.value
       ? [
           {
             label: `Download ${
@@ -126,11 +130,11 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(props.isDownloaded
+    ...(isDownloaded.value
       ? [
           {
             label: "Remove from Download",
-            icon: "pi pi-trash",
+            customIcon: TrashIcon,
             command: () => {
               handleDelete(bucketItem)
             },
@@ -168,7 +172,7 @@ const onMenuChange = (e) => {
 
 const imgSrcUrl = ref("")
 
-if (props.isDownloaded) {
+if (props.isInDownloads) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
   imgSrcUrl.value = String(
@@ -256,7 +260,7 @@ const handleHasAudio = computed(() => {
             class="z-1"
             :label="getMinutes(props.data.estimatedDuration, 1)"
             @onClick="
-              props.isDownloaded
+              isDownloaded
                 ? toggleDownloadedPlay(props.data)
                 : togglePlayEpisode(props.data)
             "
@@ -267,11 +271,8 @@ const handleHasAudio = computed(() => {
             <div class="flex gap-1 align-items-center">
               <DownloadProgress
                 class="mr-2"
-                v-if="
-                  (progress && Object.keys(progress).length > 0) ||
-                  isAlreadyDownloaded(props.data)
-                "
-                :isDownloaded="isAlreadyDownloaded(props.data)"
+                v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
+                :isDownloaded="isDownloaded"
                 :progress="progress"
                 small
               />

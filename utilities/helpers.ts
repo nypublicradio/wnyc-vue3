@@ -513,7 +513,13 @@ export const shareAPI = async (
 
 // handle the delete of the stored audio file and GA tracking
 export const handleDelete = (file) => {
+  const globalToast = useGlobalToast()
   deleteDirectory(file)
+  globalToast.value = {
+    severity: "info",
+    summary: "Removed download.",
+    life: 3000,
+  }
   // GA tracking
   trackClickEvent(
     "Click Tracking - Audio file delete",
@@ -912,7 +918,7 @@ export const getWagtailRawBody = (bodyArr) => {
 }
 
 // function to add to the favorites
-export const addToFavorites = async (bucketItem, isFavorited, callback) => {
+export const addToFavorites = async (bucketItem, isFavorited, callback?) => {
   const user = useCurrentUser()
   const accountPromptSideBar = useAccountPromptSideBar()
   if (user.value) {
@@ -925,11 +931,15 @@ export const addToFavorites = async (bucketItem, isFavorited, callback) => {
     if (isFavorited) {
       await deleteFavorite(episode)
       getFavoritedItems()
-      callback()
+      if (callback) {
+        callback()
+      }
     } else {
       await saveFavorite(episode, episode.type)
       getFavoritedItems()
-      callback()
+      if (callback) {
+        callback()
+      }
     }
     globalToast.value = {
       severity: "info",

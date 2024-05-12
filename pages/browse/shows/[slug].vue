@@ -121,7 +121,7 @@ const handleAddToFavorites = () => {
 }
 
 const handleShare = () => {
-  shareAPI(show.value.show, "shows slug")
+  shareAPI(show.value.show, "shows page")
 }
 
 const hasEpisodes = computed(() => {
@@ -221,6 +221,7 @@ onMounted(() => {
         severity="secondary"
         rounded
         aria-label="play toggle"
+        :disabled="!hasEpisodes"
         @click="togglePlayMostRecentEpisode"
       >
         <template #icon>

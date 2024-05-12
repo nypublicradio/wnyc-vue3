@@ -1,6 +1,7 @@
 <script setup>
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 const emit = defineEmits(["onClick"])
+const config = useRuntimeConfig()
 </script>
 <template>
   <div class="streamfield-donation p-4 pb-5 my-6">
@@ -14,7 +15,7 @@ const emit = defineEmits(["onClick"])
         <!-- maybe consider opening in a in app browser -->
         <VFlexibleLink
           raw
-          to="https://pledge.wnyc.org/support/wnyc?utm_source=wnyc_app&utm_medium=wnyc&utm_campaign=story-donate-button"
+          :to="`${config.public.ARTICLE_STREAMFIELD_DONATION_URL}`"
           target="_blank"
           @click="emit('onClick')"
         >

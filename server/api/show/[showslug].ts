@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources } from '~/composables/globals'
+import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 //import { checkUrl404 } from '~/utilities/helpers'
 
@@ -56,6 +56,8 @@ const getShow = async (slug: string) => {
         });
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
         show.cmsSource = cmsSources.PUBLISHER
+        show.type = mediaTypes.SHOW
+        show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
         return show;
     } catch (e) {
         console.error('getShow error = ', e);

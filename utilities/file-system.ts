@@ -285,7 +285,6 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 } else {
                     imgNameFromUrl = await fileNameFromURL(imgUrl)
                 }
-
                 // downlaod image
                 await Filesystem.downloadFile({
                     url: imgUrl,
@@ -333,7 +332,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                                 // find the image
                                 const directoryImage = await thisFileSystemEntry.files.find((entry) => {
                                     const mainString = entry.name
-                                    const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+                                    const subStrings = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".JPG", ".JPEG", ".PNG", ".GIF", ".WEBP"]
 
                                     return subStrings.some((substring) => mainString.includes(substring))
                                 })

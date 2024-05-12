@@ -23,6 +23,7 @@ import FollowIcon from "~/components/icons/FollowIcon.vue"
 
 const emit = defineEmits(["close-panel"])
 
+const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const isLiveStream = useIsLiveStream()
@@ -32,7 +33,9 @@ const expandedFooterheight = ref(0)
 
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(currentEpisode.value.slug)
+  isFavorited.value = await checkIsFavorited(
+    currentEpisode.value.showSlug || currentEpisode.value.slug
+  )
 })
 
 onMounted(() => {
@@ -46,6 +49,20 @@ const handleAddToFavorites = () => {
   addToFavorites(currentEpisode.value, isFavorited.value)
   if (user.value) {
     isFavorited.value = !isFavorited.value
+  }
+}
+// add show to favorites
+const handleFollow = async (showSlug) => {
+  const { data: show, error } = await useLazyFetch(
+    `${config.public.BFF_URL}/api/show/${showSlug}`
+  )
+  if (!error) {
+    addToFavorites(show.value.show, isFavorited.value)
+    if (user.value) {
+      isFavorited.value = !isFavorited.value
+    }
+  } else {
+    console.error(`Error following this show: ${error}`)
   }
 }
 const progress = ref({})
@@ -91,16 +108,6 @@ const handleShare = () => {
 //   )
 // }
 
-const handleFollow = () => {
-  // toggle active state
-  // update SB and LS with new state
-  trackClickEvent(
-    `Click Tracking - Follow ${currentEpisode.value.title}`,
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
-
 // const handleSleepTimer = () => {
 //   // toggle active state
 //   // show sleep timer interface
@@ -120,15 +127,17 @@ const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-          // {
-          //   label: `Follow ${currentEpisode.value.title}`,
-          //   customIcon: FollowIcon,
-          //   active: true,
-          //   title: currentEpisode.value.title,
-          //   command: () => {
-          //     handleFollow()
-          //   },
-          // },
+          {
+            label: `${isFavorited.value ? "Unfollow" : "Follow"} ${
+              currentEpisode.value.title
+            }`,
+            customIcon: FollowIcon,
+            active: isFavorited.value,
+            title: currentEpisode.value.title,
+            command: () => {
+              handleFollow(currentEpisode.value.showSlug)
+            },
+          },
           // {
           //   label: "Sleep Timer",
           //   customIcon: SleepIcon,
@@ -138,18 +147,18 @@ const getDotMenuItems = () => {
           //     handleSleepTimer()
           //   },
           // },
-          ...(showShare.value
-            ? [
-                {
-                  label: "Share",
-                  customIcon: ShareIcon,
-                  title: currentEpisode.value.title,
-                  command: () => {
-                    handleShare()
-                  },
-                },
-              ]
-            : []),
+          // ...(showShare.value
+          //   ? [
+          //       {
+          //         label: "Share",
+          //         customIcon: ShareIcon,
+          //         title: currentEpisode.value.title,
+          //         command: () => {
+          //           handleShare()
+          //         },
+          //       },
+          //     ]
+          //   : []),
           // {
           //   label: "More Episodes",
           //   customIcon: MoreEpisodesIcon,
@@ -163,7 +172,9 @@ const getDotMenuItems = () => {
           ...(!currentEpisode.value.hideFavorite
             ? [
                 {
-                  label: "Favorite Episode",
+                  label: `${
+                    isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
+                  }`,
                   customIcon: StarIcon,
                   active: isFavorited.value,
                   title: currentEpisode.value.title,
@@ -211,12 +222,12 @@ const getDotMenuItems = () => {
           //   },
           // },
           // {
-          //   label: `Follow ${currentEpisode.value.title}`,
+          //   label: `Follow ${currentEpisode.value.showTitle}`,
           //   customIcon: FollowIcon,
-          //   active: true,
+          //   active: isFavorited.value,
           //   title: currentEpisode.value.title,
           //   command: () => {
-          //     handleFollow()
+          //     handleAddToFavorites()
           //   },
           // },
         ]),
@@ -247,15 +258,15 @@ const moreFromClick = () => {
     <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
-        <Button
+        <!-- <Button
           text
           severity="secondary"
           rounded
           aria-label="Create Free Account"
-          @click="handleFollow"
+          @click="handleAddToFavorites"
         >
           <template #icon> <FollowIcon /></template>
-        </Button>
+        </Button> -->
         <!--   <Button text severity="secondary" rounded @click="handleSleepTimer">
           <template #icon> <SleepIcon /></template>
         </Button> -->
@@ -290,7 +301,7 @@ const moreFromClick = () => {
 
       <div class="flex gap-1">
         <Button
-          v-if="showShare"
+          v-if="showShare && !isLive"
           text
           severity="secondary"
           rounded

@@ -14,6 +14,8 @@ const props = defineProps({
   },
 })
 
+const animateComplete = ref(!props.isDownloaded)
+
 const theProgress = computed(() => {
   return Math.round(props.progress?.percentage)
 })
@@ -24,6 +26,7 @@ const theProgress = computed(() => {
     <DownloadedSmallIcon
       class="check-icon"
       v-if="theProgress === 100 || props.isDownloaded"
+      :animate="animateComplete"
     />
     <div v-else class="spin-holder">
       <i class="pi pi-spin pi-spinner"></i>
