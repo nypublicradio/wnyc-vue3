@@ -20,6 +20,7 @@ import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/componen
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
+const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const textSizeOptions = useTextSizeOption()
@@ -313,7 +314,7 @@ const handleNotificationChange = async (e) => {
       ></SBox>
       <SBox
         label="Donate"
-        link="https://pledge.wnyc.org/support/wnyc?utm_medium=redirect&utm_source=wnyc&utm_campaign=default&"
+        :link="config.public.SETTINGS_MENU_DONATION_URL"
         @linkClick="
           (link) => {
             trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
