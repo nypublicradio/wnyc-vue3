@@ -69,6 +69,7 @@ const getNYCNowNewscast = async () => {
 	try {
 		const feedItems = await getPodcastFromURL(config.public.WNYC_NOW_FEED_URL);
 		const item = feedItems.episodes[0];
+		console.log('item = ', item)
 		const episode = {
 			id: 1234567890, // hardcoded ID needed
 			file: item.enclosure.url,
@@ -80,6 +81,7 @@ const getNYCNowNewscast = async () => {
 			cmsSource: cmsSources.SIMPLECAST,
 			hideFavorite: true,
 			newsdate: item.pubDate,
+			url: item.link,
 		};
 		return episode;
 	} catch (e) {

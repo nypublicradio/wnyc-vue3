@@ -255,7 +255,7 @@ const moreFromClick = () => {
 
 <template>
   <section class="expanded-player flex flex-column gap-3">
-    <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
+    <pre class="text-xs">{{ currentEpisode }}</pre>
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
         <!-- <Button
