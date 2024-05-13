@@ -80,6 +80,7 @@ const getNYCNowNewscast = async () => {
 			cmsSource: cmsSources.SIMPLECAST,
 			hideFavorite: true,
 			newsdate: item.pubDate,
+			url: item.link,
 		};
 		return episode;
 	} catch (e) {

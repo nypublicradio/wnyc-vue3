@@ -2,6 +2,8 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { normalizePublisherPage, normalizeNprPage } from '~/composables/data/articlePages'
+import { hasAudio } from '~/utilities/helpers'
+
 
 // Get curated SHOW content from the WNYC Puplisher API
 const getSectionData = async (slug: string) => {
@@ -39,7 +41,11 @@ const getHomeTemplate = async () => {
 			// Regex navSlug to extract if it's horizontal or vertical.
 			// This is used to determine the layout of the home page.
 			const componentType = layout.navSlug.match(/(horizontal)/g);
-			const data = await getSectionData(layout.navSlug);
+			const rawData = await getSectionData(layout.navSlug);
+
+			// filter out episodes with no audio (we want to keep the null results because that seems to allow news stories with no audio to skipthe filter, so we specifically look for FALSE)
+			const data = rawData.filter((item) => hasAudio(item.audio) !== false);
+
 			return {
 				title: layout.title,
 				layout: layout.navSlug,
