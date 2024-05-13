@@ -5,10 +5,14 @@ const config: CapacitorConfig = {
   appName: 'wnyc-app-android',
   webDir: 'dist',
   backgroundColor: "#d4d4d4",
-  /*   server: {
-      androidScheme: 'https',
-      url: "https://demo.native-app.wnyc.org",
-    }, */
+  android: {
+    overrideUserAgent: `${process.env.USER_AGENT}`,
+    appendUserAgent: 'Android-WNYC-App'
+  },
+  ios: {
+    overrideUserAgent: `${process.env.USER_AGENT}`,
+    appendUserAgent: 'iOS-WNYC-App'
+  },
   plugins: {
     CapacitorCookies: {
       enabled: true,
