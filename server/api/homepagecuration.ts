@@ -43,7 +43,7 @@ const getHomeTemplate = async () => {
 			const componentType = layout.navSlug.match(/(horizontal)/g);
 			const rawData = await getSectionData(layout.navSlug);
 
-			// filter out episodes with no audio (we want to keep the null results, so we specifically look for FALSE)
+			// filter out episodes with no audio (we want to keep the null results because that seems to allow news stories with no audio to skipthe filter, so we specifically look for FALSE)
 			const data = rawData.filter((item) => hasAudio(item.audio) !== false);
 
 			return {
