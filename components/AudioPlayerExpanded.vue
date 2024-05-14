@@ -7,7 +7,7 @@ import {
   shareAPI,
   templatizePublisherImageUrl,
   checkIsFavorited,
-  addToFavorites,
+  addToFavorites2,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
@@ -46,7 +46,10 @@ onMounted(() => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(currentEpisode.value, isFavorited.value)
+  addToFavorites2({
+    item: currentEpisode.value,
+    isFavorited: isFavorited.value,
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }
@@ -57,7 +60,11 @@ const handleFollow = async (showSlug) => {
     `${config.public.BFF_URL}/api/show/${showSlug}`
   )
   if (!error) {
-    addToFavorites(show.value.show, isFavorited.value)
+    addToFavorites2({
+      item: show.value.show,
+      isFavorited: isFavorited.value,
+      message: "Updated your followed shows.",
+    })
     if (user.value) {
       isFavorited.value = !isFavorited.value
     }

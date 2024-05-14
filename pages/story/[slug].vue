@@ -17,7 +17,7 @@ import {
   whenTime,
   getMinutes,
   togglePlayEpisode,
-  addToFavorites,
+  addToFavorites2,
 } from "~/utilities/helpers"
 
 import { useCurrentUser } from "~/composables/states"
@@ -74,7 +74,10 @@ watchEffect(async () => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(storyData.value, isFavorited.value)
+  addToFavorites2({
+    item: storyData.value,
+    isFavorited: isFavorited.value,
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }

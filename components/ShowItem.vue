@@ -3,7 +3,7 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
-import { checkIsFavorited, addToFavorites } from "~/utilities/helpers"
+import { checkIsFavorited, addToFavorites2 } from "~/utilities/helpers"
 import { useCurrentEpisodeHolder, useCurrentEpisode } from "~/composables/states"
 
 const $primevue = usePrimeVue()
@@ -48,8 +48,13 @@ const handleIsLiveIndicator = computed(() => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(props.data, isFavorited.value, () => {
-    emit("on-delete-favorite")
+  addToFavorites2({
+    item: props.data,
+    isFavorited: isFavorited.value,
+    message: "Updated your followed shows.",
+    callback: () => {
+      emit("on-delete-favorite")
+    },
   })
   if (user.value) {
     isFavorited.value = !isFavorited.value

@@ -15,7 +15,7 @@ import {
   getDate,
   hasAudio,
   togglePlayEpisode,
-  addToFavorites,
+  addToFavorites2,
   getEpisodeFallBackImage,
   handleDelete,
 } from "~/utilities/helpers"
@@ -88,8 +88,12 @@ watchEffect(async () => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(bucketItem, isFavorited.value, () => {
-    emit("on-delete-favorite")
+  addToFavorites2({
+    item: bucketItem,
+    isFavorited: isFavorited.value,
+    callback: () => {
+      emit("on-delete-favorite")
+    },
   })
   if (user.value) {
     isFavorited.value = !isFavorited.value

@@ -11,7 +11,7 @@ import {
   trackClickEvent,
   goToEpisodePage,
   hasAudio,
-  addToFavorites,
+  addToFavorites2,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
@@ -114,7 +114,11 @@ watchEffect(async () => {
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(show.value.show, isFavorited.value)
+  addToFavorites2({
+    item: show.value.show,
+    isFavorited: isFavorited.value,
+    message: "Updated your followed shows.",
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }

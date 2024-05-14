@@ -917,44 +917,51 @@ export const getWagtailRawBody = (bodyArr) => {
   return rawbody
 }
 
+// Define the interface for the function parameters
+interface AddToFavoritesParams {
+  item: any; // Replace 'any' with the actual type of bucketItem
+  isFavorited: boolean;
+  message?: string;
+  callback?: () => void;
+}
 // function to add to the favorites
-export const addToFavorites = async (bucketItem, isFavorited, callback?) => {
-  const user = useCurrentUser()
-  const accountPromptSideBar = useAccountPromptSideBar()
+export const addToFavorites2 = async ({ item, isFavorited, message = "Updated your favorites.", callback }: AddToFavoritesParams) => {
+  const user = useCurrentUser();
+  const accountPromptSideBar = useAccountPromptSideBar();
   if (user.value) {
-    const globalToast = useGlobalToast()
+    const globalToast = useGlobalToast();
 
     const episode = {
-      ...bucketItem,
-      slug: bucketItem.meta?.slug ?? bucketItem.slug,
-    }
+      ...item,
+      slug: item.meta?.slug ?? item.slug,
+    };
     if (isFavorited) {
-      await deleteFavorite(episode)
-      getFavoritedItems()
+      await deleteFavorite(episode);
+      getFavoritedItems();
       if (callback) {
-        callback()
+        callback();
       }
     } else {
-      await saveFavorite(episode, episode.type)
-      getFavoritedItems()
+      await saveFavorite(episode, episode.type);
+      getFavoritedItems();
       if (callback) {
-        callback()
+        callback();
       }
     }
     globalToast.value = {
       severity: "info",
-      summary: "Updated your favorites.",
+      summary: message,
       life: 3000,
-    }
+    };
     trackClickEvent(
-      "Click Tracking - Add/remove from favorites",
+      `Click Tracking - ${message}`,
       "Episode Item",
-      bucketItem.title
-    )
+      item.title
+    );
   } else {
-    accountPromptSideBar.value = true
+    accountPromptSideBar.value = true;
   }
-}
+};
 
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
