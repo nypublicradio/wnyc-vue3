@@ -86,7 +86,9 @@ const getNprStories = async () => {
 				}
 			}
 			//remove article if it contains restricted content
-			 if (!article?.isRestrictedToAuthorizedOrgServiceIds) {
+			if (article?.isRestrictedToAuthorizedOrgServiceIds) {
+				return null;
+			} else {
 				return normalizeNprPage(article, componentType);
 			}
 		}));
