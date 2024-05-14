@@ -53,6 +53,9 @@ body {
     max-height: unset !important;
     position: relative !important;
   }
+  &.solid-bg {
+    background: var(--solid-bg-color);
+  }
   main {
     transition: padding-top $transitionDuration ease;
     padding-bottom: calc(

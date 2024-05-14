@@ -7,7 +7,7 @@ import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
 
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu background-gradient",
+    class: "no-bottom-padding hide-bottom-menu solid-bg",
   },
 })
 
@@ -31,13 +31,17 @@ const onSkipThis = () => {
 
 /* track the create free account button and open the signup side bar */
 const createFreeAccount = () => {
-  trackClickEvent( "Click Tracking - Create Free Account button", "welcome screen", "signup-button" )
+  trackClickEvent(
+    "Click Tracking - Create Free Account button",
+    "welcome screen",
+    "signup-button"
+  )
   signupSideBar.value = true
 }
 
 /* track the login button and open the login side bar */
 const login = () => {
-  trackClickEvent( "Click Tracking - Login button", "welcome screen", "login-button" )
+  trackClickEvent("Click Tracking - Login button", "welcome screen", "login-button")
   loginSideBar.value = true
 }
 
@@ -93,11 +97,12 @@ onUnmounted(() => {
             <WnycLogo class="w-12rem m-auto mb-6 flex-none" />
             <h1 class="headline">What's new?</h1>
             <ul class="list m-auto mt-4 mb-6">
-              <li>Listen to WNYC's Live Radio Stream</li>
-              <li>Get the latest news updates</li>
-              <li>Stream your favorite podcasts</li>
-              <li>Read local news from Gothamist</li>
-              <li>Follow your favorite shows</li>
+              <li>Improved live streaming experience</li>
+              <li>Daily schedule at your fingertips</li>
+              <li>Save & follow your favorite podcasts</li>
+              <li>Local news stories from Gothamist</li>
+              <li>All day updates from WNYC & NPR</li>
+              <li>New look: light & dark themes</li>
             </ul>
             <h1 class="headline mb-4">Get started!</h1>
             <div class="text-center flex flex-column gap-3 mb-4">
