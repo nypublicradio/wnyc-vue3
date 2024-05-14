@@ -79,11 +79,24 @@ const getNprStories = async () => {
 	try {
 		response = await axios(options);
 		const normalizeArticles = await Promise.all(response.data.resources.map((article) => {
-			return normalizeNprPage(article, componentType);
+			for (const asset of Object.values(article.assets)) {
+				if (asset?.isRestrictedToAuthorizedOrgServiceIds === true) {
+					article.isRestrictedToAuthorizedOrgServiceIds = true;
+					break;
+				}
+			}
+			//remove article if it contains restricted content
+			if (article?.isRestrictedToAuthorizedOrgServiceIds) {
+				return null;
+			} else {
+				return normalizeNprPage(article, componentType);
+			}
 		}));
 
+		// Remove null and undefined articles
+		const cleanedArticles = normalizeArticles.filter((article) => article !== undefined && article !== null);
 		// remove articles with no body content or empty body content
-		const filteredArticles = normalizeArticles.filter((article) => article.body !== null && article.body !== '');
+		const filteredArticles = cleanedArticles.filter((article) => article.body !== null && article.body !== '');
 
 		// Sort articles by "updatedDate" if it exists, otherwise by "publicationDate" in reverse cronological order
 		const articles = filteredArticles.sort((a, b) => {
