@@ -25,6 +25,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --v-caption-bg-color: 17, 17, 17; //#111111
     --v-caption-bg-color-opacity: 0.9;
     --button-hover-plain-background: #e8e8e8;
+    --donation-text: #ffffff !important;
 }
 
 // component cssvar theme control and base component overrides
@@ -41,8 +42,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --expandedHeaderBackgroundTransparent: #2f2f2fe6 !important;
     --live-feature-background: var(--background2) !important;
     --horzScrollGradient: var(--background);
-    --donation-bg: linear-gradient(to top, var(--dark-blue), var(--blue)) !important;
-    --donation-text: var(--text-color-on-dark) !important;
+    --donation-bg: var(--night-500, #101012) !important;
     --searchFieldBackground: var(--background2) !important;
     --backgroundSimple: var(--background) !important;
 
@@ -58,8 +58,8 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --expandedHeaderBackgroundTransparent: #13182ae6 !important;
     --live-feature-background: var(--background3) !important;
     --horzScrollGradient: var(--dark-blue);
-    --donation-bg: linear-gradient(to top, var(--background3-500), var(--background-500)) !important;
-    --donation-text: var(--night-500) !important;
+    --donation-bg: var(--dark-blue-500, #101012) !important;
+    --donation-text: var(--text-color) !important;
     --searchFieldBackground: var(--s-box-background-color) !important;
     --backgroundSimple: var(--background2) !important;
 

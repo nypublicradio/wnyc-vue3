@@ -4,14 +4,14 @@ const emit = defineEmits(["onClick"])
 const config = useRuntimeConfig()
 </script>
 <template>
-  <div class="streamfield-donation p-4 pb-5 my-6">
+  <div class="streamfield-donation p-3 pb-4 my-6">
     <section class="holder">
-      <h2 class="mb-3">We rely on <span class="no-wrap">your support</span></h2>
-      <p class="mb-3">
-        Donations from listeners are the largest source of WNYC's funding for all the
-        reporting and programs that keep you informed, engaged, and entertained.
+      <h2 class="mb-2">WNYC depends <span class="no-wrap">on you.</span></h2>
+      <p class="mb-1">
+        Listener support is WNYC’s largest source of funding, and makes it possible to
+        bring you the independent local news you depend on.
       </p>
-      <div class="text-center mt-6">
+      <div class="text-center mt-4">
         <!-- maybe consider opening in a in app browser -->
         <VFlexibleLink
           raw
@@ -19,7 +19,7 @@ const config = useRuntimeConfig()
           target="_blank"
           @click="emit('onClick')"
         >
-          <Button label="Donate" aria-label="donate" />
+          <Button label="Donate Now" aria-label="donate" />
         </VFlexibleLink>
       </div>
     </section>
@@ -29,9 +29,8 @@ const config = useRuntimeConfig()
 <style lang="scss" scoped>
 .streamfield-donation {
   background: var(--donation-bg);
-  //background: $backgroundGradient1;
   .holder {
-    max-width: 650px;
+    max-width: 550px;
   }
 }
 .streamfield-donation h2 {
