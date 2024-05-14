@@ -7,7 +7,7 @@ import {
   prepForPlayer,
   shareAPI,
   checkIsFavorited,
-  addToFavorites,
+  addToFavorites2,
   handleDelete,
 } from "~/utilities/helpers"
 import {
@@ -52,7 +52,10 @@ const handleDownload = async (bucketItem) => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(bucketItem, isFavorited.value[bucketItem.id])
+  addToFavorites2({
+    item: bucketItem,
+    isFavorited: isFavorited.value[bucketItem.id],
+  })
   if (user.value) {
     isFavorited.value[bucketItem.id] = !isFavorited.value[bucketItem.id]
   }

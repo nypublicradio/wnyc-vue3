@@ -15,7 +15,7 @@ import {
   togglePlayEpisode,
   checkIsFavorited,
   shareAPI,
-  addToFavorites,
+  addToFavorites2,
   getEpisodeHeadFallBackImage,
   hasAudio,
 } from "~/utilities/helpers"
@@ -62,7 +62,10 @@ watchEffect(async () => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites(bucketItem, isFavorited.value)
+  addToFavorites2({
+    item: bucketItem,
+    isFavorited: isFavorited.value,
+  })
   if (user.value) {
     isFavorited.value = !isFavorited.value
   }
