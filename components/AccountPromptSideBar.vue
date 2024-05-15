@@ -4,11 +4,11 @@ import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
 
 const props = defineProps({
   styleMode: {
-    type: String,
+    type: [String, Promise],
     default: "dark",
   },
   bgColor: {
-    type: String,
+    type: [String, Promise],
     default: "var(--solid-bg-color)",
   },
 })
