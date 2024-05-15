@@ -12,6 +12,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 //
 
 :root {
+    --background-gradient-1: #{$backgroundGradient1};
     --header-height: #{$headerHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
     --bottom-menu-icon-color: var(--white, #ffffff) !important;
