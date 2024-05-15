@@ -1,11 +1,12 @@
 <script setup>
-import { useSelectedSavedTab } from "~/composables/states"
+import { useSelectedSavedTab, useIsDarkMode } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
 
 const user = useCurrentUser()
 const savedMenuItems = ref(getSavedMenuItems())
 const selectedSavedTab = useSelectedSavedTab()
 const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
+const isDarkMode = useIsDarkMode()
 
 const scrollToActiveItem = () => {
   const selectedItem = document.getElementsByClassName("selected")
@@ -33,6 +34,15 @@ const loadComponent = (componentName) => {
     },
   })
 }
+
+const handleStyleMode = computed(async () => {
+  await nextTick()
+  return isDarkMode.value ? "dark" : "light"
+})
+const handleBgColor = computed(async () => {
+  await nextTick()
+  return isDarkMode.value ? "none" : "#ffffff"
+})
 
 onMounted(() => {
   // send GA page view
@@ -109,7 +119,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <AccountPromptSideBar styleMode="light" bgColor="#ffffff" />
+    <AccountPromptSideBar :styleMode="handleStyleMode" :bgColor="handleBgColor" />
   </div>
 </template>
 

@@ -9,7 +9,7 @@ const props = defineProps({
   },
   bgColor: {
     type: String,
-    default: null,
+    default: "var(--solid-bg-color)",
   },
 })
 
@@ -21,7 +21,7 @@ const bgColorRef = ref(props.bgColor)
 </script>
 
 <template>
-  <div class="account-prompt-sidebar" :class="[{ 'bg-color': bgColorRef }]">
+  <div class="account-prompt-sidebar">
     <section
       class="content flex flex-column gap-3 py-5 px-4"
       :class="`style-mode-${props.styleMode}`"
@@ -68,10 +68,7 @@ const bgColorRef = ref(props.bgColor)
 
 <style lang="scss" scoped>
 .account-prompt-sidebar {
-  background: var(--solid-bg-color);
-  &.bg-color {
-    background: v-bind(bgColorRef);
-  }
+  background: v-bind(bgColorRef);
   .content {
     max-width: 520px;
   }
