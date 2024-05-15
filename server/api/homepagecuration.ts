@@ -69,7 +69,7 @@ const getNprStories = async () => {
 		params: {
 			collectionIds: '1002',
 			sort: 'publishDateTime:desc',
-			limit: 5,
+			limit: 15,
 		},
 		headers: {
 			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
@@ -99,11 +99,13 @@ const getNprStories = async () => {
 		const filteredArticles = cleanedArticles.filter((article) => article.body !== null && article.body !== '');
 
 		// Sort articles by "updatedDate" if it exists, otherwise by "publicationDate" in reverse cronological order
-		const articles = filteredArticles.sort((a, b) => {
-			const dateA = new Date(a.updatedDate ?? a.publicationDate);
-			const dateB = new Date(b.updatedDate ?? b.publicationDate);
-			return dateB - dateA; // Descending order
-		});
+		const articles = filteredArticles
+			.sort((a, b) => {
+				const dateA = new Date(a.updatedDate ?? a.publicationDate);
+				const dateB = new Date(b.updatedDate ?? b.publicationDate);
+				return dateB - dateA; // Descending order
+			})
+			.slice(0, 5); // Return only 5 articles
 
 		return [{
 			componentType,
