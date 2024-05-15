@@ -109,7 +109,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <AccountPromptSideBar v-else style-mode="light" />
+    <AccountPromptSideBar />
   </div>
 </template>
 
