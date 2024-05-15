@@ -109,7 +109,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <AccountPromptSideBar />
+    <AccountPromptSideBar styleMode="light" bgColor="#ffffff" />
   </div>
 </template>
 
