@@ -130,7 +130,7 @@ watch(currentEpisode, (val) => {
   //remotePlayer = remoteControl.getPlayer()
 })
 
-watch(togglePlayTrigger, async (e) => {
+watch(togglePlayTrigger, async () => {
   await nextTick()
   if (playerRef.value) playerRef.value.togglePlay()
 })
