@@ -17,9 +17,9 @@ const isGif = (imageUrl) => {
 
 const imgWidth = ref(null)
 // make it HTML bny wrapping it in a div
-const asHtml = `<div class="html-convert">${props.htmlContent}</div>`
 
 const parseHtml = computed(() => {
+  const asHtml = `<div class="html-convert">${props.htmlContent}</div>`
   const updatedHTML = asHtml
     .replace(/<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g, (match, href, text) => {
       const isInternal = !href.startsWith("http")
@@ -39,6 +39,9 @@ const parseHtml = computed(() => {
 
 onMounted(() => {
   window.innerWidth > 768 ? (imgWidth.value = 672) : (imgWidth.value = 382)
+})
+watch(props.htmlContent, () => {
+  parseHtml()
 })
 </script>
 
