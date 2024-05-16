@@ -92,7 +92,7 @@ const updateUseIsEpisodePlaying = async (e) => {
       playerRef.value.togglePlay()
       await nextTick()
       // initiallizes the media session in ~/utilities/media-session.js
-      initMediaSession( currentEpisode.value, skipTime )
+      initMediaSession(currentEpisode.value, skipTime)
     }, 1500)
   }
 }
@@ -130,7 +130,8 @@ watch(currentEpisode, (val) => {
   //remotePlayer = remoteControl.getPlayer()
 })
 
-watch(togglePlayTrigger, () => {
+watch(togglePlayTrigger, async () => {
+  await nextTick()
   if (playerRef.value) playerRef.value.togglePlay()
 })
 
@@ -175,9 +176,9 @@ const getDescription = computed(() => {
   } else {
     return "..."
   }
-} )
+})
 
-const getMediaType = computed( () => {
+const getMediaType = computed(() => {
   // if the hls value is set, then it is a live stream
   return currentEpisode?.value?.hls ? "live" : "on_demand"
 })
@@ -192,18 +193,13 @@ const togglePlayHere = async (e) => {
     eventType = "play"
   }
   // don't track the initial play hack above
-  if (isInitialPlay.value && eventType === "resume" ) {
+  if (isInitialPlay.value && eventType === "resume") {
     isInitialPlay.value = false
     eventType = "play"
   }
   await nextTick()
   if (!isInitialPlay.value) {
-    trackAudioEvent(
-      eventType,
-      getMediaType.value,
-      getTitle.value,
-      getDescription.value
-    )
+    trackAudioEvent(eventType, getMediaType.value, getTitle.value, getDescription.value)
   }
   isNewEpisode.value = false
 }

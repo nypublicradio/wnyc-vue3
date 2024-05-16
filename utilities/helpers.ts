@@ -45,7 +45,6 @@ import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
 
-
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
