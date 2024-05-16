@@ -52,7 +52,7 @@ watch(
   >
     <div class="bar flex align-items-center justify-content-center">
       <i :class="`pi ${props.connected ? 'pi-check' : 'pi-exclamation-triangle'} mr-1`" />
-      {{ props.connected ? "NETWORK CONNECTED" : "NETWORK DISCONNECTED" }}
+      {{ props.connected ? "YOU ARE ONLINE" : "YOU ARE OFFLINE" }}
     </div>
   </div>
 </template>
