@@ -325,7 +325,7 @@ const handleNotificationChange = async (e) => {
     <section class="footer mb-4">
       <WnycLogo style="fill: var(--night)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
-      <p>Version 1.0.0</p>
+      <p>Version {{ config.public.APP_VERSION }}</p>
     </section>
     <Transition name="zoom">
       <Message
