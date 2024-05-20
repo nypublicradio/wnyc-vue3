@@ -119,7 +119,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <AccountPromptSideBar :styleMode="handleStyleMode" :bgColor="handleBgColor" />
+    <AccountPromptSideBar v-else :styleMode="handleStyleMode" :bgColor="handleBgColor" />
   </div>
 </template>
 

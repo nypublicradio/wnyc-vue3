@@ -10,7 +10,12 @@ import {
   addToFavorites2,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
-import { useCurrentEpisode, useCurrentUser, useIsLiveStream } from "~/composables/states"
+import {
+  useCurrentEpisode,
+  useCurrentUser,
+  useIsLiveStream,
+  useGlobalToast,
+} from "~/composables/states"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -21,6 +26,7 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 //import SleepIcon from "~/components/icons/SleepIcon.vue"
 
+const globalToast = useGlobalToast()
 const emit = defineEmits(["close-panel"])
 
 const config = useRuntimeConfig()
@@ -56,20 +62,23 @@ const handleAddToFavorites = () => {
 }
 // add show to favorites
 const handleFollow = async (showSlug) => {
-  const { data: show, error } = await useLazyFetch(
-    `${config.public.BFF_URL}/api/show/${showSlug}`
-  )
-  if (!error) {
+  try {
+    const show = await $fetch(`${config.public.BFF_URL}/api/show/${showSlug}`)
     addToFavorites2({
-      item: show.value.show,
+      item: show.show,
       isFavorited: isFavorited.value,
       message: "Updated your followed shows.",
     })
     if (user.value) {
       isFavorited.value = !isFavorited.value
     }
-  } else {
+  } catch (error) {
     console.error(`Error following this show: ${error}`)
+    globalToast.value = {
+      severity: "error",
+      summary: `Error following this show ${error}`,
+      life: 3000,
+    }
   }
 }
 const progress = ref({})
