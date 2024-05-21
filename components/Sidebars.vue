@@ -120,7 +120,7 @@ const accountPromptSideBar = useAccountPromptSideBar()
       v-model:visible="accountPromptSideBar"
       :baseZIndex="10003"
       position="bottom"
-      class="w-full hideX hideBg h-auto"
+      class="w-full hideX no-safe-area h-auto"
       id="account-prompt-sidebar"
       @hide="
         () => {
@@ -165,8 +165,8 @@ const accountPromptSideBar = useAccountPromptSideBar()
       display: none !important;
     }
   }
-  &.hideBg {
-    background: none !important;
+  &.no-safe-area {
+    padding-top: 0 !important;
   }
 }
 </style>
