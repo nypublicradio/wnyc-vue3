@@ -15,5 +15,7 @@ while IFS= read -r env_var; do
     echo "${new_env_var}" >> local-env
 done < <(printenv | grep "^${env_var_prefix}")
 
+export APP_VERSION=$(git describe --abbrev=0 --tags | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+echo "APP_VERSION=${APP_VERSION}" >> local-env
 cat local-env | sed 's/\(^[^=]*\)=\(.*\)/export \1="\2"/' >> ~/.bash_profile
 source ~/.bash_profile

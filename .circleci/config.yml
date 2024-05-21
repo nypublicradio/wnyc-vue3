@@ -163,7 +163,6 @@ jobs:
     steps:
       - checkout
       - setup_mobile_env
-      - get_release_version
       - ruby/install-deps:
           app-dir: ios/App
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
@@ -211,7 +210,6 @@ jobs:
     steps:
       - checkout
       - setup_mobile_env
-      - get_release_version
       - ruby/install-deps:
           app-dir: android
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "android/Gemfile.lock" }}
@@ -252,7 +250,6 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
-      - get_release_version
       - setup_remote_docker         
       - run:
           name: Deploy
@@ -289,12 +286,7 @@ commands:
           command: |
             echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
             echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
-  get_release_version:
-    steps:
-      - run:
-          name: Get tag release version
-          command: |
-            export APP_VERSION=$(git describe --abbrev=0 --tags | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+
   setup_mobile_env:
     steps:
       - run:
