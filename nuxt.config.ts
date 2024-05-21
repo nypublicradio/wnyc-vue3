@@ -191,6 +191,7 @@ export default defineNuxtConfig({
       WNYC_SHOW_SHARE_BASE_URL: process.env.WNYC_SHOW_SHARE_BASE_URL ?? 'https://www.wnyc.org/shows/',
       ARTICLE_STREAMFIELD_DONATION_URL: process.env.ARTICLE_STREAMFIELD_DONATION_URL ?? 'https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-block&utm_campaign=article-block',
       SETTINGS_MENU_DONATION_URL: process.env.SETTINGS_MENU_DONATION_URL ?? 'https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=settings_menu',
+      APP_VERSION: process.env.APP_VERSION ?? 'x.x.x',
     }
   },
 })
