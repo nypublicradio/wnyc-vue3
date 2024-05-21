@@ -24,7 +24,6 @@ const accountPromptSideBar = useAccountPromptSideBar()
       :baseZIndex="10000"
       position="right"
       class="w-full"
-      blockScroll
       id="settings-sidebar"
       @hide="
         () => {
@@ -121,8 +120,7 @@ const accountPromptSideBar = useAccountPromptSideBar()
       v-model:visible="accountPromptSideBar"
       :baseZIndex="10003"
       position="bottom"
-      class="w-full hideX h-auto"
-      blockScroll
+      class="w-full hideX no-safe-area h-auto"
       id="account-prompt-sidebar"
       @hide="
         () => {
@@ -140,11 +138,6 @@ const accountPromptSideBar = useAccountPromptSideBar()
 </template>
 
 <style lang="scss">
-.hideX {
-  .p-sidebar-header {
-    display: none !important;
-  }
-}
 .p-sidebar {
   padding-top: env(safe-area-inset-top);
   background: var(--background2);
@@ -166,6 +159,14 @@ const accountPromptSideBar = useAccountPromptSideBar()
     path {
       fill: var(--night);
     }
+  }
+  &.hideX {
+    .p-sidebar-header {
+      display: none !important;
+    }
+  }
+  &.no-safe-area {
+    padding-top: 0 !important;
   }
 }
 </style>
