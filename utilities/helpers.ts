@@ -595,6 +595,14 @@ export const getAndSetUserProfile = async () => {
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
 
+        // some odd timeing hack to fix the text_size and default station if they come over as an object
+        if (typeof ls.text_size === 'object') {
+          ls.text_size = ls.text_size.label;
+        }
+        if (typeof ls.default_live_stream === 'object') {
+          ls.default_live_stream = ls.default_live_stream.station;
+        }
+
         // if first time logging in with new profile
         data.initial = false
         data.autodownload = ls.autodownload
