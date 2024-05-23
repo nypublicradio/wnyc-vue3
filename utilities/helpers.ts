@@ -594,7 +594,7 @@ export const getAndSetUserProfile = async () => {
       if (data.initial) {
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
-        alert('ls' + JSON.stringify(ls))
+
         // if first time logging in with new profile
         data.initial = false
         data.autodownload = ls.autodownload
