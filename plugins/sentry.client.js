@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/vue'
-import { HttpClient, httpClientIntegration } from '@sentry/integrations'
+import { HttpClient } from '@sentry/integrations'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const { vueApp } = nuxtApp
@@ -14,11 +14,11 @@ export default defineNuxtPlugin((nuxtApp) => {
         routingInstrumentation: Sentry.vueRouterInstrumentation(nuxtApp.$router),
         tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'demo.native-app.wnyc.org', 'api.wnyc.org'],
       }),
-      new replayIntegration({
+      new HttpClient(),
+      new Sentry.Replay({
         maskAllText: false,
         blockAllMedia: false
       }),
-      new httpClientIntegration(),
     ],
     tracesSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.1 : 1.0,
     replaysSessionSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.0005 : 1.0,
