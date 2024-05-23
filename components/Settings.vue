@@ -300,7 +300,42 @@ const handleNotificationChange = async (e) => {
         "
       ></SBox> -->
       <SBox
-        label="Contact Us"
+        label="Donate"
+        :link="config.public.SETTINGS_MENU_DONATION_URL"
+        @linkClick="
+          (link) => {
+            trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
+          }
+        "
+      ></SBox>
+      <SBox
+        label="Submit app feedback"
+        link="https://www.surveymonkey.com/r/wnyc-app-feedback-settings-menu"
+        @linkClick="
+          (link) => {
+            trackClickEvent(
+              'Click Tracking - Submit app feedback',
+              'Settings Sidebar - links',
+              link
+            )
+          }
+        "
+      ></SBox>
+      <SBox
+        label="Get tech support"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/website-or-app-support"
+        @linkClick="
+          (link) => {
+            trackClickEvent(
+              'Click Tracking - Get tech support',
+              'Settings Sidebar - links',
+              link
+            )
+          }
+        "
+      ></SBox>
+      <SBox
+        label="Contact us"
         link="https://newyorkpublicradio.my.site.com/wnyc/s/"
         @linkClick="
           (link) => {
@@ -309,15 +344,6 @@ const handleNotificationChange = async (e) => {
               'Settings Sidebar - links',
               link
             )
-          }
-        "
-      ></SBox>
-      <SBox
-        label="Donate"
-        :link="config.public.SETTINGS_MENU_DONATION_URL"
-        @linkClick="
-          (link) => {
-            trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
           }
         "
       ></SBox>
