@@ -15,12 +15,16 @@ export default defineNuxtPlugin((nuxtApp) => {
         tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'demo.native-app.wnyc.org', 'api.wnyc.org'],
       }),
       new HttpClient(),
-      new Sentry.Replay(),
+      new Sentry.Replay({
+        maskAllText: false,
+        blockAllMedia: false
+      }),
     ],
-    tracesSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.5 : 1.0,
+    tracesSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.1 : 1.0,
     replaysSessionSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.0005 : 1.0,
     replaysOnErrorSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.001 : 1.0,
     allowUrls: [
+      'https://native-app.wnyc.org',
       'https://demo.native-app.wnyc.org',
       'http://local.dev.nypr.digital:3000',
       'capacitor://localhost',
