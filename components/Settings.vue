@@ -75,6 +75,7 @@ const updateProfile = async () => {
   // update supabase and local storage
 
   if (currentUser.value) {
+    alert("currentUserProfile.value = " + JSON.stringify(currentUserProfile.value))
     const { error } = await client
       .from("profiles")
       .upsert({

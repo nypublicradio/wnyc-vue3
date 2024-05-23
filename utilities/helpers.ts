@@ -584,11 +584,18 @@ export const getAndSetUserProfile = async () => {
       .single()
     if (error) {
       console.error(error)
+      //account does not exist anymore, wipe local storage and session and hard refresh
+      // if (error.code === 'PGRST116') {
+      //   await Preferences.clear()
+      //   await localStorage.clear()
+      //   location.reload()
+      // }
     } else if (data) {
       if (data.initial) {
-        // if first time logging in with new profile
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
+        alert('ls' + JSON.stringify(ls))
+        // if first time logging in with new profile
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
@@ -652,16 +659,30 @@ export const getAndSetUserProfile = async () => {
         //get the system's current theme and apply it to the initial defaults
         defaults.dark_mode = detectSystemDarkMode()
 
+        // get the system's notification permission and apply it to the initial defaults
+        if (isApp.value) {
+          await PushNotifications.checkPermissions().then((result) => {
+            if (result.receive === "denied") {
+              defaults.receive_general_notifications = false
+            }
+            if (result.receive === "granted") {
+              defaults.receive_general_notifications = true
+            }
+          })
+        }
+
         const defaultsSTRING = JSON.stringify(defaults)
+        //console.log('defaultsSTRING' + defaultsSTRING)
         await Preferences.set({
           key: localUserProfileKey,
           value: defaultsSTRING,
         })
-        currentUserProfile.value = localUserProfileDefault.value
+
+        currentUserProfile.value = defaults
 
         updateAllLiveStreams()
         //set display settings
-        setDisplaySettings(localUserProfileDefault.value)
+        setDisplaySettings(defaults)
       } else {
         // local storage is set, so set currentUserProfile to the local storage settings
         currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
