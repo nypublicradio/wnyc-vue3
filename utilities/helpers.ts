@@ -566,6 +566,7 @@ export const convertTime = (val) => {
   return hhmmss.startsWith("00:") ? hhmmss.substring(3) : hhmmss
 }
 
+// get and set the user profiel
 export const getAndSetUserProfile = async () => {
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
@@ -602,6 +603,18 @@ export const getAndSetUserProfile = async () => {
         }
         if (typeof ls.default_live_stream === 'object') {
           ls.default_live_stream = ls.default_live_stream.station;
+        }
+
+        // get the system's notification permission and apply it to the ls
+        if (isApp.value) {
+          await PushNotifications.checkPermissions().then((result) => {
+            if (result.receive === "denied") {
+              ls.receive_general_notifications = false
+            }
+            if (result.receive === "granted") {
+              ls.receive_general_notifications = true
+            }
+          })
         }
 
         // if first time logging in with new profile
