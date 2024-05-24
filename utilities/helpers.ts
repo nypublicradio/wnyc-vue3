@@ -593,7 +593,6 @@ export const getAndSetUserProfile = async () => {
       }
     } else if (data) {
       if (data.initial) {
-        alert('intitial')
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
 
@@ -708,6 +707,18 @@ export const getAndSetUserProfile = async () => {
       } else {
         // local storage is set, so set currentUserProfile to the local storage settings
         currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
+
+        // get the system's notification permission and apply it to the currentUserProfile.value
+        if (isApp.value) {
+          await PushNotifications.checkPermissions().then((result) => {
+            if (result.receive === "denied") {
+              currentUserProfile.value.receive_general_notifications = false
+            }
+            if (result.receive === "granted") {
+              currentUserProfile.value.receive_general_notifications = true
+            }
+          })
+        }
 
         updateAllLiveStreams()
         //set display settings
