@@ -585,13 +585,14 @@ export const getAndSetUserProfile = async () => {
     if (error) {
       console.error(error)
       //account does not exist anymore, wipe local storage and session and hard refresh
-      // if (error.code === 'PGRST116') {
-      //   await Preferences.clear()
-      //   await localStorage.clear()
-      //   location.reload()
-      // }
+      if (error.code === 'PGRST116') {
+        await Preferences.clear()
+        await localStorage.clear()
+        location.reload()
+      }
     } else if (data) {
       if (data.initial) {
+        alert('intitial')
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
 
