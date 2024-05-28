@@ -268,9 +268,9 @@ onUnmounted(() => {
   .p-dropdown-trigger {
     display: none !important;
   }
-  &:hover {
-    background: var(--background3);
-  }
+  //&:hover {
+  //background: var(--background3);
+  //}
 }
 </style>
 <style lang="scss">

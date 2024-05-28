@@ -566,6 +566,7 @@ export const convertTime = (val) => {
   return hhmmss.startsWith("00:") ? hhmmss.substring(3) : hhmmss
 }
 
+// get and set the user profiel
 export const getAndSetUserProfile = async () => {
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
@@ -584,11 +585,38 @@ export const getAndSetUserProfile = async () => {
       .single()
     if (error) {
       console.error(error)
+      //account does not exist anymore, wipe local storage and session and hard refresh
+      if (error.code === 'PGRST116') {
+        await Preferences.clear()
+        await localStorage.clear()
+        location.reload()
+      }
     } else if (data) {
       if (data.initial) {
-        // if first time logging in with new profile
         const lsSTRING = await Preferences.get({ key: localUserProfileKey })
         const ls = JSON.parse(lsSTRING.value)
+
+        // some odd timeing hack to fix the text_size and default station if they come over as an object
+        if (typeof ls.text_size === 'object') {
+          ls.text_size = ls.text_size.label;
+        }
+        if (typeof ls.default_live_stream === 'object') {
+          ls.default_live_stream = ls.default_live_stream.station;
+        }
+
+        // get the system's notification permission and apply it to the ls
+        if (isApp.value) {
+          await PushNotifications.checkPermissions().then((result) => {
+            if (result.receive === "denied") {
+              ls.receive_general_notifications = false
+            }
+            if (result.receive === "granted") {
+              ls.receive_general_notifications = true
+            }
+          })
+        }
+
+        // if first time logging in with new profile
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
@@ -652,19 +680,45 @@ export const getAndSetUserProfile = async () => {
         //get the system's current theme and apply it to the initial defaults
         defaults.dark_mode = detectSystemDarkMode()
 
+        // get the system's notification permission and apply it to the initial defaults
+        if (isApp.value) {
+          await PushNotifications.checkPermissions().then((result) => {
+            if (result.receive === "denied") {
+              defaults.receive_general_notifications = false
+            }
+            if (result.receive === "granted") {
+              defaults.receive_general_notifications = true
+            }
+          })
+        }
+
         const defaultsSTRING = JSON.stringify(defaults)
+        //console.log('defaultsSTRING' + defaultsSTRING)
         await Preferences.set({
           key: localUserProfileKey,
           value: defaultsSTRING,
         })
-        currentUserProfile.value = localUserProfileDefault.value
+
+        currentUserProfile.value = defaults
 
         updateAllLiveStreams()
         //set display settings
-        setDisplaySettings(localUserProfileDefault.value)
+        setDisplaySettings(defaults)
       } else {
         // local storage is set, so set currentUserProfile to the local storage settings
         currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
+
+        // get the system's notification permission and apply it to the currentUserProfile.value
+        if (isApp.value) {
+          await PushNotifications.checkPermissions().then((result) => {
+            if (result.receive === "denied") {
+              currentUserProfile.value.receive_general_notifications = false
+            }
+            if (result.receive === "granted") {
+              currentUserProfile.value.receive_general_notifications = true
+            }
+          })
+        }
 
         updateAllLiveStreams()
         //set display settings

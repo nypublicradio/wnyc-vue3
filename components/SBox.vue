@@ -15,7 +15,19 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  ripple: {
+    type: Boolean,
+    default: true,
+  },
 })
+
+// TEMP fix to make ripple work+
+import { usePrimeVue } from "primevue/config"
+const $primevue = usePrimeVue()
+defineExpose({
+  $primevue,
+})
+// TEMP fix to make ripple work
 const settingSideBar = useSettingSideBar()
 const emit = defineEmits(["link-click", "label-click"])
 
@@ -29,20 +41,27 @@ const onClick = () => {
 </script>
 
 <template>
-  <div class="s-box" :class="[{ 'is-link': props.link, clickable: props.clickable }]">
-    <div class="content flex justify-content-between align-items-center">
+  <div
+    class="s-box relative overflow-hidden"
+    :class="[{ 'is-link': props.link, clickable: props.clickable }]"
+  >
+    <div
+      class="content flex justify-content-between align-items-center"
+      v-ripple
+      :class="[{ killRipple: !props.ripple }]"
+    >
       <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
-        <Button
-          :label="label"
-          class="w-full text-left"
-          text
-          aria-label="menu item"
-        />
+        <Button :label="label" class="w-full text-left" text aria-label="menu item" />
       </VFlexibleLink>
-      <div v-else class="flex h-full align-items-center" @click="emit('label-click')">
-        <p class="label white-space-nowrap">
-          {{ label }}
-        </p>
+      <div v-else>
+        <div
+          class="label-holder flex h-full py-3 align-items-center cursor-pointer"
+          @click="emit('label-click')"
+        >
+          <p class="label white-space-nowrap">
+            {{ label }}
+          </p>
+        </div>
       </div>
       <slot />
     </div>
@@ -84,6 +103,21 @@ const onClick = () => {
   .label {
     font-size: 1rem;
     margin-right: 15px;
+  }
+}
+</style>
+<style lang="scss">
+.s-box {
+  .content {
+    &.killRipple {
+      .p-ink,
+      .p-ink-active {
+        display: none !important;
+      }
+      .label-holder {
+        cursor: default !important;
+      }
+    }
   }
 }
 </style>

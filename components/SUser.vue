@@ -8,6 +8,9 @@ import {
   useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
+  useCurrentEpisode,
+  useCurrentEpisodeHolder,
+  useIsEpisodePlaying,
 } from "~/composables/states.ts"
 import { trackClickEvent, getAndSetUserProfile } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
@@ -30,7 +33,9 @@ const emit = defineEmits(["update:data", "onDisabled"])
 const settingsSideBar = useSettingSideBar()
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
-
+const currentEpisode = useCurrentEpisode()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isEpisodePlaying = useIsEpisodePlaying()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const client = useSupabaseClient()
@@ -57,6 +62,11 @@ const onLogOut = async () => {
 
   // set the currentUser composable to null
   currentUser.value = null
+
+  // clear what is playing
+  currentEpisode.value = null
+  currentEpisodeHolder.value = null
+  isEpisodePlaying.value = false
 
   getAndSetUserProfile()
 

@@ -73,8 +73,7 @@ const initializeStationList = (val) => {
 
 const updateProfile = async () => {
   // update supabase and local storage
-
-  if (currentUser.value) {
+  if (currentUser.value && currentUserProfile.value) {
     const { error } = await client
       .from("profiles")
       .upsert({
@@ -236,7 +235,7 @@ const handleNotificationChange = async (e) => {
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox label="General">
+      <SBox label="General" :ripple="false">
         <VInputSwitch
           yes="ON"
           no="OFF"
@@ -263,7 +262,7 @@ const handleNotificationChange = async (e) => {
           @change="onUpdateTextSize"
         />
       </SBox>
-      <SBox label="Dark theme">
+      <SBox label="Dark theme" :ripple="false">
         <VInputSwitch
           yes="ON"
           no="OFF"
@@ -302,6 +301,7 @@ const handleNotificationChange = async (e) => {
       <SBox
         label="Donate"
         :link="config.public.SETTINGS_MENU_DONATION_URL"
+        :ripple="false"
         @linkClick="
           (link) => {
             trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
@@ -311,6 +311,7 @@ const handleNotificationChange = async (e) => {
       <SBox
         label="Submit app feedback"
         link="https://www.surveymonkey.com/r/wnyc-app-feedback-settings-menu"
+        :ripple="false"
         @linkClick="
           (link) => {
             trackClickEvent(
@@ -324,6 +325,7 @@ const handleNotificationChange = async (e) => {
       <SBox
         label="Get tech support"
         link="https://newyorkpublicradio.my.site.com/wnyc/s/website-or-app-support"
+        :ripple="false"
         @linkClick="
           (link) => {
             trackClickEvent(
@@ -337,6 +339,7 @@ const handleNotificationChange = async (e) => {
       <SBox
         label="Contact us"
         link="https://newyorkpublicradio.my.site.com/wnyc/s/"
+        :ripple="false"
         @linkClick="
           (link) => {
             trackClickEvent(
