@@ -10,6 +10,8 @@ export const cmsSources = {
     SIMPLECAST: 'simplecast',
 }
 
+export const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
+
 export const mediaTypes = {
     LIVE: 'live',
     SHOW: 'show',

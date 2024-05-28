@@ -29,6 +29,7 @@ import {
   FALLBACKIMAGEEPHEADDARK,
   FALLBACKUSER,
   FALLBACKUSERDARK,
+  NPRIMAGEDOMAINSOURCES,
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
@@ -250,7 +251,7 @@ export const imageSolver = (url, options = {}) => {
     imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
   } else if (url.includes("media.wnyc.org")) {
     imgUrl = resizePublisherImageUrl(url, w, h, q)
-  } else if (url.includes("media.npr.org")) {
+  } else if (NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))) {
     imgUrl = resizeNprImageUrl(url, w, q, format)
   } else {
     imgUrl = url
