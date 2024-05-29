@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Your location will be used to personalize and improve your experience.</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>org.wnyc.android.localnotificationstask</string>
@@ -27,11 +25,13 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string>org.wnyc.iphone</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wnycalpha</string>
+				<string>wnyc</string>
 			</array>
 		</dict>
 	</array>
@@ -43,6 +43,10 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Your location will be used to personalize and improve your experience.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Your data will be used to personalize your experience.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -63,8 +67,6 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Your data will be used to personalize your experience.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
