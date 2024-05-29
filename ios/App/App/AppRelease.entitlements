@@ -8,6 +8,7 @@
 	<array>
 		<string>webcredentials:native-app.wnyc.org</string>
 		<string>applinks:native-app.wnyc.org</string>
+		<string>activitycontinuation:native-app.wnyc.org</string>
 	</array>
 </dict>
 </plist>
