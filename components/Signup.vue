@@ -67,7 +67,6 @@ const closeAll = () => {
         label="Sign up with Google"
         severity="secondary"
         class="center my-3"
-        redirectUrl="wnycalpha://"
         @login-success="onSignup('google')"
       />
       <VLoginWithProvider
@@ -77,7 +76,6 @@ const closeAll = () => {
         severity="secondary"
         class="center"
         label="Sign up with Apple"
-        redirectUrl="wnycalpha://"
         @login-success="onSignup('apple')"
       />
       <Divider class="my-4" align="center">
