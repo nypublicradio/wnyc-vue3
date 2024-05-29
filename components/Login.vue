@@ -68,7 +68,6 @@ const openForgotPassword = () => {
         label="Log in with Google"
         severity="secondary"
         class="center my-3"
-        redirectUrl="wnycalpha://"
         @submit-success="onLogin('google')"
       />
       <VLoginWithProvider
@@ -78,7 +77,6 @@ const openForgotPassword = () => {
         label="Log in with Apple"
         severity="secondary"
         class="center"
-        redirectUrl="wnycalpha://"
         @submit-success="onLogin('apple')"
       />
       <Divider class="my-4" align="center">
