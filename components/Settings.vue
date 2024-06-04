@@ -198,10 +198,12 @@ const handleNotificationChange = async (e) => {
         label="Name"
         @click="editField('name')"
         :clickable="!isDisabled"
+        :ripple="!isDisabled"
       >
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
-      <SBox label="Email" @click="editField('email')" :clickable="!isDisabled">
+      <SBox label="Email" @click="editField('email')" :clickable="!isDisabled"
+      :ripple="!isDisabled">
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
       <SBox
@@ -209,6 +211,7 @@ const handleNotificationChange = async (e) => {
         v-if="isEmail"
         @click="editField('password')"
         :clickable="!isDisabled"
+        :ripple="!isDisabled"
       >
         <p :class="[{ disabled: isDisabled }]">*********</p>
       </SBox>
