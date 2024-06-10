@@ -109,20 +109,19 @@ const handleModal = () => {
   }
 }
 
-const avatar = ref(
-  currentUser.value.user_metadata.avatar_url || currentUserProfile?.avatar_image_url
-)
-// watch for changes in the currentUserProfile
-watchEffect(() => {
-  avatar.value =
-    currentUser.value.user_metadata.avatar_url || currentUserProfile?.avatar_image_url
+const avatarUrl = computed(() => {
+  return (
+    currentUser.value?.user_metadata?.avatar_url ||
+    currentUserProfile.value?.avatar_image_url ||
+    null
+  )
 })
 </script>
 
 <template>
   <div class="s-user flex gap-3">
     <Avatar
-      :image="avatar"
+      :image="avatarUrl"
       size="large"
       :style="`
         cursor: ${props.disabled ? 'default' : 'pointer'};
@@ -130,7 +129,7 @@ watchEffect(() => {
       shape="circle"
       @click="handleModal"
     >
-      <template #icon v-if="!avatar">
+      <template #icon v-if="!avatarUrl">
         <UserIcon />
 
         <Button
