@@ -1,0 +1,12 @@
+5a6
+> import android.view.View;
+52c53,58
+< }
+---
+> 
+>     @Override
+>         public void dispatchWindowVisibilityChanged(int visibility) {
+>         super.onWindowVisibilityChanged(View.VISIBLE);
+>     }
+> }
+\ No newline at end of file
