@@ -7,7 +7,7 @@ keyStoreProperties.load(new FileInputStream(keyStorePropertiesFile))
 
 ext.versionMajor = 4
 ext.versionMinor = 0
-ext.versionPatch = 0
+ext.versionPatch = 2
 ext.versionClassifier = null
 ext.isSnapShot = false
 ext.minSdkVersion = 22
