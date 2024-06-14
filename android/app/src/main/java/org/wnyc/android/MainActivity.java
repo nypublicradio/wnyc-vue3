@@ -1,12 +1,9 @@
 package org.wnyc.android;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import com.getcapacitor.BridgeActivity;
-import com.getcapacitor.CapacitorWebView;
 
 public class MainActivity extends BridgeActivity {
 
@@ -20,10 +17,5 @@ public class MainActivity extends BridgeActivity {
         // Apply custom settings to the WebView
         WebSettings settings = webView.getSettings();
         settings.setTextZoom(100); // Set text zoom level
-    }
-
-    @Override
-    protected CapacitorWebView createWebView(Context context, AttributeSet attrs) {
-        return null;
     }
 }
