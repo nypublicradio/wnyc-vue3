@@ -1,9 +1,71 @@
 import axios from 'axios'
 import humps from 'humps'
+import { supabaseClient } from '~/server/utils/supabaseClient';
+import { NyprDb } from '~/server/utils/nyprdb';
 import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
+import { he } from 'date-fns/locale';
+import { co } from '~/android/app/src/main/assets/public/_nuxt/DPXMAggM';
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
+const supabase = supabaseClient();
+const nyprDb = new NyprDb(supabase);
+/* const getImage = (item) => { 
+   // console.log('item = ', item);
+}; */
 
+function findImageUrl(item) {
+    let imageUrl = null;
+    for (const asset of Object.values(item.resources[0].assets)) {
+        if (asset.profiles[0]?.href === '/v1/profiles/image') {
+            const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
+            if (imageEnclosure) {
+                imageUrl = { href: imageEnclosure.href, template: imageEnclosure.hrefTemplate };
+                break; // Exit the loop once the matching image URL is found
+
+            }
+        }
+    }
+    return imageUrl;
+}
+
+//Get all NPR shows 
+const nprShows = async () => {
+    try {
+        const confShows = await nyprDb.getNPRShows();
+
+        let shows = {
+            all: [],
+            featuredShows: []
+        };
+        if (confShows) {
+            shows.all = await Promise.all(confShows.map(async (show) => {
+                const options = {
+                    method: 'GET',
+                    url: `${config.public.NPR_CDS_API}/v1/documents/${show.showId}`,
+                    headers: {
+                        Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+                    }
+                };
+                const { data } = await axios(options);
+                const image = findImageUrl(data);
+                return  {
+                    id: show.showId,
+                    title: show.title,
+                    slug: show.slug,
+                    description: show.description,
+                    image: image,
+                    cmsSource: cmsSources.NPR
+                }
+            }));
+        }
+        return shows;
+    } catch (e) {
+        console.error('error = ', e);
+        return null
+    }
+}
+
+nprShows();
 //Fetch all shows for the app
 const allShows = async () => {
     try {
@@ -53,6 +115,8 @@ export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
+    const nprShowsData = await nprShows();
+    console.log('nprShowsData = ', nprShowsData.all);
     featuredShowsData.map((show) => {
         //Get the id from the allShowsData
         const match = allShowsData.find((item) => item.slug === show.slug);
