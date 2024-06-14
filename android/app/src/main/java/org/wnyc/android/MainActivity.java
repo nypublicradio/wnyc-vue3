@@ -1,13 +1,12 @@
 package org.wnyc.android;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.CapacitorWebView;
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
 
 public class MainActivity extends BridgeActivity {
 
@@ -24,8 +23,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
-    public CapacitorWebView createWebView(Context context, AttributeSet attrs) {
-        // Implement your custom WebView creation logic here
-        return createWebView(context, attrs);
+    protected CapacitorWebView createWebView(Context context, AttributeSet attrs) {
+        return null;
     }
 }
