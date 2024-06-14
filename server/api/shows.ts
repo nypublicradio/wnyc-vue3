@@ -38,7 +38,7 @@ const nprShows = async () => {
             featuredShows: []
         };
         if (confShows) {
-            shows.all = await Promise.all(confShows.map(async (show) => {
+            const fetchedShows = await Promise.all(confShows.map(async (show) => {
                 const options = {
                     method: 'GET',
                     url: `${config.public.NPR_CDS_API}/v1/documents/${show.showId}`,
@@ -54,9 +54,20 @@ const nprShows = async () => {
                     slug: show.slug,
                     description: show.description,
                     image: image,
-                    cmsSource: cmsSources.NPR
+                    cmsSource: cmsSources.NPR,
+                    type: cmsSources.NPR,
+                    featured: show.featured
                 }
             }));
+            fetchedShows.forEach((show) => {
+                if (show.featured) {
+                    //Remove the featured key from the show object
+                    delete show.featured;
+                    shows.featuredShows.push(show);
+                }
+                delete show.featured;    
+                shows.all.push(show);
+            });
         }
         return shows;
     } catch (e) {
@@ -65,7 +76,6 @@ const nprShows = async () => {
     }
 }
 
-nprShows();
 //Fetch all shows for the app
 const allShows = async () => {
     try {
@@ -116,7 +126,14 @@ export default defineEventHandler(async (event) => {
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     const nprShowsData = await nprShows();
-    console.log('nprShowsData = ', nprShowsData.all);
+    //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData
+    if (nprShowsData) {
+        allShowsData.push(...nprShowsData.all);
+        featuredShowsData.push(...nprShowsData.featuredShows);
+    }
+    //Sort the data by title
+    allShowsData.sort((a, b) => a.title.localeCompare(b.title));
+    featuredShowsData.sort((a, b) => a.title.localeCompare(b.title));
     featuredShowsData.map((show) => {
         //Get the id from the allShowsData
         const match = allShowsData.find((item) => item.slug === show.slug);
