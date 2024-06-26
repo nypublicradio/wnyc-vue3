@@ -3,30 +3,13 @@ import humps from 'humps'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NyprDb } from '~/server/utils/nyprdb';
 import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
-import { he } from 'date-fns/locale';
-import { co } from '~/android/app/src/main/assets/public/_nuxt/DPXMAggM';
+import { NPR } from '~/server/utils/npr';
+
 
 const config = useRuntimeConfig();
 const supabase = supabaseClient();
 const nyprDb = new NyprDb(supabase);
-/* const getImage = (item) => { 
-   // console.log('item = ', item);
-}; */
-
-function findImageUrl(item) {
-    let imageUrl = null;
-    for (const asset of Object.values(item.resources[0].assets)) {
-        if (asset.profiles[0]?.href === '/v1/profiles/image') {
-            const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
-            if (imageEnclosure) {
-                imageUrl = { href: imageEnclosure.href, template: imageEnclosure.hrefTemplate };
-                break; // Exit the loop once the matching image URL is found
-
-            }
-        }
-    }
-    return imageUrl;
-}
+const npr = new NPR();
 
 //Get all NPR shows 
 const nprShows = async () => {
@@ -47,15 +30,17 @@ const nprShows = async () => {
                     }
                 };
                 const { data } = await axios(options);
-                const image = findImageUrl(data);
-                return  {
+                const image = npr.findImageUrl(data);
+                return {
                     id: show.showId,
                     title: show.title,
                     slug: show.slug,
-                    description: show.description,
+                    description: data.resources[0]?.teaser,
+                    tease: data.resources[0]?.shortTeaser,
                     image: image,
                     cmsSource: cmsSources.NPR,
                     type: cmsSources.NPR,
+                    url: data.resources[0]?.webPages[0]?.href,
                     featured: show.featured
                 }
             }));
@@ -65,7 +50,7 @@ const nprShows = async () => {
                     delete show.featured;
                     shows.featuredShows.push(show);
                 }
-                delete show.featured;    
+                delete show.featured;
                 shows.all.push(show);
             });
         }

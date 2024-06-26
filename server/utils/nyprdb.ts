@@ -15,4 +15,12 @@ export class NyprDb {
             .order('title', { ascending: false });
         return data;
     }
+
+    async getNPRShowBySlug(slug) {
+        const { data, error } = await this.supabase
+            .from('shows')
+            .select('*')
+            .eq('slug', slug);
+        return data;
+    }
 }
