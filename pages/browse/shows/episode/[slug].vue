@@ -25,7 +25,7 @@ const route = useRoute()
 const router = useRouter()
 
 const { data: episode, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
+  `${config.public.BFF_URL}/api/show/episode/${route.query.src}/${route.params.slug}`
 )
 
 const episodeData = ref(episode?.value ?? null)
