@@ -42,6 +42,12 @@ target 'AppAlpha' do
   pod 'Firebase/Messaging'
 end
 
+target 'AppLocal' do
+  capacitor_pods
+  # Add your Pods here
+  pod 'Firebase/Messaging'
+end
+
 post_install do |installer|
   assertDeploymentTarget(installer)
 end

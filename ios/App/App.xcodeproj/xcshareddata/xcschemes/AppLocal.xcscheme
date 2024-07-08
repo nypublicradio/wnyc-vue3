@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1530"
+   LastUpgradeVersion = "1540"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
       buildArchitectures = "Automatic">
       <BuildActionEntries>
-         <BuildActionEntry
-            buildForTesting = "NO"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "504EC3031FED79650016851F"
-               BuildableName = "App.app"
-               BlueprintName = "App"
-               ReferencedContainer = "container:App.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
@@ -29,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "282EE5E12BBDAABB0023D302"
-               BuildableName = "AppAlpha.app"
-               BlueprintName = "AppAlpha"
+               BlueprintIdentifier = "2844BE5E2C3C2F2C0087D458"
+               BuildableName = "AppLocal.app"
+               BlueprintName = "AppLocal"
                ReferencedContainer = "container:App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -58,12 +44,29 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "282EE5E12BBDAABB0023D302"
-            BuildableName = "AppAlpha.app"
-            BlueprintName = "AppAlpha"
+            BlueprintIdentifier = "2844BE5E2C3C2F2C0087D458"
+            BuildableName = "AppLocal.app"
+            BlueprintName = "AppLocal"
             ReferencedContainer = "container:App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "BFF_URL"
+            value = "https://demo.native-app.wnyc.org"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "SUPABASE_URL"
+            value = "https://dyjmrswsrewafrohnfcv.supabase.co"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "SUPABASE_KEY"
+            value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5am1yc3dzcmV3YWZyb2huZmN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY1OTYxMjQsImV4cCI6MjAwMjE3MjEyNH0.rM2yQmxsH9k5hb_1HvW8nMedB7YMEvYd3HQjin8kefo"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -71,15 +74,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "282EE5E12BBDAABB0023D302"
-            BuildableName = "AppAlpha.app"
-            BlueprintName = "AppAlpha"
+            BlueprintIdentifier = "2844BE5E2C3C2F2C0087D458"
+            BuildableName = "AppLocal.app"
+            BlueprintName = "AppLocal"
             ReferencedContainer = "container:App.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
