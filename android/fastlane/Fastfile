@@ -40,6 +40,7 @@ platform :android do
   end
 
   lane :gamma do
+    increment_version_number
     # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
     gradle(
       task: 'bundle',

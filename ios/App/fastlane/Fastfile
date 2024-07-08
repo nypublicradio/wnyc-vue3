@@ -102,6 +102,7 @@ platform :ios do
     increment_build_number(
       build_number: "$CIRCLE_BUILD_NUM"
     )
+    increment_version_number
     build_app(
       workspace: "App.xcworkspace",
       scheme: "App",
