@@ -1104,3 +1104,18 @@ export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
     toSystemSettings()
   }
 }
+
+// handle account deletion requests
+export const requestAccountDeletion = async () => {
+  const currentUserProfile = useCurrentUserProfile()
+  const globalToast = useGlobalToast()
+  await $fetch( 'https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
+      method: 'POST',
+      body: {"email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id}
+  } );
+  globalToast.value = {
+    severity: "info",
+    summary: `Your account deletion request has been submitted.`,
+    life: 3000,
+  }
+}
