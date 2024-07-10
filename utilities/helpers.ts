@@ -1107,15 +1107,42 @@ export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
 
 // handle account deletion requests
 export const requestAccountDeletion = async () => {
+  const client = useSupabaseClient()
+  const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
+  const currentEpisode = useCurrentEpisode()
+  const currentEpisodeHolder = useCurrentEpisodeHolder()
+  const isEpisodePlaying = useIsEpisodePlaying()
   const globalToast = useGlobalToast()
-  await $fetch( 'https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
+
+  // post to zapier webhook
+  if (currentUserProfile.value?.id) {
+    await $fetch('https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
       method: 'POST',
-      body: {"email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id}
-  } );
+      body: { "email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id }
+    });
+  }
+  
+  // sign out from supabase
+  await client.auth.signOut()
+
+  // set the currentUser composable to null
+  currentUser.value = null
+
+  // clear what is playing
+  currentEpisode.value = null
+  currentEpisodeHolder.value = null
+  isEpisodePlaying.value = false
+
+  getAndSetUserProfile()
+
+  // send user to the sign in page
+  await navigateTo('/')
+  
+  // show toast confirmation of deletion request
   globalToast.value = {
     severity: "info",
-    summary: `Your account deletion request has been submitted.`,
+    summary: `We have received your request to delete your account. Please allow 7-10 business days for your request to be processed.`,
     life: 3000,
   }
 }
