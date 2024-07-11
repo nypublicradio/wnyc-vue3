@@ -45,7 +45,7 @@ Running this project in xcode for the first time may present an error about not 
 ```bash
 sudo xattr -w com.apple.xcode.CreatedByBuildSystem true /Users/username/Library/Developer/Xcode/DerivedData/App-fetbnufjaqwaadatgkquwnaykmin/SourcePackages/checkouts/nanopb/build
 ```
-In xcode, select the AppLocal target to build from to run the app on your development device. The device needs to be added to the development team in the Apple Developer Console.
+In xcode, select the AppLocal target to run the app on your development device. The device needs to be added to the development team in the Apple Developer Console.
 
 
 ## Learned Instructions for Ionic/Capacitor module for Nuxt 3
