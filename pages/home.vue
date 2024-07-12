@@ -43,7 +43,9 @@ onMounted(() => {
     page_type: "home_page",
     content_group: "home",
   })
-  NativeAudio.echo()
+  window.setInterval(() => {
+    NativeAudio.echo("test")
+  }, 5000)
   NativeAudio.playAudio("https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8")
 })
 </script>

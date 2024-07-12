@@ -2,6 +2,7 @@ import Foundation
 import Capacitor
 import UIKit
 import AVKit
+import MediaPlayer
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -11,21 +12,52 @@ import AVKit
 @objc(NativeAudioPlugin)
 public class NativeAudioPlugin: CAPPlugin {
     private let implementation = NativeAudio()
-    var player: AVPlayer?
+    public static var player: AVPlayer?
 
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
+        let nowPlaying = MPNowPlayingInfoCenter.default().nowPlayingInfo
+        let title = nowPlaying?[MPMediaItemPropertyTitle] as? String ?? "idk"
         call.resolve([
-            "value": implementation.echo(value)
+            "value": implementation.echo(value) + " " + title
         ])
     }
 
     @objc func playAudio(_ call: CAPPluginCall) {
         guard let url = URL(string: "https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8") else { return }
-        player = AVPlayer(url: url)
+        NativeAudioPlugin.player = AVPlayer(url: url)
 
         DispatchQueue.main.async {
-            self.player?.play()
+            NativeAudioPlugin.player?.play()
+
+            NativeAudioPlugin.setupRemoteTransportControls()
+            
+            var nowPlayingInfo = [String: Any]()
+            nowPlayingInfo[MPMediaItemPropertyTitle] = "WNYC"
+            nowPlayingInfo[MPMediaItemPropertyArtist] = "WNYCCC"
+            nowPlayingInfo[MPMediaItemPropertyGenre] = "News"
+
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
     }
+
+    static func setupRemoteTransportControls() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        // Play command
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.addTarget { event in
+            player?.play()
+            return .success
+        }
+        
+        // Pause command
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget { event in
+            player?.pause()
+            return .success
+        }
+    }
+
+ 
 }

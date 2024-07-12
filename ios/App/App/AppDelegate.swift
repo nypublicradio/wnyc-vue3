@@ -4,9 +4,11 @@ import Firebase
 import FirebaseCore
 import CapacitorBackgroundRunner
 import AVFoundation
+import NativeAudio
+import MediaPlayer
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIViewController, UIApplicationDelegate {
 
     var window: UIWindow?
 
@@ -19,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         do {
             try audioSession.setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
         }
         catch {
             print("Setting category to AVAudioSessionCategoryPlayback failed.")
@@ -26,7 +29,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         return true
     }
+
+    override func becomeFirstResponder() -> Bool {
+        return true
+    }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        self.becomeFirstResponder()
+        var nowPlayingInfo = [String: Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = "WNYC FM"
+        
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+
+    override func remoteControlReceived(with event: UIEvent?) {
+        guard let event = event else { return }
+        if event.type == .remoteControl {
+            switch event.subtype {
+            case .remoteControlPlay:
+                NativeAudioPlugin.player?.play()
+            case .remoteControlPause:
+                NativeAudioPlugin.player?.pause()
+            // Handle other cases like .remoteControlNextTrack, .remoteControlPreviousTrack
+            default:
+                break
+            }
+        }
+    }
+
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
