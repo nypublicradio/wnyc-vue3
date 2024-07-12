@@ -1,0 +1,25 @@
+App/build
+App/Pods
+App/Podfile.lock
+App/App/public
+DerivedData
+xcuserdata
+
+# Cordova plugins for Capacitor
+capacitor-cordova-ios-plugins
+
+# Generated Config files
+App/App/capacitor.config.json
+App/App/config.xml
+
+# iOS build files
+App/*.ipa
+App/*.zip
+
+# DS_Store files
+.DS_Store
+App/.DS_Store
+
+# AWS Device Farm build
+aws
+ist

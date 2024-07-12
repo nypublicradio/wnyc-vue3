@@ -3,6 +3,7 @@ import Capacitor
 import Firebase
 import FirebaseCore
 import CapacitorBackgroundRunner
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,9 +15,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         BackgroundRunnerPlugin.registerBackgroundTask()
         BackgroundRunnerPlugin.handleApplicationDidFinishLaunching(launchOptions: launchOptions)
+        let audioSession = AVAudioSession.sharedInstance()
+
+        do {
+            try audioSession.setCategory(.playback, mode: .default)
+        }
+        catch {
+            print("Setting category to AVAudioSessionCategoryPlayback failed.")
+        }
+
+        return true
+    }
+    
+    override func becomeFirstResponder() -> Bool {
         return true
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        self.becomeFirstResponder()
+    }
+
+    override func remoteControlReceived(with event: UIEvent?) {
+        guard let event = event else { return }
+        if event.type == .remoteControl {
+            switch event.subtype {
+            case .remoteControlPlay:
+                player.play()
+            case .remoteControlPause:
+                player.pause()
+            // Handle other cases like .remoteControlNextTrack, .remoteControlPreviousTrack
+            default:
+                break
+            }
+        }
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.

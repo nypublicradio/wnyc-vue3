@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BF33A31F753D42894823139 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		0BF33A31F753D42894823139 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		282EE5E62BBDAABB0023D302 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		282EE5EA2BBDAABB0023D302 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		282EE5EB2BBDAABB0023D302 /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
@@ -42,8 +42,9 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		60C1FAF911C16D6F5189F573 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		986A281B192E980102A971D0 /* Pods_AppLocal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861A0D7F8906D3A7713D0031 /* Pods_AppLocal.framework */; };
+		9C7844400F560989EDA224D0 /* Pods_AppAlpha.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E46E929E0F540F65B64777AC /* Pods_AppAlpha.framework */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
-		B03A384C7D7DE74F77AA718E /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		B03A384C7D7DE74F77AA718E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		ED00331229F07F69001B53A0 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00331129F07F69001B53A0 /* NotificationService.swift */; };
 		ED00331629F07F69001B53A0 /* ImageNotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ED00330F29F07F69001B53A0 /* ImageNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ED4757F229D3595D00668579 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED4757F129D3595D00668579 /* GoogleService-Info.plist */; };
@@ -147,6 +148,7 @@
 		B42FD969E0FAF8FBB18382B0 /* Pods-AppLocal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLocal.release.xcconfig"; path = "Pods/Target Support Files/Pods-AppLocal/Pods-AppLocal.release.xcconfig"; sourceTree = "<group>"; };
 		D47F540BC579F0A0B2ED6AE7 /* Pods-AppAlpha.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppAlpha.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AppAlpha/Pods-AppAlpha.debug.xcconfig"; sourceTree = "<group>"; };
 		D988A7BA18035974D93D1726 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		E46E929E0F540F65B64777AC /* Pods_AppAlpha.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppAlpha.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED00330F29F07F69001B53A0 /* ImageNotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ImageNotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED00331129F07F69001B53A0 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		ED00331329F07F69001B53A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -160,7 +162,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				284C6C5B2BBDD5A300B5406E /* Pods_AppAlpha.framework in Frameworks */,
-				0BF33A31F753D42894823139 /* (null) in Frameworks */,
+				0BF33A31F753D42894823139 /* BuildFile in Frameworks */,
+				9C7844400F560989EDA224D0 /* Pods_AppAlpha.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,7 +202,7 @@
 			files = (
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
 				60C1FAF911C16D6F5189F573 /* Pods_App.framework in Frameworks */,
-				B03A384C7D7DE74F77AA718E /* (null) in Frameworks */,
+				B03A384C7D7DE74F77AA718E /* BuildFile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +221,7 @@
 			children = (
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 				861A0D7F8906D3A7713D0031 /* Pods_AppLocal.framework */,
+				E46E929E0F540F65B64777AC /* Pods_AppAlpha.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -6,6 +6,8 @@ import {
   goToNprPage,
 } from "~/utilities/helpers"
 import { useCurrentEpisode } from "~/composables/states"
+import { NativeAudio } from "../plugins/native-audio"
+
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 
@@ -41,6 +43,8 @@ onMounted(() => {
     page_type: "home_page",
     content_group: "home",
   })
+  NativeAudio.echo()
+  NativeAudio.playAudio("https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8")
 })
 </script>
 
