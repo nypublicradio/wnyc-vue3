@@ -1142,7 +1142,7 @@ export const requestAccountDeletion = async () => {
   // show toast confirmation of deletion request
   globalToast.value = {
     severity: "info",
-    summary: `We have received your request to delete your account. Please allow 7-10 business days for your request to be processed.`,
+    summary: 'We have received your request to delete your account. Please allow 7-10 business days for your request to be processed.',
     life: 3000,
   }
 }
