@@ -1105,24 +1105,13 @@ export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
   }
 }
 
-// handle account deletion requests
-export const requestAccountDeletion = async () => {
+export const logOutUser = async () => {
   const client = useSupabaseClient()
   const currentUser = useCurrentUser()
-  const currentUserProfile = useCurrentUserProfile()
   const currentEpisode = useCurrentEpisode()
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   const isEpisodePlaying = useIsEpisodePlaying()
-  const globalToast = useGlobalToast()
 
-  // post to zapier webhook
-  if (currentUserProfile.value?.id) {
-    await $fetch('https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
-      method: 'POST',
-      body: { "email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id }
-    });
-  }
-  
   // sign out from supabase
   await client.auth.signOut()
 
@@ -1135,14 +1124,30 @@ export const requestAccountDeletion = async () => {
   isEpisodePlaying.value = false
 
   getAndSetUserProfile()
+}
+
+// handle account deletion requests
+export const requestAccountDeletion = async () => {
+  const currentUserProfile = useCurrentUserProfile()
+  const globalToast = useGlobalToast()
+
+  // post to zapier webhook
+  if (currentUserProfile.value?.id) {
+    await $fetch('https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
+      method: 'POST',
+      body: { "email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id }
+    });
+  }
+
+  logOutUser()
 
   // send user to the sign in page
   await navigateTo('/')
-  
+
   // show toast confirmation of deletion request
   globalToast.value = {
     severity: "info",
     summary: 'We have received your request to delete your account. Please allow 7-10 business days for your request to be processed.',
-    life: 3000,
+    closable: true,
   }
 }

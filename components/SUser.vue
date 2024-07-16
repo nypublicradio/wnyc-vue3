@@ -12,9 +12,8 @@ import {
   useCurrentEpisodeHolder,
   useIsEpisodePlaying,
 } from "~/composables/states.ts"
-import { trackClickEvent, getAndSetUserProfile } from "~/utilities/helpers"
+import { trackClickEvent, getAndSetUserProfile, logOutUser } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
-
 const toast = useToast()
 
 const props = defineProps({
@@ -53,22 +52,7 @@ const onLogIn = () => {
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
-  // sign out from supabase
-  await client.auth.signOut()
-  //const { error } = await client.auth.signOut()
-  // if (error) {
-  //   alert('Error logging out')
-  // }
-
-  // set the currentUser composable to null
-  currentUser.value = null
-
-  // clear what is playing
-  currentEpisode.value = null
-  currentEpisodeHolder.value = null
-  isEpisodePlaying.value = false
-
-  getAndSetUserProfile()
+  logOutUser()
 
   settingsSideBar.value = false
 
