@@ -36,7 +36,7 @@ private String generateVersionName() {
 
 android {
     namespace "org.wnyc.android"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     signingConfigs {
         release {
             keyAlias keyStoreProperties['releaseKeyAlias']
@@ -71,6 +71,7 @@ android {
 repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+		dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
     }
 }
 
