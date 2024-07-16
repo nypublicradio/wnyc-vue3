@@ -39,12 +39,12 @@ echo(options: { value: string; }) => Promise<{ value: string; }>
 ### playAudio(...)
 
 ```typescript
-playAudio(audio: string) => Promise<void>
+playAudio(options: { audio: string; }) => Promise<void>
 ```
 
-| Param       | Type                |
-| ----------- | ------------------- |
-| **`audio`** | <code>string</code> |
+| Param         | Type                            |
+| ------------- | ------------------------------- |
+| **`options`** | <code>{ audio: string; }</code> |
 
 --------------------
 

@@ -24,7 +24,8 @@ public class NativeAudioPlugin: CAPPlugin {
     }
 
     @objc func playAudio(_ call: CAPPluginCall) {
-        guard let url = URL(string: "https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8") else { return }
+        let audio = call.getString("audio", "")
+        guard let url = URL(string: audio) else { return }
         NativeAudioPlugin.player = AVPlayer(url: url)
 
         DispatchQueue.main.async {
