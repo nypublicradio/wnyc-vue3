@@ -40,6 +40,7 @@
     "@capacitor/share": "^6.0.0",
     "@capacitor/splash-screen": "^6.0.0",
     "@capacitor/status-bar": "^6.0.0",
+    "@christoffyw/capacitor-media-session": "^3.0.4",
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",

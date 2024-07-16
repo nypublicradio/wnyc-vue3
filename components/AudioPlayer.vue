@@ -34,7 +34,7 @@ import {
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 
-//import { initMediaSession } from "~/utilities/media-session.js"
+import { initMediaSession } from "~/utilities/media-session.js"
 import "vidstack/bundle"
 //import { MediaRemoteControl } from "vidstack"
 
@@ -92,7 +92,7 @@ const updateUseIsEpisodePlaying = async (e) => {
       playerRef.value.togglePlay()
       await nextTick()
       // initiallizes the media session in ~/utilities/media-session.js
-      //initMediaSession(currentEpisode.value, skipTime)
+      initMediaSession(currentEpisode.value, skipTime)
     }, 1500)
   }
 }
@@ -118,7 +118,7 @@ const switchEpisode = () => {
   //separagte delay for the media session to init
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
-    //initMediaSession(currentEpisode.value, skipTime)
+    initMediaSession(currentEpisode.value, skipTime)
   }, 1000)
 }
 

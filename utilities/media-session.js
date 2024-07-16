@@ -1,4 +1,4 @@
-import { MediaSession } from '@jofr/capacitor-media-session'
+import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
 import { useIsNetworkConnected } from "~/composables/states"
 import { FALLBACKIMAGE } from "~/composables/globals"
