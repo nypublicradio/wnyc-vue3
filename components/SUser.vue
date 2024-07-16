@@ -8,11 +8,8 @@ import {
   useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
-  useCurrentEpisode,
-  useCurrentEpisodeHolder,
-  useIsEpisodePlaying,
 } from "~/composables/states.ts"
-import { trackClickEvent, getAndSetUserProfile, logOutUser } from "~/utilities/helpers"
+import { trackClickEvent, logOutUser } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 const toast = useToast()
 
@@ -32,9 +29,6 @@ const emit = defineEmits(["update:data", "onDisabled"])
 const settingsSideBar = useSettingSideBar()
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
-const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isEpisodePlaying = useIsEpisodePlaying()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const client = useSupabaseClient()
@@ -52,7 +46,7 @@ const onLogIn = () => {
 }
 // actions to be taken with the log out button is clicked
 const onLogOut = async () => {
-  logOutUser()
+  await logOutUser()
 
   settingsSideBar.value = false
 

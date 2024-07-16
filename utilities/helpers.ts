@@ -1105,6 +1105,7 @@ export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
   }
 }
 
+// log out the current user
 export const logOutUser = async () => {
   const client = useSupabaseClient()
   const currentUser = useCurrentUser()
