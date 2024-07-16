@@ -25,6 +25,8 @@ import { Network } from "@capacitor/network"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 
+import { RemoteStreamer } from "mp3-hls-streaming"
+
 const toast = useToast()
 
 //const { isDesktop } = useDevice()
@@ -154,6 +156,10 @@ const checkAppLaunchUrl = async () => {
 }
 
 onMounted(async () => {
+  RemoteStreamer.play({
+    url:
+      "https://chrt.fm/track/53A61E/pdst.fm/e/dts.podtrac.com/pts/redirect.mp3/waaa.wnyc.org/74d5512f-0f0f-4f1e-b4b0-b55f533d55d2/episodes/03699946-0b48-433f-8e01-70a8dce0a31c/audio/128/default.mp3?aid=rss_feed&awCollectionId=74d5512f-0f0f-4f1e-b4b0-b55f533d55d2&awEpisodeId=03699946-0b48-433f-8e01-70a8dce0a31c&feed=kyG_uojt",
+  })
   await getAndSetUserProfile()
 
   if (isApp.value) {

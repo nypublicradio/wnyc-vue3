@@ -1,7 +1,6 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { vite as vidstack } from 'vidstack/plugins';
 export default defineNuxtConfig({
-
   modules: [
     '@nuxtjs/supabase',
     '@nuxtjs/ionic',
@@ -10,11 +9,13 @@ export default defineNuxtConfig({
     '@hypernym/nuxt-gsap',
     "@vueuse/nuxt"
   ],
+
   supabase: {
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
   },
+
   image: {
     dir: 'public/',
     screens: {
@@ -39,8 +40,10 @@ export default defineNuxtConfig({
       },
     },
   },
+
   /* ssr: process.env.ISAPP === 'false' ? true : false, */
   ssr: false,
+
   ionic: {
     integrations: {
       router: false,
@@ -50,7 +53,6 @@ export default defineNuxtConfig({
       basic: false,
     }
   },
-
 
   app: {
     //pageTransition: { name: 'rotate', mode: 'out-in' },
@@ -130,15 +132,18 @@ export default defineNuxtConfig({
       vidstack({ include: /player\// }),
     ],
   },
+
   sourcemap: {
     client: true,
     server: true,
   },
+
   components: [
     '~/components',
     '~/components/icons',
     '~/components/logos'
   ],
+
   imports: {
     dirs: [
       'composables', // top-level modules
@@ -152,6 +157,7 @@ export default defineNuxtConfig({
       'primevue'
     ]
   },
+
   plugins: [
     '~/plugins/primevue.js',
     '~/plugins/router-guards.js',
@@ -161,6 +167,7 @@ export default defineNuxtConfig({
   experimental: {
     crossOriginPrefetch: true
   },
+
   runtimeConfig: {
     public: {
       SENTRY_DSN: process.env['SENTRY_DSN'],
@@ -194,4 +201,6 @@ export default defineNuxtConfig({
       APP_VERSION: process.env.APP_VERSION ?? 'x.x.x',
     }
   },
+
+  compatibilityDate: '2024-07-16',
 })
