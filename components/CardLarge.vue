@@ -47,7 +47,7 @@ defineExpose({
         <HtmlConvert :htmlContent="props.item.tease" class="desc" />
 
         <PipeData class="text-xs" :hidePipe="props.hideDate">
-          <template #left>{{ props.item.headers.brand.title }}</template>
+          <template #left>{{ props.item?.headers?.brand.title }}</template>
           <template #right v-if="!props.hideDate">
             {{ getDate(props.item) }}
           </template>
