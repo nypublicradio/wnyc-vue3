@@ -306,7 +306,7 @@ watch(globalError, (error) => {
     </Head>
   </Html>
   <NuxtLayout>
-    <Button label="play native" @click="playNativeTest" />
+    <Button label="play native3" @click="playNativeTest" />
     <NuxtPage />
   </NuxtLayout>
   <NetworkBanner :connected="isNetworkConnected" />
