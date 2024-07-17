@@ -350,6 +350,21 @@ const handleNotificationChange = async (e) => {
           }
         "
       ></SBox>
+      <SBox
+        v-if="!isDisabled"
+        label="Delete account"
+        link="delete"
+        :ripple="false"
+        @linkClick="
+          (link) => {
+            trackClickEvent(
+              'Click Tracking - Delete account',
+              'Settings Sidebar - links',
+              link
+            )
+          }
+        "
+      ></SBox>
     </section>
     <section class="footer mb-4">
       <WnycLogo style="fill: var(--night)" />
