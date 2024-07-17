@@ -155,13 +155,6 @@ const checkAppLaunchUrl = async () => {
   //alert("App opened with URL: " + JSON.stringify(url))
 }
 
-const playNativeTest = () => {
-  RemoteStreamer.play({
-    url:
-      "https://chrt.fm/track/53A61E/pdst.fm/e/dts.podtrac.com/pts/redirect.mp3/waaa.wnyc.org/74d5512f-0f0f-4f1e-b4b0-b55f533d55d2/episodes/03699946-0b48-433f-8e01-70a8dce0a31c/audio/128/default.mp3?aid=rss_feed&awCollectionId=74d5512f-0f0f-4f1e-b4b0-b55f533d55d2&awEpisodeId=03699946-0b48-433f-8e01-70a8dce0a31c&feed=kyG_uojt",
-  })
-}
-
 onMounted(async () => {
   await getAndSetUserProfile()
 
@@ -306,7 +299,7 @@ watch(globalError, (error) => {
     </Head>
   </Html>
   <NuxtLayout>
-    <Button label="play native3" @click="playNativeTest" />
+    <NativeTestAudio />
     <NuxtPage />
   </NuxtLayout>
   <NetworkBanner :connected="isNetworkConnected" />
