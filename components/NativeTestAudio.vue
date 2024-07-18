@@ -2,6 +2,7 @@
 import { RemoteStreamer } from "mp3-hls-streaming"
 
 let isPlaying = ref(false)
+let isBuffering = ref(false)
 let currentTime = ref(0)
 let currentSource = ref("")
 
@@ -9,18 +10,108 @@ const hlsStream = "https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8"
 const mp3Episode =
   "https://chrt.fm/track/53A61E/pdst.fm/e/dts.podtrac.com/pts/redirect.mp3/waaa.wnyc.org/74d5512f-0f0f-4f1e-b4b0-b55f533d55d2/episodes/03699946-0b48-433f-8e01-70a8dce0a31c/audio/128/default.mp3?aid=rss_feed&awCollectionId=74d5512f-0f0f-4f1e-b4b0-b55f533d55d2&awEpisodeId=03699946-0b48-433f-8e01-70a8dce0a31c&feed=kyG_uojt"
 
+const setWebMediaSession = (media: object) => {
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: "Unforgettable",
+      artist: "Nat King Cole",
+      album: "The Ultimate Collection (Remastered)",
+      artwork: [
+        {
+          src: "https://dummyimage.com/96x96",
+          sizes: "96x96",
+          type: "image/png",
+        },
+        {
+          src: "https://dummyimage.com/128x128",
+          sizes: "128x128",
+          type: "image/png",
+        },
+        {
+          src: "https://dummyimage.com/192x192",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "https://dummyimage.com/256x256",
+          sizes: "256x256",
+          type: "image/png",
+        },
+        {
+          src: "https://dummyimage.com/384x384",
+          sizes: "384x384",
+          type: "image/png",
+        },
+        {
+          src: "https://dummyimage.com/512x512",
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    })
+
+    navigator.mediaSession.setActionHandler("play", async () => {
+      await RemoteStreamer.resume()
+      /* Code excerpted. */
+    })
+    navigator.mediaSession.setActionHandler("pause", async () => {
+      await RemoteStreamer.pause()
+      /* Code excerpted. */
+    })
+    // navigator.mediaSession.setActionHandler("stop", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("seekbackward", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("seekforward", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("seekto", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("previoustrack", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("nexttrack", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("skipad", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("togglecamera", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("togglemicrophone", () => {
+    //   /* Code excerpted. */
+    // })
+    // navigator.mediaSession.setActionHandler("hangup", () => {
+    //   /* Code excerpted. */
+    // })
+  }
+}
+
 onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data: any) => {
     currentTime.value = data.currentTime
   })
-  await RemoteStreamer.addListener("play", () => {
-    console.log("playing")
+  await RemoteStreamer.addListener("play", (e) => {
+    console.log("playing", e)
+    isBuffering.value = false
     isPlaying.value = true
   })
 
-  await RemoteStreamer.addListener("pause", () => {
-    console.log("paused")
+  await RemoteStreamer.addListener("pause", (e) => {
+    console.log("paused", e)
     isPlaying.value = false
+  })
+  await RemoteStreamer.addListener("buffering", (e) => {
+    if (e.isBuffering) {
+      console.log("buffering", e.isBuffering)
+      isBuffering.value = true
+    } else {
+      isBuffering.value = false
+    }
   })
 
   await RemoteStreamer.addListener("stop", () => {
@@ -40,9 +131,10 @@ async function togglePlay(source: string) {
   } else {
     if (currentSource.value !== source) {
       console.log("stop, play and set current source")
+      currentSource.value = source
       await RemoteStreamer.stop()
       await RemoteStreamer.play({ url: source })
-      currentSource.value = source
+      setWebMediaSession({ source })
     } else {
       await RemoteStreamer.resume()
       console.log("resuming")
@@ -76,7 +168,10 @@ function formatTime(seconds: number) {
           }
         "
       >
-        {{ isPlaying && currentSource === mp3Episode ? "Pause" : "Play" }}
+        <div v-if="currentSource === mp3Episode && isBuffering">Buffering...</div>
+        <div v-else>
+          {{ isPlaying && currentSource === mp3Episode ? "Pause" : "Play" }}
+        </div>
       </button>
       <p>Current Time: {{ formatTime(currentTime) }}</p>
     </div>

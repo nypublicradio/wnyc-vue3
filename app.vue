@@ -25,8 +25,6 @@ import { Network } from "@capacitor/network"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 
-import { RemoteStreamer } from "mp3-hls-streaming"
-
 const toast = useToast()
 
 //const { isDesktop } = useDevice()
