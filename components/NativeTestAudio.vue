@@ -2,9 +2,10 @@
 import { RemoteStreamer } from "mp3-hls-streaming"
 
 let isPlaying = ref(false)
+let isError = ref(null)
 let isBuffering = ref(false)
 let currentTime = ref(0)
-let currentSource = ref("")
+let currentSource = ref(null)
 
 const hlsStream = "https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8"
 const mp3Episode =
@@ -92,6 +93,9 @@ const setWebMediaSession = (media: object) => {
 }
 
 onMounted(async () => {
+  await RemoteStreamer.addListener("error", (err: string) => {
+    isError.value = err
+  })
   await RemoteStreamer.addListener("timeUpdate", (data: any) => {
     currentTime.value = data.currentTime
   })
@@ -153,6 +157,7 @@ function formatTime(seconds: number) {
   <div class="player-container">
     <div class="player-item">
       <h2>HLS Stream</h2>
+      <p>{{ isError }}</p>
       <button @click="() => togglePlay(hlsStream)">
         {{ isPlaying && currentSource === hlsStream ? "Pause" : "Play" }}
       </button>
@@ -161,6 +166,7 @@ function formatTime(seconds: number) {
 
     <div class="player-item">
       <h2>MP3 Episode</h2>
+      <p>{{ isError }}</p>
       <button
         @click="
           () => {
