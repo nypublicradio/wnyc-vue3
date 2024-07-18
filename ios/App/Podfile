@@ -27,7 +27,7 @@ def capacitor_pods
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
   pod 'CapacitorNativeSettings', :path => '../../node_modules/capacitor-native-settings'
   pod 'CapacitorPluginAppTrackingTransparency', :path => '../../node_modules/capacitor-plugin-app-tracking-transparency'
-  pod 'Mp3HlsStreaming', :path => '../../node_modules/mp3-hls-streaming'
+  pod 'Mp3HlsStreaming', :path => '../../../capacitor-remote-streamer'
 end
 
 target 'App' do

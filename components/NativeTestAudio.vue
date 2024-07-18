@@ -93,7 +93,7 @@ const setWebMediaSession = (media: object) => {
 }
 
 onMounted(async () => {
-  await RemoteStreamer.addListener("error", (err: string) => {
+  await RemoteStreamer.addListener("error", (err: any) => {
     isError.value = err
   })
   await RemoteStreamer.addListener("timeUpdate", (data: any) => {
@@ -101,7 +101,7 @@ onMounted(async () => {
   })
   await RemoteStreamer.addListener("play", (e) => {
     console.log("playing", e)
-    isBuffering.value = false
+    //isBuffering.value = false
     isPlaying.value = true
   })
 
@@ -110,9 +110,9 @@ onMounted(async () => {
     isPlaying.value = false
   })
   await RemoteStreamer.addListener("buffering", (e) => {
+    console.log("buffering", e.isBuffering)
     if (e.isBuffering) {
-      console.log("buffering", e.isBuffering)
-      isBuffering.value = true
+      isBuffering.value = e.isBuffering
     } else {
       isBuffering.value = false
     }
@@ -174,6 +174,7 @@ function formatTime(seconds: number) {
           }
         "
       >
+        <pre>{{ isBuffering }}</pre>
         <div v-if="currentSource === mp3Episode && isBuffering">Buffering...</div>
         <div v-else>
           {{ isPlaying && currentSource === mp3Episode ? "Pause" : "Play" }}
@@ -226,10 +227,12 @@ function formatTime(seconds: number) {
     background-color: #45a049;
   }
 
-  p {
+  p,
+  pre {
     margin-top: 10px;
     font-size: 14px;
-    color: #666;
+    color: #333;
+    font-weight: bolder;
   }
 }
 </style>
