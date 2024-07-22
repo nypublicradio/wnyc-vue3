@@ -185,6 +185,7 @@ const getMediaType = computed(() => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
+  console.log("toggle from emit", e)
   // prevent the player from toggling twice
   if (isEpisodePlaying.value === e) return
   updateUseIsEpisodePlaying(e)

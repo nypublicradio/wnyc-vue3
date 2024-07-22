@@ -1,14 +1,10 @@
 <script setup lang="ts">
+import { RemoteStreamer } from "mp3-hls-streaming"
 // Register elements.
 import "vidstack/player"
 import "vidstack/player/layouts"
 import "vidstack/player/styles/default/layouts/audio.css"
 import "vidstack/player/ui"
-
-//import { MediaRemoteControl } from "vidstack"
-
-//import { isHLSProvider, type MediaCanPlayEvent, type MediaProviderChangeEvent } from 'vidstack';
-//import type { MediaPlayerElement } from "vidstack/elements"
 
 import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
@@ -17,12 +13,9 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
-//import { MediaPlayerElement, defineCustomElement } from "vidstack/elements"
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 
 import type { MediaPlayerElement } from "vidstack/elements"
-
-//defineCustomElement(MediaPlayerElement)
 
 const props = defineProps({
   /**
@@ -448,8 +441,10 @@ const togglePlay = () => {
   if ($mediaPlayerRef.value && isPlayable.value) {
     if (isPlaying.value) {
       $mediaPlayerRef.value.pause()
+      emit("toggle-play", false)
     } else {
       $mediaPlayerRef.value.play()
+      emit("toggle-play", true)
     }
   }
 }
@@ -762,8 +757,107 @@ defineExpose({
     </div>
 
     <Transition name="expand">
-      <div v-show="!isExpanded" class="player-controls" ref="defaultPlayerLocationRef">
-        <!-- <Teleport :disabled="!isExpanded" v-if="isMounted" to="#expandedViewPlayer"> -->
+      <div v-show="!isExpanded" ref="defaultPlayerLocationRef">
+        <!-- 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+
+        <div class="player-controls">
+          <VNewTrackInfo
+            v-bind="{ ...$props, ...$attrs }"
+            :livestream="isLive"
+            :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
+            @description-click="emit('description-click')"
+            @title-click="emit('title-click')"
+            @click="handleClickAnywhere"
+          />
+          <Button
+            :disabled="!isPlayable"
+            class="media-button the-play-button play-button p-button-icon-only"
+            :aria-label="isPlaying ? 'Pause button' : 'Play button'"
+            @click="togglePlay"
+          >
+            <slot v-if="!isPlayable" name="loading">
+              <i class="pi pi-spin pi-spinner"></i>
+            </slot>
+            <slot v-else-if="!isPlaying" name="play"><i class="pi pi-play"></i></slot>
+            <slot v-if="isPlayable && isPlaying" name="pause"
+              ><i class="pi pi-pause"></i
+            ></slot>
+          </Button>
+        </div>
+
+        <!-- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -->
         <media-player
           ref="$mediaPlayerRef"
           class="media-player"
@@ -957,7 +1051,6 @@ defineExpose({
           </media-controls>
           <!-- <media-audio-layout small-when="never"></media-audio-layout> -->
         </media-player>
-        <!-- </Teleport> -->
       </div>
     </Transition>
 
@@ -1177,6 +1270,12 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   video {
     display: none;
   }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 }
 
 //expand-delay
@@ -1308,6 +1407,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   .media-button {
     display: inline-flex;
     position: relative;
+    flex: none;
     justify-content: center;
     align-items: center;
     width: var(--persistent-player-button-width);
@@ -1326,6 +1426,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       width: calc(var(--persistent-player-button-width) * 1.3);
       height: calc(var(--persistent-player-button-height) * 1.3);
     }
+    &:disabled {
+      opacity: 1;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -1334,10 +1437,10 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
   }
 
-  .media-button[data-paused] .pause-icon,
-  .media-button:not([data-paused]) .play-icon {
-    display: none;
-  }
+  // .media-button[data-paused] .pause-icon,
+  // .media-button:not([data-paused]) .play-icon {
+  //   display: none;
+  // }
 
   // SLIDERS
   .media-slider {
