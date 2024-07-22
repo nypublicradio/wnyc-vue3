@@ -4,7 +4,7 @@ import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
 import Next10 from "~/components/icons/Next10.vue"
-import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+//import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
 import {
   useCurrentEpisode,
   useIsEpisodePlaying,
@@ -315,7 +315,7 @@ watch(isNetworkConnected, () => {
 <template>
   <div v-if="currentEpisode">
     <transition name="player">
-      <VNewPersistentPlayer
+      <player-v-new-persistent-player
         v-show="showPlayer"
         ref="playerRef"
         data-style-mode="dark"
@@ -383,7 +383,7 @@ watch(isNetworkConnected, () => {
           <!-- <Button label="Cast" @click="handleCast" /> -->
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
-      </VNewPersistentPlayer>
+      </player-v-new-persistent-player>
     </transition>
   </div>
 

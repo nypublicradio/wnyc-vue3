@@ -101,8 +101,8 @@ onMounted(async () => {
   })
   await RemoteStreamer.addListener("play", (e) => {
     console.log("playing", e)
-    isBuffering.value = false
     isPlaying.value = true
+    isBuffering.value = false
   })
 
   await RemoteStreamer.addListener("pause", (e) => {
@@ -110,8 +110,8 @@ onMounted(async () => {
     isPlaying.value = false
   })
 
-  await RemoteStreamer.addListener("buffering", () => {
-    console.log("buffering in JS")
+  await RemoteStreamer.addListener("buffering", (e) => {
+    console.log("buffering in JS", e)
     if (!isPlaying.value) {
       isBuffering.value = true
     }
@@ -136,6 +136,7 @@ async function togglePlay(source: string) {
   } else {
     if (currentSource.value !== source) {
       console.log("stop, play and set current source")
+      isBuffering.value = true
       await RemoteStreamer.stop()
       currentSource.value = source
       await RemoteStreamer.play({ url: source })
