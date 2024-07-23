@@ -78,6 +78,10 @@ const skipTime = 10
 const route = useRoute()
 
 let delay = 250
+/* ==== */
+const currentTime = ref(null)
+const isError = ref(null)
+const isBuffering = ref(false)
 
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
@@ -104,7 +108,7 @@ const switchEpisode = async (val) => {
   //separagte delay for the media session to init
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
+    //initMediaSession(currentEpisode.value, skipTime)
   }, 1000)
 }
 
@@ -170,14 +174,15 @@ const getMediaType = computed(() => {
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
   console.log("toggle from emit", e)
-  console.log("isEpisodePlaying.value", isEpisodePlaying.value)
 
-  if (isEpisodePlaying.value) {
-    await RemoteStreamer.pause()
-    console.log("paused")
-  } else {
+  if (e) {
     await RemoteStreamer.resume()
+    isEpisodePlaying.value = true
     console.log("resuming")
+  } else {
+    await RemoteStreamer.pause()
+    isEpisodePlaying.value = false
+    console.log("paused")
   }
 
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
@@ -308,9 +313,38 @@ watch(isNetworkConnected, () => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 */
-const isError = ref(null)
-const isBuffering = ref(false)
+
 onMounted(async () => {
   await RemoteStreamer.addListener("error", (err) => {
     isError.value = err
@@ -319,7 +353,7 @@ onMounted(async () => {
     //currentTime.value = data.currentTime
   })
   await RemoteStreamer.addListener("play", (e) => {
-    console.log("playing", e)
+    console.log("playing in JS", e)
     isEpisodePlaying.value = true
     isBuffering.value = false
   })
@@ -331,14 +365,16 @@ onMounted(async () => {
 
   await RemoteStreamer.addListener("buffering", (e) => {
     console.log("buffering in JS", e)
+    console.log("isEpisodePlaying.value", isEpisodePlaying.value)
     if (!isEpisodePlaying.value) {
       isBuffering.value = true
+    } else {
+      isBuffering.value = false
     }
   })
 
   await RemoteStreamer.addListener("stop", () => {
     console.log("stopped")
-    currentEpisode.value = null
     isEpisodePlaying.value = false
     isBuffering.value = false
     currentTime.value = 0
@@ -391,6 +427,9 @@ function formatTime(seconds) {
         can-click-anywhere
         :marquee="false"
         streamType="unknown"
+        :isBuffering="isBuffering"
+        :isError="isError"
+        :isPlaying="isEpisodePlaying"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">

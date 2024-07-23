@@ -1,10 +1,4 @@
 <script setup lang="ts">
-// Register elements.
-import "vidstack/player"
-import "vidstack/player/layouts"
-import "vidstack/player/styles/default/layouts/audio.css"
-import "vidstack/player/ui"
-
 import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
@@ -293,6 +287,28 @@ const props = defineProps({
     default: 1,
     type: Number,
   },
+
+  /**
+   * audio is loading
+   */
+  isBuffering: {
+    default: false,
+    type: Boolean,
+  },
+  /**
+   * audio has an error
+   */
+  isError: {
+    default: false,
+    type: Boolean,
+  },
+  /**
+   * audio has an error
+   */
+  isPlaying: {
+    default: false,
+    type: Boolean,
+  },
 })
 
 const emit = defineEmits([
@@ -321,13 +337,14 @@ const emit = defineEmits([
 
 //swipe setup
 const playerRef = ref(null)
-const $mediaPlayerRef = ref<MediaPlayerElement>()
 
 //const remote = new MediaRemoteControl()
 const playButtonRef = ref(null)
 const isLive = ref(false)
-const isPlayable = ref(false)
-const isPlaying = ref(false)
+
+const propsIsBuffering = computed(() => props.isBuffering)
+const propsIsPlaying = computed(() => props.isPlaying)
+
 const isPaused = ref(true)
 const playerError = ref("")
 
@@ -437,28 +454,10 @@ onMounted(() => {
 // handle the toggle play event
 const togglePlay = () => {
   // Play or pause the sound.
-  if ($mediaPlayerRef.value && isPlayable.value) {
-    if (isPlaying.value) {
-      //$mediaPlayerRef.value.pause()
-      emit("toggle-play", false)
-    } else {
-      //$mediaPlayerRef.value.play()
-      emit("toggle-play", true)
-    }
-  }
-}
-// exposed method to handle the play
-const play = () => {
-  if ($mediaPlayerRef.value && isPlayable.value) {
-    isPlaying.value = true
-    //$mediaPlayerRef.value.play()
-  }
-}
-// exposed method to handle the pause
-const pause = () => {
-  if ($mediaPlayerRef.value && isPlayable.value) {
-    isPlaying.value = false
-    //$mediaPlayerRef.value.pause()
+  if (propsIsPlaying.value) {
+    emit("toggle-play", false)
+  } else {
+    emit("toggle-play", true)
   }
 }
 
@@ -497,15 +496,15 @@ watch(isExpanded, (e) => {
 
   // hack for the audio player to not pause when the player is appended to the expanded player and back.
   // track if playing on expand toggle
-  const isPlayingDuringToggle = isPlaying.value
+  const isPlayingDuringToggle = propsIsPlaying.value
 
   const delay = e ? 255 : 490
   clearTimeout(timeOutMove)
   timeOutMove = setTimeout(() => {
     if (e) {
-      expandedPlayerLocationRef.value.appendChild($mediaPlayerRef.value)
+      //expandedPlayerLocationRef.value.appendChild($mediaPlayerRef.value)
     } else {
-      defaultPlayerLocationRef.value.appendChild($mediaPlayerRef.value)
+      //defaultPlayerLocationRef.value.appendChild($mediaPlayerRef.value)
     }
 
     setTimeout(() => {
@@ -518,19 +517,19 @@ watch(isExpanded, (e) => {
 
 // exposed method to handle the skip ahead
 const skipAhead = () => {
-  emit("skip-ahead", $mediaPlayerRef.value.currentTime)
+  emit("skip-ahead")
 }
 
 // exposed method to handle the skip back
 const skipBack = () => {
-  emit("skip-back", $mediaPlayerRef.value.currentTime)
+  emit("skip-back")
 }
 
 // cast to google
 const castToGoogleCast = async () => {
   try {
     console.log("request google cast")
-    await $mediaPlayerRef.value.requestGoogleCast()
+    //await $mediaPlayerRef.value.requestGoogleCast()
   } catch (e) {
     console.log("error casting to google cast", e)
     emit("error", e)
@@ -541,7 +540,7 @@ const castToGoogleCast = async () => {
 const castToAirPlay = async () => {
   try {
     console.log("request airplay")
-    await $mediaPlayerRef.value.requestAirPlay()
+    //await $mediaPlayerRef.value.requestAirPlay()
   } catch (e) {
     console.log("error casting to air play", e)
     emit("error", e)
@@ -550,20 +549,16 @@ const castToAirPlay = async () => {
 }
 
 const handleCast = () => {
-  if ($mediaPlayerRef.value) {
-    if (props.platform === "android") {
-      castToGoogleCast()
-    } else {
-      castToAirPlay()
-    }
+  if (props.platform === "android") {
+    castToGoogleCast()
+  } else {
+    castToAirPlay()
   }
 }
 
 // exposed method to handle the mute toggle
 const toggleMute = () => {
-  if ($mediaPlayerRef.value) {
-    $mediaPlayerRef.value.muted = !$mediaPlayerRef.value.muted
-  }
+  //$mediaPlayerRef.value.muted = !$mediaPlayerRef.value.muted
 }
 
 // handles the click anywhere prop. So if the user clicks anywhere on the player, except the buttons, the player will expand or minimize
@@ -581,9 +576,7 @@ const handleClickAnywhere = (e) => {
 }
 
 const jumpToTime = (time: number) => {
-  if ($mediaPlayerRef.value) {
-    $mediaPlayerRef.value.currentTime = time
-  }
+  // $mediaPlayerRef.value.currentTime = time
 }
 
 onMounted(async () => {
@@ -591,14 +584,14 @@ onMounted(async () => {
   window.addEventListener("keydown", (event) => {
     switch (event.code) {
       case "ArrowUp":
-        if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume < 1) {
-          $mediaPlayerRef.value.volume += 0.1
-        }
+        // if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume < 1) {
+        //   $mediaPlayerRef.value.volume += 0.1
+        // }
         break
       case "ArrowDown":
-        if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume > 0) {
-          $mediaPlayerRef.value.volume -= 0.1
-        }
+        // if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume > 0) {
+        //   $mediaPlayerRef.value.volume -= 0.1
+        // }
         break
       default:
         /* code */
@@ -607,120 +600,9 @@ onMounted(async () => {
   })
 
   await nextTick()
-  const instance = document.querySelector("media-player")
-  if (instance) {
-    //subscribe to state changess
-    instance.subscribe(({ playing }) => {
-      if (playing) {
-        emit("toggle-play", true)
-      }
-      isPlaying.value = playing
-    })
-    instance.subscribe(({ paused }) => {
-      if (paused) {
-        emit("toggle-play", false)
-      }
-      isPaused.value = paused
-    })
-    instance.subscribe(({ seeking }) => {
-      if ($mediaPlayerRef.value) {
-        emit("scrub-timeline-change", $mediaPlayerRef.value.currentTime)
-        if ($mediaPlayerRef.value && !seeking) {
-          emit("scrub-timeline-end", $mediaPlayerRef.value.currentTime)
-        }
-      }
-    })
-    instance.subscribe(({ canPlay }) => {
-      isPlayable.value = canPlay
-      emit("is-loading", !canPlay)
-    })
-    instance.subscribe(({ volume }) => {
-      emit("volume-change", volume)
-    })
-    instance.subscribe(({ muted }) => {
-      emit("volume-toggle-mute", muted)
-    })
-    instance.subscribe(({ live }) => {
-      isLive.value = live
-      emit("is-live", live)
-    })
-    instance.subscribe(({ error }) => {
-      playerError.value = error
-      emit("error", error)
-    })
-    instance.subscribe(({ duration }) => {
-      emit("duration", duration)
-    })
-    instance.subscribe(({ currentTime }) => {
-      emit("current-duration", currentTime)
-    })
-    instance.subscribe(({ ended }) => {
-      emit("ended", ended)
-    })
-
-    // Fired when we begin downloading the hls.js library.
-    instance.addEventListener("hls-lib-load-start", (event) => {
-      console.log("HLS library loadStart = ", event)
-    })
-
-    // Fired when the hls.js library has loaded.
-    instance.addEventListener("hls-lib-loaded", (event) => {
-      console.log("HLS library lOADED = ", event)
-    })
-
-    // Fired when the hls.js library fails to download.
-    instance.addEventListener("hls-lib-load-error", (event) => {
-      console.log("HLS library error = ", event)
-      emit("hls-error", event)
-    })
-    // Fired when we begin downloading the hls audio.
-    instance.addEventListener("hls-audio-track-loading", (event) => {
-      console.log("HLS audio loadStart = ", event)
-    })
-
-    // Fired when the hls audio has loaded.
-    instance.addEventListener("hls-audio-track-loaded", (event) => {
-      console.log("HLS audio lOADED = ", event)
-    })
-
-    // Fired when the hls audio fails to download.
-    instance.addEventListener("hls-error", (event) => {
-      console.log("HLS audio error = ", event)
-      emit("hls-error", event)
-    })
-    // add google cast event listener
-    instance.addEventListener("provider-setup", (event) => {
-      const provider = event.detail
-      if (provider?.type === "google-cast") {
-        // Google Cast remote player.
-        provider.player
-        // Google Cast context.
-        provider.cast
-        // Google Cast session.
-        provider.session
-        // Google Cast media info.
-        provider.media
-        // Whether the session belongs to this provider.
-        provider.hasActiveSession
-      }
-    })
-
-    instance.addEventListener("provider-change", (event) => {
-      const provider = event.detail
-      if (provider?.type === "hls") {
-        provider.config = props.hlsConfig
-      }
-    })
-
-    // remote.setTarget($mediaPlayerRef.value)
-    // const player = remote.getPlayer()
-  }
 })
 
-onBeforeUnmount(() => {
-  // destroy the audio
-  $mediaPlayerRef.value?.destroy()
-})
+onBeforeUnmount(() => {})
 
 defineExpose({
   skipAhead,
@@ -730,9 +612,6 @@ defineExpose({
   toggleMute,
   togglePlay,
   jumpToTime,
-  $mediaPlayerRef,
-  play,
-  pause,
 })
 </script>
 
@@ -750,7 +629,7 @@ defineExpose({
         aria-label="maximize player"
         @click="toggleMinimize(!isMinimized)"
       >
-        <img v-if="isPlaying" :src="soundAnimGif" alt="sounds wave animation" />
+        <img v-if="propsIsPlaying" :src="soundAnimGif" alt="sounds wave animation" />
         <slot v-else name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
       </Button>
     </div>
@@ -805,19 +684,20 @@ defineExpose({
             @click="handleClickAnywhere"
           />
           <Button
-            :disabled="!isPlayable"
+            :disabled="propsIsBuffering"
             class="media-button the-play-button play-button p-button-icon-only"
-            :aria-label="isPlaying ? 'Pause button' : 'Play button'"
+            :aria-label="propsIsPlaying ? 'Pause button' : 'Play button'"
             @click="togglePlay"
           >
-            <slot v-if="!isPlayable" name="loading">
+            <slot v-if="propsIsBuffering" name="loading">
               <i class="pi pi-spin pi-spinner"></i>
             </slot>
-            <slot v-else-if="!isPlaying" name="play"><i class="pi pi-play"></i></slot>
-            <slot v-if="isPlayable && isPlaying" name="pause"
-              ><i class="pi pi-pause"></i
+            <slot v-else-if="!propsIsPlaying" name="play"
+              ><i class="pi pi-play"></i
             ></slot>
+            <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
           </Button>
+          buf:{{ propsIsBuffering }} ply:{{ propsIsPlaying }}
         </div>
 
         <!-- 
@@ -857,8 +737,7 @@ defineExpose({
 
 
  -->
-        <media-player
-          ref="$mediaPlayerRef"
+        <!-- <media-player
           class="media-player"
           :title="props.title"
           :src="props.file"
@@ -992,7 +871,7 @@ defineExpose({
                 </media-controls-group>
               </div>
             </div>
-            <!-- What the controls looks like in the expanded view -->
+
             <div v-show="isExpanded" id="expandedControls">
               <media-time-slider
                 v-if="!isLive && isPlayable"
@@ -1048,8 +927,7 @@ defineExpose({
               </div>
             </div>
           </media-controls>
-          <!-- <media-audio-layout small-when="never"></media-audio-layout> -->
-        </media-player>
+        </media-player> -->
       </div>
     </Transition>
 
