@@ -8,8 +8,6 @@ import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 
-import type { MediaPlayerElement } from "vidstack/elements"
-
 const props = defineProps({
   /**
    * autoplay on load
@@ -675,29 +673,60 @@ defineExpose({
          -->
 
         <div class="player-controls">
-          <VNewTrackInfo
-            v-bind="{ ...$props, ...$attrs }"
-            :livestream="isLive"
-            :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
-            @description-click="emit('description-click')"
-            @title-click="emit('title-click')"
-            @click="handleClickAnywhere"
-          />
-          <Button
-            :disabled="propsIsBuffering"
-            class="media-button the-play-button play-button p-button-icon-only"
-            :aria-label="propsIsPlaying ? 'Pause button' : 'Play button'"
-            @click="togglePlay"
+          <div
+            v-if="props.image"
+            class="track-info-image flex-none"
+            :class="[{ hideImageOnMobile: props.hideImageOnMobile }]"
           >
-            <slot v-if="propsIsBuffering" name="loading">
-              <i class="pi pi-spin pi-spinner"></i>
-            </slot>
-            <slot v-else-if="!propsIsPlaying" name="play"
-              ><i class="pi pi-play"></i
-            ></slot>
-            <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
-          </Button>
-          <!-- buf:{{ propsIsBuffering }} ply:{{ propsIsPlaying }} -->
+            <div
+              :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
+              @click="handleClickAnywhere"
+            >
+              <VFlexibleLink
+                class="track-info-image-link"
+                :to="props.titleLink ?? null"
+                raw
+                :title="props.titleLink ?? null"
+                @flexible-link-click="emit('image-click')"
+              >
+                <VImage
+                  :src="props.image"
+                  :width="props.imageSize"
+                  :height="props.imageSize"
+                  :sizes="`xs:${props.imageSize * 2}px`"
+                  :alt-text="props.title"
+                  :ratio="[1, 1]"
+                  role="presentation"
+                />
+              </VFlexibleLink>
+            </div>
+          </div>
+          <div class="flex w-full h-full align-items-center gap-2 px-2">
+            <VNewTrackInfo
+              v-bind="{ ...$props, ...$attrs }"
+              :livestream="isLive"
+              :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
+              @description-click="emit('description-click')"
+              @title-click="emit('title-click')"
+              @click="handleClickAnywhere"
+            />
+            <div></div>
+            <Button
+              ref="playButtonRef"
+              :disabled="propsIsBuffering"
+              class="media-button the-play-button play-button p-button-icon-only"
+              :aria-label="propsIsPlaying ? 'Pause button' : 'Play button'"
+              @click="togglePlay"
+            >
+              <slot v-if="propsIsBuffering" name="loading">
+                <i class="pi pi-spin pi-spinner"></i>
+              </slot>
+              <slot v-else-if="!propsIsPlaying" name="play"
+                ><i class="pi pi-play"></i
+              ></slot>
+              <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
+            </Button>
+          </div>
         </div>
 
         <!-- 
@@ -1151,7 +1180,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   .player-controls {
     display: flex;
     align-items: center;
-    gap: 16px;
   }
 }
 
@@ -1302,6 +1330,14 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     &.media-button-expanded-play {
       width: calc(var(--persistent-player-button-width) * 1.3);
       height: calc(var(--persistent-player-button-height) * 1.3);
+    }
+    &.play-button {
+      .play-icon {
+        width: 17px;
+        height: 17px;
+        margin-top: 1px;
+        margin-left: 4px;
+      }
     }
     &:disabled {
       opacity: 1;

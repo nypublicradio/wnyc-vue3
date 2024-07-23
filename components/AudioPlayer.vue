@@ -538,14 +538,6 @@ html.style-mode-dark .persistent-player {
   }
 
   .persistent-player {
-    .play-icon {
-      .play-icon {
-        width: 17px;
-        height: 17px;
-        margin-top: 5px;
-        margin-left: 2px;
-      }
-    }
     &.expanded {
       bottom: 0;
     }

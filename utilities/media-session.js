@@ -83,7 +83,7 @@ export const initMediaSession = async (episode, skipTime) => {
         artwork: artworkImageArray
     })
 
-    // const mediaProvider = document.querySelector('media-provider')
+    // the HTMLAudioElement is named from the mp3-hls-streaming plugin in the src/web.ts file
     audioElement = document.getElementById('pluginAudioElement')
     audioElement.addEventListener('durationchange', updatePositionState)
     audioElement.addEventListener('seeked', updatePositionState)
@@ -100,13 +100,11 @@ export const initMediaSession = async (episode, skipTime) => {
 
     MediaSession.setActionHandler({ action: 'play' }, async () => {
         audioElement.play()
-        //await RemoteStreamer.resume()
         isEpisodePlaying.value = true
     })
 
     MediaSession.setActionHandler({ action: 'pause' }, async () => {
         audioElement.pause()
-        //await RemoteStreamer.pause()
         isEpisodePlaying.value = false
     })
 
@@ -126,7 +124,7 @@ export const initMediaSession = async (episode, skipTime) => {
 
     MediaSession.setActionHandler({ action: 'stop' }, () => {
         playbackStopped = true
-        //audioElement.pause()
+        audioElement.pause()
         isEpisodePlaying.value = false
     })
 }
