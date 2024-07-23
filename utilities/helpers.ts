@@ -892,7 +892,7 @@ export const togglePlayEpisode = (media, index = 0) => {
       saveRecentlyPlayed(media, mediaTypes.EPISODE)
     }
   }
-  //togglePlayTrigger.value = !togglePlayTrigger.value
+  togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 // css var helper to get the css var value or as pixel value
