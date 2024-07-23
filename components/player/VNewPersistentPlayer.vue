@@ -722,7 +722,7 @@ defineExpose({
               ></slot>
               <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
             </Button>
-            <Slider class="timeline" v-model="currentEpisodeProgress" />
+            <Slider class="timeline non-expanded" v-model="currentEpisodeProgress" />
           </div>
         </div>
 
@@ -1156,6 +1156,18 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         left: 0;
         bottom: 0;
         width: 100%;
+        background: var(--persistent-player-slider-buffer);
+        .p-slider-range {
+          background: var(--persistent-player-slider-progress);
+        }
+        &.non-expanded {
+          pointer-events: none;
+          height: 2px;
+          margin: 0;
+          .p-slider-handle {
+            display: none;
+          }
+        }
       }
     }
   }
