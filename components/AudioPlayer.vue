@@ -1,4 +1,5 @@
 <script setup>
+import { RemoteStreamer } from "mp3-hls-streaming"
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
@@ -75,27 +76,8 @@ const playerHeight = ref(`${audioPlayerHeight}px`)
 const skipTime = 10
 
 const route = useRoute()
-// once flag to prevent the media session from initing multiple times
-let onceMediaSessionFlag = true
 
-/*function that updated the global useIsEpisodePlaying */
-const updateUseIsEpisodePlaying = async (e) => {
-  isEpisodePlaying.value = e
-
-  // HACK: for some reason the media session does not show up on initial play, so we have to toggle the play button twice to somehow enable the initial media session to show up. It is not needed for subsequent plays, hence the once flag
-  if (onceMediaSessionFlag) {
-    onceMediaSessionFlag = false
-    await nextTick()
-    playerRef.value.togglePlay()
-    setTimeout(async () => {
-      await nextTick()
-      playerRef.value.togglePlay()
-      await nextTick()
-      // initiallizes the media session in ~/utilities/media-session.js
-      initMediaSession(currentEpisode.value, skipTime)
-    }, 1500)
-  }
-}
+let delay = 250
 
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
@@ -106,11 +88,15 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
-let delay = 250
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
-const switchEpisode = () => {
+const switchEpisode = async (val) => {
+  console.log("val = ", val)
   isNewEpisode.value = true
   showPlayer.value = false
+  await RemoteStreamer.stop()
+  isBuffering.value = true
+  currentEpisode.value = val
+  await RemoteStreamer.play({ url: val.audio })
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
@@ -124,10 +110,8 @@ const switchEpisode = () => {
 
 watch(currentEpisode, (val) => {
   if (val !== null) {
-    switchEpisode()
+    switchEpisode(val)
   }
-  //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
-  //remotePlayer = remoteControl.getPlayer()
 })
 
 watch(togglePlayTrigger, async () => {
@@ -186,9 +170,16 @@ const getMediaType = computed(() => {
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
   console.log("toggle from emit", e)
-  // prevent the player from toggling twice
-  if (isEpisodePlaying.value === e) return
-  updateUseIsEpisodePlaying(e)
+  console.log("isEpisodePlaying.value", isEpisodePlaying.value)
+
+  if (isEpisodePlaying.value) {
+    await RemoteStreamer.pause()
+    console.log("paused")
+  } else {
+    await RemoteStreamer.resume()
+    console.log("resuming")
+  }
+
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
   if (isNewEpisode.value) {
     eventType = "play"
@@ -202,6 +193,7 @@ const togglePlayHere = async (e) => {
   if (!isInitialPlay.value) {
     trackAudioEvent(eventType, getMediaType.value, getTitle.value, getDescription.value)
   }
+  isEpisodePlaying.value = e
   isNewEpisode.value = false
 }
 
@@ -245,12 +237,6 @@ const getConfiguredAudioUrl = computed(() => {
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
-  // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player
-  // it hs to be on a delay, because then the media session artwork image does not show up sometimes
-
-  setTimeout(() => {
-    //(currentEpisode.value, skipTime)
-  }, 1500)
 }
 
 // function that handles the error event from the persistent player emit
@@ -311,6 +297,59 @@ watch(isNetworkConnected, () => {
     }, 1500)
   }
 })
+
+/*
+
+
+
+
+
+
+
+
+
+*/
+const isError = ref(null)
+const isBuffering = ref(false)
+onMounted(async () => {
+  await RemoteStreamer.addListener("error", (err) => {
+    isError.value = err
+  })
+  await RemoteStreamer.addListener("timeUpdate", (data) => {
+    //currentTime.value = data.currentTime
+  })
+  await RemoteStreamer.addListener("play", (e) => {
+    console.log("playing", e)
+    isEpisodePlaying.value = true
+    isBuffering.value = false
+  })
+
+  await RemoteStreamer.addListener("pause", (e) => {
+    console.log("paused", e)
+    isEpisodePlaying.value = false
+  })
+
+  await RemoteStreamer.addListener("buffering", (e) => {
+    console.log("buffering in JS", e)
+    if (!isEpisodePlaying.value) {
+      isBuffering.value = true
+    }
+  })
+
+  await RemoteStreamer.addListener("stop", () => {
+    console.log("stopped")
+    currentEpisode.value = null
+    isEpisodePlaying.value = false
+    isBuffering.value = false
+    currentTime.value = 0
+  })
+})
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = Math.floor(seconds % 60)
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+}
 </script>
 
 <template>

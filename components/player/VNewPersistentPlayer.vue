@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RemoteStreamer } from "mp3-hls-streaming"
 // Register elements.
 import "vidstack/player"
 import "vidstack/player/layouts"
@@ -440,10 +439,10 @@ const togglePlay = () => {
   // Play or pause the sound.
   if ($mediaPlayerRef.value && isPlayable.value) {
     if (isPlaying.value) {
-      $mediaPlayerRef.value.pause()
+      //$mediaPlayerRef.value.pause()
       emit("toggle-play", false)
     } else {
-      $mediaPlayerRef.value.play()
+      //$mediaPlayerRef.value.play()
       emit("toggle-play", true)
     }
   }
@@ -452,14 +451,14 @@ const togglePlay = () => {
 const play = () => {
   if ($mediaPlayerRef.value && isPlayable.value) {
     isPlaying.value = true
-    $mediaPlayerRef.value.play()
+    //$mediaPlayerRef.value.play()
   }
 }
 // exposed method to handle the pause
 const pause = () => {
   if ($mediaPlayerRef.value && isPlayable.value) {
     isPlaying.value = false
-    $mediaPlayerRef.value.pause()
+    //$mediaPlayerRef.value.pause()
   }
 }
 
@@ -511,7 +510,7 @@ watch(isExpanded, (e) => {
 
     setTimeout(() => {
       if (isPlayingDuringToggle) {
-        $mediaPlayerRef.value?.play()
+        //$mediaPlayerRef.value?.play()
       }
     }, 500)
   }, delay)
