@@ -1,8 +1,9 @@
 import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
-import { useIsNetworkConnected } from "~/composables/states"
+import { useIsNetworkConnected, useIsEpisodePlaying } from "~/composables/states"
 import { FALLBACKIMAGE } from "~/composables/globals"
 import axios from 'axios'
+//import { RemoteStreamer } from "mp3-hls-streaming"
 let currentEpisode = null
 let playbackStopped = true
 let audioElement = null
@@ -53,6 +54,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 // initialize the media session with the episode data
 export const initMediaSession = async (episode, skipTime) => {
     const isNetworkConnected = useIsNetworkConnected()
+    const isEpisodePlaying = useIsEpisodePlaying()
     if (!isNetworkConnected.value) return
     currentEpisode = episode
 
@@ -81,9 +83,8 @@ export const initMediaSession = async (episode, skipTime) => {
         artwork: artworkImageArray
     })
 
-    const mediaProvider = document.querySelector('media-provider')
-    audioElement = mediaProvider.querySelector('audio, video')
-
+    // const mediaProvider = document.querySelector('media-provider')
+    audioElement = document.getElementById('pluginAudioElement')
     audioElement.addEventListener('durationchange', updatePositionState)
     audioElement.addEventListener('seeked', updatePositionState)
     audioElement.addEventListener('ratechange', updatePositionState)
@@ -97,30 +98,35 @@ export const initMediaSession = async (episode, skipTime) => {
     audioElement.addEventListener('pause', updatePlaybackState)
 
 
-    MediaSession.setActionHandler({ action: 'play' }, () => {
+    MediaSession.setActionHandler({ action: 'play' }, async () => {
         audioElement.play()
+        //await RemoteStreamer.resume()
+        isEpisodePlaying.value = true
     })
 
-    MediaSession.setActionHandler({ action: 'pause' }, () => {
+    MediaSession.setActionHandler({ action: 'pause' }, async () => {
         audioElement.pause()
+        //await RemoteStreamer.pause()
+        isEpisodePlaying.value = false
     })
 
     MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
-        audioElement.currentTime = details.seekTime
+        //audioElement.currentTime = details.seekTime
     })
 
     MediaSession.setActionHandler({ action: 'seekforward' }, () => {
         const seekOffset = skipTime
-        audioElement.currentTime = audioElement.currentTime + seekOffset
+        //audioElement.currentTime = audioElement.currentTime + seekOffset
     })
 
     MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
         const seekOffset = skipTime
-        audioElement.currentTime = audioElement.currentTime - seekOffset
+        //audioElement.currentTime = audioElement.currentTime - seekOffset
     })
 
     MediaSession.setActionHandler({ action: 'stop' }, () => {
         playbackStopped = true
-        audioElement.pause()
+        //audioElement.pause()
+        isEpisodePlaying.value = false
     })
 }

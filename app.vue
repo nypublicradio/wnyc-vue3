@@ -297,7 +297,6 @@ watch(globalError, (error) => {
     </Head>
   </Html>
   <NuxtLayout>
-    <NativeTestAudio />
     <NuxtPage />
   </NuxtLayout>
   <NetworkBanner :connected="isNetworkConnected" />

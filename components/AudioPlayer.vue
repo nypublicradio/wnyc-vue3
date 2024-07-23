@@ -98,9 +98,10 @@ const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
   await RemoteStreamer.stop()
-  isBuffering.value = true
   currentEpisode.value = val
+  isBuffering.value = true
   await RemoteStreamer.play({ url: val.audio })
+
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
@@ -108,7 +109,7 @@ const switchEpisode = async (val) => {
   //separagte delay for the media session to init
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
-    //initMediaSession(currentEpisode.value, skipTime)
+    initMediaSession(currentEpisode.value, skipTime)
   }, 1000)
 }
 
@@ -175,14 +176,13 @@ const getMediaType = computed(() => {
 const togglePlayHere = async (e) => {
   console.log("toggle from emit", e)
 
-  if (e) {
+  if (e && !isEpisodePlaying.value) {
     await RemoteStreamer.resume()
     isEpisodePlaying.value = true
-    console.log("resuming")
-  } else {
+  }
+  if (!e && isEpisodePlaying.value) {
     await RemoteStreamer.pause()
     isEpisodePlaying.value = false
-    console.log("paused")
   }
 
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
@@ -352,20 +352,21 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     //currentTime.value = data.currentTime
   })
-  await RemoteStreamer.addListener("play", (e) => {
-    console.log("playing in JS", e)
+  await RemoteStreamer.addListener("play", async (e) => {
+    console.log("playing in JS", e, isEpisodePlaying.value)
     isEpisodePlaying.value = true
     isBuffering.value = false
   })
 
   await RemoteStreamer.addListener("pause", (e) => {
-    console.log("paused", e)
-    isEpisodePlaying.value = false
+    if (isEpisodePlaying.value) {
+      console.log("paused", e)
+      isEpisodePlaying.value = false
+    }
   })
 
   await RemoteStreamer.addListener("buffering", (e) => {
-    console.log("buffering in JS", e)
-    console.log("isEpisodePlaying.value", isEpisodePlaying.value)
+    console.log("buffering", e)
     if (!isEpisodePlaying.value) {
       isBuffering.value = true
     } else {

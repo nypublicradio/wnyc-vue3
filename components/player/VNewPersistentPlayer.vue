@@ -697,7 +697,7 @@ defineExpose({
             ></slot>
             <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
           </Button>
-          buf:{{ propsIsBuffering }} ply:{{ propsIsPlaying }}
+          <!-- buf:{{ propsIsBuffering }} ply:{{ propsIsPlaying }} -->
         </div>
 
         <!-- 
