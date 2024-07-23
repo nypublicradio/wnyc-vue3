@@ -112,15 +112,14 @@ watch(currentEpisode, (val) => {
 })
 
 watch(togglePlayTrigger, async () => {
-  await nextTick()
-  if (playerRef.value) playerRef.value.togglePlay()
+  togglePlayHere(!isEpisodePlaying.value)
 })
 
 watch(skipAheadTrigger, () => {
-  if (playerRef.value) playerRef.value.skipAhead()
+  RemoteStreamer.seekTo({ position: currentEpisodeProgress.value + skipTime })
 })
 watch(skipBackTrigger, () => {
-  if (playerRef.value) playerRef.value.skipBack()
+  RemoteStreamer.seekTo({ position: currentEpisodeProgress.value - skipTime })
 })
 // watch(
 //   playerSeek,
@@ -398,7 +397,7 @@ function formatTime(seconds) {
         :show-download="false"
         :show-volume="false"
         :hide-download-mobile="true"
-        :show-skip="isPlayerExpanded"
+        :show-skip="!isPlayerExpanded"
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"
@@ -406,8 +405,6 @@ function formatTime(seconds) {
           templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
         "
         :file="getConfiguredAudioUrl"
-        :skipAheadTime="skipTime"
-        :skipBackTime="skipTime"
         :nativeHLS="true"
         :show-cast="isNetworkConnected && devicePlatform !== null"
         :platform="devicePlatform"

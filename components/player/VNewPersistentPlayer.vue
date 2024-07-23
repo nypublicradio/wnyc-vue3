@@ -231,20 +231,6 @@ const props = defineProps({
     type: Boolean,
   },
   /**
-   * skip ahead time
-   */
-  skipAheadTime: {
-    default: 15,
-    type: Number,
-  },
-  /**
-   * skip back time
-   */
-  skipBackTime: {
-    default: 15,
-    type: Number,
-  },
-  /**
    * radio station name
    */
   station: {
@@ -448,11 +434,7 @@ onMounted(() => {
 // handle the toggle play event
 const togglePlay = () => {
   // Play or pause the sound.
-  if (isEpisodePlaying.value) {
-    emit("toggle-play", false)
-  } else {
-    emit("toggle-play", true)
-  }
+  emit("toggle-play", !isEpisodePlaying.value)
 }
 
 // exposed method to handle the minimize toggle
@@ -512,11 +494,13 @@ watch(isExpanded, (e) => {
 // exposed method to handle the skip ahead
 const skipAhead = () => {
   emit("skip-ahead")
+  skipAheadTrigger.value = !skipAheadTrigger.value
 }
 
 // exposed method to handle the skip back
 const skipBack = () => {
   emit("skip-back")
+  skipBackTrigger.value = !skipBackTrigger.value
 }
 
 // cast to google
@@ -707,12 +691,23 @@ defineExpose({
               @title-click="emit('title-click')"
               @click="handleClickAnywhere"
             />
+            <Transition name="skipBtnL">
+              <Button
+                v-if="props.showSkip && !isLive && !isStreamLoading"
+                class="media-button flex-none p-button-icon-only"
+                severity="secondary"
+                @click="skipBack"
+              >
+                <slot name="skipBack"><i class="pi pi-undo"></i></slot>
+              </Button>
+            </Transition>
             <Button
               ref="playButtonRef"
               :disabled="isStreamLoading"
-              class="media-button the-play-button play-button p-button-icon-only"
+              class="media-button play-button p-button-icon-only"
               :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
               @click="togglePlay"
+              severity="secondary"
             >
               <slot v-if="isStreamLoading" name="loading">
                 <i class="pi pi-spin pi-spinner"></i>
@@ -722,6 +717,16 @@ defineExpose({
               ></slot>
               <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
             </Button>
+            <Transition name="skipBtnR">
+              <Button
+                v-if="props.showSkip && !isLive && !isStreamLoading"
+                class="media-button flex-none p-button-icon-only p-button-secondary"
+                severity="secondary"
+                @click="skipAhead"
+              >
+                <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
+              </Button>
+            </Transition>
             <Slider class="timeline non-expanded" v-model="currentEpisodeProgress" />
           </div>
         </div>
@@ -1354,12 +1359,20 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       width: calc(var(--persistent-player-button-width) * 1.3);
       height: calc(var(--persistent-player-button-height) * 1.3);
     }
+    .o-icon {
+      width: 20px;
+      height: 20px;
+    }
     &.play-button {
       .play-icon {
         width: 17px;
         height: 17px;
         margin-top: 1px;
-        margin-left: 4px;
+        margin-left: 3px;
+      }
+      .pause-icon {
+        width: 11px;
+        height: 13px;
       }
     }
     &:disabled {
