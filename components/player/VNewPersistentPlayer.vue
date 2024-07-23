@@ -8,6 +8,25 @@ import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 
+import {
+  useIsEpisodePlaying,
+  useIsStreamLoading,
+  useIsLiveStream,
+  useCurrentEpisodeDuration,
+  useCurrentEpisodeProgress,
+  useSkipAheadTrigger,
+  useSkipBackTrigger,
+} from "~/composables/states"
+
+const isStreamLoading = useIsStreamLoading()
+const isEpisodePlaying = useIsEpisodePlaying()
+const currentEpisodeDuration = useCurrentEpisodeDuration()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
+const isLiveStream = useIsLiveStream()
+const currentEpisode = useCurrentEpisode()
+const skipAheadTrigger = useSkipAheadTrigger()
+const skipBackTrigger = useSkipBackTrigger()
+
 const props = defineProps({
   /**
    * autoplay on load
@@ -285,25 +304,7 @@ const props = defineProps({
     default: 1,
     type: Number,
   },
-
-  /**
-   * audio is loading
-   */
-  isBuffering: {
-    default: false,
-    type: Boolean,
-  },
-  /**
-   * audio has an error
-   */
   isError: {
-    default: false,
-    type: Boolean,
-  },
-  /**
-   * audio has an error
-   */
-  isPlaying: {
     default: false,
     type: Boolean,
   },
@@ -329,8 +330,6 @@ const emit = defineEmits([
   "swipe-down",
   "is-loading",
   "is-live",
-  "duration",
-  "current-duration",
 ])
 
 //swipe setup
@@ -339,9 +338,6 @@ const playerRef = ref(null)
 //const remote = new MediaRemoteControl()
 const playButtonRef = ref(null)
 const isLive = ref(false)
-
-const propsIsBuffering = computed(() => props.isBuffering)
-const propsIsPlaying = computed(() => props.isPlaying)
 
 const isPaused = ref(true)
 const playerError = ref("")
@@ -452,7 +448,7 @@ onMounted(() => {
 // handle the toggle play event
 const togglePlay = () => {
   // Play or pause the sound.
-  if (propsIsPlaying.value) {
+  if (isEpisodePlaying.value) {
     emit("toggle-play", false)
   } else {
     emit("toggle-play", true)
@@ -494,7 +490,7 @@ watch(isExpanded, (e) => {
 
   // hack for the audio player to not pause when the player is appended to the expanded player and back.
   // track if playing on expand toggle
-  const isPlayingDuringToggle = propsIsPlaying.value
+  const isPlayingDuringToggle = isEpisodePlaying.value
 
   const delay = e ? 255 : 490
   clearTimeout(timeOutMove)
@@ -627,7 +623,7 @@ defineExpose({
         aria-label="maximize player"
         @click="toggleMinimize(!isMinimized)"
       >
-        <img v-if="propsIsPlaying" :src="soundAnimGif" alt="sounds wave animation" />
+        <img v-if="isEpisodePlaying" :src="soundAnimGif" alt="sounds wave animation" />
         <slot v-else name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
       </Button>
     </div>
@@ -701,7 +697,8 @@ defineExpose({
               </VFlexibleLink>
             </div>
           </div>
-          <div class="flex w-full h-full align-items-center gap-2 px-2">
+
+          <div class="flex h-full w-full align-items-center gap-2 px-2 content">
             <VNewTrackInfo
               v-bind="{ ...$props, ...$attrs }"
               :livestream="isLive"
@@ -710,22 +707,22 @@ defineExpose({
               @title-click="emit('title-click')"
               @click="handleClickAnywhere"
             />
-            <div></div>
             <Button
               ref="playButtonRef"
-              :disabled="propsIsBuffering"
+              :disabled="isStreamLoading"
               class="media-button the-play-button play-button p-button-icon-only"
-              :aria-label="propsIsPlaying ? 'Pause button' : 'Play button'"
+              :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
               @click="togglePlay"
             >
-              <slot v-if="propsIsBuffering" name="loading">
+              <slot v-if="isStreamLoading" name="loading">
                 <i class="pi pi-spin pi-spinner"></i>
               </slot>
-              <slot v-else-if="!propsIsPlaying" name="play"
+              <slot v-else-if="!isEpisodePlaying" name="play"
                 ><i class="pi pi-play"></i
               ></slot>
               <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
             </Button>
+            <Slider class="timeline" v-model="currentEpisodeProgress" />
           </div>
         </div>
 
@@ -1147,6 +1144,22 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
   }
 
+  .player-controls {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    .content {
+      position: relative;
+      height: 100%;
+      .timeline {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+      }
+    }
+  }
+
   .expanded-view {
     padding-top: env(safe-area-inset-top);
     position: relative;
@@ -1178,8 +1191,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   .player-controls {
-    display: flex;
-    align-items: center;
   }
 }
 

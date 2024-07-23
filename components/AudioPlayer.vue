@@ -42,15 +42,7 @@ import "vidstack/bundle"
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
 const device = useDevice()
-// if (process.client) {
-//   import("~/utilities/media-session.js").then((module) => {
-//     // Use your module here
-//     console.log("after load")
-//   })
-// }
 
-//const remoteControl = new MediaRemoteControl()
-//let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -99,7 +91,7 @@ const switchEpisode = async (val) => {
   showPlayer.value = false
   await RemoteStreamer.stop()
   currentEpisode.value = val
-  isBuffering.value = true
+  isStreamLoading.value = true
   await RemoteStreamer.play({ url: val.audio })
 
   setTimeout(() => {
@@ -109,7 +101,7 @@ const switchEpisode = async (val) => {
   //separagte delay for the media session to init
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
+    //initMediaSession(currentEpisode.value, skipTime)
   }, 1000)
 }
 
@@ -351,11 +343,13 @@ onMounted(async () => {
   })
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     //currentTime.value = data.currentTime
+    currentEpisodeProgress.value = data.currentTime
   })
   await RemoteStreamer.addListener("play", async (e) => {
     console.log("playing in JS", e, isEpisodePlaying.value)
     isEpisodePlaying.value = true
-    isBuffering.value = false
+    isStreamLoading.value = false
+    currentEpisodeDuration.value = currentEpisode.value.duration
   })
 
   await RemoteStreamer.addListener("pause", (e) => {
@@ -368,17 +362,18 @@ onMounted(async () => {
   await RemoteStreamer.addListener("buffering", (e) => {
     console.log("buffering", e)
     if (!isEpisodePlaying.value) {
-      isBuffering.value = true
+      isStreamLoading.value = true
     } else {
-      isBuffering.value = false
+      isStreamLoading.value = false
     }
   })
 
   await RemoteStreamer.addListener("stop", () => {
     console.log("stopped")
     isEpisodePlaying.value = false
-    isBuffering.value = false
-    currentTime.value = 0
+    isStreamLoading.value = false
+    //currentTime.value = 0
+    currentEpisodeProgress.value = 0
   })
 })
 
@@ -422,15 +417,12 @@ function formatTime(seconds) {
         @is-live="isLiveStream = $event"
         @is-expanded="handleIsExpanded($event)"
         @duration="currentEpisodeDuration = $event"
-        @current-duration="currentEpisodeProgress = $event"
         @ended="episodeEnded"
         @error="handleError"
         can-click-anywhere
         :marquee="false"
         streamType="unknown"
-        :isBuffering="isBuffering"
         :isError="isError"
-        :isPlaying="isEpisodePlaying"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
