@@ -42,11 +42,13 @@ const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
 const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
 const isLiveStream = computed(() => props.isLiveStream)
 
-const getEpisodeProgressPercentage = computed(() => {
-  if (currentEpisodeDuration.value === 0) {
-    return 0
+const progress = ref(currentEpisodeDuration.value)
+onUpdated(() => {
+  if (!isDragging.value) {
+    progress.value = Math.floor(
+      (props.currentEpisodeProgress / props.currentEpisodeDuration) * 100
+    )
   }
-  return Math.floor((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
 })
 
 const formatTime = (seconds) => {
@@ -61,30 +63,16 @@ const handleDragging = (value) => {
   isDragging.value = true
   jumpToValue.value = value
   progress.value = value
-
-  console.log("dragging:", value)
 }
 const handleDragEnd = (data) => {
   emit("scrub-timeline-end", data.value)
   isDragging.value = false
   progress.value = data.value
-
-  console.log("drag ended:", data.value)
 }
 const handleClick = (value) => {
   emit("scrub-timeline-click", jumpToValue.value)
-  console.log("click:")
   handleDragEnd({ value: jumpToValue.value })
 }
-
-const progress = ref(currentEpisodeDuration.value)
-onUpdated(() => {
-  if (!isDragging.value) {
-    progress.value = Math.floor(
-      (props.currentEpisodeProgress / props.currentEpisodeDuration) * 100
-    )
-  }
-})
 </script>
 
 <template>

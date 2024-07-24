@@ -19,7 +19,6 @@ import {
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
-  //usePlayerSeek,
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
@@ -51,7 +50,6 @@ const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
-//const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
@@ -68,10 +66,7 @@ const skipTime = 10
 const route = useRoute()
 
 let delay = 250
-/* ==== */
-const currentTime = ref(null)
 const isError = ref(null)
-const isBuffering = ref(false)
 
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
@@ -128,15 +123,6 @@ watch(skipAheadTrigger, () => {
 watch(skipBackTrigger, () => {
   handleSkipTo(currentEpisodeProgress.value - skipTime)
 })
-// watch(
-//   playerSeek,
-//   (e) => {
-//     if (playerRef.value) {
-//       playerRef.value.scrubTimelineEnd(e.time)
-//     }
-//   },
-//   { deep: true }
-// )
 
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
@@ -304,48 +290,6 @@ const handleSkipAhead = (e) => {
 const handleSkipBack = (e) => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
 
 onMounted(async () => {
   await RemoteStreamer.addListener("error", (err) => {
