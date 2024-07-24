@@ -309,7 +309,6 @@ const emit = defineEmits([
   "image-click",
   "description-click",
   "title-click",
-  "ended",
   "is-minimized",
   "is-expanded",
   "swipe-up",
@@ -534,6 +533,13 @@ const jumpToTime = (time: number) => {
   // $mediaPlayerRef.value.currentTime = time
 }
 
+const getEpisodeProgressPercentage = computed(() => {
+  if (currentEpisodeDuration.value === 0) {
+    return 0
+  }
+  return Math.floor((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
+})
+
 onMounted(async () => {
   // keyboard accessibility
   window.addEventListener("keydown", (event) => {
@@ -670,7 +676,7 @@ defineExpose({
             />
             <Transition name="skipBtnL">
               <Button
-                v-if="props.showSkip && !isLive && !isStreamLoading"
+                v-if="props.showSkip && !isLive"
                 class="media-button flex-none p-button-icon-only"
                 severity="secondary"
                 @click="skipBack"
@@ -696,7 +702,7 @@ defineExpose({
             </Button>
             <Transition name="skipBtnR">
               <Button
-                v-if="props.showSkip && !isLive && !isStreamLoading"
+                v-if="props.showSkip && !isLive"
                 class="media-button flex-none p-button-icon-only p-button-secondary"
                 severity="secondary"
                 @click="skipAhead"
@@ -704,7 +710,11 @@ defineExpose({
                 <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
               </Button>
             </Transition>
-            <Slider class="timeline non-expanded" v-model="currentEpisodeProgress" />
+            {{ getEpisodeProgressPercentage }}
+            <Slider
+              class="timeline non-expanded"
+              v-model="getEpisodeProgressPercentage"
+            />
           </div>
         </div>
 

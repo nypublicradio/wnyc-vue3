@@ -260,20 +260,17 @@ const handleError = (e) => {
 
 /*function that fires when the episode has ended/completed */
 const episodeEnded = (e) => {
-  // for some reason the event fires on initial load, so we need to check if the event is true and unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full estimatedDuration
-  if (e && currentEpisodeProgress.value > currentEpisode.value.estimatedDuration - 5) {
-    if (isPlayerExpanded.value) {
-      playerRef.value.toggleExpanded()
-      setTimeout(() => {
-        showPlayer.value = false
-        currentEpisode.value = null
-      }, 500)
-    } else {
+  if (isPlayerExpanded.value) {
+    playerRef.value.toggleExpanded()
+    setTimeout(() => {
       showPlayer.value = false
       currentEpisode.value = null
-    }
-    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+    }, 500)
+  } else {
+    showPlayer.value = false
+    currentEpisode.value = null
   }
+  trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
 // resume the player if the network is connected where they left off
@@ -369,8 +366,10 @@ onMounted(async () => {
     console.log("stopped", e)
     isEpisodePlaying.value = false
     isStreamLoading.value = false
-    //currentTime.value = 0
     currentEpisodeProgress.value = 0
+    if (e.ended) {
+      episodeEnded()
+    }
   })
 })
 
@@ -412,7 +411,6 @@ function formatTime(seconds) {
         @is-live="isLiveStream = $event"
         @is-expanded="handleIsExpanded($event)"
         @duration="currentEpisodeDuration = $event"
-        @ended="episodeEnded"
         @error="handleError"
         can-click-anywhere
         :marquee="false"
