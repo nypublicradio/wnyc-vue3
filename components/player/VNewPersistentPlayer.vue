@@ -576,44 +576,6 @@ defineExpose({
 
     <Transition name="expand">
       <div v-show="!isExpanded">
-        <!-- 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         -->
-
         <div class="flex h-full align-items-center">
           <div
             v-if="props.image"
@@ -697,44 +659,6 @@ defineExpose({
             />
           </div>
         </div>
-
-        <!-- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- -->
       </div>
     </Transition>
 
@@ -1176,112 +1100,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
   }
 
-  // .media-button[data-paused] .pause-icon,
-  // .media-button:not([data-paused]) .play-icon {
-  //   display: none;
-  // }
-
-  // SLIDERS
-  .media-slider {
-    display: inline-flex;
-    align-items: center;
-    width: 100%;
-    height: 40px;
-    position: relative;
-    contain: layout style;
-    outline: none;
-    pointer-events: auto;
-    cursor: pointer;
-    user-select: none;
-    touch-action: none;
-    /** Prevent thumb flowing out of slider (15px = thumb width). */
-    //margin: 0 calc(15px / 2);
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    &.volume-slider {
-      width: 72px;
-    }
-  }
-
-  .media-slider[data-focus] .media-slider-track {
-    box-shadow: var(--media-focus-ring, 0 0 0 3px rgb(78 156 246));
-  }
-
-  .media-slider-track {
-    z-index: 0;
-    position: absolute;
-    width: 100%;
-    height: 6px;
-    top: 50%;
-    left: 0;
-    border-radius: 3px;
-    transform: translateY(-50%) translateZ(0);
-    background-color: var(--persistent-player-slider-bg);
-    //contain: strict;
-  }
-
-  .media-slider-track-fill {
-    z-index: 2;
-    /** above progress. */
-    background-color: var(--persistent-player-slider-progress);
-    width: var(--slider-fill, 0%);
-    will-change: width;
-  }
-
-  .media-slider-progress {
-    z-index: 1;
-    /** above track. */
-    width: var(--slider-progress, 0%);
-    will-change: width;
-    background-color: var(--persistent-player-slider-buffer);
-  }
-
-  .media-slider-thumb {
-    position: absolute;
-    top: 50%;
-    left: var(--slider-fill);
-    //opacity: 0;
-    contain: layout size style;
-    width: 15px;
-    height: 15px;
-    border: 1px solid var(--persistent-player-slider-thumb-border);
-    border-radius: 9999px;
-    background-color: var(--persistent-player-slider-thumb-bg);
-    transform: translate(-50%, -50%) translateZ(0);
-    transition: opacity 0.15s ease-in;
-    pointer-events: none;
-    will-change: left;
-    z-index: 2;
-    /** above track fill. */
-  }
-
-  .media-slider[data-active] .media-slider-thumb {
-    opacity: 1;
-    transition: opacity 0.2s ease-in;
-  }
-
-  .media-slider[data-dragging] .media-slider-thumb {
-    box-shadow: 0 0 0 3px var(--persistent-player-slider-thumb-shadow);
-  }
-
-  // thin disabled slider
-
-  .thin-disabled {
-    &.media-slider {
-      pointer-events: none;
-      height: 2px;
-      margin: 0;
-
-      .media-slider-track {
-        height: 2px;
-        border-radius: 0;
-      }
-      .media-slider-thumb {
-        opacity: 0;
-      }
-    }
-  }
-
   // live button
   .media-live-indicator {
     width: 40px;
@@ -1309,26 +1127,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     letter-spacing: 1.5px;
     padding: 0px 4px;
     transition: color 0.3s ease;
-  }
-
-  //volume button
-  .media-button:not([data-muted]) .mute-icon,
-  .media-button:not([data-state="low"]) .volume-low-icon,
-  .media-button:not([data-state="high"]) .volume-high-icon {
-    display: none;
-  }
-
-  .media-button.volume-btn {
-    @include secondary-button;
-  }
-
-  // time
-  .media-time {
-    font-size: 0.75rem;
-  }
-
-  .vds-google-cast {
-    display: none;
   }
 }
 </style>
