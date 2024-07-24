@@ -69,13 +69,13 @@ const getMarqueeSpeed = computed(() => {
           v-if="props.livestream"
           class="track-info-livestream flex gap-1 align-content-center"
         >
-          <media-live-button class="media-live-button">
+          <!-- <media-live-button class="media-live-button">
             <span class="media-live-button-text">LIVE</span>
-          </media-live-button>
-          <!-- <div class="track-info-livestream-indicator">
+          </media-live-button> -->
+          <div class="track-info-livestream-indicator">
             <span class="track-info-livestream-indicator-text">Live</span>
             <span class="track-info-livestream-indicator-dot pulse" />
-          </div> -->
+          </div>
           <div class="track-info-livestream-station">{{ station }}</div>
         </div>
         <div class="track-info-title">
@@ -123,7 +123,7 @@ const getMarqueeSpeed = computed(() => {
             <div v-else class="track-info-description" v-html="props.description"></div>
           </VFlexibleLink>
         </div>
-        <div
+        <!-- <div
           v-if="!props.livestream"
           class="media-time-group track-info-time"
           :class="[{ hideTimeOnMobile: props.hideTimeOnMobile }]"
@@ -131,7 +131,7 @@ const getMarqueeSpeed = computed(() => {
           <media-time class="media-time" type="current"></media-time>
           <div class="media-time-divider">/</div>
           <media-time class="media-time" type="duration"></media-time>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

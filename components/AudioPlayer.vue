@@ -394,7 +394,7 @@ function formatTime(seconds) {
         :show-download="false"
         :show-volume="false"
         :hide-download-mobile="true"
-        :show-skip="!isPlayerExpanded"
+        :show-skip="isPlayerExpanded"
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"

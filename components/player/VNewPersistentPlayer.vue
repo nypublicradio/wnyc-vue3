@@ -533,13 +533,6 @@ const jumpToTime = (time: number) => {
   // $mediaPlayerRef.value.currentTime = time
 }
 
-const getEpisodeProgressPercentage = computed(() => {
-  if (currentEpisodeDuration.value === 0) {
-    return 0
-  }
-  return Math.floor((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
-})
-
 onMounted(async () => {
   // keyboard accessibility
   window.addEventListener("keydown", (event) => {
@@ -635,7 +628,7 @@ defineExpose({
         
          -->
 
-        <div class="player-controls">
+        <div class="flex h-full align-items-center">
           <div
             v-if="props.image"
             class="track-info-image flex-none"
@@ -665,10 +658,10 @@ defineExpose({
             </div>
           </div>
 
-          <div class="flex h-full w-full align-items-center gap-2 px-2 content">
+          <div class="flex h-full w-full align-items-center gap-2 px-2 relative">
             <VNewTrackInfo
               v-bind="{ ...$props, ...$attrs }"
-              :livestream="isLive"
+              :livestream="isLiveStream"
               :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
               @description-click="emit('description-click')"
               @title-click="emit('title-click')"
@@ -676,7 +669,7 @@ defineExpose({
             />
             <Transition name="skipBtnL">
               <Button
-                v-if="props.showSkip && !isLive"
+                v-if="props.showSkip && !isLiveStream"
                 class="media-button flex-none p-button-icon-only"
                 severity="secondary"
                 @click="skipBack"
@@ -702,7 +695,7 @@ defineExpose({
             </Button>
             <Transition name="skipBtnR">
               <Button
-                v-if="props.showSkip && !isLive"
+                v-if="props.showSkip && !isLiveStream"
                 class="media-button flex-none p-button-icon-only p-button-secondary"
                 severity="secondary"
                 @click="skipAhead"
@@ -710,11 +703,7 @@ defineExpose({
                 <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
               </Button>
             </Transition>
-            {{ getEpisodeProgressPercentage }}
-            <Slider
-              class="timeline non-expanded"
-              v-model="getEpisodeProgressPercentage"
-            />
+            <player-v-timeline minimized />
           </div>
         </div>
 
@@ -811,7 +800,7 @@ defineExpose({
                     <div class="flex h-full align-items-center gap-2 px-2">
                       <VNewTrackInfo
                         v-bind="{ ...$props, ...$attrs }"
-                        :livestream="isLive"
+                        :livestream="isLiveStream"
                         :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
                         @description-click="emit('description-click')"
                         @title-click="emit('title-click')"
@@ -842,7 +831,7 @@ defineExpose({
                       </div>
                       <Transition name="skipBtnL">
                         <media-seek-button
-                          v-if="props.showSkip && !isLive && isPlayable"
+                          v-if="props.showSkip && !isLiveStream && isPlayable"
                           class="media-button flex-none"
                           :seconds="-props.skipBackTime"
                           @click="skipBack"
@@ -868,7 +857,7 @@ defineExpose({
                       </media-play-button>
                       <Transition name="skipBtnR">
                         <media-seek-button
-                          v-if="props.showSkip && !isLive && isPlayable"
+                          v-if="props.showSkip && !isLiveStream && isPlayable"
                           class="media-button flex-none"
                           :seconds="props.skipAheadTime"
                           @click="skipAhead"
@@ -878,7 +867,7 @@ defineExpose({
                       </Transition>
                     </div>
 
-                    <media-time-slider v-if="!isLive" class="media-slider thin-disabled">
+                    <media-time-slider v-if="!isLiveStream" class="media-slider thin-disabled">
                       <div class="media-slider-track">
                         <div class="media-slider-track-fill media-slider-track"></div>
                         <div class="media-slider-progress media-slider-track"></div>
@@ -892,7 +881,7 @@ defineExpose({
 
             <div v-show="isExpanded" id="expandedControls">
               <media-time-slider
-                v-if="!isLive && isPlayable"
+                v-if="!isLiveStream && isPlayable"
                 class="media-slider expanded-slider"
               >
                 <div class="media-slider-track">
@@ -902,7 +891,7 @@ defineExpose({
                 <div class="media-slider-thumb"></div>
               </media-time-slider>
               <div
-                v-if="!isLive && isPlayable"
+                v-if="!isLiveStream && isPlayable"
                 class="media-time-group track-info-time flex justify-content-between w-full -mt-3"
               >
                 <media-time class="media-time" type="current"></media-time>
@@ -912,7 +901,7 @@ defineExpose({
                 class="expanded-buttons flex gap-2 justify-content-center align-items-center"
               >
                 <media-seek-button
-                  v-if="props.showSkip && !isLive && isPlayable"
+                  v-if="props.showSkip && !isLiveStream && isPlayable"
                   class="media-button flex-none"
                   :seconds="-props.skipBackTime"
                   @click="skipBack"
@@ -935,7 +924,7 @@ defineExpose({
                   </media-icon>
                 </media-play-button>
                 <media-seek-button
-                  v-if="props.showSkip && !isLive && isPlayable"
+                  v-if="props.showSkip && !isLiveStream && isPlayable"
                   class="media-button flex-none"
                   :seconds="props.skipAheadTime"
                   @click="skipAhead"
@@ -1018,11 +1007,11 @@ defineExpose({
                 role="presentation"
               />
 
-              <div v-if="isLive" class="flex flex-column gap-2">
+              <div v-if="!isLiveStream" class="flex flex-column gap-2">
                 <div class="live flex gap-2 align-items-center">
-                  <media-live-button data-edge class="media-live-button">
-                    <span class="media-live-button-text">LIVE</span>
-                  </media-live-button>
+                  <div class="media-live-indicator">
+                    <span class="media-live-indicator-text">Live</span>
+                  </div>
                   <div class="text-sm">{{ props.station }}</div>
                 </div>
                 <slot name="expanded-player-title">{{ props.title }}</slot>
@@ -1033,7 +1022,48 @@ defineExpose({
               </div>
             </div>
 
-            <div id="expandedViewPlayer"></div>
+            <div class="expandedViewPlayer mt-5">
+              <player-v-timeline />
+
+              <div class="mt-2 flex justify-content-center align-items-center gap-2">
+                <Transition name="skipBtnL">
+                  <Button
+                    v-if="props.showSkip && !isLiveStream"
+                    class="media-button flex-none p-button-icon-only"
+                    severity="secondary"
+                    @click="skipBack"
+                  >
+                    <slot name="skipBack"><i class="pi pi-undo"></i></slot>
+                  </Button>
+                </Transition>
+                <Button
+                  ref="playButtonRef"
+                  :disabled="isStreamLoading"
+                  class="media-button media-button-expanded-play play-button p-button-icon-only"
+                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+                  @click="togglePlay"
+                  severity="secondary"
+                >
+                  <slot v-if="isStreamLoading" name="loading">
+                    <i class="pi pi-spin pi-spinner"></i>
+                  </slot>
+                  <slot v-else-if="!isEpisodePlaying" name="play"
+                    ><i class="pi pi-play"></i
+                  ></slot>
+                  <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
+                </Button>
+                <Transition name="skipBtnR">
+                  <Button
+                    v-if="props.showSkip && !isLiveStream"
+                    class="media-button flex-none p-button-icon-only p-button-secondary"
+                    severity="secondary"
+                    @click="skipAhead"
+                  >
+                    <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
+                  </Button>
+                </Transition>
+              </div>
+            </div>
           </div>
 
           <slot name="expanded-content"></slot>
@@ -1136,34 +1166,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
   }
 
-  .player-controls {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    .content {
-      position: relative;
-      height: 100%;
-      .timeline {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        background: var(--persistent-player-slider-buffer);
-        .p-slider-range {
-          background: var(--persistent-player-slider-progress);
-        }
-        &.non-expanded {
-          pointer-events: none;
-          height: 2px;
-          margin: 0;
-          .p-slider-handle {
-            display: none;
-          }
-        }
-      }
-    }
-  }
-
   .expanded-view {
     padding-top: env(safe-area-inset-top);
     position: relative;
@@ -1192,9 +1194,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
   video {
     display: none;
-  }
-
-  .player-controls {
   }
 }
 
@@ -1480,7 +1479,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   // live button
-  .media-live-button {
+  .media-live-indicator {
     width: 40px;
     height: 16px;
     display: flex;
@@ -1495,29 +1494,17 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     border: none;
   }
 
-  .media-live-button-text {
-    background-color: #8a8a8a;
+  .media-live-indicator-text {
+    text-transform: uppercase;
+    background-color: var(--red);
     border-radius: 2px;
-    color: #161616;
+    color: #f5f5f5;
     font-family: sans-serif;
     font-size: 9px;
     font-weight: 900;
     letter-spacing: 1.5px;
     padding: 0px 4px;
     transition: color 0.3s ease;
-  }
-
-  .media-live-button[data-focus] {
-    box-shadow: var(--media-focus-ring, 0 0 0 3px var(--primary-color));
-  }
-
-  .media-live-button[data-edge] {
-    cursor: unset;
-  }
-
-  .media-live-button[data-edge] .media-live-button-text {
-    background-color: var(--red, #dc2626);
-    color: var(--media-live-button-edge-color, #f5f5f5);
   }
 
   //volume button
