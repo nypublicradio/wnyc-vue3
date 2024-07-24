@@ -367,8 +367,8 @@ onMounted(async () => {
     }
   })
 
-  await RemoteStreamer.addListener("stop", () => {
-    console.log("stopped")
+  await RemoteStreamer.addListener("stop", (e) => {
+    console.log("stopped", e)
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     //currentTime.value = 0

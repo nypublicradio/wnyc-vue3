@@ -463,32 +463,9 @@ const toggleExpanded = (e) => {
   isExpanded.value = e
 }
 
-const defaultPlayerLocationRef = ref(null)
-const expandedPlayerLocationRef = ref(null)
-let timeOutMove = null
 watch(isExpanded, (e) => {
-  // set expanded contetn scroll position to top
+  // set expanded content scroll position to top
   expandedContentHolder.value.scrollTop = 0
-
-  // hack for the audio player to not pause when the player is appended to the expanded player and back.
-  // track if playing on expand toggle
-  const isPlayingDuringToggle = isEpisodePlaying.value
-
-  const delay = e ? 255 : 490
-  clearTimeout(timeOutMove)
-  timeOutMove = setTimeout(() => {
-    if (e) {
-      //expandedPlayerLocationRef.value.appendChild($mediaPlayerRef.value)
-    } else {
-      //defaultPlayerLocationRef.value.appendChild($mediaPlayerRef.value)
-    }
-
-    setTimeout(() => {
-      if (isPlayingDuringToggle) {
-        //$mediaPlayerRef.value?.play()
-      }
-    }, 500)
-  }, delay)
 })
 
 // exposed method to handle the skip ahead
@@ -613,7 +590,7 @@ defineExpose({
     </div>
 
     <Transition name="expand">
-      <div v-show="!isExpanded" ref="defaultPlayerLocationRef">
+      <div v-show="!isExpanded">
         <!-- 
         
         
@@ -1046,7 +1023,7 @@ defineExpose({
               </div>
             </div>
 
-            <div id="expandedViewPlayer" ref="expandedPlayerLocationRef"></div>
+            <div id="expandedViewPlayer"></div>
           </div>
 
           <slot name="expanded-content"></slot>
