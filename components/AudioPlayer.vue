@@ -372,12 +372,6 @@ onMounted(async () => {
     }
   })
 })
-
-function formatTime(seconds) {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = Math.floor(seconds % 60)
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-}
 </script>
 
 <template>
@@ -387,7 +381,6 @@ function formatTime(seconds) {
         v-show="showPlayer"
         ref="playerRef"
         data-style-mode="dark"
-        :auto-play="true"
         :can-expand="true"
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
@@ -402,20 +395,14 @@ function formatTime(seconds) {
           templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
         "
         :file="getConfiguredAudioUrl"
-        :nativeHLS="true"
         :show-cast="isNetworkConnected && devicePlatform !== null"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
-        @is-loading="isStreamLoading = $event"
-        @is-live="isLiveStream = $event"
         @is-expanded="handleIsExpanded($event)"
-        @duration="currentEpisodeDuration = $event"
         @error="handleError"
         can-click-anywhere
         :marquee="false"
-        streamType="unknown"
-        :isError="isError"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">

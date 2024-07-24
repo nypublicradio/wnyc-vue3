@@ -12,29 +12,17 @@ import {
   useIsEpisodePlaying,
   useIsStreamLoading,
   useIsLiveStream,
-  useCurrentEpisodeDuration,
-  useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
 } from "~/composables/states"
 
 const isStreamLoading = useIsStreamLoading()
 const isEpisodePlaying = useIsEpisodePlaying()
-const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isLiveStream = useIsLiveStream()
-const currentEpisode = useCurrentEpisode()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 
 const props = defineProps({
-  /**
-   * autoplay on load
-   */
-  autoPlay: {
-    default: false,
-    type: Boolean,
-  },
   /**
    * expand the player by clicking anywhere but the control buttons
    */
@@ -127,13 +115,6 @@ const props = defineProps({
     type: Boolean,
   },
   /**
-   * hide the time on mobile container breakpoint
-   */
-  hlsConfig: {
-    default: {},
-    type: Object,
-  },
-  /**
    * left image representing the audio
    */
   image: {
@@ -191,10 +172,6 @@ const props = defineProps({
     default: 0.1,
     type: Number,
   },
-  nativeHLS: {
-    default: true,
-    type: Boolean,
-  },
   /**
    * show the download button
    */
@@ -235,10 +212,6 @@ const props = defineProps({
    */
   station: {
     default: null,
-    type: String,
-  },
-  streamType: {
-    default: "unknown",
     type: String,
   },
   /**
@@ -290,10 +263,6 @@ const props = defineProps({
     default: 1,
     type: Number,
   },
-  isError: {
-    default: false,
-    type: Boolean,
-  },
 })
 
 const emit = defineEmits([
@@ -301,7 +270,6 @@ const emit = defineEmits([
   "volume-toggle-mute",
   "volume-change",
   "error",
-  "hls-error",
   "skip-ahead",
   "skip-back",
   "scrub-timeline-change",
@@ -313,8 +281,6 @@ const emit = defineEmits([
   "is-expanded",
   "swipe-up",
   "swipe-down",
-  "is-loading",
-  "is-live",
 ])
 
 //swipe setup
@@ -322,11 +288,6 @@ const playerRef = ref(null)
 
 //const remote = new MediaRemoteControl()
 const playButtonRef = ref(null)
-const isLive = ref(false)
-
-const isPaused = ref(true)
-const playerError = ref("")
-
 const isMinimized = ref(false)
 const isExpanded = ref(false)
 const isMounted = ref(false)
@@ -744,197 +705,6 @@ defineExpose({
 
 
  -->
-        <!-- <media-player
-          class="media-player"
-          :title="props.title"
-          :src="props.file"
-          :autoplay="props.autoPlay"
-          viewType="audio"
-          load="eager"
-          :volume="props.volume"
-          :loop="props.loop"
-          :streamType="props.streamType"
-          keep-alive
-          :preferNativeHLS="props.nativeHLS"
-          playsinline
-        >
-          <media-provider :controls="false" playsinline></media-provider>
-
-          <media-controls data-visible>
-            <div
-              v-if="!isExpanded"
-              class="flex w-full"
-              :style="`height:${props.imageSize}px`"
-            >
-              <div
-                v-if="props.image"
-                class="track-info-image flex-none"
-                :class="[{ hideImageOnMobile: props.hideImageOnMobile }]"
-              >
-                <div
-                  :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
-                  @click="handleClickAnywhere"
-                >
-                  <VFlexibleLink
-                    class="track-info-image-link"
-                    :to="props.titleLink ?? null"
-                    raw
-                    :title="props.titleLink ?? null"
-                    @flexible-link-click="emit('image-click')"
-                  >
-                    <VImage
-                      :src="props.image"
-                      :width="props.imageSize"
-                      :height="props.imageSize"
-                      :sizes="`xs:${props.imageSize * 2}px`"
-                      :alt-text="props.title"
-                      :ratio="[1, 1]"
-                      role="presentation"
-                    />
-                  </VFlexibleLink>
-                </div>
-              </div>
-              <div class="w-full">
-                <media-controls-group>
-                  <div class="flex flex-column h-full justify-content-between">
-                    <div class="flex h-full align-items-center gap-2 px-2">
-                      <VNewTrackInfo
-                        v-bind="{ ...$props, ...$attrs }"
-                        :livestream="isLiveStream"
-                        :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
-                        @description-click="emit('description-click')"
-                        @title-click="emit('title-click')"
-                        @click="handleClickAnywhere"
-                      />
-                      <div class="flex gap-1" v-if="props.showVolume">
-                        <media-volume-slider class="media-slider volume-slider flex-none">
-                          <div class="media-slider-track">
-                            <div class="media-slider-track-fill media-slider-track"></div>
-                          </div>
-                          <div class="media-slider-thumb"></div>
-                        </media-volume-slider>
-                        <media-mute-button class="volume-btn media-button flex-none">
-                          <div type="mute" class="mute-icon">
-                            <slot name="mute"><i class="pi pi-volume-off"></i></slot>
-                          </div>
-                          <div type="volume-low" class="volume-low-icon">
-                            <slot name="volume-low"
-                              ><i class="pi pi-volume-down"></i
-                            ></slot>
-                          </div>
-                          <div type="volume-high" class="volume-high-icon">
-                            <slot name="volume-high"
-                              ><i class="pi pi-volume-up"></i
-                            ></slot>
-                          </div>
-                        </media-mute-button>
-                      </div>
-                      <Transition name="skipBtnL">
-                        <media-seek-button
-                          v-if="props.showSkip && !isLiveStream && isPlayable"
-                          class="media-button flex-none"
-                          :seconds="-props.skipBackTime"
-                          @click="skipBack"
-                        >
-                          <slot name="skipBack"><i class="pi pi-undo"></i></slot>
-                        </media-seek-button>
-                      </Transition>
-                      <media-play-button
-                        ref="playButtonRef"
-                        class="media-button flex-none z-1"
-                        :data-disabled="isPlayable ? null : ''"
-                        :aria-label="isPlaying ? 'pause button' : 'play button'"
-                      >
-                        <media-icon type="play" class="play-icon">
-                          <slot v-if="!isPlayable" name="loading">
-                            <i class="pi pi-spin pi-spinner"></i>
-                          </slot>
-                          <slot v-else name="play"><i class="pi pi-play"></i></slot>
-                        </media-icon>
-                        <media-icon type="pause" class="pause-icon">
-                          <slot name="pause"><i class="pi pi-pause"></i></slot>
-                        </media-icon>
-                      </media-play-button>
-                      <Transition name="skipBtnR">
-                        <media-seek-button
-                          v-if="props.showSkip && !isLiveStream && isPlayable"
-                          class="media-button flex-none"
-                          :seconds="props.skipAheadTime"
-                          @click="skipAhead"
-                        >
-                          <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
-                        </media-seek-button>
-                      </Transition>
-                    </div>
-
-                    <media-time-slider v-if="!isLiveStream" class="media-slider thin-disabled">
-                      <div class="media-slider-track">
-                        <div class="media-slider-track-fill media-slider-track"></div>
-                        <div class="media-slider-progress media-slider-track"></div>
-                      </div>
-                      <div class="media-slider-thumb"></div>
-                    </media-time-slider>
-                  </div>
-                </media-controls-group>
-              </div>
-            </div>
-
-            <div v-show="isExpanded" id="expandedControls">
-              <media-time-slider
-                v-if="!isLiveStream && isPlayable"
-                class="media-slider expanded-slider"
-              >
-                <div class="media-slider-track">
-                  <div class="media-slider-track-fill media-slider-track"></div>
-                  <div class="media-slider-progress media-slider-track"></div>
-                </div>
-                <div class="media-slider-thumb"></div>
-              </media-time-slider>
-              <div
-                v-if="!isLiveStream && isPlayable"
-                class="media-time-group track-info-time flex justify-content-between w-full -mt-3"
-              >
-                <media-time class="media-time" type="current"></media-time>
-                <media-time class="media-time" type="duration"></media-time>
-              </div>
-              <div
-                class="expanded-buttons flex gap-2 justify-content-center align-items-center"
-              >
-                <media-seek-button
-                  v-if="props.showSkip && !isLiveStream && isPlayable"
-                  class="media-button flex-none"
-                  :seconds="-props.skipBackTime"
-                  @click="skipBack"
-                >
-                  <slot name="skipBack"><i class="pi pi-undo"></i></slot>
-                </media-seek-button>
-                <media-play-button
-                  ref="playButtonRef"
-                  class="media-button media-button-expanded-play flex-none"
-                  :data-disabled="isPlayable ? null : ''"
-                >
-                  <media-icon type="play" class="play-icon">
-                    <slot v-if="!isPlayable" name="loading">
-                      <i class="pi pi-spin pi-spinner"></i>
-                    </slot>
-                    <slot v-else name="play"><i class="pi pi-play"></i></slot>
-                  </media-icon>
-                  <media-icon type="pause" class="pause-icon">
-                    <slot name="pause"><i class="pi pi-pause"></i></slot>
-                  </media-icon>
-                </media-play-button>
-                <media-seek-button
-                  v-if="props.showSkip && !isLiveStream && isPlayable"
-                  class="media-button flex-none"
-                  :seconds="props.skipAheadTime"
-                  @click="skipAhead"
-                >
-                  <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
-                </media-seek-button>
-              </div>
-            </div>
-          </media-controls>
-        </media-player> -->
       </div>
     </Transition>
 
@@ -1007,7 +777,7 @@ defineExpose({
                 role="presentation"
               />
 
-              <div v-if="!isLiveStream" class="flex flex-column gap-2">
+              <div v-if="isLiveStream" class="flex flex-column gap-2">
                 <div class="live flex gap-2 align-items-center">
                   <div class="media-live-indicator">
                     <span class="media-live-indicator-text">Live</span>
