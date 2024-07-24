@@ -103,6 +103,15 @@ const switchEpisode = async (val) => {
   }, 1000)
 }
 
+const handleSkipTo = (e) => {
+  RemoteStreamer.seekTo({ position: e })
+}
+const handleSeekTo = (e) => {
+  // convert the percentage to the time
+  const time = (e / 100) * currentEpisodeDuration.value
+  RemoteStreamer.seekTo({ position: time })
+}
+
 watch(currentEpisode, (val) => {
   if (val !== null) {
     switchEpisode(val)
@@ -114,10 +123,10 @@ watch(togglePlayTrigger, async () => {
 })
 
 watch(skipAheadTrigger, () => {
-  RemoteStreamer.seekTo({ position: currentEpisodeProgress.value + skipTime })
+  handleSkipTo(currentEpisodeProgress.value + skipTime)
 })
 watch(skipBackTrigger, () => {
-  RemoteStreamer.seekTo({ position: currentEpisodeProgress.value - skipTime })
+  handleSkipTo(currentEpisodeProgress.value - skipTime)
 })
 // watch(
 //   playerSeek,
@@ -343,7 +352,6 @@ onMounted(async () => {
     isError.value = err
   })
   await RemoteStreamer.addListener("timeUpdate", (data) => {
-    //currentTime.value = data.currentTime
     currentEpisodeProgress.value = data.currentTime
   })
   await RemoteStreamer.addListener("play", async (e) => {
@@ -406,6 +414,7 @@ onMounted(async () => {
         @skip-ahead="handleSkipAhead"
         @skip-back="handleSkipBack"
         @error="handleError"
+        @scrub-timeline-end="handleSeekTo($event)"
         can-click-anywhere
         :isStreamLoading
         :isEpisodePlaying

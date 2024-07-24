@@ -1,4 +1,6 @@
-<script lang="ts" setup>
+<script setup>
+import { ref, onUpdated } from "vue"
+import Slider from "primevue/slider"
 const props = defineProps({
   /**
    * autoplay on load
@@ -30,6 +32,12 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits([
+  "scrub-timeline-change",
+  "scrub-timeline-end",
+  "scrub-timeline-click",
+])
+
 const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
 const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
 const isLiveStream = computed(() => props.isLiveStream)
@@ -46,13 +54,52 @@ const formatTime = (seconds) => {
   const remainingSeconds = Math.floor(seconds % 60)
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
 }
+const isDragging = ref(false)
+const jumpToValue = ref(0)
+const handleDragging = (value) => {
+  emit("scrub-timeline-change", value)
+  isDragging.value = true
+  jumpToValue.value = value
+  progress.value = value
+
+  console.log("dragging:", value)
+}
+const handleDragEnd = (data) => {
+  emit("scrub-timeline-end", data.value)
+  isDragging.value = false
+  progress.value = data.value
+
+  console.log("drag ended:", data.value)
+}
+const handleClick = (value) => {
+  emit("scrub-timeline-click", jumpToValue.value)
+  console.log("click:")
+  handleDragEnd({ value: jumpToValue.value })
+}
+
+const progress = ref(currentEpisodeDuration.value)
+onUpdated(() => {
+  if (!isDragging.value) {
+    progress.value = Math.floor(
+      (props.currentEpisodeProgress / props.currentEpisodeDuration) * 100
+    )
+  }
+})
 </script>
 
 <template>
   <Slider
+    v-model="progress"
     class="timeline"
     :class="[{ minimized: props.minimized }]"
-    v-model="getEpisodeProgressPercentage"
+    :min="0.1"
+    :max="100"
+    aria-label="progress slider"
+    title="progress slider"
+    aria-labelledby="progress slider"
+    @slideend="handleDragEnd"
+    @click="handleClick"
+    @update:modelValue="handleDragging"
   />
   <div
     v-if="!isLiveStream && !props.minimized"

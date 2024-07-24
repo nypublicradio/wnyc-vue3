@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onUpdated } from 'vue'
-import Slider from 'primevue/slider'
+import { ref, onUpdated } from "vue"
+import Slider from "primevue/slider"
 
 const props = defineProps({
   progress: {
@@ -10,9 +10,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-  'scrub-timeline-change',
-  'scrub-timeline-end',
-  'timeline-click',
+  "scrub-timeline-change",
+  "scrub-timeline-end",
+  "timeline-click",
 ])
 
 // v-model can't be used with props, so we need to create a ref
@@ -42,18 +42,6 @@ onUpdated(() => {
 <style lang="scss">
 .progress-control {
   width: 100%;
-
-  @media (max-width: $md) {
-    position: absolute;
-    cursor: pointer;
-    min-width: 200px;
-    top: -5px;
-    margin-top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-  }
-
   .p-slider {
     width: 100%;
   }

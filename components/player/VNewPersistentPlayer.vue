@@ -295,6 +295,7 @@ const emit = defineEmits([
   "skip-back",
   "scrub-timeline-change",
   "scrub-timeline-end",
+  "scrub-timeline-click",
   "image-click",
   "description-click",
   "title-click",
@@ -751,6 +752,9 @@ defineExpose({
                 :currentEpisodeProgress
                 :currentEpisodeDuration
                 :isLiveStream
+                @scrub-timeline-end="emit('scrub-timeline-end', $event)"
+                @scrub-timeline-change="emit('scrub-timeline-change', $event)"
+                @scrub-timeline-click="emit('scrub-timeline-click', $event)"
               />
 
               <div class="mt-2 flex justify-content-center align-items-center gap-2">
