@@ -1,10 +1,4 @@
 <script lang="ts" setup>
-import {
-  useCurrentEpisodeDuration,
-  useCurrentEpisodeProgress,
-  useIsLiveStream,
-} from "~/composables/states"
-
 const props = defineProps({
   /**
    * autoplay on load
@@ -13,11 +7,32 @@ const props = defineProps({
     default: false,
     type: Boolean,
   },
+  /**
+   * get if the audio is a live stream or on demand
+   */
+  isLiveStream: {
+    default: false,
+    type: Boolean,
+  },
+  /**
+   * get if the audio duration
+   */
+  currentEpisodeDuration: {
+    default: 0,
+    type: Number,
+  },
+  /**
+   * get if the audio duration progress
+   */
+  currentEpisodeProgress: {
+    default: 0,
+    type: Number,
+  },
 })
 
-const currentEpisodeDuration = useCurrentEpisodeDuration()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
-const isLiveStream = useIsLiveStream()
+const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
+const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
+const isLiveStream = computed(() => props.isLiveStream)
 
 const getEpisodeProgressPercentage = computed(() => {
   if (currentEpisodeDuration.value === 0) {

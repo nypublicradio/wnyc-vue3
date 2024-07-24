@@ -8,21 +8,42 @@ import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 
-import {
-  useIsEpisodePlaying,
-  useIsStreamLoading,
-  useIsLiveStream,
-  useSkipAheadTrigger,
-  useSkipBackTrigger,
-} from "~/composables/states"
-
-const isStreamLoading = useIsStreamLoading()
-const isEpisodePlaying = useIsEpisodePlaying()
-const isLiveStream = useIsLiveStream()
-const skipAheadTrigger = useSkipAheadTrigger()
-const skipBackTrigger = useSkipBackTrigger()
-
 const props = defineProps({
+  /**
+   * get if the stream is buffering / loading
+   */
+  isStreamLoading: {
+    default: false,
+    type: Boolean,
+  },
+  /**
+   * get if the audio is playing
+   */
+  isEpisodePlaying: {
+    default: false,
+    type: Boolean,
+  },
+  /**
+   * get if the audio is a live stream or on demand
+   */
+  isLiveStream: {
+    default: false,
+    type: Boolean,
+  },
+  /**
+   * get if the audio duration
+   */
+  currentEpisodeDuration: {
+    default: 0,
+    type: Number,
+  },
+  /**
+   * get if the audio duration progress
+   */
+  currentEpisodeProgress: {
+    default: 0,
+    type: Number,
+  },
   /**
    * expand the player by clicking anywhere but the control buttons
    */
@@ -190,7 +211,7 @@ const props = defineProps({
    * show the cast button
    */
   showCast: {
-    default: true,
+    default: false,
     type: Boolean,
   },
   /**
@@ -282,6 +303,12 @@ const emit = defineEmits([
   "swipe-up",
   "swipe-down",
 ])
+
+const isStreamLoading = computed(() => props.isStreamLoading)
+const isEpisodePlaying = computed(() => props.isEpisodePlaying)
+const isLiveStream = computed(() => props.isLiveStream)
+const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
+const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
 
 //swipe setup
 const playerRef = ref(null)
@@ -431,13 +458,11 @@ watch(isExpanded, (e) => {
 // exposed method to handle the skip ahead
 const skipAhead = () => {
   emit("skip-ahead")
-  skipAheadTrigger.value = !skipAheadTrigger.value
 }
 
 // exposed method to handle the skip back
 const skipBack = () => {
   emit("skip-back")
-  skipBackTrigger.value = !skipBackTrigger.value
 }
 
 // cast to google
@@ -664,7 +689,12 @@ defineExpose({
                 <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
               </Button>
             </Transition>
-            <player-v-timeline minimized />
+            <player-v-timeline
+              :currentEpisodeProgress
+              :currentEpisodeDuration
+              :isLiveStream
+              minimized
+            />
           </div>
         </div>
 
@@ -793,7 +823,11 @@ defineExpose({
             </div>
 
             <div class="expandedViewPlayer mt-5">
-              <player-v-timeline />
+              <player-v-timeline
+                :currentEpisodeProgress
+                :currentEpisodeDuration
+                :isLiveStream
+              />
 
               <div class="mt-2 flex justify-content-center align-items-center gap-2">
                 <Transition name="skipBtnL">

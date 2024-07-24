@@ -53,10 +53,10 @@ const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
 //const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
 const globalToast = useGlobalToast()
 const isInitialPlay = useIsInitialPlay()
 
@@ -289,6 +289,13 @@ watch(isNetworkConnected, () => {
   }
 })
 
+const handleSkipAhead = (e) => {
+  skipAheadTrigger.value = !skipAheadTrigger.value
+}
+const handleSkipBack = (e) => {
+  skipBackTrigger.value = !skipBackTrigger.value
+}
+
 /*
 
 
@@ -384,9 +391,6 @@ onMounted(async () => {
         :can-expand="true"
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
-        :show-download="false"
-        :show-volume="false"
-        :hide-download-mobile="true"
         :show-skip="isPlayerExpanded"
         :title="getTitle"
         :station="currentEpisode?.name"
@@ -395,14 +399,19 @@ onMounted(async () => {
           templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
         "
         :file="getConfiguredAudioUrl"
-        :show-cast="isNetworkConnected && devicePlatform !== null"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
         @is-expanded="handleIsExpanded($event)"
+        @skip-ahead="handleSkipAhead"
+        @skip-back="handleSkipBack"
         @error="handleError"
         can-click-anywhere
-        :marquee="false"
+        :isStreamLoading
+        :isEpisodePlaying
+        :isLiveStream
+        :currentEpisodeDuration
+        :currentEpisodeProgress
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
