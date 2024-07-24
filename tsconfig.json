@@ -13,7 +13,6 @@
     "types": [
       "node",
       "vitest/globals",
-      "vidstack/vue"
     ]
   }
 }

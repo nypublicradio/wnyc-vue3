@@ -1,5 +1,4 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-import { vite as vidstack } from 'vidstack/plugins';
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/supabase',
@@ -111,14 +110,6 @@ export default defineNuxtConfig({
         ]
       }
     },
-    // added for VidStack players
-    vue: {
-      template: {
-        compilerOptions: {
-          isCustomElement: tag => tag.startsWith('media-'),
-        },
-      },
-    },
     plugins: [
       process.env.SENTRY_ENV === 'development'
         ? null
@@ -129,7 +120,6 @@ export default defineNuxtConfig({
           project: 'wnyc-vue3',
           authToken: process.env.SENTRY_AUTH_TOKEN,
         }),
-      vidstack({ include: /player\// }),
     ],
   },
 
