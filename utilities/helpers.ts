@@ -870,7 +870,7 @@ export const prepForPlayer = (item, index = null) => {
       item.listingImage?.template ??
       item.showImage ??
       getEpisodeFallBackImage(),
-    duration: item.estimatedDuration,
+    duration: item.estimatedDuration || item.duration,
     details: isSegment ? item.segments[index].tease : item.body,
     first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
   }

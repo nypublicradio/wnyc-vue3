@@ -23,7 +23,6 @@ const props = defineProps({
 
 <template>
   <div>
-    <!-- <pre class="text-xs">{{ props.localNewscast }}</pre> -->
     <div class="latest-news-updates grid">
       <div class="col-6">
         <NewsCard
