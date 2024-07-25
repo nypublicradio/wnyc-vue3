@@ -257,6 +257,7 @@ const handleError = (e) => {
 const episodeEnded = (e) => {
   if (isPlayerExpanded.value) {
     playerRef.value.toggleExpanded()
+    handleIsExpanded(false)
     setTimeout(() => {
       showPlayer.value = false
       currentEpisode.value = null
@@ -264,6 +265,7 @@ const episodeEnded = (e) => {
   } else {
     showPlayer.value = false
     currentEpisode.value = null
+    handleIsExpanded(false)
   }
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
@@ -326,6 +328,7 @@ onMounted(async () => {
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
+    // this is work webview detecting the end of the audio
     if (e.ended) {
       episodeEnded()
     }
@@ -352,7 +355,6 @@ onMounted(async () => {
         :can-expand="true"
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
-        :show-skip="isPlayerExpanded"
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"

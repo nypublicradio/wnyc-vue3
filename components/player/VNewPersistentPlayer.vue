@@ -217,10 +217,10 @@ const props = defineProps({
   /**
    * show the skip buttons
    */
-  showSkip: {
-    default: true,
-    type: Boolean,
-  },
+  // showSkip: {
+  //   default: true,
+  //   type: Boolean,
+  // },
   /**
    * show the skip buttons
    */
@@ -616,7 +616,7 @@ defineExpose({
               @title-click="emit('title-click')"
               @click="handleClickAnywhere"
             />
-            <Transition name="skipBtnL">
+            <!-- <Transition name="skipBtnL">
               <Button
                 v-if="props.showSkip && !isLiveStream"
                 class="media-button flex-none p-button-icon-only"
@@ -625,7 +625,7 @@ defineExpose({
               >
                 <slot name="skipBack"><i class="pi pi-undo"></i></slot>
               </Button>
-            </Transition>
+            </Transition> -->
             <Button
               ref="playButtonRef"
               :disabled="isStreamLoading"
@@ -642,7 +642,7 @@ defineExpose({
               ></slot>
               <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
             </Button>
-            <Transition name="skipBtnR">
+            <!-- <Transition name="skipBtnR">
               <Button
                 v-if="props.showSkip && !isLiveStream"
                 class="media-button flex-none p-button-icon-only p-button-secondary"
@@ -651,7 +651,7 @@ defineExpose({
               >
                 <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
               </Button>
-            </Transition>
+            </Transition> -->
             <player-v-timeline
               :currentEpisodeProgress
               :currentEpisodeDuration
@@ -760,7 +760,7 @@ defineExpose({
               <div class="mt-2 flex justify-content-center align-items-center gap-2">
                 <Transition name="skipBtnL">
                   <Button
-                    v-if="props.showSkip && !isLiveStream"
+                    v-if="!isLiveStream"
                     class="media-button flex-none p-button-icon-only"
                     severity="secondary"
                     @click="skipBack"
@@ -786,7 +786,7 @@ defineExpose({
                 </Button>
                 <Transition name="skipBtnR">
                   <Button
-                    v-if="props.showSkip && !isLiveStream"
+                    v-if="!isLiveStream"
                     class="media-button flex-none p-button-icon-only p-button-secondary"
                     severity="secondary"
                     @click="skipAhead"
