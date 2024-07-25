@@ -93,7 +93,7 @@ watch(storyData, () => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = (story, index = 0) => {
-  togglePlayEpisode(story, index)
+  togglePlayEpisode(story, mediaTypes.EPISODE, index)
 }
 </script>
 

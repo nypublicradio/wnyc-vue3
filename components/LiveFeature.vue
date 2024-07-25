@@ -6,7 +6,11 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
 } from "~/composables/states"
-import { templatizePublisherImageUrl, saveRecentlyPlayed } from "~/utilities/helpers"
+import {
+  templatizePublisherImageUrl,
+  saveRecentlyPlayed,
+  togglePlayEpisode,
+} from "~/utilities/helpers"
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -26,10 +30,11 @@ const togglePlayHere = () => {
     currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
   ) {
-    currentEpisode.value = currentEpisodeHolder.value
-    saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
+    togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+    //currentEpisode.value = currentEpisodeHolder.value
+    //saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
+  //togglePlayTrigger.value = !togglePlayTrigger.value
 }
 </script>
 

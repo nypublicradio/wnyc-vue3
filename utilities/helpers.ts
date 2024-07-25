@@ -858,11 +858,13 @@ export const prepForPlayer = (item, index = null) => {
     ? item.file
     : isSegment
       ? item.audio[index]
-      : item.audio
+      : item.audio || item.hls
 
   return {
     ...item,
     file: fileValue,
+    audio: fileValue,
+    hls: item.hls,
     title: isSegment ? item.segments[index].title : item.title,
     image:
       item.image?.template ??
@@ -877,19 +879,22 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = (media, index = 0) => {
+export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   if (typeof media.audio === "string") {
+    console.log('string')
     if (currentEpisode.value?.audio !== media.audio) {
+      console.log('!==')
       currentEpisode.value = prepForPlayer(media)
-      saveRecentlyPlayed(media, mediaTypes.EPISODE)
+      saveRecentlyPlayed(media, type)
     }
   } else {
+    console.log('segment')
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
       currentEpisode.value = prepForPlayer(media, index)
-      saveRecentlyPlayed(media, mediaTypes.EPISODE)
+      saveRecentlyPlayed(media, type)
     }
   }
   togglePlayTrigger.value = !togglePlayTrigger.value

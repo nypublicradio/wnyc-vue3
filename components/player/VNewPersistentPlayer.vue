@@ -13,7 +13,7 @@ const props = defineProps({
    * get if the stream is buffering / loading
    */
   isStreamLoading: {
-    default: false,
+    default: true,
     type: Boolean,
   },
   /**

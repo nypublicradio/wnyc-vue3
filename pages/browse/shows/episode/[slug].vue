@@ -147,7 +147,7 @@ const onMenuChange = (e) => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, index)
+  togglePlayEpisode(epData, mediaTypes.EPISODE, index)
 }
 
 watch(episode, () => {
