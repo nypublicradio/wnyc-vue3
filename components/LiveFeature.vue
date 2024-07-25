@@ -33,8 +33,9 @@ const togglePlayHere = () => {
     togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
     //currentEpisode.value = currentEpisodeHolder.value
     //saveRecentlyPlayed(currentEpisode.value, mediaTypes.LIVE)
+  } else {
+    togglePlayTrigger.value = !togglePlayTrigger.value
   }
-  //togglePlayTrigger.value = !togglePlayTrigger.value
 }
 </script>
 

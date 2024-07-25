@@ -14,6 +14,7 @@ import {
   useAccountPromptSideBar,
   useIsDarkMode,
   useIsNetworkConnected,
+  useIsLiveStream,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -882,6 +883,8 @@ export const prepForPlayer = (item, index = null) => {
 export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
+  const isLiveStream = useIsLiveStream()
+  type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
   if (typeof media.audio === "string") {
     console.log('string')
     if (currentEpisode.value?.audio !== media.audio) {

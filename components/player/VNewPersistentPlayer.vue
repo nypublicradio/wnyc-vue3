@@ -653,6 +653,7 @@ defineExpose({
               </Button>
             </Transition> -->
             <player-v-timeline
+              v-if="!isLiveStream"
               :currentEpisodeProgress
               :currentEpisodeDuration
               :isLiveStream
@@ -749,6 +750,7 @@ defineExpose({
 
             <div class="expandedViewPlayer mt-5">
               <player-v-timeline
+                v-if="!isLiveStream"
                 :currentEpisodeProgress
                 :currentEpisodeDuration
                 :isLiveStream
@@ -1110,7 +1112,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     height: 16px;
     display: flex;
     align-items: center;
-    cursor: pointer;
     /* Browser resets. */
     padding: 0;
     user-select: none;
