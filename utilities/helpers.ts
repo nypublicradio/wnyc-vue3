@@ -885,6 +885,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
   const togglePlayTrigger = useTogglePlayTrigger()
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
+  console.log('media.audio  = ', media.audio)
   if (typeof media.audio === "string") {
     console.log('string')
     if (currentEpisode.value?.audio !== media.audio) {
