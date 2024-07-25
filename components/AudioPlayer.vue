@@ -330,6 +330,15 @@ onMounted(async () => {
       episodeEnded()
     }
   })
+  await RemoteStreamer.addListener("ended", (e) => {
+    console.log("ended", e)
+    isEpisodePlaying.value = false
+    isStreamLoading.value = false
+    currentEpisodeProgress.value = 0
+    if (e.ended) {
+      episodeEnded()
+    }
+  })
 })
 </script>
 
