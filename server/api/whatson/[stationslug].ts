@@ -51,6 +51,7 @@ const formatShowData = (apiResponse: any) => {
 		episodeLink: episodeData ? episodeData.attributes.url : null,
 		episodeBody: episodeData ? episodeData.attributes.body : null,
 		episodeTranscript: episodeData ? episodeData.attributes.transcript : null,
+		audio: apiResponse.data[0].attributes['mobile-mp3'],
 		file: apiResponse.data[0].attributes['mobile-mp3'],
 		hls: apiResponse.data[0].attributes['hls'],
 		id,
