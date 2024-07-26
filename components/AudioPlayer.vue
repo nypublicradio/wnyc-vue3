@@ -1,5 +1,6 @@
 <script setup>
 import { RemoteStreamer } from "mp3-hls-streaming"
+import { Capacitor } from "@capacitor/core"
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
@@ -38,7 +39,6 @@ import { initMediaSession } from "~/utilities/media-session.js"
 
 const { isAndroid, isIos, isChrome } = useDevice()
 const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
-const device = useDevice()
 
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -88,8 +88,7 @@ then we merge it all together and return it to the player as the source for the 
 */
 
 const getConfiguredAudioUrl = computed(() => {
-  const desktop = device.isDesktop || device.isDesktopOrTablet
-  console.log("device = ", device)
+  const desktop = Capacitor.getPlatform() === "web"
   // if it is not the desktop, then we use the hls value, else we use the file value
   const url = !desktop
     ? currentEpisode.value?.hls ||
@@ -98,15 +97,9 @@ const getConfiguredAudioUrl = computed(() => {
       ""
     : currentEpisode.value?.file || currentEpisode.value?.audio || ""
   const hasQuery = hasQueryParams(url)
-  const adID = deviceId.value ?? "0"
+  const adID = deviceId.value.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
-  const thisDevice = device.isAndroid
-    ? "android"
-    : desktop
-    ? "desktop"
-    : device.isIos
-    ? "ios"
-    : "unknown"
+  const thisDevice = Capacitor.getPlatform()
   // update restriction when we have the value from setting panel
   const restriction = "0"
   return `${url}${
@@ -338,7 +331,7 @@ onMounted(async () => {
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
     // this is work webview detecting the end of the audio
-    if (e.ended) {
+    if (e?.ended) {
       episodeEnded()
     }
   })
