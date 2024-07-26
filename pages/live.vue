@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
@@ -60,13 +60,17 @@ const switchStation = async (station) => {
 }
 // handle the toggle play button and tracking
 const togglePlayHere = () => {
-  console.log("togglePlayHere on Live page", currentEpisode.value)
-  if (currentEpisode.value.id !== currentEpisodeHolder.value.id) {
+  console.log("togglePlayHere on Live page")
+  console.log("currentEpisode.value", currentEpisode.value)
+  console.log("currentEpisodeHolder.value", currentEpisodeHolder.value)
+  if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug
-    currentEpisode.value = currentEpisodeHolder.value
+    //currentEpisode.value = currentEpisodeHolder.value
+    togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+  } else {
+    togglePlayTrigger.value = !togglePlayTrigger.value
   }
-  togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 const scrollToActiveStation = () => {
@@ -219,7 +223,7 @@ onMounted(async () => {
     scrollToActiveStation()
   }, 200)
   // updates the stream to the current station
-  await updateLiveStream(currentStreamStation.value, false)
+  await updateLiveStream(currentEpisodeHolder.value.slug, false)
 })
 
 onUnmounted(() => {

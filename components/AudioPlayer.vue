@@ -96,7 +96,7 @@ const getConfiguredAudioUrl = computed(() => {
       ""
     : currentEpisode.value?.file || currentEpisode.value?.audio || ""
   const hasQuery = hasQueryParams(url)
-  const adID = deviceId.value.identifier ?? "0"
+  const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
   const thisDevice = devicePlatform
   // update restriction when we have the value from setting panel
