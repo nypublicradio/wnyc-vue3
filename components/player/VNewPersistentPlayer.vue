@@ -94,13 +94,6 @@ const props = defineProps({
     type: String,
   },
   /**
-   * audio file url
-   */
-  file: {
-    default: null,
-    type: String,
-  },
-  /**
    * hide the description on mobile container breakpoint
    */
   hideDescriptionOnMobile: {

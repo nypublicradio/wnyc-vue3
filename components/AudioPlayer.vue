@@ -77,6 +77,43 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
+
+/*
+the url that comes down from publisher is in currentEpisode.value
+then if we are in the App env, we check if the url has a param(a "?" already)
+then we grab the asID and the restriction value (0 default or 1)
+then we add the user id to the url (0 if not logged in)
+then we detect the device and add it to the url
+then we merge it all together and return it to the player as the source for the request
+*/
+
+const getConfiguredAudioUrl = computed(() => {
+  const desktop = device.isDesktop || device.isDesktopOrTablet
+  console.log("device = ", device)
+  // if it is not the desktop, then we use the hls value, else we use the file value
+  const url = !desktop
+    ? currentEpisode.value?.hls ||
+      currentEpisode.value?.file ||
+      currentEpisode.value?.audio ||
+      ""
+    : currentEpisode.value?.file || currentEpisode.value?.audio || ""
+  const hasQuery = hasQueryParams(url)
+  const adID = deviceId.value ?? "0"
+  const userID = currentUser?.value?.id ?? "0"
+  const thisDevice = device.isAndroid
+    ? "android"
+    : desktop
+    ? "desktop"
+    : device.isIos
+    ? "ios"
+    : "unknown"
+  // update restriction when we have the value from setting panel
+  const restriction = "0"
+  return `${url}${
+    hasQuery ? "&" : "?"
+  }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
+})
+
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
   console.log("val = ", val)
@@ -85,7 +122,8 @@ const switchEpisode = async (val) => {
   await RemoteStreamer.stop()
   currentEpisode.value = val
   isStreamLoading.value = true
-  await RemoteStreamer.play({ url: val.audio })
+  await nextTick()
+  await RemoteStreamer.play({ url: getConfiguredAudioUrl.value })
 
   setTimeout(() => {
     showPlayer.value = true
@@ -193,35 +231,6 @@ const togglePlayHere = async (e) => {
 //playerRef.value.castToGoogleCast()
 //remoteControl.requestGoogleCast()
 //}
-
-/*
-the url that comes down from publisher is in currentEpisode.value
-then if we are in the App env, we check if the url has a param(a "?" already)
-then we grab the asID and the restriction value (0 default or 1)
-then we add the user id to the url (0 if not logged in)
-then we detect the device and add it to the url
-then we merge it all together and return it to the player as the source for the request
-*/
-
-const getConfiguredAudioUrl = computed(() => {
-  const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
-  const hasQuery = hasQueryParams(url)
-  const adID = deviceId.value ?? "0"
-  const userID = currentUser?.value?.id ?? "0"
-  const desktop = device.isDesktop || device.isDesktopOrTablet
-  const thisDevice = device.isAndroid
-    ? "android"
-    : desktop
-    ? "desktop"
-    : device.isIos
-    ? "ios"
-    : "unknown"
-  // update restriction when we have the value from setting panel
-  const restriction = "0"
-  return `${url}${
-    hasQuery ? "&" : "?"
-  }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
-})
 
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
@@ -361,7 +370,6 @@ onMounted(async () => {
         :image="
           templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
         "
-        :file="getConfiguredAudioUrl"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
