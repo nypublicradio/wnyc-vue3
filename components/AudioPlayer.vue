@@ -37,8 +37,7 @@ import {
 
 import { initMediaSession } from "~/utilities/media-session.js"
 
-const { isAndroid, isIos, isChrome } = useDevice()
-const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
+const devicePlatform = Capacitor.getPlatform()
 
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -88,7 +87,7 @@ then we merge it all together and return it to the player as the source for the 
 */
 
 const getConfiguredAudioUrl = computed(() => {
-  const desktop = Capacitor.getPlatform() === "web"
+  const desktop = devicePlatform === "web"
   // if it is not the desktop, then we use the hls value, else we use the file value
   const url = !desktop
     ? currentEpisode.value?.hls ||
@@ -99,7 +98,7 @@ const getConfiguredAudioUrl = computed(() => {
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
-  const thisDevice = Capacitor.getPlatform()
+  const thisDevice = devicePlatform
   // update restriction when we have the value from setting panel
   const restriction = "0"
   return `${url}${
