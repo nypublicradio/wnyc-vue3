@@ -28,13 +28,15 @@ watch(
     // skip initial connected banner if its connected
     if (skipInit && newValue) {
       skipInit = false
+      bgColor.value = newValue ? "var(--success)" : "var(--error)"
+      shouldFadeIn.value = false
       return
     }
     bgColor.value = newValue ? "var(--success)" : "var(--error)"
     if (newValue) {
       shouldFadeIn.value = true
       setTimeout(() => {
-        shouldFadeIn.value = false
+        if (newValue) shouldFadeIn.value = false
       }, 4000)
       refreshData()
     } else {

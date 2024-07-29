@@ -66,11 +66,12 @@ useHead({
 })
 
 // init the Network listener
-await Network.addListener("networkStatusChange", (status) => {
+Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
 })
 // set the initial network status
-isNetworkConnected.value = (await Network.getStatus()).connected
+const initNewtworkStatus = await Network.getStatus()
+isNetworkConnected.value = initNewtworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {

@@ -115,7 +115,19 @@ const switchEpisode = async (val) => {
   currentEpisode.value = val
   isStreamLoading.value = true
   await nextTick()
-  await RemoteStreamer.play({ url: getConfiguredAudioUrl.value })
+
+  await RemoteStreamer.play({
+    url: getConfiguredAudioUrl.value,
+    enableCommandCenter: true,
+    enableCommandCenterSeek: !isLiveStream.value,
+  })
+  await RemoteStreamer.setNowPlayingInfo({
+    title: "titletest",
+    artist: "artist",
+    album: "albummm",
+    imageUrl:
+      "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg",
+  })
 
   setTimeout(() => {
     showPlayer.value = true
@@ -124,7 +136,7 @@ const switchEpisode = async (val) => {
   //separagte delay for the media session to init
   setTimeout(() => {
     // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
+    //initMediaSession(currentEpisode.value, skipTime)
   }, 1000)
 }
 

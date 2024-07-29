@@ -138,10 +138,12 @@ export const initReadOfPreferences = async () => {
     try {
         const { value } = await Preferences.get({ key: localStorageKey })
         val = value ?? "[]"
+        console.log('##################localStorageKey = ', value)
+        return JSON.parse(val ?? "[]")
     } catch (error) {
         console.error("preference read error = ", error)
+        return []
     }
-    return JSON.parse(val ?? "[]")
 }
 
 // initializing the fileSystem, gets called in the setup function of the App.vue
@@ -412,8 +414,8 @@ export const playStoredMp3 = async (file) => {
                 directory: directoryToSaveTo,
             })
             await nextTick()
-            const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
-
+            //const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
+            const savedAudioSrc = audio.uri;
             // get image file
             const image = await Filesystem.getUri({
                 path: `${appDirectory}/${file.id}/${file?.directoryImage?.name}`,
