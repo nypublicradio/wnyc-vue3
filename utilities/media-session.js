@@ -1,9 +1,9 @@
 import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
-import { useIsNetworkConnected, useIsEpisodePlaying } from "~/composables/states"
+import { useIsNetworkConnected, useIsEpisodePlaying, useIsApp } from "~/composables/states"
 import { FALLBACKIMAGE } from "~/composables/globals"
 import axios from 'axios'
-//import { RemoteStreamer } from "mp3-hls-streaming"
+import { RemoteStreamer } from "mp3-hls-streaming"
 let currentEpisode = null
 let playbackStopped = true
 let audioElement = null
@@ -55,6 +55,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 export const initMediaSession = async (episode, skipTime) => {
     const isNetworkConnected = useIsNetworkConnected()
     const isEpisodePlaying = useIsEpisodePlaying()
+    const isApp = useIsApp()
     if (!isNetworkConnected.value) return
     currentEpisode = episode
 
@@ -75,56 +76,64 @@ export const initMediaSession = async (episode, skipTime) => {
         })
     }))
 
-    await nextTick()
-    MediaSession.setMetadata({
-        title: currentEpisode.title,
-        artist: getDate(currentEpisode),
-        album: currentEpisode.showTitle,
-        artwork: artworkImageArray
-    })
+    if (isApp.value) {
+        await RemoteStreamer.setNowPlayingInfo({
+            title: currentEpisode.title,
+            artist: getDate(currentEpisode),
+            album: currentEpisode.showTitle,
+            imageUrl: artworkImageArray[2].src // 512x512 image
+        })
+    } else {
+        MediaSession.setMetadata({
+            title: currentEpisode.title,
+            artist: getDate(currentEpisode),
+            album: currentEpisode.showTitle,
+            artwork: artworkImageArray
+        })
 
-    // the HTMLAudioElement is named from the mp3-hls-streaming plugin in the src/web.ts file
-    audioElement = document.getElementById('pluginAudioElement')
-    audioElement.addEventListener('durationchange', updatePositionState)
-    audioElement.addEventListener('seeked', updatePositionState)
-    audioElement.addEventListener('ratechange', updatePositionState)
-    audioElement.addEventListener('play', updatePositionState)
-    audioElement.addEventListener('pause', updatePositionState)
+        // the HTMLAudioElement is named from the mp3-hls-streaming plugin in the src/web.ts file
+        audioElement = document.getElementById('pluginAudioElement')
+        audioElement.addEventListener('durationchange', updatePositionState)
+        audioElement.addEventListener('seeked', updatePositionState)
+        audioElement.addEventListener('ratechange', updatePositionState)
+        audioElement.addEventListener('play', updatePositionState)
+        audioElement.addEventListener('pause', updatePositionState)
 
-    audioElement.addEventListener('play', () => {
-        playbackStopped = false
-        updatePlaybackState()
-    })
-    audioElement.addEventListener('pause', updatePlaybackState)
+        audioElement.addEventListener('play', () => {
+            playbackStopped = false
+            updatePlaybackState()
+        })
+        audioElement.addEventListener('pause', updatePlaybackState)
 
 
-    MediaSession.setActionHandler({ action: 'play' }, async () => {
-        audioElement.play()
-        isEpisodePlaying.value = true
-    })
+        MediaSession.setActionHandler({ action: 'play' }, async () => {
+            audioElement.play()
+            isEpisodePlaying.value = true
+        })
 
-    MediaSession.setActionHandler({ action: 'pause' }, async () => {
-        audioElement.pause()
-        isEpisodePlaying.value = false
-    })
+        MediaSession.setActionHandler({ action: 'pause' }, async () => {
+            audioElement.pause()
+            isEpisodePlaying.value = false
+        })
 
-    MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
-        //audioElement.currentTime = details.seekTime
-    })
+        MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
+            //audioElement.currentTime = details.seekTime
+        })
 
-    MediaSession.setActionHandler({ action: 'seekforward' }, () => {
-        const seekOffset = skipTime
-        //audioElement.currentTime = audioElement.currentTime + seekOffset
-    })
+        MediaSession.setActionHandler({ action: 'seekforward' }, () => {
+            const seekOffset = skipTime
+            //audioElement.currentTime = audioElement.currentTime + seekOffset
+        })
 
-    MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
-        const seekOffset = skipTime
-        //audioElement.currentTime = audioElement.currentTime - seekOffset
-    })
+        MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
+            const seekOffset = skipTime
+            //audioElement.currentTime = audioElement.currentTime - seekOffset
+        })
 
-    MediaSession.setActionHandler({ action: 'stop' }, () => {
-        playbackStopped = true
-        audioElement.pause()
-        isEpisodePlaying.value = false
-    })
+        MediaSession.setActionHandler({ action: 'stop' }, () => {
+            playbackStopped = true
+            audioElement.pause()
+            isEpisodePlaying.value = false
+        })
+    }
 }

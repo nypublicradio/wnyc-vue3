@@ -121,23 +121,16 @@ const switchEpisode = async (val) => {
     enableCommandCenter: true,
     enableCommandCenterSeek: !isLiveStream.value,
   })
-  await RemoteStreamer.setNowPlayingInfo({
-    title: "titletest",
-    artist: "artist",
-    album: "albummm",
-    imageUrl:
-      "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg",
-  })
 
+  //separate delay for the media session to init
+  //setTimeout(() => {
+  // initiallizes the media session in ~/utilities/media-session.js
+  initMediaSession(currentEpisode.value, skipTime)
+  //}, 1000)
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
   }, delay)
-  //separagte delay for the media session to init
-  setTimeout(() => {
-    // initiallizes the media session in ~/utilities/media-session.js
-    //initMediaSession(currentEpisode.value, skipTime)
-  }, 1000)
 }
 
 const handleSkipTo = (e) => {
