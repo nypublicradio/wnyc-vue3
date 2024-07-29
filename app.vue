@@ -20,11 +20,7 @@ import {
   useIsNetworkConnected,
   useCurrentEpisode,
 } from "~/composables/states"
-import {
-  useBrowserTopColor,
-  useBrowserTopColorDarkMode,
-  PLAYER_SKIP_TIME,
-} from "~/composables/globals"
+import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
@@ -196,7 +192,7 @@ onMounted(async () => {
         console.error(error)
       }
       //update media session
-      initMediaSession(currentEpisode.value, PLAYER_SKIP_TIME)
+      initMediaSession(currentEpisode.value)
     }
   })
 

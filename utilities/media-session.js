@@ -1,7 +1,8 @@
 import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsEpisodePlaying, useIsApp } from "~/composables/states"
-import { FALLBACKIMAGE } from "~/composables/globals"
+import { FALLBACKIMAGE, PLAYER_SKIP_TIME } from "~/composables/globals"
+
 import axios from 'axios'
 import { RemoteStreamer } from "mp3-hls-streaming"
 let currentEpisode = null
@@ -52,7 +53,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 }
 
 // initialize the media session with the episode data
-export const initMediaSession = async (episode, skipTime) => {
+export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => {
     const isNetworkConnected = useIsNetworkConnected()
     const isEpisodePlaying = useIsEpisodePlaying()
     const isApp = useIsApp()

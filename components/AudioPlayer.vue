@@ -122,11 +122,8 @@ const switchEpisode = async (val) => {
     enableCommandCenterSeek: !isLiveStream.value,
   })
 
-  //separate delay for the media session to init
-  //setTimeout(() => {
   // initiallizes the media session in ~/utilities/media-session.js
-  initMediaSession(currentEpisode.value, PLAYER_SKIP_TIME)
-  //}, 1000)
+  initMediaSession(currentEpisode.value)
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
