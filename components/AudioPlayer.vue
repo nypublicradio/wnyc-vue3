@@ -7,6 +7,7 @@ import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
 import Next10 from "~/components/icons/Next10.vue"
 //import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+import { PLAYER_SKIP_TIME } from "~/composables/globals"
 import {
   useCurrentEpisode,
   useIsEpisodePlaying,
@@ -60,7 +61,6 @@ const isInitialPlay = useIsInitialPlay()
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const playerHeight = ref(`${audioPlayerHeight}px`)
-const skipTime = 10
 
 const route = useRoute()
 
@@ -125,7 +125,7 @@ const switchEpisode = async (val) => {
   //separate delay for the media session to init
   //setTimeout(() => {
   // initiallizes the media session in ~/utilities/media-session.js
-  initMediaSession(currentEpisode.value, skipTime)
+  initMediaSession(currentEpisode.value, PLAYER_SKIP_TIME)
   //}, 1000)
   setTimeout(() => {
     showPlayer.value = true
@@ -153,10 +153,10 @@ watch(togglePlayTrigger, async () => {
 })
 
 watch(skipAheadTrigger, () => {
-  handleSkipTo(currentEpisodeProgress.value + skipTime)
+  handleSkipTo(currentEpisodeProgress.value + PLAYER_SKIP_TIME)
 })
 watch(skipBackTrigger, () => {
-  handleSkipTo(currentEpisodeProgress.value - skipTime)
+  handleSkipTo(currentEpisodeProgress.value - PLAYER_SKIP_TIME)
 })
 
 // if the route changes, and the expanded player is expanded, close the expanded player
