@@ -54,6 +54,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 
 // initialize the media session with the episode data
 export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => {
+    if (!episode) return
     const isNetworkConnected = useIsNetworkConnected()
     const isEpisodePlaying = useIsEpisodePlaying()
     const isApp = useIsApp()
@@ -82,7 +83,7 @@ export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => 
             title: currentEpisode.title,
             artist: getDate(currentEpisode),
             album: currentEpisode.showTitle,
-            imageUrl: artworkImageArray[2].src // 512x512 image
+            imageUrl: artworkImageArray?.src ?? artworkImageArray[2].src // 512x512 image
         })
     } else {
         MediaSession.setMetadata({

@@ -138,7 +138,6 @@ export const initReadOfPreferences = async () => {
     try {
         const { value } = await Preferences.get({ key: localStorageKey })
         val = value ?? "[]"
-        console.log('##################localStorageKey = ', value)
         return JSON.parse(val ?? "[]")
     } catch (error) {
         console.error("preference read error = ", error)
