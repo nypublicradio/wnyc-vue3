@@ -83,6 +83,7 @@ export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => 
             title: currentEpisode.title,
             artist: getDate(currentEpisode),
             album: currentEpisode.showTitle,
+            duration: String(currentEpisode.duration),
             imageUrl: artworkImageArray?.src ?? artworkImageArray[2].src // 512x512 image
         })
     } else {
