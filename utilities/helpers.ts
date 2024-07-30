@@ -570,9 +570,10 @@ export const convertTime = (val) => {
 
 // get and set the user profiel
 export const getAndSetUserProfile = async () => {
+  const isNetworkConnected = useIsNetworkConnected()
+  const isApp = useIsApp()
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
-  const isApp = useIsApp()
   const localUserProfileDefault = useLocalUserProfileDefault()
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
@@ -653,8 +654,6 @@ export const getAndSetUserProfile = async () => {
     }
   }
 
-  //
-
   // check local storage for the auth token
   if (process.client) {
     const supabaseAuthToken = await Preferences.get({
@@ -670,70 +669,81 @@ export const getAndSetUserProfile = async () => {
       currentUser.value = user?.data?.session?.user
     }
 
-    if (!currentUser.value) {
-      // initially set default user profile settings or use the local storage settings
+    // if no network connection, get the user profile from local storage
+    if (!isNetworkConnected.value) {
+      const lsSTRING = await Preferences.get({ key: localUserProfileKey })
+      const ls = JSON.parse(lsSTRING.value)
+      currentUserProfile.value = ls
 
-      // does local storage settings exist?
-      const isLocalUserProfile = await Preferences.get({ key: localUserProfileKey })
-      if (!isLocalUserProfile.value) {
-        // no, set defaults from localUserProfileDefault state
-        const defaults = localUserProfileDefault.value
-
-        //get the system's current theme and apply it to the initial defaults
-        defaults.dark_mode = detectSystemDarkMode()
-
-        // get the system's notification permission and apply it to the initial defaults
-        if (isApp.value) {
-          await PushNotifications.checkPermissions().then((result) => {
-            if (result.receive === "denied") {
-              defaults.receive_general_notifications = false
-            }
-            if (result.receive === "granted") {
-              defaults.receive_general_notifications = true
-            }
-          })
-        }
-
-        const defaultsSTRING = JSON.stringify(defaults)
-        //console.log('defaultsSTRING' + defaultsSTRING)
-        await Preferences.set({
-          key: localUserProfileKey,
-          value: defaultsSTRING,
-        })
-
-        currentUserProfile.value = defaults
-
-        updateAllLiveStreams()
-        //set display settings
-        setDisplaySettings(defaults)
-      } else {
-        // local storage is set, so set currentUserProfile to the local storage settings
-        currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
-
-        // get the system's notification permission and apply it to the currentUserProfile.value
-        if (isApp.value) {
-          await PushNotifications.checkPermissions().then((result) => {
-            if (result.receive === "denied") {
-              currentUserProfile.value.receive_general_notifications = false
-            }
-            if (result.receive === "granted") {
-              currentUserProfile.value.receive_general_notifications = true
-            }
-          })
-        }
-
-        updateAllLiveStreams()
-        //set display settings
-        setDisplaySettings(currentUserProfile.value)
-      }
+      setDisplaySettings(currentUserProfile.value)
     } else {
-      // if they are a user, get their profile data
-      await getProfile()
-      // get the device id if it's an app and not a browser
-      if (isApp.value) {
-        await initDeviceId()
+
+
+      if (!currentUser.value) {
+        // initially set default user profile settings or use the local storage settings
+
+        // does local storage settings exist?
+        const isLocalUserProfile = await Preferences.get({ key: localUserProfileKey })
+        if (!isLocalUserProfile.value) {
+          // no, set defaults from localUserProfileDefault state
+          const defaults = localUserProfileDefault.value
+
+          //get the system's current theme and apply it to the initial defaults
+          defaults.dark_mode = detectSystemDarkMode()
+
+          // get the system's notification permission and apply it to the initial defaults
+          if (isApp.value) {
+            await PushNotifications.checkPermissions().then((result) => {
+              if (result.receive === "denied") {
+                defaults.receive_general_notifications = false
+              }
+              if (result.receive === "granted") {
+                defaults.receive_general_notifications = true
+              }
+            })
+          }
+
+          const defaultsSTRING = JSON.stringify(defaults)
+          //console.log('defaultsSTRING' + defaultsSTRING)
+          await Preferences.set({
+            key: localUserProfileKey,
+            value: defaultsSTRING,
+          })
+
+          currentUserProfile.value = defaults
+
+          updateAllLiveStreams()
+          //set display settings
+          setDisplaySettings(defaults)
+        } else {
+          // local storage is set, so set currentUserProfile to the local storage settings
+          currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
+
+          // get the system's notification permission and apply it to the currentUserProfile.value
+          if (isApp.value) {
+            await PushNotifications.checkPermissions().then((result) => {
+              if (result.receive === "denied") {
+                currentUserProfile.value.receive_general_notifications = false
+              }
+              if (result.receive === "granted") {
+                currentUserProfile.value.receive_general_notifications = true
+              }
+            })
+          }
+
+          updateAllLiveStreams()
+          //set display settings
+          setDisplaySettings(currentUserProfile.value)
+        }
+      } else {
+        // if they are a user, get their profile data
+        await getProfile()
+        // get the device id if it's an app and not a browser
+        if (isApp.value) {
+          await initDeviceId()
+        }
+        await getFavoritedItems()
       }
-      await getFavoritedItems()
     }
   }
 }

@@ -69,9 +69,29 @@ useHead({
   // },
 })
 
+// a func to refresh all data
+const refreshData = async () => {
+  await getAndSetUserProfile()
+
+  // refresh data here
+  updateAllLiveStreams()
+
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+  //update media session
+  initMediaSession(currentEpisode.value)
+}
+
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
+  // refresh data here
+  if (status.connected) {
+    refreshData()
+  }
 })
 // set the initial network status
 const initNewtworkStatus = await Network.getStatus()
@@ -186,16 +206,7 @@ onMounted(async () => {
           }
         })
       }
-      // refresh data here
-      updateAllLiveStreams()
-
-      try {
-        await refreshNuxtData()
-      } catch (error) {
-        console.error(error)
-      }
-      //update media session
-      initMediaSession(currentEpisode.value)
+      refreshData()
     }
   })
 
