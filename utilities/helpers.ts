@@ -704,7 +704,6 @@ export const getAndSetUserProfile = async () => {
           }
 
           const defaultsSTRING = JSON.stringify(defaults)
-          //console.log('defaultsSTRING' + defaultsSTRING)
           await Preferences.set({
             key: localUserProfileKey,
             value: defaultsSTRING,
@@ -895,16 +894,12 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
   const togglePlayTrigger = useTogglePlayTrigger()
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
-  console.log('media.audio  = ', media.audio)
   if (typeof media.audio === "string") {
-    console.log('string')
     if (currentEpisode.value?.audio !== media.audio) {
-      console.log('!==')
       currentEpisode.value = prepForPlayer(media)
       saveRecentlyPlayed(media, type)
     }
   } else {
-    console.log('segment')
     // segment
     if (currentEpisode.value?.file !== media.audio[index]) {
       currentEpisode.value = prepForPlayer(media, index)

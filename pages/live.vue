@@ -60,9 +60,6 @@ const switchStation = async (station) => {
 }
 // handle the toggle play button and tracking
 const togglePlayHere = () => {
-  console.log("togglePlayHere on Live page")
-  console.log("currentEpisode.value", currentEpisode.value)
-  console.log("currentEpisodeHolder.value", currentEpisodeHolder.value)
   if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
     //update slug
     currentStreamStation.value = currentEpisodeHolder.value.slug

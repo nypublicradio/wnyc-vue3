@@ -108,7 +108,6 @@ const getConfiguredAudioUrl = computed(() => {
 
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
-  console.log("val = ", val)
   isNewEpisode.value = true
   showPlayer.value = false
   await RemoteStreamer.stop()
@@ -190,8 +189,6 @@ const getMediaType = computed(() => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
-  console.log("toggle from emit", e)
-
   if (e && !isEpisodePlaying.value) {
     await RemoteStreamer.resume()
     isEpisodePlaying.value = true
@@ -304,7 +301,6 @@ onMounted(async () => {
     currentEpisodeProgress.value = data.currentTime
   })
   await RemoteStreamer.addListener("play", async (e) => {
-    console.log("playing in JS", e, isEpisodePlaying.value)
     isEpisodePlaying.value = true
     isStreamLoading.value = false
     currentEpisodeDuration.value = currentEpisode.value.duration
@@ -312,13 +308,11 @@ onMounted(async () => {
 
   await RemoteStreamer.addListener("pause", (e) => {
     if (isEpisodePlaying.value) {
-      console.log("paused", e)
       isEpisodePlaying.value = false
     }
   })
 
   await RemoteStreamer.addListener("buffering", (e) => {
-    console.log("buffering", e)
     if (!isEpisodePlaying.value) {
       isStreamLoading.value = true
     } else {
@@ -327,7 +321,6 @@ onMounted(async () => {
   })
 
   await RemoteStreamer.addListener("stop", (e) => {
-    console.log("stopped", e)
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
@@ -337,7 +330,6 @@ onMounted(async () => {
     }
   })
   await RemoteStreamer.addListener("ended", (e) => {
-    console.log("ended", e)
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0

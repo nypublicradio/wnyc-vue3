@@ -462,10 +462,10 @@ const skipBack = () => {
 // cast to google
 const castToGoogleCast = async () => {
   try {
-    console.log("request google cast")
+    //console.log("request google cast")
     //await $mediaPlayerRef.value.requestGoogleCast()
   } catch (e) {
-    console.log("error casting to google cast", e)
+    //console.log("error casting to google cast", e)
     emit("error", e)
     // Throws if not supported or the dialog is cancelled.
   }
@@ -473,10 +473,10 @@ const castToGoogleCast = async () => {
 // cast to apple air play
 const castToAirPlay = async () => {
   try {
-    console.log("request airplay")
+    //console.log("request airplay")
     //await $mediaPlayerRef.value.requestAirPlay()
   } catch (e) {
-    console.log("error casting to air play", e)
+    //console.log("error casting to air play", e)
     emit("error", e)
     // Throws if not supported or the dialog is cancelled.
   }
