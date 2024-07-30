@@ -4,7 +4,7 @@ import { useIsNetworkConnected, useIsEpisodePlaying, useIsApp } from "~/composab
 import { FALLBACKIMAGE, PLAYER_SKIP_TIME } from "~/composables/globals"
 
 import axios from 'axios'
-import { RemoteStreamer } from "mp3-hls-streaming"
+import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 let currentEpisode = null
 let playbackStopped = true
 let audioElement = null

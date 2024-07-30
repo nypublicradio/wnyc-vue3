@@ -1,5 +1,5 @@
 <script setup>
-import { RemoteStreamer } from "mp3-hls-streaming"
+import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { Capacitor } from "@capacitor/core"
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
