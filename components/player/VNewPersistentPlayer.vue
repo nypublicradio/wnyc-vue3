@@ -350,6 +350,13 @@ function handleSwipeDirection() {
   }
 }
 
+// exposed method to handle the expanding toggle
+const toggleExpanded = (e) => {
+  scrollToggle(e)
+  emit("is-expanded", e)
+  isExpanded.value = e
+}
+
 // handles the swipe ended logic
 function handleSwipe() {
   const distance = Math.abs(touchendY - touchstartY)
@@ -437,14 +444,7 @@ const scrollToggle = (e) => {
   }
 }
 
-// exposed method to handle the expanding toggle
-const toggleExpanded = (e) => {
-  scrollToggle(e)
-  emit("is-expanded", e)
-  isExpanded.value = e
-}
-
-watch(isExpanded, (e) => {
+watch(isExpanded, () => {
   // set expanded content scroll position to top
   expandedContentHolder.value.scrollTop = 0
 })
@@ -460,7 +460,7 @@ const skipBack = () => {
 }
 
 // cast to google
-const castToGoogleCast = async () => {
+const castToGoogleCast = () => {
   try {
     //console.log("request google cast")
     //await $mediaPlayerRef.value.requestGoogleCast()
@@ -471,7 +471,7 @@ const castToGoogleCast = async () => {
   }
 }
 // cast to apple air play
-const castToAirPlay = async () => {
+const castToAirPlay = () => {
   try {
     //console.log("request airplay")
     //await $mediaPlayerRef.value.requestAirPlay()
@@ -481,7 +481,7 @@ const castToAirPlay = async () => {
     // Throws if not supported or the dialog is cancelled.
   }
 }
-
+// exposed method to handle the cast
 const handleCast = () => {
   if (props.platform === "android") {
     castToGoogleCast()
@@ -509,10 +509,6 @@ const handleClickAnywhere = (e) => {
   }
 }
 
-const jumpToTime = (time: number) => {
-  // $mediaPlayerRef.value.currentTime = time
-}
-
 onMounted(async () => {
   // keyboard accessibility
   window.addEventListener("keydown", (event) => {
@@ -536,8 +532,6 @@ onMounted(async () => {
   await nextTick()
 })
 
-onBeforeUnmount(() => {})
-
 defineExpose({
   skipAhead,
   skipBack,
@@ -545,7 +539,6 @@ defineExpose({
   toggleMinimize,
   toggleMute,
   togglePlay,
-  jumpToTime,
 })
 </script>
 

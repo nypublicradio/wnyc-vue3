@@ -27,7 +27,6 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 import { initMediaSession } from "~/utilities/media-session.js"
 
-import { Preferences } from "@capacitor/preferences"
 const toast = useToast()
 
 //const { isDesktop } = useDevice()

@@ -41,6 +41,8 @@ const emit = defineEmits([
 const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
 const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
 const isLiveStream = computed(() => props.isLiveStream)
+const isDragging = ref(false)
+const jumpToValue = ref(0)
 
 const progress = ref(currentEpisodeDuration.value)
 onUpdated(() => {
@@ -51,25 +53,29 @@ onUpdated(() => {
   }
 })
 
+// format time in minutes and seconds
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = Math.floor(seconds % 60)
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
 }
-const isDragging = ref(false)
-const jumpToValue = ref(0)
+
+// handles dragging on the timeline
 const handleDragging = (value) => {
   emit("scrub-timeline-change", value)
   isDragging.value = true
   jumpToValue.value = value
   progress.value = value
 }
+// handles drag end on the timeline
 const handleDragEnd = (data) => {
   emit("scrub-timeline-end", data.value)
   isDragging.value = false
   progress.value = data.value
 }
-const handleClick = (value) => {
+// handles click on the timeline
+const handleClick = () => {
+  // uses the jumpToValue.value from the change event in the handleDragging function
   emit("scrub-timeline-click", jumpToValue.value)
   handleDragEnd({ value: jumpToValue.value })
 }

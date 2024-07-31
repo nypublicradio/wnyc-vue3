@@ -109,29 +109,29 @@ export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => 
         audioElement.addEventListener('pause', updatePlaybackState)
 
 
-        MediaSession.setActionHandler({ action: 'play' }, async () => {
+        MediaSession.setActionHandler({ action: 'play' }, () => {
             audioElement.play()
             isEpisodePlaying.value = true
         })
 
-        MediaSession.setActionHandler({ action: 'pause' }, async () => {
+        MediaSession.setActionHandler({ action: 'pause' }, () => {
             audioElement.pause()
             isEpisodePlaying.value = false
         })
 
-        MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
-            //audioElement.currentTime = details.seekTime
-        })
+        //MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
+        //audioElement.currentTime = details.seekTime
+        //})
 
-        MediaSession.setActionHandler({ action: 'seekforward' }, () => {
-            const seekOffset = skipTime
-            //audioElement.currentTime = audioElement.currentTime + seekOffset
-        })
+        //MediaSession.setActionHandler({ action: 'seekforward' }, () => {
+        //const seekOffset = skipTime
+        //audioElement.currentTime = audioElement.currentTime + seekOffset
+        //})
 
-        MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
-            const seekOffset = skipTime
-            //audioElement.currentTime = audioElement.currentTime - seekOffset
-        })
+        //MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
+        //const seekOffset = skipTime
+        //audioElement.currentTime = audioElement.currentTime - seekOffset
+        //})
 
         MediaSession.setActionHandler({ action: 'stop' }, () => {
             playbackStopped = true

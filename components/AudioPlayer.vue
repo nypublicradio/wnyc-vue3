@@ -138,33 +138,6 @@ const handleSeekTo = (e) => {
   RemoteStreamer.seekTo({ position: time })
 }
 
-watch(currentEpisode, (val) => {
-  if (val !== null) {
-    switchEpisode(val)
-  }
-})
-
-watch(togglePlayTrigger, async () => {
-  togglePlayHere(!isEpisodePlaying.value)
-})
-
-watch(skipAheadTrigger, () => {
-  handleSkipTo(currentEpisodeProgress.value + PLAYER_SKIP_TIME)
-})
-watch(skipBackTrigger, () => {
-  handleSkipTo(currentEpisodeProgress.value - PLAYER_SKIP_TIME)
-})
-
-// if the route changes, and the expanded player is expanded, close the expanded player
-watch(
-  () => route.name,
-  () => {
-    if (playerRef.value && isPlayerExpanded.value) {
-      playerRef.value.toggleExpanded()
-    }
-  }
-)
-
 const getTitle = computed(() => {
   return currentEpisode?.value?.title
 })
@@ -254,7 +227,7 @@ const handleError = (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = (e) => {
+const episodeEnded = () => {
   if (isPlayerExpanded.value) {
     playerRef.value.toggleExpanded()
     handleIsExpanded(false)
@@ -286,12 +259,41 @@ watch(isNetworkConnected, () => {
   }
 })
 
-const handleSkipAhead = (e) => {
+// function that handles the skip ahead toggle triiger
+const handleSkipAhead = () => {
   skipAheadTrigger.value = !skipAheadTrigger.value
 }
-const handleSkipBack = (e) => {
+// function that handles the skip back toggle trigger
+const handleSkipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
+
+watch(currentEpisode, (val) => {
+  if (val !== null) {
+    switchEpisode(val)
+  }
+})
+
+watch(togglePlayTrigger, () => {
+  togglePlayHere(!isEpisodePlaying.value)
+})
+
+watch(skipAheadTrigger, () => {
+  handleSkipTo(currentEpisodeProgress.value + PLAYER_SKIP_TIME)
+})
+watch(skipBackTrigger, () => {
+  handleSkipTo(currentEpisodeProgress.value - PLAYER_SKIP_TIME)
+})
+
+// if the route changes, and the expanded player is expanded, close the expanded player
+watch(
+  () => route.name,
+  () => {
+    if (playerRef.value && isPlayerExpanded.value) {
+      playerRef.value.toggleExpanded()
+    }
+  }
+)
 
 onMounted(async () => {
   await RemoteStreamer.addListener("error", (err) => {
@@ -300,19 +302,19 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
-  await RemoteStreamer.addListener("play", async (e) => {
+  await RemoteStreamer.addListener("play", () => {
     isEpisodePlaying.value = true
     isStreamLoading.value = false
     currentEpisodeDuration.value = currentEpisode.value.duration
   })
 
-  await RemoteStreamer.addListener("pause", (e) => {
+  await RemoteStreamer.addListener("pause", () => {
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
     }
   })
 
-  await RemoteStreamer.addListener("buffering", (e) => {
+  await RemoteStreamer.addListener("buffering", () => {
     if (!isEpisodePlaying.value) {
       isStreamLoading.value = true
     } else {
