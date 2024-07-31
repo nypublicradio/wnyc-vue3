@@ -7,7 +7,7 @@ import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { useIsNetworkConnected } from "~/composables/states"
+import { useIsNetworkConnected, useCurrentUser } from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -20,7 +20,6 @@ import {
   getEpisodeFallBackImage,
   handleDelete,
 } from "~/utilities/helpers"
-import { useCurrentUser } from "~/composables/states"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
