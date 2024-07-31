@@ -13,6 +13,7 @@ import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, getEpisodeFallBackImage, imageSolver } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
+import { initMediaSession } from "~/utilities/media-session.js"
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
@@ -427,10 +428,11 @@ export const playStoredMp3 = async (file) => {
             currentEpisode.value = {
                 ...file,
                 file: savedAudioSrc,
+                audio: savedAudioSrc,
                 image: savedImageSrc
             }
             togglePlayTrigger.value = !togglePlayTrigger.value
-
+            initMediaSession(currentEpisode.value)
         } catch (e) {
             console.error("Unable to read file", e)
         }

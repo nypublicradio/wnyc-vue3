@@ -7,6 +7,7 @@ import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
+import { useIsNetworkConnected } from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -71,6 +72,7 @@ const props = defineProps({
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
+const isNetworkConnected = useIsNetworkConnected()
 //handle if it this is downloaded
 const isDownloaded = ref(false)
 // check if item is already favorited
@@ -264,7 +266,7 @@ const handleHasAudio = computed(() => {
             class="z-1"
             :label="getMinutes(props.data.estimatedDuration, 1)"
             @onClick="
-              isDownloaded
+              isDownloaded && !isNetworkConnected
                 ? toggleDownloadedPlay(props.data)
                 : togglePlayEpisode(props.data)
             "
