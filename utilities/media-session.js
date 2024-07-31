@@ -1,6 +1,6 @@
 import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
-import { useIsNetworkConnected, useIsEpisodePlaying, useIsApp } from "~/composables/states"
+import { useIsNetworkConnected, useIsApp } from "~/composables/states"
 import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
 
 import axios from 'axios'
@@ -56,7 +56,6 @@ const generateMediaSessionArtworkArray = async (image) => {
 export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
     if (!episode) return
     const isNetworkConnected = useIsNetworkConnected()
-    const isEpisodePlaying = useIsEpisodePlaying()
     const isApp = useIsApp()
     if (!isNetworkConnected.value) return
     currentEpisode = episode
