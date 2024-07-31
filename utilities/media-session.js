@@ -1,27 +1,27 @@
 import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsEpisodePlaying, useIsApp } from "~/composables/states"
-import { FALLBACKIMAGE, PLAYER_SKIP_TIME } from "~/composables/globals"
+import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
 
 import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 let currentEpisode = null
-let playbackStopped = true
-let audioElement = null
-const updatePlaybackState = () => {
-    const playbackState = playbackStopped ? 'none' : (audioElement.paused ? 'paused' : 'playing')
-    MediaSession.setPlaybackState({
-        playbackState: playbackState
-    })
-}
+//let playbackStopped = true
+//let audioElement = null
+// const updatePlaybackState = () => {
+//     const playbackState = playbackStopped ? 'none' : (audioElement.paused ? 'paused' : 'playing')
+//     MediaSession.setPlaybackState({
+//         playbackState: playbackState
+//     })
+// }
 
-const updatePositionState = () => {
-    MediaSession.setPositionState({
-        position: audioElement.currentTime,
-        duration: audioElement.duration,
-        playbackRate: audioElement.playbackRate
-    })
-}
+// const updatePositionState = () => {
+//     MediaSession.setPositionState({
+//         position: audioElement.currentTime,
+//         duration: audioElement.duration,
+//         playbackRate: audioElement.playbackRate
+//     })
+// }
 
 const defaultMimeType = 'image/jpeg'
 const imageSizes = [128, 256, 512, 1024]
@@ -53,7 +53,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 }
 
 // initialize the media session with the episode data
-export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => {
+export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
     if (!episode) return
     const isNetworkConnected = useIsNetworkConnected()
     const isEpisodePlaying = useIsEpisodePlaying()
@@ -95,48 +95,48 @@ export const initMediaSession = async (episode, skipTime = PLAYER_SKIP_TIME) => 
         })
 
         // the HTMLAudioElement is named from the mp3-hls-streaming plugin in the src/web.ts file
-        audioElement = document.getElementById('pluginAudioElement')
-        audioElement.addEventListener('durationchange', updatePositionState)
-        audioElement.addEventListener('seeked', updatePositionState)
-        audioElement.addEventListener('ratechange', updatePositionState)
-        audioElement.addEventListener('play', updatePositionState)
-        audioElement.addEventListener('pause', updatePositionState)
+        // audioElement = document.getElementById('pluginAudioElement')
+        // audioElement.addEventListener('durationchange', updatePositionState)
+        // audioElement.addEventListener('seeked', updatePositionState)
+        // audioElement.addEventListener('ratechange', updatePositionState)
+        // audioElement.addEventListener('play', updatePositionState)
+        // audioElement.addEventListener('pause', updatePositionState)
 
-        audioElement.addEventListener('play', () => {
-            playbackStopped = false
-            updatePlaybackState()
-        })
-        audioElement.addEventListener('pause', updatePlaybackState)
+        // audioElement.addEventListener('play', () => {
+        //     playbackStopped = false
+        //     updatePlaybackState()
+        // })
+        // audioElement.addEventListener('pause', updatePlaybackState)
 
 
-        MediaSession.setActionHandler({ action: 'play' }, () => {
-            audioElement.play()
-            isEpisodePlaying.value = true
-        })
+        // MediaSession.setActionHandler({ action: 'play' }, () => {
+        //     audioElement.play()
+        //     isEpisodePlaying.value = true
+        // })
 
-        MediaSession.setActionHandler({ action: 'pause' }, () => {
-            audioElement.pause()
-            isEpisodePlaying.value = false
-        })
+        // MediaSession.setActionHandler({ action: 'pause' }, () => {
+        //     audioElement.pause()
+        //     isEpisodePlaying.value = false
+        // })
 
-        //MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
-        //audioElement.currentTime = details.seekTime
-        //})
+        // MediaSession.setActionHandler({ action: 'seekto' }, (details) => {
+        //     audioElement.currentTime = details.seekTime
+        // })
 
-        //MediaSession.setActionHandler({ action: 'seekforward' }, () => {
-        //const seekOffset = skipTime
-        //audioElement.currentTime = audioElement.currentTime + seekOffset
-        //})
+        // MediaSession.setActionHandler({ action: 'seekforward' }, () => {
+        //     const seekOffset = skipTime
+        //     audioElement.currentTime = audioElement.currentTime + seekOffset
+        // })
 
-        //MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
-        //const seekOffset = skipTime
-        //audioElement.currentTime = audioElement.currentTime - seekOffset
-        //})
+        // MediaSession.setActionHandler({ action: 'seekbackward' }, () => {
+        //     const seekOffset = skipTime
+        //     audioElement.currentTime = audioElement.currentTime - seekOffset
+        // })
 
-        MediaSession.setActionHandler({ action: 'stop' }, () => {
-            playbackStopped = true
-            audioElement.pause()
-            isEpisodePlaying.value = false
-        })
+        // MediaSession.setActionHandler({ action: 'stop' }, () => {
+        //     playbackStopped = true
+        //     audioElement.pause()
+        //     isEpisodePlaying.value = false
+        // })
     }
 }

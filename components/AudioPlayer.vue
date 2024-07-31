@@ -129,9 +129,11 @@ const switchEpisode = async (val) => {
   }, delay)
 }
 
+// function that handles the skip to time with the plugin
 const handleSkipTo = (e) => {
   RemoteStreamer.seekTo({ position: e })
 }
+//
 const handleSeekTo = (e) => {
   // convert the percentage to the time
   const time = (e / 100) * currentEpisodeDuration.value

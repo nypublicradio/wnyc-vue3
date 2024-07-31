@@ -6,7 +6,7 @@ import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VIm
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, ref, watch } from "vue"
 
 const props = defineProps({
   /**
@@ -350,6 +350,18 @@ function handleSwipeDirection() {
   }
 }
 
+// handle scroll blocking with js when player is expanded
+const scrollToggle = (e) => {
+  if (e) {
+    playerRef.value.removeEventListener("touchmove", preventScrollOnTouch, {
+      passive: false,
+    })
+  } else {
+    playerRef.value.addEventListener("touchmove", preventScrollOnTouch, {
+      passive: false,
+    })
+  }
+}
 // exposed method to handle the expanding toggle
 const toggleExpanded = (e) => {
   scrollToggle(e)
@@ -429,19 +441,6 @@ const togglePlay = () => {
 const toggleMinimize = (e) => {
   emit("is-minimized", e)
   isMinimized.value = e
-}
-
-// handle scroll blocking with js when player is expanded
-const scrollToggle = (e) => {
-  if (e) {
-    playerRef.value.removeEventListener("touchmove", preventScrollOnTouch, {
-      passive: false,
-    })
-  } else {
-    playerRef.value.addEventListener("touchmove", preventScrollOnTouch, {
-      passive: false,
-    })
-  }
 }
 
 watch(isExpanded, () => {
