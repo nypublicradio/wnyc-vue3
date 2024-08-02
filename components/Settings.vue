@@ -15,11 +15,13 @@ import {
   useEditProfileSideBar,
   useIsLiveStream,
   useIsApp,
+  useAccountDeleteSideBar
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
+
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -27,6 +29,7 @@ const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
 const isLiveStream = useIsLiveStream()
 const isApp = useIsApp()
+const accountDeleteSideBar = useAccountDeleteSideBar()
 
 const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
@@ -180,6 +183,12 @@ const handleNotificationChange = async (e) => {
     "Settings Sidebar - Notifications",
     currentUserProfile.receive_general_notifications
   )
+}
+
+// handle the delete account sidebar when the user clicks on the delete account link
+const onDeleteAccountClick = () => {
+  trackClickEvent("Click Tracking - delete account", "Delete Account Sidebar - user section")
+  accountDeleteSideBar.value = true
 }
 </script>
 
@@ -352,18 +361,10 @@ const handleNotificationChange = async (e) => {
       ></SBox>
       <SBox
         v-if="!isDisabled"
+        :is-link="true"
         label="Delete account"
-        link="delete"
         :ripple="false"
-        @linkClick="
-          (link) => {
-            trackClickEvent(
-              'Click Tracking - Delete account',
-              'Settings Sidebar - links',
-              link
-            )
-          }
-        "
+        @click="onDeleteAccountClick"
       ></SBox>
     </section>
     <section class="footer mb-4">

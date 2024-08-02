@@ -14,6 +14,8 @@ import {
   useAccountPromptSideBar,
   useIsDarkMode,
   useIsNetworkConnected,
+  useAccountDeleteSideBar,
+  useSettingSideBar
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -1130,6 +1132,8 @@ export const logOutUser = async () => {
 // handle account deletion requests
 export const requestAccountDeletion = async () => {
   const currentUserProfile = useCurrentUserProfile()
+  const accountDeleteSideBar = useAccountDeleteSideBar()
+  const settingsSideBar = useSettingSideBar()
   const globalToast = useGlobalToast()
 
   // post to zapier webhook
@@ -1141,6 +1145,10 @@ export const requestAccountDeletion = async () => {
   }
 
   logOutUser()
+
+  // close the account delete and settings sidebars
+  accountDeleteSideBar.value = false
+  settingsSideBar.value = false
 
   // send user to the sign in page
   await navigateTo('/')

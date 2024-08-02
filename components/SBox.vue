@@ -15,6 +15,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isLink: {
+    type: Boolean,
+    default: false,
+  },
   ripple: {
     type: Boolean,
     default: true,
@@ -43,7 +47,7 @@ const onClick = () => {
 <template>
   <div
     class="s-box relative overflow-hidden"
-    :class="[{ 'is-link': props.link, clickable: props.clickable }]"
+    :class="[{ 'is-link': props.link || props.isLink, clickable: props.clickable }]"
   >
     <div
       class="content flex justify-content-between align-items-center"
@@ -51,6 +55,9 @@ const onClick = () => {
       :class="[{ killRipple: !props.ripple }]"
     >
       <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
+        <Button :label="label" class="w-full text-left" text aria-label="menu item" />
+      </VFlexibleLink>
+      <VFlexibleLink v-else-if="isLink" raw class="w-full">
         <Button :label="label" class="w-full text-left" text aria-label="menu item" />
       </VFlexibleLink>
       <div v-else>
