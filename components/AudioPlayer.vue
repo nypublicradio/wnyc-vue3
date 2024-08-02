@@ -113,12 +113,12 @@ const switchEpisode = async (val) => {
   await RemoteStreamer.stop()
   currentEpisode.value = val
   isStreamLoading.value = true
+  isLiveStream.value = val.hls ? true : false
   await nextTick()
-
   await RemoteStreamer.play({
     url: getConfiguredAudioUrl.value,
     enableCommandCenter: true,
-    enableCommandCenterSeek: true,
+    enableCommandCenterSeek: !isLiveStream.value,
   })
 
   // initiallizes the media session in ~/utilities/media-session.js

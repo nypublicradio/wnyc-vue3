@@ -72,7 +72,6 @@ export const getOrg = (cmsSource) => {
   }
 }
 
-
 // returns the time since the episode was published, but checks for updated_date first
 export const whenTime = (data) => {
   const res = data?.updatedDate

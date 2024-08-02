@@ -1,6 +1,6 @@
 import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
-import { useIsNetworkConnected, useIsApp } from "~/composables/states"
+import { useIsNetworkConnected, useIsApp, useIsLiveStream } from "~/composables/states"
 import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
 import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
@@ -39,6 +39,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
     if (!episode) return
     const isNetworkConnected = useIsNetworkConnected()
+    const isLiveStream = useIsLiveStream()
     const isApp = useIsApp()
 
     currentEpisode = episode
@@ -66,8 +67,9 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
             title: currentEpisode.title,
             artist: getDate(currentEpisode),
             album: currentEpisode.showTitle,
-            duration: String(currentEpisode.duration),
-            imageUrl: artworkImageUrl
+            duration: !isLiveStream.value ? String(currentEpisode.duration) : null,
+            imageUrl: artworkImageUrl,
+            isLiveStream: isLiveStream.value,
         })
     } else {
         MediaSession.setMetadata({
