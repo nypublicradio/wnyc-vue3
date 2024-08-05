@@ -1,6 +1,5 @@
 <script setup>
 import useSleepTimer from "~/composables/useSleepTimer"
-
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 const {
   sleepTimerSelectedTime,
@@ -15,6 +14,7 @@ const {
 } = useSleepTimer()
 
 const timeLengthOptions = [
+  { label: "10 seconds", value: 10 },
   { label: "15 minutes", value: 900 },
   { label: "30 minutes", value: 1800 },
   { label: "45 minutes", value: 2700 },

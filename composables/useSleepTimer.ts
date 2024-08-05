@@ -61,6 +61,7 @@ export default function useSleepTimer(initialTime = 30) {
         clearInterval(sleepTimerInterval.value)
         sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.value
         sleepTimerRunning.value = false
+        sleepTimerSideBar.value = false
     }
 
     function onTimeEnd() {
