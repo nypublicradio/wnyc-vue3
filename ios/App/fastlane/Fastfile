@@ -103,7 +103,7 @@ platform :ios do
       build_number: "$CIRCLE_BUILD_NUM"
     )
     increment_version_number(
-      version_number: "$APP_VERSION"
+      version_number: "$APP_SHORT_VERSION"
     )
     build_app(
       workspace: "App.xcworkspace",
