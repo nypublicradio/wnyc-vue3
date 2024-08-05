@@ -43,7 +43,6 @@ export default function useSleepTimer(initialTime = 30) {
         }
         isPaused.value = false
         sleepTimerInterval.value = setInterval(() => {
-            //console.log('interval running', sleepTimerCurrentTime.value)
             if (sleepTimerCurrentTime.value > 0) {
                 sleepTimerCurrentTime.value--
             } else {
@@ -84,7 +83,6 @@ export default function useSleepTimer(initialTime = 30) {
 
     async function onUpdateDuration(e) {
         await nextTick()
-        console.log("e =  ", e)
         sleepTimerSelectedTime.value = e.value
         resetTimer()
         startTimer()

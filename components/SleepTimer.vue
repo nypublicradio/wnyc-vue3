@@ -26,11 +26,8 @@ const timeToIncrement = 5
 const customTime = ref(90)
 const handleCutomTimeChange = (inc) => {
   const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
-  console.log(seconds)
-  console.log(sleepTimerCurrentTime.value)
-  console.log((sleepTimerCurrentTime.value += seconds))
-  console.log((sleepTimerCurrentTime.value += seconds) > 0)
-  if (sleepTimerRunning.value && (sleepTimerCurrentTime.value += seconds) > 0) {
+  const destination = sleepTimerCurrentTime.value + seconds
+  if (sleepTimerRunning.value && destination > 0) {
     sleepTimerCurrentTime.value += seconds
   } else {
     customTime.value += seconds / 60
@@ -42,7 +39,10 @@ const handleCutomTimeChange = (inc) => {
 <template>
   <div>
     <div class="sleep-timer">
-      <div v-if="!sleepTimerRunning" class="p-8 flex align-items-center gap-2">
+      <div
+        v-if="!sleepTimerRunning"
+        class="py-8 flex align-items-center justify-content-center gap-2 style-mode-light"
+      >
         <DropupMenu
           id="sleep-timer-duration"
           v-model:data.sync="sleepTimerSelectedTime"
@@ -56,7 +56,7 @@ const handleCutomTimeChange = (inc) => {
         >
           <template #footer="slotpProps">
             <div
-              class="style-mode-dark flex align-items-center justify-content-between"
+              class="flex align-items-center justify-content-between"
               @click="
                 onUpdateDuration({
                   value: { value: customTime * 60, label: `${customTime} minutes` },
@@ -94,7 +94,6 @@ const handleCutomTimeChange = (inc) => {
       <div v-else>
         <div class="count-down">
           <div><SleepIcon /></div>
-          {{ sleepTimerCurrentTime }}
           <div class="time-holder flex align-items-center justify-content-between">
             <Button
               class="mr-3"
