@@ -505,3 +505,43 @@ a:visited {
   @include truncate();
   @include t4lines();
 }
+
+.p-slider {
+  // makes tapping on the timeline easier
+  &:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 50px;
+    margin: auto;
+    background-color: transparent;
+  }
+}
+.p-slider .p-slider-handle {
+  // makes dragging the slider easier
+  &:before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 0;
+    bottom: 0;
+    left: -16px;
+    right: 0;
+    margin: auto;
+    background-color: transparent;
+    border-radius: 25px;
+  }
+}
+.p-slider:not(.p-disabled) .p-slider-handle:hover {
+  background: var(--persistent-player-slider-thumb--hover-bg);
+  border-color: #ffffff;
+}
+.p-slider .p-slider-handle:focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0.2rem 0.2rem #ffffff;
+}

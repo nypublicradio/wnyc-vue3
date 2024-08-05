@@ -18,12 +18,14 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
+  useCurrentEpisode,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
+import { initMediaSession } from "~/utilities/media-session.js"
 
 const toast = useToast()
 
@@ -32,6 +34,7 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
+const currentEpisode = useCurrentEpisode()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
@@ -65,12 +68,33 @@ useHead({
   // },
 })
 
+// a func to refresh all data
+const refreshData = async () => {
+  await getAndSetUserProfile()
+
+  // refresh data here
+  updateAllLiveStreams()
+
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+  //update media session
+  initMediaSession(currentEpisode.value)
+}
+
 // init the Network listener
-await Network.addListener("networkStatusChange", (status) => {
+Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
+  // refresh data here
+  if (status.connected) {
+    refreshData()
+  }
 })
 // set the initial network status
-isNetworkConnected.value = (await Network.getStatus()).connected
+const initNewtworkStatus = await Network.getStatus()
+isNetworkConnected.value = initNewtworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
@@ -157,11 +181,12 @@ onMounted(async () => {
   await getAndSetUserProfile()
 
   if (isApp.value) {
+    // init downloads files system for the app
+    await initFileSystem()
+
     await addListeners()
     // if APP then add listeners
     await checkAppLaunchUrl()
-    // init downloads files system for the app
-    await initFileSystem()
     // init local notifications
     await initLocalNotifications()
   }
@@ -180,13 +205,7 @@ onMounted(async () => {
           }
         })
       }
-      // refresh data here
-      updateAllLiveStreams()
-      try {
-        await refreshNuxtData()
-      } catch (error) {
-        console.error(error)
-      }
+      refreshData()
     }
   })
 

@@ -1,4 +1,4 @@
-import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, useGlobalToast } from '~/composables/states'
+import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, useGlobalToast, useIsLiveStream } from '~/composables/states'
 import { saveRecentlyPlayed } from '~/utilities/helpers'
 
 
@@ -10,6 +10,8 @@ export async function updateLiveStream(slug: string, save = true) {
         const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
         const currentEpisodeHolder = useCurrentEpisodeHolder()
         currentEpisodeHolder.value = fetchData
+        const isLiveStream = useIsLiveStream()
+        isLiveStream.value = true
         if (save) { saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE) }
     } catch (error) {
         const globalToast = useGlobalToast()

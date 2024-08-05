@@ -13,6 +13,7 @@ import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, getEpisodeFallBackImage, imageSolver } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
+import { initMediaSession } from "~/utilities/media-session.js"
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
@@ -138,10 +139,11 @@ export const initReadOfPreferences = async () => {
     try {
         const { value } = await Preferences.get({ key: localStorageKey })
         val = value ?? "[]"
+        return JSON.parse(val ?? "[]")
     } catch (error) {
         console.error("preference read error = ", error)
+        return []
     }
-    return JSON.parse(val ?? "[]")
 }
 
 // initializing the fileSystem, gets called in the setup function of the App.vue
@@ -412,8 +414,8 @@ export const playStoredMp3 = async (file) => {
                 directory: directoryToSaveTo,
             })
             await nextTick()
-            const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
-
+            //const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
+            const savedAudioSrc = audio.uri;
             // get image file
             const image = await Filesystem.getUri({
                 path: `${appDirectory}/${file.id}/${file?.directoryImage?.name}`,
@@ -426,10 +428,11 @@ export const playStoredMp3 = async (file) => {
             currentEpisode.value = {
                 ...file,
                 file: savedAudioSrc,
+                audio: savedAudioSrc,
                 image: savedImageSrc
             }
             togglePlayTrigger.value = !togglePlayTrigger.value
-
+            initMediaSession(currentEpisode.value)
         } catch (e) {
             console.error("Unable to read file", e)
         }

@@ -40,15 +40,7 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_notification_default",
       iconColor: "#de1e3d",
       sound: "notification.wav"
-    },
-    BackgroundRunner: {
-      label: 'org.wnyc.background.task',
-      src: 'utilities/background.js',
-      event: 'remoteNotification',
-      repeat: true,
-      interval: 2,
-      autoStart: false,
-    },
+    }
   }
 };
 
