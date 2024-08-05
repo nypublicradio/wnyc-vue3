@@ -86,12 +86,20 @@ const handleModal = () => {
     emit("onDisabled")
   }
 }
+
+const avatarUrl = computed(() => {
+  return (
+    currentUser.value?.user_metadata?.avatar_url ||
+    currentUserProfile.value?.avatar_image_url ||
+    null
+  )
+})
 </script>
 
 <template>
   <div class="s-user flex gap-3">
     <Avatar
-      :image="currentUserProfile?.avatar_image_url"
+      :image="avatarUrl"
       size="large"
       :style="`
         cursor: ${props.disabled ? 'default' : 'pointer'};
@@ -99,7 +107,7 @@ const handleModal = () => {
       shape="circle"
       @click="handleModal"
     >
-      <template #icon v-if="!currentUserProfile?.avatar_image_url">
+      <template #icon v-if="!avatarUrl">
         <UserIcon />
 
         <Button

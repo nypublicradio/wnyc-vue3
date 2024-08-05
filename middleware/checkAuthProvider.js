@@ -68,7 +68,8 @@ export default defineNuxtRouteMiddleware(async () => {
       const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
       if (userLocalStorage.value) {
         // a delay is needed for an unknown reason
-        setTimeout(() => {
+        setTimeout(async () => {
+          await updateUser()
           navigateTo(redirectSlug)
         }, 1000)
       }
