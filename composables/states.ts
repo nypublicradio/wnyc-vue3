@@ -53,7 +53,7 @@ export const useSleepTimerCurrentTime = () =>
 
 // sleep timer selected state
 export const useSleepTimerSelectedTime = () =>
-    useState("useSleepTimerSelectedTime", () => ({ label: "30 minutes", toValue: 1800 }));
+    useState("useSleepTimerSelectedTime", () => ({ label: "30 minutes", value: 1800 }));
 
 // sleep timer running state
 export const useSleepTimerRunning = () => useState("useSleepTimerRunning", () => false)

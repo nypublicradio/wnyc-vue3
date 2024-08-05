@@ -1,8 +1,11 @@
 <script setup>
 import useSleepTimer from "~/composables/useSleepTimer"
-import { useSleepTimerRunning } from "~/composables/states"
+
+import SleepIcon from "~/components/icons/SleepIcon.vue"
 const {
   sleepTimerSelectedTime,
+  sleepTimerCurrentTime,
+  sleepTimerRunning,
   formattedTime,
   startTimer,
   pauseTimer,
@@ -10,7 +13,7 @@ const {
   onUpdateDuration,
   isPaused,
 } = useSleepTimer()
-const sleepTimerRunning = useSleepTimerRunning()
+
 const timeLengthOptions = [
   { label: "15 minutes", value: 900 },
   { label: "30 minutes", value: 1800 },
@@ -18,9 +21,21 @@ const timeLengthOptions = [
   { label: "60 minutes", value: 3600 },
 ]
 
+const timeToIncrement = 5
+
 const customTime = ref(90)
-const handleCutomTimeChange = (value) => {
-  customTime.value += value
+const handleCutomTimeChange = (inc) => {
+  const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
+  console.log(seconds)
+  console.log(sleepTimerCurrentTime.value)
+  console.log((sleepTimerCurrentTime.value += seconds))
+  console.log((sleepTimerCurrentTime.value += seconds) > 0)
+  if (sleepTimerRunning.value && (sleepTimerCurrentTime.value += seconds) > 0) {
+    sleepTimerCurrentTime.value += seconds
+  } else {
+    customTime.value += seconds / 60
+  }
+  // add preferred custom time to the local storage preferences
 }
 </script>
 
@@ -56,7 +71,7 @@ const handleCutomTimeChange = (value) => {
                   outlined
                   severity="secondary"
                   aria-label="subtract time"
-                  @click.stop="handleCutomTimeChange(-5)"
+                  @click.stop="handleCutomTimeChange(false)"
                 />
                 <Button
                   icon="pi pi-plus"
@@ -64,7 +79,7 @@ const handleCutomTimeChange = (value) => {
                   outlined
                   severity="secondary"
                   aria-label="add time"
-                  @click.stop="handleCutomTimeChange(5)"
+                  @click.stop="handleCutomTimeChange(true)"
                 />
               </div>
             </div>
@@ -76,11 +91,39 @@ const handleCutomTimeChange = (value) => {
           @click="onUpdateDuration({ value: sleepTimerSelectedTime })"
         />
       </div>
-      <div v-else class="p-8">
-        <p>{{ formattedTime }}</p>
-        <button v-if="isPaused" @click="startTimer">Resume</button>
-        <button v-else @click="pauseTimer">Pause</button>
-        <button @click="resetTimer">Cancel Timer</button>
+      <div v-else>
+        <div class="count-down">
+          <div><SleepIcon /></div>
+          {{ sleepTimerCurrentTime }}
+          <div class="time-holder flex align-items-center justify-content-between">
+            <Button
+              class="mr-3"
+              icon="pi pi-minus"
+              rounded
+              outlined
+              severity="secondary"
+              aria-label="subtract time"
+              @click="handleCutomTimeChange(false)"
+            />
+            <p class="time">{{ formattedTime }}</p>
+            <Button
+              class="ml-3"
+              icon="pi pi-plus"
+              rounded
+              outlined
+              severity="secondary"
+              aria-label="add time"
+              @click="handleCutomTimeChange(true)"
+            />
+          </div>
+          <div class="flex">
+            <Button v-if="isPaused" @click="startTimer" severity="secondary"
+              >Resume</Button
+            >
+            <Button v-else @click="pauseTimer" severity="secondary">Pause</Button>
+          </div>
+          <Button @click="resetTimer" severity="">Cancel Timer</Button>
+        </div>
       </div>
     </div>
   </div>
@@ -91,6 +134,30 @@ const handleCutomTimeChange = (value) => {
   .custom-time {
     font-size: 1rem;
     font-weight: 600;
+  }
+}
+.sleep-timer {
+  .count-down {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    .sleep-icon {
+      width: 4rem;
+      height: 4rem;
+      margin-bottom: -1rem;
+      path {
+        fill: var(--text-color);
+      }
+    }
+    .time-holder {
+      .time {
+        font-size: 3.5rem;
+        font-weight: bold;
+        line-height: 3rem;
+      }
+    }
   }
 }
 </style>

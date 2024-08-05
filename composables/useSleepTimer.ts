@@ -51,23 +51,18 @@ export default function useSleepTimer(initialTime = 30) {
                 onTimeEnd() // Function to call when time ends
             }
         }, 1000)
-
-
     }
-
 
     function pauseTimer() {
         isPaused.value = true
         clearInterval(sleepTimerInterval.value)
     }
 
-
     function resetTimer() {
         clearInterval(sleepTimerInterval.value)
         sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.value
         sleepTimerRunning.value = false
     }
-
 
     function onTimeEnd() {
         if (isEpisodePlaying.value) {
@@ -78,7 +73,7 @@ export default function useSleepTimer(initialTime = 30) {
         trackClickEvent(
             "Click Tracking - Sleep timer event",
             "Sleep Timer - Ended",
-            sleepTimerSelectedTime.value.value
+            sleepTimerSelectedTime.value.label
         )
         globalToast.value = {
             severity: "success",
@@ -87,8 +82,8 @@ export default function useSleepTimer(initialTime = 30) {
         }
     }
 
-
-    function onUpdateDuration(e) {
+    async function onUpdateDuration(e) {
+        await nextTick()
         console.log("e =  ", e)
         sleepTimerSelectedTime.value = e.value
         resetTimer()
@@ -101,6 +96,5 @@ export default function useSleepTimer(initialTime = 30) {
         )
     }
 
-
-    return { sleepTimerSelectedTime, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, isPaused }
+    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, isPaused }
 }
