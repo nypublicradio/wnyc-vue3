@@ -1,6 +1,5 @@
 <script setup>
-import { saveRecentlyPlayed } from "~/utilities/helpers"
-import { useTogglePlayTrigger, useCurrentEpisode } from "~/composables/states"
+import { togglePlayEpisode } from "~/utilities/helpers"
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -20,30 +19,17 @@ const props = defineProps({
     default: null,
   },
 })
-
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
-
-// handles play button click that updates the currentEpisode if it is a different file and togglePlayTrigger states
-const togglePlayHere = (media) => {
-  if (currentEpisode.value?.file !== media.file) {
-    currentEpisode.value = media
-    saveRecentlyPlayed(media, mediaTypes.EPISODE)
-  }
-  togglePlayTrigger.value = !togglePlayTrigger.value
-}
 </script>
 
 <template>
   <div>
-    <!-- <pre class="text-xs">{{ props.localNewscast }}</pre> -->
     <div class="latest-news-updates grid">
       <div class="col-6">
         <NewsCard
           :newsData="props.localNewscast"
           sourceLabel="WNYC"
           badgeLabel="NEW YORK NEWS"
-          @onClick="togglePlayHere(props.localNewscast)"
+          @onClick="togglePlayEpisode(props.localNewscast)"
         />
       </div>
 
@@ -54,7 +40,7 @@ const togglePlayHere = (media) => {
           badgeLabel="U.S. & WORLD NEWS"
           bagdeColor="var(--background-500)"
           badgeBgColor="var(--indigo-500)"
-          @onClick="togglePlayHere(props.nationalNewscast)"
+          @onClick="togglePlayEpisode(props.nationalNewscast)"
         />
       </div>
     </div>

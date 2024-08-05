@@ -7,6 +7,7 @@ import {
   useForgotPasswordSideBar,
   useEditProfileSideBar,
   useAccountPromptSideBar,
+  useAccountDeleteSideBar
 } from "~/composables/states"
 
 const settingsSideBar = useSettingSideBar()
@@ -15,6 +16,7 @@ const signinSideBar = useSignupSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
 const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
+const accountDeleteSideBar = useAccountDeleteSideBar()
 </script>
 
 <template>
@@ -133,6 +135,24 @@ const accountPromptSideBar = useAccountPromptSideBar()
       "
     >
       <AccountPromptSideBar />
+    </Sidebar>
+    <Sidebar
+      v-model:visible="accountDeleteSideBar"
+      :baseZIndex="10003"
+      position="right"
+      class="w-full hideX"
+      id="account-delete-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Account Delete Sidebar Close Button',
+            'Account Delete Sidebar',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <AccountDeleteSideBar />
     </Sidebar>
   </div>
 </template>

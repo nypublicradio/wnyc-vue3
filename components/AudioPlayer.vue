@@ -1,10 +1,13 @@
 <script setup>
+import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { Capacitor } from "@capacitor/core"
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
 import Next10 from "~/components/icons/Next10.vue"
-import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+//import VNewPersistentPlayer from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VNewPersistentPlayer.vue"
+import { PLAYER_SKIP_TIME } from "~/composables/globals"
 import {
   useCurrentEpisode,
   useIsEpisodePlaying,
@@ -18,7 +21,6 @@ import {
   useCurrentEpisodeProgress,
   useSkipAheadTrigger,
   useSkipBackTrigger,
-  //usePlayerSeek,
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
@@ -35,21 +37,9 @@ import {
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
-import "vidstack/bundle"
-//import { MediaRemoteControl } from "vidstack"
 
-const { isAndroid, isIos, isChrome } = useDevice()
-const devicePlatform = isAndroid ? "android" : isChrome ? "android" : isIos ? "ios" : null
-const device = useDevice()
-// if (process.client) {
-//   import("~/utilities/media-session.js").then((module) => {
-//     // Use your module here
-//     console.log("after load")
-//   })
-// }
+const devicePlatform = Capacitor.getPlatform()
 
-//const remoteControl = new MediaRemoteControl()
-//let remotePlayer = null
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -60,42 +50,22 @@ const isPlayerMinimized = useIsPlayerMinimized()
 const isStreamLoading = useIsStreamLoading()
 const skipAheadTrigger = useSkipAheadTrigger()
 const skipBackTrigger = useSkipBackTrigger()
-//const playerSeek = usePlayerSeek()
 const currentEpisodeDuration = useCurrentEpisodeDuration()
+const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
-const currentEpisodeProgress = useCurrentEpisodeProgress()
 const globalToast = useGlobalToast()
 const isInitialPlay = useIsInitialPlay()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const playerHeight = ref(`${audioPlayerHeight}px`)
-const skipTime = 10
 
 const route = useRoute()
-// once flag to prevent the media session from initing multiple times
-let onceMediaSessionFlag = true
 
-/*function that updated the global useIsEpisodePlaying */
-const updateUseIsEpisodePlaying = async (e) => {
-  isEpisodePlaying.value = e
-
-  // HACK: for some reason the media session does not show up on initial play, so we have to toggle the play button twice to somehow enable the initial media session to show up. It is not needed for subsequent plays, hence the once flag
-  if (onceMediaSessionFlag) {
-    onceMediaSessionFlag = false
-    await nextTick()
-    playerRef.value.togglePlay()
-    setTimeout(async () => {
-      await nextTick()
-      playerRef.value.togglePlay()
-      await nextTick()
-      // initiallizes the media session in ~/utilities/media-session.js
-      initMediaSession(currentEpisode.value, skipTime)
-    }, 1500)
-  }
-}
+let delay = 250
+const isError = ref(null)
 
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
@@ -106,60 +76,69 @@ const updateUseIsPlayerMinimized = (e) => {
   )
   isPlayerMinimized.value = e
 }
-let delay = 250
+
+/*
+the url that comes down from publisher is in currentEpisode.value
+then if we are in the App env, we check if the url has a param(a "?" already)
+then we grab the asID and the restriction value (0 default or 1)
+then we add the user id to the url (0 if not logged in)
+then we detect the device and add it to the url
+then we merge it all together and return it to the player as the source for the request
+*/
+
+const getConfiguredAudioUrl = computed(() => {
+  const desktop = devicePlatform === "web"
+  // if it is not the desktop, then we use the hls value, else we use the file value
+  const url = !desktop
+    ? currentEpisode.value?.hls ||
+      currentEpisode.value?.file ||
+      currentEpisode.value?.audio ||
+      ""
+    : currentEpisode.value?.file || currentEpisode.value?.audio || ""
+  const hasQuery = hasQueryParams(url)
+  const adID = deviceId.value?.identifier ?? "0"
+  const userID = currentUser?.value?.id ?? "0"
+  const thisDevice = devicePlatform
+  // update restriction when we have the value from setting panel
+  const restriction = "0"
+  return `${url}${
+    hasQuery ? "&" : "?"
+  }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
+})
+
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
-const switchEpisode = () => {
+const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
+  await RemoteStreamer.stop()
+  currentEpisode.value = val
+  isStreamLoading.value = true
+  isLiveStream.value = val.hls ? true : false
+  await nextTick()
+  await RemoteStreamer.play({
+    url: getConfiguredAudioUrl.value,
+    enableCommandCenter: true,
+    enableCommandCenterSeek: !isLiveStream.value,
+  })
+
+  // initiallizes the media session in ~/utilities/media-session.js
+  initMediaSession(currentEpisode.value)
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
   }, delay)
-  //separagte delay for the media session to init
-  setTimeout(() => {
-    // initiallizes the media session in ~/utilities/media-session.js
-    initMediaSession(currentEpisode.value, skipTime)
-  }, 1000)
 }
 
-watch(currentEpisode, (val) => {
-  if (val !== null) {
-    switchEpisode()
-  }
-  //remoteControl.setTarget(playerRef.value.$mediaPlayerRef)
-  //remotePlayer = remoteControl.getPlayer()
-})
-
-watch(togglePlayTrigger, async () => {
-  await nextTick()
-  if (playerRef.value) playerRef.value.togglePlay()
-})
-
-watch(skipAheadTrigger, () => {
-  if (playerRef.value) playerRef.value.skipAhead()
-})
-watch(skipBackTrigger, () => {
-  if (playerRef.value) playerRef.value.skipBack()
-})
-// watch(
-//   playerSeek,
-//   (e) => {
-//     if (playerRef.value) {
-//       playerRef.value.scrubTimelineEnd(e.time)
-//     }
-//   },
-//   { deep: true }
-// )
-
-// if the route changes, and the expanded player is expanded, close the expanded player
-watch(
-  () => route.name,
-  () => {
-    if (playerRef.value && isPlayerExpanded.value) {
-      playerRef.value.toggleExpanded()
-    }
-  }
-)
+// function that handles the skip to time with the plugin
+const handleSkipTo = (e) => {
+  RemoteStreamer.seekTo({ position: e })
+}
+//
+const handleSeekTo = (e) => {
+  // convert the percentage to the time
+  const time = (e / 100) * currentEpisodeDuration.value
+  RemoteStreamer.seekTo({ position: time })
+}
 
 const getTitle = computed(() => {
   return currentEpisode?.value?.title
@@ -185,9 +164,15 @@ const getMediaType = computed(() => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
-  // prevent the player from toggling twice
-  if (isEpisodePlaying.value === e) return
-  updateUseIsEpisodePlaying(e)
+  if (e && !isEpisodePlaying.value) {
+    await RemoteStreamer.resume()
+    isEpisodePlaying.value = true
+  }
+  if (!e && isEpisodePlaying.value) {
+    await RemoteStreamer.pause()
+    isEpisodePlaying.value = false
+  }
+
   let eventType = isEpisodePlaying.value ? "resume" : "pause"
   if (isNewEpisode.value) {
     eventType = "play"
@@ -201,6 +186,7 @@ const togglePlayHere = async (e) => {
   if (!isInitialPlay.value) {
     trackAudioEvent(eventType, getMediaType.value, getTitle.value, getDescription.value)
   }
+  isEpisodePlaying.value = e
   isNewEpisode.value = false
 }
 
@@ -212,44 +198,9 @@ const togglePlayHere = async (e) => {
 //remoteControl.requestGoogleCast()
 //}
 
-/*
-the url that comes down from publisher is in currentEpisode.value
-then if we are in the App env, we check if the url has a param(a "?" already)
-then we grab the asID and the restriction value (0 default or 1)
-then we add the user id to the url (0 if not logged in)
-then we detect the device and add it to the url
-then we merge it all together and return it to the player as the source for the request
-*/
-
-const getConfiguredAudioUrl = computed(() => {
-  const url = currentEpisode.value?.hls ?? currentEpisode.value?.file
-  const hasQuery = hasQueryParams(url)
-  const adID = deviceId.value ?? "0"
-  const userID = currentUser?.value?.id ?? "0"
-  const desktop = device.isDesktop || device.isDesktopOrTablet
-  const thisDevice = device.isAndroid
-    ? "android"
-    : desktop
-    ? "desktop"
-    : device.isIos
-    ? "ios"
-    : "unknown"
-  // update restriction when we have the value from setting panel
-  const restriction = "0"
-  return `${url}${
-    hasQuery ? "&" : "?"
-  }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
-})
-
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
-  // running the initMediaSession again after the teleport fixes the issue with the seek back and forward buttons only go forward in the os native player
-  // it hs to be on a delay, because then the media session artwork image does not show up sometimes
-
-  setTimeout(() => {
-    initMediaSession(currentEpisode.value, skipTime)
-  }, 1500)
 }
 
 // function that handles the error event from the persistent player emit
@@ -278,21 +229,20 @@ const handleError = (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = (e) => {
-  // for some reason the event fires on initial load, so we need to check if the event is true and unfortunely the event gets fired when the track has reached the end of it's buffer. So we have to check if the prgress is the full estimatedDuration
-  if (e && currentEpisodeProgress.value > currentEpisode.value.estimatedDuration - 5) {
-    if (isPlayerExpanded.value) {
-      playerRef.value.toggleExpanded()
-      setTimeout(() => {
-        showPlayer.value = false
-        currentEpisode.value = null
-      }, 500)
-    } else {
+const episodeEnded = () => {
+  if (isPlayerExpanded.value) {
+    playerRef.value.toggleExpanded()
+    handleIsExpanded(false)
+    setTimeout(() => {
       showPlayer.value = false
       currentEpisode.value = null
-    }
-    trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+    }, 500)
+  } else {
+    showPlayer.value = false
+    currentEpisode.value = null
+    handleIsExpanded(false)
   }
+  trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
 // resume the player if the network is connected where they left off
@@ -310,47 +260,120 @@ watch(isNetworkConnected, () => {
     }, 1500)
   }
 })
+
+// function that handles the skip ahead toggle triiger
+const handleSkipAhead = () => {
+  skipAheadTrigger.value = !skipAheadTrigger.value
+}
+// function that handles the skip back toggle trigger
+const handleSkipBack = () => {
+  skipBackTrigger.value = !skipBackTrigger.value
+}
+
+watch(currentEpisode, (val) => {
+  if (val !== null) {
+    switchEpisode(val)
+  }
+})
+
+watch(togglePlayTrigger, () => {
+  togglePlayHere(!isEpisodePlaying.value)
+})
+
+watch(skipAheadTrigger, () => {
+  handleSkipTo(currentEpisodeProgress.value + PLAYER_SKIP_TIME)
+})
+watch(skipBackTrigger, () => {
+  handleSkipTo(currentEpisodeProgress.value - PLAYER_SKIP_TIME)
+})
+
+// if the route changes, and the expanded player is expanded, close the expanded player
+watch(
+  () => route.name,
+  () => {
+    if (playerRef.value && isPlayerExpanded.value) {
+      playerRef.value.toggleExpanded()
+    }
+  }
+)
+
+onMounted(async () => {
+  await RemoteStreamer.addListener("error", (err) => {
+    isError.value = err
+  })
+  await RemoteStreamer.addListener("timeUpdate", (data) => {
+    currentEpisodeProgress.value = data.currentTime
+  })
+  await RemoteStreamer.addListener("play", () => {
+    isEpisodePlaying.value = true
+    isStreamLoading.value = false
+    currentEpisodeDuration.value = currentEpisode.value.duration
+  })
+
+  await RemoteStreamer.addListener("pause", () => {
+    if (isEpisodePlaying.value) {
+      isEpisodePlaying.value = false
+    }
+  })
+
+  await RemoteStreamer.addListener("buffering", () => {
+    if (!isEpisodePlaying.value) {
+      isStreamLoading.value = true
+    } else {
+      isStreamLoading.value = false
+    }
+  })
+
+  await RemoteStreamer.addListener("stop", (e) => {
+    isEpisodePlaying.value = false
+    isStreamLoading.value = false
+    currentEpisodeProgress.value = 0
+    // this is work webview detecting the end of the audio
+    if (e?.ended) {
+      episodeEnded()
+    }
+  })
+  await RemoteStreamer.addListener("ended", (e) => {
+    isEpisodePlaying.value = false
+    isStreamLoading.value = false
+    currentEpisodeProgress.value = 0
+    if (e.ended) {
+      episodeEnded()
+    }
+  })
+})
 </script>
 
 <template>
   <div v-if="currentEpisode">
     <transition name="player">
-      <VNewPersistentPlayer
+      <player-v-new-persistent-player
         v-show="showPlayer"
         ref="playerRef"
         data-style-mode="dark"
-        :auto-play="true"
         :can-expand="true"
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
-        :show-download="false"
-        :show-volume="false"
-        :hide-download-mobile="true"
-        :show-skip="isPlayerExpanded"
         :title="getTitle"
         :station="currentEpisode?.name"
         :description="getDescription"
         :image="
           templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
         "
-        :file="getConfiguredAudioUrl"
-        :skipAheadTime="skipTime"
-        :skipBackTime="skipTime"
-        :nativeHLS="true"
-        :show-cast="isNetworkConnected && devicePlatform !== null"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
-        @is-loading="isStreamLoading = $event"
-        @is-live="isLiveStream = $event"
         @is-expanded="handleIsExpanded($event)"
-        @duration="currentEpisodeDuration = $event"
-        @current-duration="currentEpisodeProgress = $event"
-        @ended="episodeEnded"
+        @skip-ahead="handleSkipAhead"
+        @skip-back="handleSkipBack"
         @error="handleError"
+        @scrub-timeline-end="handleSeekTo($event)"
         can-click-anywhere
-        :marquee="false"
-        streamType="unknown"
+        :isStreamLoading
+        :isEpisodePlaying
+        :isLiveStream
+        :currentEpisodeDuration
+        :currentEpisodeProgress
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
@@ -383,7 +406,7 @@ watch(isNetworkConnected, () => {
           <!-- <Button label="Cast" @click="handleCast" /> -->
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
-      </VNewPersistentPlayer>
+      </player-v-new-persistent-player>
     </transition>
   </div>
 
@@ -458,14 +481,6 @@ html.style-mode-dark .persistent-player {
   }
 
   .persistent-player {
-    .play-icon {
-      .play-icon {
-        width: 17px;
-        height: 17px;
-        margin-top: 5px;
-        margin-left: 2px;
-      }
-    }
     &.expanded {
       bottom: 0;
     }

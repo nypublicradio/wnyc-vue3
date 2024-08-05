@@ -7,6 +7,7 @@ const fileSystemLS = useFileSystemLS()
 <template>
   <section class="downloads">
     <div class="empty flex flex-column gap-3">
+      <pre class="text-xs"><code>{{ fileSystemLS.directory }}</code></pre>
       <!-- <Button
         class="w-3 ml-auto"
         label="Delete all"

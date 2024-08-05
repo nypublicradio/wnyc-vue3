@@ -17,5 +17,8 @@ done < <(printenv | grep "^${env_var_prefix}")
 
 export APP_VERSION=$(git describe --abbrev=0 --tags | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
 echo "APP_VERSION=${APP_VERSION}" >> local-env
+echo "APP_VERSION_MAJOR=$(echo ${APP_VERSION} | cut -d. -f1 | cut -c2-)" >> local-env
+echo "APP_VERSION_MINOR=$(echo ${APP_VERSION} | cut -d. -f2)" >> local-env
+echo "APP_VERSION_PATCH=$(echo ${APP_VERSION} | cut -d. -f3)" >> local-env
 cat local-env | sed 's/\(^[^=]*\)=\(.*\)/export \1="\2"/' >> ~/.bash_profile
 source ~/.bash_profile

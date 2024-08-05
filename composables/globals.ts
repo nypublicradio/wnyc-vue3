@@ -51,6 +51,9 @@ export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffff
 //Global vars for the browser top color or Darkmode
 export const useBrowserTopColorDarkMode = () => useState('browserTopColorDarkMode', () => '#1f2741')
 
+//player skip time
+export const PLAYER_SKIP_TIME = 10
+
 //browse topics
 export const showTopics = [
     {

@@ -11,7 +11,8 @@ const config: CapacitorConfig = {
   },
   ios: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
-    appendUserAgent: 'iOS-WNYC-App'
+    appendUserAgent: 'iOS-WNYC-App',
+    scheme: 'capacitor://'
   },
   plugins: {
     CapacitorCookies: {
@@ -39,15 +40,7 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_notification_default",
       iconColor: "#de1e3d",
       sound: "notification.wav"
-    },
-    BackgroundRunner: {
-      label: 'org.wnyc.background.task',
-      src: 'utilities/background.js',
-      event: 'remoteNotification',
-      repeat: true,
-      interval: 2,
-      autoStart: false,
-    },
+    }
   }
 };
 

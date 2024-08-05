@@ -2,7 +2,7 @@
 // // global state for the Bff useHomepageData data
 // export const useHomepageData = () => useState('useHomepageData', () => null)
 
-// defualt seettings that are over writted by user data
+// default settings that are overwritten by user data
 const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: 'WNYC 93.9 FM',
@@ -50,6 +50,8 @@ export const useEditProfileSideBar = () => useState('useEditProfileSideBar', () 
 // create an account or log in bottom sidebar state
 export const useAccountPromptSideBar = () => useState('useAccountPromptSideBar', () => false)
 
+// delete an account sidebar state
+export const useAccountDeleteSideBar = () => useState('useAccountDeleteSideBar', () => false)
 
 // global state for the network connection
 export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () => true)
@@ -170,20 +172,18 @@ export const useFileSystem = () => useState('fileSystem', () => fileSystem)
 // export const useFileSystemLS = () => useState('fileSystemLS', () => JSON.parse(fileSystemLS.value) || [])
 export const useFileSystemLS = () => useState('fileSystemLS', () => [])
 
-
 const bottomMenuState: object = {}
 /**
  * Global state for the bottom navigation
  */
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
 
-
-
 const textSizeOptionsArr = [
     { label: 'Normal', value: 'Normal', pixel: '16px' },
     { label: 'Large', value: 'Large', pixel: '18px' },
     { label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
 ]
+
 /**
  * Global state for TEMP login state
  */
@@ -191,7 +191,6 @@ export const useTextSizeOption = () => useState('textSizeOption', () => textSize
 
 // story
 export const useSensitiveContent = () => useState<boolean>('sensitiveContent', () => false)
-
 
 // global toast
 export const useGlobalToast = () => useState<object>('globalToast', () => null)
