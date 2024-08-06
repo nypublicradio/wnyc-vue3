@@ -68,6 +68,7 @@ const isLive = computed(() => {
       severity="secondary"
       rounded
       aria-label="play"
+      tabindex="0"
       @click="togglePlay"
     >
       <template #icon> <PlayIcon /></template>

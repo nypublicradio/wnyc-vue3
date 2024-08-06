@@ -33,6 +33,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 :root,
 [data-style-mode='light'],
 .style-mode-light {
+    --focus-outline-color: #2b6f99;
     --solid-bg-color: var(--night-500, #101012) !important;
     --persistent-player-slider-thumb-border: var(--night-500);
     --wnyc-logo-color: var(--red, #de1e3d) !important;
@@ -52,6 +53,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
+    --focus-outline-color: var(--spanish-orange);
     --solid-bg-color: var(--dark-blue-500, #101012) !important;
     --wnyc-logo-color: var(--white, #ffffff) !important;
     --bottom-menu-bg-color: var(--dark-blue-500, #101012) !important;
