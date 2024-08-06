@@ -41,7 +41,7 @@ const handleCutomTimeChange = (inc) => {
 <template>
   <div>
     <div class="sleep-timer px-3 pb-8 pt-6">
-      <h1 class="mb-3">Sleep Timer</h1>
+      <h1 class="mb-3" :class="[{ 'text-center': sleepTimerRunning }]">Sleep Timer</h1>
       <div
         v-if="!sleepTimerRunning"
         class="flex flex-column w-full align-items-stretch gap-3 style-mode-light"

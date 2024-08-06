@@ -83,7 +83,7 @@ export default function useSleepTimer(initialTime = 30) {
         globalToast.value = {
             severity: "success",
             summary: "Audio Paused. Sleep Timer Ended.",
-            closable: true,
+            life: 6000,
         }
     }
 
