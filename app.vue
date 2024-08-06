@@ -51,10 +51,10 @@ useHead({
     lang: "en",
   },
   script: [
-    {
-      src: `https://www.googletagmanager.com/gtag/js?id=${config.public.GA_MEASUREMENT_ID}`,
-      async: true,
-    },
+    // {
+    //   src: `https://www.googletagmanager.com/gtag/js?id=${config.public.GA_MEASUREMENT_ID}`,
+    //   async: true,
+    // },
   ],
   noscript: [
     {
