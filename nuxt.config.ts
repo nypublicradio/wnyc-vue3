@@ -152,6 +152,7 @@ export default defineNuxtConfig({
     '~/plugins/primevue.js',
     '~/plugins/router-guards.js',
     '~/plugins/error-handler.js',
+    '~/plugins/firebase.js',
   ],
 
   experimental: {
