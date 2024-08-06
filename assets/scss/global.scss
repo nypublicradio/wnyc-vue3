@@ -384,6 +384,9 @@ a:visited {
     color: var(--text-color) !important;
   }
 }
+::placeholder {
+  color: var(--placeholder-color);
+}
 
 .p-divider {
   .p-divider-content {
