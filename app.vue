@@ -50,18 +50,8 @@ useHead({
   htmlAttrs: {
     lang: "en",
   },
-  script: [
-    // {
-    //   src: `https://www.googletagmanager.com/gtag/js?id=${config.public.GA_MEASUREMENT_ID}`,
-    //   async: true,
-    // },
-  ],
-  noscript: [
-    {
-      children: `<iframe src=&quot;https://www.googletagmanager.com/ns.html?id=${config.public.GTM_ID}&quot;
-    height=&quot;0&quot; width=&quot;0&quot; style=&quot;display:none;visibility:hidden&quot;></iframe>`,
-    },
-  ],
+  script: [],
+  noscript: [],
 
   // bodyAttrs: {
   //   class: 'safe-area-padding',
