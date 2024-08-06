@@ -2,6 +2,7 @@
   <svg
     role="img"
     aria-label="play icon"
+    tabindex="-1"
     class="play-icon o-icon"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 10 13"
