@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { localUserProfileKey } from "~/composables/globals"
 import { trackClickEvent } from "~/utilities/helpers"
 import {
     useIsEpisodePlaying,
@@ -9,7 +10,9 @@ import {
     useSleepTimerInterval,
     useSleepTimerSelectedTime,
     useGlobalToast,
+    useCurrentUserProfile,
 } from "~/composables/states"
+import { Preferences } from "@capacitor/preferences"
 
 export default function useSleepTimer(initialTime = 30) {
     const isEpisodePlaying = useIsEpisodePlaying()
@@ -19,6 +22,7 @@ export default function useSleepTimer(initialTime = 30) {
     const sleepTimerCurrentTime = useSleepTimerCurrentTime()
     const sleepTimerInterval = useSleepTimerInterval()
     const sleepTimerSelectedTime = useSleepTimerSelectedTime()
+    const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
 
     const isPaused = ref(false)
@@ -65,6 +69,7 @@ export default function useSleepTimer(initialTime = 30) {
     }
 
     function onTimeEnd() {
+        // slowly decrease volume to 0
         if (isEpisodePlaying.value) {
             togglePlayTrigger.value = !togglePlayTrigger.value
         }
@@ -82,8 +87,7 @@ export default function useSleepTimer(initialTime = 30) {
         }
     }
 
-    async function onUpdateDuration(e) {
-        await nextTick()
+    function onUpdateDuration(e) {
         sleepTimerSelectedTime.value = e.value
         resetTimer()
         startTimer()
@@ -95,5 +99,26 @@ export default function useSleepTimer(initialTime = 30) {
         )
     }
 
-    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, isPaused }
+    async function updateUserPreferences(customTime) {
+        console.log("updating user preferences", customTime)
+        currentUserProfile.value.sleep_timer = customTime
+        const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
+        await Preferences.set({
+            key: localUserProfileKey,
+            value: currentUserProfileSTRING,
+        })
+    }
+
+    async function getUserPreferenceSleepTime() {
+        const userPreferences = await Preferences.get({ key: localUserProfileKey })
+        if (userPreferences.value) {
+            const userPreferencesObj = JSON.parse(userPreferences.value)
+            if (userPreferencesObj.sleep_timer) {
+                return userPreferencesObj.sleep_timer
+            }
+        }
+        return 90
+    }
+
+    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, isPaused, updateUserPreferences, getUserPreferenceSleepTime }
 }

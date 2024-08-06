@@ -9,6 +9,7 @@ const localUserProfileDefault: object = {
     receive_general_notifications: false,
     text_size: 'Normal',
     dark_mode: false,
+    sleep_timer: 90,
 }
 /**
  * Global state for the settings data

@@ -11,6 +11,8 @@ const {
   resetTimer,
   onUpdateDuration,
   isPaused,
+  updateUserPreferences,
+  getUserPreferenceSleepTime,
 } = useSleepTimer()
 
 const timeLengthOptions = [
@@ -22,8 +24,7 @@ const timeLengthOptions = [
 ]
 
 const timeToIncrement = 5
-
-const customTime = ref(90)
+const customTime = ref(await getUserPreferenceSleepTime())
 const handleCutomTimeChange = (inc) => {
   const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
   const destination = sleepTimerCurrentTime.value + seconds
@@ -31,17 +32,19 @@ const handleCutomTimeChange = (inc) => {
     sleepTimerCurrentTime.value += seconds
   } else {
     customTime.value += seconds / 60
+    // add preferred custom time to the local storage preferences
+    updateUserPreferences(customTime.value)
   }
-  // add preferred custom time to the local storage preferences
 }
 </script>
 
 <template>
   <div>
-    <div class="sleep-timer">
+    <div class="sleep-timer px-3 pb-8 pt-6">
+      <h1 class="mb-3">Sleep Timer</h1>
       <div
         v-if="!sleepTimerRunning"
-        class="py-8 flex align-items-center justify-content-center gap-2 style-mode-light"
+        class="flex flex-column w-full align-items-stretch gap-3 style-mode-light"
       >
         <DropupMenu
           id="sleep-timer-duration"
@@ -49,7 +52,7 @@ const handleCutomTimeChange = (inc) => {
           :options="timeLengthOptions"
           optionLabel="label"
           placeholder="Select a Sleep Timer Duration"
-          label="Sleep Timer Duration"
+          label="Sleep Timer"
           @change="onUpdateDuration"
           normal
           :checkMark="false"
@@ -157,6 +160,9 @@ const handleCutomTimeChange = (inc) => {
         line-height: 3rem;
       }
     }
+  }
+  .p-dropdown .p-dropdown-label .ans div {
+    justify-content: start !important;
   }
 }
 </style>

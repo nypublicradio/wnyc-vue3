@@ -40,7 +40,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.sleep-icon path {
+.sleep-icon {
   height: 28px;
   width: 28px;
 }
