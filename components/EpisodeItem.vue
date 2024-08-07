@@ -216,6 +216,10 @@ const handleHasAudio = computed(() => {
     <div
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       @click.prevent="handleClick"
+      @keypress.enter.space="handleClick"
+      tabindex="0"
+      aria-role="button"
+      :aria-label="`${props.data.showTitle} show details`"
     ></div>
     <div class="flex gap-3 w-full">
       <!-- <pre class="text-xs overflow-hidden">{{ props.data }}</pre> -->
@@ -228,6 +232,7 @@ const handleHasAudio = computed(() => {
         :ratio="[1, 1]"
         :srcset="[2]"
         style="height: 116px; width: 116px"
+        tabindex="-1"
       />
       <div class="flex gap-1 flex-column justify-content-between w-full">
         <div class="flex gap-1 flex-column w-full">

@@ -328,10 +328,18 @@ label {
 .p-button:focus,
 .p-link:focus,
 button:focus,
-a:focus {
+a:focus,
+.flexible-link:focus,
+.card-click:focus,
+.p-focus {
+  outline: solid 2px var(--focus-outline-color);
+  outline-offset: -2px;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
+}
+.p-button-icon-only:focus {
+  outline-offset: -7px;
 }
 a:visited {
   color: initial;
@@ -375,6 +383,9 @@ a:visited {
   .p-icon {
     color: var(--text-color) !important;
   }
+}
+::placeholder {
+  color: var(--placeholder-color);
 }
 
 .p-divider {
