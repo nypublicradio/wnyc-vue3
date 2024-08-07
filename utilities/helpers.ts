@@ -1164,7 +1164,7 @@ export const requestAccountDeletion = async () => {
   settingsSideBar.value = false
 
   // send user to the sign in page
-  await navigateTo('/')
+  await navigateTo('/home')
 
   // show toast confirmation of deletion request
   globalToast.value = {
