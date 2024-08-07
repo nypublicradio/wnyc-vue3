@@ -5,7 +5,6 @@ export default defineNuxtPlugin(async () => {
 
   // event to use when sending gtag events
   const sendEvent = async (name: string, params: Record<string, string>) => {
-    console.log('sendEvent', name, params)
     await FirebaseAnalytics.logEvent({
       name: name,
       params: params,
