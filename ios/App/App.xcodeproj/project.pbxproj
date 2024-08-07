@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 48;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -48,8 +48,6 @@
 		ED00331229F07F69001B53A0 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00331129F07F69001B53A0 /* NotificationService.swift */; };
 		ED00331629F07F69001B53A0 /* ImageNotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ED00330F29F07F69001B53A0 /* ImageNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ED4757F229D3595D00668579 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED4757F129D3595D00668579 /* GoogleService-Info.plist */; };
-		ED969E742C62BBFC0082F2C7 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED969E732C62BBFC0082F2C7 /* FirebaseAnalytics */; };
-		ED969E762C62BBFC0082F2C7 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ED969E752C62BBFC0082F2C7 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,8 +178,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED969E762C62BBFC0082F2C7 /* FirebaseMessaging in Frameworks */,
-				ED969E742C62BBFC0082F2C7 /* FirebaseAnalytics in Frameworks */,
 				986A281B192E980102A971D0 /* Pods_AppLocal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -377,8 +373,6 @@
 			);
 			name = AppLocal;
 			packageProductDependencies = (
-				ED969E732C62BBFC0082F2C7 /* FirebaseAnalytics */,
-				ED969E752C62BBFC0082F2C7 /* FirebaseMessaging */,
 			);
 			productName = App;
 			productReference = 2844BE752C3C2F2C0087D458 /* AppLocal.app */;
@@ -504,7 +498,6 @@
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
-				ED969E722C62BBFC0082F2C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
@@ -821,10 +814,7 @@
 				DEVELOPMENT_TEAM = 4337V994WQ;
 				INFOPLIST_FILE = "AppAlpha-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = org.nypr.ios.WNYC;
@@ -851,10 +841,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4337V994WQ;
 				INFOPLIST_FILE = "AppAlpha-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.nypr.ios.WNYC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -884,11 +871,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 4.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -922,11 +905,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 4.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.nypr.ios.WNYC.ImageNotification;
@@ -953,10 +932,7 @@
 				DEVELOPMENT_TEAM = 4337V994WQ;
 				INFOPLIST_FILE = "AppLocal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = org.nypr.ios.WNYC;
@@ -981,10 +957,7 @@
 				DEVELOPMENT_TEAM = 4337V994WQ;
 				INFOPLIST_FILE = "AppLocal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.nypr.ios.WNYC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1012,11 +985,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 4.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1047,11 +1016,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 4.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.nypr.ios.WNYC.ImageNotification;
@@ -1217,8 +1182,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1237,10 +1201,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4337V994WQ;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = org.wnyc.iphone;
@@ -1268,10 +1229,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4337V994WQ;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.wnyc.iphone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1301,11 +1259,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 4.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1339,11 +1293,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 4.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.wnyc.iphone.ImageNotification;
@@ -1433,30 +1383,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		ED969E722C62BBFC0082F2C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		ED969E732C62BBFC0082F2C7 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ED969E722C62BBFC0082F2C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		ED969E752C62BBFC0082F2C7 /* FirebaseMessaging */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ED969E722C62BBFC0082F2C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseMessaging;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;
 }
