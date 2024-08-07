@@ -34,23 +34,23 @@ end
 target 'App' do
   capacitor_pods
   # Add your Pods here
+  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '~/node_modules/@capacitor-firebase/analytics'
   pod 'Firebase/Messaging'
-  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '../../node_modules/@capacitor-firebase/analytics'
 
 end
 
 target 'AppAlpha' do
   capacitor_pods
   # Add your Pods here
+  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '.~/node_modules/@capacitor-firebase/analytics'
   pod 'Firebase/Messaging'
-  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '../../node_modules/@capacitor-firebase/analytics'
 end
 
 target 'AppLocal' do
   capacitor_pods
   # Add your Pods here
+  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '~/node_modules/@capacitor-firebase/analytics'
   pod 'Firebase/Messaging'
-  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '../../node_modules/@capacitor-firebase/analytics'
 end
 
 post_install do |installer|

@@ -4,14 +4,14 @@ import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 export default defineNuxtPlugin(async () => {
 
   // event to use when sending gtag events
-  const sendEvent = async (name: string, params: Record<string, string>) => {
+  const sendEvent = async (name, params) => {
     await FirebaseAnalytics.logEvent({
       name: name,
-      params: params,
+      params: [params],
     });
   }
   // gtag event for reporting on page views
-  const sendPageView = async (params: Record<string, string>) => {
+  const sendPageView = async (params) => {
     const currentUser = useCurrentUser()
     sendEvent('page_view', {
       page_location: document.location.href,
