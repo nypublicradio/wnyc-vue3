@@ -17,5 +17,6 @@
 .delete-user-icon {
   height: 28px;
   width: 28px;
+  opacity: 0.7;
 }
 </style>
