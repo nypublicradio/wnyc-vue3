@@ -994,7 +994,7 @@ interface AddToFavoritesParams {
   callback?: () => void;
 }
 // function to add to the favorites
-export const addToFavorites2 = async ({ item, isFavorited, message = "Updated your favorites.", callback }: AddToFavoritesParams) => {
+export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited ? "Removed from Favorites." : "Added to Favorites.", callback }: AddToFavoritesParams) => {
   const user = useCurrentUser();
   const accountPromptSideBar = useAccountPromptSideBar();
   if (user.value) {
