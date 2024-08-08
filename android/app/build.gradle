@@ -28,7 +28,7 @@ private String generateVersionName() {
     }
 
     if (ext.versionClassifier != null) {
-        versionName += "-" + ext.versionClassifer
+        versionName += "-" + ext.versionClassifier
     }
 
     return versionName
