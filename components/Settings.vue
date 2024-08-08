@@ -363,7 +363,7 @@ const onDeleteAccountClick = () => {
         "
       ></SBox>
       <SBox
-        v-if="!isDisabled"
+        v-if="currentUser"
         :is-link="true"
         label="Delete account"
         :ripple="false"
