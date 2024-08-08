@@ -14,8 +14,18 @@ ext.minSdkVersion = 34
 ext.circleCiBuildNumber = System.getenv("CIRCLE_BUILD_NUM") ?: "0"
 
 private Integer generateVersionCode() {
-    return ext.minSdkVersion * 10000000 + ext.versionMajor.toInteger() * 10000 +
-            ext.versionMinor.toInteger() * 100 + ext.versionPatch.toInteger() + ext.circleCiBuildNumber.toInteger()
+    int majorVersion = ext.versionMajor.toInteger()
+    int minorVersion = ext.versionMinor.toInteger()
+    int patchVersion = ext.versionPatch.toInteger()
+    int circleCiBuildNum = ext.circleCiBuildNumber.toInteger()
+
+    int versionCode = ext.minSdkVersion * 10000000 +
+                      majorVersion * 10000 +
+                      minorVersion * 100 +
+                      patchVersion +
+                      circleCiBuildNum
+
+    return versionCode
 }
 
 private String generateVersionName() {
