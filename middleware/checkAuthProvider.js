@@ -4,6 +4,7 @@ import {
 } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences'
 import { localUserProfileKey } from "~/composables/globals"
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 export default defineNuxtRouteMiddleware(async () => {
   const client = useSupabaseClient()
@@ -24,6 +25,10 @@ export default defineNuxtRouteMiddleware(async () => {
         })
         .match({ id: user.data.session.user.id })
     }
+
+    await FirebaseAnalytics.setUserId({
+      userId: currentUser.value.id,
+    })
   }
   if (process.client) {
     if (currentUser.value) {

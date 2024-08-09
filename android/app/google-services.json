@@ -1,37 +1,26 @@
 {
   "project_info": {
-    "project_number": "426209036575",
-    "firebase_url": "https://wnyc-app-android.firebaseio.com",
-    "project_id": "wnyc-app-android",
-    "storage_bucket": "wnyc-app-android.appspot.com"
+    "project_number": "162090348678",
+    "project_id": "wnyc-app-demo",
+    "storage_bucket": "wnyc-app-demo.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:426209036575:android:d4376ea8427ce382",
+        "mobilesdk_app_id": "1:162090348678:android:acbe9c06d49ffa5950a107",
         "android_client_info": {
           "package_name": "org.wnyc.android"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "426209036575-ppv8ste9tjn986dsc68da2f28pdpu9uu.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBOR0HDaViFGCGIy8D6A4RAGVNta4oopYk"
+          "current_key": "AIzaSyAVsLvw_wsbgHMzfA3sZ6fBvSeZN3RwkBI"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "426209036575-ppv8ste9tjn986dsc68da2f28pdpu9uu.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

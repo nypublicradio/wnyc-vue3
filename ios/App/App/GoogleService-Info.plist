@@ -2,33 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>431848840548-qu48s2ufvs6ghqsilhvfjs5jdke3b6lg.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.431848840548-qu48s2ufvs6ghqsilhvfjs5jdke3b6lg</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCfgS9x7Ay-8D-Z9K4XYszj6h6GoO2Nzi8</string>
+	<string>AIzaSyD4uY7n_OoIQa6Lp6lmfp09lK0Ov8tMkyA</string>
 	<key>GCM_SENDER_ID</key>
-	<string>431848840548</string>
+	<string>162090348678</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.wnyc.iphone</string>
+	<string>org.wnyc.android</string>
 	<key>PROJECT_ID</key>
-	<string>WNYC</string>
+	<string>wnyc-app-demo</string>
 	<key>STORAGE_BUCKET</key>
-	<string>wnyc-app.appspot.com</string>
+	<string>wnyc-app-demo.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:431848840548:ios:7ab6ec1f430ee8c5cf6e71</string>
+	<string>1:162090348678:ios:7878d7e413189b5050a107</string>
 </dict>
 </plist>

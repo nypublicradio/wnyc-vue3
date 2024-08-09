@@ -152,6 +152,7 @@ export default defineNuxtConfig({
     '~/plugins/primevue.js',
     '~/plugins/router-guards.js',
     '~/plugins/error-handler.js',
+    '~/plugins/firebase.js',
   ],
 
   experimental: {
@@ -174,7 +175,13 @@ export default defineNuxtConfig({
       AVIARY_BASE_API: process.env.AVIARY_BASE_API ?? 'https://cms.prod.nypr.digital/api/v2/',
       IMAGE_BASE_URL: process.env.IMAGE_BASE_URL ?? 'https://cms.prod.nypr.digital/images/',
       FEATURED_SHOWS: process.env.FEATURED_SHOWS ?? 'https://www.wnyc.org/api/v2/discover/shows/',
-      GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID ?? 'G-ZV3N92G65W',
+      FB_MEASUREMENT_ID: process.env.FB_MEASUREMENT_ID,
+      FB_API_KEY: process.env.FB_API_KEY,
+      FB_AUTH_DOMAIN: process.env.FB_AUTH_DOMAIN,
+      FB_PROJECT_ID: process.env.FB_PROJECT_ID,
+      FB_STORAGE_BUCKET: process.env.FB_STORAGE_BUCKET,
+      FB_MESSAGING_SENDER_ID: process.env.FB_MESSAGING_SENDER_ID,
+      FB_APP_ID: process.env.FB_APP_ID,
       BFF_URL: process.env.BFF_URL ?? 'https://demo.native-app.wnyc.org',
       GTM_ID: process.env.GTM_ID ?? 'GTM-TKFJ684',
       environment: process.env.environment ?? 'prod',
