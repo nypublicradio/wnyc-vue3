@@ -332,8 +332,8 @@ a:focus,
 .flexible-link:focus,
 .card-click:focus,
 .p-focus {
-  outline: solid 2px var(--focus-outline-color);
-  outline-offset: -2px;
+  outline: solid 3px var(--focus-outline-color);
+  outline-offset: -3px;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
