@@ -1,8 +1,24 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
+import { Capacitor } from "@capacitor/core"
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin(async () => {
     const config = useRuntimeConfig()
+
+    const platform = await Capacitor.getPlatform()
+    let thisAppId = null
+    switch (platform) {
+        case 'web':
+            thisAppId = config.public.FB_APP_ID_WEB
+            break
+        case 'android':
+            thisAppId = config.public.FB_APP_ID_ANDROID
+            break
+        case 'ios':
+            thisAppId = config.public.FB_APP_ID_IOS
+            break
+        default:
+    }
 
     const firebaseConfig = {
         apiKey: config.public.FB_API_KEY,
@@ -10,7 +26,7 @@ export default defineNuxtPlugin(() => {
         projectId: config.public.FB_PROJECT_ID,
         storageBucket: config.public.FB_STORAGE_BUCKET,
         messagingSenderId: config.public.FB_MESSAGING_SENDER_ID,
-        appId: config.public.FB_APP_ID,
+        appId: thisAppId,
         measurementId: config.public.FB_MEASUREMENT_ID,
     }
     const app = initializeApp(firebaseConfig)
