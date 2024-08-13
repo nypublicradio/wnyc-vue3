@@ -134,7 +134,6 @@ const addListeners = async () => {
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
     //when redirected to the app from a deep link, we need to exchange the url parame code for a session
-    //alert("event = " + JSON.stringify(event))
     //console.log("event = ", event)
     const code = event.url.split("=")[1]
     //alert("code = " + JSON.stringify(code))
@@ -142,13 +141,22 @@ const addListeners = async () => {
     const cleanCode = code.replace("#", "")
     //console.log("code = ", code)
     if (cleanCode) {
-      //alert("cleanCode = " + JSON.stringify(cleanCode))
-      await client.auth.exchangeCodeForSession(cleanCode)
-      //alert("route")
-      navigateTo("/")
-      //alert("refresh")
-      window.location.reload()
+      try {
+        await client.auth.exchangeCodeForSession(cleanCode)
+        //alert("route")
+        navigateTo("/")
+        //alert("refresh")
+        window.location.reload()
+      } catch (error) {
+        console.error(error)
+        toast.add({
+          severity: "error",
+          summary: "Authentication failed",
+          life: 6000,
+        })
+      }
     } else {
+      console.error("No code or wrong code in the auth event.url")
       // show toast error
       toast.add({
         severity: "error",
