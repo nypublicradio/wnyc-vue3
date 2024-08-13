@@ -148,6 +148,7 @@ const addListeners = async () => {
         //alert("refresh")
         window.location.reload()
       } catch (error) {
+        console.error(error)
         toast.add({
           severity: "error",
           summary: "Authentication failed",
@@ -155,6 +156,7 @@ const addListeners = async () => {
         })
       }
     } else {
+      console.error("No code or wrong code in the auth event.url")
       // show toast error
       toast.add({
         severity: "error",
