@@ -113,7 +113,7 @@ const switchEpisode = async (val) => {
   await RemoteStreamer.stop()
   currentEpisode.value = val
   isStreamLoading.value = true
-  isLiveStream.value = val.hls ? true : false
+  //isLiveStream.value = val.hls ? true : false
   await nextTick()
   await RemoteStreamer.play({
     url: getConfiguredAudioUrl.value,

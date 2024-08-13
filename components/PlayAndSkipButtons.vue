@@ -13,6 +13,10 @@ const props = defineProps({
     default: false,
     type: Boolean,
   },
+  liveOnly: {
+    default: false,
+    type: Boolean,
+  },
 })
 
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -39,6 +43,10 @@ const skipBack = () => {
 const isLive = computed(() => {
   return isLiveStream.value
 })
+
+const isLiveOnly = computed(() => {
+  return props.liveOnly && isLiveStream.value
+})
 </script>
 
 <template>
@@ -54,8 +62,9 @@ const isLive = computed(() => {
         <template #icon> <Previous10 /></template>
       </Button>
     </template>
+
     <Button
-      v-if="isEpisodePlaying && !isStreamLoading"
+      v-if="isEpisodePlaying && isLiveOnly && !isStreamLoading"
       severity="secondary"
       rounded
       aria-label="pause"
