@@ -19,6 +19,7 @@ const config = useRuntimeConfig()
 const allCurrentStations = useAllCurrentStations()
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isLiveStream = useIsLiveStream()
 const currentStreamStation = useCurrentStreamStation()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -44,6 +45,7 @@ const switchStation = async (station) => {
       await updateLiveStream(station.slug)
       togglePlayTrigger.value = !togglePlayTrigger.value
       currentEpisode.value = station
+      isLiveStream.value = true
     } else {
       currentEpisode.value = null
       currentStreamStation.value = station.slug
@@ -325,7 +327,11 @@ onUnmounted(() => {
         <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
-      <PlayAndSkipButtons :hideSkip="true" @beforeTogglePlay="togglePlayHere" />
+      <PlayAndSkipButtons
+        :hideSkip="true"
+        :liveOnly="true"
+        @beforeTogglePlay="togglePlayHere"
+      />
     </div>
     <section class="schedule">
       <h2>Schedule</h2>

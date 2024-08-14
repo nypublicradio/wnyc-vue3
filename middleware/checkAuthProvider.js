@@ -15,7 +15,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
   // update the user's profile (name and image) if they signed up with google
   const updateUser = async () => {
-    if (user.data.session.user.app_metadata.provider === 'google') {
+    if (user.data.session?.user.app_metadata.provider === 'google') {
       await client
         .from('profiles')
         .update({
@@ -25,11 +25,13 @@ export default defineNuxtRouteMiddleware(async () => {
         })
         .match({ id: user.data.session.user.id })
     }
-
-    await FirebaseAnalytics.setUserId({
-      userId: currentUser.value.id,
-    })
+    if (currentUser.value) {
+      await FirebaseAnalytics.setUserId({
+        userId: currentUser.value.id,
+      })
+    }
   }
+
   if (process.client) {
     if (currentUser.value) {
       // check local storage for the auth token
@@ -84,4 +86,3 @@ export default defineNuxtRouteMiddleware(async () => {
   }
 
 })
-
