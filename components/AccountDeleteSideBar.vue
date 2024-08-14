@@ -1,10 +1,9 @@
 <script setup>
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { requestAccountDeletion } from "~/utilities/helpers"
-import { useAccountDeleteSideBar, useCurrentUserProfile } from "~/composables/states.ts"
+import { useAccountDeleteSideBar } from "~/composables/states.ts"
 
 const accountDeleteSideBar = useAccountDeleteSideBar()
-const currentUserProfile = useCurrentUserProfile()
 </script>
 
 <template>

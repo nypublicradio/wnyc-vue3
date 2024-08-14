@@ -46,7 +46,6 @@ const switchStation = async (station) => {
       togglePlayTrigger.value = !togglePlayTrigger.value
       currentEpisode.value = station
       isLiveStream.value = true
-      console.log("switching")
     } else {
       currentEpisode.value = null
       currentStreamStation.value = station.slug
