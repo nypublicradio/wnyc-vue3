@@ -1139,6 +1139,9 @@ export const logOutUser = async () => {
   currentEpisodeHolder.value = null
   isEpisodePlaying.value = false
 
+  // clear the local storage
+  await Preferences.clear()
+
   getAndSetUserProfile()
 }
 
