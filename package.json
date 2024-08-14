@@ -12,7 +12,7 @@
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.1.0",
+    "@capacitor/cli": "^6.1.2",
     "@nuxtjs/device": "^3.1.0",
     "@nuxtjs/ionic": "0.13.1",
     "@sentry/vite-plugin": "^2.21.1",
@@ -23,16 +23,16 @@
   },
   "dependencies": {
     "@capacitor-firebase/analytics": "^6.1.0",
-    "@capacitor/android": "^6.1.0",
+    "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.0",
     "@capacitor/assets": "3.0.4",
     "@capacitor/browser": "^6.0.0",
     "@capacitor/clipboard": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
+    "@capacitor/core": "^6.1.2",
     "@capacitor/device": "^6.0.0",
     "@capacitor/filesystem": "^6.0.0",
     "@capacitor/haptics": "^6.0.0",
-    "@capacitor/ios": "^6.1.0",
+    "@capacitor/ios": "^6.1.2",
     "@capacitor/keyboard": "^6.0.0",
     "@capacitor/local-notifications": "^6.0.0",
     "@capacitor/network": "^6.0.0",
