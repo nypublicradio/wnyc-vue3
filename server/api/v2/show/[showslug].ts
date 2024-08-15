@@ -13,145 +13,132 @@ const nyprDb = new NyprDb(supabase);
 const npr = new NPR();
 
 const getNPREpisodes = async (slug: string, type: string, pageSize: string, page: number) => {
-    try {
-        const show = await nyprDb.getNPRShowBySlug(slug);
-        // Fetching the episodes from the NPR API and normalizing the data
-        const option = {
-            method: 'GET',
-            url: `${config.public.NPR_CDS_API}/v1/documents`,
-            headers: {
-                Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
-            },
-            params: {
-                profileIds: 'program-episode',
-                collectionIds: show[0].showId,
-                sort: 'publishDateTime:desc',
-            },
 
-        };
-        const res = await axios(option);
+    const show = await nyprDb.getNPRShowBySlug(slug);
+    // Fetching the episodes from the NPR API and normalizing the data
+    const option = {
+        method: 'GET',
+        url: `${config.public.NPR_CDS_API}/v1/documents`,
+        headers: {
+            Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+        },
+        params: {
+            profileIds: 'program-episode',
+            collectionIds: show[0].showId,
+            sort: 'publishDateTime:desc',
+        },
 
-        let episodes = [];
-        episodes = await Promise.all(res.data.resources.map(async (item) => {
-            const audio = await npr.findAudio(item);
-            return {
-                id: item.id,
-                title: item.title,
-                tease: item.teaser,
-                meta: {
-                    slug: item.id,
-                    firstPublishedAt: item.publishDateTime,
-                },
-                slug: item.slug,
-                publicationDate: item.publishDateTime,
-                sortDate: item.publishDateTime,
-                cmsSource: cmsSources.NPR,
-                type: 'episode',
-                audio: audio,
-                imageMain: { FALLBACKIMAGE },
-            };
-        }));
+    };
+    const res = await axios(option);
 
+    let episodes = [];
+    episodes = await Promise.all(res.data.resources.map(async (item) => {
+        const audio = await npr.findAudio(item);
         return {
-            data: episodes,
+            id: item.id,
+            title: item.title,
+            tease: item.teaser,
             meta: {
-                pagination: {
-                    page: page,
-                    pages: 1000,
-                    count: 10000,
-                }
-            }
+                slug: item.id,
+                firstPublishedAt: item.publishDateTime,
+            },
+            slug: item.slug,
+            publicationDate: item.publishDateTime,
+            sortDate: item.publishDateTime,
+            cmsSource: cmsSources.NPR,
+            type: 'episode',
+            audio: audio,
+            imageMain: { FALLBACKIMAGE },
         };
-    } catch (e) {
-        console.error('getNPREpisodes error = ', e);
-    }
+    }));
+
+    return {
+        data: episodes,
+        meta: {
+            pagination: {
+                page: page,
+                pages: 1000,
+                count: 10000,
+            }
+        }
+    };
 };
 
 const getEpisodes = async (slug: string, showImage: string, type?: string, pageSize?: string, page?: number) => {
-    try {
-        // If page is not defined, set it to 1
-        if (!page) {
-            page = 1;
-        }
-        const option = {
-            method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v3/story/`,
-            params: {
-                [type]: slug,
-                // channel: slug,
-                ordering: '-newsdate',
-                page,
-                page_size: Number(pageSize),
-                audio_only: true,
-            }
-        };
-        const res = await axios(option);
-        const resData = await Promise.all(res.data.data.map(async (item: any) => {
-            item.cmsSource = cmsSources.PUBLISHER;
-            item.showImage = showImage;
-            return await normalizeArticlePage(humps.camelizeKeys(item))
-        }));
-        //Passing meta and data separately to the client. Meta is to used for pagination
-        return {
-            data: resData,
-            meta: humps.camelizeKeys(res.data).meta
-        };
-    } catch (e) {
-        console.error('getEpisodes error = ', e);
+    // If page is not defined, set it to 1
+    if (!page) {
+        page = 1;
     }
-    return null;
-
+    const option = {
+        method: 'GET',
+        url: `${config.public.PUBLISHER_BASE_API}v3/story/`,
+        params: {
+            [type]: slug,
+            // channel: slug,
+            ordering: '-newsdate',
+            page,
+            page_size: Number(pageSize),
+            audio_only: true,
+        }
+    };
+    const res = await axios(option);
+    const resData = await Promise.all(res.data.data.map(async (item: any) => {
+        item.cmsSource = cmsSources.PUBLISHER;
+        item.showImage = showImage;
+        return await normalizeArticlePage(humps.camelizeKeys(item))
+    }));
+    //Passing meta and data separately to the client. Meta is to used for pagination
+    return {
+        data: resData,
+        meta: humps.camelizeKeys(res.data).meta
+    };
 }
 
 // gets the publisher show data
 const getShow = async (slug: string) => {
-    try {
-        const nprShows = await nyprDb.getNPRShowBySlug(slug);
-        if (nprShows) {
-            const fetchedShows = await Promise.all(nprShows.map(async (show) => {
-                const options = {
-                    method: 'GET',
-                    url: `${config.public.NPR_CDS_API}/v1/documents/${show.showId}`,
-                    headers: {
-                        Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
-                    }
-                };
-                const { data } = await axios(options);
-                const image = npr.findImageUrl(data);
-                return {
-                    id: show.showId,
-                    title: show.title,
-                    slug: show.slug,
-                    description: data.resources[0]?.teaser,
-                    tease: data.resources[0]?.shortTeaser,
-                    image: image,
-                    cmsSource: cmsSources.NPR,
-                    type: cmsSources.NPR,
-                    url: data.resources[0]?.webPages[0]?.href,
-                }
-            }));
-            return fetchedShows;
-        } else {
-            const option = {
+
+    const nprShows = await nyprDb.getNPRShowBySlug(slug);
+    if (nprShows) {
+        const fetchedShows = await Promise.all(nprShows.map(async (show) => {
+            const options = {
                 method: 'GET',
-                url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
+                url: `${config.public.NPR_CDS_API}/v1/documents/${show.showId}`,
+                headers: {
+                    Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+                }
             };
-            const res = await axios(option);
-            const resData = humps.camelizeKeys(res.data).results;
-            // Find the show from the list of shows
-            const show = resData.find((s) => {
-                return s.slug === slug
-            });
-            show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
-            show.cmsSource = cmsSources.PUBLISHER
-            show.type = mediaTypes.SHOW
-            show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
-            return show;
-        }
-    } catch (e) {
-        console.error('getShow error = ', e);
+            const { data } = await axios(options);
+            const image = npr.findImageUrl(data);
+            return {
+                id: show.showId,
+                title: show.title,
+                slug: show.slug,
+                description: data.resources[0]?.teaser,
+                tease: data.resources[0]?.shortTeaser,
+                image: image,
+                cmsSource: cmsSources.NPR,
+                type: cmsSources.NPR,
+                url: data.resources[0]?.webPages[0]?.href,
+            }
+        }));
+        return fetchedShows;
+    } else {
+        const option = {
+            method: 'GET',
+            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
+        };
+        const res = await axios(option);
+        const resData = humps.camelizeKeys(res.data).results;
+        // Find the show from the list of shows
+        const show = resData.find((s) => {
+            return s.slug === slug
+        });
+        show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
+        show.cmsSource = cmsSources.PUBLISHER
+        show.type = mediaTypes.SHOW
+        show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
+        return show;
     }
-    return null
 }
 
 export default defineEventHandler(async (event) => {

@@ -3,6 +3,8 @@
  */
 
 export class NyprDb {
+    supabase: any;
+
     constructor(supabase) {
         this.supabase = supabase;
     }
