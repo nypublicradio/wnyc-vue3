@@ -22,5 +22,6 @@ echo "APP_VERSION_MAJOR=$(echo ${APP_VERSION} | cut -d. -f1 | cut -c2-)" >> loca
 echo "APP_VERSION_MINOR=$(echo ${APP_VERSION} | cut -d. -f2)" >> local-env
 echo "APP_VERSION_PATCH=$(echo ${APP_VERSION} | cut -d. -f3)" >> local-env
 echo "APP_SHORT_VERSION=$(echo ${APP_VERSION} | cut -d. -f1 | cut -c2-).$(echo ${APP_VERSION} | cut -d. -f2)" >> local-env
+echo "APP_LONG_VERSION=$(echo ${APP_VERSION} | cut -d. -f1 | cut -c2-).$(echo ${APP_VERSION} | cut -d. -f2).$(echo ${APP_VERSION} | cut -d. -f3)" >> local-env
 cat local-env | sed 's/\(^[^=]*\)=\(.*\)/export \1="\2"/' >> ~/.bash_profile
 source ~/.bash_profile
