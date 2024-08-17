@@ -163,6 +163,7 @@ jobs:
     steps:
       - checkout
       - setup_mobile_env
+      - gservice_config
       - ruby/install-deps:
           app-dir: ios/App
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "ios/App/Gemfile.lock" }}
@@ -210,6 +211,7 @@ jobs:
     steps:
       - checkout
       - setup_mobile_env
+      - gservice_config
       - ruby/install-deps:
           app-dir: android
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "android/Gemfile.lock" }}
@@ -294,6 +296,13 @@ commands:
           name: Setup mobile environment
           command: |
             bash ./scripts/rename_env_vars.sh
+
+  gservice_config:
+    steps:
+      - run:
+          name: Setup Google Service Files on iOS and Android
+          command: |
+            bash ./scripts/gservice_config.sh
     
 executors:
   default:

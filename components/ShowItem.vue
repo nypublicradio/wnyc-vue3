@@ -87,7 +87,14 @@ const getDotMenuItems = (bucketItem) => {
     v-ripple
     v-if="props.data"
   >
-    <div class="flex gap-3 w-full" @click="emit('on-click')">
+    <div
+      class="card-click flex gap-3 w-full"
+      @click="emit('on-click')"
+      @keypress.enter.space="emit('on-click')"
+      tabindex="0"
+      aria-role="button"
+      :aria-label="`${props.data.title} show details`"
+    >
       <VImage
         :src="props.data.image.template ?? props.data.image.url"
         :height="116"

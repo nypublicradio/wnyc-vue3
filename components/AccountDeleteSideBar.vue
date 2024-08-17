@@ -1,10 +1,9 @@
 <script setup>
 import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { requestAccountDeletion } from "~/utilities/helpers"
-import { useAccountDeleteSideBar, useCurrentUserProfile } from "~/composables/states.ts"
+import { useAccountDeleteSideBar } from "~/composables/states.ts"
 
 const accountDeleteSideBar = useAccountDeleteSideBar()
-const currentUserProfile = useCurrentUserProfile()
 </script>
 
 <template>
@@ -19,21 +18,17 @@ const currentUserProfile = useCurrentUserProfile()
       </p>
       <div class="text-center">
         <div class="s-user my-8">
-          <Avatar
-            v-if="currentUserProfile?.avatar_image_url"
-            :image="currentUserProfile?.avatar_image_url"
-            size="large"
-            shape="circle"
-          />
-          <div v-else class="p-avatar">
+          <div class="p-avatar">
             <DeleteUserIcon />
           </div>
         </div>
         <Button class="px-8 mb-4" @click="requestAccountDeletion()" label="Delete" />
         <div class="mb-4 w-6 m-auto">
-        <p>
-          <VFlexibleLink to="#" @click="accountDeleteSideBar = false"> Go back </VFlexibleLink>
-        </p>
+          <p>
+            <VFlexibleLink to="#" @click="accountDeleteSideBar = false">
+              Go back
+            </VFlexibleLink>
+          </p>
         </div>
       </div>
     </section>

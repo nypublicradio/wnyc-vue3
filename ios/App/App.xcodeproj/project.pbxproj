@@ -372,6 +372,8 @@
 				2844BE822C3C332E0087D458 /* PBXTargetDependency */,
 			);
 			name = AppLocal;
+			packageProductDependencies = (
+			);
 			productName = App;
 			productReference = 2844BE752C3C2F2C0087D458 /* AppLocal.app */;
 			productType = "com.apple.product-type.application";
@@ -495,6 +497,8 @@
 				Base,
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
+			packageReferences = (
+			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
