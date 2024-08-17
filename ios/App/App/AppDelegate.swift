@@ -25,8 +25,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if #available(iOS 17.0, *) {
             webView.configuration.preferences.inactiveSchedulingPolicy = .none
+        } else {
+            webView.configuration.preferences.setValue(false, forKey: "allowInfiniteMediaPlayback")
         }
-
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
