@@ -43,7 +43,7 @@ workflows:
             - build
       - nypr-deploy/build_and_deploy:
           <<: *filter_demo
-          name: Deploy (demo)
+          name: Deploy(demo)
           context: "AWS Deploy"
           env: "demo"
           repo: "wnyc-vue3"
@@ -56,7 +56,7 @@ workflows:
             - test_nginx
       - nypr-deploy/build_and_deploy:
           <<: *filter_prod
-          name: Deploy (prod)
+          name: Deploy(prod)
           context: "AWS Deploy"
           env: "prod"
           repo: "wnyc-vue3"
