@@ -1,4 +1,3 @@
-import { MediaSession } from '@christoffyw/capacitor-media-session'
 import { getDate, imageSolver } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsApp, useIsLiveStream } from "~/composables/states"
 import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
@@ -72,11 +71,13 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
             isLiveStream: isLiveStream.value,
         })
     } else {
-        MediaSession.setMetadata({
-            title: currentEpisode.title,
-            artist: getDate(currentEpisode),
-            album: currentEpisode.showTitle,
-            artwork: artworkImageArray
-        })
+        if ("mediaSession" in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: currentEpisode.title,
+                artist: getDate(currentEpisode),
+                album: currentEpisode.showTitle,
+                artwork: artworkImageArray
+            })
+        }
     }
 }
