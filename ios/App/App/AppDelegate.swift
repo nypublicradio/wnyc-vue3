@@ -8,27 +8,29 @@ import FirebaseCore
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var webView: WKWebView?
+    
+    private func getWebView() -> WKWebView? {
+        return (window?.rootViewController as? CAPBridgeViewController)?.bridge?.webView
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         return true
     }
-
-    private func getWebView() -> WKWebView? {
-        return (window?.rootViewController as? CAPBridgeViewController)?.bridge?.webView
-    }
-    func willFinishLoadingWithOptions(_ application: UIApplication) {
-        guard let webView = getWebView() else {
-            print("Unable to setup WebView: WebView is nil")
-            return
-        }
-        
-        if #available(iOS 17.0, *) {
-            webView.configuration.preferences.inactiveSchedulingPolicy = .none
-        } else {
-            webView.configuration.preferences.setValue(false, forKey: "allowInfiniteMediaPlayback")
-        }
-    }
+    
+//    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+//        // print("App launching... \(getWebView())")
+//        // guard let webView = getWebView(), #available(iOS 17.0, *) else {
+//        //     print("Unsupported iOS version or unable to access WebView.")
+//        //     return false
+//        // }
+//
+//        // webView.configuration.preferences.inactiveSchedulingPolicy = .none
+//        // print("Inactive scheduling policy set to none.")
+//
+//        // return true
+//    }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -44,9 +46,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
 
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    }
+     func applicationDidBecomeActive(_ application: UIApplication) {
+         print("---------------------------App launching... \(getWebView())")
+         webView = getWebView() // Assign the result of getWebView() to webView
+      
+        if(webView !== nil){
+            if #available(iOS 17.0, *) {
+                let preferences = webView?.configuration.preferences
+                if preferences !== nil {
+                    preferences?.inactiveSchedulingPolicy = .none
+                    //webView?.configuration.preferences.inactiveSchedulingPolicy = .none
+
+                    print("JavaScript Enabled: \(preferences?.javaScriptEnabled)")
+                    print("inactiveSchedulingPolicy: \(preferences?.inactiveSchedulingPolicy.rawValue)")
+                    // Add more properties as needed
+    
+                    // Check if the inactiveSchedulingPolicy was successfully set to .none
+                    if preferences?.inactiveSchedulingPolicy.rawValue == 2 {
+                        print("----------inactiveSchedulingPolicy was successfully set to .none")
+                    } else {
+                        print("----------Failed to set inactiveSchedulingPolicy to .none")
+                    }
+                }
+            } else {
+                //webView.configuration.preferences.setValue(false, forKey: "allowInfiniteMediaPlayback")
+            }
+        }
+        //return true
+         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+     }
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.

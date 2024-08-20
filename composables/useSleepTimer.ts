@@ -13,6 +13,8 @@ import {
     useCurrentUserProfile,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
+import { clearInterval, setInterval } from 'worker-timers';
+
 
 export default function useSleepTimer(initialTime = 30) {
     const isEpisodePlaying = useIsEpisodePlaying()
