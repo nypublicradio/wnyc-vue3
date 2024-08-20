@@ -38,6 +38,13 @@ export default function useSleepTimer(initialTime = 30) {
         return `${cHours}${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
     })
 
+    function clearTheInterval() {
+        clearInterval(sleepTimerInterval.value)
+        sleepTimerInterval.value = null
+        chunckedTime.value = 0
+        console.log('interval cleared')
+    }
+
     function startTimer(repeat = false) {
         console.log('new interval')
         sleepTimerRunning.value = true
@@ -56,14 +63,12 @@ export default function useSleepTimer(initialTime = 30) {
                 if (sleepTimerCurrentTime.value > 0) {
                     sleepTimerCurrentTime.value--
                 } else {
-                    clearInterval(sleepTimerInterval.value)
-                    chunckedTime.value = 0
+                    clearTheInterval()
                     onTimeEnd() // Function to call when time ends
                 }
             } else {
                 // restart new interval
-                clearInterval(sleepTimerInterval.value)
-                chunckedTime.value = 0
+                clearTheInterval()
                 startTimer(true)
             }
         }, 1000)
@@ -71,11 +76,11 @@ export default function useSleepTimer(initialTime = 30) {
 
     function pauseTimer() {
         isPaused.value = true
-        clearInterval(sleepTimerInterval.value)
+        clearTheInterval()
     }
 
     function resetTimer() {
-        clearInterval(sleepTimerInterval.value)
+        clearTheInterval()
         sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.value
         sleepTimerRunning.value = false
         sleepTimerSideBar.value = false
@@ -96,7 +101,7 @@ export default function useSleepTimer(initialTime = 30) {
         globalToast.value = {
             severity: "success",
             summary: "Audio Paused. Sleep Timer Ended.",
-            life: 6000,
+            //life: 6000,
         }
     }
 
