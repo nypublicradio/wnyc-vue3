@@ -4,6 +4,7 @@ orbs:
   ruby: circleci/ruby@2.1.0
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
+  nypr-deploy: nypr/nypr-deploy@0.0.19
 
 filter_all: &filter_all
   filters:
@@ -40,19 +41,29 @@ workflows:
           <<: *filter_all
           requires:
             - build
-      - deploy:
+      - nypr-deploy/build_and_deploy:
+          <<: *filter_demo
           name: Deploy (demo)
           context: "AWS Deploy"
-          <<: *filter_demo
-          tag: demo
+          env: "demo"
+          repo: "wnyc-vue3"
+          service: "wnyc-vue3"
+          cluster: "wnyc-vue3"
+          cpu: 1024
+          memory: 2048
           requires:
             - test
             - test_nginx
-      - deploy:
+      - nypr-deploy/build_and_deploy:
+          <<: *filter_prod
           name: Deploy (prod)
           context: "AWS Deploy"
-          env: prod
-          <<: *filter_prod
+          env: "prod"
+          repo: "wnyc-vue3"
+          service: "wnyc-vue3"
+          cluster: "wnyc-vue3"
+          cpu: 1024
+          memory: 2048
           requires:
             - test
             - test_nginx
@@ -239,47 +250,6 @@ jobs:
       - android/save-gradle-cache
       - store_artifacts:
           path: android/app/build/outputs/apk
-  deploy:
-    docker: 
-      - image: cimg/python:3.8
-    parameters:
-      env:
-        type: enum
-        default: "demo"
-        enum: ["demo", "prod"]
-      tag:
-        type: string
-        default: ""
-    steps:
-      - checkout
-      - setup_npmrc
-      - setup_remote_docker         
-      - run:
-          name: Deploy
-          environment:
-            ENV: <<parameters.env>>
-            TAG: <<parameters.tag>>
-            ISAPP: "false"
-            ROLE: wnyc-vue3-<<parameters.env>>
-          command: |
-            TAG=${TAG:-$CIRCLE_TAG}
-
-            python3 -m venv ~/.venv
-            source ~/.venv/bin/activate
-            pip3 install -U git+https://github.com/nypublicradio/nyprsetuptools.git
-            
-            nyprsetuptools DockerDeploy \
-              --fargate \
-              --cpu=1024 \
-              --memory-reservation=2048 \
-              --ecr-repository=wnyc-vue3 \
-              --ecs-cluster=wnyc-vue3 \
-              --ports=8080 \
-              --execution-role=$ROLE \
-              --task-role=$ROLE \
-              --environment=$ENV \
-              --tag=$TAG \
-              --wait=300 
 
 commands:
   setup_npmrc:
