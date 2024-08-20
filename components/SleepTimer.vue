@@ -16,7 +16,7 @@ const {
 } = useSleepTimer()
 
 const timeLengthOptions = [
-  { label: "10 seconds", value: 10 },
+  { label: "31 seconds", value: 31 },
   { label: "15 minutes", value: 900 },
   { label: "30 minutes", value: 1800 },
   { label: "45 minutes", value: 2700 },
@@ -25,15 +25,20 @@ const timeLengthOptions = [
 
 const timeToIncrement = 5
 const customTime = ref(await getUserPreferenceSleepTime())
-const handleCutomTimeChange = (inc) => {
+const handleCustomTimeChange = (inc) => {
+  const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
+  console.log("customTime.value", customTime.value)
+  if (customTime.value + seconds / 60 >= 5) {
+    customTime.value += seconds / 60
+    // add preferred custom time to the local storage preferences
+    updateUserPreferences(customTime.value)
+  }
+}
+const handleCurrentTimeChange = (inc) => {
   const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
   const destination = sleepTimerCurrentTime.value + seconds
   if (sleepTimerRunning.value && destination > 0) {
     sleepTimerCurrentTime.value += seconds
-  } else {
-    customTime.value += seconds / 60
-    // add preferred custom time to the local storage preferences
-    updateUserPreferences(customTime.value)
   }
 }
 </script>
@@ -74,7 +79,7 @@ const handleCutomTimeChange = (inc) => {
                   outlined
                   severity="secondary"
                   aria-label="subtract time"
-                  @click.stop="handleCutomTimeChange(false)"
+                  @click.stop="handleCustomTimeChange(false)"
                 />
                 <Button
                   icon="pi pi-plus"
@@ -82,7 +87,7 @@ const handleCutomTimeChange = (inc) => {
                   outlined
                   severity="secondary"
                   aria-label="add time"
-                  @click.stop="handleCutomTimeChange(true)"
+                  @click.stop="handleCustomTimeChange(true)"
                 />
               </div>
             </div>
@@ -105,7 +110,7 @@ const handleCutomTimeChange = (inc) => {
               outlined
               severity="secondary"
               aria-label="subtract time"
-              @click="handleCutomTimeChange(false)"
+              @click="handleCurrentTimeChange(false)"
             />
             <p class="time">{{ formattedTime }}</p>
             <Button
@@ -115,7 +120,7 @@ const handleCutomTimeChange = (inc) => {
               outlined
               severity="secondary"
               aria-label="add time"
-              @click="handleCutomTimeChange(true)"
+              @click="handleCurrentTimeChange(true)"
             />
           </div>
           <div class="flex">

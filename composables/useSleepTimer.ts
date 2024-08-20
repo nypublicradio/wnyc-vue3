@@ -27,6 +27,9 @@ export default function useSleepTimer(initialTime = 30) {
 
     const isPaused = ref(false)
 
+    const chunck = 60
+    const chunckedTime = ref(0)
+
     const formattedTime = computed(() => {
         const hours = Math.floor(sleepTimerCurrentTime.value / 3600)
         const minutes = Math.floor((sleepTimerCurrentTime.value % 3600) / 60)
@@ -35,9 +38,10 @@ export default function useSleepTimer(initialTime = 30) {
         return `${cHours}${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
     })
 
-    function startTimer() {
+    function startTimer(repeat = false) {
+        console.log('new interval')
         sleepTimerRunning.value = true
-        if (!isPaused.value) {
+        if (!isPaused.value && !repeat) {
             globalToast.value = {
                 severity: "info",
                 summary: `Sleep timer started for ${sleepTimerSelectedTime.value.label}`,
@@ -47,11 +51,20 @@ export default function useSleepTimer(initialTime = 30) {
         }
         isPaused.value = false
         sleepTimerInterval.value = setInterval(() => {
-            if (sleepTimerCurrentTime.value > 0) {
-                sleepTimerCurrentTime.value--
+            if (chunckedTime.value < chunck) {
+                chunckedTime.value++
+                if (sleepTimerCurrentTime.value > 0) {
+                    sleepTimerCurrentTime.value--
+                } else {
+                    clearInterval(sleepTimerInterval.value)
+                    chunckedTime.value = 0
+                    onTimeEnd() // Function to call when time ends
+                }
             } else {
+                // restart new interval
                 clearInterval(sleepTimerInterval.value)
-                onTimeEnd() // Function to call when time ends
+                chunckedTime.value = 0
+                startTimer(true)
             }
         }, 1000)
     }
