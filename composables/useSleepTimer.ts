@@ -15,9 +15,8 @@ import {
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { clearInterval, setInterval } from 'worker-timers';
-
-
-export default async function useSleepTimer(initialTime = 30) {
+const { platform, osVersion } = await Device.getInfo();
+export default function useSleepTimer(initialTime = 30) {
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
     const sleepTimerRunning = useSleepTimerRunning()
@@ -28,7 +27,7 @@ export default async function useSleepTimer(initialTime = 30) {
     const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
 
-    const { platform, osVersion } = await Device.getInfo();
+    //const { platform, osVersion } = await Device.getInfo();
 
     const isPaused = ref(false)
 
@@ -50,6 +49,8 @@ export default async function useSleepTimer(initialTime = 30) {
     }
 
     function startTimer(repeat = false) {
+        //console.log("_______________platform", platform)
+        //console.log("_______________osVersion", parseFloat(osVersion))
         if (platform === 'ios' && parseFloat(osVersion) < 17) {
             globalToast.value = {
                 severity: "error",
