@@ -84,6 +84,9 @@ const handleStartTimer = (obj) => {
           :checkMark="false"
         >
           <template #footer="slotpProps">
+            <hr />
+            <p>Custom time:</p>
+
             <div
               class="flex align-items-center justify-content-between"
               @click="
@@ -126,12 +129,14 @@ const handleStartTimer = (obj) => {
           <div class="time-holder flex align-items-center justify-content-between">
             <Button
               class="mr-3"
+              :class="[{ 'opacity-20': sleepTimerCurrentTime < timeToIncrement * 60 }]"
               icon="pi pi-minus"
               rounded
               outlined
               severity="secondary"
               aria-label="subtract time"
               @click="handleCurrentTimeChange(false)"
+              :disabled="sleepTimerCurrentTime < timeToIncrement * 60"
             />
             <p class="time">{{ formattedTime }}</p>
             <Button
