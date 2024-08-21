@@ -19,19 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-//    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        // print("App launching... \(getWebView())")
-//        // guard let webView = getWebView(), #available(iOS 17.0, *) else {
-//        //     print("Unsupported iOS version or unable to access WebView.")
-//        //     return false
-//        // }
-//
-//        // webView.configuration.preferences.inactiveSchedulingPolicy = .none
-//        // print("Inactive scheduling policy set to none.")
-//
-//        // return true
-//    }
-
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -46,35 +33,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
 
-     func applicationDidBecomeActive(_ application: UIApplication) {
-         print("---------------------------App launching... \(getWebView())")
-         webView = getWebView() // Assign the result of getWebView() to webView
-      
-        if(webView !== nil){
-            if #available(iOS 17.0, *) {
-                let preferences = webView?.configuration.preferences
-                if preferences !== nil {
-                    preferences?.inactiveSchedulingPolicy = .none
-                    //webView?.configuration.preferences.inactiveSchedulingPolicy = .none
-
-                    print("JavaScript Enabled: \(preferences?.javaScriptEnabled)")
-                    print("inactiveSchedulingPolicy: \(preferences?.inactiveSchedulingPolicy.rawValue)")
-                    // Add more properties as needed
-    
-                    // Check if the inactiveSchedulingPolicy was successfully set to .none
-                    if preferences?.inactiveSchedulingPolicy.rawValue == 2 {
-                        print("----------inactiveSchedulingPolicy was successfully set to .none")
-                    } else {
-                        print("----------Failed to set inactiveSchedulingPolicy to .none")
-                    }
-                }
-            } else {
-                //webView.configuration.preferences.setValue(false, forKey: "allowInfiniteMediaPlayback")
-            }
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        webView = getWebView()
+        
+        if let webView = webView, #available(iOS 17.0, *) {
+            let preferences = webView.configuration.preferences
+            preferences.inactiveSchedulingPolicy = .none
+        } else {
+            print("Sleep Timer is not supported on iOS 16 and below")
         }
-        //return true
-         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-     }
+    }
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.

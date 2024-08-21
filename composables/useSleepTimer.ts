@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { Device } from '@capacitor/device';
 import { localUserProfileKey } from "~/composables/globals"
 import { trackClickEvent } from "~/utilities/helpers"
 import {
@@ -16,7 +17,7 @@ import { Preferences } from "@capacitor/preferences"
 import { clearInterval, setInterval } from 'worker-timers';
 
 
-export default function useSleepTimer(initialTime = 30) {
+export default async function useSleepTimer(initialTime = 30) {
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
     const sleepTimerRunning = useSleepTimerRunning()
@@ -26,6 +27,8 @@ export default function useSleepTimer(initialTime = 30) {
     const sleepTimerSelectedTime = useSleepTimerSelectedTime()
     const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
+
+    const { platform, osVersion } = await Device.getInfo();
 
     const isPaused = ref(false)
 
@@ -44,11 +47,19 @@ export default function useSleepTimer(initialTime = 30) {
         clearInterval(sleepTimerInterval.value)
         sleepTimerInterval.value = null
         chunckedTime.value = 0
-        console.log('interval cleared')
     }
 
     function startTimer(repeat = false) {
-        console.log('new interval')
+        if (platform === 'ios' && parseFloat(osVersion) < 17) {
+            globalToast.value = {
+                severity: "error",
+                summary: "Sleep timer required iOS 17 or later",
+                life: 3000,
+                closable: true,
+            }
+            return
+        }
+
         sleepTimerRunning.value = true
         if (!isPaused.value && !repeat) {
             globalToast.value = {
@@ -120,7 +131,6 @@ export default function useSleepTimer(initialTime = 30) {
     }
 
     async function updateUserPreferences(customTime) {
-        console.log("updating user preferences", customTime)
         currentUserProfile.value.sleep_timer = customTime
         const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
         await Preferences.set({

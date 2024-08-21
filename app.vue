@@ -29,7 +29,6 @@ import { initMediaSession } from "~/utilities/media-session.js"
 
 const toast = useToast()
 
-//const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
