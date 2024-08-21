@@ -45,7 +45,7 @@ const handleCurrentTimeChange = (inc) => {
   }
 }
 
-const handleStartTimer = (obj = null) => {
+const handleStartTimer = (obj) => {
   // console.log("platform", platform)
   // console.log("osVersion", parseInt(osVersion))
   if (platform === "ios" && parseInt(osVersion) < 17) {
