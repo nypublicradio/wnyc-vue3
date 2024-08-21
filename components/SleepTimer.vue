@@ -31,7 +31,6 @@ const timeToIncrement = 5
 const customTime = ref(await getUserPreferenceSleepTime())
 const handleCustomTimeChange = (inc) => {
   const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
-  console.log("customTime.value", customTime.value)
   if (customTime.value + seconds / 60 >= 5) {
     customTime.value += seconds / 60
     // add preferred custom time to the local storage preferences
@@ -46,9 +45,9 @@ const handleCurrentTimeChange = (inc) => {
   }
 }
 
-const handleStartButton = () => {
-  console.log("platform", platform)
-  console.log("osVersion", parseInt(osVersion))
+const handleStartTimer = (obj = null) => {
+  // console.log("platform", platform)
+  // console.log("osVersion", parseInt(osVersion))
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
       severity: "error",
@@ -58,7 +57,7 @@ const handleStartButton = () => {
     }
     return
   }
-  onUpdateDuration({ value: sleepTimerSelectedTime.value })
+  onUpdateDuration(obj)
 }
 </script>
 
@@ -77,7 +76,7 @@ const handleStartButton = () => {
           optionLabel="label"
           placeholder="Select a Sleep Timer Duration"
           label="Sleep Timer"
-          @change="onUpdateDuration"
+          @change="handleStartTimer"
           normal
           :checkMark="false"
         >
@@ -85,7 +84,7 @@ const handleStartButton = () => {
             <div
               class="flex align-items-center justify-content-between"
               @click="
-                onUpdateDuration({
+                handleStartTimer({
                   value: { value: customTime * 60, label: `${customTime} minutes` },
                 })
               "
@@ -112,7 +111,11 @@ const handleStartButton = () => {
             </div>
           </template>
         </DropupMenu>
-        <Button label="Start" severity="success" @click="handleStartButton" />
+        <Button
+          label="Start"
+          severity="success"
+          @click="handleStartTimer({ value: sleepTimerSelectedTime })"
+        />
       </div>
       <div v-else>
         <div class="count-down">
