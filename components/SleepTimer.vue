@@ -64,7 +64,10 @@ const handleStartTimer = (obj) => {
 <template>
   <div>
     <div class="sleep-timer px-3 pb-8 pt-6">
-      <h1 class="mb-3" :class="[{ 'text-center': sleepTimerRunning }]">Sleep Timer</h1>
+      <div><SleepIcon :active="sleepTimerRunning" /></div>
+      <h1 class="my-3 text-center" :class="[{ 'text-center': sleepTimerRunning }]">
+        We'll lull you to sleep in:
+      </h1>
       <div
         v-if="!sleepTimerRunning"
         class="flex flex-column w-full align-items-stretch gap-3 style-mode-light"
@@ -113,13 +116,13 @@ const handleStartTimer = (obj) => {
         </DropupMenu>
         <Button
           label="Start"
-          severity="success"
+          severity=""
           @click="handleStartTimer({ value: sleepTimerSelectedTime })"
         />
       </div>
       <div v-else>
         <div class="count-down">
-          <div><SleepIcon /></div>
+          <!-- <div><SleepIcon /></div> -->
           <div class="time-holder flex align-items-center justify-content-between">
             <Button
               class="mr-3"
@@ -145,9 +148,9 @@ const handleStartTimer = (obj) => {
             <Button v-if="isPaused" @click="startTimer" severity="secondary"
               >Resume</Button
             >
-            <Button v-else @click="pauseTimer" severity="secondary">Pause</Button>
+            <Button v-else @click="pauseTimer" severity="">Pause</Button>
           </div>
-          <Button @click="resetTimer" severity="">Cancel Timer</Button>
+          <Button @click="resetTimer" severity="secondary">Cancel</Button>
         </div>
       </div>
     </div>
@@ -162,20 +165,23 @@ const handleStartTimer = (obj) => {
   }
 }
 .sleep-timer {
+  .sleep-icon {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: -1rem;
+    position: relative;
+    margin: auto;
+    display: block;
+    path {
+      fill: var(--text-color);
+    }
+  }
   .count-down {
     padding: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
-    .sleep-icon {
-      width: 4rem;
-      height: 4rem;
-      margin-bottom: -1rem;
-      path {
-        fill: var(--text-color);
-      }
-    }
     .time-holder {
       .time {
         font-size: 3.5rem;
