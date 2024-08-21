@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-import { Device } from '@capacitor/device';
 import { localUserProfileKey } from "~/composables/globals"
 import { trackClickEvent } from "~/utilities/helpers"
 import {
@@ -15,7 +14,7 @@ import {
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { clearInterval, setInterval } from 'worker-timers';
-const { platform, osVersion } = await Device.getInfo();
+
 export default function useSleepTimer(initialTime = 30) {
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
@@ -26,8 +25,6 @@ export default function useSleepTimer(initialTime = 30) {
     const sleepTimerSelectedTime = useSleepTimerSelectedTime()
     const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
-
-    //const { platform, osVersion } = await Device.getInfo();
 
     const isPaused = ref(false)
 
@@ -49,18 +46,6 @@ export default function useSleepTimer(initialTime = 30) {
     }
 
     function startTimer(repeat = false) {
-        //console.log("_______________platform", platform)
-        //console.log("_______________osVersion", parseFloat(osVersion))
-        if (platform === 'ios' && parseFloat(osVersion) < 17) {
-            globalToast.value = {
-                severity: "error",
-                summary: "Sleep timer required iOS 17 or later",
-                life: 3000,
-                closable: true,
-            }
-            return
-        }
-
         sleepTimerRunning.value = true
         if (!isPaused.value && !repeat) {
             globalToast.value = {

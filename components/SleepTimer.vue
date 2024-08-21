@@ -1,4 +1,5 @@
 <script setup>
+import { Device } from "@capacitor/device"
 import useSleepTimer from "~/composables/useSleepTimer"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 const {
@@ -14,6 +15,9 @@ const {
   updateUserPreferences,
   getUserPreferenceSleepTime,
 } = useSleepTimer()
+import { useGlobalToast } from "~/composables/states"
+const globalToast = useGlobalToast()
+const { platform, osVersion } = await Device.getInfo()
 
 const timeLengthOptions = [
   { label: "31 seconds", value: 31 },
@@ -40,6 +44,21 @@ const handleCurrentTimeChange = (inc) => {
   if (sleepTimerRunning.value && destination > 0) {
     sleepTimerCurrentTime.value += seconds
   }
+}
+
+const handleStartButton = () => {
+  console.log("platform", platform)
+  console.log("osVersion", parseInt(osVersion))
+  if (platform === "ios" && parseInt(osVersion) < 17) {
+    globalToast.value = {
+      severity: "error",
+      summary: "Sleep Timer requires iOS 17 or later",
+      life: 3000,
+      closable: true,
+    }
+    return
+  }
+  onUpdateDuration({ value: sleepTimerSelectedTime.value })
 }
 </script>
 
@@ -93,11 +112,7 @@ const handleCurrentTimeChange = (inc) => {
             </div>
           </template>
         </DropupMenu>
-        <Button
-          label="Start"
-          severity="success"
-          @click="onUpdateDuration({ value: sleepTimerSelectedTime })"
-        />
+        <Button label="Start" severity="success" @click="handleStartButton" />
       </div>
       <div v-else>
         <div class="count-down">
