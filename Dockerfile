@@ -37,7 +37,7 @@ ARG USER_AGENT
 ARG APP_VERSION
 
 WORKDIR /code
-
+RUN env
 COPY ./.npmrc .
 COPY ./package.json .
 COPY ./package-lock.json .
