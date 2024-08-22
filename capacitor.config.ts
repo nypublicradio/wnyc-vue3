@@ -39,7 +39,7 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_notification_default",
       iconColor: "#de1e3d",
       sound: "notification.wav"
-    }
+    },
   }
 };
 

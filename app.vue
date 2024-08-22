@@ -56,7 +56,6 @@ useHead({
   //   class: 'safe-area-padding',
   // },
 })
-
 // a func to refresh all data
 const refreshData = async () => {
   await getAndSetUserProfile()

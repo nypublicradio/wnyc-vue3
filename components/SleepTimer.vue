@@ -2,6 +2,7 @@
 import { Device } from "@capacitor/device"
 import useSleepTimer from "~/composables/useSleepTimer"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
+import { useBackgroundMode } from "~/composables/useBackgroundMode"
 const {
   sleepTimerSelectedTime,
   sleepTimerCurrentTime,
@@ -18,6 +19,7 @@ const {
 import { useGlobalToast } from "~/composables/states"
 const globalToast = useGlobalToast()
 const { platform, osVersion } = await Device.getInfo()
+const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
   { label: "31 seconds", value: 31 },
@@ -45,9 +47,7 @@ const handleCurrentTimeChange = (inc) => {
   }
 }
 
-const handleStartTimer = (obj) => {
-  // console.log("platform", platform)
-  // console.log("osVersion", parseInt(osVersion))
+const handleStartTimer = async (obj) => {
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
       severity: "error",
@@ -57,6 +57,22 @@ const handleStartTimer = (obj) => {
     }
     return
   }
+
+  // allow for background interval on android
+  if (platform === "android") {
+    if (!(await initBackgroundMode())) {
+      // user did not allow the background mode
+      globalToast.value = {
+        severity: "error",
+        summary: "You must allow WNYC to run in the background for the sleep timer",
+        life: 8000,
+        closable: true,
+      }
+      return
+    }
+  }
+
+  // start the timer
   onUpdateDuration(obj)
 }
 </script>

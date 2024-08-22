@@ -43,11 +43,11 @@ export default function useSleepTimer(initialTime = 30) {
         clearInterval(sleepTimerInterval.value)
         sleepTimerInterval.value = null
         chunckedTime.value = 0
-        //console.log("----------------------------Clear The Interval")
+        console.log("----------------------------Clear The Interval")
     }
 
     function startTimer(repeat = false) {
-        //console.log("----------------------------Start The Interval")
+        console.log("----------------------------Start The Interval")
         sleepTimerRunning.value = true
         if (!isPaused.value && !repeat) {
             globalToast.value = {
