@@ -100,35 +100,37 @@ const handleStartTimer = async (obj) => {
           :checkMark="false"
         >
           <template #footer="slotpProps">
-            <hr />
-            <p>Custom time:</p>
+            <div class="style-mode-dark">
+              <hr />
+              <p>Custom time:</p>
 
-            <div
-              class="flex align-items-center justify-content-between"
-              @click="
-                handleStartTimer({
-                  value: { value: customTime * 60, label: `${customTime} minutes` },
-                })
-              "
-            >
-              <p class="custom-time">{{ customTime }} minutes</p>
-              <div class="flex align-items-center gap-4 z-2">
-                <Button
-                  icon="pi pi-minus"
-                  rounded
-                  outlined
-                  severity="secondary"
-                  aria-label="subtract time"
-                  @click.stop="handleCustomTimeChange(false)"
-                />
-                <Button
-                  icon="pi pi-plus"
-                  rounded
-                  outlined
-                  severity="secondary"
-                  aria-label="add time"
-                  @click.stop="handleCustomTimeChange(true)"
-                />
+              <div
+                class="flex align-items-center justify-content-between"
+                @click="
+                  handleStartTimer({
+                    value: { value: customTime * 60, label: `${customTime} minutes` },
+                  })
+                "
+              >
+                <p class="custom-time">{{ customTime }} minutes</p>
+                <div class="flex align-items-center gap-4 z-2">
+                  <Button
+                    icon="pi pi-minus"
+                    rounded
+                    outlined
+                    severity="secondary"
+                    aria-label="subtract time"
+                    @click.stop="handleCustomTimeChange(false)"
+                  />
+                  <Button
+                    icon="pi pi-plus"
+                    rounded
+                    outlined
+                    severity="secondary"
+                    aria-label="add time"
+                    @click.stop="handleCustomTimeChange(true)"
+                  />
+                </div>
               </div>
             </div>
           </template>
