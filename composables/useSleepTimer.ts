@@ -15,7 +15,7 @@ import {
 import { Preferences } from "@capacitor/preferences"
 import { clearInterval, setInterval } from 'worker-timers';
 
-export default function useSleepTimer(initialTime = 30) {
+export default function useSleepTimer() {
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
     const sleepTimerRunning = useSleepTimerRunning()
@@ -31,6 +31,7 @@ export default function useSleepTimer(initialTime = 30) {
     const chunck = 60
     const chunckedTime = ref(0)
 
+    // Formatted time
     const formattedTime = computed(() => {
         const hours = Math.floor(sleepTimerCurrentTime.value / 3600)
         const minutes = Math.floor((sleepTimerCurrentTime.value % 3600) / 60)
@@ -39,6 +40,7 @@ export default function useSleepTimer(initialTime = 30) {
         return `${cHours}${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
     })
 
+    // Clear the interval
     function clearTheInterval() {
         clearInterval(sleepTimerInterval.value)
         sleepTimerInterval.value = null
@@ -46,6 +48,7 @@ export default function useSleepTimer(initialTime = 30) {
         //console.log("----------------------------Clear The Interval")
     }
 
+    // Start the timer
     function startTimer(repeat = false) {
         //console.log("----------------------------Start The Interval")
         sleepTimerRunning.value = true
@@ -75,11 +78,13 @@ export default function useSleepTimer(initialTime = 30) {
         }, 1000)
     }
 
+    // Pause the timer
     function pauseTimer() {
         isPaused.value = true
         clearTheInterval()
     }
 
+    // Reset the timer
     function resetTimer() {
         clearTheInterval()
         sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.value
@@ -87,6 +92,7 @@ export default function useSleepTimer(initialTime = 30) {
         sleepTimerSideBar.value = false
     }
 
+    // Function to call when time ends
     function onTimeEnd() {
         // slowly decrease volume to 0
         if (isEpisodePlaying.value) {
@@ -106,6 +112,7 @@ export default function useSleepTimer(initialTime = 30) {
         }
     }
 
+    // Update the duration, reset and start the timer
     function onUpdateDuration(e) {
         sleepTimerSelectedTime.value = e.value
         resetTimer()
@@ -118,6 +125,7 @@ export default function useSleepTimer(initialTime = 30) {
         )
     }
 
+    // Update the user preferences
     async function updateUserPreferences(customTime) {
         currentUserProfile.value.sleep_timer = customTime
         const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
@@ -127,6 +135,7 @@ export default function useSleepTimer(initialTime = 30) {
         })
     }
 
+    // Get the user preferences
     async function getUserPreferenceSleepTime() {
         const userPreferences = await Preferences.get({ key: localUserProfileKey })
         if (userPreferences.value) {

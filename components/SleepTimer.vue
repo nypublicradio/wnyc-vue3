@@ -39,6 +39,7 @@ const handleCustomTimeChange = (inc) => {
     updateUserPreferences(customTime.value)
   }
 }
+// increment or decrement the current time
 const handleCurrentTimeChange = (inc) => {
   const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
   const destination = sleepTimerCurrentTime.value + seconds
@@ -47,7 +48,9 @@ const handleCurrentTimeChange = (inc) => {
   }
 }
 
+// start the timer
 const handleStartTimer = async (obj) => {
+  // ios only
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
       severity: "error",
@@ -58,7 +61,7 @@ const handleStartTimer = async (obj) => {
     return
   }
 
-  // allow for background interval on android
+  // allow for background interval on android only
   if (platform === "android") {
     if (!(await initBackgroundMode())) {
       // user did not allow the background mode
@@ -90,7 +93,7 @@ const handleStartTimer = async (obj) => {
       >
         <DropupMenu
           id="sleep-timer-duration"
-          v-model:data.sync="sleepTimerSelectedTime"
+          v-model="sleepTimerSelectedTime"
           :options="timeLengthOptions"
           optionLabel="label"
           placeholder="Select a Sleep Timer Duration"
