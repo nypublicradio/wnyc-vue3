@@ -54,7 +54,7 @@ export async function updateAllLiveStreams() {
         globalToast.value = {
             severity: "error",
             summary: "Sorry. We are having trouble with the live stream. Please try again later.",
-            life: null,
+            life: 8000,
             closable: true,
         }
         console.error('error = ', error)
