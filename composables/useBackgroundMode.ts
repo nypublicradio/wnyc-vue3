@@ -6,7 +6,6 @@ import { BackgroundMode } from "bp-capacitor-background-mode"
 export const useBackgroundMode = () => {
   const batteryDisabled = ref(false);
 
-
   const requestDisableBatteryOptimizations = async () => {
     if (!(await BackgroundMode.checkBatteryOptimizations()).disabled) {
       await BackgroundMode.requestDisableBatteryOptimizations().then((res) => {
@@ -30,18 +29,16 @@ export const useBackgroundMode = () => {
     if (batteryDisabled.value) {
       await BackgroundMode.disableWebViewOptimizations()
       await BackgroundMode.enable();
-      await BackgroundMode.setSettings({ visibility: 'private' });
+      await BackgroundMode.setSettings({
+        silent: true,
+        hidden: true,
+      });
       await addAppInBackgroundListener()
       return true
     } else {
       return false
     }
   }
-
-
-  // await BackgroundMode.addListener("appInForeground", async () => {
-  //   await BackgroundMode.requestForegroundPermission()
-  // })
 
   return { initBackgroundMode };
 };
