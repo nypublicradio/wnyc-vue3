@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { BackgroundMode } from "bp-capacitor-background-mode"
 
+// composable to handle the background mode for android only
 export const useBackgroundMode = () => {
   const batteryDisabled = ref(false);
 

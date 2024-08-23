@@ -31,6 +31,8 @@ const timeLengthOptions = [
 
 const timeToIncrement = 5
 const customTime = ref(await getUserPreferenceSleepTime())
+
+// increment or decrement the custom time
 const handleCustomTimeChange = (inc) => {
   const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
   if (customTime.value + seconds / 60 >= 5) {

@@ -15,6 +15,7 @@ import {
 import { Preferences } from "@capacitor/preferences"
 import { clearInterval, setInterval } from 'worker-timers';
 
+// composable to handle the sleep timer
 export default function useSleepTimer() {
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
