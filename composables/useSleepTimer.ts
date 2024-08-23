@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { localUserProfileKey } from "~/composables/globals"
 import { trackClickEvent } from "~/utilities/helpers"
 import {
@@ -95,10 +96,7 @@ export default function useSleepTimer() {
 
     // Function to call when time ends
     function onTimeEnd() {
-        // slowly decrease volume to 0
-        if (isEpisodePlaying.value) {
-            togglePlayTrigger.value = !togglePlayTrigger.value
-        }
+
         sleepTimerSideBar.value = false
         sleepTimerRunning.value = false
         trackClickEvent(
@@ -111,6 +109,47 @@ export default function useSleepTimer() {
             summary: "Audio Paused. Sleep Timer Ended.",
             //life: 6000,
         }
+
+        // slowly decrease volume to 0
+        const duration = 10000 // 10 seconds
+        const interval = 100 // 100 milliseconds
+        const steps = duration / interval
+        const volumeStep = 1 / steps
+
+        let currentVolume = 1
+
+        const volumeInterval = setInterval(() => {
+            currentVolume -= volumeStep
+            if (currentVolume < 0) { currentVolume = 0 }
+            RemoteStreamer.setVolume({ volume: currentVolume })
+
+            if (currentVolume <= 0) {
+                clearInterval(volumeInterval)
+
+                // Continue with the remaining code
+                if (isEpisodePlaying.value) {
+                    togglePlayTrigger.value = !togglePlayTrigger.value
+                }
+                RemoteStreamer.setVolume({ volume: 1 })
+
+            }
+        }, interval)
+
+        // if (isEpisodePlaying.value) {
+        //     togglePlayTrigger.value = !togglePlayTrigger.value
+        // }
+        // sleepTimerSideBar.value = false
+        // sleepTimerRunning.value = false
+        // trackClickEvent(
+        //     "Click Tracking - Sleep timer event",
+        //     "Sleep Timer - Ended",
+        //     sleepTimerSelectedTime.value.label
+        // )
+        // globalToast.value = {
+        //     severity: "success",
+        //     summary: "Audio Paused. Sleep Timer Ended.",
+        //     //life: 6000,
+        // }
     }
 
     // Update the duration, reset and start the timer

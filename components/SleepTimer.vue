@@ -22,7 +22,7 @@ const { platform, osVersion } = await Device.getInfo()
 const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
-  { label: "31 seconds", value: 31 },
+  { label: "5 seconds", value: 5 },
   { label: "15 minutes", value: 900 },
   { label: "30 minutes", value: 1800 },
   { label: "45 minutes", value: 2700 },
