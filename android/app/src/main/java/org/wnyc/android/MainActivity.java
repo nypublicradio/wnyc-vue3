@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
-import android.webkit.CookieManager;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.CapacitorWebView;
-//import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends BridgeActivity {
 
@@ -21,20 +19,7 @@ public class MainActivity extends BridgeActivity {
 
         // Apply custom settings to the WebView
         WebSettings settings = webView.getSettings();
-
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-
         settings.setTextZoom(100); // Set text zoom level
-        // Let the web view use JavaScript.
-        settings.setJavaScriptEnabled(true);
-        // Let the web view access local storage.
-        settings.setDomStorageEnabled(true);
-        // Let HTML videos play automatically.
-        settings.setMediaPlaybackRequiresUserGesture(false);
-
-        //MobileAds.registerWebView(webView);
-        //webView.loadUrl("https://webview-api-for-ads-test.glitch.me#webview-settings-tests");
-
     }
 
     // Removed @Override annotation and returning null

@@ -49,10 +49,6 @@
             android:resource="@color/customColorAccent"
             tools:replace="android:resource"
         />
-        <!-- <meta-data
-            android:name="com.google.android.gms.ads.INTEGRATION_MANAGER"
-            android:value="webview"/>
-        /> -->
     </application>
 
     <!-- Permissions -->
