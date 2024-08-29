@@ -1,9 +1,9 @@
-FROM node:18.18.2 as build
+FROM node:18.18.2 AS build
 
 ARG SENTRY_DSN
-ARG SENTRY_ENV
+ARG SENTRY_ARG
 ARG SENTRY_AUTH_TOKEN
-ARG ENV
+ARG ARG
 ARG LIVESTREAM_URL
 ARG NAVIGATION_API
 ARG SYSTEM_MESSAGES_API
@@ -37,7 +37,6 @@ ARG USER_AGENT
 ARG APP_VERSION
 
 WORKDIR /code
-
 COPY ./.npmrc .
 COPY ./package.json .
 COPY ./package-lock.json .
@@ -47,7 +46,7 @@ RUN npm install sass
 COPY . .
 RUN npm run build
 
-FROM node:18.18.2-slim as app
+FROM node:18.18.2-slim AS app
 
 
 WORKDIR /app
