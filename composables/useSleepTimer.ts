@@ -6,6 +6,7 @@ import {
     useIsEpisodePlaying,
     useTogglePlayTrigger,
     useSleepTimerRunning,
+    useSleepTimerPaused,
     useSleepTimerSideBar,
     useSleepTimerCurrentTime,
     useSleepTimerInterval,
@@ -21,14 +22,13 @@ export default function useSleepTimer() {
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
     const sleepTimerRunning = useSleepTimerRunning()
+    const sleepTimerPaused = useSleepTimerPaused()
     const sleepTimerSideBar = useSleepTimerSideBar()
     const sleepTimerCurrentTime = useSleepTimerCurrentTime()
     const sleepTimerInterval = useSleepTimerInterval()
     const sleepTimerSelectedTime = useSleepTimerSelectedTime()
     const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
-
-    const isPaused = ref(false)
 
     const chunck = 60
     const chunckedTime = ref(0)
@@ -54,7 +54,7 @@ export default function useSleepTimer() {
     function startTimer(repeat = false) {
         //console.log("----------------------------Start The Interval")
         sleepTimerRunning.value = true
-        if (!isPaused.value && !repeat) {
+        if (!sleepTimerPaused.value && !repeat) {
             globalToast.value = {
                 severity: "info",
                 summary: `Sleep timer started for ${sleepTimerSelectedTime.value.label}`,
@@ -62,7 +62,7 @@ export default function useSleepTimer() {
                 closable: true,
             }
         }
-        isPaused.value = false
+        sleepTimerPaused.value = false
         sleepTimerInterval.value = setInterval(() => {
             if (chunckedTime.value < chunck) {
                 chunckedTime.value++
@@ -82,7 +82,7 @@ export default function useSleepTimer() {
 
     // Pause the timer
     function pauseTimer() {
-        isPaused.value = true
+        sleepTimerPaused.value = true
         clearTheInterval()
     }
 
@@ -195,5 +195,5 @@ export default function useSleepTimer() {
         return 90
     }
 
-    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, isPaused, updateUserPreferences, getUserPreferenceSleepTime }
+    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, sleepTimerPaused, updateUserPreferences, getUserPreferenceSleepTime }
 }

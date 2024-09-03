@@ -59,6 +59,9 @@ export const useSleepTimerSelectedTime = () =>
 // sleep timer running state
 export const useSleepTimerRunning = () => useState("useSleepTimerRunning", () => false)
 
+// sleep timer running state
+export const useSleepTimerPaused = () => useState("useSleepTimerPaused", () => false)
+
 // signin sidebar state
 export const useForgotPasswordSideBar = () => useState('useForgotPasswordSideBar', () => false)
 

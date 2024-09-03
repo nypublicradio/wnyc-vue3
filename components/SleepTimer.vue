@@ -12,7 +12,7 @@ const {
   pauseTimer,
   resetTimer,
   onUpdateDuration,
-  isPaused,
+  sleepTimerPaused,
   updateUserPreferences,
   getUserPreferenceSleepTime,
 } = useSleepTimer()
@@ -172,10 +172,8 @@ const handleStartTimer = async (obj) => {
             />
           </div>
           <div class="flex">
-            <Button v-if="isPaused" @click="startTimer" severity="secondary"
-              >Resume</Button
-            >
-            <Button v-else @click="pauseTimer" severity="">Pause</Button>
+            <Button v-if="sleepTimerPaused" @click="startTimer">Resume</Button>
+            <Button v-else @click="pauseTimer">Pause</Button>
           </div>
           <Button @click="resetTimer" severity="secondary">Cancel</Button>
         </div>
