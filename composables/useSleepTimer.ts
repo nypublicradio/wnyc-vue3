@@ -104,19 +104,20 @@ export default function useSleepTimer() {
             "Sleep Timer - Ended",
             sleepTimerSelectedTime.value.label
         )
-        globalToast.value = {
-            severity: "success",
-            summary: "Audio Paused. Sleep Timer Ended.",
-            //life: 6000,
-        }
 
         // slowly decrease volume to 0
-        const duration = 10000 // 10 seconds
+        const duration = 7000 // 10 seconds
         const interval = 100 // 100 milliseconds
         const steps = duration / interval
         const volumeStep = 1 / steps
 
         let currentVolume = 1
+
+        globalToast.value = {
+            severity: "success",
+            summary: "Sleep Timer Ended. Audio fading out...",
+            life: duration,
+        }
 
         const volumeInterval = setInterval(() => {
             currentVolume -= volumeStep
@@ -126,12 +127,19 @@ export default function useSleepTimer() {
             if (currentVolume <= 0) {
                 clearInterval(volumeInterval)
 
-                // Continue with the remaining code
+                // pause the audio
                 if (isEpisodePlaying.value) {
                     togglePlayTrigger.value = !togglePlayTrigger.value
                 }
+
+                // return the volume to 1
                 RemoteStreamer.setVolume({ volume: 1 })
 
+                //notify the user
+                globalToast.value = {
+                    severity: "success",
+                    summary: "Sleep Timer Ended. Audio paused.",
+                }
             }
         }, interval)
 
