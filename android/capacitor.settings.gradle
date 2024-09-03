@@ -51,7 +51,7 @@ include ':christoffyw-capacitor-media-session'
 project(':christoffyw-capacitor-media-session').projectDir = new File('../node_modules/@christoffyw/capacitor-media-session/android')
 
 include ':nypublicradio-capacitor-remote-streamer'
-project(':nypublicradio-capacitor-remote-streamer').projectDir = new File('../../capacitor-remote-streamer/android')
+project(':nypublicradio-capacitor-remote-streamer').projectDir = new File('../node_modules/@nypublicradio/capacitor-remote-streamer/android')
 
 include ':bp-capacitor-background-mode'
 project(':bp-capacitor-background-mode').projectDir = new File('../node_modules/bp-capacitor-background-mode/android')
