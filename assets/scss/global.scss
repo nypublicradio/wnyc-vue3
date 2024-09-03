@@ -322,6 +322,14 @@ label {
     .p-button-icon:after {
       color: var(--text-color);
     }
+    &.p-button-outlined {
+      color: var(--text-color);
+    }
+    &:enabled:hover {
+      &.p-button-outlined {
+        color: var(--text-color);
+      }
+    }
   }
 }
 

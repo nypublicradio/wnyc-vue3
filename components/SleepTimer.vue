@@ -148,7 +148,6 @@ const handleStartTimer = async (obj) => {
       </div>
       <div v-else>
         <div class="count-down">
-          <!-- <div><SleepIcon /></div> -->
           <div class="time-holder flex align-items-center justify-content-between">
             <Button
               class="mr-3"
