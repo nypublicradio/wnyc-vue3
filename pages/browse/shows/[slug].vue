@@ -22,7 +22,7 @@ const route = useRoute()
 const router = useRouter()
 
 const { data: show, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/show/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
 )
 
 const page = ref(show?.value?.episodes?.meta.pagination.page ?? null)

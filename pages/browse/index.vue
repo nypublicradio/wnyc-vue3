@@ -4,7 +4,7 @@ import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error } = useLazyFetch(`${config.public.BFF_URL}/api/shows`)
+const { data: shows, pending, error } = useLazyFetch(`${config.public.BFF_URL}/api/v2/shows`)
 
 const router = useRouter()
 const route = useRoute()
