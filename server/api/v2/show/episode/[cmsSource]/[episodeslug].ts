@@ -65,6 +65,7 @@ export default defineEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.episodeslug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
+
     //Fetching query params
     if (slug && cmsSource) {
         let episode;

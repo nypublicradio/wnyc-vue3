@@ -31,7 +31,7 @@ const currentEpisode = useCurrentEpisode()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 const { data: episode, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`
 )
 
 const episodeData = ref(episode?.value ?? null)
@@ -162,11 +162,12 @@ const onMenuChange = (e) => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, mediaTypes.EPISODE, index)
+  togglePlayEpisode(epData, index)
 }
 
 watch(episode, () => {
   episodeData.value = episode.value
+  console.log("episodeData", episodeData.value)
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
