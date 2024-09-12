@@ -148,7 +148,7 @@ const getDotMenuItems = (bucketItem) => {
       label: "Sleep Timer",
       customIcon: SleepIcon,
       active: sleepTimerRunning.value,
-      title: currentEpisode.value.title ?? "No audio playing",
+      title: currentEpisode.value?.title ?? "No audio playing",
       command: () => {
         handleSleepTimer()
       },
