@@ -340,7 +340,7 @@ a:focus,
 .flexible-link:focus,
 .card-click:focus,
 .p-focus {
-  outline: solid 2px var(--focus-outline-color);
+  //outline: solid 2px var(--focus-outline-color);
   outline-offset: -2px;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;

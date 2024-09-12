@@ -109,6 +109,7 @@ const handleShare = () => {
 }
 
 const handleSleepTimer = () => {
+  //handleFeatureClick()
   // toggle active state
   // show sleep timer interface
   sleepTimerSideBar.value = !sleepTimerSideBar.value
@@ -306,6 +307,7 @@ const moreFromClick = () => {
         >
           <template #icon> <FollowIcon /></template>
         </Button> -->
+        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
         <Button text severity="secondary" rounded @click="handleSleepTimer">
           <template #icon> <SleepIcon :active="sleepTimerRunning" /></template>
         </Button>
@@ -321,6 +323,7 @@ const moreFromClick = () => {
         >
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
+        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
         <Button text severity="secondary" rounded @click="handleSleepTimer">
           <template #icon> <SleepIcon :active="sleepTimerRunning" /></template>
         </Button>

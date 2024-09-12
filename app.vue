@@ -26,6 +26,11 @@ import { Network } from "@capacitor/network"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 import { initMediaSession } from "~/utilities/media-session.js"
+import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
+
+// temp system to handle the new feature badge on the sleep timer
+const { initFeatureSessionCount } = useNewFeatureBadge()
+initFeatureSessionCount()
 
 const toast = useToast()
 
