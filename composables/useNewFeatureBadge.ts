@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue';
 import { Preferences } from '@capacitor/preferences';
 
+// composable to handle the new feature badge
 export const useNewFeatureBadge = () => {
     const isNewFeature = ref(true);
     const sessionCount = ref(0);

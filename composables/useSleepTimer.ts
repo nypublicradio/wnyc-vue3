@@ -197,6 +197,7 @@ export default function useSleepTimer() {
         return 90
     }
 
+    // handle the sleep timer side bar toggle and tracking
     function handleSleepTimer() {
         sleepTimerSideBar.value = !sleepTimerSideBar.value
         trackClickEvent(

@@ -15,7 +15,6 @@ import {
   useCurrentUser,
   useIsLiveStream,
   useGlobalToast,
-  useSleepTimerSideBar,
   useSleepTimerRunning,
 } from "~/composables/states"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -36,7 +35,6 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const isLiveStream = useIsLiveStream()
-const sleepTimerSideBar = useSleepTimerSideBar()
 const sleepTimerRunning = useSleepTimerRunning()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)

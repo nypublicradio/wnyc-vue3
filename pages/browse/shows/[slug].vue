@@ -127,9 +127,9 @@ const handleAddToFavorites = () => {
   }
 }
 
-const handleShare = () => {
-  shareAPI(show.value.show, "shows page")
-}
+// const handleShare = () => {
+//   shareAPI(show.value.show, "shows page")
+// }
 
 const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")

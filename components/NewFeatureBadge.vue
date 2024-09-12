@@ -1,4 +1,3 @@
-<script lang="ts" setup></script>
 <template>
   <div class="new-feature-badge">NEW</div>
 </template>

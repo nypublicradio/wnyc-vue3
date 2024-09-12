@@ -12,6 +12,7 @@ const props = defineProps({
 
 const emit = defineEmits(["emit-click"])
 
+// handle click event on the button
 const handleClick = () => {
   handleFeatureClick()
   emit("emit-click")
