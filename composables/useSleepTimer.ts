@@ -13,12 +13,14 @@ import {
     useSleepTimerSelectedTime,
     useGlobalToast,
     useCurrentUserProfile,
+    useCurrentEpisode,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
 import { clearInterval, setInterval } from 'worker-timers';
 
 // composable to handle the sleep timer
 export default function useSleepTimer() {
+    const currentEpisode = useCurrentEpisode()
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
     const sleepTimerRunning = useSleepTimerRunning()
@@ -195,5 +197,14 @@ export default function useSleepTimer() {
         return 90
     }
 
-    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, sleepTimerPaused, updateUserPreferences, getUserPreferenceSleepTime }
+    function handleSleepTimer() {
+        sleepTimerSideBar.value = !sleepTimerSideBar.value
+        trackClickEvent(
+            "Click Tracking - Sleep Timer",
+            "Expanded Audio Player",
+            currentEpisode.value.title ?? "No audio selected"
+        )
+    }
+
+    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, sleepTimerPaused, updateUserPreferences, getUserPreferenceSleepTime, handleSleepTimer }
 }

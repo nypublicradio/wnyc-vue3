@@ -31,7 +31,7 @@ const handleClick = () => {
 .sleep-timer-button {
   position: relative;
   .badge {
-    top: -15px;
+    top: -25px;
     position: absolute;
   }
 }

@@ -18,6 +18,7 @@ import {
   useSleepTimerSideBar,
   useSleepTimerRunning,
 } from "~/composables/states"
+import useSleepTimer from "~/composables/useSleepTimer"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -39,6 +40,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
 const sleepTimerRunning = useSleepTimerRunning()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
+
+const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -108,18 +111,6 @@ const handleShare = () => {
   shareAPI(currentEpisode.value, "Expanded Audio Player")
 }
 
-const handleSleepTimer = () => {
-  //handleFeatureClick()
-  // toggle active state
-  // show sleep timer interface
-  sleepTimerSideBar.value = !sleepTimerSideBar.value
-  trackClickEvent(
-    "Click Tracking - Sleep Timer",
-    "Expanded Audio Player",
-    currentEpisode.value.title
-  )
-}
-
 // const handleAddToQueue = () => {
 //   // toggle active state
 //   // update SB and LS with new state
@@ -134,16 +125,6 @@ const handleSleepTimer = () => {
 //   // navitget to show page
 //   trackClickEvent(
 //     "Click Tracking - More Episodes",
-//     "Expanded Audio Player",
-//     currentEpisode.value.title
-//   )
-// }
-
-// const handleSleepTimer = () => {
-//   // toggle active state
-//   // show sleep timer interface
-//   trackClickEvent(
-//     "Click Tracking - Sleep Timer",
 //     "Expanded Audio Player",
 //     currentEpisode.value.title
 //   )
@@ -308,9 +289,6 @@ const moreFromClick = () => {
           <template #icon> <FollowIcon /></template>
         </Button> -->
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
-        <Button text severity="secondary" rounded @click="handleSleepTimer">
-          <template #icon> <SleepIcon :active="sleepTimerRunning" /></template>
-        </Button>
       </div>
       <div v-else class="flex gap-3">
         <Button
@@ -324,15 +302,13 @@ const moreFromClick = () => {
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
-        <Button text severity="secondary" rounded @click="handleSleepTimer">
-          <template #icon> <SleepIcon :active="sleepTimerRunning" /></template>
-        </Button>
         <Button
           text
           severity="secondary"
           rounded
           aria-label="download"
           @click="handleDownload"
+          v-if="currentEpisode.hideFavorite"
         >
           <template #icon> <DownloadIcon /></template>
         </Button>
