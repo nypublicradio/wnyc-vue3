@@ -7,7 +7,7 @@ import PlayIcon from "~/components/icons/PlayIcon.vue"
 import {
   checkIsFavorited,
   togglePlayEpisode,
-  shareAPI,
+  //shareAPI,
   trackClickEvent,
   goToEpisodePage,
   hasAudio,
@@ -128,7 +128,7 @@ const handleAddToFavorites = () => {
 }
 
 // const handleShare = () => {
-//   shareAPI(show.value.show, "shows page")
+//   //(show.value.show, "shows page")
 // }
 
 const hasEpisodes = computed(() => {
