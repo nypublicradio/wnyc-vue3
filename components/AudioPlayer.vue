@@ -256,7 +256,7 @@ watch(isNetworkConnected, () => {
       currentEpisode.value = tempEpisode
     }, 500)
     setTimeout(() => {
-      playerRef.value.jumpToTime(tempTime)
+      RemoteStreamer.seekTo({ position: tempTime })
     }, 1500)
   }
 })
