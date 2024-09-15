@@ -256,10 +256,17 @@ watch(isNetworkConnected, () => {
     setTimeout(() => {
       currentEpisode.value = tempEpisode
     }, 500)
-    setTimeout(() => {
-      RemoteStreamer.seekTo({ position: tempTime })
-    }, 1500)
+    if (!isLiveStream.value) {
+      setTimeout(() => {
+        RemoteStreamer.seekTo({ position: tempTime })
+      }, 1500)
+    }
   }
+})
+
+// resume the player if the network is connected where they left off
+watch(isBuffering, (e) => {
+  console.log("watch: isBuffering = ", isBuffering.value, e)
 })
 
 // function that handles the skip ahead toggle triiger
