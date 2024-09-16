@@ -12,7 +12,7 @@ const supabase = supabaseClient();
 const nyprDb = new NyprDb(supabase);
 const npr = new NPR();
 
-const getNPREpisodes = async (slug: string, type: string, pageSize: string, page: number) => {
+const getNPREpisodes = async (slug: string, type: string, pageSize: string, page: number, showTitle: string) => {
 
     const show = await nyprDb.getNPRShowBySlug(slug);
     // Fetching the episodes from the NPR API and normalizing the data
@@ -37,6 +37,7 @@ const getNPREpisodes = async (slug: string, type: string, pageSize: string, page
         return {
             id: item.id,
             title: item.title,
+            showTitle,
             tease: item.teaser,
             meta: {
                 slug: item.id,
@@ -120,7 +121,7 @@ const getShow = async (slug: string) => {
                 url: data.resources[0]?.webPages[0]?.href,
             }
         }));
-        return fetchedShows;
+        return fetchedShows[0];
     } else {
         const option = {
             method: 'GET',
@@ -153,8 +154,8 @@ export default defineEventHandler(async (event) => {
         let episodes;
         // Get show details
         const show = await getShow(slug);
-        if (show[0]?.type === cmsSources.NPR) {
-            episodes = await getNPREpisodes(slug, show.type, pageSize, page);
+        if (show?.type === cmsSources.NPR) {
+            episodes = await getNPREpisodes(slug, show.type, pageSize, page, show?.title);
         } else {
             episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page);
         }
