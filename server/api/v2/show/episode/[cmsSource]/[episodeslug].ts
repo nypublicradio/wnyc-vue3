@@ -1,7 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
+import { cmsSources, FALLBACKIMAGELOCAL, FALLBACKIMAGE, FALLBACKIMAGEEP } from '~/composables/globals';
 import { NPR } from '~/server/utils/npr';
 
 const config = useRuntimeConfig()
@@ -20,7 +20,7 @@ const getNPREpisode = async (slug: string) => {
     // Fetching the audio from the NPR API
     const npr = new NPR();
     const audio = await npr.findAudio(resData.resources[0]);
-
+    // Fallback image to show image when no image is available
     return {
         data: {
             id: resData.resources[0].id,
@@ -34,10 +34,11 @@ const getNPREpisode = async (slug: string) => {
             publicationDate: resData.resources[0].publishDateTime,
             sortDate: resData.resources[0].publishDateTime,
             cmsSource: cmsSources.NPR,
-            type: 'segment',
-            brand: { title: cmsSources.NPR },
-            audio: audio,
-            imageMain: { template: FALLBACKIMAGELOCAL },
+            type: 'episode',
+            headers: { brand: { title: cmsSources.NPR, logoImage: { template: FALLBACKIMAGE } } },
+            audio,
+            image: { template: FALLBACKIMAGE, altText: 'Episode image' },
+            imageMain: { template: FALLBACKIMAGE, altText: 'Episode image' },
         },
     };
 

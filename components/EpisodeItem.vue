@@ -70,6 +70,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hasSegments: {
+    type: Boolean,
+    default: false,
+  },
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()

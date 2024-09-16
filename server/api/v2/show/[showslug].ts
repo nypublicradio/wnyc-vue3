@@ -48,8 +48,8 @@ const getNPREpisodes = async (slug: string, type: string, pageSize: string, page
             sortDate: item.publishDateTime,
             cmsSource: cmsSources.NPR,
             type: 'episode',
-            audio: audio,
-            imageMain: { FALLBACKIMAGE },
+            audio,
+            imageMain: { FALLBACKIMAGE }
         };
     }));
 
@@ -115,7 +115,7 @@ const getShow = async (slug: string) => {
                 slug: show.slug,
                 description: data.resources[0]?.teaser,
                 tease: data.resources[0]?.shortTeaser,
-                image: image,
+                image,
                 cmsSource: cmsSources.NPR,
                 type: cmsSources.NPR,
                 url: data.resources[0]?.webPages[0]?.href,

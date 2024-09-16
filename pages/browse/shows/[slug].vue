@@ -135,9 +135,6 @@ const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
 
-const hasSegments = computed(() => {
-  return episodes.value?.some((ep) => ep?.type === "segment")
-})
 watch(show, () => {
   page.value = show?.value?.episodes?.meta.pagination.page
   maxPages = show.value.episodes?.meta.pagination.pages
@@ -289,16 +286,18 @@ onMounted(() => {
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
+              <pre class="text-xs text-white">{{ ep }}</pre>
               <EpisodeItem
                 v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
-                @onClick="goToEpisodePage(ep)"
+                @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
                 :fallback-image="getEpisodeFallBackImage()"
+                :hasSegments="Array.isArray(ep.audio)"
               />
             </template>
           </div>
         </TabPanel>
-        <TabPanel header="Segments" v-if="hasSegments">
+        <!-- <TabPanel header="Segments" v-if="hasSegments">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
               {{ ep?.esitmatedDuration }}
@@ -310,7 +309,7 @@ onMounted(() => {
               />
             </template>
           </div>
-        </TabPanel>
+        </TabPanel> -->
       </TabView>
     </div>
     <div v-if="pending">

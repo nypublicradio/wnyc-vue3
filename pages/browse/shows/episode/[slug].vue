@@ -35,6 +35,7 @@ const { data: episode, pending, error } = useFetch(
 )
 
 const episodeData = ref(episode?.value ?? null)
+const hasSegments = ref(Array.isArray(episode?.value?.audio))
 
 const user = useCurrentUser()
 
@@ -95,11 +96,11 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio)
+    ...(hasAudio(bucketItem?.audio)
       ? [
           {
             label: `Download ${
-              bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+              bucketItem.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
             }`,
             //icon: 'pi pi-google',
             customIcon: DownloadIcon,
@@ -167,6 +168,7 @@ const togglePlayHere = (epData, index = 0) => {
 
 watch(episode, () => {
   episodeData.value = episode.value
+  hasSegments.value = Array.isArray(episode.value.audio)
   console.log("episodeData", episodeData.value)
   // send GA page view
   const { $analytics } = useNuxtApp()
@@ -185,7 +187,7 @@ watch(episode, () => {
 
 const isSegment = computed(
   () =>
-    Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segments)
+    Array.isArray(episodeData.value?.audio) && Array.isArray(episodeData.value.segments)
 )
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
@@ -295,7 +297,7 @@ const getEpisodeImage = computed(() => {
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button
-              v-if="hasAudio(episodeData.audio)"
+              v-if="hasAudio(episodeData?.audio)"
               class="w-2rem h-2rem"
               text
               plain
