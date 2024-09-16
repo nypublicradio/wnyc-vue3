@@ -1,6 +1,7 @@
 import axios from 'axios';
 // Class to normailze NPR data 
 export class NPR {
+
     findImageUrl(item) {
         try {
             let imageUrl = null;
@@ -19,6 +20,7 @@ export class NPR {
             console.error('findImageUrl error = ', e);
         }
     }
+
     async findAudio(item) {
         try {
             let audio = [];
@@ -33,10 +35,14 @@ export class NPR {
                 const response = await axios(option);
                 for (const asset of Object.values(response.data.resources[0].assets)) {
                     if (asset?.isAvailable) {
+                        const category = await this.getAudioCategory(response.data.resources[0]);
+                        const byline = await this.getAudioByline(response.data.resources[0]);
                         audio.push({
                             url: asset.enclosures[0].href,
                             title: asset.title,
                             duration: asset.duration,
+                            category,
+                            byline,
                             //TODO: Find Catagories, Authors
                         });
                     }
@@ -47,20 +53,40 @@ export class NPR {
             console.error('findAudio error = ', e);
         }
     }
+    async getAudioCategory(item) {
+        const collections = item?.collections;
+        const categoryHref = collections?.filter(collection => collection.rels.includes('slug')).map(collection => collection.href);
+        const request = await this.getDocument(categoryHref[0]);
+        const category = request?.resources[0].title;
+        return category;
+    }
+    async getAudioByline(item: { assets: any[] }) {
+        let bylines: string[] = [];
+        for (const contributor of Object.values(item?.assets)) {
+            if (contributor?.profiles?.[1]?.href === '/v1/profiles/reference-byline') {
+                for (const asset of contributor?.bylineDocuments || []) {
+                    const bylineUrl = asset.href;
+                    const request = await this.getDocument(bylineUrl);
+                    const byline = request?.resources[0].title;
+                    bylines.push(byline);
+                }
+            }
+        }
+        return bylines;
+    }
     async getDocument(url) {
         try {
             const options = {
                 method: 'GET',
-                url,
+                url: `${process.env.NPR_CDS_API}${url}`,
                 headers: {
                     Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
                 },
             };
             const data = await axios(options);
-            console.log('data = ', data.data);
-            return data;
+            return data.data;
         } catch (e) {
-            console.error('getDocument error = ', e);
+            console.error('getDocument error = ', e, url);
         }
     }
 }

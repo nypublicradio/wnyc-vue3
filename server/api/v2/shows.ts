@@ -16,7 +16,7 @@ const nprShows = async () => {
 
     const confShows = await nyprDb.getNPRShows();
 
-    let shows = {
+    const shows = {
         all: [],
         featuredShows: []
     };
@@ -37,7 +37,7 @@ const nprShows = async () => {
                 slug: show.slug,
                 description: data.resources[0]?.teaser,
                 tease: data.resources[0]?.shortTeaser,
-                image: image,
+                image,
                 cmsSource: cmsSources.NPR,
                 type: cmsSources.NPR,
                 url: data.resources[0]?.webPages[0]?.href,
@@ -107,8 +107,8 @@ export default defineEventHandler(async (event) => {
     //Sort the data by title
     allShowsData.sort((a, b) => a.title.localeCompare(b.title));
     featuredShowsData.sort((a, b) => a.title.localeCompare(b.title));
-    featuredShowsData.map((show) => {
-        //Get the id from the allShowsData
+    featuredShowsData.forEach((show) => {
+        // Get the id from the allShowsData
         const match = allShowsData.find((item) => item.slug === show.slug);
         if (match) {
             show.id = match.id;

@@ -7,7 +7,7 @@ import { NPR } from '~/server/utils/npr';
 const config = useRuntimeConfig()
 
 const getNPREpisode = async (slug: string) => {
-
+    // Fetching the episode details from the NPR API
     const option = {
         method: 'GET',
         url: `${config.public.NPR_CDS_API}/v1/documents/${slug}`,
@@ -34,11 +34,13 @@ const getNPREpisode = async (slug: string) => {
             publicationDate: resData.resources[0].publishDateTime,
             sortDate: resData.resources[0].publishDateTime,
             cmsSource: cmsSources.NPR,
-            type: 'episode',
+            type: 'segment',
+            brand: { title: cmsSources.NPR },
             audio: audio,
             imageMain: { template: FALLBACKIMAGELOCAL },
         },
     };
+
 };
 
 const getEpisode = async (slug: string) => {

@@ -96,9 +96,8 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
 
 // gets the publisher show data
 const getShow = async (slug: string) => {
-
     const nprShows = await nyprDb.getNPRShowBySlug(slug);
-    if (nprShows) {
+    if (nprShows.length > 0) {
         const fetchedShows = await Promise.all(nprShows.map(async (show) => {
             const options = {
                 method: 'GET',
