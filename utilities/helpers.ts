@@ -266,11 +266,12 @@ export const imageSolver = (url, options = {}) => {
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
+  const deviceId = useDeviceId()
   $analytics.sendEvent(eventName, {
     audio_type: audioType,
     audio_title: audioTitle,
     audio_show: audioShow,
-    user_id: currentUser.value?.id,
+    user_id: currentUser.value?.id ?? deviceId.value,
   })
 }
 
