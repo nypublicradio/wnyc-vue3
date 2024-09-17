@@ -43,6 +43,12 @@ const getNPREpisode = async (slug: string) => {
             sortDate: resData.resources[0].publishDateTime,
             cmsSource: cmsSources.NPR,
             type: 'episode',
+            headers: {
+                brand: {
+                    title: cmsSources.NPR,
+                    logoImage: showImage,
+                }
+            },
             audio,
             image: showImage,
             imageMain: showImage,
