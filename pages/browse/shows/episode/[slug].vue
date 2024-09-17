@@ -344,6 +344,7 @@ const getEpisodeImage = computed(() => {
           </div>
         </div>
         <!-- SEGMENTS -->
+        <!-- <pre class="text-xs">{{ episodeData?.audio }}</pre> -->
         <div v-if="hasSegments" class="flex flex-column gap-3 mt-4 grid">
           <EpisodeItem
             v-for="(segment, index) in episodeData?.audio"

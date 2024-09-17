@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
 // Class to normailze NPR data 
 export class NPR {
 
@@ -45,6 +46,12 @@ export class NPR {
                             byline,
                             publishAt: response.data.resources[0].publishDateTime,
                             publicationDate: response.data.resources[0].publishDateTime,
+                            headers: {
+                                brand: {
+                                    title: cmsSources.NPR,
+                                    logoImage: FALLBACKIMAGEEP,
+                                }
+                            },
                             //TODO: Find Catagories, Authors
                         });
                     }
