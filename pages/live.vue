@@ -222,7 +222,9 @@ onMounted(async () => {
     scrollToActiveStation()
   }, 200)
   // updates the stream to the current station
-  await updateLiveStream(currentEpisodeHolder.value.slug, false)
+  if (currentEpisodeHolder.value) {
+    await updateLiveStream(currentEpisodeHolder.value.slug, false)
+  }
 })
 
 onUnmounted(() => {
