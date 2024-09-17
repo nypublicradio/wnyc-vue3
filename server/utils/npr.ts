@@ -38,11 +38,13 @@ export class NPR {
                         const category = await this.getAudioCategory(response.data.resources[0]);
                         const byline = await this.getAudioByline(response.data.resources[0]);
                         audio.push({
-                            url: asset.enclosures[0].href,
+                            audio: asset.enclosures[0].href,
                             title: asset.title,
-                            duration: asset.duration,
+                            estimatedDuration: asset.duration,
                             category,
                             byline,
+                            publishAt: response.data.resources[0].publishDateTime,
+                            publicationDate: response.data.resources[0].publishDateTime,
                             //TODO: Find Catagories, Authors
                         });
                     }
@@ -61,13 +63,13 @@ export class NPR {
         return category;
     }
     async getAudioByline(item: { assets: any[] }) {
-        let bylines: string[] = [];
+        let bylines: object[] = [];
         for (const contributor of Object.values(item?.assets)) {
             if (contributor?.profiles?.[1]?.href === '/v1/profiles/reference-byline') {
                 for (const asset of contributor?.bylineDocuments || []) {
                     const bylineUrl = asset.href;
                     const request = await this.getDocument(bylineUrl);
-                    const byline = request?.resources[0].title;
+                    const byline = { firstName: request?.resources[0].title };
                     bylines.push(byline);
                 }
             }

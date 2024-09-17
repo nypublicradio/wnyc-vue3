@@ -865,20 +865,16 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
-  const isSegment = index !== null
 
   const fileValue = item.file?.includes("blob:")
-    ? item.file
-    : isSegment
-      ? item.audio[index]
-      : item.audio || item.hls
+    ? item.file : item.audio || item.hls
 
   return {
     ...item,
     file: fileValue,
     audio: fileValue,
     hls: item.hls,
-    title: isSegment ? item.segments[index].title : item.title,
+    title: item.title,
     image:
       item.image?.template ??
       item.image ??
@@ -886,8 +882,8 @@ export const prepForPlayer = (item, index = null) => {
       item.showImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration || item.duration,
-    details: isSegment ? item.segments[index].tease : item.body,
-    first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
+    details: item.body,
+    first_published_at: item.publishAt,
   }
 }
 
@@ -897,18 +893,12 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
   const togglePlayTrigger = useTogglePlayTrigger()
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
-  if (typeof media.audio === "string") {
-    if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = prepForPlayer(media)
-      saveRecentlyPlayed(media, type)
-    }
-  } else {
-    // segment
-    if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = prepForPlayer(media, index)
-      saveRecentlyPlayed(media, type)
-    }
+
+  if (currentEpisode.value?.audio !== media.audio) {
+    currentEpisode.value = prepForPlayer(media)
+    saveRecentlyPlayed(media, type)
   }
+
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 

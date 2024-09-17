@@ -70,7 +70,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  hasSegments: {
+  isSegment: {
     type: Boolean,
     default: false,
   },
@@ -223,7 +223,10 @@ const handleClick = () => {
 
 // handle the play button render
 const handleHasAudio = computed(() => {
-  return props.showPlayButton && hasAudio(props.data.audio)
+  return (
+    (props.showPlayButton && hasAudio(props.data.audio)) ||
+    (props.showPlayButton && props.isSegment && hasAudio(props.data.url))
+  )
 })
 </script>
 
@@ -263,12 +266,24 @@ const handleHasAudio = computed(() => {
           <div class="article-metadata">
             <PipeData class="text-xs">
               <template #left>
-                {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
+                {{
+                  props.data?.showTitle ||
+                  props.data?.headers?.brand?.title ||
+                  props.data.category
+                }}
               </template>
               <template #right>
                 {{ getDate(props.data) }}
               </template>
             </PipeData>
+
+            <div class="text-xs mt-1 opacity-70">
+              <VByline
+                v-if="props.data.byline && props.isSegment"
+                :authors="props.data.byline"
+                prefix="By: "
+              />
+            </div>
           </div>
           <!-- FROM SUPABASE PROFILER DATA -->
           <!-- Has to have started playing to show -->

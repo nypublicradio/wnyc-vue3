@@ -169,7 +169,6 @@ const togglePlayHere = (epData, index = 0) => {
 watch(episode, () => {
   episodeData.value = episode.value
   hasSegments.value = Array.isArray(episode.value.audio)
-  console.log("episodeData", episodeData.value)
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -184,11 +183,6 @@ watch(episode, () => {
     article_title: episodeData.value.title,
   })
 })
-
-const isSegment = computed(
-  () =>
-    Array.isArray(episodeData.value?.audio) && Array.isArray(episodeData.value.segments)
-)
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = computed(() => {
@@ -267,7 +261,7 @@ const getEpisodeImage = computed(() => {
         <div class="flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="flex align-items-center gap-2">
             <PlayButton
-              v-if="!isSegment"
+              v-if="!hasSegments"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
@@ -350,9 +344,17 @@ const getEpisodeImage = computed(() => {
           </div>
         </div>
         <!-- SEGMENTS -->
-        <div v-if="isSegment" class="flex flex-column gap-3 mt-4">
-          <div v-for="(segment, index) in episodeData?.segments" :key="segment.title">
-            <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
+        <div v-if="hasSegments" class="flex flex-column gap-3 mt-4 grid">
+          <EpisodeItem
+            v-for="(segment, index) in episodeData?.audio"
+            :key="segment.title"
+            :data="segment"
+            showPlayButton
+            isSegment
+            class="col-12 md:col-6 mb-3"
+          />
+
+          <!-- <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton
                 :label="getMinutes(segment.audioDurationReadable, 1)"
                 :data="episodeData"
@@ -360,8 +362,7 @@ const getEpisodeImage = computed(() => {
                 @onClick="togglePlayHere(episodeData, index)"
               />
               <p class="truncate t2lines">{{ segment.title }}</p>
-            </div>
-          </div>
+            </div> -->
         </div>
         <HtmlConvert :htmlContent="episodeData?.body" class="mt-5" />
       </section>
