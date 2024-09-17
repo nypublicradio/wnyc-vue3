@@ -6,7 +6,9 @@ import { NPR } from '~/server/utils/npr';
 
 const config = useRuntimeConfig()
 
+
 const getNPREpisode = async (slug: string) => {
+    const npr = new NPR();
     // Fetching the episode details from the NPR API
     const option = {
         method: 'GET',
@@ -17,8 +19,14 @@ const getNPREpisode = async (slug: string) => {
     };
     const res = await axios(option);
     const resData = res.data;
+    // From the response find the show details that are in the collections array 
+    const showUrl = resData.resources[0].collections
+        .filter((collection: any) => collection.rels.includes('program'))
+        .map((collection: any) => collection.href)[0] || '';
+    // Fetching the show details to get the show image
+    const show = await npr.getDocument(showUrl);
+    const showImage = npr.findImageUrl(show);
     // Fetching the audio from the NPR API
-    const npr = new NPR();
     const audio = await npr.findAudio(resData.resources[0]);
     // Fallback image to show image when no image is available
     return {
@@ -35,10 +43,9 @@ const getNPREpisode = async (slug: string) => {
             sortDate: resData.resources[0].publishDateTime,
             cmsSource: cmsSources.NPR,
             type: 'episode',
-            headers: { brand: { title: cmsSources.NPR, logoImage: { template: FALLBACKIMAGE } } },
             audio,
-            image: { template: FALLBACKIMAGE, altText: 'Episode image' },
-            imageMain: { template: FALLBACKIMAGE, altText: 'Episode image' },
+            image: showImage,
+            imageMain: showImage,
         },
     };
 

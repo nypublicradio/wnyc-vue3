@@ -7,7 +7,7 @@ export class NPR {
             let imageUrl = null;
             for (const asset of Object.values(item.resources[0].assets)) {
                 if (asset.profiles[0]?.href === '/v1/profiles/image') {
-                    const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
+                    const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-square'));
                     if (imageEnclosure) {
                         imageUrl = { href: imageEnclosure.href, template: imageEnclosure.hrefTemplate };
                         break; // Exit the loop once the matching image URL is found
