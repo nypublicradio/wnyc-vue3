@@ -57,7 +57,7 @@ const getNPREpisodes = async (slug: string, type: string, pageSize: string, page
         data: episodes,
         meta: {
             pagination: {
-                page: page,
+                page,
                 pages: 1000,
                 count: 10000,
             }

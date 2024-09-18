@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
-import { getDate, howLongAgo } from '~/utilities/helpers'
+import { howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data 
 export class NPR {
 
@@ -23,6 +23,7 @@ export class NPR {
         }
     }
 
+    // Fetch all segments for a episode and return audio array
     async findAudio(item, showTitle) {
         try {
             let audio = [];
@@ -69,6 +70,7 @@ export class NPR {
             console.error('findAudio error = ', e);
         }
     }
+    // Fetch the category of the audio
     async getAudioCategory(item) {
         const collections = item?.collections;
         const categoryHref = collections?.filter(collection => collection.rels.includes('slug')).map(collection => collection.href);
@@ -76,6 +78,7 @@ export class NPR {
         const category = request?.resources[0].title;
         return category;
     }
+    // Fetch the authors of the audio
     async getAudioByline(item: { assets: any[] }) {
         let bylines: object[] = [];
         for (const contributor of Object.values(item?.assets)) {
@@ -90,6 +93,7 @@ export class NPR {
         }
         return bylines;
     }
+    // Fetch the document from the NPR API
     async getDocument(url) {
         try {
             const options = {

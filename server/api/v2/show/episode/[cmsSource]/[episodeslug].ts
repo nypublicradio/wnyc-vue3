@@ -1,12 +1,12 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { cmsSources, FALLBACKIMAGELOCAL, FALLBACKIMAGE, FALLBACKIMAGEEP } from '~/composables/globals';
+import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
 import { NPR } from '~/server/utils/npr';
 
 const config = useRuntimeConfig()
 
-
+// Get NPR episode data
 const getNPREpisode = async (slug: string) => {
     const npr = new NPR();
     // Fetching the episode details from the NPR API
@@ -26,7 +26,6 @@ const getNPREpisode = async (slug: string) => {
     // Fetching the show details to get the show image
     const show = await npr.getDocument(showUrl);
     const showImage = npr.findImageUrl(show);
-    console.log('resData.resources[0] =', resData.resources[0])
     const id = String(resData.resources[0].id);
     const showTitle = show.resources[0].title
     // Fetching the audio from the NPR API
