@@ -23,7 +23,7 @@ export class NPR {
         }
     }
 
-    async findAudio(item) {
+    async findAudio(item, showTitle) {
         try {
             let audio = [];
             for (const asset of Object.values(item?.items)) {
@@ -40,6 +40,7 @@ export class NPR {
                         const category = await this.getAudioCategory(response.data.resources[0]);
                         const byline = await this.getAudioByline(response.data.resources[0]);
                         const publishedDate = response.data.resources[0].publishDateTime
+                        const body = response.data.resources[0].teaser
                         audio.push({
                             audio: asset.enclosures[0].href,
                             title: asset.title,
@@ -54,7 +55,9 @@ export class NPR {
                                     logoImage: FALLBACKIMAGEEP,
                                 }
                             },
-                            showTitle: `${getDate(publishedDate)} - ${howLongAgo(publishedDate)}`,
+                            showTitle: `${showTitle} - ${howLongAgo(publishedDate)}`,
+                            description: "test description",
+                            body,
                             //TODO: Find Catagories, Authors
                         });
                     }
