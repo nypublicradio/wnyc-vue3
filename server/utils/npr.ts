@@ -42,6 +42,7 @@ export class NPR {
                         const publishedDate = response.data.resources[0].publishDateTime
                         const body = response.data.resources[0].teaser
                         audio.push({
+                            id: asset.id,
                             audio: asset.enclosures[0].href,
                             title: asset.title,
                             estimatedDuration: asset.duration,

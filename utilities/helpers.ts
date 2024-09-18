@@ -865,7 +865,6 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 
 // normalize the bucket item data for the player
 export const prepForPlayer = (item, index = null) => {
-  console.log("PREP item", item)
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
 
@@ -896,7 +895,6 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
 
   if (currentEpisode.value?.audio !== media.audio) {
     currentEpisode.value = prepForPlayer(media)
-    console.log('prepped = ', currentEpisode.value)
     saveRecentlyPlayed(media, type)
   }
 

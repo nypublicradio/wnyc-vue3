@@ -348,7 +348,7 @@ const getEpisodeImage = computed(() => {
         <div v-if="hasSegments" class="flex flex-column gap-3 mt-4 grid">
           <EpisodeItem
             v-for="(segment, index) in episodeData?.audio"
-            :key="segment.title"
+            :key="segment.id"
             :data="segment"
             showPlayButton
             isSegment
