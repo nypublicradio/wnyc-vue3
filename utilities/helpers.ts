@@ -896,6 +896,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
 
   if (currentEpisode.value?.audio !== media.audio) {
     currentEpisode.value = prepForPlayer(media)
+    console.log('prepped = ', currentEpisode.value)
     saveRecentlyPlayed(media, type)
   }
 

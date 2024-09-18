@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
+import { getDate, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data 
 export class NPR {
 
@@ -38,20 +39,22 @@ export class NPR {
                     if (asset?.isAvailable) {
                         const category = await this.getAudioCategory(response.data.resources[0]);
                         const byline = await this.getAudioByline(response.data.resources[0]);
+                        const publishedDate = response.data.resources[0].publishDateTime
                         audio.push({
                             audio: asset.enclosures[0].href,
                             title: asset.title,
                             estimatedDuration: asset.duration,
                             category,
                             byline,
-                            publishAt: response.data.resources[0].publishDateTime,
-                            publicationDate: response.data.resources[0].publishDateTime,
+                            publishAt: publishedDate,
+                            publicationDate: publishedDate,
                             headers: {
                                 brand: {
                                     title: cmsSources.NPR,
                                     logoImage: FALLBACKIMAGEEP,
                                 }
                             },
+                            showTitle: `${getDate(publishedDate)} - ${howLongAgo(publishedDate)}`,
                             //TODO: Find Catagories, Authors
                         });
                     }

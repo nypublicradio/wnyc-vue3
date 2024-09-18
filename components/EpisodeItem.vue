@@ -267,9 +267,9 @@ const handleHasAudio = computed(() => {
             <PipeData class="text-xs">
               <template #left>
                 {{
-                  props.data?.showTitle ||
-                  props.data?.headers?.brand?.title ||
-                  props.data.category
+                  isSegment
+                    ? props.data?.category
+                    : props.data?.showTitle || props.data?.headers?.brand?.title
                 }}
               </template>
               <template #right>
