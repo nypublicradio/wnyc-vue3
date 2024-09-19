@@ -203,7 +203,7 @@ export default function useSleepTimer() {
         trackClickEvent(
             "Click Tracking - Sleep Timer",
             "Expanded Audio Player",
-            currentEpisode.value.title ?? "No audio selected"
+            currentEpisode.value?.title ?? "No audio selected"
         )
     }
 

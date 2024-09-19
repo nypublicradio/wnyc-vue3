@@ -31,6 +31,9 @@ const handleClick = () => {
 <style lang="scss" scoped>
 .sleep-timer-button {
   position: relative;
+  .p-button .o-icon {
+    color: var(--text-color);
+  }
   .badge {
     top: -25px;
     position: absolute;
