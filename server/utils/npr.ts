@@ -22,7 +22,34 @@ export class NPR {
             console.error('findImageUrl error = ', e);
         }
     }
+    async findEpisodeImage(item) {
+        try {
+            if (item?.assets) {
+                for (const asset of Object.values(item?.assets)) {
 
+                    if (asset.cardStyle === 'ProgramSegment') {
+                        const res = await this.getDocument(asset?.documentLink?.href);
+                        for (const asset of Object.values(res.resources[0].assets)) {
+                            if (asset.enclosures) {
+                                const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
+                                console.log('imageEnclosure = ', imageEnclosure);
+                                if (imageEnclosure) {
+                                    return {
+                                        template: imageEnclosure.hrefTemplate,
+                                        alt: asset.altText,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                return null;
+            }
+        } catch (e) {
+            console.error('findDocumentLink error = ', e);
+        }
+    }
     // Fetch all segments for a episode and return audio array
     async findAudio(item, showTitle) {
         try {

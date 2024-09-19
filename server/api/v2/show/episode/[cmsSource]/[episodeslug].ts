@@ -19,6 +19,7 @@ const getNPREpisode = async (slug: string) => {
     };
     const res = await axios(option);
     const resData = res.data;
+    const episodeImage = await npr.findEpisodeImage(resData.resources[0]);
     // From the response find the show details that are in the collections array 
     const showUrl = resData.resources[0].collections
         .filter((collection: any) => collection.rels.includes('program'))
@@ -52,7 +53,7 @@ const getNPREpisode = async (slug: string) => {
                 }
             },
             audio,
-            image: showImage,
+            image: episodeImage,
             imageMain: showImage,
             showTitle,
         },

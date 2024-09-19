@@ -5,6 +5,7 @@ import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
+import { image } from 'ionicons/icons'
 
 
 const config = useRuntimeConfig();
@@ -33,7 +34,7 @@ const getNPREpisodes = async (slug: string, type: string, pageSize: string, page
 
     let episodes = [];
     episodes = await Promise.all(res.data.resources.map(async (item) => {
-        const audio = await npr.findAudio(item);
+        const episodeImage = await npr.findEpisodeImage(item);
         return {
             id: item.id,
             title: item.title,
@@ -48,8 +49,8 @@ const getNPREpisodes = async (slug: string, type: string, pageSize: string, page
             sortDate: item.publishDateTime,
             cmsSource: cmsSources.NPR,
             type: 'episode',
-            audio,
-            imageMain: { FALLBACKIMAGE }
+            imageMain: { FALLBACKIMAGE },
+            image: episodeImage,
         };
     }));
 
