@@ -32,7 +32,6 @@ export class NPR {
                         for (const asset of Object.values(res.resources[0].assets)) {
                             if (asset.enclosures) {
                                 const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
-                                console.log('imageEnclosure = ', imageEnclosure);
                                 if (imageEnclosure) {
                                     return {
                                         template: imageEnclosure.hrefTemplate,
@@ -85,7 +84,6 @@ export class NPR {
                                 }
                             },
                             showTitle: `${showTitle} - ${howLongAgo(publishedDate)}`,
-                            description: "test description",
                             body,
                             //TODO: Find Catagories, Authors
                         });
