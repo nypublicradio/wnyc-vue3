@@ -25,9 +25,9 @@ const { data: show, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
 )
 
-const page = ref(show?.value?.episodes?.meta.pagination.page ?? null)
+const page = ref(show?.value?.episodes?.meta?.pagination?.page ?? null)
 const episodes = ref(show?.value?.episodes?.data ?? null)
-let maxPages = show?.value?.episodes?.meta.pagination.pages ?? null
+let maxPages = show?.value?.episodes?.meta?.pagination?.pages ?? null
 const showImage = ref(show?.value?.show?.image?.template ?? null)
 const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
@@ -136,8 +136,8 @@ const hasEpisodes = computed(() => {
 })
 
 watch(show, () => {
-  page.value = show?.value?.episodes?.meta.pagination.page
-  maxPages = show.value.episodes?.meta.pagination.pages
+  page.value = show?.value?.episodes?.meta?.pagination.page
+  maxPages = show.value.episodes?.meta?.pagination.pages
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template ?? getEpisodeFallBackImage()
   showTitle.value = show.value.show?.title
