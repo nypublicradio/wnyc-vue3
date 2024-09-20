@@ -149,7 +149,7 @@ export default defineEventHandler(async (event) => {
         // Get show details
         const show = await getShow(slug);
         if (show?.type === cmsSources.NPR) {
-            episodes = await getNPREpisodes(slug, show.type, pageSize, page, show?.title);
+            episodes = await getNPREpisodes(slug, show.type, show?.title);
         } else {
             episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page);
         }

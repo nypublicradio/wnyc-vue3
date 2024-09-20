@@ -292,7 +292,6 @@ onMounted(() => {
                 :data="ep"
                 @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
                 :fallback-image="getEpisodeFallBackImage()"
-                :hasSegments="Array.isArray(ep.audio)"
               />
             </template>
           </div>
