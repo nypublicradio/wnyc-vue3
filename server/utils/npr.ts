@@ -63,7 +63,18 @@ export class NPR {
                         Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
                     }
                 };
-                const response = await axios(option);
+                let response;
+                try {
+                    response = await axios(option);
+                } catch (error) {
+                    if (error.response && error.response.status === 404) {
+                        console.warn('Resource not found:', option.url);
+                        continue; // Skip to the next iteration
+                    } else {
+                        throw error; // Re-throw the error if it's not a 404
+                    }
+                }
+
                 for (const asset of Object.values(response.data.resources[0].assets)) {
                     if (asset?.isAvailable) {
                         const category = await this.getAudioCategory(response.data.resources[0]);

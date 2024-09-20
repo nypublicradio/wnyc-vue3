@@ -284,7 +284,7 @@ const handleHasAudio = computed(() => {
 
             <div class="text-xs mt-1 opacity-70">
               <VByline
-                v-if="props.data.byline && props.isSegment"
+                v-if="props.data.byline.length > 0 && props.isSegment"
                 :authors="props.data.byline"
                 prefix="By: "
               />
