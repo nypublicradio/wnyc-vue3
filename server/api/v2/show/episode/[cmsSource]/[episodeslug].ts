@@ -61,6 +61,7 @@ const getNPREpisode = async (slug: string) => {
 
 };
 
+// Get episode data
 const getEpisode = async (slug: string) => {
 
     const option = {

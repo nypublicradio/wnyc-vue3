@@ -5,7 +5,6 @@ import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
-import { image } from 'ionicons/icons'
 
 
 const config = useRuntimeConfig();
@@ -13,6 +12,7 @@ const supabase = supabaseClient();
 const nyprDb = new NyprDb(supabase);
 const npr = new NPR();
 
+// Get NPR episodes data
 const getNPREpisodes = async (slug: string, type: string, showTitle: string) => {
 
     const show = await nyprDb.getNPRShowBySlug(slug);
@@ -59,6 +59,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
     };
 };
 
+// Get Publisher episodes data
 const getEpisodes = async (slug: string, showImage: string, type?: string, pageSize?: string, page?: number) => {
     // If page is not defined, set it to 1
     if (!page) {

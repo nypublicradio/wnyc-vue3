@@ -864,7 +864,7 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 }
 
 // normalize the bucket item data for the player
-export const prepForPlayer = (item, index = null) => {
+export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
 
@@ -887,7 +887,7 @@ export const prepForPlayer = (item, index = null) => {
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) => {
+export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   const isLiveStream = useIsLiveStream()

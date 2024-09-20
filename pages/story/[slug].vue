@@ -142,8 +142,8 @@ watch(
 )
 
 // handle the toggle play button and tracking
-const togglePlayHere = (story, index = 0) => {
-  togglePlayEpisode(story, mediaTypes.EPISODE, index)
+const togglePlayHere = (story) => {
+  togglePlayEpisode(story, mediaTypes.EPISODE)
 }
 </script>
 

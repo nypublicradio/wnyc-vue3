@@ -95,7 +95,7 @@ const featuredShows = async () => {
 
 
 export default defineEventHandler(async (event) => {
-    let res = event?.node?.res;
+    const res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     const nprShowsData = await nprShows();

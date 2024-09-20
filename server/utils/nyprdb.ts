@@ -9,17 +9,18 @@ export class NyprDb {
         this.supabase = supabase;
     }
 
+    // Get all NPR shows
     async getNPRShows() {
-        const { data, error } = await this.supabase
+        const { data } = await this.supabase
             .from('shows')
             .select('*')
             .eq('cmsSource', 'NPR')
             .order('title', { ascending: false });
         return data;
     }
-
+    // Get NPR show by slug
     async getNPRShowBySlug(slug) {
-        const { data, error } = await this.supabase
+        const { data } = await this.supabase
             .from('shows')
             .select('*')
             .eq('slug', slug);

@@ -346,14 +346,12 @@ const getEpisodeImage = computed(() => {
         <!-- SEGMENTS -->
         <!-- <pre class="text-xs">{{ episodeData?.audio }}</pre> -->
         <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 grid">
-          <li v-for="segment in episodeData?.audio" class="col-12 mb-3 pr-0">
-            <EpisodeItem
-              :key="segment.id"
-              :data="segment"
-              showPlayButton
-              isSegment
-              :show-image="false"
-            />
+          <li
+            v-for="segment in episodeData?.audio"
+            class="col-12 mb-3 pr-0"
+            :key="segment.id"
+          >
+            <EpisodeItem :data="segment" showPlayButton isSegment :show-image="false" />
           </li>
 
           <!-- <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">

@@ -3,7 +3,7 @@ import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
 import { howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data 
 export class NPR {
-
+    // Fetch the image of the show
     findImageUrl(item) {
         try {
             let imageUrl = null;
@@ -22,6 +22,7 @@ export class NPR {
             console.error('findImageUrl error = ', e);
         }
     }
+    // Fetch the image of the episode
     async findEpisodeImage(item) {
         try {
             if (item?.assets) {
@@ -54,7 +55,7 @@ export class NPR {
         const item = resData.resources[0]
         const showTitle = show.resources[0].title
         try {
-            let audio = [];
+            const audio = [];
             for (const asset of Object.values(item?.items)) {
                 const option = {
                     method: 'GET',
@@ -121,7 +122,7 @@ export class NPR {
     }
     // Fetch the authors of the audio
     async getAudioByline(item: { assets: any[] }) {
-        let bylines: object[] = [];
+        const bylines: object[] = [];
         for (const contributor of Object.values(item?.assets)) {
             if (contributor?.profiles?.[1]?.href === '/v1/profiles/reference-byline') {
                 for (const asset of contributor?.bylineDocuments || []) {
