@@ -13,7 +13,7 @@ const supabase = supabaseClient();
 const nyprDb = new NyprDb(supabase);
 const npr = new NPR();
 
-const getNPREpisodes = async (slug: string, type: string, pageSize: string, page: number, showTitle: string) => {
+const getNPREpisodes = async (slug: string, type: string, showTitle: string) => {
 
     const show = await nyprDb.getNPRShowBySlug(slug);
     // Fetching the episodes from the NPR API and normalizing the data
@@ -55,14 +55,7 @@ const getNPREpisodes = async (slug: string, type: string, pageSize: string, page
     }));
 
     return {
-        data: episodes,
-        meta: {
-            pagination: {
-                page,
-                pages: 1000,
-                count: 10000,
-            }
-        }
+        data: episodes
     };
 };
 
