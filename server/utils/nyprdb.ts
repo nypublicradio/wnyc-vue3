@@ -1,9 +1,11 @@
+import { SupabaseClient } from '@supabase/supabase-js';
+
 /**
  * Class to handle all database queries
  */
 
 export class NyprDb {
-    supabase: any;
+    supabase: SupabaseClient;
 
     constructor(supabase) {
         this.supabase = supabase;

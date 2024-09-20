@@ -121,7 +121,7 @@ export class NPR {
         return category;
     }
     // Fetch the authors of the audio
-    async getAudioByline(item: { assets: any[] }) {
+    async getAudioByline(item: { assets: { profiles?: { href?: string }[], bylineDocuments?: { href: string }[] }[] }) {
         const bylines: object[] = [];
         for (const contributor of Object.values(item?.assets)) {
             if (contributor?.profiles?.[1]?.href === '/v1/profiles/reference-byline') {

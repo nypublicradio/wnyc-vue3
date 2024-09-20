@@ -78,7 +78,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
         }
     };
     const res = await axios(option);
-    const resData = await Promise.all(res.data.data.map(async (item: any) => {
+    const resData = await Promise.all(res.data.data.map(async (item: Record<string, unknown>) => {
         item.cmsSource = cmsSources.PUBLISHER;
         item.showImage = showImage;
         return await normalizeArticlePage(humps.camelizeKeys(item))

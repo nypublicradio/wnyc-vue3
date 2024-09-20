@@ -22,8 +22,8 @@ const getNPREpisode = async (slug: string) => {
     const episodeImage = await npr.findEpisodeImage(resData.resources[0]);
     // From the response find the show details that are in the collections array 
     const showUrl = resData.resources[0].collections
-        .filter((collection: any) => collection.rels.includes('program'))
-        .map((collection: any) => collection.href)[0] || '';
+        .filter((collection: { rels: string[]; href: string }) => collection.rels.includes('program'))
+        .map((collection: { rels: string[]; href: string }) => collection.href)[0] || '';
     // Fetching the show details to get the show image
     const show = await npr.getDocument(showUrl);
     const showImage = npr.findImageUrl(show);
