@@ -29,7 +29,7 @@ export class NPR {
                 for (const asset of Object.values(item?.assets)) {
 
                     if (asset.cardStyle === 'ProgramSegment') {
-                        const res = await this.getDocument(asset?.documentLink?.href);
+                        const res = await NPR.getDocument(asset?.documentLink?.href);
                         for (const asset of Object.values(res.resources[0].assets)) {
                             if (asset.enclosures) {
                                 const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
@@ -49,6 +49,7 @@ export class NPR {
         } catch (e) {
             console.error('findDocumentLink error = ', e);
         }
+        return null;
     }
     // Fetch all segments for a episode and return audio array
     async findAudio(resData, show) {
@@ -111,12 +112,13 @@ export class NPR {
         } catch (e) {
             console.error('findAudio error = ', e);
         }
+        return null;
     }
     // Fetch the category of the audio
     async getAudioCategory(item) {
         const collections = item?.collections;
         const categoryHref = collections?.filter(collection => collection.rels.includes('slug')).map(collection => collection.href);
-        const request = await this.getDocument(categoryHref[0]);
+        const request = await NPR.getDocument(categoryHref[0]);
         const category = request?.resources[0].title;
         return category;
     }
