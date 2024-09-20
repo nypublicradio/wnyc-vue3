@@ -74,6 +74,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showImage: {
+    type: Boolean,
+    default: true,
+  },
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
@@ -243,6 +247,7 @@ const handleHasAudio = computed(() => {
     <div class="flex gap-3 w-full">
       <!-- <pre class="text-xs overflow-hidden">{{ props.data }}</pre> -->
       <VImage
+        v-if="props.showImage"
         class="flex-none"
         :alt="`${props.data.showTitle} show `"
         :src="imgSrcUrl"
@@ -253,7 +258,7 @@ const handleHasAudio = computed(() => {
         style="height: 116px; width: 116px"
         tabindex="-1"
       />
-      <div class="flex gap-1 flex-column justify-content-between w-full">
+      <div class="flex gap-2 flex-column justify-content-between w-full">
         <div class="flex gap-1 flex-column w-full">
           <div class="flex gap-0 flex-column align-items-start">
             <p v-if="props.showTitle" class="text-xs line-height-1">

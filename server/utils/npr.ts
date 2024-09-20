@@ -50,7 +50,9 @@ export class NPR {
         }
     }
     // Fetch all segments for a episode and return audio array
-    async findAudio(item, showTitle) {
+    async findAudio(resData, show) {
+        const item = resData.resources[0]
+        const showTitle = show.resources[0].title
         try {
             let audio = [];
             for (const asset of Object.values(item?.items)) {
@@ -85,6 +87,9 @@ export class NPR {
                             },
                             showTitle: `${showTitle} - ${howLongAgo(publishedDate)}`,
                             body,
+                            meta: {
+                                slug: asset.id,
+                            },
                             //TODO: Find Catagories, Authors
                         });
                     }
