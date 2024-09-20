@@ -122,15 +122,19 @@ const handleDownload = async (bucketItem) => {
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
-    {
-      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
-      customIcon: StarIcon,
-      active: isFavorited.value,
-      title: bucketItem.title,
-      command: () => {
-        handleAddToFavorites(bucketItem)
-      },
-    },
+    ...(!props.isSegment
+      ? [
+          {
+            label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
+            customIcon: StarIcon,
+            active: isFavorited.value,
+            title: bucketItem.title,
+            command: () => {
+              handleAddToFavorites(bucketItem)
+            },
+          },
+        ]
+      : []),
     ...(hasAudio(bucketItem.audio) && !isDownloaded.value
       ? [
           {
