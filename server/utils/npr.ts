@@ -86,7 +86,7 @@ export class NPR {
                         audio.push({
                             id: asset.id,
                             audio: asset.enclosures[0].href,
-                            title: asset.title,
+                            title: response.data.resources[0].title ?? asset.title,
                             estimatedDuration: asset.duration,
                             category,
                             byline,
