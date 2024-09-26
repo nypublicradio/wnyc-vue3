@@ -2,18 +2,22 @@ import UIKit
 import Capacitor
 import Firebase
 import FirebaseCore
-//import CapacitorBackgroundRunner
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var webView: WKWebView?
+    
+    private func getWebView() -> WKWebView? {
+        return (window?.rootViewController as? CAPBridgeViewController)?.bridge?.webView
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         return true
     }
-
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -29,7 +33,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        webView = getWebView()
+        
+        if let webView = webView, #available(iOS 17.0, *) {
+            let preferences = webView.configuration.preferences
+            preferences.inactiveSchedulingPolicy = .none
+        } else {
+            print("Sleep Timer is not supported on iOS 16 and below")
+        }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -65,15 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-            // ....
-            // BackgroundRunnerPlugin.dispatchEvent(event: "remoteNotification", eventArgs: userInfo) { result in
-            //     switch result {
-            //     case .success:
-            //         completionHandler(.newData)
-            //     case .failure:
-            //         completionHandler(.failed)
-            //     }
-            // }
-        }
+
+    }
 
 }

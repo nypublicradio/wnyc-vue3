@@ -41,11 +41,10 @@
     "@capacitor/share": "6.0.2",
     "@capacitor/splash-screen": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
-    "@christoffyw/capacitor-media-session": "^3.0.4",
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",
-    "@nypublicradio/capacitor-remote-streamer": "0.1.7",
+    "@nypublicradio/capacitor-remote-streamer": "^0.3.5",
     "@nypublicradio/nypr-design-system-vue3": "^2.1.47",
     "@sentry/integrations": "^7.114.0",
     "@sentry/tracing": "^7.114.0",
@@ -57,6 +56,7 @@
     "@vueuse/core": "^10.11.0",
     "@vueuse/integrations": "^10.11.0",
     "axios": "1.6.5",
+    "bp-capacitor-background-mode": "^2.0.10",
     "capacitor-native-settings": "6.0.1",
     "capacitor-plugin-app-tracking-transparency": "^2.0.5",
     "firebase": "^10.12.5",
@@ -69,9 +69,10 @@
     "music-metadata": "^7.14.0",
     "podcast-feed-parser": "^1.0.4",
     "primeflex": "^3.3.0",
-    "primevue": "^3.46.0",
+    "primevue": "3.46.0",
     "ufo": "^1.5.4",
     "vitest": "0.32.4",
-    "vue": "3.4.6"
+    "vue": "3.4.6",
+    "worker-timers": "^8.0.4"
   }
 }

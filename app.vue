@@ -26,10 +26,14 @@ import { Network } from "@capacitor/network"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 import { initMediaSession } from "~/utilities/media-session.js"
+import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
+
+// temp system to handle the new feature badge on the sleep timer
+const { initFeatureSessionCount } = useNewFeatureBadge()
+initFeatureSessionCount()
 
 const toast = useToast()
 
-//const { isDesktop } = useDevice()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -57,7 +61,6 @@ useHead({
   //   class: 'safe-area-padding',
   // },
 })
-
 // a func to refresh all data
 const refreshData = async () => {
   await getAndSetUserProfile()

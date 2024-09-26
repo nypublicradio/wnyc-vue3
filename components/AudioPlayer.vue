@@ -61,6 +61,7 @@ const isInitialPlay = useIsInitialPlay()
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const playerHeight = ref(`${audioPlayerHeight}px`)
+const isBuffering = ref(false)
 
 const route = useRoute()
 
@@ -249,17 +250,24 @@ const episodeEnded = () => {
 watch(isNetworkConnected, () => {
   const tempEpisode = currentEpisode.value
   const tempTime = currentEpisodeProgress.value
-  if (currentEpisode.value && isNetworkConnected.value) {
+  if (currentEpisode.value && isNetworkConnected.value && isBuffering.value) {
     // the current episode does not resume, so we have to null it out and then set it back
     currentEpisode.value = null
     setTimeout(() => {
       currentEpisode.value = tempEpisode
     }, 500)
-    setTimeout(() => {
-      playerRef.value.jumpToTime(tempTime)
-    }, 1500)
+    if (!isLiveStream.value) {
+      setTimeout(() => {
+        RemoteStreamer.seekTo({ position: tempTime })
+      }, 1500)
+    }
   }
 })
+
+//
+// watch(isBuffering, (e) => {
+//   console.log("watch: isBuffering = ", isBuffering.value, e)
+// })
 
 // function that handles the skip ahead toggle triiger
 const handleSkipAhead = () => {
@@ -316,12 +324,14 @@ onMounted(async () => {
     }
   })
 
-  await RemoteStreamer.addListener("buffering", () => {
+  await RemoteStreamer.addListener("buffering", (e) => {
+    isBuffering.value = e.isBuffering
     if (!isEpisodePlaying.value) {
       isStreamLoading.value = true
     } else {
       isStreamLoading.value = false
     }
+    //isStreamLoading.value = e.isBuffering
   })
 
   await RemoteStreamer.addListener("stop", (e) => {

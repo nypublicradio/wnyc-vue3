@@ -15,7 +15,9 @@ import {
   useCurrentUser,
   useIsLiveStream,
   useGlobalToast,
+  useSleepTimerRunning,
 } from "~/composables/states"
+import useSleepTimer from "~/composables/useSleepTimer"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -24,7 +26,7 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 //import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
-//import SleepIcon from "~/components/icons/SleepIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
 
 const globalToast = useGlobalToast()
 const emit = defineEmits(["close-panel"])
@@ -33,9 +35,11 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const isLiveStream = useIsLiveStream()
-
+const sleepTimerRunning = useSleepTimerRunning()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
+
+const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -124,16 +128,6 @@ const handleShare = () => {
 //   )
 // }
 
-// const handleSleepTimer = () => {
-//   // toggle active state
-//   // show sleep timer interface
-//   trackClickEvent(
-//     "Click Tracking - Sleep Timer",
-//     "Expanded Audio Player",
-//     currentEpisode.value.title
-//   )
-// }
-
 const isLive = computed(() => {
   return isLiveStream.value
 })
@@ -154,15 +148,15 @@ const getDotMenuItems = () => {
               handleFollow(currentEpisode.value.showSlug)
             },
           },
-          // {
-          //   label: "Sleep Timer",
-          //   customIcon: SleepIcon,
-          //   active: true,
-          //   title: currentEpisode.value.title,
-          //   command: () => {
-          //     handleSleepTimer()
-          //   },
-          // },
+          {
+            label: "Sleep Timer",
+            customIcon: SleepIcon,
+            active: sleepTimerRunning.value,
+            title: currentEpisode.value.title,
+            command: () => {
+              handleSleepTimer()
+            },
+          },
           // ...(showShare.value
           //   ? [
           //       {
@@ -200,6 +194,15 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
+          {
+            label: "Sleep Timer",
+            customIcon: SleepIcon,
+            active: sleepTimerRunning.value,
+            title: currentEpisode.value.title,
+            command: () => {
+              handleSleepTimer()
+            },
+          },
           {
             label: "Download",
             customIcon: DownloadIcon,
@@ -283,9 +286,7 @@ const moreFromClick = () => {
         >
           <template #icon> <FollowIcon /></template>
         </Button> -->
-        <!--   <Button text severity="secondary" rounded @click="handleSleepTimer">
-          <template #icon> <SleepIcon /></template>
-        </Button> -->
+        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
       </div>
       <div v-else class="flex gap-3">
         <Button
@@ -298,12 +299,14 @@ const moreFromClick = () => {
         >
           <template #icon> <StarIcon :active="isFavorited" /></template>
         </Button>
+        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
         <Button
           text
           severity="secondary"
           rounded
           aria-label="download"
           @click="handleDownload"
+          v-if="currentEpisode.hideFavorite"
         >
           <template #icon> <DownloadIcon /></template>
         </Button>

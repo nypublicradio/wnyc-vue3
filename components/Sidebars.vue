@@ -7,7 +7,8 @@ import {
   useForgotPasswordSideBar,
   useEditProfileSideBar,
   useAccountPromptSideBar,
-  useAccountDeleteSideBar
+  useAccountDeleteSideBar,
+  useSleepTimerSideBar,
 } from "~/composables/states"
 
 const settingsSideBar = useSettingSideBar()
@@ -17,6 +18,7 @@ const forgotPasswordSideBar = useForgotPasswordSideBar()
 const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
+const sleepTimerSideBar = useSleepTimerSideBar()
 </script>
 
 <template>
@@ -153,6 +155,26 @@ const accountDeleteSideBar = useAccountDeleteSideBar()
       "
     >
       <AccountDeleteSideBar />
+    </Sidebar>
+
+    <Sidebar
+      v-model:visible="sleepTimerSideBar"
+      :baseZIndex="10003"
+      position="bottom"
+      class="w-full hideX no-safe-area h-auto"
+      :class="[{ hide: !sleepTimerSideBar }]"
+      id="sleep-timer-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Sleep Timer Sidebar Close Button',
+            'Sleep Timer Sidebar',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <SleepTimer />
     </Sidebar>
   </div>
 </template>
