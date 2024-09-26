@@ -47,9 +47,6 @@ project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capa
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
-include ':christoffyw-capacitor-media-session'
-project(':christoffyw-capacitor-media-session').projectDir = new File('../node_modules/@christoffyw/capacitor-media-session/android')
-
 include ':nypublicradio-capacitor-remote-streamer'
 project(':nypublicradio-capacitor-remote-streamer').projectDir = new File('../node_modules/@nypublicradio/capacitor-remote-streamer/android')
 

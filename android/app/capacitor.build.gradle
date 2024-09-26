@@ -24,7 +24,6 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
-    implementation project(':christoffyw-capacitor-media-session')
     implementation project(':nypublicradio-capacitor-remote-streamer')
     implementation project(':bp-capacitor-background-mode')
     implementation project(':capacitor-native-settings')
