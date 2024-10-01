@@ -1178,10 +1178,12 @@ export const requestAccountDeletion = async () => {
 }
 // Custom sorting function that ignores "A " and "The " at the beginning of titles
 export const customAlphabeticalSort = (key = 'title') => {
-  return (a: any, b: any) => {
-    const getValue = (obj: any, key: string) => obj[key];
+  return (a, b) => {
+    // get the value from the key
+    const getValue = (obj, key) => obj[key];
 
-    const getTitle = (title: string) => {
+    // get the title without "A " or "The " at the beginning
+    const getTitle = (title) => {
       const prefixes = ["A ", "The "];
       for (const prefix of prefixes) {
         if (title.startsWith(prefix)) {

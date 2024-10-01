@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
     featuredShowsData.sort(customAlphabeticalSort());
 
     // Match IDs and update featuredShowsData
-    featuredShowsData.map((show) => {
+    featuredShowsData.forEach((show) => {
         const match = allShowsData.find((item) => item.slug === show.slug);
         if (match) {
             show.id = match.id;
