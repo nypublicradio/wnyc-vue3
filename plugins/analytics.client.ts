@@ -22,10 +22,9 @@ export default defineNuxtPlugin(() => {
             page_title: document.title,
             user_id: newValue.id ?? deviceId.value,
             ...params
-          });
+          })
         }
-      });
-      return;
+      })
     } else {
       sendEvent('page_view', {
         page_location: document.location.href,
