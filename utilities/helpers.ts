@@ -281,7 +281,7 @@ export const trackClickEvent = (category, component, label) => {
   const deviceId = useDeviceId()
   $analytics.sendEvent("click_tracking", {
     event_category: category,
-    component: component,
+    component,
     event_label: label,
     user_id: currentUser.value?.id ?? deviceId.value,
   })
@@ -478,6 +478,7 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
+// helper function to remove HTML tags from a string
 export const removeHTMLTags = (str) => {
   const parser = new DOMParser()
   const parsedHTML = parser.parseFromString(str, "text/html")
