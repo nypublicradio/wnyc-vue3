@@ -273,12 +273,6 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
     audio_show: audioShow,
     user_id: currentUser.value?.id ?? deviceId.value,
   })
-  console.log("Audio Event Tracked: ", eventName, {
-    audio_type: audioType,
-    audio_title: audioTitle,
-    audio_show: audioShow,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
 }
 
 // function that tracks click events to google analytics
@@ -914,9 +908,6 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
       saveRecentlyPlayed(media, type)
     }
   }
-  console.log("togglePlayEpisode", media.title, type)
-  //trackAudioEvent = (eventName, audioType, audioTitle, audioShow)
-  // trackAudioEvent( type, currentEpisode.value.audio_type, currentEpisode.value.audio_title, currentEpisode.value.audio_show)
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 

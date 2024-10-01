@@ -133,12 +133,14 @@ const switchEpisode = async (val) => {
 // function that handles the skip to time with the plugin
 const handleSkipTo = (e) => {
   RemoteStreamer.seekTo({ position: e })
+  trackAudioEvent("skip", getMediaType.value, getTitle.value, getDescription.value)
 }
 //
 const handleSeekTo = (e) => {
   // convert the percentage to the time
   const time = (e / 100) * currentEpisodeDuration.value
   RemoteStreamer.seekTo({ position: time })
+  trackAudioEvent("seek", getMediaType.value, getTitle.value, getDescription.value)
 }
 
 const getTitle = computed(() => {
@@ -173,19 +175,10 @@ const togglePlayHere = async (e) => {
     await RemoteStreamer.pause()
     isEpisodePlaying.value = false
   }
-
-  let eventType = isEpisodePlaying.value ? "resume" : "pause"
-  if (isNewEpisode.value) {
-    eventType = "play"
-  }
-  // don't track the initial play hack above
-  if (isInitialPlay.value && eventType === "resume") {
-    isInitialPlay.value = false
-    eventType = "play"
-  }
-  await nextTick()
-  if (!isInitialPlay.value) {
-    trackAudioEvent(eventType, getMediaType.value, getTitle.value, getDescription.value)
+  if (isEpisodePlaying.value && isNewEpisode.value) {
+    trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
+  } else if(isEpisodePlaying.value && !isNewEpisode.value) {
+    trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
   }
   isEpisodePlaying.value = e
   isNewEpisode.value = false
@@ -321,6 +314,7 @@ onMounted(async () => {
   await RemoteStreamer.addListener("pause", () => {
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
+      trackAudioEvent("pause", getMediaType.value, getTitle.value, getDescription.value)
     }
   })
 
@@ -341,6 +335,7 @@ onMounted(async () => {
     // this is work webview detecting the end of the audio
     if (e?.ended) {
       episodeEnded()
+      trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
     }
   })
   await RemoteStreamer.addListener("ended", (e) => {
@@ -349,6 +344,7 @@ onMounted(async () => {
     currentEpisodeProgress.value = 0
     if (e.ended) {
       episodeEnded()
+      trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
     }
   })
 })
