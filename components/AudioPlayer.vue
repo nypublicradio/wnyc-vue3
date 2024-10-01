@@ -56,7 +56,6 @@ const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
 const globalToast = useGlobalToast()
-const isInitialPlay = useIsInitialPlay()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
@@ -67,6 +66,28 @@ const route = useRoute()
 
 let delay = 250
 const isError = ref(null)
+
+const getDescription = computed(() => {
+  if (!isStreamLoading.value) {
+    if (isLiveStream.value) {
+      return currentEpisode?.value?.episodeTitle
+    } else {
+      return currentEpisode?.value?.showTitle
+      //currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details
+    }
+  } else {
+    return "..."
+  }
+})
+
+const getMediaType = computed(() => {
+  // if the hls value is set, then it is a live stream
+  return currentEpisode?.value?.hls ? "live" : "on_demand"
+})
+
+const getTitle = computed(() => {
+  return currentEpisode?.value?.title
+})
 
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
@@ -142,28 +163,6 @@ const handleSeekTo = (e) => {
   RemoteStreamer.seekTo({ position: time })
   trackAudioEvent("seek", getMediaType.value, getTitle.value, getDescription.value)
 }
-
-const getTitle = computed(() => {
-  return currentEpisode?.value?.title
-})
-
-const getDescription = computed(() => {
-  if (!isStreamLoading.value) {
-    if (isLiveStream.value) {
-      return currentEpisode?.value?.episodeTitle
-    } else {
-      return currentEpisode?.value?.showTitle
-      //currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details
-    }
-  } else {
-    return "..."
-  }
-})
-
-const getMediaType = computed(() => {
-  // if the hls value is set, then it is a live stream
-  return currentEpisode?.value?.hls ? "live" : "on_demand"
-})
 
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
