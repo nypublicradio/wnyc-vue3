@@ -16,16 +16,8 @@ export default defineNuxtPlugin(() => {
 
     if (!currentUser.value) {
       watch(currentUser, (newValue) => {
-
         if (newValue) {
           sendEvent('page_view', {
-            page_location: document.location.href,
-            page_title: document.title,
-            user_id: newValue.id ?? deviceId.value,
-            ...params
-          });
-          console.log('currentUser WATCH', newValue);
-          console.log('Page view sent', {
             page_location: document.location.href,
             page_title: document.title,
             user_id: newValue.id ?? deviceId.value,
@@ -36,13 +28,6 @@ export default defineNuxtPlugin(() => {
       return;
     } else {
       sendEvent('page_view', {
-        page_location: document.location.href,
-        page_title: document.title,
-        user_id: currentUser.value?.id ?? deviceId.value,
-        ...params
-      })
-      console.log('currentUser', currentUser.value)
-      console.log('Page view sent', {
         page_location: document.location.href,
         page_title: document.title,
         user_id: currentUser.value?.id ?? deviceId.value,
