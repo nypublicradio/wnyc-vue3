@@ -1,4 +1,5 @@
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
+import { useCurrentUser } from '~/composables/states'
 
 export default defineNuxtPlugin(() => {
   // event to use when sending gtag events
@@ -9,22 +10,45 @@ export default defineNuxtPlugin(() => {
     });
   }
   // gtag event for reporting on page views
-  const sendPageView = async (params) => {
-    const currentUser = await useCurrentUser()
+  const sendPageView = (params) => {
+    const currentUser = useCurrentUser()
     const deviceId = useDeviceId()
-    sendEvent('page_view', {
-      page_location: document.location.href,
-      page_title: document.title,
-      user_id: currentUser.value?.id ?? deviceId.value,
-      ...params
-    })
-    console.log('currentUser', currentUser.value)
-    console.log('Page view sent',{
-      page_location: document.location.href,
-      page_title: document.title,
-      user_id: currentUser.value?.id ?? deviceId.value,
-      ...params
-    })
+
+    if (!currentUser.value) {
+      watch(currentUser, (newValue) => {
+
+        if (newValue) {
+          sendEvent('page_view', {
+            page_location: document.location.href,
+            page_title: document.title,
+            user_id: newValue.id ?? deviceId.value,
+            ...params
+          });
+          console.log('currentUser WATCH', newValue);
+          console.log('Page view sent', {
+            page_location: document.location.href,
+            page_title: document.title,
+            user_id: newValue.id ?? deviceId.value,
+            ...params
+          });
+        }
+      });
+      return;
+    } else {
+      sendEvent('page_view', {
+        page_location: document.location.href,
+        page_title: document.title,
+        user_id: currentUser.value?.id ?? deviceId.value,
+        ...params
+      })
+      console.log('currentUser', currentUser.value)
+      console.log('Page view sent', {
+        page_location: document.location.href,
+        page_title: document.title,
+        user_id: currentUser.value?.id ?? deviceId.value,
+        ...params
+      })
+    }
   }
   return {
     provide: {
