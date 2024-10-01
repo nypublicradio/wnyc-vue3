@@ -16,7 +16,7 @@ import {
   useIsNetworkConnected,
   useIsLiveStream,
   useAccountDeleteSideBar,
-  useSettingSideBar
+  useSettingSideBar,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -268,6 +268,12 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
   $analytics.sendEvent(eventName, {
+    audio_type: audioType,
+    audio_title: audioTitle,
+    audio_show: audioShow,
+    user_id: currentUser.value?.id ?? deviceId.value,
+  })
+  console.log("Audio Event Tracked: ", eventName, {
     audio_type: audioType,
     audio_title: audioTitle,
     audio_show: audioShow,
@@ -908,6 +914,9 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) =
       saveRecentlyPlayed(media, type)
     }
   }
+  console.log("togglePlayEpisode", media.title, type)
+  //trackAudioEvent = (eventName, audioType, audioTitle, audioShow)
+  // trackAudioEvent( type, currentEpisode.value.audio_type, currentEpisode.value.audio_title, currentEpisode.value.audio_show)
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 

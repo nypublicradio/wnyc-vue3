@@ -1,13 +1,11 @@
-//import { useMembershipStatus } from "~~/composables/states"
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 
 export default defineNuxtPlugin(() => {
-
   // event to use when sending gtag events
-  const sendEvent = async (name, params) => {
+  const sendEvent = async (eventName, eventParams) => {
     await FirebaseAnalytics.logEvent({
-      name,
-      params: params,
+      name: eventName,
+      params: eventParams,
     });
   }
   // gtag event for reporting on page views
