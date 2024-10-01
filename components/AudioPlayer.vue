@@ -25,7 +25,6 @@ import {
   useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
-  useIsInitialPlay,
 } from "~/composables/states"
 import {
   trackAudioEvent,
