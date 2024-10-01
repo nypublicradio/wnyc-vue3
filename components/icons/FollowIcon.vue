@@ -9,7 +9,7 @@ const props = defineProps({
 <template>
   <svg
     role="img"
-    aria-label="follow icon"
+    :aria-label="props.active ? 'Show Followed' : 'Show Unfollowed'"
     class="follow-icon o-icon"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 28 28"
