@@ -10,7 +10,7 @@ ext.versionMinor = System.getenv("APP_VERSION_MINOR") ?: 0
 ext.versionPatch = System.getenv("APP_VERSION_PATCH") ?: 2
 ext.versionClassifier = null
 ext.isSnapShot = false
-ext.minSdkVersion = 34
+ext.minSdkVersion = 30
 ext.circleCiBuildNumber = System.getenv("CIRCLE_BUILD_NUM") ?: "0"
 
 private Integer generateVersionCode() {
@@ -81,7 +81,7 @@ android {
 repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-		dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
+        dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
     }
 }
 

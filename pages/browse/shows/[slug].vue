@@ -3,11 +3,11 @@ import { useIntersectionObserver } from "@vueuse/core"
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
-import ShareIcon from "~/components/icons/ShareIcon.vue"
+//import ShareIcon from "~/components/icons/ShareIcon.vue"
 import {
   checkIsFavorited,
   togglePlayEpisode,
-  shareAPI,
+  //shareAPI,
   trackClickEvent,
   goToEpisodePage,
   hasAudio,
@@ -15,6 +15,7 @@ import {
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
+import useSleepTimer from "~/composables/useSleepTimer"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -35,6 +36,8 @@ const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
+
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
   // so it does not trigger on initial load and before we have data
@@ -124,9 +127,9 @@ const handleAddToFavorites = () => {
   }
 }
 
-const handleShare = () => {
-  shareAPI(show.value.show, "shows page")
-}
+// const handleShare = () => {
+//   //(show.value.show, "shows page")
+// }
 
 const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
@@ -235,9 +238,11 @@ onMounted(() => {
         </template>
       </Button>
 
-      <Button text plain rounded aria-label="share" @click="handleShare">
+      <!-- <Button text plain rounded aria-label="share" @click="handleShare">
         <template #icon> <ShareIcon /></template>
-      </Button>
+      </Button> -->
+
+      <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
     </div>
     <div v-else class="flex justify-content-center align-items-center gap-2 mt-2 mb-4">
       <Skeleton height="37px" width="37px" borderRadius="20px" />

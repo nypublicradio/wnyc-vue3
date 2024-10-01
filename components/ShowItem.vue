@@ -51,7 +51,7 @@ const handleAddToFavorites = () => {
   addToFavorites2({
     item: props.data,
     isFavorited: isFavorited.value,
-    message: "Updated your followed shows.",
+    message: isFavorited.value ? "Show unfollowed." : "Show followed.",
     callback: () => {
       emit("on-delete-favorite")
     },

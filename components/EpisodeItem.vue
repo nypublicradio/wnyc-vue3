@@ -6,6 +6,7 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 import { useIsNetworkConnected, useCurrentUser } from "~/composables/states"
 import {
@@ -27,6 +28,7 @@ import {
   isAlreadyDownloaded,
   /*   formatFileSize, */
 } from "~/utilities/file-system"
+import useSleepTimer from "~/composables/useSleepTimer"
 
 const $primevue = usePrimeVue()
 defineExpose({
@@ -72,6 +74,7 @@ const props = defineProps({
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 //handle if it this is downloaded
 const isDownloaded = ref(false)
 // check if item is already favorited
@@ -158,6 +161,15 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
+    {
+      label: "Sleep Timer",
+      customIcon: SleepIcon,
+      active: sleepTimerRunning.value,
+      title: "Sleep Timer",
+      command: () => {
+        handleSleepTimer()
+      },
+    },
     // {
     //   label: "Add to Queue",
     //   active: true,

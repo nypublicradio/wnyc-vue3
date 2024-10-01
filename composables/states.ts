@@ -9,6 +9,7 @@ const localUserProfileDefault: object = {
     receive_general_notifications: false,
     text_size: 'Normal',
     dark_mode: false,
+    sleep_timer: 90,
 }
 /**
  * Global state for the settings data
@@ -40,6 +41,26 @@ export const useLoginSideBar = () => useState('useLoginSideBar', () => false)
 
 // signin sidebar state
 export const useSignupSideBar = () => useState('useSignupSideBar', () => false)
+
+// sleep timer sidebar state
+export const useSleepTimerSideBar = () => useState("useSleepTimerSideBar", () => false)
+
+// sleep timer currentTime state
+export const useSleepTimerInterval = () => useState("useSleepTimerInterval", () => null)
+
+// sleep timer currentTime state
+export const useSleepTimerCurrentTime = () =>
+    useState("useSleepTimerCurrentTime", () => 1800)
+
+// sleep timer selected state
+export const useSleepTimerSelectedTime = () =>
+    useState("useSleepTimerSelectedTime", () => ({ label: "30 minutes", value: 1800 }));
+
+// sleep timer running state
+export const useSleepTimerRunning = () => useState("useSleepTimerRunning", () => false)
+
+// sleep timer running state
+export const useSleepTimerPaused = () => useState("useSleepTimerPaused", () => false)
 
 // signin sidebar state
 export const useForgotPasswordSideBar = () => useState('useForgotPasswordSideBar', () => false)

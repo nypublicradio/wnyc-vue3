@@ -34,12 +34,25 @@ const props = defineProps({
     type: String,
     default: "42px",
   },
+  normal: {
+    type: Boolean,
+    default: false,
+  },
+  startOpen: {
+    type: Boolean,
+    default: false,
+  },
+  checkMark: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(["update:data", "swipe-down"])
 
 const dataRef = ref(props.data)
 
+const dropdownRootRef = ref(null)
 const sDropDownRef = ref(null)
 const panel = ref(null)
 // to match the total height of the shadow that is being applied to the panel
@@ -169,22 +182,28 @@ function handleSwipe() {
   }
 }
 
+onMounted(() => {
+  if (props.startOpen) dropdownRootRef.value.show()
+})
 onUnmounted(() => {
   unsetPanel()
 })
 </script>
 <template>
   <Dropdown
+    ref="dropdownRootRef"
     v-model="dataRef"
     :options="props.options"
     :optionLabel="props.optionLabel"
     :placeholder="props.placeholder"
     class="s-dropup"
-    :class="[{ customButton: props.customButton }]"
+    :class="[{ customButton: props.customButton, normal: props.normal }]"
     @update:modelValue="$emit('update:data', $event)"
     @show="setPanel"
     @hide="unsetPanel"
-    :panelClass="`p-dropup-panel ${props.customButton ? 'is-customButton' : ''}`"
+    :panelClass="`p-dropup-panel ${props.customButton ? 'is-customButton' : ''} ${
+      !props.checkMark ? 'hideCheckMark' : ''
+    }`"
     :panelProps="{ id: 'p-dropup-panel' }"
     @click.prevent
   >
@@ -212,7 +231,7 @@ onUnmounted(() => {
     <template #header>
       <div class="style-mode-dark">
         <div class="px-4">
-          <i class="pi pi-minus" @click="closeMenu" />
+          <i class="pi pi-minus closer-line" @click="closeMenu" />
           <h3 v-if="props.label" class="p-submenu-header-replace">
             {{ props.label }}
           </h3>
@@ -255,7 +274,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.s-dropup {
+.s-dropup:not(.normal) {
   width: v-bind(width);
   height: v-bind(height);
   background: transparent;
@@ -288,7 +307,7 @@ onUnmounted(() => {
     height: 1rem;
   }
 }
-.s-dropup {
+.s-dropup:not(.normal) {
   .p-dropdown-trigger {
     display: none !important;
   }
@@ -306,7 +325,7 @@ onUnmounted(() => {
 }
 .p-dropup-panel {
   // move the panel above the bottom-menu
-  z-index: 10001 !important;
+  z-index: 10010;
   &.release {
     transition: bottom 0.25s;
     -webkit-transition: bottom 0.25s;
@@ -327,7 +346,7 @@ onUnmounted(() => {
   -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
   box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
   background: var(--background4) !important;
-  .pi-minus {
+  .pi-minus.closer-line {
     color: #ffffff;
     font-size: 30px;
     text-align: center;
@@ -385,6 +404,14 @@ onUnmounted(() => {
   .footer {
     //padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
     padding: 0px 20px calc($bottomMenuHeight + 20px) 20px;
+  }
+  &.hideCheckMark {
+    .p-highlight:after {
+      display: none !important;
+    }
+    .station-options .selected:after {
+      display: none !important;
+    }
   }
 }
 </style>

@@ -1,10 +1,11 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import { useCurrentUser } from "~/composables/states"
+import { useCurrentUser, useCurrentEpisode } from "~/composables/states"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 //import FollowIcon from "~/components/icons/FollowIcon.vue"
 //import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
@@ -19,10 +20,15 @@ import {
   getEpisodeHeadFallBackImage,
   hasAudio,
 } from "~/utilities/helpers"
+import useSleepTimer from "~/composables/useSleepTimer"
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+
+const currentEpisode = useCurrentEpisode()
+
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 const { data: episode, pending, error } = useFetch(
   `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
@@ -137,6 +143,15 @@ const getDotMenuItems = (bucketItem) => {
     //     handleFollow()
     //   },
     // },
+    {
+      label: "Sleep Timer",
+      customIcon: SleepIcon,
+      active: sleepTimerRunning.value,
+      title: currentEpisode.value?.title ?? "No audio playing",
+      command: () => {
+        handleSleepTimer()
+      },
+    },
   ]
 }
 

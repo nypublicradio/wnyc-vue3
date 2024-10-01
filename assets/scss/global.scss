@@ -322,6 +322,14 @@ label {
     .p-button-icon:after {
       color: var(--text-color);
     }
+    &.p-button-outlined {
+      color: var(--text-color);
+    }
+    &:enabled:hover {
+      &.p-button-outlined {
+        color: var(--text-color);
+      }
+    }
   }
 }
 
@@ -332,7 +340,7 @@ a:focus,
 .flexible-link:focus,
 .card-click:focus,
 .p-focus {
-  outline: solid 2px var(--focus-outline-color);
+  //outline: solid 2px var(--focus-outline-color);
   outline-offset: -2px;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;

@@ -27,6 +27,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --v-caption-bg-color-opacity: 0.9;
     --button-hover-plain-background: #e8e8e8;
     --donation-text: #ffffff !important;
+    --persistent-player-slider-buffer: var(--secondary);
 }
 
 // component cssvar theme control and base component overrides
@@ -80,7 +81,7 @@ html.style-mode-dark {
         --persistent-player-slider-thumb-bg: var(--white);
         --persistent-player-slider-thumb--hover-bg: var(--indigo);
         --persistent-player-slider-bg: var(--white);
-        --persistent-player-slider-buffer: var(--secondary);
+        //--persistent-player-slider-buffer: var(--secondary);
     }
 }
 

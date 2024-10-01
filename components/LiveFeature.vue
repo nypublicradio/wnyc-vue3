@@ -7,6 +7,7 @@ import {
   useCurrentEpisodeHolder,
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
+import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
 
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
@@ -21,7 +22,13 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
-const togglePlayHere = () => {
+const togglePlayHere = async () => {
+  // updates the stream to the current station
+  if (currentEpisode.value) {
+    await updateLiveStream(currentEpisode.value.slug, false)
+  } else {
+    await updateAllLiveStreams()
+  }
   if (
     currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
