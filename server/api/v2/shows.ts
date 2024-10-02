@@ -4,6 +4,7 @@ import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NyprDb } from '~/server/utils/nyprdb';
 import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
 import { NPR } from '~/server/utils/npr';
+import { customAlphabeticalSort } from '~/utilities/helpers';
 
 
 const config = useRuntimeConfig();
@@ -105,8 +106,8 @@ export default defineEventHandler(async (event) => {
         featuredShowsData.push(...nprShowsData.featuredShows);
     }
     //Sort the data by title
-    allShowsData.sort((a, b) => a.title.localeCompare(b.title));
-    featuredShowsData.sort((a, b) => a.title.localeCompare(b.title));
+    allShowsData.sort(customAlphabeticalSort());
+    featuredShowsData.sort(customAlphabeticalSort());
     featuredShowsData.forEach((show) => {
         // Get the id from the allShowsData
         const match = allShowsData.find((item) => item.slug === show.slug);
