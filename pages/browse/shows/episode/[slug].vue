@@ -186,6 +186,8 @@ watch(episode, () => {
   // check route param autoplay exists and if so, play the first segment
   if (route.query.autoplay === "true") {
     togglePlayEpisode(episodeData.value.audio[0])
+    // remove the autoplay query param
+    router.replace({ query: { ...route.query, autoplay: null } })
   }
 })
 
