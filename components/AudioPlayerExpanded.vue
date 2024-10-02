@@ -293,7 +293,7 @@ const moreFromClick = () => {
           text
           severity="secondary"
           rounded
-          aria-label="add to favoties"
+          aria-label="add to favorites"
           @click="handleAddToFavorites"
           v-if="!currentEpisode.hideFavorite"
         >

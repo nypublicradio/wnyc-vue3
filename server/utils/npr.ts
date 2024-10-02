@@ -92,6 +92,7 @@ export class NPR {
                             byline,
                             publishAt: publishedDate,
                             publicationDate: publishedDate,
+                            hideFavorite: true,
                             headers: {
                                 brand: {
                                     title: cmsSources.NPR,
