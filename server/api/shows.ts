@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
+import { customAlphabeticalSort } from '~/utilities/helpers';
 
 const config = useRuntimeConfig()
 
@@ -53,13 +54,21 @@ export default defineEventHandler(async (event) => {
     let res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
-    featuredShowsData.map((show) => {
-        //Get the id from the allShowsData
+
+    // Sort allShowsData
+    allShowsData.sort(customAlphabeticalSort());
+
+    // Sort featuredShowsData
+    featuredShowsData.sort(customAlphabeticalSort());
+
+    // Match IDs and update featuredShowsData
+    featuredShowsData.forEach((show) => {
         const match = allShowsData.find((item) => item.slug === show.slug);
         if (match) {
             show.id = match.id;
         }
     });
+
     res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     return {
         all: allShowsData,

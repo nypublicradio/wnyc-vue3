@@ -282,7 +282,7 @@ export const trackClickEvent = (category, component, label) => {
   const deviceId = useDeviceId()
   $analytics.sendEvent("click_tracking", {
     event_category: category,
-    component: component,
+    component,
     event_label: label,
     user_id: currentUser.value?.id ?? deviceId.value,
   })
@@ -479,6 +479,7 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
+// helper function to remove HTML tags from a string
 export const removeHTMLTags = (str) => {
   const parser = new DOMParser()
   const parsedHTML = parser.parseFromString(str, "text/html")
@@ -1177,3 +1178,30 @@ export const requestAccountDeletion = async () => {
     closable: true,
   }
 }
+// Custom sorting function that ignores "A " and "The " at the beginning of titles
+export const customAlphabeticalSort = (key = 'title') => {
+  return (a, b) => {
+    // get the value from the key
+    const getValue = (obj, key) => obj[key];
+
+    // get the title without "A " or "The " at the beginning
+    const getTitle = (title) => {
+      const prefixes = ["A ", "The "];
+      for (const prefix of prefixes) {
+        if (title.startsWith(prefix)) {
+          return title.substring(prefix.length);
+        }
+      }
+      return title;
+    };
+
+    const aValue = getTitle(getValue(a, key));
+    const bValue = getTitle(getValue(b, key));
+
+    if (aValue !== bValue) {
+      return aValue.localeCompare(bValue);
+    }
+
+    return a.localeCompare(b);
+  };
+};

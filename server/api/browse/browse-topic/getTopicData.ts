@@ -2,6 +2,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { showTopics } from '~/composables/globals'
+import { customAlphabeticalSort } from '~/utilities/helpers';
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -13,6 +14,9 @@ export default defineEventHandler(async (event) => {
         }
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
+
+        // Sort resData
+        resData.sort(customAlphabeticalSort());
         return resData
     } catch (error) {
         console.error('An error occurred:', error.message)
