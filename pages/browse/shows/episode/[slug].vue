@@ -332,7 +332,7 @@ const getEpisodeImage = () => {
                 <div>
                   <div class="flex gap-3 px-4 align-items-center">
                     <VImage
-                      :src="episodeData?.image.template"
+                      :src="episodeData?.image?.template || getEpisodeImage()"
                       :alt="`${episodeData?.title} show image`"
                       :width="116"
                       :height="116"
