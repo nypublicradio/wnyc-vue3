@@ -182,6 +182,11 @@ watch(episode, () => {
       : episodeData.value.publicationDate,
     article_title: episodeData.value.title,
   })
+
+  // check route param autoplay exists and if so, play the first segment
+  if (route.query.autoplay === "true") {
+    togglePlayEpisode(episodeData.value.audio[0])
+  }
 })
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image

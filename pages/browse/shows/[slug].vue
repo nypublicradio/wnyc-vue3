@@ -15,6 +15,7 @@ import {
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
+import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 
 const config = useRuntimeConfig()
@@ -104,8 +105,21 @@ const firstEpisodeWithAudio = () => {
 }
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  const ep = firstEpisodeWithAudio()
-  togglePlayEpisode(ep)
+  // handle NPR show segments.
+  if (show.value.show.cmsSource === "npr") {
+    // route to the first episode with a url parameter
+    navigateTo({
+      path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${show.value.episodes.data[0].id}`,
+      query: {
+        src: "npr",
+        type: "episode",
+        autoplay: true,
+      },
+    })
+  } else {
+    const ep = firstEpisodeWithAudio()
+    togglePlayEpisode(ep)
+  }
 }
 
 // if user is logged in, check if item is already favorited

@@ -1,5 +1,6 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
