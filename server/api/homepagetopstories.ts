@@ -69,9 +69,23 @@ const mergeArticles = (articles1: any, articles2: any) => {
 		return bDate.getTime() - aDate.getTime();
 	});
 	// remove duplicates
-	return sortedArticles.filter((obj, index) => {
+	sortedArticles.filter((obj, index) => {
 		return index === sortedArticles.findIndex((o) => obj.title === o.title)
 	})
+
+	// filter data by removing unneeded keys from the data object
+	sortedArticles.forEach((item) => {
+		delete item.transcript;
+		delete item.socialImage;
+		delete item.tags;
+		delete item.embedCode;
+		delete item.body;
+		delete item.rawBody;
+		delete item.description;
+		delete item.authors;
+		console.log('+++++++++++++++++++++++++++++++++++++++item = ', item);
+	});
+	return sortedArticles;
 }
 
 
