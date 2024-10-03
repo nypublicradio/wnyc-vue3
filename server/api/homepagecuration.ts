@@ -46,6 +46,18 @@ const getHomeTemplate = async () => {
 			// filter out episodes with no audio (we want to keep the null results because that seems to allow news stories with no audio to skipthe filter, so we specifically look for FALSE)
 			const data = rawData.filter((item) => hasAudio(item.audio) !== false);
 
+			// filter data by removing the transcript key from the object
+			data.forEach((item) => {
+				delete item.transcript;
+				delete item.socialImage;
+				delete item.tags;
+				delete item.embedCode;
+				delete item.headers.links;
+				delete item.body;
+				delete item.rawBody;
+				console.log('item = ', item);
+			});
+
 			return {
 				title: layout.title,
 				layout: layout.navSlug,
