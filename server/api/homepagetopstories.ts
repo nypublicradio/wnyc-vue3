@@ -83,7 +83,7 @@ const mergeArticles = (articles1: any, articles2: any) => {
 		delete item.rawBody;
 		delete item.description;
 		delete item.authors;
-		console.log('+++++++++++++++++++++++++++++++++++++++item = ', item);
+		//console.log('+++++++++++++++++++++++++++++++++++++++item = ', item);
 	});
 	return sortedArticles;
 }
