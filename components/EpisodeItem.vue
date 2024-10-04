@@ -240,9 +240,14 @@ const handleHasAudio = computed(() => {
 </script>
 
 <template>
-  <div class="episode-item relative p-ripple" v-ripple>
+  <div
+    class="episode-item relative"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+  >
     <div
-      class="card-click w-full h-full absolute top-0 left-0 z-1"
+      v-if="!props.isSegment"
+      v-ripple
+      class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
       @click.prevent="handleClick"
       @keypress.enter.space="handleClick"
       tabindex="0"
