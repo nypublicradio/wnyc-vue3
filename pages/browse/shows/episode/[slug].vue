@@ -188,11 +188,11 @@ const isSegment = computed(
 )
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
-const getEpisodeImage = computed(() => {
+const getEpisodeImage = () => {
   const epImage = episodeData.value?.image?.template
   const showImage = episodeData.value?.headers.brand.logoImage.template
   return epImage !== showImage ? epImage : getEpisodeHeadFallBackImage()
-})
+}
 </script>
 
 <template>
@@ -223,7 +223,7 @@ const getEpisodeImage = computed(() => {
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
-        :src="getEpisodeImage"
+        :src="getEpisodeImage()"
         :width="390"
         :height="360"
         :ratio="[3, 2]"

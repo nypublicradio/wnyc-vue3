@@ -35,7 +35,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click, on-delete-favorite"])
+const emit = defineEmits(["on-click", "on-delete-favorite"])
 
 const props = defineProps({
   data: {

@@ -30,6 +30,23 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
             item.showImage = showImage;
             return await normalizeArticlePage(humps.camelizeKeys(item))
         }));
+
+        // filter data by removing unneeded keys from the data object
+        resData.forEach((item) => {
+            delete item.transcript;
+            delete item.socialImage;
+            delete item.tags;
+            delete item.embedCode;
+            delete item.body;
+            delete item.rawBody;
+            delete item.description;
+            delete item.authors;
+            delete item.tease;
+            delete item.listingImage;
+            delete item.url;
+            delete item.headers;
+        });
+        console.log('resData = ', resData)
         //Passing meta and data separately to the client. Meta is to used for pagination
         return {
             data: resData,
