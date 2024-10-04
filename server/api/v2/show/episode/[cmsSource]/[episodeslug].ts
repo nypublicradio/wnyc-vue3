@@ -56,6 +56,7 @@ const getNPREpisode = async (slug: string) => {
             image: episodeImage,
             imageMain: showImage,
             showTitle,
+            url: resData.resources[0].webPages[0]?.href,
         },
     };
 

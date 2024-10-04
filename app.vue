@@ -62,19 +62,25 @@ useHead({
   // },
 })
 // a func to refresh all data
-const refreshData = async () => {
-  await getAndSetUserProfile()
+const refreshData = async (streamOnly = false) => {
+  if (streamOnly) {
+    // refresh data here
+    updateAllLiveStreams()
+    //update media session
+    initMediaSession(currentEpisode.value)
+  } else {
+    await getAndSetUserProfile()
 
-  // refresh data here
-  updateAllLiveStreams()
-
-  try {
-    await refreshNuxtData()
-  } catch (error) {
-    console.error(error)
+    try {
+      await refreshNuxtData()
+    } catch (error) {
+      console.error(error)
+    }
+    // refresh data here
+    updateAllLiveStreams()
+    //update media session
+    initMediaSession(currentEpisode.value)
   }
-  //update media session
-  initMediaSession(currentEpisode.value)
 }
 
 // init the Network listener
@@ -82,6 +88,7 @@ Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
   // refresh data here
   if (status.connected) {
+    // refresh all data
     refreshData()
   }
 })
@@ -206,7 +213,8 @@ onMounted(async () => {
           }
         })
       }
-      refreshData()
+      // refresh stream only
+      refreshData(true)
     }
   })
 
