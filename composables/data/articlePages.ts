@@ -78,6 +78,21 @@ export async function normalizeArticlePage(article: Record<string, any | undefin
     return null
 }
 
+/**
+ * Normalize an article page object from Publisher or Wagtail into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizeArticleListItem(article: Record<string, any | undefined>): Promise<ArticlePage> {
+
+  if (article.cmsSource === cmsSources.WAGTAIL)
+    return await normalizeWagtailListItem(article)
+  else if (article.cmsSource === cmsSources.PUBLISHER)
+    return await normalizePublisherListItem(article)
+  else
+    return null
+}
+
 // normalize person social media data
 function normalizePersonSocial(social: Record<string, any>): ISocial {
   return {
@@ -157,6 +172,39 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
   })
 }
 
+
+// Wagtail: Transform page data from the API into a simpler and typed format
+export async function normalizeWagtailListItem(article: Record<string, any | undefined>): ArticlePage {
+  if (typeof article === 'undefined')
+    return null
+
+  return Object.assign({}, await normalizePage(article), {
+    image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
+    cmsSource: cmsSources.WAGTAIL,
+    authors: article.relatedAuthors?.map(normalizeAuthor),
+    contributingOrganizations: article.relatedContributingOrganizations,
+    sponsors: article.relatedSponsors,
+    publicationDate: (article.publicationDate && new Date(article.publicationDate))
+      || (article.meta?.firstPublishedAt && new Date(article.meta?.firstPublishedAt)),
+    updatedDate: article.updatedDate ? new Date(article.updatedDate) : undefined,
+    showAsFeature: article.showAsFeature,
+    sensitiveContent: article.sensitiveContent,
+    provocativeContent: article.provocativeContent,
+    sponsoredContent: article.sponsoredContent,
+    relatedLinks: article.relatedLinks,
+    url: article.url,
+    section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
+    rawBody: getWagtailRawBody(article.body),
+    audio: article.audio,
+
+    // for comments
+    estimatedDuration: undefined,
+    sortDate: article.sortDate,
+    meta: article.meta,
+    showTitle: article.showTitle,
+  })
+}
+
 /**
  * Normalize an article page object from Publisher into a generic ArticlePage object.
  * @param article 
@@ -233,6 +281,52 @@ export async function normalizePublisherPage(article: Record<string, any | undef
     transcript: article.attributes.transcript,
 
     embedCode: article.attributes.embedCode,
+  }))
+}
+
+/**
+ * Normalize an article page object from Publisher into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizePublisherListItem(article: Record<string, any | undefined>): Promise<ArticlePage> {
+  if (typeof article === 'undefined')
+    return null
+  let duration = article.attributes.estimatedDuration;
+  if (!duration || typeof duration !== 'number' || duration === 0) {
+    duration = await estimateMp3Duration(article.attributes.audio);
+  }
+
+  //segment audio duration
+  const segments = article.attributes.segments;
+  if (segments && segments.length > 0) {
+    segments.forEach(async (segment, index) => {
+      if (!segment.audioDurationReadable) {
+        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]);
+      }
+    });
+  }
+
+  return Promise.resolve(Object.assign({}, await normalizePage(article), {
+    image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
+    type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
+    cmsSource: cmsSources.PUBLISHER,
+    meta: {
+      firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
+      slug: article.attributes.slug,
+    },
+    title: article.attributes.title,
+    tease: article.attributes.tease,
+    authors: article.attributes.appearances?.authors.map(normalizeAuthor),
+    contributingOrganizations: article.attributes?.producingOrganizations,
+    publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
+    url: article.attributes.url,
+    rawBody: article.attributes.body,
+    audio: article.attributes.audio,
+    estimatedDuration: duration,
+    show: article.attributes.show,
+    showTitle: article.attributes.showTitle,
+    headers: article.attributes.headers,
   }))
 }
 

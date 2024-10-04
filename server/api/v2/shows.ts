@@ -36,8 +36,8 @@ const nprShows = async () => {
                 id: show.showId,
                 title: show.title,
                 slug: show.slug,
-                description: data.resources[0]?.teaser,
-                tease: data.resources[0]?.shortTeaser,
+                //description: data.resources[0]?.teaser,
+                //tease: data.resources[0]?.shortTeaser,
                 image,
                 cmsSource: cmsSources.NPR,
                 type: cmsSources.NPR,
@@ -69,7 +69,10 @@ const allShows = async () => {
     res.data.results.forEach((show) => {
         show.cmsSource = cmsSources.PUBLISHER;
         show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGELOCAL
+        delete show.description;
+        delete show.image.url;
     });
+
     return humps.camelizeKeys(res.data).results;
 }
 

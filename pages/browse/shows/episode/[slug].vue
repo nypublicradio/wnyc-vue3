@@ -53,7 +53,6 @@ const handleDownload = async (epD) => {
 }
 
 const handleShare = () => {
-  console.log("episodeData.value", episodeData.value)
   shareAPI(episodeData.value, "episode slug")
 }
 

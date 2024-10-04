@@ -1,7 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, mediaTypes, FALLBACKIMAGE } from '~/composables/globals'
-import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { normalizeArticleListItem } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
@@ -82,7 +82,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
     const resData = await Promise.all(res.data.data.map(async (item: Record<string, unknown>) => {
         item.cmsSource = cmsSources.PUBLISHER;
         item.showImage = showImage;
-        return await normalizeArticlePage(humps.camelizeKeys(item))
+        return await normalizeArticleListItem(humps.camelizeKeys(item))
     }));
     //Passing meta and data separately to the client. Meta is to used for pagination
     return {

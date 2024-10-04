@@ -1,7 +1,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { normalizePublisherPage, normalizeNprPage } from '~/composables/data/articlePages'
+import { normalizePublisherListItem, normalizeNprPage } from '~/composables/data/articlePages'
 import { hasAudio } from '~/utilities/helpers'
 
 
@@ -17,7 +17,7 @@ const getSectionData = async (slug: string) => {
 		res = await axios(options);
 
 		const resData = await Promise.all(res.data.included.map((item: any) => {
-			return normalizePublisherPage(humps.camelizeKeys(item));
+			return normalizePublisherListItem(humps.camelizeKeys(item));
 		}));
 		return resData;
 	} catch (e) {
