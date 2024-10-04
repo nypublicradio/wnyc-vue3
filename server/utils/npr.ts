@@ -23,7 +23,7 @@ export class NPR {
         }
     }
     // Fetch the image of the episode
-    async findEpisodeImage(item) {
+    async findEpisodeImage(item, imageRatio = 'image-standard') {
         try {
             if (item?.assets) {
                 for (const asset of Object.values(item?.assets)) {
@@ -32,7 +32,7 @@ export class NPR {
                         const res = await this.getDocument(asset?.documentLink?.href);
                         for (const asset of Object.values(res.resources[0].assets)) {
                             if (asset.enclosures) {
-                                const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-standard'));
+                                const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes(imageRatio));
                                 if (imageEnclosure) {
                                     return {
                                         template: imageEnclosure.hrefTemplate,

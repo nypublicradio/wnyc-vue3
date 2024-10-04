@@ -34,7 +34,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
 
     let episodes = [];
     episodes = await Promise.all(res.data.resources.map(async (item) => {
-        const episodeImage = await npr.findEpisodeImage(item);
+        const episodeImage = await npr.findEpisodeImage(item, 'image-square');
         return {
             id: item.id,
             title: item.title,
