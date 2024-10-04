@@ -51,6 +51,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
             type: 'episode',
             imageMain: { FALLBACKIMAGE },
             image: episodeImage,
+            url: item.webPages[0]?.href,
         };
     }));
 

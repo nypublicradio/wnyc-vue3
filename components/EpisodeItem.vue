@@ -162,7 +162,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(props.showShare
+    ...(props.showShare && !props.isSegment
       ? [
           {
             label: "Share",
@@ -291,7 +291,7 @@ const handleHasAudio = computed(() => {
               <VByline
                 v-if="props.data.byline?.length > 0 && props.isSegment"
                 :authors="props.data.byline"
-                prefix="By: "
+                prefix="by "
               />
             </div>
           </div>
