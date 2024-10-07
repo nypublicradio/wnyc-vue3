@@ -46,7 +46,9 @@ const handleClick = () => {
     <div class="info flex flex-column gap-3 w-full justify-content-between">
       <div class="content flex flex-column gap-1 justify-content-start w-full">
         <LiveBadge v-if="!props.saved" class="align-self-start" />
-        <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+        <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
+          {{ props.data.title }}
+        </h2>
         <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
         <div
           class="blurb truncate t3lines html-formating"
