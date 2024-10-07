@@ -356,13 +356,19 @@ const getEpisodeImage = () => {
         </div>
         <!-- SEGMENTS -->
         <!-- <pre class="text-xs">{{ episodeData?.audio }}</pre> -->
-        <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 grid">
+        <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 segment-list">
           <li
             v-for="segment in episodeData?.audio"
-            class="col-12 mb-3 pr-0"
+            class="mb-3 pr-0 beforeHack"
             :key="segment.id"
           >
-            <EpisodeItem :data="segment" showPlayButton isSegment :show-image="false" />
+            <EpisodeItem
+              :data="segment"
+              showPlayButton
+              isSegment
+              :show-image="false"
+              class=""
+            />
           </li>
 
           <!-- <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
@@ -428,6 +434,13 @@ const getEpisodeImage = () => {
   color: var(--text-color);
   text-decoration: none;
   opacity: 70%;
+}
+.episode-page .segment-list .beforeHack {
+  &::before {
+    content: "";
+    display: block;
+    height: 0px;
+  }
 }
 
 .episode-page h1.alt {
