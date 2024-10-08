@@ -239,9 +239,9 @@ const episodeEnded = () => {
     handleIsExpanded(false)
   }
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
-  console.log("currentUser.value = ", currentUser.value)
-  console.log("currentEpisodeHolder.value = ", currentEpisodeHolder.value)
-  console.log("currentEpisodeHolder.value = ", currentEpisodeHolder.value)
+  // console.log("currentUser.value = ", currentUser.value)
+  // console.log("currentEpisodeHolder.value = ", currentEpisodeHolder.value)
+  // console.log("currentEpisodeHolder.value = ", currentEpisodeHolder.value)
   // when an episode has ended, we want to then trigger the current live stream to play.
   if (!isLiveStream.value && currentUser.value?.continuous_play) {
     // technically, a live stream would never end, so this is a bit redundant
@@ -249,12 +249,11 @@ const episodeEnded = () => {
     // slight delay to allow the player to close before the live stream starts
     setTimeout(() => {
       // play the live stream audio bumper based on what is currently selected/last played, then when the bumper is done, play the live stream
-      console.log("currentEpisodeHolder.value.slug = ", currentEpisodeHolder.value.slug)
       playLocalMp3(
         `/live-stream-audio-bumpers/${currentEpisodeHolder.value.slug}.mp3`,
         togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
       )
-    }, 1000)
+    }, 500)
   }
 }
 
