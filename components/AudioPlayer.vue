@@ -25,6 +25,7 @@ import {
   useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
+  useCurrentEpisodeHolder,
 } from "~/composables/states"
 import {
   trackAudioEvent,
@@ -33,6 +34,7 @@ import {
   getDate,
   hasQueryParams,
   getEpisodeFallBackImage,
+  togglePlayEpisode,
 } from "~/utilities/helpers"
 
 import { initMediaSession } from "~/utilities/media-session.js"
@@ -40,6 +42,7 @@ import { initMediaSession } from "~/utilities/media-session.js"
 const devicePlatform = Capacitor.getPlatform()
 
 const currentEpisode = useCurrentEpisode()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
 const isNewEpisode = ref(false)
@@ -175,7 +178,7 @@ const togglePlayHere = async (e) => {
   }
   if (isEpisodePlaying.value && isNewEpisode.value) {
     trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
-  } else if(isEpisodePlaying.value && !isNewEpisode.value) {
+  } else if (isEpisodePlaying.value && !isNewEpisode.value) {
     trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
   }
   isEpisodePlaying.value = e
@@ -235,6 +238,18 @@ const episodeEnded = () => {
     handleIsExpanded(false)
   }
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+  console.log("currentUser.value = ", currentUser.value)
+  // when an episode has ended, we want to then trigger the current live stream to play.
+  if (!isLiveStream.value && currentUser.value?.continuous_play) {
+    // technically, a live stream would never end, so this is a bit redundant
+
+    // slight delay to allow the player to close before the live stream starts
+    setTimeout(() => {
+      // need to play a particular local mp3 audio file based on the live stream in the users preferences and then switch to that live stream
+
+      togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+    }, 1000)
+  }
 }
 
 // resume the player if the network is connected where they left off

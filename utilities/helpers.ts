@@ -626,6 +626,7 @@ export const getAndSetUserProfile = async () => {
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
+        data.continuous_play = ls.continuous_play
         data.receive_general_notifications = ls.receive_general_notifications
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
@@ -638,6 +639,7 @@ export const getAndSetUserProfile = async () => {
             initial: false,
             autodownload: ls.autodownload,
             default_live_stream: ls.default_live_stream,
+            continuous_play: ls.continuous_play,
             receive_general_notifications: ls.receive_general_notifications,
             dark_mode: ls.dark_mode,
             text_size: ls.text_size,

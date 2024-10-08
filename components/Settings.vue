@@ -15,7 +15,7 @@ import {
   useEditProfileSideBar,
   useIsLiveStream,
   useIsApp,
-  useAccountDeleteSideBar
+  useAccountDeleteSideBar,
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
@@ -86,6 +86,7 @@ const updateProfile = async () => {
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
         default_live_stream: currentUserProfile.value.default_live_stream.station,
+        continuous_play: currentUserProfile.value.continuous_play,
         dark_mode: currentUserProfile.value.dark_mode,
         receive_general_notifications:
           currentUserProfile.value.receive_general_notifications,
@@ -187,8 +188,19 @@ const handleNotificationChange = async (e) => {
 
 // handle the delete account sidebar when the user clicks on the delete account link
 const onDeleteAccountClick = () => {
-  trackClickEvent("Click Tracking - delete account", "Delete Account Sidebar - user section")
+  trackClickEvent(
+    "Click Tracking - delete account",
+    "Delete Account Sidebar - user section"
+  )
   accountDeleteSideBar.value = true
+}
+
+const onUpdateContinuousPlay = () => {
+  trackClickEvent(
+    "Click Tracking - Continuous play",
+    "Settings Sidebar - Listening Preferences",
+    currentUserProfile.value.continuous_play
+  )
 }
 </script>
 
@@ -211,8 +223,12 @@ const onDeleteAccountClick = () => {
       >
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
-      <SBox label="Email" @click="editField('email')" :clickable="!isDisabled"
-      :ripple="!isDisabled">
+      <SBox
+        label="Email"
+        @click="editField('email')"
+        :clickable="!isDisabled"
+        :ripple="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
       <SBox
@@ -240,6 +256,15 @@ const onDeleteAccountClick = () => {
           width="80%"
           class="-mr-2"
           @change="onUpdateStation"
+        />
+      </SBox>
+      <SBox label="Continuous play" :ripple="false">
+        <VInputSwitch
+          yes="ON"
+          no="OFF"
+          static-width
+          v-model:data.sync="currentUserProfile.continuous_play"
+          @change="onUpdateContinuousPlay"
         />
       </SBox>
     </section>
