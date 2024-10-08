@@ -1213,9 +1213,6 @@ export const customAlphabeticalSort = (key = 'title') => {
 export function playLocalMp3(url, callback) {
   const audio = new Audio();
 
-  // Set the source URL
-  audio.src = url;
-
   // Add event listener for audio completion
   audio.addEventListener('ended', () => {
     // execute the callback function
@@ -1223,6 +1220,8 @@ export function playLocalMp3(url, callback) {
       callback();
     }
   });
+  // Set the source URL
+  audio.src = url;
 
   // Play the audio
   audio.play().catch((error) => {

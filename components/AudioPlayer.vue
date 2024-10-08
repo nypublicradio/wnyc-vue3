@@ -251,7 +251,7 @@ const episodeEnded = () => {
       // play the live stream audio bumper based on what is currently selected/last played, then when the bumper is done, play the live stream
       playLocalMp3(
         `/live-stream-audio-bumpers/${currentEpisodeHolder.value.slug}.mp3`,
-        togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+        () => togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
       )
     }, 500)
   }
