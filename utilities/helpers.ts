@@ -1207,3 +1207,25 @@ export const customAlphabeticalSort = (key = 'title') => {
     return a.localeCompare(b);
   };
 };
+
+
+// quick simple way to play local mp3 files and detect when it is complete
+export function playLocalMp3(url, callback) {
+  const audio = new Audio();
+
+  // Set the source URL
+  audio.src = url;
+
+  // Add event listener for audio completion
+  audio.addEventListener('ended', () => {
+    // execute the callback function
+    if (callback) {
+      callback();
+    }
+  });
+
+  // Play the audio
+  audio.play().catch((error) => {
+    console.error('Error playing audio:', error);
+  });
+}
