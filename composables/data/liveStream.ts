@@ -33,7 +33,6 @@ export async function updateAllLiveStreams() {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams
         allCurrentStations.value = fetchingAll.filter(Boolean)
-        console.log('allCurrentStations.value = ', allCurrentStations.value)
         // set initial stream with the `currentStreamStation` value in the states.ts file
         const initialStation = allCurrentStations.value.find(
             (option) => {
