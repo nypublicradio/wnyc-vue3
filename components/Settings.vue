@@ -195,6 +195,7 @@ const onDeleteAccountClick = () => {
   accountDeleteSideBar.value = true
 }
 
+// handles the continuous play switch change event
 const onUpdateContinuousPlay = () => {
   trackClickEvent(
     "Click Tracking - Continuous play",
