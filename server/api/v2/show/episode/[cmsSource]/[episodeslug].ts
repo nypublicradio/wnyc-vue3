@@ -30,7 +30,7 @@ const getNPREpisode = async (slug: string) => {
     const id = String(resData.resources[0].id);
     const showTitle = show.resources[0].title
     // Fetching the audio from the NPR API
-    const audio = await npr.findAudio(resData, show);
+    const audio = await npr.findAudio(id, show);
     // Fallback image to show image when no image is available
     return {
         data: {

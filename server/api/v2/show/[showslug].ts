@@ -156,7 +156,6 @@ export default defineEventHandler(async (event) => {
             episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page);
         }
         res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
-        //console.log('page = ', page)
         return {
             show,
             episodes,

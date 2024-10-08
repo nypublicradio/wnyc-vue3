@@ -52,42 +52,31 @@ export class NPR {
         return null;
     }
     // Fetch all segments for a episode and return audio array
-    async findAudio(resData, show) {
-        const item = resData.resources[0]
+    async findAudio(id, show) {
         const showTitle = show.resources[0].title
+        const audio = [];
         try {
-            const audio = [];
-            for (const asset of Object.values(item?.items)) {
-                const option = {
-                    method: 'GET',
-                    url: `${process.env.NPR_CDS_API}${asset.href}`,
-                    headers: {
-                        Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
-                    }
-                };
-                let response;
-                try {
-                    response = await axios(option);
-                } catch (error) {
-                    if (error.response && error.response.status === 404) {
-                        console.warn('Resource not found:', option.url);
-                        continue; // Skip to the next iteration
-                    } else {
-                        throw error; // Re-throw the error if it's not a 404
-                    }
+            const url = `${process.env.NPR_CDS_API}/v1/documents?collectionIds=${id}`;
+            const option = {
+                method: 'GET',
+                url,
+                headers: {
+                    Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
                 }
-
-                for (const asset of Object.values(response.data.resources[0].assets)) {
-                    if (asset?.isAvailable) {
-                        const category = await this.getAudioCategory(response.data.resources[0]);
-                        const byline = await this.getAudioByline(response.data.resources[0]);
-                        const publishedDate = response.data.resources[0].publishDateTime
-                        const body = response.data.resources[0].teaser
+            };
+            const res = await axios(option);
+            for (const item of res.data.resources) {
+                for (const asset of Object.values(item?.assets)) {
+                    if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
+                        const category = await this.getAudioCategory(item);
+                        const byline = await this.getAudioByline(item);
+                        const publishedDate = item.publishDateTime
+                        const body = item.teaser
                         audio.push({
-                            id: asset.id,
+                            id: item.id,
                             audio: asset.enclosures[0].href,
-                            title: response.data.resources[0].title ?? asset.title,
-                            estimatedDuration: asset.duration,
+                            title: item.title,
+                            estimatedDuration: asset.enclosures[0].duration,
                             category,
                             byline,
                             publishAt: publishedDate,
@@ -102,9 +91,8 @@ export class NPR {
                             showTitle: `${showTitle} - ${howLongAgo(publishedDate)}`,
                             body,
                             meta: {
-                                slug: asset.id,
+                                slug: item.id,
                             },
-                            //TODO: Find Catagories, Authors
                         });
                     }
                 }
@@ -113,7 +101,6 @@ export class NPR {
         } catch (e) {
             console.error('findAudio error = ', e);
         }
-        return null;
     }
     // Fetch the category of the audio
     async getAudioCategory(item) {
