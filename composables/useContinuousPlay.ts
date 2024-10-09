@@ -15,6 +15,7 @@ export const useContinuousPlay = () => {
   const isLiveStream = useIsLiveStream()
   const currentUser = useCurrentUserProfile()
 
+  // Function to initialize continuous play feature. 
   const initContinuousPlay = () => {
 
     // if the user has continuous play enabled, then we want to play the next episode
