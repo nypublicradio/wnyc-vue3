@@ -6,9 +6,9 @@ import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
     async getFromNPR(path: string, options: Record<string, any> = {}) {
-      options.headers = options.headers ?? {}
-      options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
-      return axios.get(`${process.env.NPR_CDS_API}/v1/${path}`, options).catch(e => {console.error('NPR CDS error', e); return []});
+        options.headers = options.headers ?? {}
+        options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
+        return axios.get(`${process.env.NPR_CDS_API}/v1/${path}`, options).catch(e => { console.error('NPR CDS error', e); return [] });
     }
 
     async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
@@ -87,7 +87,7 @@ export class NPR {
                             id: item.id,
                             audio: asset.enclosures[0].href,
                             title: item.title,
-                            estimatedDuration: asset.enclosures[0].duration,
+                            estimatedDuration: asset.duration,
                             categoryId: this.getCategoryId(item),
                             bylineIds: this.getBylineIds(item),
                             publishAt: publishedDate,
@@ -117,7 +117,7 @@ export class NPR {
     async addMetadata(audio, itemData) {
         const categories = audio.map(item => item.categoryId)
         const categoryDocsRequest = this.multiDocumentRequest(categories)
-        const bylineDocIds = audio.reduce((acc, item) => {return acc.concat(item.bylineIds)},[])
+        const bylineDocIds = audio.reduce((acc, item) => { return acc.concat(item.bylineIds) }, [])
         const bylineDocsRequest = this.multiDocumentRequest(bylineDocIds)
         const [categoryDocs, bylineDocs] = await Promise.all([categoryDocsRequest, bylineDocsRequest])
 
@@ -138,7 +138,7 @@ export class NPR {
         itemData.forEach((item) => {
             item.bylines?.map(byline => byline.href.split('/')[2]).forEach((bylineId) => {
                 if (item.assets?.[bylineId]?.name)
-                bylineMap[bylineId] = item.assets[bylineId].name
+                    bylineMap[bylineId] = item.assets[bylineId].name
             })
         })
 
