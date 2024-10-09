@@ -25,7 +25,6 @@ import {
   useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
-  useCurrentEpisodeHolder,
 } from "~/composables/states"
 import {
   trackAudioEvent,
@@ -34,16 +33,14 @@ import {
   getDate,
   hasQueryParams,
   getEpisodeFallBackImage,
-  togglePlayEpisode,
-  playLocalMp3,
 } from "~/utilities/helpers"
-
 import { initMediaSession } from "~/utilities/media-session.js"
+import { useContinuousPlay } from "~/composables/useContinuousPlay"
+const { initContinuousPlay } = useContinuousPlay()
 
 const devicePlatform = Capacitor.getPlatform()
 
 const currentEpisode = useCurrentEpisode()
-const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
 const isNewEpisode = ref(false)
@@ -239,22 +236,9 @@ const episodeEnded = () => {
     handleIsExpanded(false)
   }
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
-  // console.log("currentUser.value = ", currentUser.value)
-  // console.log("currentEpisodeHolder.value = ", currentEpisodeHolder.value)
-  // console.log("currentEpisodeHolder.value = ", currentEpisodeHolder.value)
-  // when an episode has ended, we want to then trigger the current live stream to play.
-  if (!isLiveStream.value && currentUser.value?.continuous_play) {
-    // technically, a live stream would never end, so this is a bit redundant
 
-    // slight delay to allow the player to close before the live stream starts
-    setTimeout(() => {
-      // play the live stream audio bumper based on what is currently selected/last played, then when the bumper is done, play the live stream
-      playLocalMp3(
-        `/live-stream-audio-bumpers/${currentEpisodeHolder.value.slug}.mp3`,
-        () => togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
-      )
-    }, 500)
-  }
+  // if the user has continuous play enabled, then we want to play the next episode
+  initContinuousPlay()
 }
 
 // resume the player if the network is connected where they left off
