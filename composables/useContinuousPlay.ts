@@ -9,6 +9,7 @@ import {
   playLocalMp3,
 } from "~/utilities/helpers"
 
+// Function to initialize continuous play feature.
 export const useContinuousPlay = () => {
 
   const currentEpisodeHolder = useCurrentEpisodeHolder()
