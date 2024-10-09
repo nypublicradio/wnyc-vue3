@@ -108,17 +108,17 @@ export class NPR {
                     }
                 }
             }
-            const audioWithMetadata = await this.addMetadata(audio)
+            const audioWithMetadata = await this.addMetadata(audio, res.data.resources)
             return audioWithMetadata;
         } catch (e) {
             console.error('findAudio error = ', e);
         }
     }
-    async addMetadata(audio) {
+    async addMetadata(audio, itemData) {
         const categories = audio.map(item => item.categoryId)
         const categoryDocsRequest = this.multiDocumentRequest(categories)
-        const bylinesId = audio.reduce((acc, item) => {return acc.concat(item.bylineIds)},[])
-        const bylineDocsRequest = this.multiDocumentRequest(bylinesId)
+        const bylineDocIds = audio.reduce((acc, item) => {return acc.concat(item.bylineIds)},[])
+        const bylineDocsRequest = this.multiDocumentRequest(bylineDocIds)
         const [categoryDocs, bylineDocs] = await Promise.all([categoryDocsRequest, bylineDocsRequest])
 
         // map ids to category names
@@ -133,6 +133,13 @@ export class NPR {
             if (item.title) {
                 bylineMap[item.id] = item.title
             }
+        })
+        // sometimes the byline asset is not a separate document and includes the name directly
+        itemData.forEach((item) => {
+            item.bylines?.map(byline => byline.href.split('/')[2]).forEach((bylineId) => {
+                if (item.assets?.[bylineId]?.name)
+                bylineMap[bylineId] = item.assets[bylineId].name
+            })
         })
 
         const audioWithMetadata = audio.map((item) => {
@@ -149,9 +156,12 @@ export class NPR {
     getBylineIds(item) {
         // Get the byline ids from all bylineDocuments with type biography
         const bylineIds = item.bylines?.map(byline => {
-        const assetId = byline.href.split('/')[2]
-            return item.assets[assetId].bylineDocuments.find(bylineDoc => bylineDoc.type = 'biography').href.split('/')[3]
-        }) ?? []
+            const assetId = byline.href.split('/')[2]
+            if (item.assets[assetId].bylineDocuments)
+                return item.assets[assetId].bylineDocuments.find(bylineDoc => bylineDoc.rels.includes('biography'))?.href.split('/')[3]
+            else
+                return assetId
+        }).filter(item => item) ?? []
         return bylineIds
     }
     getCategoryId(item) {
