@@ -1194,3 +1194,6 @@ export const customAlphabeticalSort = (key = 'title') => {
     return a.localeCompare(b);
   };
 };
+export const deduplicateArray = (array) => {
+  return [...new Set(array)];
+}

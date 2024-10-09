@@ -1,8 +1,29 @@
+import { forEachBail } from './../../node_modules/enhanced-resolve/types.d';
 import axios from 'axios';
+import { ca } from 'date-fns/locale';
 import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
-import { howLongAgo } from '~/utilities/helpers'
-// Class to normailze NPR data 
+import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
+// Class to normailze NPR data
 export class NPR {
+    async getFromNPR(path: string, options: Record<string, any> = {}) {
+      options.headers = options.headers ?? {}
+      options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
+      return axios.get(`${process.env.NPR_CDS_API}/v1/${path}`, options).catch(e => {console.error('NPR CDS error', e); return []});
+    }
+
+    async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
+        // NPR CDS api has a document request limit of 20, so we may need to make multiple requests
+        const deduplicatedIds = deduplicateArray(ids)
+        const idBatches = []
+        while (deduplicatedIds.length) {
+            idBatches.push(deduplicatedIds.splice(0, maxDocumentsPerRequest))
+        }
+        const requests = idBatches.map(ids => this.getFromNPR(`documents?ids=${ids.join(',')}`))
+        const responses = await Promise.all(requests)
+        // append all the resources from each response into a single array
+        return responses.reduce((acc, response) => acc.concat(response.data.resources), [])
+    }
+
     // Fetch the image of the show
     findImageUrl(item) {
         try {
@@ -56,20 +77,10 @@ export class NPR {
         const showTitle = show.resources[0].title
         const audio = [];
         try {
-            const url = `${process.env.NPR_CDS_API}/v1/documents?collectionIds=${id}`;
-            const option = {
-                method: 'GET',
-                url,
-                headers: {
-                    Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
-                }
-            };
-            const res = await axios(option);
+            const res = await this.getFromNPR(`documents?collectionIds=${id}`)
             for (const item of res.data.resources) {
                 for (const asset of Object.values(item?.assets)) {
                     if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
-                        const category = await this.getAudioCategory(item);
-                        const byline = await this.getAudioByline(item);
                         const publishedDate = item.publishDateTime
                         const body = item.teaser
                         audio.push({
@@ -77,8 +88,8 @@ export class NPR {
                             audio: asset.enclosures[0].href,
                             title: item.title,
                             estimatedDuration: asset.enclosures[0].duration,
-                            category,
-                            byline,
+                            categoryId: this.getCategoryId(item),
+                            bylineIds: this.getBylineIds(item),
                             publishAt: publishedDate,
                             publicationDate: publishedDate,
                             hideFavorite: true,
@@ -97,33 +108,56 @@ export class NPR {
                     }
                 }
             }
-            return audio;
+            const audioWithMetadata = await this.addMetadata(audio)
+            return audioWithMetadata;
         } catch (e) {
             console.error('findAudio error = ', e);
         }
     }
-    // Fetch the category of the audio
-    async getAudioCategory(item) {
-        const collections = item?.collections;
-        const categoryHref = collections?.filter(collection => collection.rels.includes('slug')).map(collection => collection.href);
-        const request = await this.getDocument(categoryHref[0]);
-        const category = request?.resources[0].title;
-        return category;
-    }
-    // Fetch the authors of the audio
-    async getAudioByline(item: { assets: { profiles?: { href?: string }[], bylineDocuments?: { href: string }[] }[] }) {
-        const bylines: object[] = [];
-        for (const contributor of Object.values(item?.assets)) {
-            if (contributor?.profiles?.[1]?.href === '/v1/profiles/reference-byline') {
-                for (const asset of contributor?.bylineDocuments || []) {
-                    const bylineUrl = asset.href;
-                    const request = await this.getDocument(bylineUrl);
-                    const byline = { firstName: request?.resources[0].title };
-                    bylines.push(byline);
-                }
+    async addMetadata(audio) {
+        const categories = audio.map(item => item.categoryId)
+        const categoryDocsRequest = this.multiDocumentRequest(categories)
+        const bylinesId = audio.reduce((acc, item) => {return acc.concat(item.bylineIds)},[])
+        const bylineDocsRequest = this.multiDocumentRequest(bylinesId)
+        const [categoryDocs, bylineDocs] = await Promise.all([categoryDocsRequest, bylineDocsRequest])
+
+        // map ids to category names
+        const categoryMap = {}
+        categoryDocs.forEach(
+            item => categoryMap[item.id] = item.title
+        )
+
+        // map ids to author names
+        const bylineMap = {}
+        bylineDocs.forEach((item) => {
+            if (item.title) {
+                bylineMap[item.id] = item.title
             }
-        }
-        return bylines;
+        })
+
+        const audioWithMetadata = audio.map((item) => {
+            const category = categoryMap[item.categoryId]
+            const byline = item.bylineIds?.map(id => ({ firstName: bylineMap[id] }))
+            return {
+                ...item,
+                category,
+                byline,
+            }
+        });
+        return audioWithMetadata
+    }
+    getBylineIds(item) {
+        // Get the byline ids from all bylineDocuments with type biography
+        const bylineIds = item.bylines?.map(byline => {
+        const assetId = byline.href.split('/')[2]
+            return item.assets[assetId].bylineDocuments.find(bylineDoc => bylineDoc.type = 'biography').href.split('/')[3]
+        }) ?? []
+        return bylineIds
+    }
+    getCategoryId(item) {
+        // Get the category id from the first collection that has a topic relationship
+        const categoryId = item.collections?.filter(collection => collection.rels.includes('topic')).map(collection => collection.href)[0].split('/')[3];
+        return categoryId
     }
     // Fetch the document from the NPR API
     private async getDocument(url: string): Promise<any> {
