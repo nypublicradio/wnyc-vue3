@@ -67,15 +67,10 @@ let delay = 250
 const isError = ref(null)
 
 const getDescription = computed(() => {
-  if (!isStreamLoading.value) {
-    if (isLiveStream.value) {
-      return currentEpisode?.value?.episodeTitle
-    } else {
-      return currentEpisode?.value?.showTitle
-      //currentEpisode?.onTodaysShowHeadline ?? currentEpisode?.details
-    }
+  if (isLiveStream.value) {
+    return currentEpisode?.value?.episodeTitle
   } else {
-    return "..."
+    return currentEpisode?.value?.showTitle
   }
 })
 
