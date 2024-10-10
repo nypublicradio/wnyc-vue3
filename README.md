@@ -1,38 +1,77 @@
-NODE v18.18.2
-# Nuxt 3 Minimal Starter
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Requirements
 
-## Setup
-On a MacOS computer only, [install xCode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
-After installing xCode, run the following command to install the xcode command line tools:
+- Node v18.18.2
+- [Homebrew pacakge manager](https://brew.sh/)
+- Ruby >= 3
+- [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
+- [Android Studio](https://developer.android.com/studio)
+- OSX (building the Android version only should be possible in other platforms but we don't have instructions for that yet)
+
+# OSX Setup
+
+## Install Build tools and dependencies
+
+[Install Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
+
+After installing Xcode, run the following command to install the Xcode command line tools:
 ```bash
 xcode-select --install
 ```
-Make sure to install the dependencies:
+
+Install the dependencies:
+Install Homebrew:
+
 ```bash
-# Install Homebrew:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install CocoaPods:
-brew install cocoapods
-
-# Install fastlane:
-brew install fastlane
-
 ```
-Once the dependencies are installed, run the following command to install the project dependencies:
 
+Install CocoaPods
 ```bash
-# npm
-npm install
+brew install cocoapods
+```
+
+Install fastlane
+```bash
+brew install fastlane
+```
+
+(optional) Install Ruby if current version is lower than 3
+```bash
+brew install ruby
+```
+
+## Setting up secrets
+
+Secret keys are in the developer 1password library
+
+.env
+/android/keystore.properties
+/android/app/keystore.jks
+
+to access our github-hosted dependencies you will need to create a personal access token
+
+## Environment variables
+Setting environment variables in your shell
+```bash
+export $(cat .env | xargs -L 1)
 ```
 
 ## Local Development
+
+```
+Install project dependencies:
+
+```bash
+npm install
+```
+
 To start the development server, run the following command:
+
 ```bash
 npm run dev
 ```
+
 To work on the mobile builds, run the following commands:
 ```bash
 npm run generate
