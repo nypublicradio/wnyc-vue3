@@ -81,12 +81,13 @@ export class NPR {
                     if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
                         const publishedDate = item.publishDateTime
                         const body = item.teaser
+                        const categoryId = this.getCategoryId(item) ?? []
                         audio.push({
                             id: item.id,
                             audio: asset.enclosures[0].href,
                             title: item.title,
                             estimatedDuration: asset.duration,
-                            categoryId: this.getCategoryId(item),
+                            categoryId,
                             bylineIds: this.getBylineIds(item),
                             publishAt: publishedDate,
                             publicationDate: publishedDate,
@@ -164,8 +165,12 @@ export class NPR {
     }
     getCategoryId(item) {
         // Get the category id from the first collection that has a topic relationship
-        const categoryId = item.collections?.filter(collection => collection.rels.includes('topic')).map(collection => collection.href)[0].split('/')[3];
-        return categoryId
+        const getCategoryIdFromCollections = (relsType: string) => {
+            return item.collections?.find(collection => collection.rels.includes(relsType))?.href.split('/')[3];
+        };
+
+        const categoryId = getCategoryIdFromCollections('topic') || getCategoryIdFromCollections('program');
+        return categoryId;
     }
     // Fetch the document from the NPR API
     private async getDocument(url: string): Promise<any> {
