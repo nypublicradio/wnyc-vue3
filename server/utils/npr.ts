@@ -3,7 +3,7 @@ import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
 import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
-    async getFromNPR(path: string, options: Record<string, any> = {}) {
+    getFromNPR(path: string, options: Record<string, any> = {}) {
         options.headers = options.headers ?? {}
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
         return axios.get(`${process.env.NPR_CDS_API}/v1/${path}`, options).catch(e => { console.error('NPR CDS error', e); return [] });
@@ -171,7 +171,7 @@ export class NPR {
         return categoryId
     }
     // Fetch the document from the NPR API
-    private async getDocument(url: string): Promise<any> {
+    async getDocument(url: string): Promise<any> {
         try {
             const options = {
                 method: 'GET',
