@@ -114,7 +114,7 @@ export class NPR {
         }
     }
     async addMetadata(audio, itemData) {
-        const categories = audio.map(item => item.categoryId)
+        const categories = audio.map(item => item.categoryId).filter(item => item)
         const categoryDocsRequest = this.multiDocumentRequest(categories)
         const bylineDocIds = audio.reduce((acc, item) => { return acc.concat(item.bylineIds) }, [])
         const bylineDocsRequest = this.multiDocumentRequest(bylineDocIds)
@@ -164,13 +164,11 @@ export class NPR {
         return bylineIds
     }
     getCategoryId(item) {
-        // Get the category id from the first collection that has a topic relationship
-        const getCategoryIdFromCollections = (relsType: string) => {
-            return item.collections?.find(collection => collection.rels.includes(relsType))?.href.split('/')[3];
-        };
-
-        const categoryId = getCategoryIdFromCollections('topic') || getCategoryIdFromCollections('program');
-        return categoryId;
+        // Get the category id from the first collection that has a topic or program relationship
+        const categoryId = item.collections?.find(
+            collection => collection.rels.includes('topic') || collection.rels.includes('program')
+        )?.href?.split('/')[3];
+        return categoryId
     }
     // Fetch the document from the NPR API
     private async getDocument(url: string): Promise<any> {
