@@ -3,10 +3,11 @@ import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
 import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
-    getFromNPR(path: string, options: Record<string, any> = {}) {
+    getFromNPR(path: string, options: Record<string, any> = {}, baseURL = '/v1/') {
         options.headers = options.headers ?? {}
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
-        return axios.get(`${process.env.NPR_CDS_API}/v1/${path}`, options).catch(e => { console.error('NPR CDS error', e); return [] });
+        const url = `${process.env.NPR_CDS_API}${baseURL}${path}`
+        return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) });
     }
 
     async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
@@ -170,20 +171,9 @@ export class NPR {
         )?.href?.split('/')[3];
         return categoryId
     }
-    // Fetch the document from the NPR API
+    // Fetch the document from the NPR API    // Fetch the document from the NPR API
     async getDocument(url: string): Promise<any> {
-        try {
-            const options = {
-                method: 'GET',
-                url: `${process.env.NPR_CDS_API}${url}`,
-                headers: {
-                    Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
-                },
-            };
-            const data = await axios(options);
-            return data.data;
-        } catch (e) {
-            console.error('getDocument error = ', e, url);
-        }
+        const response = await this.getFromNPR(url, {}, '')
+        return response?.data;
     }
 }
