@@ -18,11 +18,6 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
     const show = await nyprDb.getNPRShowBySlug(slug);
     // Fetching the episodes from the NPR API and normalizing the data
     const option = {
-        method: 'GET',
-        url: `${config.public.NPR_CDS_API}/v1/documents`,
-        headers: {
-            Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
-        },
         params: {
             profileIds: 'program-episode',
             collectionIds: show[0].showId,
@@ -30,7 +25,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
         },
 
     };
-    const res = await axios(option);
+    const res = await npr.getFromNPR('documents', option);
 
     let episodes = [];
     episodes = await Promise.all(res.data.resources.map(async (item) => {

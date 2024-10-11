@@ -59,7 +59,7 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
+      `${config.public.BFF_URL}/api/v2/show/${route.params.slug}?page=${page.value}`
     )
     pendingMore.value = false
     episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
