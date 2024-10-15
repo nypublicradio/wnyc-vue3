@@ -72,7 +72,7 @@ export class NPR {
         return null;
     }
     // Fetch all segments for a episode and return audio array
-    async findAudio(id, show) {
+    async findAudio(id, show, image = FALLBACKIMAGEEP) {
         const showTitle = show.resources[0].title
         const audio = [];
         try {
@@ -101,6 +101,7 @@ export class NPR {
                             },
                             showTitle: `${showTitle} - ${howLongAgo(publishedDate)}`,
                             body,
+                            image,
                             meta: {
                                 slug: item.id,
                             },
