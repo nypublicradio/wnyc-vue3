@@ -205,7 +205,7 @@ export const resizeNprImageUrl = (
   url: string,
   w: number,
   q = 80,
-  format = "webp"
+  format = "jpeg"
 ): string => {
   const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
   return finalUrl
@@ -246,7 +246,7 @@ export const templatizePublisherImageUrl = (url: string): string => {
 // central spot to handle image formatting from diff sources
 export const imageSolver = (url, options = {}) => {
   // Default values for width, height, quality, and format
-  const { w = 288, h = 288, q = 80, format = "webp" }: { w?: number, h?: number, q?: number, format?: string } = options
+  const { w = 288, h = 288, q = 80, format = "jpeg" }: { w?: number, h?: number, q?: number, format?: string } = options
 
   let imgUrl = ""
   if (/^\d+$/.test(url)) {
