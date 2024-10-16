@@ -217,10 +217,10 @@ export const resizeWagtailImageUrl = (
   w: number,
   h: number,
   q = 80,
-  format = "webp"
+  format = "jpeg"
 ): string => {
   const config = useRuntimeConfig()
-  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|webpquality-${q}`
+  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|${format}quality-${q}`
   return finalUrl
 }
 // returns a templated image url when provided just the image URL
