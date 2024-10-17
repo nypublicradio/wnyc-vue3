@@ -8,6 +8,7 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize';
+import { de } from 'date-fns/locale'
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages(queryParams: any) {
   const defaultParams = {
@@ -227,7 +228,12 @@ export async function normalizePublisherPage(article: Record<string, any | undef
       }
     });
   }
-
+  const authors = article.attributes.appearances?.authors.map(normalizeAuthor);
+  // Remove publisher author fields because we don't haven't built out the author pages for publisher
+  authors.forEach((author) => {
+    delete author.slug;
+    delete author.url;
+  });
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
@@ -248,7 +254,7 @@ export async function normalizePublisherPage(article: Record<string, any | undef
     tease: article.attributes.tease,
     gallerySlides: article.attributes?.slideshow,
     legacyId: article.attributes.id,
-    authors: article.attributes.appearances?.authors.map(normalizeAuthor),
+    authors,
     contributingOrganizations: article.attributes?.producingOrganizations,
     sponsors: undefined,
 
