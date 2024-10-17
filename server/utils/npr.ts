@@ -152,7 +152,7 @@ export class NPR {
 
         const audioWithMetadata = audio.map((item) => {
             const category = categoryMap[item.categoryId]
-            const byline = item.bylineIds?.map(id => ({ firstName: bylineMap[id] }))
+            const byline = item.bylineIds?.map(id => ({ name: bylineMap[id] }))
             return {
                 ...item,
                 category,
