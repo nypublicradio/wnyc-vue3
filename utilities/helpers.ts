@@ -1194,6 +1194,8 @@ export const customAlphabeticalSort = (key = 'title') => {
     return a.localeCompare(b);
   };
 };
+
+// function that converts and array to a set to remove the dups
 export const deduplicateArray = (array) => {
   return [...new Set(array)];
 }

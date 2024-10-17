@@ -3,6 +3,7 @@ import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
 import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
+    // Fetch the document from the NPR API
     getFromNPR(path: string, options: Record<string, any> = {}, baseURL = '/v1/') {
         options.headers = options.headers ?? {}
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
@@ -40,6 +41,7 @@ export class NPR {
             return imageUrl;
         } catch (e) {
             console.error('findImageUrl error = ', e);
+            return null;
         }
     }
     // Fetch the image of the episode
@@ -115,8 +117,10 @@ export class NPR {
             return audioWithMetadata;
         } catch (e) {
             console.error('findAudio error = ', e);
+            return null;
         }
     }
+    // Add metadata to the audio array
     async addMetadata(audio, itemData) {
         const categories = audio.map(item => item.categoryId).filter(item => item)
         const categoryDocsRequest = this.multiDocumentRequest(categories)
@@ -125,10 +129,9 @@ export class NPR {
         const [categoryDocs, bylineDocs] = await Promise.all([categoryDocsRequest, bylineDocsRequest])
 
         // map ids to category names
-        const categoryMap = {}
-        categoryDocs.forEach(
-            item => categoryMap[item.id] = item.title
-        )
+        const categoryMap = Object.fromEntries(
+            categoryDocs.map(item => [item.id, item.title])
+        );
 
         // map ids to author names
         const bylineMap = {}
@@ -156,6 +159,7 @@ export class NPR {
         });
         return audioWithMetadata
     }
+    // parses item for document ids of bylines
     getBylineIds(item) {
         // Get the byline ids from all bylineDocuments with type biography
         const bylineIds = item.bylines?.map(byline => {
@@ -167,6 +171,7 @@ export class NPR {
         }).filter(item => item) ?? []
         return bylineIds
     }
+    // parses item for document id of the category
     getCategoryId(item) {
         // Get the category id from the first collection that has a topic or program relationship
         const categoryId = item.collections?.find(
