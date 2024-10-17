@@ -105,6 +105,8 @@ export class NPR {
                             meta: {
                                 slug: item.id,
                             },
+                            cmsSource: cmsSources.NPR,
+                            isSegment: true,
                         });
                     }
                 }

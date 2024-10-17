@@ -38,11 +38,15 @@ const isLiveStream = useIsLiveStream()
 const sleepTimerRunning = useSleepTimerRunning()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
+const showShare = ref(true)
 
 const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
 watchEffect(async () => {
+  // hide share if it is a segment, which is only set in NPR direct show episodes
+  currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
+
   isFavorited.value = await checkIsFavorited(
     currentEpisode.value.showSlug || currentEpisode.value.slug
   )
@@ -96,13 +100,6 @@ const handleDownload = async () => {
   )
   progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
 }
-
-// hide share if it is a NPR story... for now
-const showShare = ref(true)
-if (currentEpisode.value?.cmsSource === cmsSources.NPR) {
-  showShare.value = false
-}
-//console.log("currentEpisode.value", currentEpisode.value)
 
 // handle share button
 const handleShare = () => {
