@@ -20,7 +20,7 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).items;
-    const author = resData[0].relatedAuthors.filter((author) => {
+    const author = resData[0].relatedAuthors?.filter((author) => {
         return author.slug === staffSlug;
     }).map(author => normalizeAuthor(author));
 

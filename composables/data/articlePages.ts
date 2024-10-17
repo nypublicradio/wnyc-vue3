@@ -50,7 +50,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
     lastName: author.lastName,
     organization: author.contributingOrganization?.name,
     organizationUrl: author.contributingOrganization?.url,
-    name: `${author.firstName} ${author.lastName}`,
+    name: author.firstName ? `${author.firstName} ${author.lastName}` : author.name,
     photoID: author.photo,
     jobTitle: author.jobTitle,
     biography: author.biography,

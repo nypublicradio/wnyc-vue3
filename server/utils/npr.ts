@@ -4,8 +4,10 @@ import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
     // Fetch the document from the NPR API
-    getFromNPR(path: string, options: Record<string, any> = {}, baseURL = '/v1/') {
-        options.headers = options.headers ?? {}
+    getFromNPR(path: string, options: Record<string, unknown> = {}, baseURL: string = '/v1/'): Promise<void> {
+        if (typeof options.headers !== 'object' || options.headers === null) {
+            options.headers = {};
+        }
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
         const url = `${process.env.NPR_CDS_API}${baseURL}${path}`
         return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) });
@@ -172,15 +174,15 @@ export class NPR {
         return bylineIds
     }
     // parses item for document id of the category
-    getCategoryId(item) {
+    getCategoryId(item: { collections?: Array<{ rels: string[]; href: string }> }): string | undefined {
         // Get the category id from the first collection that has a topic or program relationship
         const categoryId = item.collections?.find(
-            collection => collection.rels.includes('topic') || collection.rels.includes('program')
+            (collection) => collection.rels.includes('topic') || collection.rels.includes('program')
         )?.href?.split('/')[3];
-        return categoryId
+        return categoryId;
     }
-    // Fetch the document from the NPR API    // Fetch the document from the NPR API
-    async getDocument(url: string): Promise<any> {
+    // Fetch the document from the NPR API
+    async getDocument(url: string): Promise<unknown> {
         const response = await this.getFromNPR(url, {}, '')
         return response?.data;
     }
