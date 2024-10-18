@@ -290,9 +290,6 @@ onMounted(() => {
         style="margin-bottom: 6px"
       />
     </div>
-    <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
-    <!-- <pre class="text-xs overflow-hidden">{{ episodes }}</pre> -->
-
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">
       <TabView :lazy="true">
@@ -300,7 +297,6 @@ onMounted(() => {
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-              <!-- <pre class="text-xs text-white">{{ ep }}</pre> -->
               <EpisodeItem
                 v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
