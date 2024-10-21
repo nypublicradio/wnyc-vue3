@@ -183,6 +183,7 @@ const checkAppLaunchUrl = async () => {
   appLaunchUrl.value = url
   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
   //alert("App opened with URL: " + JSON.stringify(url))
+  // get data from UA
 }
 
 onMounted(async () => {
