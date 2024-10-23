@@ -11,7 +11,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click, on-delete-favorite"])
+const emit = defineEmits(["on-click", "on-delete-favorite"])
 
 const props = defineProps({
   data: {
@@ -106,7 +106,9 @@ const getDotMenuItems = (bucketItem) => {
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
-        <h2 class="text-sm line-height-2 truncate t2lines">{{ props.data.title }}</h2>
+        <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
+          {{ props.data.title }}
+        </h2>
         <p v-for="org in props.data?.producingOrganizations" :key="org.name">
           {{ org.name }}
         </p>

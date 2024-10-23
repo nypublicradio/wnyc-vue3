@@ -8,7 +8,12 @@ const filterOptions = ref([
   // { label: "Segments", value: mediaTypes.SEGMENT },
   {
     label: "Articles",
-    value: [mediaTypes.ARTICLE_PAGE, mediaTypes.ARTICLE, mediaTypes.STORY],
+    value: [
+      mediaTypes.ARTICLE_PAGE,
+      mediaTypes.ARTICLE,
+      mediaTypes.STORY,
+      mediaTypes.NPR_ARTICLE,
+    ],
   },
   /*  { label: "Shows", value: mediaTypes.SHOW }, */
 ])

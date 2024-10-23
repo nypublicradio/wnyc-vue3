@@ -15,6 +15,7 @@ import {
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { useCurrentUser, useIsEpisodePlaying, useGlobalToast } from "~/composables/states"
+import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 
 const config = useRuntimeConfig()
@@ -22,12 +23,12 @@ const route = useRoute()
 const router = useRouter()
 
 const { data: show, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/show/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
 )
 
-const page = ref(show?.value?.episodes?.meta.pagination.page ?? null)
+const page = ref(show?.value?.episodes?.meta?.pagination?.page ?? null)
 const episodes = ref(show?.value?.episodes?.data ?? null)
-let maxPages = show?.value?.episodes?.meta.pagination.pages ?? null
+let maxPages = show?.value?.episodes?.meta?.pagination?.pages ?? null
 const showImage = ref(show?.value?.show?.image?.template ?? null)
 const showTitle = ref(show?.value?.show?.title ?? null)
 const showTease = ref(show?.value?.show?.description ?? null)
@@ -58,7 +59,7 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/show/${route.params.slug}?page=${page.value}`
+      `${config.public.BFF_URL}/api/v2/show/${route.params.slug}?page=${page.value}`
     )
     pendingMore.value = false
     episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
@@ -104,8 +105,21 @@ const firstEpisodeWithAudio = () => {
 }
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  const ep = firstEpisodeWithAudio()
-  togglePlayEpisode(ep)
+  // handle NPR show segments.
+  if (show.value.show.cmsSource === "npr") {
+    // route to the first episode with a url parameter
+    navigateTo({
+      path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${show.value.episodes.data[0].id}`,
+      query: {
+        src: "npr",
+        type: "episode",
+        autoplay: true,
+      },
+    })
+  } else {
+    const ep = firstEpisodeWithAudio()
+    togglePlayEpisode(ep)
+  }
 }
 
 // if user is logged in, check if item is already favorited
@@ -135,12 +149,9 @@ const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
 
-const hasSegments = computed(() => {
-  return episodes.value?.some((ep) => ep?.type === "segment")
-})
 watch(show, () => {
-  page.value = show?.value?.episodes?.meta.pagination.page
-  maxPages = show.value.episodes?.meta.pagination.pages
+  page.value = show?.value?.episodes?.meta?.pagination.page
+  maxPages = show.value.episodes?.meta?.pagination.pages
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template ?? getEpisodeFallBackImage()
   showTitle.value = show.value.show?.title
@@ -279,9 +290,6 @@ onMounted(() => {
         style="margin-bottom: 6px"
       />
     </div>
-    <!-- <h2 class="mt-4 mb-3">Episodes</h2> -->
-    <!-- <pre class="text-xs overflow-hidden">{{ episodes }}</pre> -->
-
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">
       <TabView :lazy="true">
@@ -292,13 +300,13 @@ onMounted(() => {
               <EpisodeItem
                 v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
-                @onClick="goToEpisodePage(ep)"
+                @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
                 :fallback-image="getEpisodeFallBackImage()"
               />
             </template>
           </div>
         </TabPanel>
-        <TabPanel header="Segments" v-if="hasSegments">
+        <!-- <TabPanel header="Segments" v-if="hasSegments">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
               {{ ep?.esitmatedDuration }}
@@ -310,7 +318,7 @@ onMounted(() => {
               />
             </template>
           </div>
-        </TabPanel>
+        </TabPanel> -->
       </TabView>
     </div>
     <div v-if="pending">

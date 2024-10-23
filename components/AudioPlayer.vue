@@ -170,7 +170,7 @@ const togglePlayHere = async (e) => {
   }
   if (isEpisodePlaying.value && isNewEpisode.value) {
     trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
-  } else if(isEpisodePlaying.value && !isNewEpisode.value) {
+  } else if (isEpisodePlaying.value && !isNewEpisode.value) {
     trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
   }
   isEpisodePlaying.value = e

@@ -1,5 +1,6 @@
 <script setup>
 import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -35,7 +36,7 @@ defineExpose({
   $primevue,
 })
 
-const emit = defineEmits(["on-click, on-delete-favorite"])
+const emit = defineEmits(["on-click", "on-delete-favorite"])
 
 const props = defineProps({
   data: {
@@ -69,6 +70,14 @@ const props = defineProps({
   isInDownloads: {
     type: Boolean,
     default: false,
+  },
+  isSegment: {
+    type: Boolean,
+    default: false,
+  },
+  showImage: {
+    type: Boolean,
+    default: true,
   },
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
@@ -114,15 +123,19 @@ const handleDownload = async (bucketItem) => {
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
-    {
-      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
-      customIcon: StarIcon,
-      active: isFavorited.value,
-      title: bucketItem.title,
-      command: () => {
-        handleAddToFavorites(bucketItem)
-      },
-    },
+    ...(!props.isSegment
+      ? [
+          {
+            label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
+            customIcon: StarIcon,
+            active: isFavorited.value,
+            title: bucketItem.title,
+            command: () => {
+              handleAddToFavorites(bucketItem)
+            },
+          },
+        ]
+      : []),
     ...(hasAudio(bucketItem.audio) && !isDownloaded.value
       ? [
           {
@@ -149,7 +162,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(props.showShare
+    ...(props.showShare && !props.isSegment
       ? [
           {
             label: "Share",
@@ -219,14 +232,22 @@ const handleClick = () => {
 
 // handle the play button render
 const handleHasAudio = computed(() => {
-  return props.showPlayButton && hasAudio(props.data.audio)
+  return (
+    (props.showPlayButton && hasAudio(props.data.audio)) ||
+    (props.showPlayButton && props.isSegment && hasAudio(props.data.url))
+  )
 })
 </script>
 
 <template>
-  <div class="episode-item relative p-ripple" v-ripple>
+  <div
+    class="episode-item relative"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+  >
     <div
-      class="card-click w-full h-full absolute top-0 left-0 z-1"
+      v-if="!props.isSegment"
+      v-ripple
+      class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
       @click.prevent="handleClick"
       @keypress.enter.space="handleClick"
       tabindex="0"
@@ -236,6 +257,7 @@ const handleHasAudio = computed(() => {
     <div class="flex gap-3 w-full">
       <!-- <pre class="text-xs overflow-hidden">{{ props.data }}</pre> -->
       <VImage
+        v-if="props.showImage"
         class="flex-none"
         :alt="`${props.data.showTitle} show `"
         :src="imgSrcUrl"
@@ -246,25 +268,37 @@ const handleHasAudio = computed(() => {
         style="height: 116px; width: 116px"
         tabindex="-1"
       />
-      <div class="flex gap-1 flex-column justify-content-between w-full">
+      <div class="flex gap-2 flex-column justify-content-between w-full">
         <div class="flex gap-1 flex-column w-full">
           <div class="flex gap-0 flex-column align-items-start">
             <p v-if="props.showTitle" class="text-xs line-height-1">
               {{ props.data.org ?? props.data.showTitle }}
             </p>
-            <h2 class="text-sm line-height-2 truncate t2lines">
+            <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
               {{ props.data?.title }}
             </h2>
           </div>
           <div class="article-metadata">
             <PipeData class="text-xs">
               <template #left>
-                {{ props.data?.showTitle || props.data?.headers?.brand?.title }}
+                {{
+                  props.isSegment
+                    ? props.data?.category
+                    : props.data?.showTitle || props.data?.headers?.brand?.title
+                }}
               </template>
               <template #right>
                 {{ getDate(props.data) }}
               </template>
             </PipeData>
+
+            <div class="text-xs mt-1 opacity-70">
+              <VByline
+                v-if="props.data.byline?.length > 0 && props.isSegment"
+                :authors="props.data.byline"
+                prefix="by "
+              />
+            </div>
           </div>
           <!-- FROM SUPABASE PROFILER DATA -->
           <!-- Has to have started playing to show -->

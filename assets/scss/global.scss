@@ -274,6 +274,12 @@ section {
 .no-wrap {
   white-space: nowrap;
 }
+.no-hyphens {
+  hyphens: none;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+}
 .col-fixed {
   &.ad300 {
     max-width: 316px;

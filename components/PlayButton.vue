@@ -58,12 +58,7 @@ const isPlaying = ref(false)
 watch(
   isEpisodePlaying,
   () => {
-    // to handle segments\
-    if (Array.isArray(props.data.audio)) {
-      isPlaying.value = currentEpisode.value?.file === props.data?.audio[props.index]
-    } else {
-      isPlaying.value = Number(currentEpisode.value?.id) === Number(props.data?.id)
-    }
+    isPlaying.value = String(currentEpisode.value?.id) === String(props.data?.id)
   },
   {
     immediate: true,

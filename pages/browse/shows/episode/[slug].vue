@@ -31,10 +31,11 @@ const currentEpisode = useCurrentEpisode()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 const { data: episode, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/show/episode/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`
 )
 
 const episodeData = ref(episode?.value ?? null)
+const hasSegments = ref(Array.isArray(episode?.value?.audio))
 
 const user = useCurrentUser()
 
@@ -95,11 +96,11 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    ...(hasAudio(bucketItem.audio)
+    ...(hasAudio(bucketItem?.audio)
       ? [
           {
             label: `Download ${
-              bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+              bucketItem.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
             }`,
             //icon: 'pi pi-google',
             customIcon: DownloadIcon,
@@ -162,11 +163,12 @@ const onMenuChange = (e) => {
 
 // handle the toggle play button and tracking
 const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, mediaTypes.EPISODE, index)
+  togglePlayEpisode(epData, index)
 }
 
 watch(episode, () => {
   episodeData.value = episode.value
+  hasSegments.value = Array.isArray(episode.value.audio)
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -180,19 +182,25 @@ watch(episode, () => {
       : episodeData.value.publicationDate,
     article_title: episodeData.value.title,
   })
-})
 
-const isSegment = computed(
-  () =>
-    Array.isArray(episodeData.value.audio) && Array.isArray(episodeData.value.segments)
-)
+  // check route param autoplay exists and if so, play the first segment
+  if (route.query.autoplay === "true") {
+    togglePlayEpisode(episodeData.value.audio[0])
+    // remove the autoplay query param
+    router.replace({ query: { ...route.query, autoplay: null } })
+  }
+})
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
-const getEpisodeImage = computed(() => {
+const getEpisodeImage = () => {
   const epImage = episodeData.value?.image?.template
   const showImage = episodeData.value?.headers.brand.logoImage.template
-  return epImage !== showImage ? epImage : getEpisodeHeadFallBackImage()
-})
+  return epImage
+    ? epImage !== showImage
+      ? epImage
+      : getEpisodeHeadFallBackImage()
+    : getEpisodeHeadFallBackImage()
+}
 </script>
 
 <template>
@@ -223,12 +231,12 @@ const getEpisodeImage = computed(() => {
     <div class="relative mb-4">
       <v-image
         v-if="!pending"
-        :src="getEpisodeImage"
+        :src="getEpisodeImage()"
         :width="390"
         :height="360"
         :ratio="[3, 2]"
         :srcset="[2]"
-        :alt="episodeData?.image.altText"
+        :alt="episodeData?.image?.altText"
         class="episode-page-image mb-2"
       />
       <Skeleton
@@ -264,7 +272,7 @@ const getEpisodeImage = computed(() => {
         <div class="flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="flex align-items-center gap-2">
             <PlayButton
-              v-if="!isSegment"
+              v-if="!hasSegments"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :data="episodeData"
               @onClick="togglePlayHere(episodeData)"
@@ -294,7 +302,7 @@ const getEpisodeImage = computed(() => {
               <template #icon> <StarIcon :active="isFavorited" /></template>
             </Button>
             <Button
-              v-if="hasAudio(episodeData.audio)"
+              v-if="hasAudio(episodeData?.audio)"
               class="w-2rem h-2rem"
               text
               plain
@@ -326,7 +334,7 @@ const getEpisodeImage = computed(() => {
                 <div>
                   <div class="flex gap-3 px-4 align-items-center">
                     <VImage
-                      :src="episodeData?.image.template"
+                      :src="episodeData?.image?.template || getEpisodeImage()"
                       :alt="`${episodeData?.title} show image`"
                       :width="116"
                       :height="116"
@@ -347,9 +355,23 @@ const getEpisodeImage = computed(() => {
           </div>
         </div>
         <!-- SEGMENTS -->
-        <div v-if="isSegment" class="flex flex-column gap-3 mt-4">
-          <div v-for="(segment, index) in episodeData?.segments" :key="segment.title">
-            <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
+        <!-- <pre class="text-xs">{{ episodeData?.audio }}</pre> -->
+        <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 segment-list">
+          <li
+            v-for="segment in episodeData?.audio"
+            class="mb-3 pr-0 beforeHack"
+            :key="segment.id"
+          >
+            <EpisodeItem
+              :data="segment"
+              showPlayButton
+              isSegment
+              :show-image="false"
+              class=""
+            />
+          </li>
+
+          <!-- <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
               <PlayButton
                 :label="getMinutes(segment.audioDurationReadable, 1)"
                 :data="episodeData"
@@ -357,9 +379,8 @@ const getEpisodeImage = computed(() => {
                 @onClick="togglePlayHere(episodeData, index)"
               />
               <p class="truncate t2lines">{{ segment.title }}</p>
-            </div>
-          </div>
-        </div>
+            </div> -->
+        </ol>
         <HtmlConvert :htmlContent="episodeData?.body" class="mt-5" />
       </section>
       <section v-if="episodeData?.transcript">
@@ -413,6 +434,13 @@ const getEpisodeImage = computed(() => {
   color: var(--text-color);
   text-decoration: none;
   opacity: 70%;
+}
+.episode-page .segment-list .beforeHack {
+  &::before {
+    content: "";
+    display: block;
+    height: 0px;
+  }
 }
 
 .episode-page h1.alt {

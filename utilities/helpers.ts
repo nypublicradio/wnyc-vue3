@@ -205,7 +205,7 @@ export const resizeNprImageUrl = (
   url: string,
   w: number,
   q = 80,
-  format = "webp"
+  format = "jpeg"
 ): string => {
   const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
   return finalUrl
@@ -217,10 +217,10 @@ export const resizeWagtailImageUrl = (
   w: number,
   h: number,
   q = 80,
-  format = "webp"
+  format = "jpeg"
 ): string => {
   const config = useRuntimeConfig()
-  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|webpquality-${q}`
+  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|${format}quality-${q}`
   return finalUrl
 }
 // returns a templated image url when provided just the image URL
@@ -246,7 +246,7 @@ export const templatizePublisherImageUrl = (url: string): string => {
 // central spot to handle image formatting from diff sources
 export const imageSolver = (url, options = {}) => {
   // Default values for width, height, quality, and format
-  const { w = 288, h = 288, q = 80, format = "webp" }: { w?: number, h?: number, q?: number, format?: string } = options
+  const { w = 288, h = 288, q = 80, format = "jpeg" }: { w?: number, h?: number, q?: number, format?: string } = options
 
   let imgUrl = ""
   if (/^\d+$/.test(url)) {
@@ -864,51 +864,42 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 }
 
 // normalize the bucket item data for the player
-export const prepForPlayer = (item, index = null) => {
-  const isSegment = index !== null
-
+export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
-    ? item.file
-    : isSegment
-      ? item.audio[index]
-      : item.audio || item.hls
+    ? item.file : item.audio || item.hls
 
   return {
     ...item,
     file: fileValue,
     audio: fileValue,
     hls: item.hls,
-    title: isSegment ? item.segments[index].title : item.title,
+    title: item.title,
     image:
       item.image?.template ??
       item.image ??
       item.listingImage?.template ??
       item.showImage ??
+      item.headers?.brand?.logoImage?.template ??
+      item.headers?.brand?.logoImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration || item.duration,
-    details: isSegment ? item.segments[index].tease : item.body,
-    first_published_at: isSegment ? item.segments[index].newsdate : item.publishAt,
+    details: item.body,
+    first_published_at: item.publishAt,
   }
 }
 
 // handles playing episodes and segments
-export const togglePlayEpisode = (media, type = mediaTypes.EPISODE, index = 0) => {
+export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   const currentEpisode = useCurrentEpisode()
   const togglePlayTrigger = useTogglePlayTrigger()
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
-  if (typeof media.audio === "string") {
-    if (currentEpisode.value?.audio !== media.audio) {
-      currentEpisode.value = prepForPlayer(media)
-      saveRecentlyPlayed(media, type)
-    }
-  } else {
-    // segment
-    if (currentEpisode.value?.file !== media.audio[index]) {
-      currentEpisode.value = prepForPlayer(media, index)
-      saveRecentlyPlayed(media, type)
-    }
+
+  if (currentEpisode.value?.audio !== media.audio) {
+    currentEpisode.value = prepForPlayer(media)
+    saveRecentlyPlayed(media, type)
   }
+
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
@@ -1041,7 +1032,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
     switch (item.type) {
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
-        goToEpisodePage(item, null, isSaveHistory)
+        goToEpisodePage(item, { src: item.cmsSource, type: item.type }, isSaveHistory)
         break
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE:
@@ -1205,3 +1196,8 @@ export const customAlphabeticalSort = (key = 'title') => {
     return a.localeCompare(b);
   };
 };
+
+// function that converts and array to a set to remove the dups
+export const deduplicateArray = (array) => {
+  return [...new Set(array)];
+}

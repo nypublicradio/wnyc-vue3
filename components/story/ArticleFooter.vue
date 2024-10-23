@@ -52,6 +52,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
             class="mb-4 text-sm gap-4"
             :imageFallbackPath="!profile.photoID ? getUserFallBackImage() : null"
             :onStaffPage="!profile.url"
+            :truncate="5"
           />
         </section>
         <hr class="black mb-6" />

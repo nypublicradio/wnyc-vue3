@@ -2,7 +2,7 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { normalizeArticleListItem } from '~/composables/data/articlePages'
 
 //Gets the top stories from the Wagtail API (gothamist)
 const getGothamistTopStories = async () => {
@@ -30,7 +30,7 @@ const getGothamistTopStories = async () => {
 	const articles = Promise.all(resData.map((article: any) => {
 		article.cmsSource = cmsSources.WAGTAIL;
 		article.sortDate = article.publicationDate;
-		return normalizeArticlePage(article);
+		return normalizeArticleListItem(article);
 	}));
 	return articles;
 }
@@ -52,7 +52,7 @@ const getWNYCTopStories = async () => {
 		const articles = Promise.all(resData.map((article: any) => {
 			article.cmsSource = cmsSources.PUBLISHER;
 			article.sortDate = article.attributes.publishAt;
-			return normalizeArticlePage(article);
+			return normalizeArticleListItem(article);
 		}));
 		return articles;
 	} else {

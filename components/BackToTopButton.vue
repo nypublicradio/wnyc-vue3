@@ -38,6 +38,7 @@ watch(
   .p-scrolltop {
     margin-bottom: calc(env(safe-area-inset-bottom) + v-bind(bottomBuffer));
     border-radius: 50%;
+    z-index: 1;
   }
 }
 </style>
