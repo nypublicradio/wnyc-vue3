@@ -97,21 +97,36 @@ const featuredShows = async () => {
     return resData;
 }
 
+//Merge data and favor the NPR data
+const mergeShows = (sourceShows, nprShows) => {
+    const merged = [...sourceShows];
+    nprShows.forEach(nprShow => {
+        const index = merged.findIndex(show => show.title === nprShow.title);
+        if (index !== -1) {
+            merged[index] = nprShow; // Favor the NPR data
+        } else {
+            merged.push(nprShow);
+        }
+    });
+    return merged;
+};
 
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     const nprShowsData = await nprShows();
+    let allShowsDataMerged;
+    let featuredShowsDataMerged;
     //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData
     if (nprShowsData) {
-        allShowsData.push(...nprShowsData.all);
-        featuredShowsData.push(...nprShowsData.featuredShows);
+        allShowsDataMerged = mergeShows(allShowsData, nprShowsData.all);
+        featuredShowsDataMerged = mergeShows(featuredShowsData, nprShowsData.featuredShows);
     }
     //Sort the data by title
-    allShowsData.sort(customAlphabeticalSort());
-    featuredShowsData.sort(customAlphabeticalSort());
-    featuredShowsData.forEach((show) => {
+    allShowsDataMerged.sort(customAlphabeticalSort());
+    featuredShowsDataMerged.sort(customAlphabeticalSort());
+    featuredShowsDataMerged.forEach((show) => {
         // Get the id from the allShowsData
         const match = allShowsData.find((item) => item.slug === show.slug);
         if (match) {
@@ -120,7 +135,7 @@ export default defineEventHandler(async (event) => {
     });
     res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     return {
-        all: allShowsData,
-        featuredShows: featuredShowsData
+        all: allShowsDataMerged,
+        featuredShows: featuredShowsDataMerged
     }
 });
