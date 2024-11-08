@@ -200,7 +200,7 @@ onMounted(async () => {
     await initLocalNotifications()
 
     // OneSignal
-    OneSignal.initialize("a18c292e-fecd-4fa0-9915-6892fa905d9b")
+    OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
     OneSignal.Notifications.requestPermission()
   }
 
