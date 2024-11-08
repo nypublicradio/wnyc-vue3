@@ -30,6 +30,7 @@ def capacitor_pods
   pod 'BpCapacitorBackgroundMode', :path => '../../node_modules/bp-capacitor-background-mode'
   pod 'CapacitorNativeSettings', :path => '../../node_modules/capacitor-native-settings'
   pod 'CapacitorPluginAppTrackingTransparency', :path => '../../node_modules/capacitor-plugin-app-tracking-transparency'
+  pod 'CordovaPluginsStatic', :path => '../capacitor-cordova-ios-plugins'
 end
 
 target 'App' do

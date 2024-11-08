@@ -4,4 +4,5 @@
     <string name="title_activity_main">WNYC</string>
     <string name="package_name">org.wnyc.android</string>
     <string name="custom_url_scheme">org.wnyc.android</string>
+    <string name="onesignal_notification_accent_color">de1e3d</string>
 </resources>

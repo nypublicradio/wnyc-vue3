@@ -27,7 +27,7 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
-
+import OneSignal from "onesignal-cordova-plugin"
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
 initFeatureSessionCount()
@@ -198,6 +198,10 @@ onMounted(async () => {
     await checkAppLaunchUrl()
     // init local notifications
     await initLocalNotifications()
+
+    // OneSignal
+    OneSignal.initialize("a18c292e-fecd-4fa0-9915-6892fa905d9b")
+    OneSignal.Notifications.requestPermission()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
