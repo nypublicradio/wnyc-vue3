@@ -98,17 +98,23 @@ const featuredShows = async () => {
 }
 
 //Merge data and favor the NPR data
+// const mergeShows2 = (sourceShows, nprShows) => {
+//     const merged = [...sourceShows];
+//     nprShows.forEach(nprShow => {
+//         const index = merged.findIndex(show => show.title === nprShow.title);
+//         if (index !== -1) {
+//             merged[index] = nprShow; // Favor the NPR data
+//         } else {
+//             merged.push(nprShow);
+//         }
+//     });
+//     return merged;
+// };
+
 const mergeShows = (sourceShows, nprShows) => {
-    const merged = [...sourceShows];
-    nprShows.forEach(nprShow => {
-        const index = merged.findIndex(show => show.title === nprShow.title);
-        if (index !== -1) {
-            merged[index] = nprShow; // Favor the NPR data
-        } else {
-            merged.push(nprShow);
-        }
-    });
-    return merged;
+    const showMap = new Map(sourceShows.map(show => [show.title, show]));
+    nprShows.forEach(show => showMap.set(show.title, show)); // NPR shows override existing entries
+    return Array.from(showMap.values());
 };
 
 export default defineEventHandler(async (event) => {
