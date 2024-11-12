@@ -108,13 +108,11 @@ export default defineEventHandler(async (event) => {
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     const nprShowsData = await nprShows();
-    let allShowsDataMerged;
-    let featuredShowsDataMerged;
-    //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData
-    if (nprShowsData) {
-        allShowsDataMerged = mergeShows(allShowsData, nprShowsData.all);
-        featuredShowsDataMerged = mergeShows(featuredShowsData, nprShowsData.featuredShows);
-    }
+
+    //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData    
+    const allShowsDataMerged = mergeShows(allShowsData, nprShowsData.all);
+    const featuredShowsDataMerged = mergeShows(featuredShowsData, nprShowsData.featuredShows);
+
     //Sort the data by title
     allShowsDataMerged.sort(customAlphabeticalSort());
     featuredShowsDataMerged.sort(customAlphabeticalSort());
