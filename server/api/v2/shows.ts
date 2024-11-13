@@ -96,7 +96,7 @@ const featuredShows = async () => {
     });
     return resData;
 }
-
+//If the show is in both sources, the NPR show will override the existing show 
 const mergeShows = (sourceShows, nprShows) => {
     const showMap = new Map(sourceShows.map(show => [show.title, show]));
     nprShows.forEach(show => showMap.set(show.title, show)); // NPR shows override existing entries
