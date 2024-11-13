@@ -14,6 +14,10 @@ export class NPR {
     }
 
     async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
+        // if no ids are provided, return an empty array
+        if (!ids.length || !ids[0].length) {
+            return []
+        }
         // NPR CDS api has a document request limit of 20, so we may need to make multiple requests
         const deduplicatedIds = deduplicateArray(ids)
         const idBatches = []
@@ -177,7 +181,7 @@ export class NPR {
     getCategoryId(item: { collections?: Array<{ rels: string[]; href: string }> }): string | undefined {
         // Get the category id from the first collection that has a topic or program relationship
         const categoryId = item.collections?.find(
-            (collection) => collection.rels.includes('topic') || collection.rels.includes('program')
+            (collection) => collection.rels.includes('topic') || collection.rels.includes('program') || collection.rels.includes('series')
         )?.href?.split('/')[3];
         return categoryId;
     }

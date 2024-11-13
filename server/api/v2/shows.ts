@@ -96,22 +96,27 @@ const featuredShows = async () => {
     });
     return resData;
 }
-
+//If the show is in both sources, the NPR show will override the existing show 
+const mergeShows = (sourceShows, nprShows) => {
+    const showMap = new Map(sourceShows.map(show => [show.title, show]));
+    nprShows.forEach(show => showMap.set(show.title, show)); // NPR shows override existing entries
+    return Array.from(showMap.values());
+};
 
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res;
     const allShowsData = await allShows();
     const featuredShowsData = await featuredShows();
     const nprShowsData = await nprShows();
-    //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData
-    if (nprShowsData) {
-        allShowsData.push(...nprShowsData.all);
-        featuredShowsData.push(...nprShowsData.featuredShows);
-    }
+
+    //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData    
+    const allShowsDataMerged = mergeShows(allShowsData, nprShowsData.all);
+    const featuredShowsDataMerged = mergeShows(featuredShowsData, nprShowsData.featuredShows);
+
     //Sort the data by title
-    allShowsData.sort(customAlphabeticalSort());
-    featuredShowsData.sort(customAlphabeticalSort());
-    featuredShowsData.forEach((show) => {
+    allShowsDataMerged.sort(customAlphabeticalSort());
+    featuredShowsDataMerged.sort(customAlphabeticalSort());
+    featuredShowsDataMerged.forEach((show) => {
         // Get the id from the allShowsData
         const match = allShowsData.find((item) => item.slug === show.slug);
         if (match) {
@@ -120,7 +125,7 @@ export default defineEventHandler(async (event) => {
     });
     res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
     return {
-        all: allShowsData,
-        featuredShows: featuredShowsData
+        all: allShowsDataMerged,
+        featuredShows: featuredShowsDataMerged
     }
 });
