@@ -156,7 +156,7 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
     body: article.body,
     rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
-
+    hasAudio: article.audio ? true : false,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -196,7 +196,7 @@ export async function normalizeWagtailListItem(article: Record<string, any | und
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
-
+    hasAudio: article.audio ? true : false,
     // for comments
     estimatedDuration: undefined,
     sortDate: article.sortDate,
@@ -270,7 +270,7 @@ export async function normalizePublisherPage(article: Record<string, any | undef
     body: article.attributes.body,
     rawBody: article.attributes.body,
     audio: article.attributes.audio,
-
+    hasAudio: article.attributes.audio ? true : false,
     // curated images
     listingImage: article.attributes.imageMain, // This may need tweaking
     socialImage: article.attributes.imageMain, // This may need tweaking
@@ -328,6 +328,7 @@ export async function normalizePublisherListItem(article: Record<string, any | u
     url: article.attributes.url,
     rawBody: article.attributes.body,
     audio: article.attributes.audio,
+    hasAudio: article.attributes.audio ? true : false,
     estimatedDuration: duration,
     show: article.attributes.show,
     showTitle: article.attributes.showTitle,
@@ -421,7 +422,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
   let index = 0;
   for (const layoutItem of Object.values(article.layout)) {
     const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
-    //console.log('article.assets[layoutId].profiles[0]?.href= ', article.assets[layoutId].profiles[0]?.href)
+
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
       textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : '';
     }
@@ -497,6 +498,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
     audio: audioURL ? audioURL : null,
+    hasAudio: audioURL ? true : false,
     type: audioURL ? mediaTypes.NPR_EPISODE : mediaTypes.NPR_ARTICLE,
     estimatedDuration: audioDuration ? audioDuration : null,
     meta: {
