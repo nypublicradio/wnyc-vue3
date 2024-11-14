@@ -83,7 +83,6 @@ export class NPR {
     async hasAudio(id) {
         try {
             const res = await this.getFromNPR(`documents?collectionIds=${id}`)
-            console.log(id)
             for (const item of res.data.resources) {
                 for (const asset of Object.values(item?.assets)) {
                     if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
