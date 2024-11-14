@@ -62,6 +62,7 @@ export interface ArticlePage extends Page {
   body?: StreamfieldBlock[] | string
   rawBody?: string
   audio?: string
+  hasAudio?: boolean
   estimatedDuration?: number
   authors?: Author[]
   relatedAuthors?: Author[]
