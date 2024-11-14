@@ -14,6 +14,10 @@ export class NPR {
     }
 
     async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
+        // if no ids are provided, return an empty array
+        if (!ids.length || !ids[0].length) {
+            return []
+        }
         // NPR CDS api has a document request limit of 20, so we may need to make multiple requests
         const deduplicatedIds = deduplicateArray(ids)
         const idBatches = []
@@ -75,6 +79,26 @@ export class NPR {
         }
         return null;
     }
+    // Check if the item has audio
+    async hasAudio(id) {
+        try {
+            const res = await this.getFromNPR(`documents?collectionIds=${id}`)
+            for (const item of res.data.resources) {
+                for (const asset of Object.values(item?.assets)) {
+                    if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
+                        if (asset.enclosures.length > 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (e) {
+            console.error('has NPR Audio error = ', e);
+            return null;
+        }
+    }
+
     // Fetch all segments for a episode and return audio array
     async findAudio(id, show, image = FALLBACKIMAGEEP) {
         const showTitle = show.resources[0].title
@@ -177,7 +201,7 @@ export class NPR {
     getCategoryId(item: { collections?: Array<{ rels: string[]; href: string }> }): string | undefined {
         // Get the category id from the first collection that has a topic or program relationship
         const categoryId = item.collections?.find(
-            (collection) => collection.rels.includes('topic') || collection.rels.includes('program')
+            (collection) => collection.rels.includes('topic') || collection.rels.includes('program') || collection.rels.includes('series')
         )?.href?.split('/')[3];
         return categoryId;
     }

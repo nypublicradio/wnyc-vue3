@@ -298,7 +298,9 @@ onMounted(() => {
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <EpisodeItem
-                v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0"
+                v-if="
+                  ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
+                "
                 :data="ep"
                 @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
                 :fallback-image="getEpisodeFallBackImage()"
