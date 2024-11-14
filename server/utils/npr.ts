@@ -79,6 +79,26 @@ export class NPR {
         }
         return null;
     }
+    // Check if the item has audio
+    async hasAudio(id) {
+        try {
+            const res = await this.getFromNPR(`documents?collectionIds=${id}`)
+            for (const item of res.data.resources) {
+                for (const asset of Object.values(item?.assets)) {
+                    if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
+                        if (asset.enclosures.length > 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (e) {
+            console.error('has NPR Audio error = ', e);
+            return null;
+        }
+    }
+
     // Fetch all segments for a episode and return audio array
     async findAudio(id, show, image = FALLBACKIMAGEEP) {
         const showTitle = show.resources[0].title

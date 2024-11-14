@@ -30,6 +30,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
     let episodes = [];
     episodes = await Promise.all(res.data.resources.map(async (item) => {
         const episodeImage = await npr.findEpisodeImage(item, 'image-square');
+        const hasAudio = await npr.hasAudio(item.id);
         return {
             id: item.id,
             title: item.title,
@@ -47,6 +48,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
             imageMain: { FALLBACKIMAGE },
             image: episodeImage,
             url: item.webPages[0]?.href,
+            hasAudio,
         };
     }));
 
