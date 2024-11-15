@@ -143,17 +143,15 @@ const addListeners = async () => {
   // this is for deep links
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
-    alert("App opened with URL: " + JSON.stringify(event))
-    //when redirected to the app from a deep link, we need to exchange the url parame code for a session
-    const code = event.url.split("=")[1]
-    // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
-    const cleanCode = code.replace("#", "")
-    //console.log("code = ", code)
+    //alert("App opened with URL: " + JSON.stringify(event))
 
-    // function that removes the "https://native-app.wnyc.org" from  "https://native-app.wnyc.org/story/161611?src=wagtail"
     if (!event.url.startsWith("http")) {
       //if the url has a query var "code" then we need to exchange it for a session
       if (event.url.includes("code=")) {
+        //when redirected to the app from a deep link, we need to exchange the url parame code for a session
+        const code = event.url.split("=")[1]
+        // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
+        const cleanCode = code.replace("#", "")
         try {
           await client.auth.exchangeCodeForSession(cleanCode)
           navigateTo("/")
@@ -179,30 +177,6 @@ const addListeners = async () => {
     }
     // if the url is a link to a web page, then open it in a new tab
     window.open(event.url, "_blank")
-    // if (cleanCode) {
-    //   try {
-    //     await client.auth.exchangeCodeForSession(cleanCode)
-    //     //alert("route")
-    //     navigateTo("/")
-    //     //alert("refresh")
-    //     window.location.reload()
-    //   } catch (error) {
-    //     console.error(error)
-    //     toast.add({
-    //       severity: "error",
-    //       summary: "Authentication failed",
-    //       life: 6000,
-    //     })
-    //   }
-    // } else {
-    //   console.error("No code or wrong code in the auth event.url")
-    //   // show toast error
-    //   toast.add({
-    //     severity: "error",
-    //     summary: "Authentication failed",
-    //     life: 6000,
-    //   })
-    // }
   })
 }
 
