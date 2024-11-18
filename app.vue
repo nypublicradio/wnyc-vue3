@@ -27,6 +27,7 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
+import useOneSignal from "~/composables/useOneSignal"
 import OneSignal from "onesignal-cordova-plugin"
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
@@ -99,7 +100,7 @@ isNetworkConnected.value = initNewtworkStatus.connected
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   // Ask for notification permissions
-  await askNotificationPermisstions()
+  //await askNotificationPermisstions()
   // Ask for tracking permissions (iOS only)
   await askTrackingPermissions()
 
@@ -117,9 +118,10 @@ const addListeners = async () => {
   // Show us the notification payload if the app is open on our device
   await PushNotifications.addListener(
     "pushNotificationReceived",
-    (/* notification: PushNotificationSchema */) => {
+    // (/* notification: PushNotificationSchema */) => {
+    (notification) => {
       //nNotification.value = notification
-      //alert('Push received: ' + JSON.stringify(notification))
+      console.log("Push received: ", JSON.stringify(notification))
     }
   )
 
@@ -128,11 +130,11 @@ const addListeners = async () => {
     "pushNotificationActionPerformed",
     (notification: ActionPerformed) => {
       //nNotification.value = notification
-      //alert('Push action performed: ' + JSON.stringify(notification))
-      const slug = notification.notification.data.slug
-      if (slug) {
-        router.push(`/${slug}`)
-      }
+      console.log("Push action performed: ", JSON.stringify(notification))
+      // const slug = notification.notification.data.slug
+      // if (slug) {
+      //   router.push(`/${slug}`)
+      // }
     }
   )
   // fired when the app becomes active (ios only)
@@ -185,13 +187,13 @@ const checkAppLaunchUrl = async () => {
   const url = await App.getLaunchUrl()
   appLaunchUrl.value = url
   // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-  //alert("App opened with URL: " + JSON.stringify(url))
+  console.log("App opened with URL: ", JSON.stringify(url))
   // get data from UA
 }
 
 onMounted(async () => {
   await getAndSetUserProfile()
-
+  useOneSignal().test()
   if (isApp.value) {
     // init downloads files system for the app
     await initFileSystem()
@@ -204,22 +206,22 @@ onMounted(async () => {
 
     // OneSignal
 
+    OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
+
     let myClickListener = async function (event) {
-      let notificationData = JSON.stringify(event)
-      console.log("OneSignal notification clicked: ", notificationData)
+      console.log("OneSignal notification clicked: ", event)
+      console.log("OneSignal route: ", event.additionalData.route)
     }
     OneSignal.Notifications.addEventListener("click", myClickListener)
 
     let inAppClickListener = async function (event) {
-      let clickData = JSON.stringify(event)
-      console.log("OneSignal In-App Message Clicked: " + clickData)
+      console.log("OneSignal In-App Message Clicked: " + event)
     }
     OneSignal.InAppMessages.addEventListener("click", inAppClickListener)
     // OneSignal.Notifications.requestPermission(true).then((accepted: boolean) => {
     //   console.log("User accepted notifications: " + accepted);
     // });
     //OneSignal.setConsentRequired(false);
-    OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
 
     // the request is already happening in the askNotificationPermisstions() function, which uses the capacitor Notification plugin.
     //OneSignal.Notifications.requestPermission()
