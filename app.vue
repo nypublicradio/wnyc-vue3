@@ -143,7 +143,7 @@ const addListeners = async () => {
   // this is for deep links
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
-    //alert("App opened with URL: " + JSON.stringify(event))
+    console.log("appUrlOpen App opened with URL: ", JSON.stringify(event))
 
     if (!event.url.startsWith("http")) {
       //if the url has a query var "code" then we need to exchange it for a session
@@ -206,15 +206,23 @@ onMounted(async () => {
 
     let myClickListener = async function (event) {
       let notificationData = JSON.stringify(event)
-      alert("OneSignal notification clicked: " + notificationData)
+      console.log("OneSignal notification clicked: ", notificationData)
     }
     OneSignal.Notifications.addEventListener("click", myClickListener)
+
+    let inAppClickListener = async function (event) {
+      let clickData = JSON.stringify(event)
+      console.log("OneSignal In-App Message Clicked: " + clickData)
+    }
+    OneSignal.InAppMessages.addEventListener("click", inAppClickListener)
     // OneSignal.Notifications.requestPermission(true).then((accepted: boolean) => {
     //   console.log("User accepted notifications: " + accepted);
     // });
     //OneSignal.setConsentRequired(false);
     OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
-    OneSignal.Notifications.requestPermission()
+
+    // the request is already happening in the askNotificationPermisstions() function, which uses the capacitor Notification plugin.
+    //OneSignal.Notifications.requestPermission()
     //OneSignal.User.addEmail("example@domain.com");
     //OneSignal.User.addTags({key: "supabase_id", key2: "value2"});
     //OneSignal.User.addTags({"KEY_01": "VALUE_01", "KEY_02": "VALUE_02"});
