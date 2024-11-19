@@ -48,7 +48,7 @@ import {
 import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
-
+import useOneSignal from "~/composables/useOneSignal"
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
@@ -740,6 +740,9 @@ export const getAndSetUserProfile = async () => {
       } else {
         // if they are a user, get their profile data
         await getProfile()
+        // One Signal login
+        useOneSignal().login()
+
         // get the device id if it's an app and not a browser
         if (isApp.value) {
           await initDeviceId()
@@ -1134,6 +1137,9 @@ export const logOutUser = async () => {
 
   // clear the local storage
   await Preferences.clear()
+
+  // logout of OneSignal
+  useOneSignal().logout()
 
   getAndSetUserProfile()
 }

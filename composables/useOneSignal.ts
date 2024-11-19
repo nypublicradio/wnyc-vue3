@@ -78,11 +78,32 @@ export default function useOneSignal() {
     OneSignal.User.addTags({ "salesforce_id": salesforceId, "supabase_id": supabaseId });
 
 
-    // update Supabase with oneSignalId & oneSignalSubscriptionId
+    // update Supabase profile with oneSignalId & oneSignalSubscriptionId (push to array)
+    const client = useSupabaseClient()
+    const { data: profile } = await client
+      .from("profiles")
+      .select("one_signal_subscription_ids")
+      .eq("id", currentUser.value.id)
+      .single()
 
-    //4b388803-e743-4e96-8ab2-7b54cf7e6ac6
+    console.log('profile.one_signal_subscription_ids = ', profile.one_signal_subscription_ids)
+
+    let subscriptionIds = profile.one_signal_subscription_ids || []
+
+    if (!subscriptionIds.includes(oneSignalSubscriptionId)) {
+      subscriptionIds.push(oneSignalSubscriptionId)
+    }
+
+    await client
+      .from("profiles")
+      .update({
+        onesignal_id: oneSignalId,
+        one_signal_subscription_ids: subscriptionIds
+      })
+      .match({ id: currentUser.value.id })
 
   }
+
   async function logout() {
     await OneSignal.logout();
   }

@@ -10,7 +10,6 @@ const localUserProfileDefault: object = {
     text_size: 'Normal',
     dark_mode: false,
     sleep_timer: 90,
-    onesignal_id: null,
 }
 /**
  * Global state for the settings data
