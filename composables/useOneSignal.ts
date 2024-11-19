@@ -12,10 +12,25 @@ export default function useOneSignal() {
   const notificationClickListener = async function (event) {
     console.log("OneSignal notification clicked: ", event)
     console.log("OneSignal route: ", event.additionalData.route)
+    if (event.additionalData.route) {
+      navigateTo(event.additionalData.route)
+    }
   }
 
   const inAppNotificationClickListener = async function (event) {
     console.log("OneSignal In-App Message Clicked: " + event)
+
+    if (!event.url.startsWith("http")) {
+      // deep link
+      const url = event.url.replace(/^.*?\/\/.*?\//, "/")
+      //alert("url = " + url)
+      navigateTo(url)
+      return
+    }
+
+    // if the url is a link to a web page, then open it in a new tab
+    window.open(event.url, "_blank")
+
   }
 
   const notificationPermissionListener = async (accepted) => {
