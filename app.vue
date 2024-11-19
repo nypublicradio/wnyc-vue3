@@ -193,7 +193,7 @@ const checkAppLaunchUrl = async () => {
 
 onMounted(async () => {
   await getAndSetUserProfile()
-  useOneSignal().test()
+
   if (isApp.value) {
     // init downloads files system for the app
     await initFileSystem()
@@ -205,19 +205,8 @@ onMounted(async () => {
     await initLocalNotifications()
 
     // OneSignal
+    useOneSignal().init()
 
-    OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
-
-    let myClickListener = async function (event) {
-      console.log("OneSignal notification clicked: ", event)
-      console.log("OneSignal route: ", event.additionalData.route)
-    }
-    OneSignal.Notifications.addEventListener("click", myClickListener)
-
-    let inAppClickListener = async function (event) {
-      console.log("OneSignal In-App Message Clicked: " + event)
-    }
-    OneSignal.InAppMessages.addEventListener("click", inAppClickListener)
     // OneSignal.Notifications.requestPermission(true).then((accepted: boolean) => {
     //   console.log("User accepted notifications: " + accepted);
     // });
