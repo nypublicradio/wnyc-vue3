@@ -28,7 +28,6 @@ import { useToast } from "primevue/usetoast"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
-import OneSignal from "onesignal-cordova-plugin"
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
 initFeatureSessionCount()
@@ -105,38 +104,38 @@ const addListeners = async () => {
   await askTrackingPermissions()
 
   // On success, we should be able to receive notifications
-  await PushNotifications.addListener("registration", (token: Token) => {
-    fcmToken.value = token.value
-    //alert('Push registration success, token: ' + token.value)
-  })
+  // await PushNotifications.addListener("registration", (token: Token) => {
+  //   fcmToken.value = token.value
+  //   //alert('Push registration success, token: ' + token.value)
+  // })
 
-  // Some issue with our setup and push will not work
-  await PushNotifications.addListener("registrationError", (/* error: any */) => {
-    //alert('Error on registration: ' + JSON.stringify(error))
-  })
+  // // Some issue with our setup and push will not work
+  // await PushNotifications.addListener("registrationError", (/* error: any */) => {
+  //   //alert('Error on registration: ' + JSON.stringify(error))
+  // })
 
-  // Show us the notification payload if the app is open on our device
-  await PushNotifications.addListener(
-    "pushNotificationReceived",
-    // (/* notification: PushNotificationSchema */) => {
-    (notification) => {
-      //nNotification.value = notification
-      console.log("Push received: ", JSON.stringify(notification))
-    }
-  )
+  // // Show us the notification payload if the app is open on our device
+  // await PushNotifications.addListener(
+  //   "pushNotificationReceived",
+  //   // (/* notification: PushNotificationSchema */) => {
+  //   (notification) => {
+  //     //nNotification.value = notification
+  //     console.log("Push received: ", JSON.stringify(notification))
+  //   }
+  // )
 
-  // Method called when tapping on a local notification
-  await PushNotifications.addListener(
-    "pushNotificationActionPerformed",
-    (notification: ActionPerformed) => {
-      //nNotification.value = notification
-      console.log("Push action performed: ", JSON.stringify(notification))
-      // const slug = notification.notification.data.slug
-      // if (slug) {
-      //   router.push(`/${slug}`)
-      // }
-    }
-  )
+  // // Method called when tapping on a local notification
+  // await PushNotifications.addListener(
+  //   "pushNotificationActionPerformed",
+  //   (notification: ActionPerformed) => {
+  //     //nNotification.value = notification
+  //     console.log("Push action performed: ", JSON.stringify(notification))
+  //     // const slug = notification.notification.data.slug
+  //     // if (slug) {
+  //     //   router.push(`/${slug}`)
+  //     // }
+  //   }
+  // )
   // fired when the app becomes active (ios only)
   await App.addListener("appStateChange", (/* { isActive } */) => {
     //alert("App state changed. ", JSON.stringify(isActive))
