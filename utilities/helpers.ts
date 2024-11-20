@@ -1067,17 +1067,19 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 
 // handles the permissions for push & local notifications
 export const askNotificationPermisstions = async () => {
-  const currentUserProfile = useCurrentUserProfile()
-  await PushNotifications.requestPermissions().then((result) => {
-    //alert('push request' + JSON.stringify(result))
-    if (result.receive === "granted") {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      currentUserProfile.value.receive_general_notifications = true
-    } else {
-      currentUserProfile.value.receive_general_notifications = false
-    }
-  })
+  useOneSignal().requestNotificationPermission()
+
+  // const currentUserProfile = useCurrentUserProfile()
+  // await PushNotifications.requestPermissions().then((result) => {
+  //   //alert('push request' + JSON.stringify(result))
+  //   if (result.receive === "granted") {
+  //     // Register with Apple / Google to receive push via APNS/FCM
+  //     PushNotifications.register()
+  //     currentUserProfile.value.receive_general_notifications = true
+  //   } else {
+  //     currentUserProfile.value.receive_general_notifications = false
+  //   }
+  // })
 }
 
 // handles iOS asking permission for tracking

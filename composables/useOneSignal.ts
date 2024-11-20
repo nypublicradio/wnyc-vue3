@@ -3,6 +3,7 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
 } from "~/composables/states"
+import { PushNotifications } from "@capacitor/push-notifications"
 
 export default function useOneSignal() {
 
@@ -31,6 +32,70 @@ export default function useOneSignal() {
     }
   }
 
+  const setSalesForceId = async () => {
+    const tags = await OneSignal.User.getTags();
+    console.log('tags = ', tags)
+    if (tags.salesforce_id) return
+    console.log('salesforce_id not found in tags')
+    const currentUser = useCurrentUser()
+    const client = useSupabaseClient()
+    const { data: profile } = await client
+      .from("profiles")
+      .select("salesforce_id")
+      .eq("id", currentUser.value.id)
+      .single()
+
+    // if the salesforce_id is set, then update OneSignal with the salesforce_id
+    const salesforceId = profile.salesforce_id
+    if (salesforceId) {
+      await OneSignal.User.addTags({ "salesforce_id": salesforceId });
+    }
+  }
+
+  const setOneSignalId = async () => {
+    const currentUser = useCurrentUser()
+    oneSignalId = await OneSignal.User.getOnesignalId()
+    console.log('oneSignalId = ', oneSignalId)
+    const client = useSupabaseClient()
+    await client
+      .from("profiles")
+      .update({
+        onesignal_id: oneSignalId,
+      })
+      .match({ id: currentUser.value.id })
+  }
+
+  const setSubscriptions = async () => {
+    const currentUser = useCurrentUser()
+    // update Supabase profile with oneSignalSubscriptionId (push to array)
+    const client = useSupabaseClient()
+    const { data: profile } = await client
+      .from("profiles")
+      .select("one_signal_subscription_ids")
+      .eq("id", currentUser.value.id)
+      .single()
+
+    oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync();
+    console.log('oneSignalSubscriptionId = ', oneSignalSubscriptionId)
+
+    console.log('profile.one_signal_subscription_ids = ', profile.one_signal_subscription_ids)
+
+    let subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
+
+    if (!subscriptionIds.includes(oneSignalSubscriptionId)) {
+      subscriptionIds.push(oneSignalSubscriptionId)
+
+      console.log('subscriptionIds = ', subscriptionIds)
+
+      await client
+        .from("profiles")
+        .update({
+          one_signal_subscription_ids: subscriptionIds,
+        })
+        .match({ id: currentUser.value.id })
+    }
+  }
+
   const notificationClickListener = async function (event) {
     console.log("OneSignal notification clicked: ", event)
     console.log("OneSignal additionalData: ", event.notification.additionalData)
@@ -48,6 +113,8 @@ export default function useOneSignal() {
     if (accepted) {
       // Register with Apple / Google to receive push via APNS/FCM
       currentUserProfile.value.receive_general_notifications = true
+      // legacy code
+      PushNotifications.register()
     } else {
       currentUserProfile.value.receive_general_notifications = false
     }
@@ -55,15 +122,18 @@ export default function useOneSignal() {
   }
 
   const pushSubscriptionListener = (event) => {
-    console.log("Push subscription changed: ", (event));
+    console.log("Push subscription changed: ", event);
+  };
+
+  const userListener = async (event) => {
+    console.log("user listener: ", event);
+    setOneSignalId()
   };
 
   async function init() {
     const config = useRuntimeConfig()
 
     await OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
-
-
 
     await OneSignal.Notifications.addEventListener("click", notificationClickListener)
 
@@ -73,6 +143,7 @@ export default function useOneSignal() {
 
     await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener);
 
+    await OneSignal.User.addEventListener("change", userListener);
   }
 
   async function requestNotificationPermission() {
@@ -91,46 +162,18 @@ export default function useOneSignal() {
     // log in to OneSignal with Salesforce ID
     await OneSignal.login(supabaseId);
 
-    oneSignalId = await OneSignal.User.getOnesignalId()
-    console.log('oneSignalId = ', oneSignalId)
-    oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync();
-    console.log('oneSignalSubscriptionId = ', oneSignalSubscriptionId)
-
-    console.log('OneSignal.User.getExternalId() = ', await OneSignal.User.getExternalId())
-
     // add email to One Signal
     await OneSignal.User.addEmail(currentUser.value.email);
 
-    // add Salesforce id to One Signal
-    await OneSignal.User.addTags({ /* "salesforce_id": salesforceId, */ "supabase_id": supabaseId });
+    // check for salesforce_id and update OneSignal
+    setSalesForceId()
 
+    // check subscriptions and update Supabase profile
+    setSubscriptions()
 
-    // update Supabase profile with oneSignalId & oneSignalSubscriptionId (push to array)
-    const client = useSupabaseClient()
-    const { data: profile } = await client
-      .from("profiles")
-      .select("one_signal_subscription_ids")
-      .eq("id", currentUser.value.id)
-      .single()
-
-    console.log('profile.one_signal_subscription_ids = ', profile.one_signal_subscription_ids)
-
-    let subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
-
-    if (!subscriptionIds.includes(oneSignalSubscriptionId)) {
-      subscriptionIds.push(oneSignalSubscriptionId)
-    }
-
-    console.log('subscriptionIds = ', subscriptionIds)
-
-    await client
-      .from("profiles")
-      .update({
-        onesignal_id: oneSignalId,
-        one_signal_subscription_ids: subscriptionIds
-      })
-      .match({ id: currentUser.value.id })
-
+    // add/update name, email, phone to OneSignal tags
+    // NEED TO WAIT FOR FULL PAID ACCOUNT for more than 2 tags
+    //await OneSignal.User.addTags({ "email": currentUser.value.email || null, "name": currentUser.value.user_metadata.full_name || null, "phone": currentUser.value.phone || null });
   }
 
   async function logout() {
