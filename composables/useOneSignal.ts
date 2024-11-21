@@ -3,6 +3,9 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
 } from "~/composables/states"
+import {
+  trackClickEvent,
+} from "~/utilities/helpers"
 //import { PushNotifications } from "@capacitor/push-notifications"
 
 export default function useOneSignal() {
@@ -11,6 +14,7 @@ export default function useOneSignal() {
   let oneSignalId: string = null
 
   const linkOrRouteOrAction = (event) => {
+    console.log('notification event', event)
     const url = event.result.url
     const action = event.result.actionId
     if (url) {
@@ -18,16 +22,33 @@ export default function useOneSignal() {
         // deep link
         const route = url.replace(/^.*?\/\/.*?\//, "/")
         //alert("url = " + url)
+
+        trackClickEvent(
+          "Deep link",
+          "Notification",
+          `url = ${event.result.url}`
+        )
+
         navigateTo(route)
         return
       }
 
       // if the url is a link to a web page, then open it in a new tab
+      trackClickEvent(
+        "Link",
+        "Notification",
+        `url = ${event.result.url}`
+      )
       window.open(url, "_blank")
     }
 
     if (action) {
       // I would imagine that we would set and share action IDs to the team and react accordingly here
+      trackClickEvent(
+        "Action",
+        "Notification",
+        `action = ${action}`
+      )
       //doActionId(actionId)
     }
   }
