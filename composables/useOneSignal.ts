@@ -3,7 +3,7 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
 } from "~/composables/states"
-import { PushNotifications } from "@capacitor/push-notifications"
+//import { PushNotifications } from "@capacitor/push-notifications"
 
 export default function useOneSignal() {
 
@@ -34,9 +34,9 @@ export default function useOneSignal() {
 
   const setSalesForceId = async () => {
     const tags = await OneSignal.User.getTags();
-    console.log('tags = ', tags)
+    //console.log('tags = ', tags)
     if (tags.salesforce_id) return
-    console.log('salesforce_id not found in tags')
+    //console.log('salesforce_id not found in tags')
     const currentUser = useCurrentUser()
     const client = useSupabaseClient()
     const { data: profile } = await client
@@ -55,7 +55,7 @@ export default function useOneSignal() {
   const setOneSignalId = async () => {
     const currentUser = useCurrentUser()
     oneSignalId = await OneSignal.User.getOnesignalId()
-    console.log('oneSignalId = ', oneSignalId)
+    //console.log('oneSignalId = ', oneSignalId)
     const client = useSupabaseClient()
     await client
       .from("profiles")
@@ -76,9 +76,9 @@ export default function useOneSignal() {
       .single()
 
     oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync();
-    console.log('oneSignalSubscriptionId = ', oneSignalSubscriptionId)
+    //console.log('oneSignalSubscriptionId = ', oneSignalSubscriptionId)
 
-    console.log('profile.one_signal_subscription_ids = ', profile.one_signal_subscription_ids)
+    //console.log('profile.one_signal_subscription_ids = ', profile.one_signal_subscription_ids)
 
     let subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
 
@@ -97,13 +97,13 @@ export default function useOneSignal() {
   }
 
   const notificationClickListener = async function (event) {
-    console.log("OneSignal notification clicked: ", event)
-    console.log("OneSignal additionalData: ", event.notification.additionalData)
+    //console.log("OneSignal notification clicked: ", event)
+    //console.log("OneSignal additionalData: ", event.notification.additionalData)
     linkOrRouteOrAction(event)
   }
 
   const inAppNotificationClickListener = async function (event) {
-    console.log("OneSignal In-App Message Clicked: ", event)
+    //console.log("OneSignal In-App Message Clicked: ", event)
     linkOrRouteOrAction(event)
   }
 
@@ -114,11 +114,11 @@ export default function useOneSignal() {
       // Register with Apple / Google to receive push via APNS/FCM
       currentUserProfile.value.receive_general_notifications = true
       // legacy code
-      PushNotifications.register()
+      //PushNotifications.register()
     } else {
       currentUserProfile.value.receive_general_notifications = false
     }
-    console.log("notifications changed: ", accepted);
+    //console.log("notifications changed: ", accepted);
   }
 
   const pushSubscriptionListener = (event) => {
@@ -126,14 +126,17 @@ export default function useOneSignal() {
   };
 
   const userListener = async (event) => {
-    console.log("user listener: ", event);
+    //console.log("user listener: ", event);
     setOneSignalId()
   };
 
   async function init() {
     const config = useRuntimeConfig()
 
+    await OneSignal.setConsentRequired(false);
+    await OneSignal.setConsentGiven(true)
     await OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
+    await OneSignal.InAppMessages.setPaused(false);
 
     await OneSignal.Notifications.addEventListener("click", notificationClickListener)
 
@@ -151,9 +154,10 @@ export default function useOneSignal() {
   }
 
   async function login() {
-    console.log('login()')
     const currentUser = useCurrentUser()
-    console.log('currentUser.value = ', currentUser.value)
+    const currentUserProfile = useCurrentUserProfile()
+    // console.log('currentUser.value = ', currentUser.value)
+    // console.log('currentUserProfile.value = ', currentUserProfile.value)
 
     if (!currentUser?.value) return
 
@@ -164,6 +168,7 @@ export default function useOneSignal() {
 
     // add email to One Signal
     await OneSignal.User.addEmail(currentUser.value.email);
+    await OneSignal.User.addSms(currentUserProfile.value.phone);
 
     // check for salesforce_id and update OneSignal
     setSalesForceId()
@@ -171,9 +176,8 @@ export default function useOneSignal() {
     // check subscriptions and update Supabase profile
     setSubscriptions()
 
-    // add/update name, email, phone to OneSignal tags
-    // NEED TO WAIT FOR FULL PAID ACCOUNT for more than 2 tags
-    //await OneSignal.User.addTags({ "email": currentUser.value.email || null, "name": currentUser.value.user_metadata.full_name || null, "phone": currentUser.value.phone || null });
+    // add/update name, to OneSignal tags
+    //await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name || null });
   }
 
   async function logout() {

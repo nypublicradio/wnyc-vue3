@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import {
   getAndSetUserProfile,
-  askNotificationPermisstions,
+  //askNotificationPermisstions,
   askTrackingPermissions,
 } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
-import {
-  //PushNotificationSchema,
-  PushNotifications,
-} from "@capacitor/push-notifications"
-import type { ActionPerformed, Token } from "@capacitor/push-notifications"
+//import { //PushNotificationSchema, PushNotifications, } from "@capacitor/push-notifications"
+//import type { ActionPerformed, Token } from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
@@ -98,8 +95,9 @@ isNetworkConnected.value = initNewtworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  // Ask for notification permissions
+  // Ask for notification permissions (handled by OneSignal now)
   //await askNotificationPermisstions()
+
   // Ask for tracking permissions (iOS only)
   await askTrackingPermissions()
 
@@ -171,66 +169,29 @@ const addListeners = async () => {
 }
 
 // get the URL the app was loaded from (if any)
-const checkAppLaunchUrl = async () => {
-  const url = await App.getLaunchUrl()
-  appLaunchUrl.value = url
-  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-  console.log("App opened with URL: ", JSON.stringify(url))
-  // get data from UA
-}
+// const checkAppLaunchUrl = async () => {
+//   const url = await App.getLaunchUrl()
+//   appLaunchUrl.value = url
+//   console.log("App opened with URL: ", JSON.stringify(url))
+//   // get data from UA
+// }
 
 onMounted(async () => {
   await getAndSetUserProfile()
 
   if (isApp.value) {
-    // init downloads files system for the app
     await initFileSystem()
-
     await addListeners()
-    // if APP then add listeners
-    await checkAppLaunchUrl()
-    // init local notifications
+    //await checkAppLaunchUrl()
     await initLocalNotifications()
 
     // OneSignal
     useOneSignal().init()
-
-    // OneSignal.Notifications.requestPermission(true).then((accepted: boolean) => {
-    //   console.log("User accepted notifications: " + accepted);
-    // });
-    //OneSignal.setConsentRequired(false);
-
-    // the request is already happening in the askNotificationPermisstions() function, which uses the capacitor Notification plugin.
-    //OneSignal.Notifications.requestPermission()
-    //OneSignal.User.addEmail("example@domain.com");
-    //OneSignal.User.addTags({key: "supabase_id", key2: "value2"});
-    //OneSignal.User.addTags({"KEY_01": "VALUE_01", "KEY_02": "VALUE_02"});
-
-    // const getTags = async () => {
-    //   const tags = await OneSignal.User.getTags();
-    //   console.log('Tags:', tags);
-    // };
-
-    //OneSignal.login("external_id");
-    //OneSignal.logout();
-    //OneSignal.User.getOnesignalId();
-    //OneSignal.User.getExternalId();
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
-      // update user profile when coming back from  the system settings
-      if (isApp.value) {
-        await PushNotifications.checkPermissions().then((result) => {
-          if (result.receive === "denied") {
-            currentUserProfile.value.receive_general_notifications = false
-          }
-          if (result.receive === "granted") {
-            currentUserProfile.value.receive_general_notifications = true
-          }
-        })
-      }
       // refresh stream only
       refreshData(true)
     }
