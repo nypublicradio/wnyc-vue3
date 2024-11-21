@@ -5,6 +5,7 @@ import {
 } from "~/composables/states"
 import {
   trackClickEvent,
+  getPathAndQuery,
 } from "~/utilities/helpers"
 //import { PushNotifications } from "@capacitor/push-notifications"
 
@@ -18,15 +19,15 @@ export default function useOneSignal() {
     const url = event.result.url
     const action = event.result.actionId
     if (url) {
-      if (!url.startsWith("http")) {
+      if (url.includes("native-app.wnyc.org")) {
         // deep link
-        const route = url.replace(/^.*?\/\/.*?\//, "/")
-        //alert("url = " + url)
+        const route = getPathAndQuery(url)
+        console.log("route = ", route)
 
         trackClickEvent(
           "Deep link",
           "Notification",
-          `url = ${event.result.url}`
+          `url = ${url}`
         )
 
         navigateTo(route)
@@ -37,7 +38,7 @@ export default function useOneSignal() {
       trackClickEvent(
         "Link",
         "Notification",
-        `url = ${event.result.url}`
+        `url = ${url}`
       )
       window.open(url, "_blank")
     }

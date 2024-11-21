@@ -1209,3 +1209,14 @@ export const customAlphabeticalSort = (key = 'title') => {
 export const deduplicateArray = (array) => {
   return [...new Set(array)];
 }
+
+
+export function getPathAndQuery(urlString) {
+  try {
+    const url = new URL(urlString);
+    return `${url.pathname}${url.search}`;
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
+  }
+}
