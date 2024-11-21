@@ -19,7 +19,7 @@ export default function useOneSignal() {
     const url = event.result.url
     const action = event.result.actionId
     if (url) {
-      if (url.includes("native-app.wnyc.org")) {
+      if (!url.includes("https://") {
         // deep link
         const route = getPathAndQuery(url)
         console.log("route = ", route)
@@ -40,7 +40,8 @@ export default function useOneSignal() {
         "Notification",
         `url = ${url}`
       )
-      window.open(url, "_blank")
+      // the link opens by its self
+      //window.open(url, "_blank")
     }
 
     if (action) {
