@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   getAndSetUserProfile,
-  //askNotificationPermisstions,
+  //askNotificationPermissions,
   askTrackingPermissions,
 } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
@@ -96,10 +96,10 @@ isNetworkConnected.value = initNewtworkStatus.connected
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   // Ask for notification permissions (handled by OneSignal now)
-  //await askNotificationPermisstions()
+  //await askNotificationPermissions()
 
-  // Ask for tracking permissions (iOS only)
-  await askTrackingPermissions()
+  // Ask for tracking permissions (iOS only, handled by OneSignal now)
+  //await askTrackingPermissions()
 
   // On success, we should be able to receive notifications
   // await PushNotifications.addListener("registration", (token: Token) => {

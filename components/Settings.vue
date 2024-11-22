@@ -5,7 +5,7 @@ import {
   getYear,
   setFontSize,
   setDarkMode,
-  toggleAskNotificationPermisstions,
+  toggleAskNotificationPermissions,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -15,7 +15,7 @@ import {
   useEditProfileSideBar,
   useIsLiveStream,
   useIsApp,
-  useAccountDeleteSideBar
+  useAccountDeleteSideBar,
 } from "~/composables/states.ts"
 import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
@@ -177,7 +177,7 @@ const clickThisId = (id) => {
 
 // handles the notification switch change event
 const handleNotificationChange = async (e) => {
-  await toggleAskNotificationPermisstions(e)
+  await toggleAskNotificationPermissions(e)
   trackClickEvent(
     "Click Tracking - General switch",
     "Settings Sidebar - Notifications",
@@ -187,7 +187,10 @@ const handleNotificationChange = async (e) => {
 
 // handle the delete account sidebar when the user clicks on the delete account link
 const onDeleteAccountClick = () => {
-  trackClickEvent("Click Tracking - delete account", "Delete Account Sidebar - user section")
+  trackClickEvent(
+    "Click Tracking - delete account",
+    "Delete Account Sidebar - user section"
+  )
   accountDeleteSideBar.value = true
 }
 </script>
@@ -211,8 +214,12 @@ const onDeleteAccountClick = () => {
       >
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
-      <SBox label="Email" @click="editField('email')" :clickable="!isDisabled"
-      :ripple="!isDisabled">
+      <SBox
+        label="Email"
+        @click="editField('email')"
+        :clickable="!isDisabled"
+        :ripple="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
       <SBox

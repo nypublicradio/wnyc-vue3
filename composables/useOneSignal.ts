@@ -6,7 +6,9 @@ import {
 import {
   trackClickEvent,
   getPathAndQuery,
+  askTrackingPermissions,
 } from "~/utilities/helpers"
+import { Capacitor } from "@capacitor/core"
 //import { PushNotifications } from "@capacitor/push-notifications"
 
 export default function useOneSignal() {
@@ -59,7 +61,7 @@ export default function useOneSignal() {
         "Notification",
         `action = ${action}`
       )
-      //doActionId(actionId)
+      doActionId(action)
     }
   }
 
@@ -139,6 +141,7 @@ export default function useOneSignal() {
   }
 
   const notificationPermissionListener = async (accepted) => {
+    alert('permission change')
     const currentUserProfile = useCurrentUserProfile()
 
     if (accepted) {
@@ -160,6 +163,10 @@ export default function useOneSignal() {
     //console.log("user listener: ", event);
     setOneSignalId()
   };
+
+  const checkPermissions = async () => {
+    return await OneSignal.Notifications.getPermissionAsync();
+  }
 
   async function init() {
     const config = useRuntimeConfig()
@@ -215,5 +222,18 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { init, requestNotificationPermission, login, logout }
+  const doActionId = async (actionId) => {
+    console.log('actionId = ', actionId)
+    switch (actionId) {
+      case "tracking-permission":
+        await askTrackingPermissions()
+        break
+      case "action2":
+        // do something
+        break
+
+    }
+  }
+
+  return { init, requestNotificationPermission, checkPermissions, login, logout }
 }

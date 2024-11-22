@@ -1066,20 +1066,8 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 }
 
 // handles the permissions for push & local notifications
-export const askNotificationPermisstions = async () => {
+export const askNotificationPermissions = async () => {
   useOneSignal().requestNotificationPermission()
-
-  // const currentUserProfile = useCurrentUserProfile()
-  // await PushNotifications.requestPermissions().then((result) => {
-  //   //alert('push request' + JSON.stringify(result))
-  //   if (result.receive === "granted") {
-  //     // Register with Apple / Google to receive push via APNS/FCM
-  //     PushNotifications.register()
-  //     currentUserProfile.value.receive_general_notifications = true
-  //   } else {
-  //     currentUserProfile.value.receive_general_notifications = false
-  //   }
-  // })
 }
 
 // handles iOS asking permission for tracking
@@ -1105,14 +1093,14 @@ export const askTrackingPermissions = async () => {
 }
 
 // handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
-export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
+export const toggleAskNotificationPermissions = async (isEnabled = true) => {
   await nextTick()
   const permStatus = await PushNotifications.checkPermissions()
   if (
     isEnabled === true &&
     (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")
   ) {
-    askNotificationPermisstions()
+    askNotificationPermissions()
   } else {
     toSystemSettings()
   }
