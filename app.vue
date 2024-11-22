@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import {
-  getAndSetUserProfile,
-  //askNotificationPermissions,
-  askTrackingPermissions,
-} from "~/utilities/helpers"
+import { getAndSetUserProfile } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
-//import { //PushNotificationSchema, PushNotifications, } from "@capacitor/push-notifications"
-//import type { ActionPerformed, Token } from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
@@ -32,7 +26,6 @@ initFeatureSessionCount()
 const toast = useToast()
 
 const route = useRoute()
-const router = useRouter()
 const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
 const currentEpisode = useCurrentEpisode()
@@ -42,11 +35,8 @@ const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
 
-const fcmToken = ref("")
-//const nNotification = ref(null)
-const appLaunchUrl = ref(null)
-
 isApp.value = Capacitor.getPlatform() !== "web"
+
 useHead({
   htmlAttrs: {
     lang: "en",
@@ -95,45 +85,6 @@ isNetworkConnected.value = initNewtworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  // Ask for notification permissions (handled by OneSignal now)
-  //await askNotificationPermissions()
-
-  // Ask for tracking permissions (iOS only, handled by OneSignal now)
-  //await askTrackingPermissions()
-
-  // On success, we should be able to receive notifications
-  // await PushNotifications.addListener("registration", (token: Token) => {
-  //   fcmToken.value = token.value
-  //   //alert('Push registration success, token: ' + token.value)
-  // })
-
-  // // Some issue with our setup and push will not work
-  // await PushNotifications.addListener("registrationError", (/* error: any */) => {
-  //   //alert('Error on registration: ' + JSON.stringify(error))
-  // })
-
-  // // Show us the notification payload if the app is open on our device
-  // await PushNotifications.addListener(
-  //   "pushNotificationReceived",
-  //   // (/* notification: PushNotificationSchema */) => {
-  //   (notification) => {
-  //     //nNotification.value = notification
-  //     console.log("Push received: ", JSON.stringify(notification))
-  //   }
-  // )
-
-  // // Method called when tapping on a local notification
-  // await PushNotifications.addListener(
-  //   "pushNotificationActionPerformed",
-  //   (notification: ActionPerformed) => {
-  //     //nNotification.value = notification
-  //     console.log("Push action performed: ", JSON.stringify(notification))
-  //     // const slug = notification.notification.data.slug
-  //     // if (slug) {
-  //     //   router.push(`/${slug}`)
-  //     // }
-  //   }
-  // )
   // fired when the app becomes active (ios only)
   await App.addListener("appStateChange", (/* { isActive } */) => {
     //alert("App state changed. ", JSON.stringify(isActive))
@@ -168,21 +119,12 @@ const addListeners = async () => {
   })
 }
 
-// get the URL the app was loaded from (if any)
-// const checkAppLaunchUrl = async () => {
-//   const url = await App.getLaunchUrl()
-//   appLaunchUrl.value = url
-//   console.log("App opened with URL: ", JSON.stringify(url))
-//   // get data from UA
-// }
-
 onMounted(async () => {
   await getAndSetUserProfile()
 
   if (isApp.value) {
     await initFileSystem()
     await addListeners()
-    //await checkAppLaunchUrl()
     await initLocalNotifications()
 
     // OneSignal
@@ -235,7 +177,7 @@ watch(globalError, (error) => {
   if (error) {
     toast.add({
       severity: "error",
-      summary: error,
+      summary: `${error}`,
       life: 6000,
     })
   }
