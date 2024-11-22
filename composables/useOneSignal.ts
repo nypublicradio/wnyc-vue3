@@ -214,7 +214,7 @@ export default function useOneSignal() {
     setSubscriptions()
 
     // add/update name, to OneSignal tags
-    //await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name || null });
+    if (currentUser.value.user_metadata.full_name) await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name });
   }
 
   async function logout() {
