@@ -130,13 +130,13 @@ export default function useOneSignal() {
   }
 
   const notificationClickListener = async function (event) {
-    //console.log("OneSignal notification clicked: ", event)
+    console.log("OneSignal notification clicked: ", event)
     //console.log("OneSignal additionalData: ", event.notification.additionalData)
     linkOrRouteOrAction(event)
   }
 
   const inAppNotificationClickListener = async function (event) {
-    //console.log("OneSignal In-App Message Clicked: ", event)
+    console.log("OneSignal In-App Message Clicked: ", event)
     linkOrRouteOrAction(event)
   }
 
@@ -228,7 +228,8 @@ export default function useOneSignal() {
       case "tracking-permission":
         await askTrackingPermissions()
         break
-      case "action2":
+      case "donate":
+        alert("you will see this when you return from the donate page. We can say thank you for donating or something")
         // do something
         break
 
