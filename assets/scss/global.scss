@@ -224,19 +224,22 @@ hr {
 
 /* Light mode */
 // @media (prefers-color-scheme: light) {
-//     body {
-//         background-color: white;
-//         color: black;
-//     }
+//   .p-ink-active {
+//     background-color: var(--ripple-color);
+//   }
 // }
 
-// /* Dark mode */
+// // /* Dark mode */
 // @media (prefers-color-scheme: dark) {
-//     body {
-//         background-color: black;
-//         color: white;
-//     }
+//   .p-ink-active {
+//     background-color: red;
+//   }
 // }
+
+// ripple color
+.p-ink-active {
+  background-color: var(--ripple-color);
+}
 
 .top-safe-cover {
   height: env(safe-area-inset-top);

@@ -6,6 +6,7 @@ import {
   setFontSize,
   setDarkMode,
   toggleAskNotificationPermissions,
+  toSystemSettings,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -250,7 +251,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section v-if="isApp" class="notifications p-0">
+    <section v-if="!isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -263,6 +264,20 @@ const onDeleteAccountClick = () => {
           @change="handleNotificationChange"
         />
       </SBox>
+      <SBox
+        label="Manage channels"
+        :ripple="true"
+        @click="
+          () => {
+            toSystemSettings()
+            trackClickEvent(
+              'Click Tracking - Manage Channels',
+              'Settings Sidebar',
+              'system settings'
+            )
+          }
+        "
+      ></SBox>
     </section>
     <section class="display p-0">
       <div class="flex s-title-holder">

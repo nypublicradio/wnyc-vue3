@@ -34,6 +34,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 :root,
 [data-style-mode='light'],
 .style-mode-light {
+    --ripple-color: #99999980;
     --placeholder-color: #757575;
     --focus-outline-color: #2b6f99;
     --solid-bg-color: var(--night-500, #101012) !important;
@@ -54,6 +55,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
+    --ripple-color: #ffffff80;
     --placeholder-color: #a3a3a3;
     --focus-outline-color: var(--spanish-orange);
     --solid-bg-color: var(--dark-blue-500, #101012) !important;
