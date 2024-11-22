@@ -19,7 +19,7 @@ export default function useOneSignal() {
     const url = event.result.url
     const action = event.result.actionId
     if (url) {
-      if (!url.includes("https://") {
+      if (!url.includes("https://")) {
         // deep link
         const route = getPathAndQuery(url)
         console.log("route = ", route)
@@ -198,8 +198,8 @@ export default function useOneSignal() {
     await OneSignal.login(supabaseId);
 
     // add email to One Signal
-    await OneSignal.User.addEmail(currentUser.value.email);
-    await OneSignal.User.addSms(currentUserProfile.value.phone);
+    await OneSignal.User.addEmail(currentUser.value.email ?? null);
+    await OneSignal.User.addSms(currentUserProfile.value.phone ?? null);
 
     // check for salesforce_id and update OneSignal
     setSalesForceId()
