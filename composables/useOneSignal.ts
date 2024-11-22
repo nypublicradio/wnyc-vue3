@@ -64,7 +64,7 @@ export default function useOneSignal() {
   }
 
   const setSalesForceId = async () => {
-    const tags = await OneSignal.User.getTags();
+    const tags = await OneSignal.User.getTags()
     //console.log('tags = ', tags)
     if (tags.salesforce_id) return
     //console.log('salesforce_id not found in tags')
@@ -79,7 +79,7 @@ export default function useOneSignal() {
     // if the salesforce_id is set, then update OneSignal with the salesforce_id
     const salesforceId = profile.salesforce_id
     if (salesforceId) {
-      await OneSignal.User.addTags({ "salesforce_id": salesforceId });
+      await OneSignal.User.addTags({ "salesforce_id": salesforceId })
     }
   }
 
@@ -164,20 +164,20 @@ export default function useOneSignal() {
   async function init() {
     const config = useRuntimeConfig()
 
-    await OneSignal.setConsentRequired(false);
+    await OneSignal.setConsentRequired(false)
     await OneSignal.setConsentGiven(true)
     await OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
-    await OneSignal.InAppMessages.setPaused(false);
+    await OneSignal.InAppMessages.setPaused(false)
 
     await OneSignal.Notifications.addEventListener("click", notificationClickListener)
 
     await OneSignal.InAppMessages.addEventListener("click", inAppNotificationClickListener)
 
-    await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionListener);
+    await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionListener)
 
-    await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener);
+    await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
 
-    await OneSignal.User.addEventListener("change", userListener);
+    await OneSignal.User.addEventListener("change", userListener)
   }
 
   async function requestNotificationPermission() {
@@ -195,11 +195,11 @@ export default function useOneSignal() {
     //const salesforceId: string = currentUser.value.salesforce_id
     const supabaseId: string = currentUser.value.id
     // log in to OneSignal with Salesforce ID
-    await OneSignal.login(supabaseId);
+    await OneSignal.login(supabaseId)
 
     // add email to One Signal
-    await OneSignal.User.addEmail(currentUser.value.email ?? null);
-    await OneSignal.User.addSms(currentUserProfile.value.phone ?? null);
+    if (currentUser.value.email) { await OneSignal.User.addEmail(currentUser.value.email) }
+    if (currentUser.value.phone) { await OneSignal.User.addSms(currentUserProfile.value.phone) }
 
     // check for salesforce_id and update OneSignal
     setSalesForceId()
@@ -212,7 +212,7 @@ export default function useOneSignal() {
   }
 
   async function logout() {
-    await OneSignal.logout();
+    await OneSignal.logout()
   }
 
   return { init, requestNotificationPermission, login, logout }
