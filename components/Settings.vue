@@ -251,7 +251,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section v-if="!isApp" class="notifications p-0">
+    <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -265,15 +265,15 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
       <SBox
-        label="Manage channels"
+        label="System options"
         :ripple="true"
         @click="
           () => {
             toSystemSettings()
             trackClickEvent(
-              'Click Tracking - Manage Channels',
+              'Click Tracking - System options',
               'Settings Sidebar',
-              'system settings'
+              'System options'
             )
           }
         "
