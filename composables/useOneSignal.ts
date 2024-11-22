@@ -141,7 +141,6 @@ export default function useOneSignal() {
   }
 
   const notificationPermissionListener = async (accepted) => {
-    alert('permission change')
     const currentUserProfile = useCurrentUserProfile()
 
     if (accepted) {
