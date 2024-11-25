@@ -57,15 +57,6 @@ export default function useOneSignal() {
         )
         window.open(url, "_blank")
       }
-
-      // if the url is a link to a web page, then open it in a new tab
-      trackClickEvent(
-        "Link",
-        "Notification",
-        `url = ${url}`
-      )
-      // the link opens by its self
-      //window.open(url, "_blank")
     }
 
     if (action) {
