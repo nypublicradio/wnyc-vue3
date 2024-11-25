@@ -98,6 +98,7 @@ export default function useOneSignal() {
     const salesforceId = profile.salesforce_id
     if (salesforceId) {
       await OneSignal.User.addTags({ "salesforce_id": salesforceId })
+      await OneSignal.User.addAlias("salesforce_id", salesforceId)
     }
   }
 
