@@ -1066,7 +1066,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 }
 
 // handles the permissions for push & local notifications
-export const askNotificationPermissions = async () => {
+export const askNotificationPermissions = () => {
   useOneSignal().requestNotificationPermission()
 }
 
@@ -1198,7 +1198,7 @@ export const deduplicateArray = (array) => {
   return [...new Set(array)];
 }
 
-
+// function that gets a URL and returns the path and query only
 export function getPathAndQuery(urlString) {
   try {
     const url = new URL(urlString);

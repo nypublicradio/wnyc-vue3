@@ -93,8 +93,6 @@ const addListeners = async () => {
   // this is for auth redirect from the web
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
-    console.log("appUrlOpen App opened with URL: ", JSON.stringify(event))
-
     //if the url has a query var "code" then we need to exchange it for a session
     if (event.url.includes("code=")) {
       //when redirected to the app from a apple or google auth, we need to exchange the url parame code for a session
@@ -132,7 +130,7 @@ onMounted(async () => {
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
-  document.addEventListener("visibilitychange", async () => {
+  document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       // refresh stream only
       refreshData(true)

@@ -15,6 +15,22 @@ export default function useOneSignal() {
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
+  // function to handle the list of action IDs from the notification click actions
+  const doActionId = async (actionId) => {
+    switch (actionId) {
+      case "tracking-permission":
+        await askTrackingPermissions()
+        break
+      case "donate":
+        alert("you will see this when you return from the donate page. We can say thank you for donating or something")
+        // do something
+        break
+      default:
+        // do something
+        break
+    }
+  }
+
   // function to handle the click actions of the notifications
   const linkOrRouteOrAction = (event) => {
     const url = event.result.url
@@ -112,7 +128,7 @@ export default function useOneSignal() {
 
     oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync();
 
-    let subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
+    const subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
 
     if (!subscriptionIds.includes(oneSignalSubscriptionId)) {
       subscriptionIds.push(oneSignalSubscriptionId)
@@ -127,17 +143,17 @@ export default function useOneSignal() {
   }
 
   // triggered when the listener for Notifications "click" is called
-  const notificationClickListener = async function (event) {
+  const notificationClickListener = function (event) {
     linkOrRouteOrAction(event)
   }
 
   // triggered when the listener for InAppMessages "click" is called
-  const inAppNotificationClickListener = async function (event) {
+  const inAppNotificationClickListener = function (event) {
     linkOrRouteOrAction(event)
   }
 
   // triggered when the listener for permissionChange is called
-  const notificationPermissionListener = async (accepted) => {
+  const notificationPermissionListener = (accepted) => {
     const currentUserProfile = useCurrentUserProfile()
 
     if (accepted) {
@@ -152,8 +168,8 @@ export default function useOneSignal() {
   //   console.log("Push subscription changed: ", event);
   // };
 
-  // triggered when the listener for User "cahnge" is called
-  const userListener = async (event) => {
+  // triggered when the listener for User "change" is called
+  const userListener = () => {
     setOneSignalId()
   };
 
@@ -213,22 +229,9 @@ export default function useOneSignal() {
     if (currentUser.value.user_metadata.full_name) await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name });
   }
 
+  // function to log out the user in OneSignal
   async function logout() {
     await OneSignal.logout()
-  }
-
-  // function to handle the list of action IDs from the notification click actions
-  const doActionId = async (actionId) => {
-    switch (actionId) {
-      case "tracking-permission":
-        await askTrackingPermissions()
-        break
-      case "donate":
-        alert("you will see this when you return from the donate page. We can say thank you for donating or something")
-        // do something
-        break
-
-    }
   }
 
   return { init, requestNotificationPermission, checkPermissions, login, logout }
