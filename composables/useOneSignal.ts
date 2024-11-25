@@ -8,23 +8,21 @@ import {
   getPathAndQuery,
   askTrackingPermissions,
 } from "~/utilities/helpers"
-import { Capacitor } from "@capacitor/core"
-//import { PushNotifications } from "@capacitor/push-notifications"
 
+// base OneSignal composable
 export default function useOneSignal() {
 
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
+  // function to handle the click actions of the notifications
   const linkOrRouteOrAction = (event) => {
-    console.log('notification event', event)
     const url = event.result.url
     const action = event.result.actionId
     if (url) {
       if (!url.includes("https://")) {
         // deep link
         const route = getPathAndQuery(url)
-        console.log("route = ", route)
 
         trackClickEvent(
           "Deep link",
@@ -65,11 +63,13 @@ export default function useOneSignal() {
     }
   }
 
+  // function to set the salesforce_id in OneSignal as a user tag
   const setSalesForceId = async () => {
     const tags = await OneSignal.User.getTags()
-    //console.log('tags = ', tags)
+
+    // if the salesforce_id is already set as a user tag, then return
     if (tags.salesforce_id) return
-    //console.log('salesforce_id not found in tags')
+
     const currentUser = useCurrentUser()
     const client = useSupabaseClient()
     const { data: profile } = await client
@@ -85,10 +85,11 @@ export default function useOneSignal() {
     }
   }
 
+  // function to set the OneSignal ID in Supabase profile
   const setOneSignalId = async () => {
     const currentUser = useCurrentUser()
     oneSignalId = await OneSignal.User.getOnesignalId()
-    //console.log('oneSignalId = ', oneSignalId)
+
     const client = useSupabaseClient()
     await client
       .from("profiles")
@@ -98,6 +99,7 @@ export default function useOneSignal() {
       .match({ id: currentUser.value.id })
   }
 
+  // function to set the OneSignal subscriptions in Supabase profile
   const setSubscriptions = async () => {
     const currentUser = useCurrentUser()
     // update Supabase profile with oneSignalSubscriptionId (push to array)
@@ -109,16 +111,11 @@ export default function useOneSignal() {
       .single()
 
     oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync();
-    //console.log('oneSignalSubscriptionId = ', oneSignalSubscriptionId)
-
-    //console.log('profile.one_signal_subscription_ids = ', profile.one_signal_subscription_ids)
 
     let subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
 
     if (!subscriptionIds.includes(oneSignalSubscriptionId)) {
       subscriptionIds.push(oneSignalSubscriptionId)
-
-      console.log('subscriptionIds = ', subscriptionIds)
 
       await client
         .from("profiles")
@@ -129,44 +126,43 @@ export default function useOneSignal() {
     }
   }
 
+  // triggered when the listener for Notifications "click" is called
   const notificationClickListener = async function (event) {
-    console.log("OneSignal notification clicked: ", event)
-    //console.log("OneSignal additionalData: ", event.notification.additionalData)
     linkOrRouteOrAction(event)
   }
 
+  // triggered when the listener for InAppMessages "click" is called
   const inAppNotificationClickListener = async function (event) {
-    console.log("OneSignal In-App Message Clicked: ", event)
     linkOrRouteOrAction(event)
   }
 
+  // triggered when the listener for permissionChange is called
   const notificationPermissionListener = async (accepted) => {
     const currentUserProfile = useCurrentUserProfile()
 
     if (accepted) {
       // Register with Apple / Google to receive push via APNS/FCM
       currentUserProfile.value.receive_general_notifications = true
-      // legacy code
-      //PushNotifications.register()
     } else {
       currentUserProfile.value.receive_general_notifications = false
     }
-    //console.log("notifications changed: ", accepted);
   }
 
-  const pushSubscriptionListener = (event) => {
-    console.log("Push subscription changed: ", event);
-  };
+  // const pushSubscriptionListener = (event) => {
+  //   console.log("Push subscription changed: ", event);
+  // };
 
+  // triggered when the listener for User "cahnge" is called
   const userListener = async (event) => {
-    //console.log("user listener: ", event);
     setOneSignalId()
   };
 
+  // function to check the permissions for notifications
   const checkPermissions = async () => {
     return await OneSignal.Notifications.getPermissionAsync();
   }
 
+  // function to initialize OneSignal
   async function init() {
     const config = useRuntimeConfig()
 
@@ -181,25 +177,25 @@ export default function useOneSignal() {
 
     await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionListener)
 
-    await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
+    //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
 
     await OneSignal.User.addEventListener("change", userListener)
   }
 
+  // function to trigger the OS permission request
   async function requestNotificationPermission() {
     await OneSignal.Notifications.requestPermission()
   }
 
+  // function to log in and manage the user in OneSignal with supabase data
   async function login() {
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
-    // console.log('currentUser.value = ', currentUser.value)
-    // console.log('currentUserProfile.value = ', currentUserProfile.value)
 
     if (!currentUser?.value) return
 
-    //const salesforceId: string = currentUser.value.salesforce_id
     const supabaseId: string = currentUser.value.id
+
     // log in to OneSignal with Salesforce ID
     await OneSignal.login(supabaseId)
 
@@ -221,8 +217,8 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
+  // function to handle the list of action IDs from the notification click actions
   const doActionId = async (actionId) => {
-    console.log('actionId = ', actionId)
     switch (actionId) {
       case "tracking-permission":
         await askTrackingPermissions()
