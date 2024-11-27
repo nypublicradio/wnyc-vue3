@@ -225,7 +225,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const isApp = useIsApp()
     const globalToast = useGlobalToast()
     const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false
-    const slug = isSegments ? file.segments[index].slug : file.meta.slug
+    const slug = isSegments ? file.segments[index].slug : file.meta?.slug
 
     //const uid = Number(file.id)
     // set the originalId initally only to keep track of the original id

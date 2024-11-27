@@ -372,6 +372,7 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
+    <pre>{{ currentEpisode }}</pre>
     <HtmlConvert :htmlContent="currentEpisode.details" />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
