@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { refreshData } from "~/utilities/helpers"
 const props = defineProps({
   connected: {
     type: Boolean,
@@ -8,16 +9,6 @@ const props = defineProps({
 
 // ship init flag
 let skipInit = true
-
-// refreshNuxtData() is called when the network is re-cconnected
-const refreshData = async () => {
-  // refresh data here
-  try {
-    await refreshNuxtData()
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 const bgColor = ref(props.connected ? "var(--success)" : "var(--error)")
 const shouldFadeIn = ref(false)
@@ -38,6 +29,8 @@ watch(
       setTimeout(() => {
         if (newValue) shouldFadeIn.value = false
       }, 4000)
+      // refreshData() is called when the network is re-cconnected
+      console.log("##### refreshing data")
       refreshData()
     } else {
       shouldFadeIn.value = true

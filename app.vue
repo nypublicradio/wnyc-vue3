@@ -3,6 +3,7 @@ import {
   getAndSetUserProfile,
   askNotificationPermisstions,
   askTrackingPermissions,
+  refreshData,
 } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
@@ -23,9 +24,7 @@ import {
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
-import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
-import { initMediaSession } from "~/utilities/media-session.js"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 
 // temp system to handle the new feature badge on the sleep timer
@@ -61,36 +60,11 @@ useHead({
   //   class: 'safe-area-padding',
   // },
 })
-// a func to refresh all data
-const refreshData = async (streamOnly = false) => {
-  if (streamOnly) {
-    // refresh data here
-    updateAllLiveStreams()
-    //update media session
-    initMediaSession(currentEpisode.value)
-  } else {
-    await getAndSetUserProfile()
-
-    try {
-      await refreshNuxtData()
-    } catch (error) {
-      console.error(error)
-    }
-    // refresh data here
-    updateAllLiveStreams()
-    //update media session
-    initMediaSession(currentEpisode.value)
-  }
-}
 
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
+  console.log("################## Network status changed", JSON.stringify(status))
   isNetworkConnected.value = status.connected
-  // refresh data here
-  if (status.connected) {
-    // refresh all data
-    refreshData()
-  }
 })
 // set the initial network status
 const initNewtworkStatus = await Network.getStatus()
