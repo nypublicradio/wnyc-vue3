@@ -19,7 +19,6 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
-  useCurrentEpisode,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
@@ -37,7 +36,6 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
-const currentEpisode = useCurrentEpisode()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
