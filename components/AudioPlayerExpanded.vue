@@ -42,6 +42,7 @@ const showShare = ref(true)
 const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
+const showDownload = ref(true)
 watchEffect(async () => {
   // hide share if it is a segment, which is only set in NPR direct show episodes
   currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
@@ -49,6 +50,10 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(
     currentEpisode.value.showSlug || currentEpisode.value.slug
   )
+  // show/hide download button based on show title
+  const showsWithoutDownload = ["nyc now", "wnyc news"]
+  const showTitle = currentEpisode.value.showTitle.toLowerCase()
+  showDownload.value = showTitle ? !showsWithoutDownload.includes(showTitle) : true
 })
 
 onMounted(() => {
@@ -199,14 +204,18 @@ const getDotMenuItems = () => {
               handleSleepTimer()
             },
           },
-          {
-            label: "Download",
-            customIcon: DownloadIcon,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleDownload()
-            },
-          },
+          ...(showDownload.value
+            ? [
+                {
+                  label: "Download",
+                  customIcon: DownloadIcon,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleDownload()
+                  },
+                },
+              ]
+            : []),
           ...(showShare.value
             ? [
                 {
@@ -302,7 +311,7 @@ const moreFromClick = () => {
           rounded
           aria-label="download"
           @click="handleDownload"
-          v-if="currentEpisode.hideFavorite"
+          v-if="currentEpisode.hideFavorite && showDownload"
         >
           <template #icon> <DownloadIcon /></template>
         </Button>
@@ -372,7 +381,6 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
-    <pre>{{ currentEpisode }}</pre>
     <HtmlConvert :htmlContent="currentEpisode.details" />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
