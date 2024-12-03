@@ -63,7 +63,6 @@ useHead({
 
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
-  console.log("################## Network status changed", JSON.stringify(status))
   isNetworkConnected.value = status.connected
 })
 // set the initial network status

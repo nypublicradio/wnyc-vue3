@@ -30,7 +30,6 @@ watch(
         if (newValue) shouldFadeIn.value = false
       }, 4000)
       // refreshData() is called when the network is re-cconnected
-      console.log("##### refreshing data")
       refreshData()
     } else {
       shouldFadeIn.value = true
