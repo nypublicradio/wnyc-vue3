@@ -51,6 +51,7 @@ workflows:
           cluster: "wnyc-vue3"
           cpu: 1024
           memory: 2048
+          use_firelens: true
           requires:
             - test
             - test_nginx
@@ -64,6 +65,7 @@ workflows:
           cluster: "wnyc-vue3"
           cpu: 1024
           memory: 2048
+          use_firelens: true
           requires:
             - test
             - test_nginx
