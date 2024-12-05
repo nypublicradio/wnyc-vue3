@@ -185,8 +185,8 @@ onMounted(async () => {
           }
         })
       }
-      // refresh stream only
-      refreshData(true)
+      // refresh data
+      refreshData()
     }
   })
 

@@ -29,8 +29,9 @@ watch(
       setTimeout(() => {
         if (newValue) shouldFadeIn.value = false
       }, 4000)
-      // refreshData() is called when the network is re-cconnected
-      refreshData()
+      // refreshData() is called when the network is re-connected
+      // true will also refresh the user profile
+      refreshData(true)
     } else {
       shouldFadeIn.value = true
     }

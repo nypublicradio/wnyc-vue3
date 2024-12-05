@@ -1204,24 +1204,20 @@ export const deduplicateArray = (array) => {
 }
 
 // a func to refresh all data
-export const refreshData = async (streamOnly = false) => {
+export const refreshData = async (refreshUser = false) => {
   const currentEpisode = useCurrentEpisode()
-  if (streamOnly) {
-    // refresh data here
-    updateAllLiveStreams()
-    //update media session
-    initMediaSession(currentEpisode.value)
-  } else {
+  if (refreshUser) {
     await getAndSetUserProfile()
-
-    try {
-      await refreshNuxtData()
-    } catch (error) {
-      console.error(error)
-    }
-    // refresh data here
-    updateAllLiveStreams()
-    //update media session
-    initMediaSession(currentEpisode.value)
   }
+  // refresh all nuxt data
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+  // refresh streams here
+  updateAllLiveStreams()
+  //update media session
+  initMediaSession(currentEpisode.value)
+
 }
