@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getAndSetUserProfile } from "~/utilities/helpers"
+import { getAndSetUserProfile, refreshData } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -9,14 +9,11 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
-  useCurrentEpisode,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
-import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
-import { initMediaSession } from "~/utilities/media-session.js"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 // temp system to handle the new feature badge on the sleep timer
@@ -28,7 +25,6 @@ const toast = useToast()
 const route = useRoute()
 const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
-const currentEpisode = useCurrentEpisode()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
@@ -48,36 +44,10 @@ useHead({
   //   class: 'safe-area-padding',
   // },
 })
-// a func to refresh all data
-const refreshData = async (streamOnly = false) => {
-  if (streamOnly) {
-    // refresh data here
-    updateAllLiveStreams()
-    //update media session
-    initMediaSession(currentEpisode.value)
-  } else {
-    await getAndSetUserProfile()
-
-    try {
-      await refreshNuxtData()
-    } catch (error) {
-      console.error(error)
-    }
-    // refresh data here
-    updateAllLiveStreams()
-    //update media session
-    initMediaSession(currentEpisode.value)
-  }
-}
 
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
-  // refresh data here
-  if (status.connected) {
-    // refresh all data
-    refreshData()
-  }
 })
 // set the initial network status
 const initNewtworkStatus = await Network.getStatus()
@@ -130,10 +100,21 @@ onMounted(async () => {
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus
-  document.addEventListener("visibilitychange", () => {
+  document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
-      // refresh stream only
-      refreshData(true)
+      // update user profile when coming back from  the system settings
+      if (isApp.value) {
+        await PushNotifications.checkPermissions().then((result) => {
+          if (result.receive === "denied") {
+            currentUserProfile.value.receive_general_notifications = false
+          }
+          if (result.receive === "granted") {
+            currentUserProfile.value.receive_general_notifications = true
+          }
+        })
+      }
+      // refresh data
+      refreshData()
     }
   })
 

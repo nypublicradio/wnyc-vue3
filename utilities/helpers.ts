@@ -48,6 +48,7 @@ import {
 import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
+import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -1196,6 +1197,25 @@ export const customAlphabeticalSort = (key = 'title') => {
 // function that converts and array to a set to remove the dups
 export const deduplicateArray = (array) => {
   return [...new Set(array)];
+}
+
+// a func to refresh all data
+export const refreshData = async (refreshUser = false) => {
+  const currentEpisode = useCurrentEpisode()
+  if (refreshUser) {
+    await getAndSetUserProfile()
+  }
+  // refresh all nuxt data
+  try {
+    await refreshNuxtData()
+  } catch (error) {
+    console.error(error)
+  }
+  // refresh streams here
+  updateAllLiveStreams()
+  //update media session
+  initMediaSession(currentEpisode.value)
+
 }
 
 // function that gets a URL and returns the path and query only
