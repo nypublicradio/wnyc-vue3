@@ -2,6 +2,7 @@ import OneSignal from "onesignal-cordova-plugin"
 import {
   useCurrentUserProfile,
   useCurrentUser,
+  useSettingSideBar,
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -35,6 +36,9 @@ export default function useOneSignal() {
   const linkOrRouteOrAction = (event) => {
     const url = event.result.url
     const action = event.result.actionId
+    const settingSideBar = useSettingSideBar()
+    // if settingSideBar is open, close it
+    if (settingSideBar.value) settingSideBar.value = false
     if (url) {
       if (!url.includes("https://")) {
         // deep link
