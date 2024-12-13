@@ -15,7 +15,7 @@ import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
-import useOneSignal from "~/composables/useOneSignal"
+import useOneSignal, { inAppNotificationActive } from "~/composables/useOneSignal"
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
 initFeatureSessionCount()

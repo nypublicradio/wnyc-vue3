@@ -9,14 +9,16 @@ import {
   getPathAndQuery,
   askTrackingPermissions,
 } from "~/utilities/helpers"
+import { ref } from "vue"
+
+// shared state for in-app notification
+export const inAppNotificationActive = ref(false)
 
 // base OneSignal composable
 export default function useOneSignal() {
 
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
-
-  const inAppNotificationActive = ref(false)
 
   // function to handle the list of action IDs from the notification click actions
   const doActionId = async (actionId) => {
@@ -145,13 +147,13 @@ export default function useOneSignal() {
   // triggered when the listener for Notifications "click" is called
   const notificationClickListener = async function (event) {
     linkOrRouteOrAction(event)
-    //await OneSignal.InAppMessages.setPaused(false)
   }
 
-  const inAppNotificationDidDisplay = function (event) {
+  const inAppNotificationDidDisplay = function () {
     inAppNotificationActive.value = true
+
   }
-  const inAppNotificationDidDismiss = function (event) {
+  const inAppNotificationDidDismiss = function () {
     inAppNotificationActive.value = false
   }
 
@@ -201,9 +203,9 @@ export default function useOneSignal() {
 
     await OneSignal.InAppMessages.addEventListener("click", inAppNotificationClickListener)
 
-    //await OneSignal.InAppMessages.addEventListener("willDisplay", willDisplayListener);
+    //await OneSignal.InAppMessages.addEventListener("willDisplay", inAppNotificationDidDisplay);
     await OneSignal.InAppMessages.addEventListener("didDisplay", inAppNotificationDidDisplay);
-    //await OneSignal.InAppMessages.addEventListener("willDismiss", willDismissListener);
+    //await OneSignal.InAppMessages.addEventListener("willDismiss", inAppNotificationDidDismiss);
     await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
     await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionListener)
