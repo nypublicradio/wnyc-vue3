@@ -16,6 +16,8 @@ export default function useOneSignal() {
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
+  const inAppNotificationActive = ref(false)
+
   // function to handle the list of action IDs from the notification click actions
   const doActionId = async (actionId) => {
     switch (actionId) {
@@ -49,8 +51,10 @@ export default function useOneSignal() {
           "Notification",
           `url = ${url}`
         )
-
-        navigateTo(route)
+        // slight delay needed for a cold start, or it will route home after the notification route
+        setTimeout(() => {
+          navigateTo(route)
+        }, 1000)
         return
       } else {
         // if the url is a link to a web page, then open it in a new tab
@@ -139,8 +143,16 @@ export default function useOneSignal() {
   }
 
   // triggered when the listener for Notifications "click" is called
-  const notificationClickListener = function (event) {
+  const notificationClickListener = async function (event) {
     linkOrRouteOrAction(event)
+    //await OneSignal.InAppMessages.setPaused(false)
+  }
+
+  const inAppNotificationDidDisplay = function (event) {
+    inAppNotificationActive.value = true
+  }
+  const inAppNotificationDidDismiss = function (event) {
+    inAppNotificationActive.value = false
   }
 
   // triggered when the listener for InAppMessages "click" is called
@@ -183,9 +195,16 @@ export default function useOneSignal() {
     await OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
     await OneSignal.InAppMessages.setPaused(false)
 
+    //await OneSignal.Notifications.addEventListener("foregroundWillDisplay", notificationAboutToDisplay);
+
     await OneSignal.Notifications.addEventListener("click", notificationClickListener)
 
     await OneSignal.InAppMessages.addEventListener("click", inAppNotificationClickListener)
+
+    //await OneSignal.InAppMessages.addEventListener("willDisplay", willDisplayListener);
+    await OneSignal.InAppMessages.addEventListener("didDisplay", inAppNotificationDidDisplay);
+    //await OneSignal.InAppMessages.addEventListener("willDismiss", willDismissListener);
+    await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
     await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionListener)
 
