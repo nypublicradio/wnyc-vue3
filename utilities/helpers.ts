@@ -50,6 +50,7 @@ import {
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
+import { capacitorIosNotificationSettings } from 'capacitor-ios-notification-settings';
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
@@ -446,9 +447,8 @@ export const toSystemSettings = () => {
       option: AndroidSettings.AppNotification,
     })
   } else {
-    NativeSettings.openIOS({
-      option: IOSSettings.App,
-    })
+    // for iOS, we are using a custom plugin
+    capacitorIosNotificationSettings.openNotificationSettings();
   }
 }
 

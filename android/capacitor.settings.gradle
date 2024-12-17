@@ -53,5 +53,8 @@ project(':nypublicradio-capacitor-remote-streamer').projectDir = new File('../no
 include ':bp-capacitor-background-mode'
 project(':bp-capacitor-background-mode').projectDir = new File('../node_modules/bp-capacitor-background-mode/android')
 
+include ':capacitor-ios-notification-settings'
+project(':capacitor-ios-notification-settings').projectDir = new File('../../capacitor-ios-notification-settings/android')
+
 include ':capacitor-native-settings'
 project(':capacitor-native-settings').projectDir = new File('../node_modules/capacitor-native-settings/android')
