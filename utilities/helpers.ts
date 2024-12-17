@@ -50,7 +50,7 @@ import {
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
-import { capacitorIosNotificationSettings } from 'capacitor-ios-notification-settings';
+import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
