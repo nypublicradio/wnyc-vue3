@@ -44,7 +44,7 @@
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",
-    "@nypublicradio/capacitor-ios-notification-settings": "^1.0.2",
+    "@nypublicradio/capacitor-ios-notification-settings": "^1.0.3",
     "@nypublicradio/capacitor-remote-streamer": "^0.3.9",
     "@nypublicradio/nypr-design-system-vue3": "^2.1.51",
     "@sentry/integrations": "^7.114.0",
