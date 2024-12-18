@@ -51,6 +51,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --searchFieldBackground: var(--background2) !important;
     --backgroundSimple: var(--background) !important;
     --persistent-player-bg-transparent: #2f2f2fcc !important;
+    --error-text-color: var(--#EB0000) !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -71,6 +72,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --backgroundSimple: var(--background2) !important;
     --persistent-player-slider-progress: #000;
     --button-hover-plain-background: #e8e8e826;
+    --error-text-color: var(--#FD5757) !important;
 }
 html.style-mode-dark {
     [data-style-mode='dark'],

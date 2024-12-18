@@ -570,3 +570,9 @@ a:visited {
   outline-offset: 0;
   box-shadow: 0 0 0.2rem 0.2rem #ffffff;
 }
+.p-error {
+  color: var(--error-text-color);
+}
+.author h2 {
+  text-decoration: underline;
+}
