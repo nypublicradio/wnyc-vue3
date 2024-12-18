@@ -2,11 +2,14 @@
 // // global state for the Bff useHomepageData data
 // export const useHomepageData = () => useState('useHomepageData', () => null)
 
+// global state
+
 // default settings that are overwritten by user data
 const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: 'WNYC 93.9 FM',
     receive_general_notifications: false,
+    //one_signal_notification_channels: { local_breaking_news: true, national_breaking_news: true },
     text_size: 'Normal',
     dark_mode: false,
     sleep_timer: 90,

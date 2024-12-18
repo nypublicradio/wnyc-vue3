@@ -128,8 +128,6 @@ export const getSavedMenuItems = () => {
     ]
 }
 
-
-
 // const imageShape = {
 //     alt: "A choreographer working with dancers in a studio",
 //     caption: "Alexei Ratmansky, center, rehearsing with American Ballet Theatre dancers.",

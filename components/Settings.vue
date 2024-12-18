@@ -22,7 +22,7 @@ import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/componen
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
-
+import useOneSignal from "~/composables/useOneSignal"
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -47,6 +47,7 @@ const isMessage = shallowRef(false)
 const severity = shallowRef("success")
 const theMessage = shallowRef("Settings updated")
 
+const { toggleUserTag, notificationChannelsArray } = useOneSignal()
 // main function to update the message component
 const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
   isMessage.value = false
@@ -90,6 +91,8 @@ const updateProfile = async () => {
         dark_mode: currentUserProfile.value.dark_mode,
         receive_general_notifications:
           currentUserProfile.value.receive_general_notifications,
+        one_signal_notification_channels:
+          currentUserProfile.value.one_signal_notification_channels,
         text_size: currentUserProfile.value.text_size.label,
         autodownload: currentUserProfile.value.autodownload,
       })
@@ -180,10 +183,23 @@ const clickThisId = (id) => {
 const handleNotificationChange = async (e) => {
   await toggleAskNotificationPermissions(e)
   trackClickEvent(
-    "Click Tracking - General switch",
+    "Click Tracking - General notification switch",
     "Settings Sidebar - Notifications",
     currentUserProfile.receive_general_notifications
   )
+}
+
+// handles the notification channel switch change events
+const handleNotificationChannelChange = async (channel) => {
+  const key = channel.key
+  const val = currentUserProfile.one_signal_notification_channels[channel.key]
+  trackClickEvent(
+    "Click Tracking - Notification Channel switch",
+    "Settings Sidebar - Notifications",
+    `${key}: ${val}`
+  )
+  // update the user tag in OneSignal
+  toggleUserTag(key, val)
 }
 
 // handle the delete account sidebar when the user clicks on the delete account link
@@ -251,7 +267,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section v-if="isApp" class="notifications p-0">
+    <section v-if="!isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -262,6 +278,22 @@ const onDeleteAccountClick = () => {
           static-width
           v-model:data.sync="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
+        />
+      </SBox>
+      <SBox
+        v-for="channel in notificationChannelsArray"
+        v-if="currentUserProfile.receive_general_notifications"
+        :label="channel.label"
+        :ripple="false"
+      >
+        <VInputSwitch
+          yes="ON"
+          no="OFF"
+          static-width
+          v-model:data.sync="
+            currentUserProfile.one_signal_notification_channels[channel.key]
+          "
+          @change="handleNotificationChannelChange(channel)"
         />
       </SBox>
       <SBox

@@ -14,6 +14,9 @@ import { ref } from "vue"
 // shared state for in-app notification
 export const inAppNotificationActive = ref(false)
 
+// notification channels 
+export const notificationChannelsArray = [{ label: 'Local Breaking News', key: 'local_breaking_news', value: true }, { label: 'National Breaking News', key: 'national_breaking_news', value: true }]
+
 // base OneSignal composable
 export default function useOneSignal() {
 
@@ -246,10 +249,15 @@ export default function useOneSignal() {
     if (currentUser.value.user_metadata.full_name) await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name });
   }
 
+  // toggle users notifications channel tags
+  const toggleUserTag = async (channel: string, value: boolean) => {
+    await OneSignal.User.addTags({ [channel]: value });
+  }
+
   // function to log out the user in OneSignal
   async function logout() {
     await OneSignal.logout()
   }
 
-  return { init, requestNotificationPermission, checkPermissions, login, logout }
+  return { init, requestNotificationPermission, checkPermissions, login, logout, toggleUserTag, notificationChannelsArray }
 }
