@@ -653,7 +653,7 @@ export const getAndSetUserProfile = async () => {
         setDisplaySettings(data)
       } else {
 
-        // new supabase entries handled here
+        // handle intialization of new supabase entries here
 
         // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notificationChannelsArray
         if (!data.one_signal_notification_channel) {
@@ -669,7 +669,6 @@ export const getAndSetUserProfile = async () => {
               one_signal_notification_channels: notification_channels,
             })
             .match({ id: currentUser.value.id })
-
         }
 
         // set the current user profile state
