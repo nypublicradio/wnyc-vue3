@@ -269,7 +269,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section v-if="!isApp" class="notifications p-0">
+    <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
