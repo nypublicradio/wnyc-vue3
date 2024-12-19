@@ -250,8 +250,8 @@ export default function useOneSignal() {
   }
 
   // toggle users notifications channel tags
-  const toggleUserTag = async (channel: string, value: boolean) => {
-    await OneSignal.User.addTags({ [channel]: value });
+  const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
+    value ? await OneSignal.User.addTags({ [channelKey]: value }) : await OneSignal.User.removeTags([channelKey]);
   }
 
   // function to log out the user in OneSignal
@@ -259,5 +259,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { init, requestNotificationPermission, checkPermissions, login, logout, toggleUserTag, notificationChannelsArray }
+  return { init, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, notificationChannelsArray }
 }

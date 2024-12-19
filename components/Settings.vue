@@ -47,7 +47,7 @@ const isMessage = shallowRef(false)
 const severity = shallowRef("success")
 const theMessage = shallowRef("Settings updated")
 
-const { toggleUserTag, notificationChannelsArray } = useOneSignal()
+const { toggleOneSignalUserTag, notificationChannelsArray } = useOneSignal()
 // main function to update the message component
 const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
   isMessage.value = false
@@ -199,7 +199,9 @@ const handleNotificationChannelChange = async (channel) => {
     `${key}: ${val}`
   )
   // update the user tag in OneSignal
-  toggleUserTag(key, val)
+  toggleOneSignalUserTag(key, val)
+
+  //subabase user profile is updated by the watch that triggers updateProfile()
 }
 
 // handle the delete account sidebar when the user clicks on the delete account link
@@ -280,10 +282,14 @@ const onDeleteAccountClick = () => {
           @change="handleNotificationChange"
         />
       </SBox>
+
+      <pre class="text-xs text-white"> currentUserProfile = {{ currentUserProfile }}</pre>
+      <p v-for="channel in notificationChannelsArray">{{ channel.label }}</p>
       <SBox
         v-for="channel in notificationChannelsArray"
         v-if="currentUserProfile.receive_general_notifications"
         :label="channel.label"
+        :key="channel.key"
         :ripple="false"
       >
         <VInputSwitch
