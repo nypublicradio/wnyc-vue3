@@ -601,6 +601,10 @@ export const getAndSetUserProfile = async () => {
     } else if (data) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
       const ls = JSON.parse(lsSTRING.value)
+
+      //what the user has already selected in the local storage or the default
+      const notification_channels = ls?.one_signal_notification_channels || notificationChannelsArray
+
       if (data.initial) {
 
         // some odd timeing hack to fix the text_size and default station if they come over as an object
@@ -628,7 +632,7 @@ export const getAndSetUserProfile = async () => {
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
         data.receive_general_notifications = ls.receive_general_notifications
-        data.one_signal_notification_channels = ls.one_signal_notification_channels ?? notificationChannelsArray
+        data.one_signal_notification_channels = notification_channels
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
 
@@ -641,7 +645,7 @@ export const getAndSetUserProfile = async () => {
             autodownload: ls.autodownload,
             default_live_stream: ls.default_live_stream,
             receive_general_notifications: ls.receive_general_notifications,
-            one_signal_notification_channels: data.one_signal_notification_channels,
+            one_signal_notification_channels: notification_channels,
             dark_mode: ls.dark_mode,
             text_size: ls.text_size,
           })
@@ -653,11 +657,10 @@ export const getAndSetUserProfile = async () => {
         setDisplaySettings(data)
       } else {
 
-        // handle intialization of new supabase entries here
+        // handle initialization of new supabase entries here
 
         // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notificationChannelsArray
-        if (!data.one_signal_notification_channel) {
-          const notification_channels = ls.one_signal_notification_channels ?? notificationChannelsArray
+        if (data.one_signal_notification_channels.length === 0) {
 
           // update data object with the notification_channels
           data.one_signal_notification_channels = notification_channels
