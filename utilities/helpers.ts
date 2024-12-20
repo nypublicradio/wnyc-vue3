@@ -585,7 +585,7 @@ export const getAndSetUserProfile = async () => {
 
   // function that gets a user profile
   const getProfile = async () => {
-    const { data, error } = await client
+    const { data, error }: { data: any, error: any } = await client
       .from("profiles")
       .select("*")
       .eq("id", currentUser.value.id)
@@ -672,6 +672,25 @@ export const getAndSetUserProfile = async () => {
               one_signal_notification_channels: notification_channels,
             })
             .match({ id: currentUser.value.id })
+
+          // initially add the user tags to OneSignal profile
+          notificationChannelsArray.forEach((channel) => {
+            useOneSignal().toggleOneSignalUserTag(channel.key, true)
+          })
+
+        } else {
+          // check to see if any new notification channels have been added/updated to the notificationChannelsArray global var and update the user tags and the supabase profile accordingly
+          notificationChannelsArray.forEach((channel) => {
+            if (
+              data.one_signal_notification_channels.every(
+                (existingChannel) => existingChannel.key !== channel.key
+              )
+            ) {
+              // add the new channel to the data object
+              data.one_signal_notification_channels.push(channel)
+            }
+            //data.one_signal_notification_channels.push(channel)
+          })
         }
 
         // set the current user profile state
