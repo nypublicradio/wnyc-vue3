@@ -251,7 +251,7 @@ export default function useOneSignal() {
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    value ? await OneSignal.User.addTags({ [channelKey]: value }) : await OneSignal.User.removeTags([channelKey]);
+    value ? await OneSignal.User.addTag(channelKey, String(value)) : await OneSignal.User.removeTag(channelKey);
   }
 
   // function to log out the user in OneSignal

@@ -192,11 +192,10 @@ const handleNotificationChange = async (e) => {
 // handles the notification channel switch change events
 const handleNotificationChannelChange = async (channel) => {
   const key = channel.key
-  //const val = currentUserProfile.one_signal_notification_channels[channel.key].value
   const val = currentUserProfile.value.one_signal_notification_channels.find(
     (c) => c.key === channel.key
   ).value
-  console.log("val = ", val)
+
   trackClickEvent(
     "Click Tracking - Notification Channel switch",
     "Settings Sidebar - Notifications",
@@ -273,7 +272,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section v-if="!isApp" class="notifications p-0">
+    <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -286,9 +285,6 @@ const onDeleteAccountClick = () => {
           @change="handleNotificationChange"
         />
       </SBox>
-
-      <pre class="text-xs text-white"> currentUserProfile = {{ currentUserProfile }}</pre>
-      <p v-for="channel in notificationChannelsArray">{{ channel.label }}</p>
       <SBox
         v-for="channel in notificationChannelsArray"
         v-if="currentUserProfile.receive_general_notifications"
