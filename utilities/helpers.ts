@@ -679,7 +679,7 @@ export const getAndSetUserProfile = async () => {
           })
 
         } else {
-          // Update data.one_signal_notification_channels based on notificationChannelsArray.
+          // Update data.one_signal_notification_channels based on notificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the notificationChannelsArray if they are updated/changed
 
           // Remove any channels from data.one_signal_notification_channels that are not in notificationChannelsArray
           data.one_signal_notification_channels = data.one_signal_notification_channels.filter(existingChannel =>
@@ -700,6 +700,8 @@ export const getAndSetUserProfile = async () => {
           data.one_signal_notification_channels.forEach((channel) => {
             useOneSignal().toggleOneSignalUserTag(channel.key, channel.value)
           })
+
+          console.log('data.one_signal_notification_channels', data.one_signal_notification_channels)
         }
 
         // set the current user profile state

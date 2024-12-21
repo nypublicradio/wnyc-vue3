@@ -10,12 +10,13 @@ import {
   askTrackingPermissions,
 } from "~/utilities/helpers"
 import { ref } from "vue"
+import { getOneSignalNotificationChannels } from '~/server/utils/oneSignalNotificationChannels'
 
 // shared state for in-app notification
 export const inAppNotificationActive = ref(false)
 
-// notification channels 
-export const notificationChannelsArray = [{ label: 'Local Breaking News', key: 'local_breaking_news', value: true }, { label: 'National Breaking News', key: 'national_breaking_news', value: true }]
+// notification channels array from the BFF server
+export const notificationChannelsArray = getOneSignalNotificationChannels()
 
 // base OneSignal composable
 export default function useOneSignal() {
