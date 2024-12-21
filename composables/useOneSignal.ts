@@ -255,10 +255,19 @@ export default function useOneSignal() {
     value ? await OneSignal.User.addTag(channelKey, String(value)) : await OneSignal.User.removeTag(channelKey);
   }
 
+  // get current tags
+  const getUserTags = async () => {
+
+    const tags = await OneSignal.User.getTags();
+    console.log('############ Tags:', JSON.stringify(tags));
+    return tags
+
+  }
+
   // function to log out the user in OneSignal
   async function logout() {
     await OneSignal.logout()
   }
 
-  return { init, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, notificationChannelsArray }
+  return { init, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, notificationChannelsArray, getUserTags }
 }

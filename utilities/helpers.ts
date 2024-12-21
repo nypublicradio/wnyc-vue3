@@ -696,12 +696,28 @@ export const getAndSetUserProfile = async () => {
               data.one_signal_notification_channels.push(newChannel);
             }
           });
-          // update the user tags to OneSignal profile
+
+          // get current tags from OneSignal
+          const currentTags = await useOneSignal().getUserTags();
+          //{"name":"Thomas Bono","salesforce_id":"003Ru00000CCB5dIAH"}
+
+          // Iterate through the current OneSignal tags
+          for (const [tagKey, tagValue] of Object.entries(currentTags)) {
+            // Check if this tag exists in the notification channels
+            const matchingChannel = data.one_signal_notification_channels.find(
+              channel => channel.key === tagKey
+            );
+
+            // If no matching channel found, delete the tag because it's no longer in use/ present in the notificationChannelsArray
+            if (!matchingChannel) {
+              useOneSignal().toggleOneSignalUserTag(tagKey, false)
+            }
+          }
+
+          //update the user tags to OneSignal profile
           data.one_signal_notification_channels.forEach((channel) => {
             useOneSignal().toggleOneSignalUserTag(channel.key, channel.value)
           })
-
-          console.log('data.one_signal_notification_channels', data.one_signal_notification_channels)
         }
 
         // set the current user profile state
