@@ -679,17 +679,26 @@ export const getAndSetUserProfile = async () => {
           })
 
         } else {
-          // check to see if any new notification channels have been added/updated to the notificationChannelsArray global var and update the user tags and the supabase profile accordingly
-          notificationChannelsArray.forEach((channel) => {
-            if (
-              data.one_signal_notification_channels.every(
-                (existingChannel) => existingChannel.key !== channel.key
-              )
-            ) {
-              // add the new channel to the data object
-              data.one_signal_notification_channels.push(channel)
+          // Update data.one_signal_notification_channels based on notificationChannelsArray.
+
+          // Remove any channels from data.one_signal_notification_channels that are not in notificationChannelsArray
+          data.one_signal_notification_channels = data.one_signal_notification_channels.filter(existingChannel =>
+            notificationChannelsArray.some(newChannel => newChannel.key === existingChannel.key)
+          );
+
+          // Add any new channels from notificationChannelsArray
+          notificationChannelsArray.forEach(newChannel => {
+            const existingChannel = data.one_signal_notification_channels.find(
+              channel => channel.key === newChannel.key
+            );
+
+            if (!existingChannel) {
+              data.one_signal_notification_channels.push(newChannel);
             }
-            //data.one_signal_notification_channels.push(channel)
+          });
+          // update the user tags to OneSignal profile
+          data.one_signal_notification_channels.forEach((channel) => {
+            useOneSignal().toggleOneSignalUserTag(channel.key, channel.value)
           })
         }
 
