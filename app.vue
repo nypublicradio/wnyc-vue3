@@ -17,6 +17,7 @@ import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
+
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
 initFeatureSessionCount()
@@ -31,6 +32,7 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
+const { initOneSignal } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -89,15 +91,14 @@ const addListeners = async () => {
 }
 
 onMounted(async () => {
+  // OneSignal
+  initOneSignal()
   await getAndSetUserProfile()
 
   if (isApp.value) {
     await initFileSystem()
     await addListeners()
     await initLocalNotifications()
-
-    // OneSignal
-    useOneSignal().init()
   }
 
   //refresh data and check notification permissions every time the tab is in focus or the App is in focus

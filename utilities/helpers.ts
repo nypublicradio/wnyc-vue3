@@ -582,6 +582,7 @@ export const getAndSetUserProfile = async () => {
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
+  const { toggleOneSignalUserTag, getUserTags, login } = useOneSignal()
 
   // function that gets a user profile
   const getProfile = async () => {
@@ -659,23 +660,15 @@ export const getAndSetUserProfile = async () => {
 
         // handle initialization of new supabase entries here
 
-        // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notificationChannelsArray
-        if (data.one_signal_notification_channels.length === 0) {
+        // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notification_channels
+        if (!data.one_signal_notification_channels || data.one_signal_notification_channels.length === 0) {
 
           // update data object with the notification_channels
           data.one_signal_notification_channels = notification_channels
 
-          // update supabase profile data
-          await client
-            .from("profiles")
-            .update({
-              one_signal_notification_channels: notification_channels,
-            })
-            .match({ id: currentUser.value.id })
-
           // initially add the user tags to OneSignal profile
           notificationChannelsArray.forEach((channel) => {
-            useOneSignal().toggleOneSignalUserTag(channel.key, true)
+            toggleOneSignalUserTag(channel.key, true)
           })
 
         } else {
@@ -698,7 +691,7 @@ export const getAndSetUserProfile = async () => {
           });
 
           // get current tags from OneSignal
-          const currentTags = await useOneSignal().getUserTags();
+          const currentTags = getUserTags();
           //{"name":"Thomas Bono","salesforce_id":"003Ru00000CCB5dIAH"}
 
           // Iterate through the current OneSignal tags
@@ -710,15 +703,25 @@ export const getAndSetUserProfile = async () => {
 
             // If no matching channel found, delete the tag because it's no longer in use/ present in the notificationChannelsArray
             if (!matchingChannel) {
-              useOneSignal().toggleOneSignalUserTag(tagKey, false)
+              toggleOneSignalUserTag(tagKey, false)
             }
           }
 
           //update the user tags to OneSignal profile
           data.one_signal_notification_channels.forEach((channel) => {
-            useOneSignal().toggleOneSignalUserTag(channel.key, channel.value)
+            toggleOneSignalUserTag(channel.key, channel.value)
           })
+
         }
+
+        // update supabase profile data with the updated data.one_signal_notification_channels
+        await client
+          .from("profiles")
+          .update({
+            one_signal_notification_channels: data.one_signal_notification_channels,
+          })
+          .match({ id: currentUser.value.id })
+
 
         // set the current user profile state
         currentUserProfile.value = data
@@ -812,7 +815,7 @@ export const getAndSetUserProfile = async () => {
         // if they are a user, get their profile data
         await getProfile()
         // One Signal login
-        useOneSignal().login()
+        login()
 
         // get the device id if it's an app and not a browser
         if (isApp.value) {

@@ -193,7 +193,7 @@ export default function useOneSignal() {
   }
 
   // function to initialize OneSignal
-  async function init() {
+  async function initOneSignal() {
     const config = useRuntimeConfig()
 
     await OneSignal.setConsentRequired(false)
@@ -252,16 +252,14 @@ export default function useOneSignal() {
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    value ? await OneSignal.User.addTag(channelKey, String(value)) : await OneSignal.User.removeTag(channelKey);
+    //value ? await OneSignal.User.addTag(channelKey, String(value)) : await OneSignal.User.removeTag(channelKey);
   }
 
   // get current tags
   const getUserTags = async () => {
-
     const tags = await OneSignal.User.getTags();
-    console.log('############ Tags:', JSON.stringify(tags));
+    console.log('tags', tags)
     return tags
-
   }
 
   // function to log out the user in OneSignal
@@ -269,5 +267,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { init, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, notificationChannelsArray, getUserTags }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, notificationChannelsArray, getUserTags }
 }
