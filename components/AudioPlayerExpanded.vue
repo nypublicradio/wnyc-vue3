@@ -410,14 +410,14 @@ const moreFromClick = () => {
     </VImage>
 
     <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
-      <h2>Author{{ currentEpisode.onTodaysShowHosts.length > 1 ? "s" : "" }}</h2>
+      <h2>Host{{ currentEpisode.onTodaysShowHosts.length > 1 ? "s" : "" }}</h2>
       <div class="flex gap-4 flex-wrap my-3">
         <Author
           v-for="author in currentEpisode.onTodaysShowHosts"
           :key="author.url"
           :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
-          :to="author.url.replace('people', 'staff')"
+          :to="currentEpisode.cmsSource='publisher' ? author.url : author.url.replace('people', 'staff')"
           @on-click="emit('close-panel')"
         />
       </div>
