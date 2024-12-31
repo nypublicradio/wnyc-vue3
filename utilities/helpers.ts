@@ -582,7 +582,7 @@ export const getAndSetUserProfile = async () => {
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
-  const { toggleOneSignalUserTag, getUserTags, login } = useOneSignal()
+  const { toggleOneSignalUserTag, login } = useOneSignal()
 
   // function that gets a user profile
   const getProfile = async () => {
@@ -690,25 +690,29 @@ export const getAndSetUserProfile = async () => {
             }
           });
 
+
+          // This block was for removing tags when false, but it's not needed because we are just updating the tags value to TRUE or FALSE
           // get current tags from OneSignal
-          const currentTags = getUserTags();
-          //{"name":"Thomas Bono","salesforce_id":"003Ru00000CCB5dIAH"}
+          // const currentTags = getUserTags();
+          // //console.log('currentTags', currentTags)
 
-          // Iterate through the current OneSignal tags
-          for (const [tagKey, tagValue] of Object.entries(currentTags)) {
-            // Check if this tag exists in the notification channels
-            const matchingChannel = data.one_signal_notification_channels.find(
-              channel => channel.key === tagKey
-            );
+          // // Iterate through the current OneSignal tags
+          // for (const [tagKey, tagValue] of Object.entries(currentTags)) {
+          //   // Check if this tag exists in the notification channels
+          //   const matchingChannel = data.one_signal_notification_channels.find(
+          //     channel => channel.key === tagKey
+          //   );
 
-            // If no matching channel found, delete the tag because it's no longer in use/ present in the notificationChannelsArray
-            if (!matchingChannel) {
-              toggleOneSignalUserTag(tagKey, false)
-            }
-          }
+          //   // If no matching channel found, delete the tag because it's no longer in use/ present in the notificationChannelsArray
+          //   if (!matchingChannel) {
+          //     //console.log('deleting tag', tagKey)
+          //     toggleOneSignalUserTag(tagKey, false)
+          //   }
+          // }
 
           //update the user tags to OneSignal profile
           data.one_signal_notification_channels.forEach((channel) => {
+            //console.log('updating tag', channel.key, channel.value)
             toggleOneSignalUserTag(channel.key, channel.value)
           })
 

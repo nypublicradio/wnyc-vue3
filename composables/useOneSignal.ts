@@ -252,13 +252,12 @@ export default function useOneSignal() {
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    //value ? await OneSignal.User.addTag(channelKey, String(value)) : await OneSignal.User.removeTag(channelKey);
+    await OneSignal.User.addTag(channelKey, String(value))
   }
 
   // get current tags
   const getUserTags = async () => {
-    const tags = await OneSignal.User.getTags();
-    console.log('tags', tags)
+    const tags = await OneSignal.User.getTags()
     return tags
   }
 
