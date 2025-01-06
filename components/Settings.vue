@@ -47,7 +47,7 @@ const isMessage = shallowRef(false)
 const severity = shallowRef("success")
 const theMessage = shallowRef("Settings updated")
 
-const { toggleOneSignalUserTag, notificationChannelsArray } = useOneSignal()
+const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
 // main function to update the message component
 const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
   isMessage.value = false
@@ -272,7 +272,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section v-if="isApp" class="notifications p-0">
+    <section v-if="!isApp" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
@@ -286,7 +286,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
       <SBox
-        v-for="channel in notificationChannelsArray"
+        v-for="channel in masterNotificationChannelsArray"
         v-if="currentUserProfile.receive_general_notifications"
         :label="channel.label"
         :key="channel.key"

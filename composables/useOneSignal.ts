@@ -10,13 +10,23 @@ import {
   askTrackingPermissions,
 } from "~/utilities/helpers"
 import { ref } from "vue"
-import { getOneSignalNotificationChannels } from '~/server/utils/oneSignalNotificationChannels'
 
 // shared state for in-app notification
-export const inAppNotificationActive = ref(false)
+export const isInAppNotificationActive = ref(false)
 
 // notification channels array from the BFF server
-export const notificationChannelsArray = getOneSignalNotificationChannels()
+export const masterNotificationChannelsArray = ref(null)
+
+export const getMasterNotificationChannels = async () => {
+  // get notification topics
+  const client = useSupabaseClient()
+  const { data } = await client
+    .from("notification_topics")
+    .select("*")
+
+  masterNotificationChannelsArray.value = data
+  return data
+}
 
 // base OneSignal composable
 export default function useOneSignal() {
@@ -154,11 +164,11 @@ export default function useOneSignal() {
   }
 
   const inAppNotificationDidDisplay = function () {
-    inAppNotificationActive.value = true
+    isInAppNotificationActive.value = true
 
   }
   const inAppNotificationDidDismiss = function () {
-    inAppNotificationActive.value = false
+    isInAppNotificationActive.value = false
   }
 
   // triggered when the listener for InAppMessages "click" is called
@@ -252,13 +262,19 @@ export default function useOneSignal() {
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    await OneSignal.User.addTag(channelKey, String(value))
+    const currentUser = useCurrentUser()
+    if (currentUser.value) {
+      await OneSignal.User.addTag(channelKey, String(value))
+    }
   }
 
   // get current tags
   const getUserTags = async () => {
-    const tags = await OneSignal.User.getTags()
-    return tags
+    const currentUser = useCurrentUser()
+    if (currentUser.value) {
+      const tags = await OneSignal.User.getTags()
+      return tags
+    }
   }
 
   // function to log out the user in OneSignal
@@ -266,5 +282,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { initOneSignal, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, notificationChannelsArray, getUserTags }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray }
 }

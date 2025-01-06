@@ -1,4 +1,4 @@
-import { notificationChannelsArray } from "~/composables/useOneSignal"
+import { masterNotificationChannelsArray } from "~/composables/useOneSignal"
 // Homepage data
 // // global state for the Bff useHomepageData data
 // export const useHomepageData = () => useState('useHomepageData', () => null)
@@ -10,7 +10,7 @@ const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
     receive_general_notifications: false,
-    one_signal_notification_channels: notificationChannelsArray,
+    one_signal_notification_channels: masterNotificationChannelsArray,
     text_size: "Normal",
     dark_mode: false,
     sleep_timer: 90,
