@@ -234,8 +234,40 @@ export default function useOneSignal() {
     await OneSignal.Notifications.requestPermission()
   }
 
+  // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
+  async function syncMasterNotificationChannels(local, master) {
+
+    // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
+
+    // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
+    local.one_signal_notification_channels = local.one_signal_notification_channels.filter(existingChannel =>
+      master.some(newChannel => newChannel.key === existingChannel.key)
+    );
+
+    // Add any new channels from masterNotificationChannelsArray
+    master.forEach(newChannel => {
+      const existingChannel = local.one_signal_notification_channels.find(
+        channel => channel.key === newChannel.key
+      );
+
+      if (!existingChannel) {
+        local.one_signal_notification_channels.push(newChannel);
+      }
+    });
+
+    //update the user tags to OneSignal profile, when user is logged in only
+    const currentUser = useCurrentUser()
+    if (currentUser.value) {
+      local.one_signal_notification_channels.forEach((channel) => {
+        toggleOneSignalUserTag(channel.key, channel.value)
+      })
+    }
+
+    return local.one_signal_notification_channels
+  }
+
   // function to log in and manage the user in OneSignal with supabase data
-  async function login() {
+  async function OneSignalLogin() {
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
 
@@ -279,5 +311,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { initOneSignal, requestNotificationPermission, checkPermissions, login, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels }
 }

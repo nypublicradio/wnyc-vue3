@@ -573,37 +573,37 @@ export const convertTime = (val) => {
 }
 
 // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
-const syncMasterNotificationChannels = async (local, master) => {
-  const { toggleOneSignalUserTag } = useOneSignal()
-  // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
+// const syncMasterNotificationChannels = async (local, master) => {
+//   const { toggleOneSignalUserTag } = useOneSignal()
+//   // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
-  // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
-  local.one_signal_notification_channels = local.one_signal_notification_channels.filter(existingChannel =>
-    master.some(newChannel => newChannel.key === existingChannel.key)
-  );
+//   // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
+//   local.one_signal_notification_channels = local.one_signal_notification_channels.filter(existingChannel =>
+//     master.some(newChannel => newChannel.key === existingChannel.key)
+//   );
 
-  // Add any new channels from masterNotificationChannelsArray
-  master.forEach(newChannel => {
-    const existingChannel = local.one_signal_notification_channels.find(
-      channel => channel.key === newChannel.key
-    );
+//   // Add any new channels from masterNotificationChannelsArray
+//   master.forEach(newChannel => {
+//     const existingChannel = local.one_signal_notification_channels.find(
+//       channel => channel.key === newChannel.key
+//     );
 
-    if (!existingChannel) {
-      local.one_signal_notification_channels.push(newChannel);
-    }
-  });
+//     if (!existingChannel) {
+//       local.one_signal_notification_channels.push(newChannel);
+//     }
+//   });
 
-  //update the user tags to OneSignal profile
-  local.one_signal_notification_channels.forEach((channel) => {
-    // delay needed because OneSignal User is not ready yet when initially logging in
-    // probably need to rethink this
-    setTimeout(() => {
-      toggleOneSignalUserTag(channel.key, channel.value)
-    }, 5000)
-  })
+//   //update the user tags to OneSignal profile
+//   local.one_signal_notification_channels.forEach((channel) => {
+//     // delay needed because OneSignal User is not ready yet when initially logging in
+//     // probably need to rethink this
+//     setTimeout(() => {
+//       toggleOneSignalUserTag(channel.key, channel.value)
+//     }, 5000)
+//   })
 
-  return local.one_signal_notification_channels
-}
+//   return local.one_signal_notification_channels
+// }
 
 // get and set the user profiel
 export const getAndSetUserProfile = async () => {
@@ -615,7 +615,7 @@ export const getAndSetUserProfile = async () => {
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
-  const { toggleOneSignalUserTag, login, getMasterNotificationChannels } = useOneSignal()
+  const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels } = useOneSignal()
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
@@ -687,9 +687,18 @@ export const getAndSetUserProfile = async () => {
 
         // set the current user profile state
         currentUserProfile.value = data
+        // One Signal login
+        await OneSignalLogin()
         updateAllLiveStreams()
         setDisplaySettings(data)
+
       } else {
+
+        // set the current user profile state
+        currentUserProfile.value = data
+
+        // One Signal login
+        await OneSignalLogin()
 
         // First time populating the notification channels on existing profiles
         // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notification_channels
@@ -697,6 +706,14 @@ export const getAndSetUserProfile = async () => {
 
           // update data object with the notification_channels
           data.one_signal_notification_channels = notification_channels
+
+          // update supabase profile data with the updated data.one_signal_notification_channels
+          await client
+            .from("profiles")
+            .update({
+              one_signal_notification_channels: data.one_signal_notification_channels,
+            })
+            .match({ id: currentUser.value.id })
 
           // initially add the user tags to OneSignal profile
           masterNotificationChannelsArray.forEach((channel) => {
@@ -707,19 +724,20 @@ export const getAndSetUserProfile = async () => {
 
           // check if supabase master notification channels changed and sync them with supabase and OneSignal
           data.one_signal_notification_channels = await syncMasterNotificationChannels(data, masterNotificationChannelsArray)
+
+          // update supabase profile data with the updated data.one_signal_notification_channels
+          await client
+            .from("profiles")
+            .update({
+              one_signal_notification_channels: data.one_signal_notification_channels,
+            })
+            .match({ id: currentUser.value.id })
+
+          // set the current user profile state again after the sync
+          currentUserProfile.value = data
         }
 
-        // update supabase profile data with the updated data.one_signal_notification_channels
-        await client
-          .from("profiles")
-          .update({
-            one_signal_notification_channels: data.one_signal_notification_channels,
-          })
-          .match({ id: currentUser.value.id })
-
-
-        // set the current user profile state
-        currentUserProfile.value = data
+        // update streams and settings
         updateAllLiveStreams()
         setDisplaySettings(data)
       }
@@ -793,6 +811,13 @@ export const getAndSetUserProfile = async () => {
           // check if supabase master notification channels changed and sync them with the local storage and supabase and OneSignal
           localUserProfile.one_signal_notification_channels = await syncMasterNotificationChannels(localUserProfile, masterNotificationChannelsArray)
 
+          // set local storage with the updated data.one_signal_notification_channels
+          const localUserProfileSTRING = JSON.stringify(localUserProfile)
+          await Preferences.set({
+            key: localUserProfileKey,
+            value: localUserProfileSTRING,
+          })
+
           // local storage is set, so set currentUserProfile to the local storage settings
           currentUserProfile.value = localUserProfile
 
@@ -815,8 +840,6 @@ export const getAndSetUserProfile = async () => {
       } else {
         // if they are a user, get their profile data
         await getProfile()
-        // One Signal login
-        login()
 
         // get the device id if it's an app and not a browser
         if (isApp.value) {
