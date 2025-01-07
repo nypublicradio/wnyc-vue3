@@ -262,10 +262,7 @@ export default function useOneSignal() {
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    const currentUser = useCurrentUser()
-    if (currentUser.value) {
-      await OneSignal.User.addTag(channelKey, String(value))
-    }
+    await OneSignal.User.addTag(channelKey, String(value))
   }
 
   // get current tags

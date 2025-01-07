@@ -1,4 +1,4 @@
-import { format, formatDistanceToNowStrict } from "date-fns"
+import { format, formatDistanceToNowStrict, set } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
@@ -595,8 +595,11 @@ const syncMasterNotificationChannels = async (local, master) => {
 
   //update the user tags to OneSignal profile
   local.one_signal_notification_channels.forEach((channel) => {
-    //console.log('updating tag', channel.key, channel.value)
-    toggleOneSignalUserTag(channel.key, channel.value)
+    // delay needed because OneSignal User is not ready yet when initially logging in
+    // probably need to rethink this
+    setTimeout(() => {
+      toggleOneSignalUserTag(channel.key, channel.value)
+    }, 5000)
   })
 
   return local.one_signal_notification_channels
@@ -688,8 +691,6 @@ export const getAndSetUserProfile = async () => {
         setDisplaySettings(data)
       } else {
 
-        // handle initialization of new supabase entries here
-
         // First time populating the notification channels on existing profiles
         // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notification_channels
         if (!data.one_signal_notification_channels || data.one_signal_notification_channels.length === 0) {
@@ -703,30 +704,9 @@ export const getAndSetUserProfile = async () => {
           })
 
         } else {
-          // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
-          // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
-          data.one_signal_notification_channels = data.one_signal_notification_channels.filter(existingChannel =>
-            masterNotificationChannelsArray.some(newChannel => newChannel.key === existingChannel.key)
-          );
-
-          // Add any new channels from masterNotificationChannelsArray
-          masterNotificationChannelsArray.forEach(newChannel => {
-            const existingChannel = data.one_signal_notification_channels.find(
-              channel => channel.key === newChannel.key
-            );
-
-            if (!existingChannel) {
-              data.one_signal_notification_channels.push(newChannel);
-            }
-          });
-
-          //update the user tags to OneSignal profile
-          data.one_signal_notification_channels.forEach((channel) => {
-            //console.log('updating tag', channel.key, channel.value)
-            toggleOneSignalUserTag(channel.key, channel.value)
-          })
-
+          // check if supabase master notification channels changed and sync them with supabase and OneSignal
+          data.one_signal_notification_channels = await syncMasterNotificationChannels(data, masterNotificationChannelsArray)
         }
 
         // update supabase profile data with the updated data.one_signal_notification_channels
