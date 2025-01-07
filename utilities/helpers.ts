@@ -572,39 +572,6 @@ export const convertTime = (val) => {
   return hhmmss.startsWith("00:") ? hhmmss.substring(3) : hhmmss
 }
 
-// syncMasterNotificationChannels with the user's profile, supabase and oneSignal
-// const syncMasterNotificationChannels = async (local, master) => {
-//   const { toggleOneSignalUserTag } = useOneSignal()
-//   // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
-
-//   // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
-//   local.one_signal_notification_channels = local.one_signal_notification_channels.filter(existingChannel =>
-//     master.some(newChannel => newChannel.key === existingChannel.key)
-//   );
-
-//   // Add any new channels from masterNotificationChannelsArray
-//   master.forEach(newChannel => {
-//     const existingChannel = local.one_signal_notification_channels.find(
-//       channel => channel.key === newChannel.key
-//     );
-
-//     if (!existingChannel) {
-//       local.one_signal_notification_channels.push(newChannel);
-//     }
-//   });
-
-//   //update the user tags to OneSignal profile
-//   local.one_signal_notification_channels.forEach((channel) => {
-//     // delay needed because OneSignal User is not ready yet when initially logging in
-//     // probably need to rethink this
-//     setTimeout(() => {
-//       toggleOneSignalUserTag(channel.key, channel.value)
-//     }, 5000)
-//   })
-
-//   return local.one_signal_notification_channels
-// }
-
 // get and set the user profiel
 export const getAndSetUserProfile = async () => {
   const isNetworkConnected = useIsNetworkConnected()
@@ -640,7 +607,7 @@ export const getAndSetUserProfile = async () => {
       const notification_channels = ls?.one_signal_notification_channels || masterNotificationChannelsArray
 
       if (data.initial) {
-
+        // FIRST LOGIN EVER
         // some odd timing hack to fix the text_size and default station if they come over as an object
         if (typeof ls.text_size === 'object') {
           ls.text_size = ls.text_size.label;
@@ -689,6 +656,12 @@ export const getAndSetUserProfile = async () => {
         currentUserProfile.value = data
         // One Signal login
         await OneSignalLogin()
+
+        // initially add the user tags to OneSignal profile
+        masterNotificationChannelsArray.forEach((channel: { key: string }) => {
+          toggleOneSignalUserTag(channel.key, true)
+        })
+
         updateAllLiveStreams()
         setDisplaySettings(data)
 
@@ -700,7 +673,7 @@ export const getAndSetUserProfile = async () => {
         // One Signal login
         await OneSignalLogin()
 
-        // First time populating the notification channels on existing profiles
+        // First time populating the notification channels on EXISTING PROFILES
         // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notification_channels
         if (!data.one_signal_notification_channels || data.one_signal_notification_channels.length === 0) {
 
@@ -716,9 +689,12 @@ export const getAndSetUserProfile = async () => {
             .match({ id: currentUser.value.id })
 
           // initially add the user tags to OneSignal profile
-          masterNotificationChannelsArray.forEach((channel) => {
+          masterNotificationChannelsArray.forEach((channel: { key: string }) => {
             toggleOneSignalUserTag(channel.key, true)
           })
+
+          // set the current user profile state again after updating the channels
+          currentUserProfile.value = data
 
         } else {
 
@@ -735,6 +711,7 @@ export const getAndSetUserProfile = async () => {
 
           // set the current user profile state again after the sync
           currentUserProfile.value = data
+
         }
 
         // update streams and settings
