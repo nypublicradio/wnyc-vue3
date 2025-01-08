@@ -190,7 +190,7 @@ const handleNotificationChange = async (e) => {
 }
 
 // handles the notification channel switch change events
-const handleNotificationChannelChange = async (channel) => {
+const handleNotificationChannelChange = (channel) => {
   const key = channel.key
   const val = currentUserProfile.value.one_signal_notification_channels.find(
     (c) => c.key === channel.key
@@ -204,7 +204,7 @@ const handleNotificationChannelChange = async (channel) => {
   // update the user tag in OneSignal
   toggleOneSignalUserTag(key, val)
 
-  //subabase user profile is updated by the watch that triggers updateProfile()
+  //supabase user profile is updated by the watch that triggers updateProfile()
 }
 
 // handle the delete account sidebar when the user clicks on the delete account link
@@ -281,29 +281,35 @@ const onDeleteAccountClick = () => {
           yes="ON"
           no="OFF"
           static-width
-          v-model:data.sync="currentUserProfile.receive_general_notifications"
+          v-model:data="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
         />
       </SBox>
-      <SBox
-        v-for="channel in masterNotificationChannelsArray"
-        v-if="currentUserProfile.receive_general_notifications"
-        :label="channel.label"
-        :key="channel.key"
-        :ripple="false"
+      <template
+        v-if="
+          currentUserProfile.receive_general_notifications &&
+          masterNotificationChannelsArray.length > 0
+        "
       >
-        <VInputSwitch
-          yes="ON"
-          no="OFF"
-          static-width
-          v-model:data.sync="
-            currentUserProfile.one_signal_notification_channels.find(
-              (c) => c.key === channel.key
-            ).value
-          "
-          @change="handleNotificationChannelChange(channel)"
-        />
-      </SBox>
+        <SBox
+          v-for="channel in masterNotificationChannelsArray"
+          :label="channel.label"
+          :key="channel.key"
+          :ripple="false"
+        >
+          <VInputSwitch
+            yes="ON"
+            no="OFF"
+            static-width
+            v-model:data="
+              currentUserProfile.one_signal_notification_channels.find(
+                (c) => c.key === channel.key
+              ).value
+            "
+            @change="handleNotificationChannelChange(channel)"
+          />
+        </SBox>
+      </template>
       <SBox
         label="System options"
         :ripple="true"

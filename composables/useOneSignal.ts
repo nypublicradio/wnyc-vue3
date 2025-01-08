@@ -50,6 +50,11 @@ export default function useOneSignal() {
     }
   }
 
+  // toggle users notifications channel tags
+  const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
+    await OneSignal.User.addTag(channelKey, String(value))
+  }
+
   // function to handle the click actions of the notifications
   const linkOrRouteOrAction = (event) => {
     const url = event.result.url
@@ -159,14 +164,16 @@ export default function useOneSignal() {
   }
 
   // triggered when the listener for Notifications "click" is called
-  const notificationClickListener = async function (event) {
+  const notificationClickListener = function (event) {
     linkOrRouteOrAction(event)
   }
 
+  // triggered when the listener for InAppMessages "didDisplay" is called isInAppNotificationActive to true
   const inAppNotificationDidDisplay = function () {
     isInAppNotificationActive.value = true
 
   }
+  // triggered when the listener for InAppMessages "didDismiss" is called isInAppNotificationActive to false
   const inAppNotificationDidDismiss = function () {
     isInAppNotificationActive.value = false
   }
@@ -235,7 +242,7 @@ export default function useOneSignal() {
   }
 
   // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
-  async function syncMasterNotificationChannels(local, master) {
+  function syncMasterNotificationChannels(local, master) {
 
     // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
@@ -299,17 +306,14 @@ export default function useOneSignal() {
     if (currentUser.value.user_metadata.full_name) await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name });
   }
 
-  // toggle users notifications channel tags
-  const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    await OneSignal.User.addTag(channelKey, String(value))
-  }
-
   // get current tags
   const getUserTags = async () => {
     const currentUser = useCurrentUser()
     if (currentUser.value) {
       const tags = await OneSignal.User.getTags()
       return tags
+    } else {
+      return null
     }
   }
 

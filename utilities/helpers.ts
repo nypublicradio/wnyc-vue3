@@ -1,4 +1,4 @@
-import { format, formatDistanceToNowStrict, set } from "date-fns"
+import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
@@ -20,7 +20,7 @@ import {
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
-import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
+import { NativeSettings, AndroidSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
 import {
   cmsSources,
@@ -788,7 +788,7 @@ export const getAndSetUserProfile = async () => {
           setDisplaySettings(defaults)
         } else {
 
-          let localUserProfile = JSON.parse(isLocalUserProfile.value)
+          const localUserProfile = JSON.parse(isLocalUserProfile.value)
 
           // check if supabase master notification channels changed and sync them with the local storage and supabase and OneSignal
           localUserProfile.one_signal_notification_channels = await syncMasterNotificationChannels(localUserProfile, masterNotificationChannelsArray)
