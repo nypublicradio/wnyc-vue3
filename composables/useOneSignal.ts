@@ -244,15 +244,22 @@ export default function useOneSignal() {
       master.some(newChannel => newChannel.key === existingChannel.key)
     );
 
-    // Add any new channels from masterNotificationChannelsArray
+    // Add any new channels from masterNotificationChannelsArray & update any labels tha tmay have changed
     master.forEach(newChannel => {
       const existingChannel = local.one_signal_notification_channels.find(
         channel => channel.key === newChannel.key
       );
 
+      //add new channel
       if (!existingChannel) {
         local.one_signal_notification_channels.push(newChannel);
       }
+
+      // update label
+      if (existingChannel && existingChannel.label !== newChannel.label) {
+        existingChannel.label = newChannel.label;
+      }
+
     });
 
     //update the user tags to OneSignal profile, when user is logged in only

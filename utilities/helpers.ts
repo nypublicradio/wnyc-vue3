@@ -572,7 +572,7 @@ export const convertTime = (val) => {
   return hhmmss.startsWith("00:") ? hhmmss.substring(3) : hhmmss
 }
 
-// get and set the user profiel
+// get and set the user profile
 export const getAndSetUserProfile = async () => {
   const isNetworkConnected = useIsNetworkConnected()
   const isApp = useIsApp()
@@ -603,11 +603,12 @@ export const getAndSetUserProfile = async () => {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
       const ls = JSON.parse(lsSTRING.value)
 
-      //what the user has already selected in the local storage or the default
-      const notification_channels = ls?.one_signal_notification_channels || masterNotificationChannelsArray
+      //what the user has already selected in the local storage OR the default
+      const defaultNotificationChannels = ls?.one_signal_notification_channels || masterNotificationChannelsArray
 
       if (data.initial) {
-        // FIRST LOGIN EVER
+        // FIRST INITIAL LOGIN EVER
+
         // some odd timing hack to fix the text_size and default station if they come over as an object
         if (typeof ls.text_size === 'object') {
           ls.text_size = ls.text_size.label;
@@ -633,7 +634,7 @@ export const getAndSetUserProfile = async () => {
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
         data.receive_general_notifications = ls.receive_general_notifications
-        data.one_signal_notification_channels = notification_channels
+        data.one_signal_notification_channels = defaultNotificationChannels
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
 
@@ -667,18 +668,20 @@ export const getAndSetUserProfile = async () => {
 
       } else {
 
+        // NOT FIRST LOGIN EVER
+
         // set the current user profile state
         currentUserProfile.value = data
 
         // One Signal login
         await OneSignalLogin()
 
-        // First time populating the notification channels on EXISTING PROFILES
-        // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the notification_channels
+        // FIRST TIME POPULATING THE NOTIFICATION CHANNELS ON EXISTING PROFILES
+        // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the defaultNotificationChannels
         if (!data.one_signal_notification_channels || data.one_signal_notification_channels.length === 0) {
 
-          // update data object with the notification_channels
-          data.one_signal_notification_channels = notification_channels
+          // update data object with the defaultNotificationChannels
+          data.one_signal_notification_channels = defaultNotificationChannels
 
           // update supabase profile data with the updated data.one_signal_notification_channels
           await client
@@ -697,6 +700,8 @@ export const getAndSetUserProfile = async () => {
           currentUserProfile.value = data
 
         } else {
+
+          // CHANNELS ALREADY SET
 
           // check if supabase master notification channels changed and sync them with supabase and OneSignal
           data.one_signal_notification_channels = await syncMasterNotificationChannels(data, masterNotificationChannelsArray)
