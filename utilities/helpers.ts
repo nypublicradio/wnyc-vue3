@@ -582,7 +582,7 @@ export const getAndSetUserProfile = async () => {
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
-  const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels } = useOneSignal()
+  const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels, checkPermissions } = useOneSignal()
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {

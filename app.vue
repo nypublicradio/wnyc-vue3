@@ -32,7 +32,7 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-const { initOneSignal } = useOneSignal()
+const { initOneSignal, notificationPermissionSync } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -99,24 +99,21 @@ onMounted(async () => {
     await initFileSystem()
     await addListeners()
     await initLocalNotifications()
+
+    // initial check for notification permission
+    await notificationPermissionSync(undefined)
   }
 
-  //refresh data and check notification permissions every time the tab is in focus or the App is in focus
+  //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
-      // update user profile when coming back from  the system settings
-      if (isApp.value) {
-        await PushNotifications.checkPermissions().then((result) => {
-          if (result.receive === "denied") {
-            currentUserProfile.value.receive_general_notifications = false
-          }
-          if (result.receive === "granted") {
-            currentUserProfile.value.receive_general_notifications = true
-          }
-        })
-      }
       // refresh data
       refreshData()
+
+      // update user profile when coming back from  the system settings
+      if (isApp.value) {
+        await notificationPermissionSync(undefined)
+      }
     }
   })
 

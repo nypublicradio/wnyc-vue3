@@ -10,6 +10,10 @@ import {
   askTrackingPermissions,
 } from "~/utilities/helpers"
 import { ref } from "vue"
+import { Preferences } from "@capacitor/preferences"
+import {
+  localUserProfileKey,
+} from "~/composables/globals"
 
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
@@ -184,14 +188,37 @@ export default function useOneSignal() {
   }
 
   // triggered when the listener for permissionChange is called
-  const notificationPermissionListener = (accepted) => {
-    const currentUserProfile = useCurrentUserProfile()
+  const notificationPermissionSync = async (accepted) => {
+    const currentUser = useCurrentUser()
+    // if accepted is not defined, then check the permissions
+    if (accepted === undefined) {
+      accepted = await checkPermissions()
+    }
+    console.log('============= permission changed, accepted = ', accepted)
+
+    let currentUserProfile = currentUser.value ? useCurrentUserProfile() : await Preferences.get({ key: localUserProfileKey })
+
+    let finalProfile = null
+
+    if (typeof currentUserProfile === 'string') {
+      console.log('============= currentUserProfile, STRING = ', currentUserProfile)
+      finalProfile = JSON.parse(currentUserProfile)
+      // convert to string
+      const finalProfileSTRING = JSON.stringify(finalProfile)
+      // update preferences
+      await Preferences.set({
+        key: localUserProfileKey,
+        value: finalProfileSTRING,
+      })
+    } else {
+      finalProfile = currentUserProfile.value
+      console.log('============= currentUserProfile, USER = ', currentUserProfile.value)
+    }
 
     if (accepted) {
-      // Register with Apple / Google to receive push via APNS/FCM
-      currentUserProfile.value.receive_general_notifications = true
+      finalProfile.receive_general_notifications = true
     } else {
-      currentUserProfile.value.receive_general_notifications = false
+      finalProfile.receive_general_notifications = false
     }
   }
 
@@ -229,7 +256,7 @@ export default function useOneSignal() {
     //await OneSignal.InAppMessages.addEventListener("willDismiss", inAppNotificationDidDismiss);
     await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
-    await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionListener)
+    await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionSync)
 
     //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
 
@@ -322,5 +349,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { initOneSignal, requestNotificationPermission, checkPermissions, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels }
 }
