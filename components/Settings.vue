@@ -266,7 +266,7 @@ const onDeleteAccountClick = () => {
           optionLabel="station"
           placeholder="Select a station"
           label="Default stream"
-          width="80%"
+          width="auto"
           class="-mr-2"
           @change="onUpdateStation"
         />
@@ -276,7 +276,7 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox label="General" :ripple="false">
+      <SBox label="Allow Notifications" :ripple="false">
         <VInputSwitch
           yes="ON"
           no="OFF"
@@ -285,31 +285,39 @@ const onDeleteAccountClick = () => {
           @change="handleNotificationChange"
         />
       </SBox>
-      <template
-        v-if="
-          currentUserProfile.receive_general_notifications &&
-          masterNotificationChannelsArray.length > 0
-        "
+    </section>
+    <section
+      v-if="
+        currentUserProfile.receive_general_notifications &&
+        masterNotificationChannelsArray.length > 0 &&
+        isApp
+      "
+      class="notifications p-0"
+    >
+      <div class="flex s-title-holder">
+        <div class="s-title">Notification Types</div>
+      </div>
+
+      <SBox
+        v-for="channel in masterNotificationChannelsArray"
+        :label="channel.label"
+        :description="channel.description"
+        :key="channel.key"
+        :ripple="false"
       >
-        <SBox
-          v-for="channel in masterNotificationChannelsArray"
-          :label="channel.label"
-          :key="channel.key"
-          :ripple="false"
-        >
-          <VInputSwitch
-            yes="ON"
-            no="OFF"
-            static-width
-            v-model:data="
-              currentUserProfile.one_signal_notification_channels.find(
-                (c) => c.key === channel.key
-              ).value
-            "
-            @change="handleNotificationChannelChange(channel)"
-          />
-        </SBox>
-      </template>
+        <VInputSwitch
+          yes="ON"
+          no="OFF"
+          static-width
+          v-model:data="
+            currentUserProfile.one_signal_notification_channels.find(
+              (c) => c.key === channel.key
+            ).value
+          "
+          @change="handleNotificationChannelChange(channel)"
+        />
+      </SBox>
+      <!-- 
       <SBox
         label="System options"
         :ripple="true"
@@ -323,7 +331,7 @@ const onDeleteAccountClick = () => {
             )
           }
         "
-      ></SBox>
+      ></SBox> -->
     </section>
     <section class="display p-0">
       <div class="flex s-title-holder">
@@ -337,7 +345,7 @@ const onDeleteAccountClick = () => {
           optionLabel="label"
           placeholder="Select a Text Size"
           label="Text Size"
-          width="80%"
+          width="auto"
           class="-mr-2"
           @change="onUpdateTextSize"
         />

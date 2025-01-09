@@ -7,6 +7,10 @@ const props = defineProps({
     default: "",
     required: true,
   },
+  description: {
+    type: String,
+    default: null,
+  },
   link: {
     type: String,
     default: null,
@@ -54,22 +58,35 @@ const onClick = () => {
       v-ripple
       :class="[{ killRipple: !props.ripple }]"
     >
-      <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
-        <Button :label="label" class="w-full text-left" text aria-label="menu item" />
+      <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full py-1">
+        <Button
+          :label="label"
+          class="w-full text-left line-height-3"
+          text
+          aria-label="menu item"
+        />
       </VFlexibleLink>
-      <VFlexibleLink v-else-if="isLink" raw class="w-full">
-        <Button :label="label" class="w-full text-left" text aria-label="menu item" />
+      <VFlexibleLink v-else-if="isLink" raw class="w-full py-1">
+        <Button
+          :label="label"
+          class="w-full text-left line-height-3"
+          text
+          aria-label="menu item"
+        />
       </VFlexibleLink>
-      <div v-else>
+      <template v-else>
         <div
-          class="label-holder flex h-full py-3 align-items-center cursor-pointer"
+          class="label-holder flex flex-column gap-1 h-full w-full py-3 justify-items-center cursor-pointer"
           @click="emit('label-click')"
         >
-          <p class="label white-space-nowrap">
+          <p class="label">
             {{ label }}
           </p>
+          <p v-if="description" class="description">
+            {{ description }}
+          </p>
         </div>
-      </div>
+      </template>
       <slot />
     </div>
   </div>
@@ -79,7 +96,7 @@ const onClick = () => {
 .s-box {
   background-color: var(--s-box-background-color);
   width: 100%;
-  height: 50px;
+  min-height: 50px;
   padding: 0 1.25rem;
   border: 1px solid var(--shade-400);
   border-left: none;
@@ -109,6 +126,12 @@ const onClick = () => {
   }
   .label {
     font-size: 1rem;
+    margin-right: 15px;
+  }
+  .description {
+    font-size: 0.75rem;
+    line-height: normal;
+    opacity: 0.7;
     margin-right: 15px;
   }
 }
