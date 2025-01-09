@@ -38,7 +38,7 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
-import { PushNotifications } from "@capacitor/push-notifications"
+//import { PushNotifications } from "@capacitor/push-notifications"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
@@ -582,7 +582,7 @@ export const getAndSetUserProfile = async () => {
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
-  const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels, checkPermissions } = useOneSignal()
+  const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels } = useOneSignal()
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
@@ -619,14 +619,7 @@ export const getAndSetUserProfile = async () => {
 
         // get the system's notification permission and apply it to the ls
         if (isApp.value) {
-          await PushNotifications.checkPermissions().then((result) => {
-            if (result.receive === "denied") {
-              ls.receive_general_notifications = false
-            }
-            if (result.receive === "granted") {
-              ls.receive_general_notifications = true
-            }
-          })
+          await useOneSignal().checkPermissions() ? ls.receive_general_notifications = true : ls.receive_general_notifications = false
         }
 
         // if first time logging in with new profile, set preferences from the local storage
@@ -765,14 +758,7 @@ export const getAndSetUserProfile = async () => {
 
           // get the system's notification permission and apply it to the initial defaults
           if (isApp.value) {
-            await PushNotifications.checkPermissions().then((result) => {
-              if (result.receive === "denied") {
-                defaults.receive_general_notifications = false
-              }
-              if (result.receive === "granted") {
-                defaults.receive_general_notifications = true
-              }
-            })
+            await useOneSignal().checkPermissions() ? defaults.receive_general_notifications = true : defaults.receive_general_notifications = false
           }
 
           const defaultsSTRING = JSON.stringify(defaults)
@@ -805,14 +791,7 @@ export const getAndSetUserProfile = async () => {
 
           // get the system's notification permission and apply it to the currentUserProfile.value
           if (isApp.value) {
-            await PushNotifications.checkPermissions().then((result) => {
-              if (result.receive === "denied") {
-                currentUserProfile.value.receive_general_notifications = false
-              }
-              if (result.receive === "granted") {
-                currentUserProfile.value.receive_general_notifications = true
-              }
-            })
+            await useOneSignal().checkPermissions() ? currentUserProfile.value.receive_general_notifications = true : currentUserProfile.value.receive_general_notifications = false
           }
 
           updateAllLiveStreams()
@@ -1172,18 +1151,10 @@ export const askTrackingPermissions = async () => {
   }
 }
 
-// handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
+// handles the toggling of permissions for push & local notifications. Either to use the available prompt, or route to the system settings to manually change it
 export const toggleAskNotificationPermissions = async (isEnabled = true) => {
   await nextTick()
-  const permStatus = await PushNotifications.checkPermissions()
-  if (
-    isEnabled === true &&
-    (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")
-  ) {
-    askNotificationPermissions()
-  } else {
-    toSystemSettings()
-  }
+  await useOneSignal().checkPermissions() && isEnabled === true ? askNotificationPermissions() : toSystemSettings()
 }
 
 // log out the current user

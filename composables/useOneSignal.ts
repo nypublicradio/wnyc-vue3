@@ -189,37 +189,14 @@ export default function useOneSignal() {
 
   // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
-    const currentUser = useCurrentUser()
+    //const currentUser = useCurrentUser()
+    const currentUserProfile = useCurrentUserProfile()
     // if accepted is not defined, then check the permissions
     if (accepted === undefined) {
       accepted = await checkPermissions()
     }
-    console.log('============= permission changed, accepted = ', accepted)
 
-    let currentUserProfile = currentUser.value ? useCurrentUserProfile() : await Preferences.get({ key: localUserProfileKey })
-
-    let finalProfile = null
-
-    if (typeof currentUserProfile === 'string') {
-      console.log('============= currentUserProfile, STRING = ', currentUserProfile)
-      finalProfile = JSON.parse(currentUserProfile)
-      // convert to string
-      const finalProfileSTRING = JSON.stringify(finalProfile)
-      // update preferences
-      await Preferences.set({
-        key: localUserProfileKey,
-        value: finalProfileSTRING,
-      })
-    } else {
-      finalProfile = currentUserProfile.value
-      console.log('============= currentUserProfile, USER = ', currentUserProfile.value)
-    }
-
-    if (accepted) {
-      finalProfile.receive_general_notifications = true
-    } else {
-      finalProfile.receive_general_notifications = false
-    }
+    currentUserProfile.value.receive_general_notifications = accepted
   }
 
   // const pushSubscriptionListener = (event) => {
