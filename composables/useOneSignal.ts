@@ -8,8 +8,10 @@ import {
   trackClickEvent,
   getPathAndQuery,
   askTrackingPermissions,
+  toSystemSettings,
 } from "~/utilities/helpers"
 import { ref } from "vue"
+import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
 
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
@@ -34,21 +36,21 @@ export default function useOneSignal() {
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
-  // function to handle the list of action IDs from the notification click actions
-  const doActionId = async (actionId) => {
-    switch (actionId) {
-      case "tracking-permission":
-        await askTrackingPermissions()
-        break
-      case "donate":
-        alert("you will see this when you return from the donate page. We can say thank you for donating or something")
-        // do something
-        break
-      default:
-        // do something
-        break
-    }
-  }
+  // // function to handle the list of action IDs from the notification click actions
+  // const doActionId = async (actionId) => {
+  //   switch (actionId) {
+  //     case "tracking-permission":
+  //       await askTrackingPermissions()
+  //       break
+  //     case "donate":
+  //       alert("you will see this when you return from the donate page. We can say thank you for donating or something")
+  //       // do something
+  //       break
+  //     default:
+  //       // do something
+  //       break
+  //   }
+  // }
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
@@ -239,7 +241,9 @@ export default function useOneSignal() {
 
   // function to trigger the OS permission request
   async function requestNotificationPermission() {
-    await OneSignal.Notifications.requestPermission()
+    await OneSignal.Notifications.canRequestPermission().then(async (canRequest) => {
+      canRequest ? await OneSignal.Notifications.requestPermission() : toSystemSettings()
+    });
   }
 
   // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
