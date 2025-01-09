@@ -195,7 +195,7 @@ export default function useOneSignal() {
     if (accepted === undefined) {
       accepted = await checkPermissions()
     }
-
+    // set profile to receive_general_notifications based on accepted
     currentUserProfile.value.receive_general_notifications = accepted
   }
 
@@ -233,6 +233,7 @@ export default function useOneSignal() {
     //await OneSignal.InAppMessages.addEventListener("willDismiss", inAppNotificationDidDismiss);
     await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
+    // listener for when the user changes the notification permissions at the OS level
     await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionSync)
 
     //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)

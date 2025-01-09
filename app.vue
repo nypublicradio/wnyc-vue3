@@ -110,7 +110,7 @@ onMounted(async () => {
       // refresh data
       refreshData()
 
-      // update user profile when coming back from  the system settings
+      // update user profile when coming back from the system settings
       if (isApp.value) {
         await notificationPermissionSync(undefined)
       }
