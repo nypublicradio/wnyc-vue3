@@ -38,7 +38,6 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
-//import { PushNotifications } from "@capacitor/push-notifications"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
 //import { useSupabaseClient } from '@nuxtjs/supabase'

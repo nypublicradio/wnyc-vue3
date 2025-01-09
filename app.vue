@@ -12,7 +12,6 @@ import {
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import { initLocalNotifications } from "~/utilities/local-notifications"
-import { PushNotifications } from "@capacitor/push-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"

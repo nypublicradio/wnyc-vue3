@@ -10,10 +10,6 @@ import {
   askTrackingPermissions,
 } from "~/utilities/helpers"
 import { ref } from "vue"
-import { Preferences } from "@capacitor/preferences"
-import {
-  localUserProfileKey,
-} from "~/composables/globals"
 
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
@@ -187,6 +183,11 @@ export default function useOneSignal() {
     linkOrRouteOrAction(event)
   }
 
+  // function to check the permissions for notifications
+  const checkPermissions = async () => {
+    return await OneSignal.Notifications.getPermissionAsync();
+  }
+
   // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
     await nextTick()
@@ -207,11 +208,6 @@ export default function useOneSignal() {
   const userListener = () => {
     setOneSignalId()
   };
-
-  // function to check the permissions for notifications
-  const checkPermissions = async () => {
-    return await OneSignal.Notifications.getPermissionAsync();
-  }
 
   // function to initialize OneSignal
   async function initOneSignal() {
