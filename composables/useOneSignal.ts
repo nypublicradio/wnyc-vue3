@@ -189,7 +189,7 @@ export default function useOneSignal() {
 
   // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
-    //const currentUser = useCurrentUser()
+    await nextTick()
     const currentUserProfile = useCurrentUserProfile()
     // if accepted is not defined, then check the permissions
     if (accepted === undefined) {
