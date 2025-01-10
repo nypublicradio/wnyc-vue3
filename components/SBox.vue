@@ -76,7 +76,7 @@ const onClick = () => {
       </VFlexibleLink>
       <template v-else>
         <div
-          class="label-holder flex flex-column gap-1 h-full w-full py-3 justify-items-center cursor-pointer"
+          class="label-holder flex flex-column gap-1 h-full w-auto py-3 justify-items-center cursor-pointer"
           @click="emit('label-click')"
         >
           <p class="label">
