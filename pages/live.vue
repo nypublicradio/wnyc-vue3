@@ -118,7 +118,7 @@ const getTheTime = (startArg, endArg, index) => {
   return index === 0 ? `Now Until ${endTime}` : startTime
 }
 
-watch(currentEpisodeHolder, async () => {
+watch(currentEpisodeHolder, () => {
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
@@ -221,9 +221,12 @@ watch(currentStreamStation, async () => {
   await fetchSchedule()
 })
 
+// Function to get the station by slug and play it
 const getStationBySlugAndPlayIt = async (querySlug) => {
-  const station = allCurrentStations.value.find((station) => station.slug === querySlug)
-  station && switchStation(station)
+  const targetStation = allCurrentStations.value.find(
+    (station) => station.slug === querySlug
+  )
+  targetStation && switchStation(targetStation)
   await nextTick()
   togglePlayHere()
 }

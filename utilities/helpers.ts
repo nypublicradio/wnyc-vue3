@@ -1152,8 +1152,6 @@ export const askTrackingPermissions = async () => {
 
 // handles the toggling of permissions for push & local notifications. Either to use the available prompt, or route to the system settings to manually change it
 export const toggleAskNotificationPermissions = async (isSwitchOn = true) => {
-  console.log("============ useOneSignal().checkPermissions() =", await useOneSignal().checkPermissions())
-  console.log("============ isSwitchOn =", isSwitchOn)
   await useOneSignal().checkPermissions() ? toSystemSettings() : askNotificationPermissions()
 }
 

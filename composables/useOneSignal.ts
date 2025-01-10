@@ -7,7 +7,6 @@ import {
 import {
   trackClickEvent,
   getPathAndQuery,
-  askTrackingPermissions,
   toSystemSettings,
 } from "~/utilities/helpers"
 import { ref } from "vue"
@@ -35,22 +34,6 @@ export default function useOneSignal() {
 
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
-
-  // // function to handle the list of action IDs from the notification click actions
-  // const doActionId = async (actionId) => {
-  //   switch (actionId) {
-  //     case "tracking-permission":
-  //       await askTrackingPermissions()
-  //       break
-  //     case "donate":
-  //       alert("you will see this when you return from the donate page. We can say thank you for donating or something")
-  //       // do something
-  //       break
-  //     default:
-  //       // do something
-  //       break
-  //   }
-  // }
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {

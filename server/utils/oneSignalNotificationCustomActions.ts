@@ -2,6 +2,7 @@ import {
     askTrackingPermissions,
 } from "~/utilities/helpers"
 
+// repository switch case for custom actions that can be triggered by OneSignal notifications based on the actionId
 export async function doActionId(actionId: string) {
     switch (actionId) {
         case "tracking-permission":
