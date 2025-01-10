@@ -1,6 +1,6 @@
 <script setup>
-import { trackClickEvent, togglePlayEpisode } from '~/utilities/helpers'
-import { updateLiveStream } from '~/composables/data/liveStream'
+import { trackClickEvent, togglePlayEpisode } from "~/utilities/helpers"
+import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
   useCurrentEpisode,
@@ -10,10 +10,10 @@ import {
   useIsEpisodePlaying,
   useIsStreamLoading,
   useGlobalToast,
-  useIsApp
-} from '~/composables/states'
+  useIsApp,
+} from "~/composables/states"
 
-import { scheduleLocalNotification } from '~/utilities/local-notifications'
+import { scheduleLocalNotification } from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -30,15 +30,19 @@ const isApp = useIsApp()
 const globalToast = useGlobalToast()
 const scheduleRef = ref(null)
 
+const route = useRoute()
+const router = useRouter()
+const routeSlug = ref(route.query.slug)
+
 // assembles the proper title for the schedule entry
-const getEntryTitle = entry => {
+const getEntryTitle = (entry) => {
   return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
     ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
     : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
 }
 
 // switch the station and track it
-const switchStation = async station => {
+const switchStation = async (station) => {
   if (!isStreamLoading.value) {
     //if (currentEpisode.value !== station) {
     if (isEpisodePlaying.value) {
@@ -53,8 +57,8 @@ const switchStation = async station => {
     }
 
     trackClickEvent(
-      'Click Tracking - Station Button',
-      'Live Page',
+      "Click Tracking - Station Button",
+      "Live Page",
       `switch station ${station?.station}`
     )
     //}
@@ -73,25 +77,25 @@ const togglePlayHere = () => {
 }
 
 const scrollToActiveStation = () => {
-  const activeStation = document.getElementsByClassName('activestation')
+  const activeStation = document.getElementsByClassName("activestation")
   if (activeStation[0]) {
     //console.log('scrolling')
     activeStation[0].scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'start'
+      behavior: "smooth",
+      block: "center",
+      inline: "start",
     })
   }
 }
 
 // schedule a local notification and track it
-const handleScheduleLocalNotification = async entry => {
+const handleScheduleLocalNotification = async (entry) => {
   trackClickEvent(
-    'Click Tracking - Schedule Notify Button',
-    'Live Page',
-    `Notify me about ${currentStreamStation.value} - ${getEntryTitle(
-      entry
-    )} at ${entry.attributes.start}`
+    "Click Tracking - Schedule Notify Button",
+    "Live Page",
+    `Notify me about ${currentStreamStation.value} - ${getEntryTitle(entry)} at ${
+      entry.attributes.start
+    }`
   )
   entry.station = currentEpisodeHolder.value.station
   await scheduleLocalNotification(entry)
@@ -100,25 +104,34 @@ const handleScheduleLocalNotification = async entry => {
 // get the time for the schedule entry
 const getTheTime = (startArg, endArg, index) => {
   const start = new Date(startArg)
-  const startTime = start.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true
+  const startTime = start.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
   })
   const end = new Date(endArg)
-  const endTime = end.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true
+  const endTime = end.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
   })
   return index === 0 ? `Now Until ${endTime}` : startTime
 }
 
-watch(currentEpisodeHolder, () => {
+watch(currentEpisodeHolder, async () => {
   setTimeout(() => {
     scrollToActiveStation()
   }, 200)
 })
+
+// updates the stream to the current station when the page loads ONCE with this watcher
+watch(
+  currentEpisodeHolder,
+  async () => {
+    await updateLiveStream(currentEpisodeHolder.value.slug, false)
+  },
+  { once: true }
+)
 
 // Function to calculate the time difference between now and the target time
 function getTimeDifference(targetTime) {
@@ -177,7 +190,7 @@ const fetchSchedule = async () => {
     const schedule = await $fetch(
       `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
       {
-        method: 'POST'
+        method: "POST",
         // params: {
         //   localDate: String(localDate),
         // },
@@ -188,20 +201,19 @@ const fetchSchedule = async () => {
 
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-      const delay =
-        (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
+      const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
       timeout = setTimeout(fetchSchedule, delay)
     }
   } catch (error) {
     globalToast.value = {
-      severity: 'error',
+      severity: "error",
       summary:
-        'Sorry. We are having trouble getting the schedule. Please try again later.',
+        "Sorry. We are having trouble getting the schedule. Please try again later.",
       life: null,
-      closable: true
+      closable: true,
     }
     clearAllTimeout()
-    console.error('error = ', error)
+    console.error("error = ", error)
   }
 }
 
@@ -209,23 +221,56 @@ watch(currentStreamStation, async () => {
   await fetchSchedule()
 })
 
+const getStationBySlugAndPlayIt = async (querySlug) => {
+  const station = allCurrentStations.value.find((station) => station.slug === querySlug)
+  station && switchStation(station)
+  await nextTick()
+  togglePlayHere()
+}
+
+// watcher for triggering a play of the live stream from a route variable
+watch(
+  () => router.currentRoute.value.query,
+  (newQuery) => {
+    // trigger stream station to play if slug is in the query
+
+    // if we have a slug in the query
+    if (newQuery.slug) {
+      routeSlug.value = newQuery.slug
+      // if we don't have allCurrentStations watch it and then play the station
+      if (!allCurrentStations.value) {
+        watch(
+          allCurrentStations,
+          () => {
+            getStationBySlugAndPlayIt(newQuery.slug)
+          },
+          { once: true }
+        )
+      } else {
+        // we have allCurrentStations already
+        getStationBySlugAndPlayIt(newQuery.slug)
+      }
+    }
+  },
+  { immediate: true }
+)
+
 onMounted(async () => {
+  if (!routeSlug.value) {
+    setTimeout(() => {
+      scrollToActiveStation()
+    }, 200)
+  }
+
   await fetchSchedule()
 
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
-    page_title: 'Listen Live',
-    page_type: 'live_tab',
-    content_group: 'app_tab'
+    page_title: "Listen Live",
+    page_type: "live_tab",
+    content_group: "app_tab",
   })
-  setTimeout(() => {
-    scrollToActiveStation()
-  }, 200)
-  // updates the stream to the current station
-  if (currentEpisodeHolder.value) {
-    await updateLiveStream(currentEpisodeHolder.value.slug, false)
-  }
 })
 
 onUnmounted(() => {
@@ -237,8 +282,8 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
+          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
         >
         <Meta
           name="og:title"
@@ -251,10 +296,7 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature
-        v-if="currentEpisodeHolder"
-        class="live-stations-holder"
-      >
+      <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
         <div class="live-stations flex pb-2 w-full">
           <div
             v-for="(station, index) in allCurrentStations"
@@ -262,7 +304,7 @@ onUnmounted(() => {
             :class="{
               activestation:
                 currentEpisodeHolder?.station === station.station ||
-                currentEpisode?.station === station.station
+                currentEpisode?.station === station.station,
             }"
             :key="`${station.station}-${index}`"
           >
@@ -282,10 +324,7 @@ onUnmounted(() => {
               >
                 <template #icon>
                   <div v-if="currentEpisode?.station === station.station">
-                    <i
-                      v-if="isStreamLoading"
-                      class="pi pi-spin pi-spinner mr-2"
-                    ></i>
+                    <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
                     <WnycLoader
                       v-else
                       class="pr-2"
@@ -355,13 +394,7 @@ onUnmounted(() => {
             <div class="left my-1" />
             <div>
               <p class="time">
-                {{
-                  getTheTime(
-                    entry.attributes.start,
-                    entry.attributes.end,
-                    index
-                  )
-                }}
+                {{ getTheTime(entry.attributes.start, entry.attributes.end, index) }}
               </p>
               <h2 class="title">
                 {{ getEntryTitle(entry) }}
@@ -455,7 +488,7 @@ html {
       &:after {
         transition: bottom 0.5s;
         -webkit-transition: bottom 0.5s;
-        content: '';
+        content: "";
         position: absolute;
         bottom: 2px;
         right: 0;
@@ -485,7 +518,7 @@ html {
         }
       }
       &:first-child {
-        @include media('>=md') {
+        @include media(">=md") {
           margin-left: calc(((100% - 768px) / 2) + 48px);
         }
       }

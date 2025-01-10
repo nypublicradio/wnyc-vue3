@@ -54,7 +54,9 @@ watchEffect(async () => {
   )
   // show/hide download button based on show title
   const showsWithoutDownload = ["nyc now", "wnyc news"]
-  const showTitle = currentEpisode.value.showTitle.toLowerCase()
+  const showTitle = (
+    currentEpisode.value.showTitle || currentEpisode.value.title
+  )?.toLowerCase()
   showDownload.value = showTitle
     ? !showsWithoutDownload.includes(showTitle) || !isApp.value
     : true
