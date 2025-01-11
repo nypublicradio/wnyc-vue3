@@ -181,11 +181,11 @@ const clickThisId = (id) => {
 
 // handles the notification switch change event
 const handleNotificationChange = async (e) => {
-  await toggleAskNotificationPermissions(e)
+  await toggleAskNotificationPermissions()
   trackClickEvent(
     "Click Tracking - General notification switch",
     "Settings Sidebar - Notifications",
-    currentUserProfile.receive_general_notifications
+    e
   )
 }
 
