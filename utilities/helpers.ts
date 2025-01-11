@@ -618,7 +618,7 @@ export const getAndSetUserProfile = async () => {
 
         // get the system's notification permission and apply it to the ls
         if (isApp.value) {
-          await useOneSignal().checkPermissions() ? ls.receive_general_notifications = true : ls.receive_general_notifications = false
+          ls.receive_general_notifications = await useOneSignal().checkPermissions()
         }
 
         // if first time logging in with new profile, set preferences from the local storage
@@ -675,11 +675,15 @@ export const getAndSetUserProfile = async () => {
           // update data object with the defaultNotificationChannels
           data.one_signal_notification_channels = defaultNotificationChannels
 
+          // get the system's notification permission and apply it to the data.receive_general_notifications
+          data.receive_general_notifications = await useOneSignal().checkPermissions()
+
           // update supabase profile data with the updated data.one_signal_notification_channels
           await client
             .from("profiles")
             .update({
               one_signal_notification_channels: data.one_signal_notification_channels,
+              receive_general_notifications: data.receive_general_notifications,
             })
             .match({ id: currentUser.value.id })
 
@@ -698,11 +702,15 @@ export const getAndSetUserProfile = async () => {
           // check if supabase master notification channels changed and sync them with supabase and OneSignal
           data.one_signal_notification_channels = await syncMasterNotificationChannels(data, masterNotificationChannelsArray)
 
+          // get the system's notification permission and apply it to the data.receive_general_notifications
+          data.receive_general_notifications = await useOneSignal().checkPermissions()
+
           // update supabase profile data with the updated data.one_signal_notification_channels
           await client
             .from("profiles")
             .update({
               one_signal_notification_channels: data.one_signal_notification_channels,
+              receive_general_notifications: data.receive_general_notifications,
             })
             .match({ id: currentUser.value.id })
 
