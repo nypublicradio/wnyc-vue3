@@ -221,18 +221,27 @@ watch(currentStreamStation, async () => {
   await fetchSchedule()
 })
 
-// Function to get the station by slug and play it
+// Function to get the station by slug and play it when all stations are loaded
 const getStationBySlugAndPlayIt = async (querySlug) => {
   // If stations aren't loaded, wait for them to load then continue
   if (!allCurrentStations.value) {
     await new Promise((resolve) => {
-      watch(allCurrentStations, () => resolve(), { once: true })
+      // because the watch is in a Promise, it will not be destroyed when the component is unmounted, so we need to unwatch it
+      const unwatch = watch(
+        allCurrentStations,
+        () => {
+          resolve()
+          unwatch()
+        },
+        { once: true }
+      )
     })
   }
 
   const targetStation = allCurrentStations.value.find(
     (station) => station.slug === querySlug
   )
+  // try .some() instead of .find() to see if it's faster
   targetStation && switchStation(targetStation)
   await nextTick()
   togglePlayHere()
