@@ -617,9 +617,8 @@ export const getAndSetUserProfile = async () => {
         }
 
         // get the system's notification permission and apply it to the ls
-        if (isApp.value) {
-          ls.receive_general_notifications = await useOneSignal().checkPermissions()
-        }
+        ls.receive_general_notifications = await useOneSignal().checkPermissions()
+
 
         // if first time logging in with new profile, set preferences from the local storage
         data.initial = false
@@ -764,9 +763,8 @@ export const getAndSetUserProfile = async () => {
           defaults.dark_mode = detectSystemDarkMode()
 
           // get the system's notification permission and apply it to the initial defaults
-          if (isApp.value) {
-            await useOneSignal().checkPermissions() ? defaults.receive_general_notifications = true : defaults.receive_general_notifications = false
-          }
+          defaults.receive_general_notifications = await useOneSignal().checkPermissions()
+
 
           const defaultsSTRING = JSON.stringify(defaults)
           await Preferences.set({
@@ -797,9 +795,8 @@ export const getAndSetUserProfile = async () => {
           currentUserProfile.value = localUserProfile
 
           // get the system's notification permission and apply it to the currentUserProfile.value
-          if (isApp.value) {
-            await useOneSignal().checkPermissions() ? currentUserProfile.value.receive_general_notifications = true : currentUserProfile.value.receive_general_notifications = false
-          }
+          currentUserProfile.value.receive_general_notifications = await useOneSignal().checkPermissions()
+
 
           updateAllLiveStreams()
           //set display settings

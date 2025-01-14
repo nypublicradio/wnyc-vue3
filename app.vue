@@ -91,7 +91,8 @@ const addListeners = async () => {
 
 onMounted(async () => {
   // OneSignal
-  initOneSignal()
+  if (isApp.value) initOneSignal()
+
   await getAndSetUserProfile()
 
   if (isApp.value) {

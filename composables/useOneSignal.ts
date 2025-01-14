@@ -3,6 +3,7 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
   useSettingSideBar,
+  useIsApp,
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -35,8 +36,11 @@ export default function useOneSignal() {
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
+  const isApp = useIsApp()
+
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
+    if (!isApp.value) return
     await OneSignal.User.addTag(channelKey, String(value))
   }
 
@@ -170,7 +174,11 @@ export default function useOneSignal() {
 
   // function to check the permissions for notifications
   const checkPermissions = async () => {
-    return await OneSignal.Notifications.getPermissionAsync();
+    if (isApp.value) {
+      return await OneSignal.Notifications.getPermissionAsync();
+    } else {
+      return false
+    }
   }
 
   // triggered when the listener for permissionChange is called
@@ -265,11 +273,13 @@ export default function useOneSignal() {
     });
 
     //update the user tags to OneSignal profile, when user is logged in only
-    const currentUser = useCurrentUser()
-    if (currentUser.value) {
-      local.one_signal_notification_channels.forEach((channel) => {
-        toggleOneSignalUserTag(channel.key, channel.value)
-      })
+    if (isApp.value) {
+      const currentUser = useCurrentUser()
+      if (currentUser.value) {
+        local.one_signal_notification_channels.forEach((channel) => {
+          toggleOneSignalUserTag(channel.key, channel.value)
+        })
+      }
     }
 
     return local.one_signal_notification_channels
@@ -277,6 +287,7 @@ export default function useOneSignal() {
 
   // function to log in and manage the user in OneSignal with supabase data
   async function OneSignalLogin() {
+    if (!isApp.value) return
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
 
@@ -314,6 +325,7 @@ export default function useOneSignal() {
 
   // function to log out the user in OneSignal
   async function logout() {
+    if (!isApp.value) return
     await OneSignal.logout()
   }
 
