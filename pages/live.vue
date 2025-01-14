@@ -223,6 +223,13 @@ watch(currentStreamStation, async () => {
 
 // Function to get the station by slug and play it
 const getStationBySlugAndPlayIt = async (querySlug) => {
+  // If stations aren't loaded, wait for them to load then continue
+  if (!allCurrentStations.value) {
+    await new Promise((resolve) => {
+      watch(allCurrentStations, () => resolve(), { once: true })
+    })
+  }
+
   const targetStation = allCurrentStations.value.find(
     (station) => station.slug === querySlug
   )
@@ -235,24 +242,10 @@ const getStationBySlugAndPlayIt = async (querySlug) => {
 watch(
   () => router.currentRoute.value.query,
   (newQuery) => {
-    // trigger stream station to play if slug is in the query
-
-    // if we have a slug in the query
+    // checking if the slug is in the query
     if (newQuery.slug) {
       routeSlug.value = newQuery.slug
-      // if we don't have allCurrentStations watch it and then play the station
-      if (!allCurrentStations.value) {
-        watch(
-          allCurrentStations,
-          () => {
-            getStationBySlugAndPlayIt(newQuery.slug)
-          },
-          { once: true }
-        )
-      } else {
-        // we have allCurrentStations already
-        getStationBySlugAndPlayIt(newQuery.slug)
-      }
+      getStationBySlugAndPlayIt(newQuery.slug)
     }
   },
   { immediate: true }
