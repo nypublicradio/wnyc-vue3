@@ -2,6 +2,13 @@ import { LocalNotifications } from "@capacitor/local-notifications"
 import { useGlobalToast, useCurrentUserProfile } from "~/composables/states"
 import { formatDate, toggleAskNotificationPermissions } from "~/utilities/helpers"
 
+// assembles the proper title for the schedule entry
+export const getEntryTitle = (entry) => {
+    return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
+        ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
+        : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
+}
+
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
 
@@ -27,7 +34,7 @@ export const scheduleLocalNotification = async (entry) => {
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
-    const title = `${entry.attributes.parentTitle} is starting now on ${entry.station}!`
+    const title = `${getEntryTitle(entry)} is starting now on ${entry.station}!`
 
     const body = entry.attributes.scheduleEventTitle ? `${entry.attributes.scheduleEventTitle}` : ''
     const serializedEntry = JSON.stringify(entry);
@@ -77,11 +84,11 @@ export const initLocalNotifications = async () => {
     // Method called when tapping on a push notification
     await LocalNotifications.addListener(
         "localNotificationActionPerformed",
-        (/* notification */) => {
+        (notification) => {
             //alert('local notifications action performed: ' + JSON.stringify(notification))
 
-            // the notification object will contain the all the data that was added to the locaal notification. so in the future we can add more data to the notification and use it here to do whatever we want. As of now, we are just hard loading the LIVE page
-            window.location.href = "/live"
+            // the notification object will contain the all the data that was added to the local notification. so in the future we can add more data to the notification and use it here to do whatever we want. As of now, we are just hard loading the LIVE page
+            window.location.href = `/live?slug=${notification.extra.slug}`
         }
     )
 }

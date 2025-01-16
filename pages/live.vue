@@ -13,7 +13,7 @@ import {
   useIsApp,
 } from "~/composables/states"
 
-import { scheduleLocalNotification } from "~/utilities/local-notifications"
+import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -33,13 +33,6 @@ const scheduleRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
-
-// assembles the proper title for the schedule entry
-const getEntryTitle = (entry) => {
-  return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
-    ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
-    : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
-}
 
 // targets the active station and scrolls to it
 const scrollToActiveStation = () => {
@@ -97,7 +90,7 @@ const handleScheduleLocalNotification = async (entry) => {
   trackClickEvent(
     "Click Tracking - Schedule Notify Button",
     "Live Page",
-    `Notify me about ${currentStreamStation.value} - ${getEntryTitle(entry)} at ${
+    `Notify me about ${entry.station} - ${getEntryTitle(entry)} at ${
       entry.attributes.start
     }`
   )
@@ -194,9 +187,15 @@ const fetchSchedule = async () => {
         // },
       }
     )
-    scheduleRef.value = schedule
-    // init setTimeouts to refetch the schedule when the current event starts
 
+    // add the slug to the schedule data to pass to the local notification system
+    schedule.forEach((entry) => {
+      entry.slug = currentStreamStation.value
+    })
+
+    scheduleRef.value = schedule
+
+    // init setTimeouts to refetch the schedule when the current event starts
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
