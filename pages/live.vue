@@ -34,70 +34,6 @@ const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
 
-// targets the active station and scrolls to it
-const scrollToActiveStation = () => {
-  console.log("scrolling")
-  const activeStation = document.getElementsByClassName("activestation")
-  if (activeStation[0]) {
-    //console.log('scrolling')
-    activeStation[0].scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "start",
-    })
-  }
-}
-
-// switch the station and track it
-const switchStation = async (station, isPLayingCheck = true) => {
-  if (!isStreamLoading.value) {
-    //if (currentEpisode.value !== station) {
-    if (isEpisodePlaying.value && isPLayingCheck) {
-      await updateLiveStream(station.slug)
-      togglePlayTrigger.value = !togglePlayTrigger.value
-      currentEpisode.value = station
-      isLiveStream.value = true
-    } else {
-      currentEpisode.value = null
-      currentStreamStation.value = station.slug
-      currentEpisodeHolder.value = station
-    }
-    await fetchSchedule()
-    scrollToActiveStation()
-
-    trackClickEvent(
-      "Click Tracking - Station Button",
-      "Live Page",
-      `switch station ${station?.station}`
-    )
-    //}
-  }
-}
-// handle the toggle play button and tracking
-const togglePlayHere = () => {
-  if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
-    //update slug
-    currentStreamStation.value = currentEpisodeHolder.value.slug
-    //currentEpisode.value = currentEpisodeHolder.value
-    togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
-  } else {
-    togglePlayTrigger.value = !togglePlayTrigger.value
-  }
-}
-
-// schedule a local notification and track it
-const handleScheduleLocalNotification = async (entry) => {
-  trackClickEvent(
-    "Click Tracking - Schedule Notify Button",
-    "Live Page",
-    `Notify me about ${entry.station} - ${getEntryTitle(entry)} at ${
-      entry.attributes.start
-    }`
-  )
-  entry.station = currentEpisodeHolder.value.station
-  await scheduleLocalNotification(entry)
-}
-
 // get the time for the schedule entry
 const getTheTime = (startArg, endArg, index) => {
   const start = new Date(startArg)
@@ -114,15 +50,6 @@ const getTheTime = (startArg, endArg, index) => {
   })
   return index === 0 ? `Now Until ${endTime}` : startTime
 }
-
-// updates the stream to the current station when the page loads ONCE with this watcher
-watch(
-  currentEpisodeHolder,
-  async () => {
-    await updateLiveStream(currentEpisodeHolder.value.slug, false)
-  },
-  { once: true }
-)
 
 // Function to calculate the time difference between now and the target time
 function getTimeDifference(targetTime) {
@@ -213,6 +140,78 @@ const fetchSchedule = async () => {
     console.error("error = ", error)
   }
 }
+
+// targets the active station and scrolls to it
+const scrollToActiveStation = () => {
+  const activeStation = document.getElementsByClassName("activestation")
+  if (activeStation[0]) {
+    //console.log('scrolling')
+    activeStation[0].scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "start",
+    })
+  }
+}
+
+// switch the station and track it
+const switchStation = async (station, isPLayingCheck = true) => {
+  if (!isStreamLoading.value) {
+    //if (currentEpisode.value !== station) {
+    if (isEpisodePlaying.value && isPLayingCheck) {
+      await updateLiveStream(station.slug)
+      togglePlayTrigger.value = !togglePlayTrigger.value
+      currentEpisode.value = station
+      isLiveStream.value = true
+    } else {
+      currentEpisode.value = null
+      currentStreamStation.value = station.slug
+      currentEpisodeHolder.value = station
+    }
+    await fetchSchedule()
+    scrollToActiveStation()
+
+    trackClickEvent(
+      "Click Tracking - Station Button",
+      "Live Page",
+      `switch station ${station?.station}`
+    )
+    //}
+  }
+}
+// handle the toggle play button and tracking
+const togglePlayHere = () => {
+  if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
+    //update slug
+    currentStreamStation.value = currentEpisodeHolder.value.slug
+    //currentEpisode.value = currentEpisodeHolder.value
+    togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+  } else {
+    togglePlayTrigger.value = !togglePlayTrigger.value
+  }
+}
+
+// schedule a local notification and track it
+const handleScheduleLocalNotification = async (entry) => {
+  trackClickEvent(
+    "Click Tracking - Schedule Notify Button",
+    "Live Page",
+    `Notify me about ${entry.station} - ${getEntryTitle(entry)} at ${
+      entry.attributes.start
+    }`
+  )
+  entry.station = currentEpisodeHolder.value.station
+  await scheduleLocalNotification(entry)
+}
+
+// updates the stream to the current station when the page loads ONCE with this watcher
+watch(
+  currentEpisodeHolder,
+  async () => {
+    await updateLiveStream(currentEpisodeHolder.value.slug, false)
+  },
+  { once: true }
+)
 
 // Function to get the station by slug and play it when all stations are loaded
 const getStationBySlugAndPlayIt = async (querySlug) => {
