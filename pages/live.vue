@@ -235,9 +235,12 @@ const getStationBySlugAndPlayIt = async (querySlug) => {
     (station) => station.slug === querySlug
   )
 
-  targetStation && switchStation(targetStation)
-  await nextTick()
-  togglePlayHere()
+  if (targetStation) {
+    setTimeout(() => {
+      switchStation(targetStation)
+      togglePlayHere()
+    }, 100)
+  }
 }
 
 // watcher for triggering a play of the live stream from a route variable

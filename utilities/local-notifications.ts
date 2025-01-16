@@ -34,6 +34,7 @@ export const scheduleLocalNotification = async (entry) => {
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
+    //const entryStartDateInFiveSeconds = new Date(Date.now() + 5000)
     const title = `${getEntryTitle(entry)} is starting now on ${entry.station}!`
 
     const body = entry.attributes.scheduleEventTitle ? `${entry.attributes.scheduleEventTitle}` : ''
@@ -46,7 +47,7 @@ export const scheduleLocalNotification = async (entry) => {
                 title,
                 body,
                 id,
-                schedule: { at: entryStartDate, allowWhileIdle: true },
+                schedule: { at: /* entryStartDateInFiveSeconds */entryStartDate, allowWhileIdle: true },
                 //schedule: { at: new Date(Date.now() + 5000) },
                 sound: "notification.wav",
                 actionTypeId: "route-live",
@@ -84,11 +85,10 @@ export const initLocalNotifications = async () => {
     // Method called when tapping on a push notification
     await LocalNotifications.addListener(
         "localNotificationActionPerformed",
-        (notification) => {
-            //alert('local notifications action performed: ' + JSON.stringify(notification))
+        (data) => {
 
-            // the notification object will contain the all the data that was added to the local notification. so in the future we can add more data to the notification and use it here to do whatever we want. As of now, we are just hard loading the LIVE page
-            window.location.href = `/live?slug=${notification.extra.slug}`
+            // we use the slug in the notification data to create the query variable
+            window.location.href = `/live?slug=${data.notification.extra.slug}`
         }
     )
 }
