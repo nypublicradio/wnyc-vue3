@@ -41,11 +41,25 @@ const getEntryTitle = (entry) => {
     : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
 }
 
+// targets the active station and scrolls to it
+const scrollToActiveStation = () => {
+  console.log("scrolling")
+  const activeStation = document.getElementsByClassName("activestation")
+  if (activeStation[0]) {
+    //console.log('scrolling')
+    activeStation[0].scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "start",
+    })
+  }
+}
+
 // switch the station and track it
-const switchStation = async (station) => {
+const switchStation = async (station, isPLayingCheck = true) => {
   if (!isStreamLoading.value) {
     //if (currentEpisode.value !== station) {
-    if (isEpisodePlaying.value) {
+    if (isEpisodePlaying.value && isPLayingCheck) {
       await updateLiveStream(station.slug)
       togglePlayTrigger.value = !togglePlayTrigger.value
       currentEpisode.value = station
@@ -55,6 +69,8 @@ const switchStation = async (station) => {
       currentStreamStation.value = station.slug
       currentEpisodeHolder.value = station
     }
+    await fetchSchedule()
+    scrollToActiveStation()
 
     trackClickEvent(
       "Click Tracking - Station Button",
@@ -73,18 +89,6 @@ const togglePlayHere = () => {
     togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
   } else {
     togglePlayTrigger.value = !togglePlayTrigger.value
-  }
-}
-
-const scrollToActiveStation = () => {
-  const activeStation = document.getElementsByClassName("activestation")
-  if (activeStation[0]) {
-    //console.log('scrolling')
-    activeStation[0].scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "start",
-    })
   }
 }
 
@@ -117,12 +121,6 @@ const getTheTime = (startArg, endArg, index) => {
   })
   return index === 0 ? `Now Until ${endTime}` : startTime
 }
-
-watch(currentEpisodeHolder, () => {
-  setTimeout(() => {
-    scrollToActiveStation()
-  }, 200)
-})
 
 // updates the stream to the current station when the page loads ONCE with this watcher
 watch(
@@ -217,10 +215,6 @@ const fetchSchedule = async () => {
   }
 }
 
-watch(currentStreamStation, async () => {
-  await fetchSchedule()
-})
-
 // Function to get the station by slug and play it when all stations are loaded
 const getStationBySlugAndPlayIt = async (querySlug) => {
   // If stations aren't loaded, wait for them to load then continue
@@ -241,7 +235,7 @@ const getStationBySlugAndPlayIt = async (querySlug) => {
   const targetStation = allCurrentStations.value.find(
     (station) => station.slug === querySlug
   )
-  // try .some() instead of .find() to see if it's faster
+
   targetStation && switchStation(targetStation)
   await nextTick()
   togglePlayHere()
@@ -261,13 +255,25 @@ watch(
 )
 
 onMounted(async () => {
+  // check if there is a route slug
   if (!routeSlug.value) {
-    setTimeout(() => {
-      scrollToActiveStation()
-    }, 200)
+    // If currentEpisodeHolder aren't loaded, wait for them to load then continue
+    if (!currentEpisodeHolder.value) {
+      await new Promise((resolve) => {
+        // because the watch is in a Promise, it will not be destroyed when the component is unmounted, so we need to unwatch it
+        const unwatch = watch(
+          currentEpisodeHolder,
+          () => {
+            resolve()
+            unwatch()
+          },
+          { once: true }
+        )
+      })
+    }
+    // select station, and don't check if it is playing
+    switchStation(currentEpisodeHolder.value, false)
   }
-
-  await fetchSchedule()
 
   // send GA page view
   const { $analytics } = useNuxtApp()
