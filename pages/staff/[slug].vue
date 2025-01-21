@@ -1,5 +1,4 @@
 <script setup>
-import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { trackClickEvent, goToStoryPage, getUserFallBackImage } from "~/utilities/helpers"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"

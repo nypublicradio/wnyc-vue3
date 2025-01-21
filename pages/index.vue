@@ -1,5 +1,5 @@
 <script setup async>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+
 import { setStatusDarkMode, trackClickEvent } from "~/utilities/helpers"
 import { useCurrentUserProfile } from "~/composables/states.ts"
 import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"

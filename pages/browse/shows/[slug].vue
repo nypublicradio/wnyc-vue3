@@ -1,6 +1,6 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 //import ShareIcon from "~/components/icons/ShareIcon.vue"

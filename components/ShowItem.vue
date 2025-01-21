@@ -1,5 +1,5 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"

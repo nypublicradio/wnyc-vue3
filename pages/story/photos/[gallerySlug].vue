@@ -1,8 +1,6 @@
 <script setup lang="ts">
 //import { GalleryPage } from "~/composables/types/Page";
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VShareTools from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareTools.vue"
-import VShareToolsItem from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VShareToolsItem.vue"
+
 import { trackClickEvent } from "~/utilities/helpers"
 import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 const route = useRoute()

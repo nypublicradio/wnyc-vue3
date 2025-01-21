@@ -1,7 +1,7 @@
 <script setup>
 import { HTML2Vue } from "html2vue-renderer"
 import { NuxtLink } from "#components"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 const props = defineProps({
   htmlContent: {
     type: String,

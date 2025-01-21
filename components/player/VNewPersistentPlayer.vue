@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
+
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"

@@ -18,7 +18,6 @@ import {
   useIsApp,
   useAccountDeleteSideBar,
 } from "~/composables/states.ts"
-import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"

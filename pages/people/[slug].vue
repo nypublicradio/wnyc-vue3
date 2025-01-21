@@ -1,6 +1,5 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
+
 import {
   trackClickEvent,
   getUserFallBackImage,

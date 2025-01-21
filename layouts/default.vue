@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VSmartHeader from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VSmartHeader.vue"
 const route = useRoute()
 useHead({
   bodyAttrs: {

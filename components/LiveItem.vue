@@ -1,6 +1,6 @@
 <script setup>
 import { templatizePublisherImageUrl } from "~/utilities/helpers"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 
 const props = defineProps({
   data: {

@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { requestAccountDeletion } from "~/utilities/helpers"
 import { useAccountDeleteSideBar } from "~/composables/states.ts"
 

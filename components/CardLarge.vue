@@ -1,7 +1,6 @@
 <script setup>
 import { getDate } from "~/utilities/helpers"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+
 // TEMP fix to make ripple work
 import { usePrimeVue } from "primevue/config"
 

@@ -1,5 +1,4 @@
 <script setup>
-import VTag from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VTag.vue'
 const props = defineProps({
   tags: {
     type: Array,
@@ -7,10 +6,10 @@ const props = defineProps({
   },
   label: {
     type: String,
-    default: 'Tagged',
+    default: "Tagged",
   },
 })
-const emit = defineEmits(['tag-click'])
+const emit = defineEmits(["tag-click"])
 </script>
 
 <template>

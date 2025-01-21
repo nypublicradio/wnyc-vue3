@@ -1,5 +1,5 @@
 <script setup>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+
 const emit = defineEmits(["onClick"])
 const config = useRuntimeConfig()
 </script>

@@ -1,5 +1,4 @@
 <script setup>
-import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { getUserFallBackImage } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import { ref } from "vue"

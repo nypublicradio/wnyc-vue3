@@ -1,8 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
-import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
-import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"

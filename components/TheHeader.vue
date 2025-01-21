@@ -1,6 +1,6 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+
 import { useSettingSideBar } from "~/composables/states.ts"
 
 const config = useRuntimeConfig()
