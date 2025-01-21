@@ -1,6 +1,6 @@
 <script setup>
 
-import VUploadImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue"
+import VUploadImage from "~/components/supabase/VUploadImage.vue"
 import UserIcon from "~/components/icons/UserIcon.vue"
 import {
   useSettingSideBar,

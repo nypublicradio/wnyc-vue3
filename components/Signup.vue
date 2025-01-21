@@ -1,7 +1,7 @@
 <script setup>
-import VSignupWithEmail from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VSignupWithEmail.vue"
-//import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
-import VLoginWithProvider from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue"
+import VSignupWithEmail from "~/components/supabase/VSignupWithEmail.vue"
+//import VLoginWithEmail from '~/components/supabase/VLoginWithEmail.vue'
+import VLoginWithProvider from "~/components/supabase/VLoginWithProvider.vue"
 
 
 import {

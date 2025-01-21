@@ -1,5 +1,5 @@
 <script setup>
-import VLoginWithMagicLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithMagicLink.vue'
+import VLoginWithMagicLink from '~/components/supabase/VLoginWithMagicLink.vue'
 
 import { useForgotPasswordSideBar } from '~/composables/states'
 
