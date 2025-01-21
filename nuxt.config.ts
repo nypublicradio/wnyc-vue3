@@ -78,9 +78,9 @@ export default defineNuxtConfig({
   },
 
   css: [
-    '@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/fonts/fonts.css',
-    'primeflex/primeflex.css',
-    '@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/wnyc-app.min.css',
+    '~/assets/wnyc-app/fonts/fonts.css',
+    //'primeflex/primeflex.css',
+    '~/assets/wnyc-app/wnyc-app.min.css',
     'primevue/resources/primevue.min.css',
     'primeicons/primeicons.css',
   ],
@@ -92,7 +92,7 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           // be sure to mirror theses imports in the vitest.config.ts
-          additionalData: '@import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/variables.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/_mixins.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss";',
+          additionalData: '@import "~/assets/wnyc-app/variables.scss"; @import "~/assets/wnyc-app/_mixins.scss"; @import "~/assets/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss";',
         },
       },
       postcss: {

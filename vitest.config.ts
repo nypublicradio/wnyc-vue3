@@ -19,7 +19,7 @@ export default (/* { mode } */) => {
       preprocessorOptions: {
         scss: {
           // besure to mirror theses imports in the nuxt.config.ts
-          additionalData: '@import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/variables.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/_mixins.scss"; @import "@nypublicradio/nypr-design-system-vue3/src/assets/themes/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss";',
+          additionalData: '@import "~/assets/wnyc-app/variables.scss"; @import "~/assets/wnyc-app/_mixins.scss"; @import "~/assets/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss";',
         },
       },
     },
