@@ -1,5 +1,4 @@
 <script setup>
-
 import VUploadImage from "~/components/supabase/VUploadImage.vue"
 import UserIcon from "~/components/icons/UserIcon.vue"
 import {
@@ -131,7 +130,7 @@ const avatarUrl = computed(() => {
         :currentUserProfile="currentUserProfile"
         :client="client"
         :config="config"
-        :maxFileSize="2500000"
+        :maxFileSize="8500000"
         @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {
@@ -187,6 +186,14 @@ const avatarUrl = computed(() => {
 <style lang="scss">
 .s-user {
   .p-avatar {
+    .p-button {
+      .p-button-icon {
+        &:before {
+          font-weight: 900;
+          color: #101012 !important;
+        }
+      }
+    }
     img {
       object-fit: cover;
     }

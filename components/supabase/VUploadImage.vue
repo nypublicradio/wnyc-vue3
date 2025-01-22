@@ -1,16 +1,16 @@
 <script setup>
-import Button from 'primevue/button'
-import FileUpload from 'primevue/fileupload'
-import Message from 'primevue/message'
-import ProgressSpinner from 'primevue/progressspinner'
-import { computed, ref, shallowRef } from 'vue'
+import Button from "primevue/button"
+import FileUpload from "primevue/fileupload"
+import Message from "primevue/message"
+import ProgressSpinner from "primevue/progressspinner"
+import { computed, ref, shallowRef } from "vue"
 const props = defineProps({
   accept: {
-    default: 'image/*',
+    default: "image/*",
     type: String,
   },
   bucket: {
-    default: 'avatars',
+    default: "avatars",
     type: String,
   },
   client: {
@@ -34,12 +34,12 @@ const props = defineProps({
     type: Number,
   },
   image: {
-    default: '',
+    default: "",
     required: true,
     type: [String, null],
   },
   label: {
-    default: 'Upload Image',
+    default: "Upload Image",
     type: String,
   },
   maxFileSize: {
@@ -47,16 +47,16 @@ const props = defineProps({
     type: Number,
   },
   success: {
-    default: '<p>Success! <br/> Your changes have been saved.</p>',
+    default: "<p>Success! <br/> Your changes have been saved.</p>",
     type: String,
   },
   table: {
-    default: 'profiles',
+    default: "profiles",
     type: String,
   },
 })
 
-const emit = defineEmits(['image-uploaded', 'close-dialog'])
+const emit = defineEmits(["image-uploaded", "close-dialog"])
 
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
@@ -78,7 +78,7 @@ const uploadImage = async (event) => {
   try {
     uploading.value = true
     const file = event.files[0]
-    const fileExt = file.name.split('.').pop()
+    const fileExt = file.name.split(".").pop()
     const filePath = `${props.userId}-${Math.random()}.${fileExt}`
 
     const { error: uploadError } = await supabase.storage
@@ -102,11 +102,10 @@ const uploadImage = async (event) => {
       })
       .match({ id: props.currentUser.id })
     if (error) {
-      //console.log(error)
       errorMessage.value = `Error: ${error}`
     } else {
       successMessage.value = props.success
-      emit('image-uploaded', imageUrl.value)
+      emit("image-uploaded", imageUrl.value)
     }
   } catch (error) {
     errorMessage.value = `Error: ${error}`
@@ -118,7 +117,7 @@ const uploadImage = async (event) => {
 // delete the image from the database and storage
 const deleteImage = async () => {
   const { error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .upsert({
       avatar_image_url: null,
       id: props.currentUser.id,
@@ -129,20 +128,20 @@ const deleteImage = async () => {
     //console.log(error)
     errorMessage.value = `Error: ${error}`
   } else {
-    successMessage.value = 'Success! Your file has been deleted.'
+    successMessage.value = "Success! Your file has been deleted."
     imageUrl.value = null
-    emit('image-uploaded', null)
+    emit("image-uploaded", null)
   }
 }
 
 const uploadLabel = computed(() => {
-  return imageUrl.value ? 'Upload new image' : props.label
+  return imageUrl.value ? "Upload new image" : props.label
 })
 
 const fileUpload = ref(null)
 function triggerFileUpload() {
   let fileInput = fileUpload.value.$el.querySelector('input[type="file"]')
-  let clickEvent = new MouseEvent('click', {
+  let clickEvent = new MouseEvent("click", {
     bubbles: true,
     cancelable: true,
     view: window,
@@ -164,22 +163,12 @@ function triggerFileUpload() {
       <img :src="imageUrl" alt="profile photo" />
     </Button>
     <template v-if="errorMessage">
-      <Message
-        :sticky="false"
-        :life="5000"
-        class="mt-0 text-only error"
-        severity="error"
-      >
+      <Message :sticky="false" :life="5000" class="mt-0 text-only error" severity="error">
         <div class="text-center" v-html="errorMessage"></div>
       </Message>
     </template>
     <template v-if="successMessage">
-      <Message
-        :sticky="false"
-        :life="5000"
-        class="mt-0 text-only"
-        severity="success"
-      >
+      <Message :sticky="false" :life="5000" class="mt-0 text-only" severity="success">
         <div class="text-center" v-html="successMessage"></div>
       </Message>
     </template>
