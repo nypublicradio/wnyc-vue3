@@ -13,6 +13,10 @@ const props = defineProps({
     default: "avatars",
     type: String,
   },
+  userId: {
+    default: "user-id",
+    type: String,
+  },
   client: {
     default: null,
     type: Object,
@@ -73,17 +77,66 @@ const errorMessage = shallowRef()
 const successMessage = shallowRef()
 const imageUrl = shallowRef(props.image)
 
+const resizeImage = async (file, maxWidth, maxHeight) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement("canvas")
+        const ctx = canvas.getContext("2d")
+
+        if (!ctx) {
+          reject(new Error("Failed to get canvas context"))
+          return
+        }
+
+        // Calculate aspect ratio to preserve image quality
+        const aspectRatio = img.width / img.height
+        let width = maxWidth
+        let height = maxWidth / aspectRatio
+
+        if (height > maxHeight) {
+          height = maxHeight
+          width = maxHeight * aspectRatio
+        }
+
+        canvas.width = width
+        canvas.height = height
+        ctx.drawImage(img, 0, 0, width, height)
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const resizedFile = new File([blob], file.name, { type: "image/jpeg" })
+            resolve(resizedFile)
+          } else {
+            reject(new Error("Failed to create blob from canvas"))
+          }
+        }, "image/jpeg")
+      }
+      img.onerror = reject
+      img.src = event.target.result
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 // upload the image to supabase storage and handle messaging
 const uploadImage = async (event) => {
   try {
     uploading.value = true
     const file = event.files[0]
-    const fileExt = file.name.split(".").pop()
+    const resizedBlob = await resizeImage(file, 600, 600)
+    const newFile = new File([resizedBlob], file.name, { type: file.type })
+    newFile.objectURL = URL.createObjectURL(resizedBlob)
+    // the resizer makes it a JPG
+    const fileExt = "jpg"
     const filePath = `${props.userId}-${Math.random()}.${fileExt}`
 
     const { error: uploadError } = await supabase.storage
       .from(props.bucket)
-      .upload(filePath, file)
+      .upload(filePath, newFile)
 
     if (uploadError) throw uploadError
 

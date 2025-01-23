@@ -131,6 +131,7 @@ const avatarUrl = computed(() => {
         :client="client"
         :config="config"
         :maxFileSize="8500000"
+        :userId="`${currentUserProfile?.name}-${currentUser?.id}`"
         @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {
