@@ -102,13 +102,13 @@ const uploadImage = async (event) => {
       })
       .match({ id: props.currentUser.id })
     if (error) {
-      errorMessage.value = `Error: ${error}`
+      errorMessage.value = `Error: ${error?.error ?? error}`
     } else {
       successMessage.value = props.success
       emit("image-uploaded", imageUrl.value)
     }
   } catch (error) {
-    errorMessage.value = `Error: ${error}`
+    errorMessage.value = `Error: ${error?.error ?? error}`
   } finally {
     uploading.value = false
   }
@@ -163,12 +163,12 @@ function triggerFileUpload() {
       <img :src="imageUrl" alt="profile photo" />
     </Button>
     <template v-if="errorMessage">
-      <Message :sticky="false" :life="5000" class="mt-0 text-only error" severity="error">
+      <Message :sticky="false" :life="6000" class="mt-0 text-only error" severity="error">
         <div class="text-center" v-html="errorMessage"></div>
       </Message>
     </template>
     <template v-if="successMessage">
-      <Message :sticky="false" :life="5000" class="mt-0 text-only" severity="success">
+      <Message :sticky="false" :life="6000" class="mt-0 text-only" severity="success">
         <div class="text-center" v-html="successMessage"></div>
       </Message>
     </template>
