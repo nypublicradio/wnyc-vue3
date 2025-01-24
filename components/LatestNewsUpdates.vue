@@ -1,14 +1,6 @@
 <script setup>
 import { togglePlayEpisode } from "~/utilities/helpers"
 
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
-
 const props = defineProps({
   localNewscast: {
     type: Object,

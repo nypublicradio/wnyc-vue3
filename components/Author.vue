@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
   name: {
     type: String,
@@ -23,14 +22,6 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(["on-click"])
-
-// TEMP fix to make ripple work+
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
 </script>
 
 <template>

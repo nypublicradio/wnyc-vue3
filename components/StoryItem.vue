@@ -1,7 +1,4 @@
 <script setup>
-
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 //import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -17,11 +14,6 @@ import {
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 

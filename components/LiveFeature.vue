@@ -1,6 +1,4 @@
 <script setup>
-
-
 import {
   useTogglePlayTrigger,
   useCurrentEpisode,
@@ -8,14 +6,6 @@ import {
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
-
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const togglePlayTrigger = useTogglePlayTrigger()

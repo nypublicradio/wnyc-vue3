@@ -1,5 +1,4 @@
 <script setup>
-import { usePrimeVue } from "primevue/config"
 import { hasAudio, goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 
 const props = defineProps({
@@ -11,12 +10,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-})
-
-// TEMP fix to make ripple work
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
 })
 </script>
 

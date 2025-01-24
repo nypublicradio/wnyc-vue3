@@ -1,15 +1,7 @@
 <script setup>
-
 import FollowIcon from "~/components/icons/FollowIcon.vue"
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
 import { checkIsFavorited, addToFavorites2 } from "~/utilities/helpers"
 import { useCurrentEpisodeHolder, useCurrentEpisode } from "~/composables/states"
-
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 

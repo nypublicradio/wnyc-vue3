@@ -1,5 +1,4 @@
 <script setup>
-
 import { useSettingSideBar } from "~/composables/states.ts"
 const props = defineProps({
   label: {
@@ -29,13 +28,6 @@ const props = defineProps({
   },
 })
 
-// TEMP fix to make ripple work+
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
 const settingSideBar = useSettingSideBar()
 const emit = defineEmits(["link-click", "label-click"])
 
