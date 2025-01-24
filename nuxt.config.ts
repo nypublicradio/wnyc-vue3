@@ -1,4 +1,6 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+import Aura from '@primevue/themes/aura';
+import Ripple from 'primevue/ripple';
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/supabase',
@@ -6,8 +8,21 @@ export default defineNuxtConfig({
     '@nuxtjs/device',
     '@nuxt/image',
     '@hypernym/nuxt-gsap',
-    "@vueuse/nuxt"
+    "@vueuse/nuxt",
+    '@primevue/nuxt-module',
   ],
+
+  primevue: {
+    options: {
+      theme: {
+        preset: Aura,
+        options: {
+          darkModeSelector: '.style-mode-dark',
+        },
+
+      }
+    }
+  },
 
   supabase: {
     url: process.env.SUPABASE_URL,
@@ -79,9 +94,9 @@ export default defineNuxtConfig({
 
   css: [
     '~/assets/wnyc-app/fonts/fonts.css',
-    //'primeflex/primeflex.css',
+    '~/assets/library/primeflex.min.css',
     '~/assets/wnyc-app/wnyc-app.min.css',
-    'primevue/resources/primevue.min.css',
+    //'primevue/resources/primevue.min.css',
     'primeicons/primeicons.css',
   ],
 
@@ -92,7 +107,7 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           // be sure to mirror theses imports in the vitest.config.ts
-          additionalData: '@import "~/assets/wnyc-app/variables.scss"; @import "~/assets/wnyc-app/_mixins.scss"; @import "~/assets/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss";',
+          additionalData: '@import "~/assets/wnyc-app/variables.scss"; @import "~/assets/wnyc-app/_mixins.scss"; @import "~/assets/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss"; ',
         },
       },
       postcss: {
