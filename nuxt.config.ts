@@ -93,10 +93,8 @@ export default defineNuxtConfig({
   },
 
   css: [
-    '~/assets/wnyc-app/fonts/fonts.css',
-    '~/assets/library/primeflex.min.css',
-    '~/assets/wnyc-app/wnyc-app.min.css',
-    //'primevue/resources/primevue.min.css',
+    '~/assets/scss/fonts/fonts.css',
+    '~/assets/scss/primeflex.min.css',
     'primeicons/primeicons.css',
   ],
 
@@ -107,7 +105,7 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           // be sure to mirror theses imports in the vitest.config.ts
-          additionalData: '@import "~/assets/wnyc-app/variables.scss"; @import "~/assets/wnyc-app/_mixins.scss"; @import "~/assets/wnyc-app/typography.scss"; @import "~/assets/scss/global.scss"; ',
+          additionalData: '@import "~/assets/scss/_global.scss";',
         },
       },
       postcss: {

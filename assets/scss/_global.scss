@@ -1,5 +1,27 @@
-@import 'vars.scss';
-@import 'transitions.scss';
+@charset "UTF-8";
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:string';
+@import './include-media';
+@import './z-index';
+@import './accessibility';
+@import './variables';
+@import './v-cssvars/_cssvars';
+@import './cssvars';
+@import './mixins-functions';
+@import './vars';
+@import './typography';
+@import './transitions';
+
+figure {
+  margin: 0;
+}
+
+// hide outline when using a mouse but not when using a keyboard
+// https://github.com/WICG/focus-visible
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
 
 * {
   -webkit-tap-highlight-color: transparent;
@@ -10,9 +32,20 @@ html {
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   overscroll-behavior: none;
+  height: 100%;
 }
 
 body {
+  font-family: var(--font-family);
+  background-color: var(--white);
+  color: var(--text-color);
+  font-size: inherit;
+  padding: 0;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: lining-nums;
+  -moz-osx-font-smoothing: grayscale;
   background: var(--background);
   transform: none;
   height: 100% !important;
@@ -67,6 +100,9 @@ body {
       padding-bottom: 0px !important;
     }
   }
+}
+body.overlay-is-active {
+  overflow: hidden;
 }
 
 a {
