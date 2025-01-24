@@ -1,6 +1,5 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-import Aura from '@primevue/themes/aura';
-import Ripple from 'primevue/ripple';
+import Material from '@primevue/themes/aura';
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/supabase',
@@ -14,8 +13,9 @@ export default defineNuxtConfig({
 
   primevue: {
     options: {
+      ripple: true,
       theme: {
-        preset: Aura,
+        preset: Material,
         options: {
           darkModeSelector: '.style-mode-dark',
         },
