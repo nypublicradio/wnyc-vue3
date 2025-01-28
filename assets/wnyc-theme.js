@@ -408,7 +408,7 @@ const MyPreset = definePreset(Aura, {
             light: {
                 surface: {
                     0: "#ffffff",
-                    50: "#f6f6f6",
+                    50: "#eaeaea",
                     100: "#d2d2d2",
                     200: "#afafaf",
                     300: "#8b8b8b",
@@ -659,16 +659,31 @@ const MyPreset = definePreset(Aura, {
     },
     components: {
         button: {
+            root: {
+                borderRadius: '9999px',
+                paddingY: '0.38rem',
+                paddingX: '0.75rem',
+                label: {
+                    fontWeight: '700'
+                },
+            },
             colorScheme: {
                 light: {
                     root: {
-                        borderRadius: '9999px',
-                        paddingX: '2rem',
-                        paddingY: '1.5rem',
-                        lgPaddingX: '2rem',
-                        lgPaddingY: '1.5rem',
                         secondary: {
                             background: '{surface.0}',
+                            hoverBackground: '{surface.50}',
+                            activeBackground: '{surface.200}',
+                            borderColor: '{surface.50}',
+                            hoverBorderColor: '{surface.50}',
+                            activeBorderColor: '{surface.300}',
+                            color: '{surface.950}',
+                            hoverColor: '{surface.950}',
+                            activeColor: '{surface.800}',
+                            focusRing: {
+                                color: '{surface.600}',
+                                shadow: 'none'
+                            }
                         },
                     },
                 },
