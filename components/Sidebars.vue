@@ -182,7 +182,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
 <style lang="scss">
 .p-sidebar {
   padding-top: env(safe-area-inset-top);
-  background: var(--background2);
+  background: var(--p-surface-25);
   .p-sidebar-header {
     padding: 0.75rem 0.75rem 0.75rem 1.25rem;
     justify-content: space-between;

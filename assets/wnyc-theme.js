@@ -408,6 +408,7 @@ const MyPreset = definePreset(Aura, {
             light: {
                 surface: {
                     0: "#ffffff",
+                    25: "#f5f5f5",
                     50: "#eaeaea",
                     100: "#d2d2d2",
                     200: "#afafaf",
@@ -418,7 +419,7 @@ const MyPreset = definePreset(Aura, {
                     700: "#303030",
                     800: "#252525",
                     900: "#1b1b1b",
-                    950: "#111111"
+                    950: "#101012"
                 },
                 primary: {
                     color: "{primary.500}",

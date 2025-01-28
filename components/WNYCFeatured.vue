@@ -247,7 +247,7 @@ const togglePlayHere = (item) => {
     overflow: hidden;
     max-width: 248px;
     min-width: 248px;
-    background-color: var(--background2);
+    background-color: var(--p-surface-25);
   }
 }
 </style>

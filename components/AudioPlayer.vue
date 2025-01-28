@@ -474,7 +474,7 @@ html.style-mode-dark .persistent-player {
     .p-splitbutton.p-button-secondary > .play-button {
       color: var(--night-500);
       background: #ffffff;
-      border: 1px solid var(--background2--500);
+      border: 1px solid var(--p-surface-25--500);
     }
   }
 

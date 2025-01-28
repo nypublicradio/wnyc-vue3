@@ -70,9 +70,9 @@ body {
     }
   }
   &.background2 {
-    background: var(--background2);
+    background: var(--p-surface-25);
     .p-divider .p-divider-content {
-      background: var(--background2);
+      background: var(--p-surface-25);
     }
   }
   &.background-gradient {
@@ -356,7 +356,7 @@ section {
 //   font-weight: var(--font-weight-700);
 // }
 // .p-inputswitch .p-inputswitch-slider {
-//   background: var(--background2);
+//   background: var(--p-surface-25);
 //   box-shadow: none !important;
 // }
 
@@ -589,7 +589,7 @@ section {
 
 // .p-divider {
 //   .p-divider-content {
-//     background-color: var(--background2);
+//     background-color: var(--p-surface-25);
 //     color: var(--text-color);
 //   }
 // }
@@ -605,7 +605,7 @@ section {
 //   .p-dialog-header,
 //   .p-dialog-content,
 //   .p-dialog-footer {
-//     background: var(--background2);
+//     background: var(--p-surface-25);
 //     color: var(--text-color);
 //   }
 //   .p-dialog-header-icon svg path {

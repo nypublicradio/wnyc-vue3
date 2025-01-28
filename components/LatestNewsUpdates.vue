@@ -42,7 +42,7 @@ const props = defineProps({
 <style lang="scss" scoped>
 .latest-news-updates {
   .card-small {
-    background-color: var(--background2);
+    background-color: var(--p-surface-25);
     padding: 10px;
     border-radius: 8px;
     display: flex;

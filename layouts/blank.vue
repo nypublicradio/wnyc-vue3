@@ -46,9 +46,9 @@ body {
     }
   }
   &.background2 {
-    background: var(--background2);
+    background: var(--p-surface-25);
     .p-divider .p-divider-content {
-      background: var(--background2);
+      background: var(--p-surface-25);
     }
   }
   &.background-gradient {

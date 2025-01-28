@@ -46,10 +46,10 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --s-box-stroke-color: var(--background) !important;
     --header-background: #ffffffe6 !important;
     --expandedHeaderBackgroundTransparent: #2f2f2fe6 !important;
-    --live-feature-background: var(--background2) !important;
+    --live-feature-background: var(--p-surface-25) !important;
     --horzScrollGradient: var(--background);
     --donation-bg: var(--night-500, #101012) !important;
-    --searchFieldBackground: var(--background2) !important;
+    --searchFieldBackground: var(--p-surface-25) !important;
     --backgroundSimple: var(--background) !important;
     --persistent-player-bg-transparent: #2f2f2fcc !important;
 }
@@ -70,7 +70,7 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --donation-bg: var(--dark-blue-500, #101012) !important;
     --donation-text: var(--text-color) !important;
     --searchFieldBackground: var(--s-box-background-color) !important;
-    --backgroundSimple: var(--background2) !important;
+    --backgroundSimple: var(--p-surface-25) !important;
     --persistent-player-slider-progress: #000;
     --button-hover-plain-background: #e8e8e826;
 }

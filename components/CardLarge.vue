@@ -59,7 +59,7 @@ const props = defineProps({
   border-radius: 8px;
   overflow: hidden;
   max-width: 248px;
-  background-color: var(--background2);
+  background-color: var(--p-surface-25);
   position: relative;
   .top {
   }

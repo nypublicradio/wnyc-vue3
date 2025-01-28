@@ -94,7 +94,7 @@ const getDotMenuItems = (bucketItem) => {
         :ratio="[1, 1]"
         :srcset="[2]"
         class="flex-none"
-        style="height: 116px; width: 116px; background-color: var(--background2)"
+        style="height: 116px; width: 116px; background-color: var(--p-surface-25)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
