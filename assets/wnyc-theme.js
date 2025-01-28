@@ -673,6 +673,8 @@ const MyPreset = definePreset(Aura, {
                     root: {
                         primary: {
                             color: '{surface.0}',
+                            hoverColor: '{surface-0}',
+                            activeColor: '{surface-0}',
                             background: '{primary.500}',
                             hoverBackground: '{primary.600}',
                             activeBackground: '{primary.700}',
@@ -701,6 +703,8 @@ const MyPreset = definePreset(Aura, {
                     root: {
                         primary: {
                             color: '{surface.0}',
+                            hoverColor: '{surface-0}',
+                            activeColor: '{surface-0}',
                             background: '{primary.500}',
                             hoverBackground: '{primary.600}',
                             activeBackground: '{primary.700}',
