@@ -659,9 +659,21 @@ const MyPreset = definePreset(Aura, {
     },
     components: {
         button: {
-            borderRadius: "9999px",
-            primaryBorderColor: "#ffff00",
-        }
+            colorScheme: {
+                light: {
+                    root: {
+                        borderRadius: '9999px',
+                        paddingX: '2rem',
+                        paddingY: '1.5rem',
+                        lgPaddingX: '2rem',
+                        lgPaddingY: '1.5rem',
+                        secondary: {
+                            background: '{surface.0}',
+                        },
+                    },
+                },
+            },
+        },
     },
 })
 
