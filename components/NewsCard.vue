@@ -16,11 +16,11 @@ const props = defineProps({
   },
   bagdeColor: {
     type: String,
-    default: "var(--night-500)",
+    default: "var(--p-surface-950)",
   },
   badgeBgColor: {
     type: String,
-    default: "var(--yellow)",
+    default: "var(--p-yellow-500)",
   },
 })
 
@@ -30,7 +30,7 @@ const emit = defineEmits(["on-click"])
 <template>
   <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
     <div>
-      <Badge
+      <VBadge
         :label="props.badgeLabel"
         :color="props.bagdeColor"
         :bg-color="props.badgeBgColor"

@@ -30,8 +30,8 @@ const props = defineProps({
           :newsData="props.nationalNewscast"
           sourceLabel="NPR"
           badgeLabel="U.S. & WORLD NEWS"
-          bagdeColor="var(--background-500)"
-          badgeBgColor="var(--indigo-500)"
+          bagdeColor="var(--p-surface-0)"
+          badgeBgColor="var(--p-indigo-500)"
           @onClick="togglePlayEpisode(props.nationalNewscast)"
         />
       </div>
