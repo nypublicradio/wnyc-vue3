@@ -671,6 +671,15 @@ const MyPreset = definePreset(Aura, {
             colorScheme: {
                 light: {
                     root: {
+                        primary: {
+                            color: '{surface.0}',
+                            background: '{primary.500}',
+                            hoverBackground: '{primary.600}',
+                            activeBackground: '{primary.700}',
+                            borderColor: '{primary.500}',
+                            hoverBorderColor: '{primary.600}',
+                            activeBorderColor: '{primary.700}',
+                        },
                         secondary: {
                             background: '{surface.0}',
                             hoverBackground: '{surface.50}',
@@ -678,9 +687,37 @@ const MyPreset = definePreset(Aura, {
                             borderColor: '{surface.50}',
                             hoverBorderColor: '{surface.50}',
                             activeBorderColor: '{surface.300}',
-                            color: '{surface.950}',
-                            hoverColor: '{surface.950}',
-                            activeColor: '{surface.800}',
+                            color: '{surface-950}',
+                            hoverColor: '{surface-950}',
+                            activeColor: '{surface-950}',
+                            focusRing: {
+                                color: '{surface.600}',
+                                shadow: 'none'
+                            }
+                        },
+                    },
+                },
+                dark: {
+                    root: {
+                        primary: {
+                            color: '{surface.0}',
+                            background: '{primary.500}',
+                            hoverBackground: '{primary.600}',
+                            activeBackground: '{primary.700}',
+                            borderColor: '{primary.500}',
+                            hoverBorderColor: '{primary.600}',
+                            activeBorderColor: '{primary.700}',
+                        },
+                        secondary: {
+                            background: '{surface.0}',
+                            hoverBackground: '{surface.50}',
+                            activeBackground: '{surface.200}',
+                            borderColor: '{surface.50}',
+                            hoverBorderColor: '{surface.50}',
+                            activeBorderColor: '{surface.300}',
+                            color: '{surface-950}',
+                            hoverColor: '{surface-950}',
+                            activeColor: '{surface-950}',
                             focusRing: {
                                 color: '{surface.600}',
                                 shadow: 'none'
