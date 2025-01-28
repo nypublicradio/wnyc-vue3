@@ -10,16 +10,14 @@ const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
 
 // check if donate button should be visible and get the button link and text
-const { data:messageData } = await useFetch(
-  `${config.public.SYSTEM_MESSAGES_API}`
-)
+const { data: messageData } = await useFetch(`${config.public.SYSTEM_MESSAGES_API}`)
 if (messageData.value?.product_banners?.length > 0) {
-  messageData.value.product_banners.forEach( ( banner ) => {
-    if ( banner.value?.title === 'WNYC App Donate Button' ) {
+  messageData.value.product_banners.forEach((banner) => {
+    if (banner.value?.title === "WNYC App Donate Button") {
       donateButtonText.value = banner.value?.button_text
       donateButtonLink.value = banner.value?.button_link
     }
-  });
+  })
 }
 </script>
 
@@ -45,7 +43,11 @@ if (messageData.value?.product_banners?.length > 0) {
               )
             "
           >
-            <Button :label="donateButtonText" aria-label="donate" class="px-3 sm:px-5 mr-3" />
+            <Button
+              :label="donateButtonText"
+              aria-label="donate"
+              class="px-3 sm:px-5 mr-3"
+            />
           </VFlexibleLink>
 
           <Button

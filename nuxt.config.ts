@@ -1,5 +1,6 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-import Material from '@primevue/themes/aura';
+import MyPreset from './assets/wnyc-theme.js';
+
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/supabase',
@@ -15,9 +16,10 @@ export default defineNuxtConfig({
     options: {
       ripple: true,
       theme: {
-        preset: Material,
+        preset: MyPreset,
         options: {
           darkModeSelector: '.style-mode-dark',
+          cssLayer: true,
         },
 
       }

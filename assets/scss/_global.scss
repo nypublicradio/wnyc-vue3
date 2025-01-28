@@ -19,9 +19,9 @@ figure {
 
 // hide outline when using a mouse but not when using a keyboard
 // https://github.com/WICG/focus-visible
-.js-focus-visible :focus:not(.focus-visible) {
-  outline: none;
-}
+// .js-focus-visible :focus:not(.focus-visible) {
+//   outline: none;
+// }
 
 * {
   -webkit-tap-highlight-color: transparent;
@@ -484,7 +484,7 @@ section {
 //   background-color: var(--ripple-color);
 // }
 
-// // remove sticky hover on mobile
+// remove sticky hover on mobile
 // .p-button.no-hover:hover {
 //   background: transparent !important;
 // }

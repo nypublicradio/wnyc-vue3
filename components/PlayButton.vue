@@ -119,8 +119,8 @@ watch(
 <style lang="scss" scoped>
 .small-play {
   .p-button {
-    padding: 0.219rem 0.75rem;
-    min-height: 28px;
+    padding: 0.38rem 0.75rem;
+    //min-height: 28px;
     &.active {
       //border: var(--night) 1px solid;
     }
