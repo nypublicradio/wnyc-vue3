@@ -132,6 +132,7 @@ watch(
               optionLabel="label"
               placeholder="Select a Time"
               class="w-full"
+              overlayClass="sleep-timer-overlay"
             />
           </template>
           <template #footer="slotProps">
@@ -248,5 +249,8 @@ watch(
   .p-dropdown .p-dropdown-label .ans div {
     justify-content: start !important;
   }
+}
+.sleep-timer-overlay.p-select-overlay {
+  display: none;
 }
 </style>
