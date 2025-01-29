@@ -52,7 +52,6 @@ const emit = defineEmits(["update:data", "swipe-down"])
 
 const dataRef = ref(props.data)
 
-const dropdownRootRef = ref(null)
 const drawerRef = ref(null)
 const panel = ref(null)
 // to match the total height of the shadow that is being applied to the panel
@@ -69,6 +68,8 @@ let distanceThreshold = 125
 const distanceThresholdDivider = 2.2
 let isDraggingDown = false
 
+const visibleBottom = ref(false)
+
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
   event.preventDefault()
@@ -82,8 +83,7 @@ const removeBodyTouch = () => {
 
 // clicks the dropdown again to close it
 const closeMenu = () => {
-  drawerRef.value.click()
-  drawerRef.value.blur()
+  drawerRef.value.hide()
   removeBodyTouch()
 }
 
@@ -96,7 +96,7 @@ const reopenPanel = () => {
 // when the dropdown is opened, set the panel ref
 const setPanel = async () => {
   await nextTick()
-  panel.value = document.getElementById("p-dropup-panel")
+  panel.value = document.getElementById("dropup-panel")
   // removes class to the css animation so the drag will be 1:1 with the finger
   panel.value.classList.remove("release")
   document.body.addEventListener("touchmove", preventScrollOnTouch, {
@@ -115,7 +115,9 @@ const unsetPanel = () => {
 // swipe setup
 const swipe = useSwipe(panel, {
   passive: true,
+  threshold: 1,
   onSwipeStart() {
+    console.log("swipe start")
     // removes class to the css animation so the drag will be 1:1 with the finger
     panel.value.classList.remove("release")
 
@@ -123,8 +125,9 @@ const swipe = useSwipe(panel, {
     touchstartTime = new Date().getTime()
   },
   onSwipe() {
+    console.log("swiping")
     touchCurrentY = swipe.lengthY.value
-    // so it does not drag hight than the height of the panel
+    // so it does not drag higher than the height of the panel
     if (touchCurrentY < 0) {
       panel.value.style.bottom = `${touchCurrentY}px`
     }
@@ -138,7 +141,7 @@ const swipe = useSwipe(panel, {
   },
 })
 
-// handles the detection of the direction of the drag movment
+// handles the detection of the direction of the drag movement
 function handleSwipeDirection() {
   const tempBool = isDraggingDown
   if (touchCurrentY < touchPrevY) {
@@ -183,13 +186,11 @@ function handleSwipe() {
 }
 
 onMounted(() => {
-  if (props.startOpen) dropdownRootRef.value.show()
+  if (props.startOpen) drawerRef.value.show()
 })
 onUnmounted(() => {
   unsetPanel()
 })
-
-const visibleBottom = ref(false)
 </script>
 <template>
   <div class="dropup-panel-holder">
@@ -217,6 +218,7 @@ const visibleBottom = ref(false)
       position="bottom"
       style="height: auto"
       :showCloseIcon="false"
+      id="dropup-panel"
       class="dropup-panel"
       :class="[{ customButton: props.customButton, normal: props.normal }]"
       @update:modelValue="$emit('update:data', $event)"
@@ -406,8 +408,22 @@ const visibleBottom = ref(false)
 }
 
 .p-drawer-mask {
-  .p-drawer {
-    //border-radius: 28px 28px 0px 0px;
+  .p-drawer.dropup-panel {
+    z-index: 10010;
+    &.release {
+      transition: bottom 0.25s;
+      -webkit-transition: bottom 0.25s;
+    }
+    &.is-customButton {
+      .p-highlight:after {
+        display: none !important;
+      }
+    }
+    -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
+    //background: var(--p-surface-500) !important;
+
+    border-radius: 28px 28px 0px 0px;
     .p-drawer-header {
       padding-top: 0;
       padding-bottom: 0;
@@ -445,7 +461,7 @@ const visibleBottom = ref(false)
 //     justify-content: center;
 //   }
 // }
-// .p-dropup-panel {
+// .dropup-panel {
 //   // move the panel above the bottom-menu
 //   z-index: 10010;
 //   &.release {

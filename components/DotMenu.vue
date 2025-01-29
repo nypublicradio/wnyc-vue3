@@ -42,7 +42,7 @@ const emit = defineEmits(["changeEmit"])
     <template #customButton="slotProps">
       <slot name="myCustomButton" label="">
         <Button
-          class="rounded"
+          class="rounded no-hover"
           severity="secondary"
           icon="pi pi-ellipsis-v"
           text

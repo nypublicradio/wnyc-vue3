@@ -18,7 +18,7 @@
     "@nuxtjs/ionic": "0.13.1",
     "@primevue/nuxt-module": "^4.2.5",
     "@sentry/vite-plugin": "^2.21.1",
-    "@vueuse/nuxt": "^10.11.0",
+    "@vueuse/nuxt": "12.5.0",
     "date-fns": "^2.30.0",
     "nuxt": "^3.12.3",
     "sass": "1.69.7"
@@ -57,7 +57,7 @@
     "@types/humps": "^2.0.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
-    "@vueuse/core": "^10.11.0",
+    "@vueuse/core": "12.5.0",
     "@vueuse/integrations": "^10.11.0",
     "axios": "1.6.5",
     "bp-capacitor-background-mode": "^2.0.10",
