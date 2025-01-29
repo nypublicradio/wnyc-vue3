@@ -239,7 +239,7 @@ defineExpose({
       @hide="unsetPanel"
     >
       <template #header>
-        <div class="style-mode-dark w-full px-4">
+        <div class="style-mode-dark w-full">
           <div>
             <i class="pi pi-minus closer-line" @click="closeMenu" />
             <h3 v-if="props.label" class="p-submenu-header-replace">
@@ -263,7 +263,7 @@ defineExpose({
                   :alt="item.label"
                   :src="item.image"
                   class="mr-3"
-                  style="width: 18px; height: 18px"
+                  style="width: 40px; height: 40px"
                 />
                 <i v-if="item.icon" class="mr-3" :class="item.icon"></i>
                 <component
@@ -372,6 +372,11 @@ defineExpose({
     .p-menu-list {
       padding: 0;
       .p-menu-item {
+        .custom-icon {
+          width: 24px;
+          height: 24px;
+          flex: none;
+        }
         .p-menu-item-content {
           border-radius: 0;
           padding: 0.75rem 0 0.75rem 1.25rem;
