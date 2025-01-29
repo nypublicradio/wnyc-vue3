@@ -51,7 +51,6 @@ const handleCurrentTimeChange = (inc) => {
 
 // start the timer
 const handleStartTimer = async (obj) => {
-  console.log("START TIMER = ", obj)
   // ios only
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
@@ -76,19 +75,8 @@ const handleStartTimer = async (obj) => {
       return
     }
   }
-  sleepTimerSelectedTime.value = obj.value
-  // add the custom time to the timeLengthOptions if it does not exist
 
-  // if (
-  //   !timeLengthOptions.some(
-  //     (option) => option.value === sleepTimerSelectedTime.value.value
-  //   )
-  // ) {
-  // timeLengthOptions.push({
-  //   label: `${sleepTimerSelectedTime.value / 60} minutes`,
-  //   value: sleepTimerSelectedTime.value,
-  // })
-  // }
+  sleepTimerSelectedTime.value = obj.value
 
   // start the timer
   onUpdateDuration(obj)
@@ -98,7 +86,6 @@ const handleStartTimer = async (obj) => {
 watch(
   sleepTimerSelectedTime,
   () => {
-    console.log("sleepTimerSelectedTime = ", sleepTimerSelectedTime.value)
     if (
       !timeLengthOptions.some(
         (option) => option.value === sleepTimerSelectedTime.value.value
@@ -109,6 +96,7 @@ watch(
   },
   {
     immediate: true,
+    once: true,
   }
 )
 </script>
@@ -138,7 +126,6 @@ watch(
           :checkMark="false"
         >
           <template #customButton="slotProps">
-            <pre>{{ sleepTimerSelectedTime }}</pre>
             <Select
               :options="timeLengthOptions"
               v-model="sleepTimerSelectedTime"
