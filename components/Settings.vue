@@ -35,6 +35,9 @@ const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
+const defaultStreamRef = ref(null)
+const textSizeRef = ref(null)
+
 //const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
 const isEmail = currentUser.value?.app_metadata?.provider === "email"
@@ -174,8 +177,8 @@ const editField = (field) => {
   }
 }
 
-const clickThisId = (id) => {
-  document.getElementById(id).click()
+const clickThisMenu = (ref) => {
+  ref.toggleDrawer()
 }
 
 // handles the notification switch change event
@@ -257,8 +260,9 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox label="Default stream" @labelClick="clickThisId('default-stream')">
-        <DropupMenu
+      <SBox label="Default stream" @click="clickThisMenu(defaultStreamRef)">
+        <DropupMenu2
+          ref="defaultStreamRef"
           id="default-stream"
           v-model:data.sync="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
@@ -266,7 +270,6 @@ const onDeleteAccountClick = () => {
           placeholder="Select a station"
           label="Default stream"
           width="auto"
-          class="-mr-2"
           @change="onUpdateStation"
         />
       </SBox>
@@ -336,8 +339,9 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Display</div>
       </div>
-      <SBox label="Text size" @labelClick="clickThisId('text-size')">
-        <DropupMenu
+      <SBox label="Text size" @click="clickThisMenu(textSizeRef)">
+        <DropupMenu2
+          ref="textSizeRef"
           id="text-size"
           v-model:data.sync="currentUserProfile.text_size"
           :options="textSizeOptions"
@@ -345,11 +349,10 @@ const onDeleteAccountClick = () => {
           placeholder="Select a Text Size"
           label="Text Size"
           width="auto"
-          class="-mr-2"
           @change="onUpdateTextSize"
         />
       </SBox>
-      <SBox label="Dark theme" :ripple="false">
+      <SBox label="Dark theme" :ripple="false" class="px-3">
         <VInputSwitch
           yes="ON"
           no="OFF"

@@ -228,7 +228,7 @@ watch(globalError, (error) => {
   </NuxtLayout>
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
-  <Sidebars class="z-2" />
+  <Drawers class="z-2" />
   <Toast position="top-center" />
   <!-- <PullToRefresh /> -->
 </template>

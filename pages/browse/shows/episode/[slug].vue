@@ -1,5 +1,4 @@
 <script setup>
-
 import { useCurrentUser, useCurrentEpisode } from "~/composables/states"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -332,7 +331,7 @@ const getEpisodeImage = () => {
             >
               <template #header-bottom>
                 <div>
-                  <div class="flex gap-3 align-items-center">
+                  <div class="flex gap-3 align-items-center px-4">
                     <VImage
                       :src="episodeData?.image?.template || getEpisodeImage()"
                       :alt="`${episodeData?.title} show image`"

@@ -335,7 +335,7 @@ const handleHasAudio = computed(() => {
               >
                 <template #header-bottom>
                   <div>
-                    <div class="flex gap-3 align-items-center">
+                    <div class="flex gap-3 align-items-center px-4">
                       <VImage
                         :src="imgSrcUrl"
                         :alt="`${props.data.showTitle} show image`"

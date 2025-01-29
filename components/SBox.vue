@@ -89,7 +89,7 @@ const onClick = () => {
   background-color: var(--s-box-background-color);
   width: 100%;
   min-height: 50px;
-  padding: 0 1.25rem;
+
   border: 1px solid var(--shade-400);
   border-left: none;
   border-right: none;
@@ -115,6 +115,7 @@ const onClick = () => {
     width: 100%;
     height: 100%;
     font-size: 0.8125rem;
+    padding: 0 1.25rem;
   }
   .label {
     font-size: 1rem;
@@ -132,6 +133,10 @@ const onClick = () => {
 .s-box {
   .content {
     &.killRipple {
+      padding: 0;
+      .p-button {
+        justify-content: left;
+      }
       .p-ink,
       .p-ink-active {
         display: none !important;

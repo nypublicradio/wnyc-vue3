@@ -23,7 +23,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
 
 <template>
   <div class="sidebars">
-    <Sidebar
+    <Drawer
       v-model:visible="settingsSideBar"
       :baseZIndex="10000"
       position="right"
@@ -41,8 +41,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
     >
       <template #header><span></span></template>
       <Settings />
-    </Sidebar>
-    <Sidebar
+    </Drawer>
+    <Drawer
       v-model:visible="loginSideBar"
       :baseZIndex="10001"
       position="right"
@@ -61,8 +61,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
     >
       <!-- <template #header><h1 class="font-medium">Log in</h1></template> -->
       <Login />
-    </Sidebar>
-    <Sidebar
+    </Drawer>
+    <Drawer
       v-model:visible="signinSideBar"
       :baseZIndex="10002"
       position="right"
@@ -80,8 +80,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <Signup />
-    </Sidebar>
-    <Sidebar
+    </Drawer>
+    <Drawer
       v-model:visible="forgotPasswordSideBar"
       :baseZIndex="10003"
       position="right"
@@ -99,9 +99,9 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <ForgotPassword />
-    </Sidebar>
+    </Drawer>
 
-    <Sidebar
+    <Drawer
       v-model:visible="editProfileSideBar"
       :baseZIndex="10003"
       position="right"
@@ -119,8 +119,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <EditProfile />
-    </Sidebar>
-    <Sidebar
+    </Drawer>
+    <Drawer
       v-model:visible="accountPromptSideBar"
       :baseZIndex="10003"
       position="bottom"
@@ -137,8 +137,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <AccountPromptSideBar />
-    </Sidebar>
-    <Sidebar
+    </Drawer>
+    <Drawer
       v-model:visible="accountDeleteSideBar"
       :baseZIndex="10003"
       position="right"
@@ -155,9 +155,9 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <AccountDeleteSideBar />
-    </Sidebar>
+    </Drawer>
 
-    <Sidebar
+    <Drawer
       v-model:visible="sleepTimerSideBar"
       :baseZIndex="10003"
       position="bottom"
@@ -175,27 +175,27 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <SleepTimer />
-    </Sidebar>
+    </Drawer>
   </div>
 </template>
 
 <style lang="scss">
-.p-sidebar {
+.p-drawer {
   padding-top: env(safe-area-inset-top);
   background: var(--p-surface-25);
-  .p-sidebar-header {
+  .p-drawer-header {
     padding: 0.75rem 0.75rem 0.75rem 1.25rem;
     justify-content: space-between;
   }
-  .p-sidebar-content {
+  .p-drawer-content {
     padding: 0;
   }
-  .p-sidebar-close {
+  .p-drawer-close {
     width: 32px !important;
     height: 32px !important;
   }
-  .p-sidebar-close,
-  .p-sidebar-close .p-icon {
+  .p-drawer-close,
+  .p-drawer-close .p-icon {
     width: 18px;
     height: 18px;
     path {
@@ -203,7 +203,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
     }
   }
   &.hideX {
-    .p-sidebar-header {
+    .p-drawer-header {
       display: none !important;
     }
   }

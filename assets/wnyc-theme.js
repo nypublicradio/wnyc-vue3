@@ -142,17 +142,17 @@ const MyPreset = definePreset(Aura, {
       950: "#082f49"
     },
     blue: {
-      50: "#eff6ff",
-      100: "#dbeafe",
-      200: "#bfdbfe",
-      300: "#93c5fd",
-      400: "#60a5fa",
-      500: "#3b82f6",
-      600: "#2563eb",
-      700: "#1d4ed8",
-      800: "#1e40af",
-      900: "#1e3a8a",
-      950: "#172554"
+      50: "#f4f6f8",
+      100: "#cad3dd",
+      200: "#a1b0c3",
+      300: "#778ea8",
+      400: "#4e6b8e",
+      500: "#244873",
+      600: "#1f3d62",
+      700: "#193251",
+      800: "#14283f",
+      900: "#0e1d2e",
+      950: "#09121d"
     },
     indigo: {
       50: "#f2f5f8",
@@ -660,6 +660,21 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    drawer: {
+      borderColor: "transparent",
+      colorScheme: {
+        light: {
+          root: {
+            background: '{surface.50}',
+          },
+        },
+        dark: {
+          root: {
+            background: '{surface.25}',
+          },
+        },
+      },
+    },
     button: {
       root: {
         borderRadius: '9999px',

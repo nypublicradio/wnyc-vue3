@@ -62,9 +62,3 @@ const emit = defineEmits(["changeEmit"])
     </template>
   </DropupMenu2>
 </template>
-
-<style lang="scss" scoped>
-.p-dropdown {
-  border-radius: 50%;
-}
-</style>

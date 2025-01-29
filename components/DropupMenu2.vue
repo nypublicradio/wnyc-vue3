@@ -184,25 +184,32 @@ function handleSwipe() {
     reopenPanel()
   }
 }
+const onMenuUpdate = (event) => {
+  $emit("update:data", event)
+  closeMenu()
+}
 
+const toggleDrawer = () => {
+  visibleBottom.value = !visibleBottom.value
+}
 onMounted(() => {
   if (props.startOpen) drawerRef.value.show()
 })
 onUnmounted(() => {
   unsetPanel()
 })
+
+defineExpose({
+  closeMenu,
+  toggleDrawer,
+})
 </script>
 <template>
   <div class="dropup-panel-holder">
-    <div class="ans" @click="visibleBottom = !visibleBottom">
+    <div class="ans" @click="toggleDrawer">
       <slot name="customButton" label="">
-        <div
-          v-if="slotProps.value[props.optionLabel] && !props.customButton"
-          class="flex align-items-center justify-content-end"
-        >
-          <div class="ans">
-            {{ slotProps.value[props.optionLabel] }}
-          </div>
+        <div v-if="!props.data" class="flex align-items-center justify-content-end">
+          <div class="ans">hello</div>
         </div>
         <span v-else>
           <div class="ans">
@@ -221,12 +228,11 @@ onUnmounted(() => {
       id="dropup-panel"
       class="dropup-panel"
       :class="[{ customButton: props.customButton, normal: props.normal }]"
-      @update:modelValue="$emit('update:data', $event)"
       @show="setPanel"
       @hide="unsetPanel"
     >
       <template #header>
-        <div class="style-mode-dark">
+        <div class="style-mode-dark w-full px-4">
           <div>
             <i class="pi pi-minus closer-line" @click="closeMenu" />
             <h3 v-if="props.label" class="p-submenu-header-replace">
@@ -237,7 +243,7 @@ onUnmounted(() => {
         </div>
       </template>
       <template #default>
-        <Menu :model="options">
+        <Menu :model="options" @click="onMenuUpdate">
           <template #item="{ item, props }">
             <div class="style-mode-dark">
               <div
@@ -272,87 +278,14 @@ onUnmounted(() => {
       </template>
     </Drawer>
   </div>
-  <!-- <Dropdown
-    ref="dropdownRootRef"
-    v-model="dataRef"
-    :options="props.options"
-    :optionLabel="props.optionLabel"
-    :placeholder="props.placeholder"
-    class="s-dropup"
-    :class="[{ customButton: props.customButton, normal: props.normal }]"
-    @update:modelValue="$emit('update:data', $event)"
-    @show="setPanel"
-    @hide="unsetPanel"
-    :panelClass="`p-dropup-panel ${props.customButton ? 'is-customButton' : ''} ${
-      !props.checkMark ? 'hideCheckMark' : ''
-    }`"
-    :panelProps="{ id: 'p-dropup-panel' }"
-    @click.prevent
-  >
-    <template #value="slotProps">
-      <div ref="drawerRef" class="ans">
-        <slot name="customButton" label="">
-          <div
-            v-if="slotProps.value[props.optionLabel] && !props.customButton"
-            class="flex align-items-center justify-content-end"
-          >
-            <div class="ans">
-              {{ slotProps.value[props.optionLabel] }}
-            </div>
-          </div>
-          <span v-else>
-            <div class="ans">
-              {{ data }}
-            </div>
-          </span>
-        </slot>
-      </div>
-    </template>
-    <template #header>
-      <div class="style-mode-dark">
-        <div class="px-4">
-          <i class="pi pi-minus closer-line" @click="closeMenu" />
-          <h3 v-if="props.label" class="p-submenu-header-replace">
-            {{ props.label }}
-          </h3>
-        </div>
-        <slot name="header" />
-      </div>
-    </template>
-    <template #option="slotProps">
-      <div class="style-mode-dark">
-        <div
-          :key="slotProps.option[props.optionLabel]"
-          class="flex align-items-center station-options"
-          :class="[{ selected: slotProps.option[props.optionLabel] === dataRef }]"
-        >
-          <img
-            v-if="slotProps.option.image"
-            :alt="slotProps.option.label"
-            :src="slotProps.option.image"
-            class="mr-3"
-            style="width: 18px; height: 18px"
-          />
-          <i v-if="slotProps.option.icon" class="mr-3" :class="slotProps.option.icon"></i>
-          <component
-            class="mr-3 custom-icon"
-            :active="slotProps.option.active ?? false"
-            v-if="slotProps.option.customIcon"
-            :is="slotProps.option.customIcon"
-          />
-          <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
-        </div>
-      </div>
-    </template>
-    <template #footer="slotProps">
-      <div class="footer">
-        <slot name="footer"></slot>
-      </div>
-    </template>
-  </Dropdown> -->
 </template>
 
 <style lang="scss" scoped>
+.dropup-panel-holder {
+  .ans {
+    @include font-config($type-paragraph1);
+  }
+}
 .dropup-panel {
   .pi-minus.closer-line {
     color: #ffffff;
@@ -371,27 +304,20 @@ onUnmounted(() => {
     margin-bottom: 20px;
   }
 }
-// .dropup-panel:not(.normal) {
-//   width: v-bind(width);
-//   height: v-bind(height);
-//   background: transparent;
-//   border: none;
-//   text-align: right;
-//   &.p-focus {
-//     outline: none;
-//     box-shadow: none;
-//   }
-//   .p-dropdown-trigger {
-//     display: none !important;
-//   }
-//   //&:hover {
-//   //background: var(--background3);
-//   //}
-// }
-//
 </style>
 
 <style lang="scss">
+:root,
+[data-style-mode="light"],
+.style-mode-light {
+  --dropupBg: var(--p-surface-700);
+  --menu-item-hover: var(--p-surface-500);
+}
+[data-style-mode="dark"],
+.style-mode-dark {
+  --dropupBg: var(--p-surface-25);
+  --menu-item-hover: #ffffff3d;
+}
 @mixin checkMark {
   &:after {
     font-family: primeicons;
@@ -410,6 +336,8 @@ onUnmounted(() => {
 .p-drawer-mask {
   .p-drawer.dropup-panel {
     z-index: 10010;
+    background-color: var(--dropupBg);
+    border: none;
     &.release {
       transition: bottom 0.25s;
       -webkit-transition: bottom 0.25s;
@@ -425,131 +353,32 @@ onUnmounted(() => {
 
     border-radius: 28px 28px 0px 0px;
     .p-drawer-header {
-      padding-top: 0;
-      padding-bottom: 0;
+      padding: 0;
     }
     .p-drawer-content {
       padding: 0;
     }
     .p-menu {
       border: none;
+      background-color: transparent;
     }
     .p-menu-list {
-      padding-left: 0;
+      padding: 0;
       .p-menu-item {
         .p-menu-item-content {
-          padding: 0.75rem 0 0.75rem 1rem;
+          border-radius: 0;
+          padding: 0.75rem 0 0.75rem 1.25rem;
+          color: var(--p-surface-0);
+          &:hover {
+            background: var(--menu-item-hover);
+          }
+          &:focus {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
         }
       }
     }
   }
 }
-
-// .dropup-panel:not(.normal) {
-//   .p-dropdown-trigger {
-//     display: none !important;
-//   }
-//   .p-dropdown-label {
-//     display: flex;
-//     align-items: center;
-//     justify-content: flex-end;
-//   }
-//   .ans {
-//     @include font-config($type-paragraph1);
-//   }
-//   &.customButton .p-dropdown-label {
-//     justify-content: center;
-//   }
-// }
-// .dropup-panel {
-//   // move the panel above the bottom-menu
-//   z-index: 10010;
-//   &.release {
-//     transition: bottom 0.25s;
-//     -webkit-transition: bottom 0.25s;
-//   }
-//   &.is-customButton {
-//     .p-highlight:after {
-//       display: none !important;
-//     }
-//   }
-//   position: fixed !important;
-//   display: block !important;
-//   top: unset !important;
-//   bottom: 0;
-//   left: 0;
-//   width: 100%;
-//   transform-origin: center bottom !important;
-//   border-radius: 28px 28px 0px 0px;
-//   -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
-//   box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
-//   background: var(--background4) !important;
-//   .pi-minus.closer-line {
-//     color: #ffffff;
-//     font-size: 30px;
-//     text-align: center;
-//     width: 100%;
-//     opacity: 30%;
-//   }
-//   .p-submenu-header-replace {
-//     background: transparent;
-//     color: var(--text-color);
-//     font-weight: var(--font-weight-700);
-//     font-size: 1.625rem;
-//     font-family: var(--font-family-header);
-//     margin-top: 20px;
-//     margin-bottom: 20px;
-//   }
-//   .p-dropdown-items-wrapper {
-//     max-height: unset !important;
-//     padding: 5px 0px 0px 0px;
-//     .p-dropdown-item {
-//       color: #ffffff !important;
-//       font-weight: var(--font-weight-600);
-//       font-size: 0.938rem;
-//       padding: 0.75rem 20px;
-//       background: unset !important;
-//       &:hover {
-//         background: #ffffff3d !important;
-//       }
-//       &.p-highlight {
-//         background: unset !important;
-//         @include checkMark;
-//       }
-//       .station-options {
-//         //margin: 10px 0;
-//         word-wrap: break-word;
-//         width: 100%;
-//         img {
-//           width: 40px !important;
-//           height: 40px !important;
-//         }
-//         .option {
-//           font-size: 16px;
-//           white-space: wrap;
-//         }
-//         &.selected {
-//           @include checkMark;
-//         }
-//       }
-//       .custom-icon {
-//         width: 2rem;
-//         height: 2rem;
-//         flex: none;
-//       }
-//     }
-//   }
-//   .footer {
-//     //padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
-//     padding: 0px 20px calc($bottomMenuHeight + 20px) 20px;
-//   }
-//   &.hideCheckMark {
-//     .p-highlight:after {
-//       display: none !important;
-//     }
-//     .station-options .selected:after {
-//       display: none !important;
-//     }
-//   }
-// }
 </style>

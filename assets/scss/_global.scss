@@ -142,7 +142,7 @@ label {
 hr {
   border: none;
   height: 1px;
-  background: var(--stroke-500);
+  background: var(--p-surface-50);
   &.dim {
     opacity: 0.25;
   }
@@ -326,6 +326,10 @@ section {
 
 //remove sticky hover on mobile
 .p-button.no-hover:hover {
+  background: transparent !important;
+}
+//remove sticky hover on mobile
+.no-active:active {
   background: transparent !important;
 }
 
@@ -668,7 +672,7 @@ section {
 // .p-component-overlay-enter {
 //   background: none !important;
 // }
-// .p-sidebar {
+// .p-drawer {
 //   box-shadow: none !important;
 // }
 
