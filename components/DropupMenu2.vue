@@ -46,6 +46,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  blockClick: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(["update:data", "swipe-down"])
@@ -206,7 +210,7 @@ defineExpose({
 </script>
 <template>
   <div class="dropup-panel-holder">
-    <div class="ans" @click="toggleDrawer">
+    <div class="ans" @click="props.blockClick ? null : toggleDrawer">
       <slot name="customButton" label="">
         <div v-if="!props.data" class="flex align-items-center justify-content-end">
           <div class="ans">hello</div>

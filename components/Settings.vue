@@ -271,6 +271,7 @@ const onDeleteAccountClick = () => {
           label="Default stream"
           width="auto"
           @change="onUpdateStation"
+          blockClick
         />
       </SBox>
     </section>
@@ -350,6 +351,7 @@ const onDeleteAccountClick = () => {
           label="Text Size"
           width="auto"
           @change="onUpdateTextSize"
+          blockClick
         />
       </SBox>
       <SBox label="Dark theme" :ripple="false" class="px-3">

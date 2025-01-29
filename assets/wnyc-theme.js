@@ -683,6 +683,7 @@ const MyPreset = definePreset(Aura, {
         label: {
           fontWeight: '700'
         },
+        gap: '0px',
       },
       colorScheme: {
         light: {
