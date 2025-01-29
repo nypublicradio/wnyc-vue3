@@ -51,6 +51,7 @@ const handleCurrentTimeChange = (inc) => {
 
 // start the timer
 const handleStartTimer = async (obj) => {
+  console.log("START TIMER = ", obj)
   // ios only
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
@@ -75,10 +76,41 @@ const handleStartTimer = async (obj) => {
       return
     }
   }
+  sleepTimerSelectedTime.value = obj.value
+  // add the custom time to the timeLengthOptions if it does not exist
+
+  // if (
+  //   !timeLengthOptions.some(
+  //     (option) => option.value === sleepTimerSelectedTime.value.value
+  //   )
+  // ) {
+  // timeLengthOptions.push({
+  //   label: `${sleepTimerSelectedTime.value / 60} minutes`,
+  //   value: sleepTimerSelectedTime.value,
+  // })
+  // }
 
   // start the timer
   onUpdateDuration(obj)
 }
+
+// adds the custom time to the timeLengthOptions so it renders in the select menu
+watch(
+  sleepTimerSelectedTime,
+  () => {
+    console.log("sleepTimerSelectedTime = ", sleepTimerSelectedTime.value)
+    if (
+      !timeLengthOptions.some(
+        (option) => option.value === sleepTimerSelectedTime.value.value
+      )
+    ) {
+      timeLengthOptions.push(sleepTimerSelectedTime.value)
+    }
+  },
+  {
+    immediate: true,
+  }
+)
 </script>
 
 <template>
@@ -92,18 +124,30 @@ const handleStartTimer = async (obj) => {
         v-if="!sleepTimerRunning"
         class="flex flex-column w-full align-items-stretch gap-3 style-mode-light"
       >
-        <DropupMenu
+        <DropupMenu2
           id="sleep-timer-duration"
           v-model="sleepTimerSelectedTime"
           :options="timeLengthOptions"
           optionLabel="label"
           placeholder="Select a Sleep Timer Duration"
           label="Sleep Timer"
-          @change="handleStartTimer"
-          normal
+          @update:modelValue="
+            handleStartTimer({ value: { label: $event.label, value: $event.value } })
+          "
+          customButton
           :checkMark="false"
         >
-          <template #footer="slotpProps">
+          <template #customButton="slotProps">
+            <pre>{{ sleepTimerSelectedTime }}</pre>
+            <Select
+              :options="timeLengthOptions"
+              v-model="sleepTimerSelectedTime"
+              optionLabel="label"
+              placeholder="Select a Time"
+              class="w-full"
+            />
+          </template>
+          <template #footer="slotProps">
             <div class="style-mode-dark">
               <hr />
               <p>Custom time:</p>
@@ -112,7 +156,7 @@ const handleStartTimer = async (obj) => {
                 class="flex align-items-center justify-content-between"
                 @click="
                   handleStartTimer({
-                    value: { value: customTime * 60, label: `${customTime} minutes` },
+                    value: { label: `${customTime} minutes`, value: customTime * 60 },
                   })
                 "
               >
@@ -138,7 +182,7 @@ const handleStartTimer = async (obj) => {
               </div>
             </div>
           </template>
-        </DropupMenu>
+        </DropupMenu2>
         <Button
           label="Start"
           severity=""

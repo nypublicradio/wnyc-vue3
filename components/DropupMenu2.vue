@@ -52,7 +52,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["update:data", "swipe-down"])
+const emit = defineEmits(["update:modelValue", "swipe-down"])
 
 const dataRef = ref(props.data)
 
@@ -73,6 +73,7 @@ const distanceThresholdDivider = 2.2
 let isDraggingDown = false
 
 const visibleBottom = ref(false)
+const selectedOption = ref(null)
 
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
@@ -121,7 +122,6 @@ const swipe = useSwipe(panel, {
   passive: true,
   threshold: 1,
   onSwipeStart() {
-    console.log("swipe start")
     // removes class to the css animation so the drag will be 1:1 with the finger
     panel.value.classList.remove("release")
 
@@ -129,7 +129,6 @@ const swipe = useSwipe(panel, {
     touchstartTime = new Date().getTime()
   },
   onSwipe() {
-    console.log("swiping")
     touchCurrentY = swipe.lengthY.value
     // so it does not drag higher than the height of the panel
     if (touchCurrentY < 0) {
@@ -189,13 +188,19 @@ function handleSwipe() {
   }
 }
 const onMenuUpdate = (event) => {
-  $emit("update:data", event)
+  event.command && event.command()
+  emit("update:modelValue", event)
   closeMenu()
 }
 
 const toggleDrawer = () => {
   visibleBottom.value = !visibleBottom.value
 }
+const toggleDrawerClick = () => {
+  if (props.blockClick) return
+  toggleDrawer()
+}
+
 onMounted(() => {
   if (props.startOpen) drawerRef.value.show()
 })
@@ -210,11 +215,9 @@ defineExpose({
 </script>
 <template>
   <div class="dropup-panel-holder">
-    <div class="ans" @click="props.blockClick ? null : toggleDrawer">
+    <div class="ans" @click="toggleDrawerClick">
       <slot name="customButton" label="">
-        <div v-if="!props.data" class="flex align-items-center justify-content-end">
-          <div class="ans">hello</div>
-        </div>
+        <div v-if="!props.data" class="flex align-items-center justify-content-end"></div>
         <span v-else>
           <div class="ans">
             {{ data }}
@@ -247,9 +250,9 @@ defineExpose({
         </div>
       </template>
       <template #default>
-        <Menu :model="options" @click="onMenuUpdate">
+        <Menu :model="options">
           <template #item="{ item, props }">
-            <div class="style-mode-dark">
+            <div class="style-mode-dark" @click="onMenuUpdate(item)">
               <div
                 :key="item.label"
                 class="flex align-items-center station-options"
