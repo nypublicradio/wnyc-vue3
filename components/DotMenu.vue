@@ -30,7 +30,7 @@ const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
 </script>
 <template>
-  <DropupMenu
+  <DropupMenu2
     v-model:data="dataRef"
     :options="props.menuItems"
     :label="props.label"
@@ -42,7 +42,8 @@ const emit = defineEmits(["changeEmit"])
     <template #customButton="slotProps">
       <slot name="myCustomButton" label="">
         <Button
-          class="text-cyan-500 hover:bg-cyan-50 rounded"
+          class="rounded"
+          severity="secondary"
           icon="pi pi-ellipsis-v"
           text
           rounded
@@ -59,7 +60,7 @@ const emit = defineEmits(["changeEmit"])
         <slot name="header-bottom" />
       </div>
     </template>
-  </DropupMenu>
+  </DropupMenu2>
 </template>
 
 <style lang="scss" scoped>

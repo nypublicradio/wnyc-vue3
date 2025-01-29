@@ -359,7 +359,7 @@ const moreFromClick = () => {
           </template>
           <template #header-bottom>
             <div>
-              <div class="flex gap-3 px-4 align-items-center">
+              <div class="flex gap-3 align-items-center">
                 <VImage
                   :src="
                     templatizePublisherImageUrl(currentEpisode.image) ??

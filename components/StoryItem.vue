@@ -230,7 +230,7 @@ const handleClick = () => {
             >
               <template #header-bottom>
                 <div>
-                  <div class="flex gap-3 px-4 align-items-center">
+                  <div class="flex gap-3 align-items-center">
                     <VImage
                       :src="imgSrcUrl"
                       :alt="`${props.data?.showTitle} show image`"
