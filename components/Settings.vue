@@ -359,7 +359,7 @@ const onDeleteAccountClick = () => {
           v-model:data.sync="currentUserProfile.dark_mode"
           @change="
             () => {
-              //setDarkMode(currentUserProfile.dark_mode)
+              setDarkMode(currentUserProfile.dark_mode)
               trackClickEvent(
                 'Click Tracking - Dark theme',
                 'Settings Sidebar - Display',
