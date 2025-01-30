@@ -690,10 +690,6 @@ const MyPreset = definePreset(Aura, {
             hoverBackground: '{surface.0}',
             checkedBackground: '{surface.0}',
             checkedHoverBackground: '{surface.0}',
-            // color: '{text.muted.color}',
-            // hoverColor: '{text.color}',
-            // checkedColor: '{primary.color}',
-            // checkedHoverColor: '{primary.hover.color}'
           }
         },
         dark: {
@@ -708,10 +704,6 @@ const MyPreset = definePreset(Aura, {
             hoverBackground: '{surface.400}',
             checkedBackground: '{surface.0}',
             checkedHoverBackground: '{surface.0}',
-            // color: '{text.muted.color}',
-            // hoverColor: '{text.color}',
-            // checkedColor: '{primary.color}',
-            // checkedHoverColor: '{primary.hover.color}'
           }
         }
       },

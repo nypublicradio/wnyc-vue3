@@ -136,6 +136,9 @@ const onClick = () => {
       padding: 0;
       .p-button {
         justify-content: left;
+        .p-button-label {
+          font-weight: var(--font-weight-500);
+        }
       }
       .p-ink,
       .p-ink-active {
