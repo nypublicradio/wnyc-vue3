@@ -673,6 +673,49 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    toggleswitch: {
+      root: {
+        width: '3.5rem',
+      },
+      colorScheme: {
+        light: {
+          root: {
+            background: '{surface.50}',
+            disabledBackground: '{form.field.disabled.background}',
+            hoverBackground: '{surface.100}',
+          },
+          handle: {
+            background: '{surface.0}',
+            disabledBackground: '{form.field.disabled.color}',
+            hoverBackground: '{surface.0}',
+            checkedBackground: '{surface.0}',
+            checkedHoverBackground: '{surface.0}',
+            // color: '{text.muted.color}',
+            // hoverColor: '{text.color}',
+            // checkedColor: '{primary.color}',
+            // checkedHoverColor: '{primary.hover.color}'
+          }
+        },
+        dark: {
+          root: {
+            background: '{surface.50}',
+            disabledBackground: '{form.field.disabled.background}',
+            hoverBackground: '{surface.100}',
+          },
+          handle: {
+            background: '{surface.300}',
+            disabledBackground: '{form.field.disabled.color}',
+            hoverBackground: '{surface.400}',
+            checkedBackground: '{surface.0}',
+            checkedHoverBackground: '{surface.0}',
+            // color: '{text.muted.color}',
+            // hoverColor: '{text.color}',
+            // checkedColor: '{primary.color}',
+            // checkedHoverColor: '{primary.hover.color}'
+          }
+        }
+      },
+    },
     drawer: {
       borderColor: "transparent",
       colorScheme: {

@@ -280,10 +280,9 @@ const onDeleteAccountClick = () => {
         <div class="s-title">Notifications</div>
       </div>
       <SBox label="Allow Notifications" :ripple="false">
-        <VInputSwitch
+        <VToggleSwitch
           yes="ON"
           no="OFF"
-          static-width
           v-model:data="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
         />
@@ -308,10 +307,9 @@ const onDeleteAccountClick = () => {
         :key="channel.key"
         :ripple="false"
       >
-        <VInputSwitch
+        <VToggleSwitch
           yes="ON"
           no="OFF"
-          static-width
           v-model:data="
             currentUserProfile.one_signal_notification_channels.find(
               (c) => c.key === channel.key
@@ -355,14 +353,13 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
       <SBox label="Dark theme" :ripple="false" class="px-3">
-        <VInputSwitch
+        <VToggleSwitch
           yes="ON"
           no="OFF"
-          static-width
           v-model:data.sync="currentUserProfile.dark_mode"
           @change="
             () => {
-              setDarkMode(currentUserProfile.dark_mode)
+              //setDarkMode(currentUserProfile.dark_mode)
               trackClickEvent(
                 'Click Tracking - Dark theme',
                 'Settings Sidebar - Display',
