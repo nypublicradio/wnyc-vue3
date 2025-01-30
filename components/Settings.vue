@@ -279,7 +279,7 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox label="Allow Notifications" :ripple="false">
+      <SBox label="Allow Notifications" :ripple="false" class="px-3">
         <VToggleSwitch
           yes="ON"
           no="OFF"
@@ -306,6 +306,7 @@ const onDeleteAccountClick = () => {
         :description="channel.description"
         :key="channel.key"
         :ripple="false"
+        class="px-3"
       >
         <VToggleSwitch
           yes="ON"

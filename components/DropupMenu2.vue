@@ -234,12 +234,11 @@ defineExpose({
       :showCloseIcon="false"
       id="dropup-panel"
       class="dropup-panel"
-      :class="[{ customButton: props.customButton, normal: props.normal }]"
       @show="setPanel"
       @hide="unsetPanel"
     >
       <template #header>
-        <div class="style-mode-dark w-full">
+        <div class="style-mode-dark w-full px-4">
           <div>
             <i class="pi pi-minus closer-line" @click="closeMenu" />
             <h3 v-if="props.label" class="p-submenu-header-replace">
@@ -251,13 +250,17 @@ defineExpose({
       </template>
       <template #default>
         <Menu :model="options">
-          <template #item="{ item, props }">
-            <div class="style-mode-dark" @click="onMenuUpdate(item)">
-              <div
-                :key="item.label"
-                class="flex align-items-center station-options"
-                :class="[{ selected: item[props.optionLabel] === dataRef }]"
-              >
+          <template #item="{ item }">
+            <div
+              class="style-mode-dark item"
+              @click="onMenuUpdate(item)"
+              :class="[
+                {
+                  selected: item.value === dataRef,
+                },
+              ]"
+            >
+              <div :key="item.label" class="flex align-items-center station-options">
                 <img
                   v-if="item.image"
                   :alt="item.label"
@@ -330,13 +333,13 @@ defineExpose({
     font-family: primeicons;
     content: "\e909";
     position: absolute;
-    right: 0;
     top: 0;
     bottom: 0;
     margin: auto;
     right: 20px;
     width: 1rem;
     height: 1rem;
+    color: #ffffff;
   }
 }
 
@@ -372,6 +375,7 @@ defineExpose({
     .p-menu-list {
       padding: 0;
       .p-menu-item {
+        position: relative;
         .custom-icon {
           width: 24px;
           height: 24px;
@@ -379,14 +383,19 @@ defineExpose({
         }
         .p-menu-item-content {
           border-radius: 0;
-          padding: 0.75rem 0 0.75rem 1.25rem;
+          padding: 0.75rem 0.75rem 0.75rem 1.5rem;
           color: var(--p-surface-0);
+          font-size: 1rem;
+          font-weight: 600;
           &:hover {
             background: var(--menu-item-hover);
           }
           &:focus {
             background: transparent !important;
             background-color: transparent !important;
+          }
+          .item.selected {
+            @include checkMark;
           }
         }
       }
