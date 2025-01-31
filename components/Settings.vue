@@ -22,6 +22,7 @@ import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
+import { id } from "date-fns/locale"
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -65,6 +66,7 @@ const initializeStationList = (val) => {
 
   val.forEach((station) => {
     tempMenuData.push({
+      id: station.station,
       label: station.title,
       name: station.title,
       station: station.station,
@@ -127,27 +129,24 @@ watch(currentUserProfile.value, () => {
 })
 
 // handles setting the font size and tracking the event
-const onUpdateTextSize = () => {
-  setFontSize(currentUserProfile.value.text_size.pixel)
+const onUpdateTextSize = (data) => {
+  console.log("text size updated", data)
+  setFontSize(data.pixel)
 
-  trackClickEvent(
-    "Click Tracking - Test size",
-    "Settings Sidebar - Display",
-    currentUserProfile.value.text_size.label
-  )
+  trackClickEvent("Click Tracking - Test size", "Settings Sidebar - Display", data.label)
 }
 
 // handles tracking the station change event
-const onUpdateStation = () => {
+const onUpdateStation = (data) => {
+  // if not playing, update the live stream so the home page updates with the new default stream
+  if (!isLiveStream.value) {
+    updateLiveStream(data.slug)
+  }
   trackClickEvent(
     "Click Tracking - Default stream",
     "Settings Sidebar - Listening Preferences",
-    currentUserProfile.value.default_live_stream.station
+    data.station
   )
-  // if not playing, update the live stream so the home page updates with the new default stream
-  if (!isLiveStream.value) {
-    updateLiveStream(currentUserProfile.value.default_live_stream.slug)
-  }
 }
 
 const accountHeader = computed(() => {
@@ -264,7 +263,7 @@ const onDeleteAccountClick = () => {
         <DropupMenu2
           ref="defaultStreamRef"
           id="default-stream"
-          v-model:data.sync="currentUserProfile.default_live_stream"
+          v-model="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
           placeholder="Select a station"
@@ -272,6 +271,7 @@ const onDeleteAccountClick = () => {
           width="auto"
           @change="onUpdateStation"
           blockClick
+          checkMark
         />
       </SBox>
     </section>
@@ -339,18 +339,20 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Display</div>
       </div>
+      <!-- <pre class="text-xs">{{ currentUserProfile }}</pre> -->
       <SBox label="Text size" @click="clickThisMenu(textSizeRef)">
         <DropupMenu2
           ref="textSizeRef"
           id="text-size"
-          v-model:data.sync="currentUserProfile.text_size"
+          v-model="currentUserProfile.text_size"
           :options="textSizeOptions"
           optionLabel="label"
           placeholder="Select a Text Size"
           label="Text Size"
           width="auto"
-          @change="onUpdateTextSize"
           blockClick
+          checkMark
+          @change="onUpdateTextSize"
         />
       </SBox>
       <SBox label="Dark theme" :ripple="false" class="px-3">
@@ -360,6 +362,7 @@ const onDeleteAccountClick = () => {
           v-model:data.sync="currentUserProfile.dark_mode"
           @change="
             () => {
+              console.log('updating mode', currentUserProfile)
               setDarkMode(currentUserProfile.dark_mode)
               trackClickEvent(
                 'Click Tracking - Dark theme',

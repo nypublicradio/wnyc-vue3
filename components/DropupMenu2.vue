@@ -44,7 +44,7 @@ const props = defineProps({
   },
   checkMark: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   blockClick: {
     type: Boolean,
@@ -52,7 +52,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["update:modelValue", "swipe-down"])
+const emit = defineEmits(["change", "swipe-down"])
 
 const dataRef = ref(props.data)
 
@@ -73,7 +73,8 @@ const distanceThresholdDivider = 2.2
 let isDraggingDown = false
 
 const visibleBottom = ref(false)
-const selectedOption = ref(null)
+
+const model = defineModel()
 
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
@@ -187,10 +188,13 @@ function handleSwipe() {
     reopenPanel()
   }
 }
-const onMenuUpdate = (event) => {
+const onMenuUpdate = async (event) => {
+  dataRef.value = event.id
+  model.value = event.id
   event.command && event.command()
-  emit("update:modelValue", event)
   closeMenu()
+  await nextTick()
+  emit("change", event)
 }
 
 const toggleDrawer = () => {
@@ -217,12 +221,9 @@ defineExpose({
   <div class="dropup-panel-holder">
     <div class="ans" @click="toggleDrawerClick">
       <slot name="customButton" label="">
-        <div v-if="!props.data" class="flex align-items-center justify-content-end"></div>
-        <span v-else>
-          <div class="ans">
-            {{ data }}
-          </div>
-        </span>
+        <div class="ans">
+          {{ model }}
+        </div>
       </slot>
     </div>
 
@@ -238,8 +239,8 @@ defineExpose({
       @hide="unsetPanel"
     >
       <template #header>
-        <div class="style-mode-dark w-full px-4">
-          <div>
+        <div class="style-mode-dark w-full">
+          <div class="px-4">
             <i class="pi pi-minus closer-line" @click="closeMenu" />
             <h3 v-if="props.label" class="p-submenu-header-replace">
               {{ props.label }}
@@ -249,14 +250,16 @@ defineExpose({
         </div>
       </template>
       <template #default>
-        <Menu :model="options">
-          <template #item="{ item }">
+        <div class="p-menu-list">
+          <div class="p-menu-item">
             <div
-              class="style-mode-dark item"
+              v-for="item in options"
+              :key="item.label"
+              class="style-mode-dark item p-menu-item-content relative"
               @click="onMenuUpdate(item)"
               :class="[
                 {
-                  selected: item.value === dataRef,
+                  selected: item.id === model && props.checkMark,
                 },
               ]"
             >
@@ -278,8 +281,8 @@ defineExpose({
                 <div class="option">{{ item.label }}</div>
               </div>
             </div>
-          </template>
-        </Menu>
+          </div>
+        </div>
       </template>
       <template #footer="slotProps">
         <div class="footer">
@@ -345,6 +348,7 @@ defineExpose({
 
 .p-drawer-mask {
   .p-drawer.dropup-panel {
+    max-height: 100vh;
     z-index: 10010;
     background-color: var(--dropupBg);
     border: none;
@@ -359,8 +363,6 @@ defineExpose({
     }
     -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
     box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
-    //background: var(--p-surface-500) !important;
-
     border-radius: 28px 28px 0px 0px;
     .p-drawer-header {
       padding: 0;
@@ -374,6 +376,7 @@ defineExpose({
     }
     .p-menu-list {
       padding: 0;
+      overflow-y: auto;
       .p-menu-item {
         position: relative;
         .custom-icon {
@@ -394,7 +397,7 @@ defineExpose({
             background: transparent !important;
             background-color: transparent !important;
           }
-          .item.selected {
+          &.selected {
             @include checkMark;
           }
         }

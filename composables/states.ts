@@ -204,9 +204,9 @@ const bottomMenuState: object = {}
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
 
 const textSizeOptionsArr = [
-    { label: 'Normal', value: 'Normal', pixel: '16px' },
-    { label: 'Large', value: 'Large', pixel: '18px' },
-    { label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
+    { id: "Normal", label: 'Normal', value: 'Normal', pixel: '16px' },
+    { id: "Large", label: 'Large', value: 'Large', pixel: '18px' },
+    { id: "Extra Large", label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
 ]
 
 /**
