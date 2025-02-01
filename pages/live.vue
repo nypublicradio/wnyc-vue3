@@ -157,14 +157,20 @@ const scrollToActiveStation = () => {
 // switch the station and track it
 const switchStation = async (station, isPLayingCheck = true) => {
   if (!isStreamLoading.value) {
-    //if (currentEpisode.value !== station) {
     if (isEpisodePlaying.value && isPLayingCheck) {
-      await updateLiveStream(station.slug)
-      togglePlayTrigger.value = !togglePlayTrigger.value
-      currentEpisode.value = station
-      isLiveStream.value = true
+      if (station?.slug !== currentStreamStation.value) {
+        await updateLiveStream(station.slug)
+        togglePlayTrigger.value = !togglePlayTrigger.value
+        currentEpisode.value = station
+        currentStreamStation.value = station.slug
+        isLiveStream.value = true
+      }
     } else {
-      currentEpisode.value = null
+      if (isPLayingCheck) {
+        if (station?.slug !== currentStreamStation.value) {
+          currentEpisode.value = null
+        }
+      }
       currentStreamStation.value = station.slug
       currentEpisodeHolder.value = station
     }
@@ -176,7 +182,6 @@ const switchStation = async (station, isPLayingCheck = true) => {
       "Live Page",
       `switch station ${station?.station}`
     )
-    //}
   }
 }
 // handle the toggle play button and tracking

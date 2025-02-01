@@ -1,7 +1,6 @@
 <script setup>
 import { templatizePublisherImageUrl } from "~/utilities/helpers"
 
-
 const props = defineProps({
   data: {
     type: Object,
@@ -42,6 +41,7 @@ const handleClick = () => {
       :ratio="[1, 1]"
       alt="show poster image"
       class="image"
+      style="background-color: #ffffff"
     />
     <div class="info flex flex-column gap-3 w-full justify-content-between">
       <div class="content flex flex-column gap-1 justify-content-start w-full">

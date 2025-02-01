@@ -2,7 +2,6 @@
 import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
 
-
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
@@ -716,6 +715,7 @@ defineExpose({
                 class="show-image m-auto"
                 :ratio="[1, 1]"
                 role="presentation"
+                style="background-color: #ffffff"
               />
 
               <div v-if="isLiveStream" class="flex flex-column gap-2">
@@ -1005,6 +1005,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   .track-info-image {
+    background-color: #ffffff;
     display: block;
 
     // prettier-ignore
