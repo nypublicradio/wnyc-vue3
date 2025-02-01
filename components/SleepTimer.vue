@@ -22,10 +22,10 @@ const { platform, osVersion } = await Device.getInfo()
 const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
-  { label: "15 minutes", value: 900 },
-  { label: "30 minutes", value: 1800 },
-  { label: "45 minutes", value: 2700 },
-  { label: "60 minutes", value: 3600 },
+  { id: "15 minutes", label: "15 minutes", value: 900 },
+  { id: "30 minutes", label: "30 minutes", value: 1800 },
+  { id: "45 minutes", label: "45 minutes", value: 2700 },
+  { id: "60 minutes", label: "60 minutes", value: 3600 },
 ]
 
 const timeToIncrement = 5
@@ -49,8 +49,23 @@ const handleCurrentTimeChange = (inc) => {
   }
 }
 
+// build the object from the id
+const buildSleepTimerDataFromId = (id) => {
+  const obj = timeLengthOptions.find((option) => option.id === id)
+  return { entry: obj }
+}
+
 // start the timer
-const handleStartTimer = async (obj) => {
+const handleStartTimer = async (data) => {
+  let obj
+  // data is already an object
+  if (typeof data === "object") {
+    obj = data
+  } else {
+    // dropdown menu: id that builds the object
+    obj = buildSleepTimerDataFromId(data)
+  }
+
   // ios only
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
@@ -76,22 +91,20 @@ const handleStartTimer = async (obj) => {
     }
   }
 
-  sleepTimerSelectedTime.value = obj.value
-
   // start the timer
   onUpdateDuration(obj)
 }
 
-// adds the custom time to the timeLengthOptions so it renders in the select menu
+//adds the custom time to the timeLengthOptions so it renders in the select menu
 watch(
   sleepTimerSelectedTime,
   () => {
     if (
       !timeLengthOptions.some(
-        (option) => option.value === sleepTimerSelectedTime.value.value
+        (option) => option.value === sleepTimerSelectedTime.value.entry.value
       )
     ) {
-      timeLengthOptions.push(sleepTimerSelectedTime.value)
+      timeLengthOptions.push(sleepTimerSelectedTime.value.entry)
     }
   },
   {
@@ -114,21 +127,19 @@ watch(
       >
         <DropupMenu2
           id="sleep-timer-duration"
-          v-model="sleepTimerSelectedTime"
+          v-model="sleepTimerSelectedTime.entry"
           :options="timeLengthOptions"
           optionLabel="label"
           placeholder="Select a Sleep Timer Duration"
           label="Sleep Timer"
-          @update:modelValue="
-            handleStartTimer({ value: { label: $event.label, value: $event.value } })
-          "
+          @update:modelValue="handleStartTimer"
           customButton
-          :checkMark="false"
+          checkMark
         >
           <template #customButton="slotProps">
             <Select
               :options="timeLengthOptions"
-              v-model="sleepTimerSelectedTime"
+              v-model="sleepTimerSelectedTime.entry"
               optionLabel="label"
               placeholder="Select a Time"
               class="w-full"
@@ -144,7 +155,11 @@ watch(
                 class="flex align-items-center justify-content-between"
                 @click="
                   handleStartTimer({
-                    value: { label: `${customTime} minutes`, value: customTime * 60 },
+                    entry: {
+                      id: `${customTime} minutes`,
+                      label: `${customTime} minutes`,
+                      value: customTime * 60,
+                    },
                   })
                 "
               >
@@ -171,11 +186,7 @@ watch(
             </div>
           </template>
         </DropupMenu2>
-        <Button
-          label="Start"
-          severity=""
-          @click="handleStartTimer({ value: sleepTimerSelectedTime })"
-        />
+        <Button label="Start" @click="handleStartTimer(sleepTimerSelectedTime)" />
       </div>
       <div v-else>
         <div class="count-down">

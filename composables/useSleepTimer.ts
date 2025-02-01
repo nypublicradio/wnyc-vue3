@@ -59,7 +59,7 @@ export default function useSleepTimer() {
         if (!sleepTimerPaused.value && !repeat) {
             globalToast.value = {
                 severity: "info",
-                summary: `Sleep timer started for ${sleepTimerSelectedTime.value.label}`,
+                summary: `Sleep timer started for ${sleepTimerSelectedTime.value.entry.label}`,
                 life: 3000,
                 closable: true,
             }
@@ -91,7 +91,7 @@ export default function useSleepTimer() {
     // Reset the timer
     function resetTimer() {
         clearTheInterval()
-        sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.value
+        sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.entry.value
         sleepTimerRunning.value = false
         sleepTimerSideBar.value = false
     }
@@ -104,7 +104,7 @@ export default function useSleepTimer() {
         trackClickEvent(
             "Click Tracking - Sleep timer event",
             "Sleep Timer - Ended",
-            sleepTimerSelectedTime.value.label
+            sleepTimerSelectedTime.value.entry.label
         )
 
         // slowly decrease volume to 0
@@ -164,7 +164,7 @@ export default function useSleepTimer() {
 
     // Update the duration, reset and start the timer
     function onUpdateDuration(e) {
-        sleepTimerSelectedTime.value = e.value
+        sleepTimerSelectedTime.value = e
         resetTimer()
         startTimer()
         sleepTimerSideBar.value = false

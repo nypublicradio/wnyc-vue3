@@ -10,10 +10,6 @@ const props = defineProps({
     type: String,
     default: "label",
   },
-  data: {
-    type: [String, Object],
-    default: null,
-  },
   label: {
     type: String,
     default: null,
@@ -54,8 +50,6 @@ const props = defineProps({
 
 const emit = defineEmits(["change", "swipe-down"])
 
-const dataRef = ref(props.data)
-
 const drawerRef = ref(null)
 const panel = ref(null)
 // to match the total height of the shadow that is being applied to the panel
@@ -74,7 +68,8 @@ let isDraggingDown = false
 
 const visibleBottom = ref(false)
 
-const model = defineModel()
+// 2way binding to the currentUserProfile on the parent prop v-model
+const vModel = defineModel()
 
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
@@ -189,8 +184,7 @@ function handleSwipe() {
   }
 }
 const onMenuUpdate = async (event) => {
-  dataRef.value = event.id
-  model.value = event.id
+  vModel.value = event.id
   event.command && event.command()
   closeMenu()
   await nextTick()
@@ -222,7 +216,7 @@ defineExpose({
     <div class="ans" @click="toggleDrawerClick">
       <slot name="customButton" label="">
         <div class="ans">
-          {{ model }}
+          {{ vModel }}
         </div>
       </slot>
     </div>
@@ -259,10 +253,15 @@ defineExpose({
               @click="onMenuUpdate(item)"
               :class="[
                 {
-                  selected: item.id === model && props.checkMark,
+                  selected:
+                    item.id === (typeof vModel === 'object' ? vModel.id : vModel) &&
+                    props.checkMark,
                 },
               ]"
             >
+              <!-- id = {{ item }}
+              <br />
+              Vmodel = {{ vModel }} -->
               <div :key="item.label" class="flex align-items-center station-options">
                 <img
                   v-if="item.image"

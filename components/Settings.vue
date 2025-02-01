@@ -130,9 +130,7 @@ watch(currentUserProfile.value, () => {
 
 // handles setting the font size and tracking the event
 const onUpdateTextSize = (data) => {
-  console.log("text size updated", data)
   setFontSize(data.pixel)
-
   trackClickEvent("Click Tracking - Test size", "Settings Sidebar - Display", data.label)
 }
 
@@ -362,7 +360,6 @@ const onDeleteAccountClick = () => {
           v-model:data.sync="currentUserProfile.dark_mode"
           @change="
             () => {
-              console.log('updating mode', currentUserProfile)
               setDarkMode(currentUserProfile.dark_mode)
               trackClickEvent(
                 'Click Tracking - Dark theme',

@@ -125,7 +125,7 @@ const getDotMenuItems = (bucketItem) => {
 
 // fire the command located in tehe menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 // handle the play button click

@@ -264,7 +264,7 @@ const getDotMenuItems = () => {
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 // handles the click on the bottom fixed footer
