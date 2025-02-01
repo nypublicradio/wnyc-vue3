@@ -21,21 +21,16 @@ const props = defineProps({
     type: String,
     default: "42px",
   },
-  customButton: {
-    type: Boolean,
-    default: true,
-  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
 </script>
 <template>
-  <DropupMenu2
+  <DropupMenu
     v-model:data="dataRef"
     :options="props.menuItems"
     :label="props.label"
     @change="emit('changeEmit', $event)"
-    :customButton="props.customButton"
     :width="props.width"
     :height="props.height"
   >
@@ -60,5 +55,5 @@ const emit = defineEmits(["changeEmit"])
         <slot name="header-bottom" />
       </div>
     </template>
-  </DropupMenu2>
+  </DropupMenu>
 </template>

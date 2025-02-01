@@ -257,8 +257,12 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox label="Default stream" @click="clickThisMenu(defaultStreamRef)">
-        <DropupMenu2
+      <SBox
+        label="Default stream"
+        class="cursor-pointer"
+        @click="clickThisMenu(defaultStreamRef)"
+      >
+        <DropupMenu
           ref="defaultStreamRef"
           id="default-stream"
           v-model="currentUserProfile.default_live_stream"
@@ -338,8 +342,8 @@ const onDeleteAccountClick = () => {
         <div class="s-title">Display</div>
       </div>
       <!-- <pre class="text-xs">{{ currentUserProfile }}</pre> -->
-      <SBox label="Text size" @click="clickThisMenu(textSizeRef)">
-        <DropupMenu2
+      <SBox label="Text size" class="cursor-pointer" @click="clickThisMenu(textSizeRef)">
+        <DropupMenu
           ref="textSizeRef"
           id="text-size"
           v-model="currentUserProfile.text_size"

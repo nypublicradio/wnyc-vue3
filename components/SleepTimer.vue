@@ -125,7 +125,7 @@ watch(
         v-if="!sleepTimerRunning"
         class="flex flex-column w-full align-items-stretch gap-3 style-mode-light"
       >
-        <DropupMenu2
+        <DropupMenu
           id="sleep-timer-duration"
           v-model="sleepTimerSelectedTime.entry"
           :options="timeLengthOptions"
@@ -133,7 +133,6 @@ watch(
           placeholder="Select a Sleep Timer Duration"
           label="Sleep Timer"
           @update:modelValue="handleStartTimer"
-          customButton
           checkMark
         >
           <template #customButton="slotProps">
@@ -185,7 +184,7 @@ watch(
               </div>
             </div>
           </template>
-        </DropupMenu2>
+        </DropupMenu>
         <Button label="Start" @click="handleStartTimer(sleepTimerSelectedTime)" />
       </div>
       <div v-else>
