@@ -34,7 +34,7 @@ import {
   FALLBACKUSERDARK,
   NPRIMAGEDOMAINSOURCES,
 } from "~/composables/globals"
-import { updateAllLiveStreams } from "~/composables/data/liveStream"
+import { updateAllLiveStreams, updateLiveStream } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
@@ -1264,11 +1264,10 @@ export const refreshData = async (refreshUser = false) => {
   } catch (error) {
     console.error(error)
   }
-  // refresh streams here
-  updateAllLiveStreams()
+  // refresh streams here but don't set it
+  updateAllLiveStreams(false)
   //update media session
   initMediaSession(currentEpisode.value)
-
 }
 
 // function that gets a URL and returns the path and query only

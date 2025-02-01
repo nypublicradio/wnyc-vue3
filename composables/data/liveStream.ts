@@ -23,7 +23,7 @@ export async function updateLiveStream(slug: string, save = true) {
     }
 }
 
-export async function updateAllLiveStreams() {
+export async function updateAllLiveStreams(setHolder = true) {
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentUserProfile = useCurrentUserProfile()
@@ -33,12 +33,10 @@ export async function updateAllLiveStreams() {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams
         allCurrentStations.value = fetchingAll.filter(Boolean)
-        //allCurrentStations.value = allCurrentStationsImport
 
         // set initial stream with the `currentStreamStation` value in the states.ts file
         const initialStation = allCurrentStations.value.find(
             (option) => {
-                //console.log('currentUserProfile.value  = ', currentUserProfile.value)
                 if (currentUserProfile.value) {
                     const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
                     return option.station === profile
@@ -47,8 +45,8 @@ export async function updateAllLiveStreams() {
                 }
             }
         )
-        currentEpisodeHolder.value = initialStation
-        //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
+        if (setHolder) currentEpisodeHolder.value = initialStation
+
     } catch (error) {
         const globalToast = useGlobalToast()
         globalToast.value = {
