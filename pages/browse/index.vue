@@ -92,26 +92,22 @@ watch(
       </Head>
     </Html>
     <section class="search z-2">
-      <span class="p-input-icon-left w-full">
-        <!-- <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-        <i v-else class="pi pi-search text-color" /> -->
-        <IconField>
-          <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-          <InputIcon v-else class="pi pi-search text-color" />
-          <InputText v-model="searchFieldValue" placeholder="Search" class="w-full" />
-        </IconField>
-        <Button
-          v-if="searchFieldValue"
-          class="closer"
-          rounded
-          text
-          plain
-          icon="pi pi-times"
-          aria-label="clear search"
-          @click="clearSearchField"
-        ></Button>
-        <!-- <i class="pi pi-spin pi-spinner" /> -->
-      </span>
+      <IconField>
+        <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
+        <InputIcon v-else class="pi pi-search text-color" />
+        <InputText v-model="searchFieldValue" placeholder="Search" class="w-full" />
+        <InputIcon v-if="searchFieldValue" class="relative">
+          <Button
+            rounded
+            text
+            plain
+            icon="pi pi-times text-color"
+            aria-label="clear search"
+            class="absolute right-0 top-0 bottom-0 m-auto"
+            @click="clearSearchField"
+          ></Button>
+        </InputIcon>
+      </IconField>
     </section>
     <div class="content-holder">
       <div v-if="!searchFieldValue">
@@ -229,12 +225,6 @@ watch(
     position: sticky;
     top: env(safe-area-inset-top);
     z-index: 1;
-  }
-  .closer {
-    position: absolute;
-    top: 50%;
-    margin-top: -1.25rem;
-    margin-left: -2.5rem;
   }
   .topics-holder {
     .station-holder {
