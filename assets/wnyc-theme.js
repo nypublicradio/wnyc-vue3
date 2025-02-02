@@ -246,17 +246,17 @@ const MyPreset = definePreset(Aura, {
       950: "#4c0519"
     },
     slate: {
-      50: "#f8fafc",
-      100: "#f1f5f9",
-      200: "#e2e8f0",
-      300: "#cbd5e1",
-      400: "#94a3b8",
-      500: "#64748b",
-      600: "#475569",
-      700: "#334155",
-      800: "#1e293b",
-      900: "#0f172a",
-      950: "#020617"
+      50: "#f5f5f6",
+      100: "#cecfd5",
+      200: "#a7a9b3",
+      300: "#808492",
+      400: "#595e70",
+      500: "{slate.500}",
+      600: "#2b3043",
+      700: "#232737",
+      800: "#1c1f2b",
+      900: "#141620",
+      950: "#0d0e14"
     },
     gray: {
       50: "#f9fafb",
@@ -338,7 +338,7 @@ const MyPreset = definePreset(Aura, {
     },
     formField: {
       paddingX: "0.75rem",
-      paddingY: "0.5rem",
+      paddingY: "0.75rem",
       sm: {
         fontSize: "0.875rem",
         paddingX: "0.625rem",
@@ -577,14 +577,14 @@ const MyPreset = definePreset(Aura, {
           color: "{surface.200}"
         },
         formField: {
-          background: "{surface.950}",
-          disabledBackground: "{surface.700}",
-          filledBackground: "{surface.800}",
-          filledHoverBackground: "{surface.800}",
-          filledFocusBackground: "{surface.800}",
-          borderColor: "{surface.600}",
-          hoverBorderColor: "{surface.500}",
-          focusBorderColor: "{primary.color}",
+          background: "{slate.500}",
+          disabledBackground: "{slate.700}",
+          filledBackground: "{slate.800}",
+          filledHoverBackground: "{slate.800}",
+          filledFocusBackground: "{slate.800}",
+          borderColor: "{slate.600}",
+          hoverBorderColor: "{slate.500}",
+          focusBorderColor: "{slate.100}",
           invalidBorderColor: "{red.300}",
           color: "{surface.0}",
           disabledColor: "{surface.400}",
@@ -673,6 +673,9 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    inputtext: {
+
+    },
     toggleswitch: {
       root: {
         width: '3.5rem',

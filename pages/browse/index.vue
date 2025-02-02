@@ -4,7 +4,9 @@ import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error } = useLazyFetch(`${config.public.BFF_URL}/api/v2/shows`)
+const { data: shows, pending, error } = useLazyFetch(
+  `${config.public.BFF_URL}/api/v2/shows`
+)
 
 const router = useRouter()
 const route = useRoute()
@@ -91,13 +93,13 @@ watch(
     </Html>
     <section class="search z-2">
       <span class="p-input-icon-left w-full">
-        <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-        <i v-else class="pi pi-search text-color" />
-        <InputText
-          v-model="searchFieldValue"
-          placeholder="Search"
-          class="search-field w-full pr-6"
-        />
+        <!-- <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
+        <i v-else class="pi pi-search text-color" /> -->
+        <IconField>
+          <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
+          <InputIcon v-else class="pi pi-search text-color" />
+          <InputText v-model="searchFieldValue" placeholder="Search" class="w-full" />
+        </IconField>
         <Button
           v-if="searchFieldValue"
           class="closer"
@@ -226,11 +228,7 @@ watch(
   .search {
     position: sticky;
     top: env(safe-area-inset-top);
-    background: var(--backgroundSimple);
     z-index: 1;
-    .search-field {
-      background-color: var(--searchFieldBackground);
-    }
   }
   .closer {
     position: absolute;
