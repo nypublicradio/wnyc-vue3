@@ -41,7 +41,6 @@ const handleClick = () => {
       :ratio="[1, 1]"
       alt="show poster image"
       class="image"
-      style="background-color: #ffffff"
     />
     <div class="info flex flex-column gap-3 w-full justify-content-between">
       <div class="content flex flex-column gap-1 justify-content-start w-full">
@@ -51,7 +50,7 @@ const handleClick = () => {
         </h2>
         <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
         <div
-          class="blurb truncate t3lines html-formating"
+          class="blurb truncate t3lines html-formating p1"
           v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
         />
       </div>
@@ -85,6 +84,11 @@ const handleClick = () => {
     width: v-bind(size);
   }
 }
-.skeleton {
+</style>
+<style lang="scss">
+.live-item {
+  .v-image-publisher.image .image {
+    background-color: #ffffff;
+  }
 }
 </style>

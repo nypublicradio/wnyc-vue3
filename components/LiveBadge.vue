@@ -2,19 +2,19 @@
 const props = defineProps({
   label: {
     type: String,
-    default: 'LIVE',
+    default: "LIVE",
   },
   bgColor: {
     type: String,
-    default: '#ffffff',
+    default: "#ffffff",
   },
   fontSize: {
     type: String,
-    default: '10px',
+    default: "10px",
   },
   padding: {
     type: String,
-    default: '1px 8px 1px 8px',
+    default: "1px 8px 1px 8px",
   },
 })
 </script>
@@ -32,7 +32,7 @@ const props = defineProps({
   border-radius: 2px;
   padding: v-bind(padding);
   font-size: v-bind(fontSize);
-  color: var(--night-500);
+  color: var(--p-surface-950);
   line-height: normal;
 }
 </style>
