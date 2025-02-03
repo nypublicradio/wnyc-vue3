@@ -388,10 +388,6 @@ onUnmounted(() => {
           style="margin-left: 1.25rem"
         />
       </div>
-      <section class="current-station-info" data-style-mode="dark">
-        <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
-        <LiveItem :data="currentEpisodeHolder" :size="100" />
-      </section>
       <section class="current-station-info">
         <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
         <LiveItem :data="currentEpisodeHolder" :size="100" />

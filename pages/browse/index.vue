@@ -40,8 +40,9 @@ const selectTopic = (topic) => {
 
 // handle the active tab for the featured and all shows to set url query
 const handleActiveTab = (e) => {
-  router.push({ query: { tab: e.index } })
-  activeTab.value = e.index
+  console.log("tab change", e)
+  router.push({ query: { tab: e } })
+  activeTab.value = e
 }
 
 watch(searchFieldValue, () => {
@@ -133,46 +134,53 @@ watch(
         </div>
         <FetchError v-if="error" />
         <section class="tabs mt-2">
-          <TabView
+          <Tabs
+            value="0"
             :lazy="true"
             :activeIndex="Number(activeTab)"
-            @tab-change="handleActiveTab"
+            @update:value="handleActiveTab"
           >
-            <TabPanel header="Featured Shows">
-              <div class="shows flex flex-column gap-5">
-                <template v-if="!pending">
-                  <ShowItem
-                    v-for="show in shows?.featuredShows"
-                    :data="show"
-                    :key="show.title"
-                    @onClick="goToShowPage(show)"
+            <TabList>
+              <Tab value="0">Featured Shows</Tab>
+              <Tab value="1">All Shows</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel value="0">
+                <div class="shows flex flex-column gap-5">
+                  <template v-if="!pending">
+                    <ShowItem
+                      v-for="show in shows?.featuredShows"
+                      :data="show"
+                      :key="show.title"
+                      @onClick="goToShowPage(show)"
+                    />
+                  </template>
+                  <skeleton-show-item
+                    v-else
+                    v-for="(show, index) in 27"
+                    :key="`sk1-${index}`"
                   />
-                </template>
-                <skeleton-show-item
-                  v-else
-                  v-for="(show, index) in 27"
-                  :key="`sk1-${index}`"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel header="All Shows">
-              <div class="shows flex flex-column gap-5">
-                <template v-if="!pending">
-                  <ShowItem
-                    v-for="show in shows?.all"
-                    :data="show"
-                    :key="show.title"
-                    @onClick="goToShowPage(show)"
+                </div>
+              </TabPanel>
+              <TabPanel value="1">
+                <div class="shows flex flex-column gap-5">
+                  <template v-if="!pending">
+                    <ShowItem
+                      v-for="show in shows?.all"
+                      :data="show"
+                      :key="show.title"
+                      @onClick="goToShowPage(show)"
+                    />
+                  </template>
+                  <skeleton-show-item
+                    v-else
+                    v-for="(show, index) in 27"
+                    :key="`sk2-${index}`"
                   />
-                </template>
-                <skeleton-show-item
-                  v-else
-                  v-for="(show, index) in 27"
-                  :key="`sk2-${index}`"
-                />
-              </div>
-            </TabPanel>
-          </TabView>
+                </div>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </section>
       </div>
       <div v-else>
