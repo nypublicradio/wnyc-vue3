@@ -673,8 +673,27 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
-    inputtext: {
-
+    tabs: {
+      tablist: {
+        background: 'transparent',
+        padding: '0rem 2rem',
+        borderColor: 'transparent',
+      },
+      tab: {
+        fontWeight: '700',
+        padding: '1rem 0rem',
+        activeColor: '{text.color}',
+        activeBorderColor: '{text.color}',
+        borderColor: 'transparent',
+      },
+      activeBar: {
+        height: '4px',
+        bottom: '-4px',
+      },
+      tabpanel: {
+        padding: '0.875rem 0rem 1.125rem 0rem',
+        background: 'transparent',
+      },
     },
     toggleswitch: {
       root: {
