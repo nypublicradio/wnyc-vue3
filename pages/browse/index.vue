@@ -232,6 +232,7 @@ watch(
   .search {
     position: sticky;
     top: env(safe-area-inset-top);
+    background: var(--backgroundSimple);
     z-index: 1;
   }
   .topics-holder {
@@ -240,6 +241,9 @@ watch(
         @include media(">=md") {
           margin-left: calc(((100% - 768px) / 2) + 48px);
         }
+      }
+      &:last-child {
+        padding-right: 3rem;
       }
     }
   }

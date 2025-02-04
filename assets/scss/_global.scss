@@ -340,7 +340,16 @@ section {
 //////////////////////////////////////////////////////////////////////
 // extensions
 
-/* Customizations to the designer theme should be defined here */
+/* Customizations to the theme for components that CAN"T be done with the tokens should be defined here */
+.tabs {
+  .p-tablist-tab-list {
+    gap: 1.5rem;
+    .p-tab {
+      font-family: var(--font-family);
+      font-size: 0.8725rem;
+    }
+  }
+}
 
 // :root,
 // [data-style-mode='light'],
