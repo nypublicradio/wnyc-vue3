@@ -300,7 +300,9 @@ const handleHasAudio = computed(() => {
           :showValue="false"
           ></ProgressBar> -->
         </div>
-        <div class="flex justify-content-between align-items-center flex-wrap">
+        <div
+          class="button-holder flex justify-content-between align-items-center flex-wrap"
+        >
           <PlayButton
             v-if="handleHasAudio"
             :data="props.data"
@@ -383,6 +385,9 @@ const handleHasAudio = computed(() => {
   cursor: pointer;
   .card-title-title {
     @include cardTitle();
+  }
+  .button-holder {
+    margin-bottom: -6px;
   }
 }
 </style>

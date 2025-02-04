@@ -312,12 +312,10 @@ onMounted(async () => {
 
   await RemoteStreamer.addListener("buffering", (e) => {
     isBuffering.value = e.isBuffering
-    if (!isEpisodePlaying.value) {
-      isStreamLoading.value = true
-    } else {
-      isStreamLoading.value = false
-    }
-    //isStreamLoading.value = e.isBuffering
+    // timeout to prevent the loading spinner from flickering
+    setTimeout(() => {
+      isStreamLoading.value = isBuffering.value
+    }, 250)
   })
 
   await RemoteStreamer.addListener("stop", (e) => {

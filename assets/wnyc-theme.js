@@ -129,17 +129,17 @@ const MyPreset = definePreset(Aura, {
       950: "#083344"
     },
     sky: {
-      50: "#f0f9ff",
-      100: "#e0f2fe",
-      200: "#bae6fd",
-      300: "#7dd3fc",
-      400: "#38bdf8",
-      500: "#0ea5e9",
-      600: "#0284c7",
-      700: "#0369a1",
-      800: "#075985",
-      900: "#0c4a6e",
-      950: "#082f49"
+      50: "#f6f7fc",
+      100: "#d2d9f1",
+      200: "#afbbe6",
+      300: "#8c9ddb",
+      400: "#687fd0",
+      500: "#4561c5",
+      600: "#3b52a7",
+      700: "#30448a",
+      800: "#26356c",
+      900: "#1c274f",
+      950: "#111831"
     },
     blue: {
       50: "#f4f6f8",
@@ -673,6 +673,38 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    slider: {
+      track: {
+        size: "6px",
+        borderRadius: '6px',
+        background: '{surface.200}',
+      },
+      handle: {
+        focusRing: {
+          color: 'transparent',
+        }
+      },
+      colorScheme: {
+        light: {
+          range: {
+            background: '{surface.950}'
+          },
+          handle: {
+            background: '{surface.950}',
+            contentBackground: '{surface.0}'
+          }
+        },
+        dark: {
+          range: {
+            background: '{sky.500}'
+          },
+          handle: {
+            background: '{sky.500}',
+            contentBackground: '{surface.0}'
+          }
+        }
+      }
+    },
     tabs: {
       tablist: {
         background: 'transparent',

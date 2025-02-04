@@ -211,7 +211,9 @@ const handleClick = () => {
           :showValue="false"
           ></ProgressBar> -->
         </div>
-        <div class="flex justify-content-between align-items-center flex-wrap">
+        <div
+          class="button-holder flex justify-content-between align-items-center flex-wrap"
+        >
           <ReadButton
             class="z-1"
             :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
@@ -276,6 +278,9 @@ const handleClick = () => {
   cursor: pointer;
   .card-title-title {
     @include cardTitle();
+  }
+  .button-holder {
+    margin-bottom: -6px;
   }
 }
 </style>
