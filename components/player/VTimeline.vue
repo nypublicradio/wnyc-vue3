@@ -108,28 +108,18 @@ const handleClick = () => {
 
 <style lang="scss">
 .timeline {
-  // position: relative;
-  // width: 100%;
-  // height: 6px !important;
-  // background: var(--persistent-player-slider-buffer);
-  // .p-slider-range {
-  //   background: var(--persistent-player-slider-progress);
-  //   border-radius: 6px;
-  // }
-  // .p-slider-handle {
-  //   border: 1px solid var(--persistent-player-slider-thumb-border);
-  //   background-color: var(--persistent-player-slider-thumb-bg);
-  // }
-  // &.minimized {
-  //   position: absolute;
-  //   left: 0;
-  //   bottom: 0;
-  //   pointer-events: none;
-  //   height: 2px !important;
-  //   margin: 0;
-  //   .p-slider-handle {
-  //     display: none;
-  //   }
-  // }
+  position: relative;
+  width: 100%;
+  &.minimized {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    pointer-events: none;
+    height: 2px !important;
+    margin: 0;
+    .p-slider-handle {
+      display: none;
+    }
+  }
 }
 </style>

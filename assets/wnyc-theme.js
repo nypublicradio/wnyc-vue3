@@ -674,24 +674,33 @@ const MyPreset = definePreset(Aura, {
   },
   components: {
     slider: {
+      borderRadius: '6px',
       track: {
         size: "6px",
         borderRadius: '6px',
-        background: '{surface.200}',
+        background: '{surface.300}',
+      },
+      range: {
+        background: '{primary.color}'
       },
       handle: {
         focusRing: {
           color: 'transparent',
-        }
+        },
       },
       colorScheme: {
         light: {
           range: {
-            background: '{surface.950}'
+            background: '#000000'
           },
           handle: {
-            background: '{surface.950}',
-            contentBackground: '{surface.0}'
+            background: '#000000',
+            contentBackground: '{surface.0}',
+            hoverBackground: '{surface.0}',
+            content: {
+              background: '{surface.0}',
+              hoverBackground: '{surface.0}',
+            },
           }
         },
         dark: {
@@ -700,7 +709,11 @@ const MyPreset = definePreset(Aura, {
           },
           handle: {
             background: '{sky.500}',
-            contentBackground: '{surface.0}'
+            hoverBackground: '{surface.0}',
+            content: {
+              background: '{surface.0}',
+              hoverBackground: '{surface.0}',
+            },
           }
         }
       }
