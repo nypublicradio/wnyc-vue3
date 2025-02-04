@@ -13,14 +13,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  width: {
-    type: String,
-    default: "42px",
-  },
-  height: {
-    type: String,
-    default: "42px",
-  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -31,8 +23,6 @@ const emit = defineEmits(["changeEmit"])
     :options="props.menuItems"
     :label="props.label"
     @change="emit('changeEmit', $event)"
-    :width="props.width"
-    :height="props.height"
   >
     <template #customButton="slotProps">
       <slot name="myCustomButton" label="">

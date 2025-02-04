@@ -112,8 +112,6 @@ const getDotMenuItems = (bucketItem) => {
       label=""
       @changeEmit="onMenuChange"
       class="z-1"
-      height="32px"
-      width="32px"
     />
     <Button
       v-else

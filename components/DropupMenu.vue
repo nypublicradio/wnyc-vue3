@@ -20,11 +20,11 @@ const props = defineProps({
   },
   width: {
     type: String,
-    default: "42px",
+    default: "40px",
   },
   height: {
     type: String,
-    default: "42px",
+    default: "40px",
   },
   startOpen: {
     type: Boolean,

@@ -325,8 +325,6 @@ const getEpisodeImage = () => {
               :menuItems="getDotMenuItems(episodeData)"
               label=""
               @changeEmit="onMenuChange"
-              width="32px"
-              height="32px"
               class="-mr-1"
             >
               <template #header-bottom>

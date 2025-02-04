@@ -330,8 +330,6 @@ const handleHasAudio = computed(() => {
                 label=""
                 @changeEmit="onMenuChange"
                 class="z-1"
-                height="28px"
-                width="32px"
               >
                 <template #header-bottom>
                   <div>
