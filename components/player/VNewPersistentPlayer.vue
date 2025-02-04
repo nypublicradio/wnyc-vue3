@@ -672,7 +672,7 @@ defineExpose({
     </Button>
 
     <Transition name="expand-delay">
-      <div v-show="isExpanded" class="expanded-view">
+      <div v-show="isExpanded" class="expanded-view style-mode-dark">
         <div ref="expandedContentHolder" class="expanded-content-holder">
           <div class="header">
             <slot name="expanded-header">
