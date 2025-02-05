@@ -79,7 +79,7 @@ const capFirstChar = (str) => {
     >
       <template #icon>
         <slot name="icon">
-          <i :class="`pi pi-${props.provider}`"></i>
+          <i :class="`mr-2 pi pi-${props.provider}`"></i>
         </slot>
       </template>
     </Button>

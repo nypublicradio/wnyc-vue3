@@ -76,7 +76,11 @@ const openForgotPassword = () => {
         class="center"
         @submit-success="onLogin('apple')"
       />
-      <Divider class="my-4" align="center">
+      <Divider
+        class="my-4"
+        align="center"
+        pt:content:style="background:var(--p-surface-25)"
+      >
         <b>or</b>
       </Divider>
       <VLoginWithEmail
@@ -89,13 +93,14 @@ const openForgotPassword = () => {
         <template #belowSubmit>
           <div class="mt-4 relative">
             <p class="text-center">
-              <Button
-                link
-                label="Forgot password?"
+              <VFlexibleLink
+                to="#"
                 class="link m-auto block"
                 aria-label="forgot password"
                 @click="openForgotPassword"
-              />
+              >
+                Forgot password?
+              </VFlexibleLink>
             </p>
           </div>
         </template>

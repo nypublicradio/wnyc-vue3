@@ -349,7 +349,7 @@ const MyPreset = definePreset(Aura, {
         paddingX: "0.875rem",
         paddingY: "0.625rem"
       },
-      borderRadius: "{border.radius.md}",
+      borderRadius: "{border.radius.lg}",
       focusRing: {
         width: "0",
         style: "none",
@@ -456,13 +456,13 @@ const MyPreset = definePreset(Aura, {
           filledBackground: "{surface.50}",
           filledHoverBackground: "{surface.50}",
           filledFocusBackground: "{surface.50}",
-          borderColor: "{surface.300}",
-          hoverBorderColor: "{surface.400}",
-          focusBorderColor: "{primary.color}",
+          borderColor: "{surface.50}",
+          hoverBorderColor: "{surface.200}",
+          focusBorderColor: "{surface.950}",
           invalidBorderColor: "{red.400}",
           color: "{surface.700}",
-          disabledColor: "{surface.500}",
-          placeholderColor: "{surface.500}",
+          disabledColor: "{surface.300}",
+          placeholderColor: "{surface.300}",
           invalidPlaceholderColor: "{red.600}",
           floatLabelColor: "{surface.500}",
           floatLabelFocusColor: "{primary.600}",
@@ -673,6 +673,9 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    inputtext: {
+
+    },
     slider: {
       borderRadius: '6px',
       track: {

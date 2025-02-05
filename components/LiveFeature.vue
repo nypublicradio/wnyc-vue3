@@ -120,8 +120,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   container-type: inline-size;
   position: relative;
   background-color: var(--live-feature-background);
-  border-bottom: 1px solid var(--p-surface-50);
-
   .image-holder {
     position: relative;
     flex: none;

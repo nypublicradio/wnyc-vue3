@@ -69,12 +69,6 @@ body {
       padding-bottom: 0px; // account for the sticky bottom menu
     }
   }
-  &.background2 {
-    background: var(--p-surface-25);
-    .p-divider .p-divider-content {
-      background: var(--p-surface-25);
-    }
-  }
   &.background-gradient {
     //background: linear-gradient(to bottom, #1b223c, #244873);
     background: $backgroundGradient1;
@@ -354,6 +348,13 @@ section {
 .p-password {
   .p-inputtext {
     width: 100%;
+  }
+}
+
+form {
+  label {
+    font-family: 'ff-meta-web-pro';
+    font-size: 0.813rem;
   }
 }
 
