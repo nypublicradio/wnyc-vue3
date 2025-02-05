@@ -344,7 +344,7 @@ onMounted(async () => {
       <player-v-new-persistent-player
         v-show="showPlayer"
         ref="playerRef"
-        data-style-mode="dark"
+        class="style-mode-dark"
         :can-expand="true"
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
@@ -409,12 +409,11 @@ onMounted(async () => {
 
 <style lang="scss">
 html.style-mode-dark .persistent-player {
-  background-color: map-get($colors-dark-mode, "background4") !important;
-
   .expanded-view .header,
   .expanded-view .expanded-footer {
-    background-color: var(--expandedHeaderBackgroundTransparent) !important;
-    backdrop-filter: blur(4px);
+    background-color: var(--persistent-player-header-footer-bg) !important;
+    opacity: var(--persistent-player-header-footer-bg-opacity);
+    backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
   }
 }
 
@@ -442,11 +441,7 @@ html.style-mode-dark .persistent-player {
   media-play-button {
     margin-right: 6px;
   }
-  .track-info-image {
-    width: 60px;
-    max-width: 60px;
-    height: 60px;
-  }
+
   .track-info .track-info-details .track-info-title .title div {
     font-family: var(--font-family-header);
     line-height: 18px;
@@ -456,13 +451,6 @@ html.style-mode-dark .persistent-player {
     text-decoration: none;
     color: inherit;
     pointer-events: none;
-  }
-  .play-button,
-  .p-buttonset > .play-button,
-  .p-splitbutton.p-button-secondary > .play-button {
-    color: var(--night-500);
-    background: #ffffff;
-    border: 1px solid var(--p-surface-25--500);
   }
 }
 
@@ -476,8 +464,9 @@ html.style-mode-dark .persistent-player {
       .header {
         z-index: 1;
         padding: 1rem;
-        background-color: var(--persistent-player-bg-transparent);
-        backdrop-filter: blur(4px);
+        background-color: var(--persistent-player-header-footer-bg);
+        opacity: var(--persistent-player-header-footer-bg-opacity);
+        backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
       }
       .header-top {
         padding: 0 1.5rem;
@@ -501,8 +490,9 @@ html.style-mode-dark .persistent-player {
         font-weight: 600;
       }
       .expanded-footer {
-        background-color: var(--persistent-player-bg-transparent);
-        backdrop-filter: blur(4px);
+        background-color: var(--persistent-player-header-footer-bg);
+        opacity: var(--persistent-player-header-footer-bg-opacity);
+        backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
       }
     }
     #expandedControls {
@@ -525,13 +515,13 @@ html.style-mode-dark .persistent-player {
 
 <style lang="scss" scoped>
 .player-enter-active {
-  transition: transform calc(var(--transition-duration)) ease-out;
+  transition: transform calc(var(--p-transition-duration)) ease-out;
 }
 
 .player-leave-active {
   // making it instant for now
   transition: none;
-  //transition: transform calc(var(--transition-duration) / 2) ease-in;
+  //transition: transform calc(var(--p-transition-duration) / 2) ease-in;
 }
 
 .player-enter-from,

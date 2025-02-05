@@ -672,7 +672,7 @@ defineExpose({
     </Button>
 
     <Transition name="expand-delay">
-      <div v-show="isExpanded" class="expanded-view style-mode-dark">
+      <div v-show="isExpanded" class="expanded-view">
         <div ref="expandedContentHolder" class="expanded-content-holder">
           <div class="header">
             <slot name="expanded-header">
@@ -805,8 +805,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   width: 100%;
   color: var(--text-color);
   background-color: var(--persistent-player-bg);
-  transition: bottom 0.25s, height calc(var(--transition-duration) * 2);
-  -webkit-transition: bottom 0.25s, height calc(var(--transition-duration) * 2);
+  transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
+  -webkit-transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
   display: flex;
   flex-direction: column;
   &.minimized {
@@ -918,11 +918,11 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 //expand-delay
 .expand-delay-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out;
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out;
 }
 
 .expand-delay-leave-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-in;
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-in;
 }
 
 .expand-delay-enter-from,
@@ -932,8 +932,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 //expand
 .expand-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--transition-duration) * 2.25);
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out;
+  transition-delay: calc(var(--p-transition-duration) * 2.25);
 }
 
 .expand-leave-active {
@@ -947,9 +947,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 //skipBtnR
 .skipBtnR-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out,
-    transform calc(var(--transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--transition-duration) * 2.25);
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out,
+    transform calc(var(--p-transition-duration) * 2) ease-out;
+  transition-delay: calc(var(--p-transition-duration) * 2.25);
 }
 
 .skipBtnR-leave-active {
@@ -967,9 +967,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 }
 //skipBtnL
 .skipBtnL-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out,
-    transform calc(var(--transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--transition-duration) * 2.25);
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out,
+    transform calc(var(--p-transition-duration) * 2) ease-out;
+  transition-delay: calc(var(--p-transition-duration) * 2.25);
 }
 
 .skipBtnL-leave-active {

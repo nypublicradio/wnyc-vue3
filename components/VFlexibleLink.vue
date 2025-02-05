@@ -84,9 +84,9 @@ const isAnchor = computed(() => {
 <style lang="scss" scoped>
 .flexible-link:not(.raw):not(.null) {
   color: var(--link-button-color);
-  transition: all var(--transition-duration);
+  transition: all var(--p-transition-duration);
   * {
-    transition: all var(--transition-duration);
+    transition: all var(--p-transition-duration);
   }
   &:hover {
     color: var(--link-button-hover-color);

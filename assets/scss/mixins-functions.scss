@@ -34,7 +34,6 @@ $spacing-base: 0.25; //  matches prime-flex
 @function hex2rgb($hexColor) {
   @return '#{red($hexColor)},#{green($hexColor)},#{blue($hexColor)}';
 }
-
 @function strip-unit($number) {
   @if type-of($number) == 'number' and not unitless($number) {
     @return math.div($number, $number * 0 + 1);

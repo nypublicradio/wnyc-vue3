@@ -154,7 +154,7 @@ const MyPreset = definePreset(Aura, {
       900: "#0e1d2e",
       950: "#09121d"
     },
-    darkBlue: {
+    darkblue: {
       50: "#f4f4f5",
       100: "#c8cad0",
       200: "#9da0ab",
@@ -312,7 +312,7 @@ const MyPreset = definePreset(Aura, {
     }
   },
   semantic: {
-    transitionDuration: "0.2s",
+    transitionDuration: "0.25s",
     focusRing: {
       width: "1px",
       style: "solid",

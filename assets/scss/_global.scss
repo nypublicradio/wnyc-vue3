@@ -90,7 +90,7 @@ body {
     background: var(--solid-bg-color);
   }
   main {
-    transition: padding-top $transitionDuration ease;
+    transition: padding-top var(--p-transition-duration) ease;
     padding-bottom: calc(
       $bottomMenuHeight + $playerHeight + env(safe-area-inset-bottom) + 20px
     ); // account for the sticky bottom menu

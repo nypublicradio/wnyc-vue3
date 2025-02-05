@@ -44,8 +44,8 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --horzScrollGradient: var(--background);
     --donation-bg: var(--night-500, #101012) !important;
     --searchFieldBackground: var(--p-surface-25) !important;
-    --backgroundSimple: var(--p-darkBlue-500) !important;
-    --persistent-player-bg-transparent: #2f2f2fcc !important;
+    --backgroundSimple: var(--p-darkblue-500) !important;
+    --persistent-player-bg-transparent: #27272acc !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -67,6 +67,8 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --backgroundSimple: var(--p-surface-25) !important;
     --button-hover-plain-background: #e8e8e826;
 }
+
+// darkmode in global darkmode
 html.style-mode-dark {
     [data-style-mode='dark'],
     .style-mode-dark {

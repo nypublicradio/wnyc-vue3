@@ -88,11 +88,11 @@ watch(
 }
 //expand
 .v-smart-header-minimize-enter-active {
-  transition: top calc(var(--transition-duration) * 2) ease-out;
+  transition: top calc(var(--p-transition-duration) * 2) ease-out;
 }
 .v-smart-header-minimize-leave-active {
-  transition: top calc(var(--transition-duration) * 2) ease-in;
-  transition-delay: calc(var(--transition-duration) * v-bind(resumeDelay));
+  transition: top calc(var(--p-transition-duration) * 2) ease-in;
+  transition-delay: calc(var(--p-transition-duration) * v-bind(resumeDelay));
 }
 .v-smart-header-minimize-enter-from,
 .v-smart-header-minimize-leave-to {

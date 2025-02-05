@@ -465,8 +465,8 @@ const moreFromClick = () => {
         bottom: 0;
         left: 0;
         width: 100%;
-        transition: bottom $transitionDuration;
-        -webkit-transition: bottom $transitionDuration;
+        transition: bottom var(--p-transition-duration);
+        -webkit-transition: bottom var(--p-transition-duration);
       }
 
       .tools {

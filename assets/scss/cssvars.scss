@@ -31,7 +31,7 @@
 
     --white: #ffffff;
 
-    --primary-color: #{map-get($colors, 'red')};
+    --primary-color: var(--p-primary-500);
     --primary-color-rgb: #{hex2rgb($primaryColor)};
     --primary-color-alt: #{$primaryColorAlt};
     --primary-color-alt-rgb: #{hex2rgb($primaryColorAlt)};
@@ -100,7 +100,7 @@
     --font-family: #{$fontFamily};
     --font-family-header: #{$fontFamilyHeader};
     --font-family-tisa: #{$fontFamilyTisa};
-    --text-color: #{$textColor};
+    --text-color: var(--p-text-color);
     --text-color-on-dark: #{$textColorOnDark};
     --text-color-secondary: #{$primaryColorAlt};
     --primary-text-color: #{$primaryTextColor};
@@ -110,10 +110,6 @@
     --font-ratio: #{$fontRatio};
     --font-ratio-large: #{$fontRatioLarge};
     --border-radius: #{$borderRadius};
-    --transition-duration: #{$transitionDuration};
-    --transition-ease: #{$transitionEase};
-    --form-element-transition: #{$formElementTransition};
-    --action-icon-transition: #{$actionIconTransition};
     --list-item-transition: #{$listItemTransition};
     --prime-icon-font: #{$primeIconFont};
     --prime-icon-font-size: #{$primeIconFontSize};

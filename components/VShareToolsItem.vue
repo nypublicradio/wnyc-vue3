@@ -233,7 +233,7 @@ const share = () => {
 .follow-link {
   color: var(--text-color);
   fill: var(--text-color);
-  transition: var(--transition-ease) var(--transition-duration);
+  transition: var(--transition-ease) var(--p-transition-duration);
 }
 
 .follow-link,
