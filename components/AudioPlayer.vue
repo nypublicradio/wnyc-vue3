@@ -12,7 +12,6 @@ import {
   useIsEpisodePlaying,
   useTogglePlayTrigger,
   useIsPlayerMinimized,
-  audioPlayerHeight,
   useIsStreamLoading,
   useIsLiveStream,
   useIsPlayerExpanded,
@@ -57,7 +56,6 @@ const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
-const playerHeight = ref(`${audioPlayerHeight}px`)
 const isBuffering = ref(false)
 
 const route = useRoute()
@@ -419,117 +417,108 @@ html.style-mode-dark .persistent-player {
     backdrop-filter: blur(4px);
   }
 }
-:root {
-  --persistent-player-padding: 0px 1rem 0 0 !important;
-  --persistent-player-height: 60px !important;
-  --persistent-player-title-size: 1rem !important;
-  --persistent-player-title-weight: 500;
-  --persistent-player-desc-size: 11px;
-  --persistent-player-play-button-height: 38px;
-  --persistent-player-play-button-width: 38px;
 
-  .persistent-player:not(.expanded) {
-    bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+.persistent-player:not(.expanded) {
+  bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
 
-    // no live icon
-    .track-info-livestream {
-      display: none !important;
-    }
-    // no time
-    .media-time,
-    .media-time-divider {
-      display: none !important;
-    }
-
-    // no seek buttons
-    media-seek-button {
-      display: none !important;
-    }
-
-    .track-info {
-      margin-left: 6px;
-    }
-    media-play-button {
-      margin-right: 6px;
-    }
-    .track-info-image {
-      width: 60px;
-      max-width: 60px;
-      height: 60px;
-    }
-    .track-info .track-info-details .track-info-title .title div {
-      font-family: var(--font-family-header);
-      line-height: 18px;
-    }
-    // because the desc is v-html and injecting a <p> tag that is overwriting the description styles
-    .track-info-description * {
-      text-decoration: none;
-      color: inherit;
-      pointer-events: none;
-    }
-    .play-button,
-    .p-buttonset > .play-button,
-    .p-splitbutton.p-button-secondary > .play-button {
-      color: var(--night-500);
-      background: #ffffff;
-      border: 1px solid var(--p-surface-25--500);
-    }
+  // no live icon
+  .track-info-livestream {
+    display: none !important;
+  }
+  // no time
+  .media-time,
+  .media-time-divider {
+    display: none !important;
   }
 
-  .persistent-player {
-    &.expanded {
-      bottom: 0;
-    }
+  // no seek buttons
+  media-seek-button {
+    display: none !important;
+  }
 
-    .expanded-view {
-      .expanded-content-holder {
-        .header {
-          z-index: 1;
-          padding: 1rem;
-          background-color: var(--persistent-player-bg-transparent);
-          backdrop-filter: blur(4px);
-        }
-        .header-top {
-          padding: 0 1.5rem;
-          .show-image {
-            // to prevent a jump when the image finally loads and renders
+  .track-info {
+    margin-left: 6px;
+  }
+  media-play-button {
+    margin-right: 6px;
+  }
+  .track-info-image {
+    width: 60px;
+    max-width: 60px;
+    height: 60px;
+  }
+  .track-info .track-info-details .track-info-title .title div {
+    font-family: var(--font-family-header);
+    line-height: 18px;
+  }
+  // because the desc is v-html and injecting a <p> tag that is overwriting the description styles
+  .track-info-description * {
+    text-decoration: none;
+    color: inherit;
+    pointer-events: none;
+  }
+  .play-button,
+  .p-buttonset > .play-button,
+  .p-splitbutton.p-button-secondary > .play-button {
+    color: var(--night-500);
+    background: #ffffff;
+    border: 1px solid var(--p-surface-25--500);
+  }
+}
+
+.persistent-player {
+  &.expanded {
+    bottom: 0;
+  }
+
+  .expanded-view {
+    .expanded-content-holder {
+      .header {
+        z-index: 1;
+        padding: 1rem;
+        background-color: var(--persistent-player-bg-transparent);
+        backdrop-filter: blur(4px);
+      }
+      .header-top {
+        padding: 0 1.5rem;
+        .show-image {
+          // to prevent a jump when the image finally loads and renders
+          height: 144px;
+          .image {
+            width: 144px;
             height: 144px;
-            .image {
-              width: 144px;
-              height: 144px;
-            }
           }
-          #expandedViewPlayer {
-            margin-top: 1rem;
-          }
-          @include content-formatting();
         }
-        .expanded-title {
-          font-size: 18px;
-          font-family: var(--font-family-header);
-          line-height: 26.78px;
-          font-weight: 600;
+        #expandedViewPlayer {
+          margin-top: 1rem;
         }
-        .expanded-footer {
-          background-color: var(--persistent-player-bg-transparent);
-          backdrop-filter: blur(4px);
-        }
+        @include content-formatting();
       }
-      #expandedControls {
-        min-height: 85px;
-        .next-10-icon,
-        .previous-10-icon {
-          width: 20px;
-          height: 20px;
-        }
+      .expanded-title {
+        font-size: 18px;
+        font-family: var(--font-family-header);
+        line-height: 26.78px;
+        font-weight: 600;
+      }
+      .expanded-footer {
+        background-color: var(--persistent-player-bg-transparent);
+        backdrop-filter: blur(4px);
+      }
+    }
+    #expandedControls {
+      min-height: 85px;
+      .next-10-icon,
+      .previous-10-icon {
+        width: 20px;
+        height: 20px;
       }
     }
   }
+}
 
-  .template-blank {
-    .persistent-player {
-      bottom: env(safe-area-inset-bottom);
-    }
+.template-blank {
+  .persistent-player {
+    bottom: env(safe-area-inset-bottom);
   }
 }
 </style>
@@ -547,6 +536,6 @@ html.style-mode-dark .persistent-player {
 
 .player-enter-from,
 .player-leave-to {
-  transform: translateY(v-bind(playerHeight));
+  transform: translateY(var(--persistent-player-height));
 }
 </style>

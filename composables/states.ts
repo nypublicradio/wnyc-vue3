@@ -167,11 +167,6 @@ const playerSeek = { bool: false, time: 20 }
  */
 export const usePlayerSeek = () => useState('usePlayerSeek', (bool, time) => playerSeek)
 
-/**
- * Global var for the height of the audio player
- */
-export const audioPlayerHeight = 60
-
 const currentStreamStation = 'wnyc-fm939'
 /**
  * Global state for the current streaming station / initial selection in the stream switcher dropdown. 

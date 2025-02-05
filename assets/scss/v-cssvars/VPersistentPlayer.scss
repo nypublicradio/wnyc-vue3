@@ -3,7 +3,7 @@
 .style-mode-light {
     --persistent-player-image-size: 60px;
     --persistent-player-height: 60px;
-    --persistent-player-padding: 8px 16px 8px 8px;
+    --persistent-player-padding: 0px 1rem 0 0 !important;
     --persistent-player-height-buffer: 20px;
     --persistent-player-bg: #f1f1f1;
     --persistent-player-minimize-btn-color: #000;
@@ -29,13 +29,13 @@
     --persistent-player-button-bg-color: #000;
     --persistent-player-button-bg-color-hover: inherit;
 
-    --persistent-player-title-size: var(--font-size-6);
-    --persistent-player-title-weight: 600;
+    --persistent-player-title-size: 1rem;
+    --persistent-player-title-weight: 500;
     --persistent-player-title-color: var(--text-color);
     --persistent-player-title-decoration: none;
     --persistent-player-title-hover-decoration: underline;
 
-    --persistent-player-desc-size: var(--font-size-5);
+    --persistent-player-desc-size: 11px;
     --persistent-player-desc-weight: 400;
     --persistent-player-desc-color: var(--text-color);
 
@@ -50,6 +50,9 @@
     --persistent-player-slider-thumb-bg: var(--stroke);
     --persistent-player-slider-thumb-border: var(--primary-color);
     --persistent-player-slider-thumb-shadow: hsla(0, 0%, 100%, 0.4);
+
+    --persistent-player-play-button-height: 38px;
+    --persistent-player-play-button-width: 38px;
 }
 
 [data-style-mode='dark'],
