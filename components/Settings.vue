@@ -541,8 +541,8 @@ const onDeleteAccountClick = () => {
       display: flex;
       justify-content: flex-end;
       .p-inputtext {
-        text-align: right;
-        width: 100%;
+        // text-align: right;
+        // width: 100%;
         @include font-config($type-paragraph1);
       }
     }

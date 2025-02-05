@@ -2,17 +2,17 @@
 const props = defineProps({
   label: {
     type: String,
-    default: '',
+    default: "",
   },
 })
 
-const emit = defineEmits(['close-sidebar'])
+const emit = defineEmits(["close-sidebar"])
 </script>
 
 <template>
   <div class="s-header">
     <div class="flex justify-content-between align-items-center">
-      <div class="flex">
+      <div class="flex align-items-center">
         <Button
           class="-ml-3"
           icon="pi pi-chevron-left"

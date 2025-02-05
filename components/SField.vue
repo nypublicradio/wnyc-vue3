@@ -102,8 +102,8 @@ const handleDisabledEmit = () => {
     }
   }
   .p-inputtext {
-    color: var(--text-color);
-    background: var(--p-surface-25);
+    // color: var(--text-color);
+    // background: var(--p-surface-25);
   }
   .p-inline-message {
     pointer-events: none;

@@ -3,7 +3,6 @@ import VSignupWithEmail from "~/components/supabase/VSignupWithEmail.vue"
 //import VLoginWithEmail from '~/components/supabase/VLoginWithEmail.vue'
 import VLoginWithProvider from "~/components/supabase/VLoginWithProvider.vue"
 
-
 import {
   useSignupSideBar,
   useLoginSideBar,
@@ -52,13 +51,9 @@ const closeAll = () => {
     <section>
       <p>
         Already have an account?
-        <Button
-          link
-          label="Log in"
-          class="link"
-          aria-label="login"
-          @click="onLoginClick"
-        />
+        <VFlexibleLink to="#" aria-label="log in" @click="onLoginClick">
+          Log in
+        </VFlexibleLink>
       </p>
       <VLoginWithProvider
         :client="client"

@@ -53,14 +53,11 @@ const openForgotPassword = () => {
     <section>
       <p>
         Don't have an account yet?
-        <Button
-          link
-          label="Sign up"
-          class="link"
-          @click="onSignupClick"
-          aria-label="sign up"
-        />
+        <VFlexibleLink to="#" aria-label="sign up" @click="onSignupClick">
+          Sign up
+        </VFlexibleLink>
       </p>
+
       <VLoginWithProvider
         :client="client"
         :config="config"
