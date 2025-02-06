@@ -67,7 +67,7 @@ const menuClick = (item) => {
   }
 }
 .bottom-menu {
-  background-color: var(--bottom-menu-bg-color);
+  background-color: var(--solid-dark-bg-color);
   position: fixed;
   bottom: 0;
   left: 0;

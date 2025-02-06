@@ -224,12 +224,6 @@ watch(globalError, (error) => {
     </Head>
   </Html>
   <NuxtLayout>
-    <!-- <div
-      style="width: 300px; height: 300px; background-color: var(--p-surface-900)"
-    ></div>
-    <div
-      style="width: 300px; height: 300px; background-color: var(--p-darkblue-500)"
-    ></div> -->
     <NuxtPage />
   </NuxtLayout>
   <NetworkBanner :connected="isNetworkConnected" />

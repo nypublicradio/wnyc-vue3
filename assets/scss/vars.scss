@@ -12,11 +12,8 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 :root {
     --header-height: #{$headerHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
-    --bottom-menu-icon-color: var(--white, #ffffff) !important;
+    --bottom-menu-icon-color: #ffffff;
     --player-height: #{$playerHeight};
-    --header-z-index: 900;
-    --line-clamp: 3;
-    --button-hover-plain-background: #e8e8e8;
 }
 
 // component cssvar theme control and base component overrides
@@ -26,11 +23,9 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     color-scheme: light;
     --background: var(--p-surface-0);
     --background3: var(--p-surface-50);
-    --solid-dark-bg-color: var(--p-surface-900) !important;
+    --solid-dark-bg-color: var(--p-surface-950) !important;
 
-    --focus-outline-color: #2b6f99;
-    --wnyc-logo-color: var(--red, #de1e3d) !important;
-    --bottom-menu-bg-color: var(--p-surface-950, #101012) !important;
+    --wnyc-logo-color: #de1e3d !important;
     --v-card-title-hover-color: var(--link-button-hover-color) !important;
     --s-box-background-color: var(--background) !important;
     --s-box-stroke-color: var(--background) !important;
@@ -48,9 +43,7 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --background3: #ffffff1a;
     --solid-dark-bg-color: var(--p-darkblue-500) !important;
 
-    --focus-outline-color: var(--spanish-orange);
-    --wnyc-logo-color: var(--white, #ffffff) !important;
-    --bottom-menu-bg-color: var(--p-dark-blue-500, #1b223c) !important;
+    --wnyc-logo-color: #ffffff !important;
     --v-card-title-hover-color: var(--link-button-hover-color) !important;
     --s-box-background-color: #32384f !important;
     --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
@@ -58,7 +51,6 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --live-feature-background: var(--background3) !important;
     --searchFieldBackground: var(--s-box-background-color) !important;
     --backgroundSimple: var(--p-surface-25) !important;
-    --button-hover-plain-background: #e8e8e826;
 }
 
 // darkmode in global darkmode
