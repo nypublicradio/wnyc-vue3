@@ -191,7 +191,7 @@ const togglePlayHere = (story) => {
         </template>
         <template #belowImage>
           <div>
-            <p class="text-left px-4 mt-1 text-xs">
+            <p class="text-right px-4 mt-1 text-xs">
               {{ storyData.image.credit }}
             </p>
           </div>

@@ -284,39 +284,39 @@ section {
 
 // V components
 
-// image caption button
-.v-image-caption {
-  .caption-button {
-    background-color: #ffffff;
-    border: none;
-    color: var(--night-500);
-    height: 38px;
-    width: 38px;
-  }
-}
-.v-image {
-  .p-button {
-    background-color: #ffffff;
-    border: none;
-    color: var(--night-500);
-    height: 38px;
-    width: 38px;
-    &.gallery-button {
-      width: auto;
-      display: flex;
-      gap: 0.4rem;
-      .p-badge {
-        font-size: inherit;
-        line-height: inherit;
-        font-weight: inherit;
-        color: inherit !important;
-        font-family: inherit;
-        margin: 0;
-        padding: 0;
-      }
-    }
-  }
-}
+// // image caption button
+// .v-image-caption {
+//   .caption-button {
+//     background-color: #ffffff;
+//     border: none;
+//     color: var(--night-500);
+//     height: 38px;
+//     width: 38px;
+//   }
+// }
+// .v-image {
+//   .p-button {
+//     background-color: #ffffff;
+//     border: none;
+//     color: var(--night-500);
+//     height: 38px;
+//     width: 38px;
+//     &.gallery-button {
+//       width: auto;
+//       display: flex;
+//       gap: 0.4rem;
+//       .p-badge {
+//         font-size: inherit;
+//         line-height: inherit;
+//         font-weight: inherit;
+//         color: inherit !important;
+//         font-family: inherit;
+//         margin: 0;
+//         padding: 0;
+//       }
+//     }
+//   }
+// }
 
 //remove sticky hover on mobile
 .p-button.no-hover:hover {

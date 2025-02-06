@@ -412,7 +412,7 @@ onMounted(async () => {
     .enlarge-button {
       background-color: rgba(var(--primary-color-rgb), 0.8);
       border-color: transparent;
-      position: absolute;
+      position: absolute !important;
       top: var(--v-image-button-padding);
       left: var(--v-image-button-padding);
       z-index: 2;

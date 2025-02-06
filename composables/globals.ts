@@ -66,7 +66,7 @@ export const showTopics = [
         label: 'News',
         value: 'news',
         url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-news&api_key=atc',
-        color: 'var(--red)',
+        color: 'var(--p-primary-500)',
     },
     {
         label: 'Politics',
@@ -107,23 +107,23 @@ export const getSavedMenuItems = () => {
         {
             label: 'Followed Shows',
             value: 'FollowedShows',
-            color: 'var(--red)',
+            color: 'var(--p-primary-500)',
         },
         {
             label: 'Favorites',
             value: 'Favorites',
-            color: 'var(--red)',
+            color: 'var(--p-primary-500)',
         },
         // Conditionally add the Downloads entry if isApp is true
         ...(isApp.value ? [{
             label: 'Downloads',
             value: 'Downloads',
-            color: 'var(--red)',
+            color: 'var(--p-primary-500)',
         }] : []),
         {
             label: 'History',
             value: 'History',
-            color: 'var(--red)',
+            color: 'var(--p-primary-500)',
         },
     ]
 }

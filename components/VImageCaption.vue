@@ -1,6 +1,6 @@
 <script setup>
-import Button from 'primevue/button'
-import { shallowRef } from 'vue'
+import Button from "primevue/button"
+import { shallowRef } from "vue"
 
 const props = defineProps({
   text: {
@@ -9,19 +9,16 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits([
-  'toggle-caption-expanded',
-  'toggle-caption-collapsed',
-])
+const emit = defineEmits(["toggle-caption-expanded", "toggle-caption-collapsed"])
 
 const showCaption = shallowRef(false)
 // toggle caption state and emits
 const toggleCaption = () => {
   showCaption.value = !showCaption.value
   if (showCaption.value) {
-    emit('toggle-caption-expanded')
+    emit("toggle-caption-expanded")
   } else {
-    emit('toggle-caption-collapsed')
+    emit("toggle-caption-collapsed")
   }
 }
 </script>
@@ -36,13 +33,16 @@ const toggleCaption = () => {
         v-html="props.text"
       ></div>
     </transition>
-    <Button
-      :icon="`pi pi-${showCaption ? 'times' : 'info'}`"
-      class="caption-button"
-      aria-label="caption button"
-      @click.prevent="toggleCaption"
-    >
-    </Button>
+    <div class="caption-button-holder">
+      <Button
+        :icon="`pi pi-${showCaption ? 'times' : 'info'}`"
+        class="caption-button"
+        aria-label="caption button"
+        @click.prevent="toggleCaption"
+        severity="secondary"
+      >
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -54,7 +54,7 @@ const toggleCaption = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  .caption-button {
+  .caption-button-holder {
     position: absolute;
     bottom: var(--v-image-button-padding);
     right: var(--v-image-button-padding);
@@ -66,16 +66,14 @@ const toggleCaption = () => {
     left: 0;
     width: 100%;
     height: auto;
-    background-color: rgba(
-      var(--v-caption-bg-color),
-      var(--v-caption-bg-color-opacity)
-    );
+    background-color: rgba(var(--v-caption-bg-color), var(--v-caption-bg-color-opacity));
     color: white;
-    padding: 16px 54px 16px 16px;
+    padding: 16px 54px 16px 24px;
     line-height: normal;
     overflow-y: auto;
     display: block;
     max-height: 100%;
+    font-size: 0.8725rem;
   }
 }
 </style>
