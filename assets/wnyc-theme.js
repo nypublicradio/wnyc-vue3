@@ -673,6 +673,20 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    skeleton: {
+      colorScheme: {
+        light: {
+          root: {
+            background: '{surface.100}',
+          }
+        },
+        dark: {
+          root: {
+
+          }
+        }
+      }
+    },
     toast: {
       root: {
         borderRadius: '0px',

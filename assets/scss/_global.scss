@@ -282,41 +282,10 @@ section {
   @include t4lines();
 }
 
-// V components
-
-// // image caption button
-// .v-image-caption {
-//   .caption-button {
-//     background-color: #ffffff;
-//     border: none;
-//     color: var(--night-500);
-//     height: 38px;
-//     width: 38px;
-//   }
-// }
-// .v-image {
-//   .p-button {
-//     background-color: #ffffff;
-//     border: none;
-//     color: var(--night-500);
-//     height: 38px;
-//     width: 38px;
-//     &.gallery-button {
-//       width: auto;
-//       display: flex;
-//       gap: 0.4rem;
-//       .p-badge {
-//         font-size: inherit;
-//         line-height: inherit;
-//         font-weight: inherit;
-//         color: inherit !important;
-//         font-family: inherit;
-//         margin: 0;
-//         padding: 0;
-//       }
-//     }
-//   }
-// }
+.p-error {
+  font-family: var(--font-family-header);
+  font-weight: var(--font-weight-500);
+}
 
 //remove sticky hover on mobile
 .p-button.no-hover:hover {
@@ -414,11 +383,6 @@ html:not(.style-mode-dark) {
 // .p-inputswitch .p-inputswitch-slider {
 //   background: var(--p-surface-25);
 //   box-shadow: none !important;
-// }
-
-// .p-error {
-//   font-family: var(--font-family-header);
-//   font-weight: var(--font-weight-500);
 // }
 
 // .p-button {
@@ -571,13 +535,6 @@ html:not(.style-mode-dark) {
 // }
 // a:visited {
 //   color: initial;
-// }
-
-// .p-skeleton {
-//   background: var(--background3);
-//   &:after {
-//     //animation-duration: 0.5s;
-//   }
 // }
 
 // .pi-spinner {
