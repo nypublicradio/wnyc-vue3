@@ -313,11 +313,11 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature v-if="currentEpisodeHolder" class="live-stations-holder">
+      <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
         <div class="live-stations flex pb-2 w-full">
           <div
             v-for="(station, index) in allCurrentStations"
-            class="station-holder"
+            class="station-holder item"
             :class="{
               activestation:
                 currentEpisodeHolder?.station === station.station ||
@@ -327,7 +327,7 @@ onUnmounted(() => {
           >
             <div class="relative">
               <Button
-                class="station-btn text-sm white-space-nowrap"
+                class="station-btn text-sm white-space-nowrap btn"
                 :severity="
                   currentEpisodeHolder?.station === station.station ||
                   currentEpisode?.station === station.station
@@ -358,36 +358,6 @@ onUnmounted(() => {
           </div>
         </div>
       </HorizontalScrollFeature>
-      <div v-else class="flex overflow-hidden mb-3">
-        <Skeleton
-          class="flex-none"
-          height="37px"
-          width="127px"
-          borderRadius="20px"
-          style="margin-left: 1.25rem"
-        />
-        <Skeleton
-          class="flex-none"
-          height="37px"
-          width="127px"
-          borderRadius="20px"
-          style="margin-left: 1.25rem"
-        />
-        <Skeleton
-          class="flex-none"
-          height="37px"
-          width="127px"
-          borderRadius="20px"
-          style="margin-left: 1.25rem"
-        />
-        <Skeleton
-          class="flex-none"
-          height="37px"
-          width="127px"
-          borderRadius="20px"
-          style="margin-left: 1.25rem"
-        />
-      </div>
       <section class="current-station-info">
         <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
         <LiveItem :data="currentEpisodeHolder" :size="100" />
@@ -497,9 +467,6 @@ html {
   .top {
     padding: 1.5rem 0;
     background-color: var(--p-surface-950);
-    .horizontal-scroll-feature .scroll {
-      padding-left: 0 !important;
-    }
     .station-holder {
       position: relative;
       &:after {
@@ -515,7 +482,7 @@ html {
         height: 0;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
-        border-top: 10px solid var(--p-red-500);
+        border-top: 10px solid var(--p-primary-500);
         z-index: -1;
       }
       &.activestation {
@@ -529,15 +496,10 @@ html {
         &:active {
           // nothing looks best
         }
-        margin-left: 1rem;
-        &:first-child {
-          margin-left: 1.25rem;
-        }
-      }
-      &:first-child {
-        @include media(">=md") {
-          margin-left: calc(((100% - 768px) / 2) + 48px);
-        }
+        // margin-left: 1rem;
+        // &:first-child {
+        //   margin-left: 1.25rem;
+        // }
       }
     }
   }
@@ -550,23 +512,13 @@ html {
       }
       &.selected {
         .left {
-          border-color: var(--p-red-500d);
+          border-color: var(--p-primary-500);
         }
       }
       .follow-icon {
         width: 28px;
         height: 28px;
       }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-.live-page {
-  .top {
-    .horizontal-scroll-feature .scroll {
-      padding-left: 0 !important;
     }
   }
 }

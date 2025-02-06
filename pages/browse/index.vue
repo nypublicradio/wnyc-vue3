@@ -96,7 +96,11 @@ watch(
       <IconField>
         <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
         <InputIcon v-else class="pi pi-search text-color" />
-        <InputText v-model="searchFieldValue" placeholder="Search" class="w-full" />
+        <InputText
+          v-model="searchFieldValue"
+          placeholder="Search"
+          class="w-full on-white"
+        />
         <InputIcon v-if="searchFieldValue" class="relative">
           <Button
             rounded
@@ -116,12 +120,16 @@ watch(
           <section>
             <h2>Browse By Topic</h2>
           </section>
-          <HorizontalScrollFeature class="topics-holder">
-            <div class="flex gap-3 w-full">
-              <div v-for="topic in showTopics" class="station-holder" :key="topic.label">
+          <HorizontalScrollFeature class="topics-holder" :data="shows">
+            <div class="flex w-full">
+              <div
+                v-for="topic in showTopics"
+                class="station-holder item"
+                :key="topic.label"
+              >
                 <div class="relative topic-btn-holder">
                   <Button
-                    class="topic-btn text-sm white-space-nowrap font-meta"
+                    class="topic-btn text-sm white-space-nowrap font-meta btn"
                     :label="topic.label"
                     :aria-label="`${topic.label} topic button`"
                     @click="selectTopic(topic)"
@@ -234,18 +242,6 @@ watch(
     top: env(safe-area-inset-top);
     background: var(--backgroundSimple);
     z-index: 1;
-  }
-  .topics-holder {
-    .station-holder {
-      &:first-child {
-        @include media(">=md") {
-          margin-left: calc(((100% - 768px) / 2) + 48px);
-        }
-      }
-      &:last-child {
-        padding-right: 3rem;
-      }
-    }
   }
   .content-holder {
     .topics {

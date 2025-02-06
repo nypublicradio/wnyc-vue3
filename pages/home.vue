@@ -88,7 +88,6 @@ onMounted(() => {
         <section>
           <h2 class="mt-4">{{ section.title }}</h2>
         </section>
-        <!-- <pre class="text-xs overflox-hidden">{{ section.data }}</pre> -->
         <section v-if="section.componentType === 'default'">
           <div class="grid">
             <EpisodeItem
@@ -102,14 +101,12 @@ onMounted(() => {
             />
           </div>
         </section>
-        <WNYCFeatured v-else class="mt-2" :articles="section.data" />
+        <WNYCFeatured v-else class="mt-2 mb-4" :articles="section.data" />
       </div>
     </div>
     <div v-if="pagedata?.npr_stories?.length">
-      <!-- <pre class="text-xs overflow-hidden">npr_stories = {{ pagedata?.npr_stories }}</pre> -->
       <section>
-        <h2 class="mb-3">NPR Stories</h2>
-        <!--      <pre class="text-xs overflox-hidden">{{ pagedata?.npr_stories }}</pre> -->
+        <h2 class="my-3">NPR Stories</h2>
         <div
           v-for="(section, index) in pagedata?.npr_stories"
           :key="`NPR-conetnet-${index}`"

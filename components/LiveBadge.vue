@@ -20,7 +20,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="live-badge flex gap-2 align-items-center relative">
+  <div class="live-badge flex align-items-center relative">
     <LiveIndicator />
     <span>{{ props.label }}</span>
   </div>
@@ -28,11 +28,15 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .live-badge {
+  gap: 6px;
   background-color: v-bind(bgColor);
   border-radius: 2px;
   padding: v-bind(padding);
   font-size: v-bind(fontSize);
   color: var(--p-surface-950);
   line-height: normal;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-family: "ff-meta-web-pro";
 }
 </style>

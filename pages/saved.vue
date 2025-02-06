@@ -90,17 +90,17 @@ onMounted(() => {
       ></Button> -->
     </section>
     <div v-if="user">
-      <HorizontalScrollFeature class="items-holder my-3">
+      <HorizontalScrollFeature class="items-holder my-3" :data="savedMenuItems">
         <div class="flex w-full">
           <div
             v-for="(item, index) in savedMenuItems"
-            class="item-holder"
+            class="item-holder item"
             :class="[{ selected: selectedMenuItem.value === item.value }]"
             :key="item.label"
           >
             <div class="relative item-btn-holder">
               <Button
-                class="item-btn text-sm white-space-nowrap"
+                class="item-btn text-sm white-space-nowrap btn"
                 :label="item.label"
                 :aria-label="`${item.label} button`"
                 @click="selectMenuItem(item, index)"
@@ -129,29 +129,12 @@ onMounted(() => {
     .item-holder {
       .item-btn {
         min-width: 130px;
-        margin-left: 1rem;
-        &:first-child {
-          margin-left: 1.25rem;
-        }
       }
       &.selected .item-btn {
         background-color: var(--red);
         color: #ffffff;
       }
-      &:first-child {
-        @include media(">=md") {
-          margin-left: calc(((100% - 768px) / 2) + 40px);
-        }
-      }
     }
-  }
-}
-</style>
-
-<style lang="scss">
-.saved-page {
-  .horizontal-scroll-feature .scroll {
-    padding-left: 0 !important;
   }
 }
 </style>

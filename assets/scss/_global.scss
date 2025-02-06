@@ -358,6 +358,15 @@ form {
   }
 }
 
+html:not(.style-mode-dark) {
+  .p-inputtext {
+    // so when input text fields are on a white background, the background color is slightly grey to contrast off the white
+    &.on-white {
+      background-color: var(--p-surface-25);
+    }
+  }
+}
+
 // :root,
 // [data-style-mode='light'],
 // .style-mode-light {

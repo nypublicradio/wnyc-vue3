@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div v-if="props.item" class="card-large mb-4 p-ripple" v-ripple>
+  <div v-if="props.item" class="card-large p-ripple" v-ripple>
     <VFlexibleLink
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       raw
@@ -59,10 +59,10 @@ const props = defineProps({
   border-radius: 8px;
   overflow: hidden;
   max-width: 248px;
+  min-width: 248px;
+  height: 400px;
   background-color: var(--p-surface-25);
   position: relative;
-  .top {
-  }
   .bottom {
     padding: 1rem;
     height: 100%;
