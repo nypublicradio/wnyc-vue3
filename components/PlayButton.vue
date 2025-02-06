@@ -124,7 +124,6 @@ watch(
     }
   }
   .icon {
-    margin-right: 0.25rem;
     .circular-progress-bar {
       position: absolute;
       left: -6px;
@@ -137,7 +136,6 @@ watch(
       }
     }
     &:not(.live) {
-      margin-right: 0.5rem;
       .pause-icon {
         height: 8px;
       }

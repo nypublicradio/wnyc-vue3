@@ -57,9 +57,6 @@ const emit = defineEmits(["on-click"])
       //border: var(--night) 1px solid;
     }
   }
-  .icon {
-    margin-right: 0.5rem;
-  }
   .content {
     font-size: 14px;
     font-weight: 700;
