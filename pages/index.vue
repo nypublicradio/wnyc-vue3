@@ -1,5 +1,4 @@
 <script setup async>
-
 import { setStatusDarkMode, trackClickEvent } from "~/utilities/helpers"
 import { useCurrentUserProfile } from "~/composables/states.ts"
 import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"

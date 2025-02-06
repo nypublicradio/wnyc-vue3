@@ -3,10 +3,6 @@
 .style-mode-light {
     color-scheme: light;
 
-    --background: #{map-get($colors, 'background')};
-    //--p-surface-25: #{map-get($colors, 'background2')};
-    --background3: #{map-get($colors, 'background3')};
-    --background4: #{map-get($colors, 'background4')};
     --dark-blue: #{map-get($colors, 'dark-blue')};
     --blue: #{map-get($colors, 'blue')};
     --stroke: #{map-get($colors, 'stroke')};
@@ -64,17 +60,17 @@
     --font-weight-800: #{$fontWeight-800};
     --font-weight-900: #{$fontWeight-900};
 
-    --z-index-vanish: #{$z-index-vanish};
-    --z-index-none: #{$z-index-none};
-    --z-index-1: #{$z-index-1};
-    --z-index-2: #{$z-index-2};
-    --z-index-5: #{$z-index-5};
-    --z-index-10: #{$z-index-10};
-    --z-index-15: #{$z-index-15};
-    --z-index-30: #{$z-index-30};
-    --z-index-50: #{$z-index-50};
-    --z-index-75: #{$z-index-75};
-    --z-index-100: #{$z-index-100};
+    --z-index-vanish: -1;
+    --z-index-none: 0;
+    --z-index-1: 100;
+    --z-index-2: 200;
+    --z-index-5: 500;
+    --z-index-10: 1000;
+    --z-index-15: 1500;
+    --z-index-30: 3000;
+    --z-index-50: 5000;
+    --z-index-75: 7500;
+    --z-index-100: 10000;
 
     --font-size-1: calc(var(--font-size-2) / var(--font-ratio));
     --font-size-2: calc(var(--font-size-3) / var(--font-ratio));
@@ -136,10 +132,6 @@
 .style-mode-dark {
     color-scheme: dark;
 
-    --background: #{$backgroundGradient1};
-    //--p-surface-25: #{map-get($colors-dark-mode, 'background2')};
-    --background3: #{map-get($colors-dark-mode, 'background3')};
-    --background4: #{map-get($colors-dark-mode, 'background4')};
     --dark-blue: #{map-get($colors-dark-mode, 'dark-blue')};
     --blue: #{map-get($colors-dark-mode, 'blue')};
     --stroke: #{map-get($colors-dark-mode, 'stroke')};

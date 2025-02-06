@@ -1,5 +1,4 @@
 <script setup>
-
 const emit = defineEmits(["onClick"])
 const config = useRuntimeConfig()
 </script>
@@ -28,7 +27,7 @@ const config = useRuntimeConfig()
 
 <style lang="scss" scoped>
 .streamfield-donation {
-  background: var(--donation-bg);
+  background: var(--solid-dark-bg-color);
   .holder {
     max-width: 550px;
   }
@@ -38,13 +37,13 @@ const config = useRuntimeConfig()
   font-size: var(--font-size-10);
   font-weight: var(--font-weight-700);
   line-height: var(--font-size-11);
-  color: var(--donation-text);
+  color: #ffffff;
 }
 .streamfield-donation p {
   font-size: var(--font-size-5);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-8);
-  color: var(--donation-text);
+  color: #ffffff;
 }
 .streamfield-donation .p-button {
   width: 181px;

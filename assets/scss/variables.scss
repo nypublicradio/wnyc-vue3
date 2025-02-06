@@ -56,7 +56,6 @@ $colors-dark-mode: (
     'spanish-orange': #f06000,
     'sea-green': #469c78
 );
-$backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 
 //primary color variables
 $primaryColor: map-get($colors, 'red') !default;

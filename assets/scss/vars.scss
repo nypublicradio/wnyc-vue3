@@ -7,12 +7,9 @@ $playerHeight: 60px;
 $toolsBreakPoint: 472px;
 $padding: 1.5rem;
 
-// DS UPDATE
-$backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
-//
+$backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 
 :root {
-    --background-gradient-1: #{$backgroundGradient1};
     --header-height: #{$headerHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
     --bottom-menu-icon-color: var(--white, #ffffff) !important;
@@ -20,17 +17,18 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --header-z-index: 900;
     --line-clamp: 3;
     --button-hover-plain-background: #e8e8e8;
-    --donation-text: #ffffff !important;
 }
 
 // component cssvar theme control and base component overrides
 :root,
 [data-style-mode='light'],
 .style-mode-light {
-    --ripple-color: #99999980;
-    --placeholder-color: #757575;
+    color-scheme: light;
+    --background: var(--p-surface-0);
+    --background3: var(--p-surface-50);
+    --solid-dark-bg-color: var(--p-surface-900) !important;
+
     --focus-outline-color: #2b6f99;
-    --solid-bg-color: var(--night-500, #101012) !important;
     --wnyc-logo-color: var(--red, #de1e3d) !important;
     --bottom-menu-bg-color: var(--p-surface-950, #101012) !important;
     --v-card-title-hover-color: var(--link-button-hover-color) !important;
@@ -39,18 +37,18 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --header-background: #ffffffe6 !important;
     --expandedHeaderBackgroundTransparent: #2f2f2fe6 !important;
     --live-feature-background: var(--p-surface-25) !important;
-    --horzScrollGradient: var(--background);
-    --donation-bg: var(--night-500, #101012) !important;
     --searchFieldBackground: var(--p-surface-25) !important;
     --backgroundSimple: var(--p-surface-0) !important;
     --persistent-player-bg-transparent: #27272acc !important;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
-    --ripple-color: #ffffff80;
-    --placeholder-color: #a3a3a3;
+    color-scheme: dark;
+    --background: #{$backgroundBlueGradient1};
+    --background3: #ffffff1a;
+    --solid-dark-bg-color: var(--p-darkblue-500) !important;
+
     --focus-outline-color: var(--spanish-orange);
-    --solid-bg-color: var(--dark-blue-500, #101012) !important;
     --wnyc-logo-color: var(--white, #ffffff) !important;
     --bottom-menu-bg-color: var(--p-dark-blue-500, #1b223c) !important;
     --v-card-title-hover-color: var(--link-button-hover-color) !important;
@@ -58,9 +56,6 @@ $backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
     --expandedHeaderBackgroundTransparent: #13182ae6 !important;
     --live-feature-background: var(--background3) !important;
-    --horzScrollGradient: var(--dark-blue);
-    --donation-bg: var(--dark-blue-500, #101012) !important;
-    --donation-text: var(--text-color) !important;
     --searchFieldBackground: var(--s-box-background-color) !important;
     --backgroundSimple: var(--p-surface-25) !important;
     --button-hover-plain-background: #e8e8e826;

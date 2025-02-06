@@ -8,7 +8,7 @@ const props = defineProps({
   },
   bgColor: {
     type: [String, Promise],
-    default: "var(--solid-bg-color)",
+    default: "var(--p-surface-950)",
   },
 })
 
