@@ -109,12 +109,10 @@ const avatarUrl = computed(() => {
       <template #icon v-if="!avatarUrl">
         <UserIcon />
 
-        <Button
+        <i
           v-if="currentUser && props.isEmail"
-          icon="pi pi-plus"
-          severity="secondary"
-          rounded
-          aria-label="upload image"
+          class="pi pi-plus"
+          aria-label="upload image plus icon"
         />
       </template>
     </Avatar>
@@ -169,16 +167,20 @@ const avatarUrl = computed(() => {
     position: relative;
     flex: none;
     background-color: #ffffff;
-    color: var(--night--500);
+    color: var(--p-surface-950);
     border-radius: 50%;
-    .p-button {
+    .pi-plus {
+      font-size: 0.5rem;
       position: absolute;
-      transform: scale(0.5);
-      left: -15px;
-      bottom: -10px;
-      &:before {
-        font-weight: 900;
-      }
+      background-color: var(--p-primary-500);
+      padding: 3px;
+      line-height: normal;
+      border-radius: 10px;
+      left: -3px;
+      bottom: -3px;
+      font-weight: 900;
+      color: var(--p-surface-0) !important;
+      pointer-events: none;
     }
   }
 }
@@ -187,14 +189,6 @@ const avatarUrl = computed(() => {
 <style lang="scss">
 .s-user {
   .p-avatar {
-    .p-button {
-      .p-button-icon {
-        &:before {
-          font-weight: 900;
-          color: #101012 !important;
-        }
-      }
-    }
     img {
       object-fit: cover;
     }

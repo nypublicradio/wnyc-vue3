@@ -561,7 +561,7 @@ const MyPreset = definePreset(Aura, {
           950: "#09090b"
         },
         primary: {
-          color: "{primary.400}",
+          color: "{primary.500}",
           contrastColor: "{surface.900}",
           hoverColor: "{primary.300}",
           activeColor: "{primary.200}"
@@ -673,9 +673,6 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
-    inputtext: {
-
-    },
     slider: {
       borderRadius: '6px',
       track: {
@@ -801,7 +798,7 @@ const MyPreset = definePreset(Aura, {
         label: {
           fontWeight: '700'
         },
-        gap: '0px',
+        gap: '0.5rem',
       },
       colorScheme: {
         light: {

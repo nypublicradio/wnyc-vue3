@@ -278,10 +278,12 @@ function triggerFileUpload() {
 .upload-image {
   .p-fileupload {
     width: 100%;
-    .p-button:hover {
-      color: var(--night-500);
-      background: #fff;
-      border: 1px solid var(--stroke-500);
+    .p-button {
+      border: 1px solid var(--p-button-secondary-hover-border-color);
+      &:hover {
+        color: var(--p-button-secondary-color);
+        background: var(--p-button-secondary-hover-background);
+      }
     }
   }
 }

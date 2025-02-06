@@ -125,7 +125,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     flex: none;
     width: 138px;
     height: 138px;
-    background-color: #ffffff;
+    background-color: #ffffff99;
     .image,
     .image-loader-anim {
       width: 138px;
