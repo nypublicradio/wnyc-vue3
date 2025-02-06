@@ -17,12 +17,13 @@ import {
   useIsLiveStream,
   useIsApp,
   useAccountDeleteSideBar,
+  useGlobalToast,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
-import { id } from "date-fns/locale"
+const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -46,18 +47,14 @@ const isDisabled = computed(() => {
   return !isEmail
 })
 
-const isMessage = shallowRef(false)
-const severity = shallowRef("success")
-const theMessage = shallowRef("Settings updated")
-
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
-// main function to update the message component
+// main function to update the toast component
 const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
-  isMessage.value = false
-  await nextTick()
-  isMessage.value = true
-  severity.value = mySverity
-  theMessage.value = myMessage
+  globalToast.value = {
+    severity: mySverity,
+    summary: myMessage,
+    life: 3000,
+  }
 }
 
 // formats the station list for the dropdown
@@ -457,16 +454,6 @@ const onDeleteAccountClick = () => {
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version {{ config.public.APP_VERSION }}</p>
     </section>
-    <Transition name="zoom">
-      <Message
-        v-if="isMessage"
-        class="settings-message"
-        :severity="severity"
-        :closable="false"
-        :sticky="false"
-        >{{ theMessage }}</Message
-      >
-    </Transition>
   </div>
 </template>
 

@@ -673,6 +673,57 @@ const MyPreset = definePreset(Aura, {
     }
   },
   components: {
+    toast: {
+      root: {
+        borderRadius: '0px',
+        borderWidth: '0px',
+      },
+      icon: {
+        size: '1.25rem',
+      },
+      colorScheme: {
+        light: {
+          info: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          success: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          warn: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          error: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          secondary: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          contrast: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+        },
+        dark: {
+          info: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          success: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          warn: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          error: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          secondary: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+          contrast: {
+            background: 'color-mix(in srgb, {surface.700}, transparent 10%)',
+          },
+        }
+      }
+    },
     slider: {
       borderRadius: '6px',
       track: {
