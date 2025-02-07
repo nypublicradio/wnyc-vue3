@@ -309,6 +309,19 @@ const MyPreset = definePreset(Aura, {
       800: "#292524",
       900: "#1c1917",
       950: "#0c0a09"
+    },
+    link: {
+      50: "#f4f8fa",
+      100: "#ccdce7",
+      200: "#a4c1d3",
+      300: "#7ca6c0",
+      400: "#538aac",
+      500: "#2b6f99",
+      600: "#255e82",
+      700: "#1e4e6b",
+      800: "#183d54",
+      900: "#112c3d",
+      950: "#0b1c26"
     }
   },
   semantic: {
@@ -911,11 +924,11 @@ const MyPreset = definePreset(Aura, {
             },
             secondary: {
               background: '{surface.0}',
-              hoverBackground: '{surface.50}',
+              hoverBackground: '{surface.300}',
               activeBackground: '{surface.200}',
               borderColor: '{surface.50}',
-              hoverBorderColor: '{surface.50}',
-              activeBorderColor: '{surface.300}',
+              hoverBorderColor: '{surface.300}',
+              activeBorderColor: '{surface.400}',
               color: '{surface-950}',
               hoverColor: '{surface-950}',
               activeColor: '{surface-950}',

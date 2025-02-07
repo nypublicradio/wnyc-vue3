@@ -147,8 +147,4 @@ $inputFilledBg: $shade100 !default;
 $inputFilledHoverBg: $inputFilledBg !default;
 $inputFilledFocusBg: $shade000 !default;
 
-$linkButtonColor: map-get($colors, 'link') !default;
-$linkButtonHoverColor: scale-color(map-get($colors, 'link'), $lightness: 20%) !default;
-$linkButtonTextHoverDecoration: underline !default;
-$linkButtonFocusShadow: 0 0 0.2rem 0.2rem scale-color(map-get($colors, 'link'), $lightness: 60%) !default;
 $panelContentPadding: 0.5rem !default;

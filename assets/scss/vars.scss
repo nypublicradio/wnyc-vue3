@@ -22,35 +22,32 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 .style-mode-light {
     color-scheme: light;
     --background: var(--p-surface-0);
+    --background2: var(--p-surface-0);
     --background3: var(--p-surface-50);
-    --solid-dark-bg-color: var(--p-surface-950) !important;
-
-    --wnyc-logo-color: #de1e3d !important;
-    --v-card-title-hover-color: var(--link-button-hover-color) !important;
-    --s-box-background-color: var(--background) !important;
-    --s-box-stroke-color: var(--background) !important;
-    --header-background: #ffffffe6 !important;
-    --expandedHeaderBackgroundTransparent: #2f2f2fe6 !important;
-    --live-feature-background: var(--p-surface-25) !important;
-    --searchFieldBackground: var(--p-surface-25) !important;
-    --backgroundSimple: var(--p-surface-0) !important;
-    --persistent-player-bg-transparent: #27272acc !important;
+    --solid-dark-bg-color: var(--p-surface-950);
+    --wnyc-logo-color: #de1e3d;
+    --link-button-color: var(--p-link-500);
+    --link-button-hover-color: var(--p-link-400);
+    --link-button-text-hover-decoration: underline;
+    --link-button-focus-shadow: 0 0 0.2rem 0.2rem var(--p-link-600);
+    --s-box-background-color: var(--background);
+    --header-background: #ffffffe6;
+    --live-feature-background: var(--p-surface-25);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
     color-scheme: dark;
     --background: #{$backgroundBlueGradient1};
+    --background2: var(--p-surface-25);
     --background3: #ffffff1a;
-    --solid-dark-bg-color: var(--p-darkblue-500) !important;
-
-    --wnyc-logo-color: #ffffff !important;
-    --v-card-title-hover-color: var(--link-button-hover-color) !important;
-    --s-box-background-color: #32384f !important;
-    --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
-    --expandedHeaderBackgroundTransparent: #13182ae6 !important;
-    --live-feature-background: var(--background3) !important;
-    --searchFieldBackground: var(--s-box-background-color) !important;
-    --backgroundSimple: var(--p-surface-25) !important;
+    --solid-dark-bg-color: var(--p-darkblue-500);
+    --wnyc-logo-color: #ffffff;
+    --link-button-color: var(--p-surface-0);
+    --link-button-hover-color: var(--p-surface-300);
+    --link-button-focus-shadow: 0 0 0.2rem 0.2rem var(--p-surface-500);
+    --s-box-background-color: var(--p-slate-500);
+    --header-background: #1b223ce6;
+    --live-feature-background: var(--background3);
 }
 
 // darkmode in global darkmode

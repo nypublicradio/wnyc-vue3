@@ -156,7 +156,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .gallery-page {
   .header {
-    background-color: var(--backgroundSimple);
+    background-color: var(--background2);
     position: sticky;
     top: 0;
     z-index: 1;

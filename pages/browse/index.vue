@@ -240,7 +240,7 @@ watch(
   .search {
     position: sticky;
     top: env(safe-area-inset-top);
-    background: var(--backgroundSimple);
+    background: var(--background2);
     z-index: 1;
   }
   .content-holder {
