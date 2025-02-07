@@ -120,7 +120,7 @@ watch(
 .small-play {
   .p-button {
     &.active {
-      //border: var(--night) 1px solid;
+      //border: var(--bw-toggle) 1px solid;
     }
   }
   .icon {

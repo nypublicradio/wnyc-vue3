@@ -231,8 +231,8 @@ const share = () => {
 .share-button svg > *,
 .follow-link svg > *,
 .follow-link {
-  color: var(--text-color);
-  fill: var(--text-color);
+  color: var(--p-text-color);
+  fill: var(--p-text-color);
   transition: var(--transition-ease) var(--p-transition-duration);
 }
 

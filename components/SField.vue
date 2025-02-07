@@ -98,11 +98,11 @@ const handleDisabledEmit = () => {
   .p-inplace-display:not(.p-disabled):hover {
     &:hover {
       background: var(--background3);
-      color: var(--text-color);
+      color: var(--p-text-color);
     }
   }
   .p-inputtext {
-    // color: var(--text-color);
+    // color: var(--p-text-color);
     // background: var(--p-surface-25);
   }
   .p-inline-message {

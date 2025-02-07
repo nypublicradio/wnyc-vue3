@@ -36,8 +36,8 @@ html {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--white);
-  color: var(--text-color);
+  background-color: #ffffff;
+  color: var(--p-text-color);
   font-size: inherit;
   padding: 0;
   min-height: 100%;
@@ -127,7 +127,7 @@ a {
 }
 
 label {
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 // match the prime vue Divider styles
@@ -180,7 +180,7 @@ section {
     line-height: var(--font-size-12);
     font-weight: var(--font-weight-700);
     letter-spacing: -1px;
-    color: var(--text-color);
+    color: var(--p-text-color);
     @include media('<md') {
       font-size: var(--font-size-9);
       line-height: var(--font-size-9);
@@ -189,13 +189,13 @@ section {
   a {
     -webkit-touch-callout: none; /* disable the iOS long press action */
     -webkit-user-select: none; /* disable text selection */
-    color: var(--link);
+    color: var(--p-link-500);
     &:hover,
     &:active {
-      color: var(--link);
+      color: var(--p-link-500);
     }
     &:visited {
-      color: var(--link);
+      color: var(--p-link-500);
     }
   }
   p,
@@ -225,9 +225,7 @@ section {
     -ms-user-select: none;
     user-select: none;
     vertical-align: bottom;
-    //background: var(--white100);
     border: 2px solid transparent;
-    //color: var(--black500);
     font-size: 1rem;
     padding: 0.5rem 1rem;
   }
@@ -256,7 +254,7 @@ section {
   &.noLinks {
     a {
       pointer-events: none;
-      color: var(--text-color);
+      color: var(--p-text-color);
       text-decoration: none;
     }
   }

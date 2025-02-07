@@ -30,7 +30,7 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .star-icon {
-  //fill: var(--text-color);
+  //fill: var(--p-text-color);
   height: 28px;
   width: 28px;
 }

@@ -803,7 +803,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   position: fixed;
   z-index: var(--persistent-player-z-index);
   width: 100%;
-  color: var(--text-color);
+  color: var(--p-text-color);
   background-color: var(--persistent-player-bg);
   transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
   -webkit-transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
@@ -1030,8 +1030,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     background: none;
 
     * {
-      color: var(--text-color);
-      fill: var(--text-color);
+      color: var(--p-text-color);
+      fill: var(--p-text-color);
     }
 
     &:hover {
@@ -1109,7 +1109,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
   .media-live-indicator-text {
     text-transform: uppercase;
-    background-color: var(--red);
+    background-color: var(--p-red-500);
     border-radius: 2px;
     color: #f5f5f5;
     font-family: sans-serif;

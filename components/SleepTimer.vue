@@ -239,7 +239,7 @@ watch(
     margin: auto;
     display: block;
     path {
-      fill: var(--text-color);
+      fill: var(--p-text-color);
     }
   }
   .count-down {

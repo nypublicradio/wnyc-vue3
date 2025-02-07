@@ -450,7 +450,7 @@ const onDeleteAccountClick = () => {
       ></SBox>
     </section>
     <section class="footer mb-4">
-      <WnycLogo style="fill: var(--night)" />
+      <WnycLogo style="fill: var(--bw-toggle)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version {{ config.public.APP_VERSION }}</p>
     </section>
@@ -469,10 +469,10 @@ const onDeleteAccountClick = () => {
       font-size: 13px;
       text-transform: uppercase;
       opacity: 0.7;
-      color: var(--text-color);
+      color: var(--p-text-color);
     }
     .pi {
-      color: var(--text-color);
+      color: var(--p-text-color);
     }
   }
   .user {
@@ -491,7 +491,7 @@ const onDeleteAccountClick = () => {
       width: 60px;
       height: auto;
       margin-bottom: 10px;
-      fill: var(--night-500);
+      fill: var(--p-surface-950);
     }
   }
   .p-inplace {

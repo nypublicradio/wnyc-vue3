@@ -7,11 +7,11 @@ const props = defineProps({
   },
   bgColor: {
     type: String,
-    default: 'var(--yellow)',
+    default: 'var(--p-yellow-500)',
   },
   color: {
     type: String,
-    default: 'var(--night-500)',
+    default: 'var(--p-surface-950)',
   },
 })
 </script>

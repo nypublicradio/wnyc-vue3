@@ -199,7 +199,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
     width: 18px;
     height: 18px;
     path {
-      fill: var(--night);
+      fill: var(--bw-toggle);
     }
   }
   &.hideX {

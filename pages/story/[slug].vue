@@ -283,7 +283,7 @@ const togglePlayHere = (story) => {
   width: 28px;
 }
 .story-page .v-byline .flexible-link {
-  color: var(--text-color) !important;
+  color: var(--p-text-color) !important;
   text-decoration: none !important;
 }
 

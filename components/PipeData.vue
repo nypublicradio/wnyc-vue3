@@ -18,7 +18,7 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .pipe-data {
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 </style>
 ```

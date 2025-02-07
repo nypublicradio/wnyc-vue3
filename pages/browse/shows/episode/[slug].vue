@@ -428,7 +428,7 @@ const getEpisodeImage = () => {
   font-size: var(--font-size-4);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-6);
-  color: var(--text-color);
+  color: var(--p-text-color);
   text-decoration: none;
   opacity: 70%;
 }

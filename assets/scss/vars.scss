@@ -14,6 +14,13 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --bottom-menu-height: #{$bottomMenuHeight};
     --bottom-menu-icon-color: #ffffff;
     --player-height: #{$playerHeight};
+
+    --teal-lake: #298c9a;
+    --electric-violet: #9747ff;
+    --honolulu-blue: #0b7bbc;
+    --berry: #bb339e;
+    --spanish-orange: #f06000;
+    --sea-green: #469c78;
 }
 
 // component cssvar theme control and base component overrides
@@ -21,6 +28,7 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
 [data-style-mode='light'],
 .style-mode-light {
     color-scheme: light;
+
     --background: var(--p-surface-0);
     --background2: var(--p-surface-0);
     --background3: var(--p-surface-50);
@@ -33,6 +41,9 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --s-box-background-color: var(--background);
     --header-background: #ffffffe6;
     --live-feature-background: var(--p-surface-25);
+    --bw-toggle: var(--p-surface-950);
+    --success: var(--p-green-500);
+    --error: var(--p-red-500);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -48,6 +59,9 @@ $backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);
     --s-box-background-color: var(--p-slate-500);
     --header-background: #1b223ce6;
     --live-feature-background: var(--background3);
+    --bw-toggle: var(--p-surface-0);
+    --success: var(--p-green-400);
+    --error: var(--p-red-400);
 }
 
 // darkmode in global darkmode

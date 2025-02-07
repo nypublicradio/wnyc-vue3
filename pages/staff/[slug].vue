@@ -195,7 +195,7 @@ watch(loadMoreRefVisible, (val) => {
 <style lang="scss">
 .staff-page {
   hr {
-    background: var(--text-color);
+    background: var(--p-text-color);
   }
 }
 </style>

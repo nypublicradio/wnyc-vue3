@@ -3,30 +3,6 @@
 .style-mode-light {
     color-scheme: light;
 
-    --dark-blue: #{map-get($colors, 'dark-blue')};
-    --blue: #{map-get($colors, 'blue')};
-    --stroke: #{map-get($colors, 'stroke')};
-    --night: #{map-get($colors, 'night')};
-    --red: #{map-get($colors, 'red')};
-    --yellow: #{map-get($colors, 'yellow')};
-    --indigo: #{map-get($colors, 'indigo')};
-    --success: #{map-get($colors, 'success')};
-    --error: #{map-get($colors, 'error')};
-    --black: #{map-get($colors, 'black')};
-    --info: #{map-get($colors, 'info')};
-    --purple: #{map-get($colors, 'purple')};
-    --secondary: #{map-get($colors, 'secondary')};
-    --link: #{map-get($colors, 'link')};
-
-    --teal-lake: #{map-get($colors, 'teal-lake')};
-    --electric-violet: #{map-get($colors, 'electric-violet')};
-    --honolulu-blue: #{map-get($colors, 'honolulu-blue')};
-    --berry: #{map-get($colors, 'berry')};
-    --spanish-orange: #{map-get($colors, 'spanish-orange')};
-    --sea-green: #{map-get($colors, 'sea-green')};
-
-    --white: #ffffff;
-
     --primary-color: var(--p-primary-500);
     --primary-color-rgb: #{hex2rgb($primaryColor)};
     --primary-color-alt: #{$primaryColorAlt};
@@ -96,12 +72,7 @@
     --font-family: #{$fontFamily};
     --font-family-header: #{$fontFamilyHeader};
     --font-family-tisa: #{$fontFamilyTisa};
-    --text-color: var(--p-text-color);
-    --text-color-on-dark: #{$textColorOnDark};
-    --text-color-secondary: #{$primaryColorAlt};
-    --primary-text-color: #{$primaryTextColor};
-    --primary-color-text: #{$primaryTextColor};
-    --text-secondary-color: #{$textSecondaryColor};
+
     --font-size: #{$fontSize};
     --font-ratio: #{$fontRatio};
     --font-ratio-large: #{$fontRatioLarge};
@@ -128,28 +99,6 @@
 .style-mode-dark {
     color-scheme: dark;
 
-    --dark-blue: #{map-get($colors-dark-mode, 'dark-blue')};
-    --blue: #{map-get($colors-dark-mode, 'blue')};
-    --stroke: #{map-get($colors-dark-mode, 'stroke')};
-    --night: #{map-get($colors-dark-mode, 'night')};
-    --red: #{map-get($colors-dark-mode, 'red')};
-    --yellow: #{map-get($colors-dark-mode, 'yellow')};
-    --indigo: #{map-get($colors-dark-mode, 'indigo')};
-    --success: #{map-get($colors-dark-mode, 'success')};
-    --error: #{map-get($colors-dark-mode, 'error')};
-    --black: #{map-get($colors-dark-mode, 'black')};
-    --info: #{map-get($colors-dark-mode, 'info')};
-    --purple: #{map-get($colors-dark-mode, 'purple')};
-    --secondary: #{map-get($colors-dark-mode, 'secondary')};
-    --link: #{map-get($colors-dark-mode, 'link')};
-    --teal-lake: #{map-get($colors-dark-mode, 'teal-lake')};
-    --electric-violet: #{map-get($colors-dark-mode, 'electric-violet')};
-    --honolulu-blue: #{map-get($colors-dark-mode, 'honolulu-blue')};
-    --berry: #{map-get($colors-dark-mode, 'berry')};
-    --spanish-orange: #{map-get($colors-dark-mode, 'spanish-orange')};
-    --sea-green: #{map-get($colors-dark-mode, 'sea-green')};
-
-    --shade-000: var(--background);
     --shade-400: #{map-get($colors-dark-mode, 'background')};
 
     --text-color: var(--text-color-on-dark);

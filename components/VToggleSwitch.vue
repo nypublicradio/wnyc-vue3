@@ -74,8 +74,6 @@ $fontSize: v-bind(fontSize);
   line-height: 0;
   width: $sliderSize;
   .p-toggleswitch {
-    //transition: all var(--v-toggleswitch-transition-duration);
-    //-webkit-transition: all var(--v-toggleswitch-transition-duration);
     width: $sliderSize;
     .p-toggleswitch-input {
       width: $sliderSize;

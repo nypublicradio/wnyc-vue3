@@ -146,7 +146,7 @@ const routeBack = () => {
 <style lang="scss">
 .person-page {
   hr {
-    background: var(--text-color);
+    background: var(--p-text-color);
   }
 }
 </style>

@@ -14,7 +14,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: "var(--text-color)",
+    default: "var(--p-text-color)",
   },
   svgXscale: {
     type: Number,

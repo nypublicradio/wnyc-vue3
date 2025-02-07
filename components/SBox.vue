@@ -103,7 +103,7 @@ const onClick = () => {
       .p-button {
         padding-left: 1.25rem;
         padding-right: 1.25rem;
-        color: var(--night);
+        color: var(--bw-toggle);
         font-weight: var(--font-weight-500);
         &:hover {
           background: var(--background3);

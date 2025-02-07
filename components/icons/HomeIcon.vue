@@ -28,7 +28,7 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .home-icon {
-  fill: var(--text-color);
+  fill: var(--p-text-color);
   height: 52px;
 }
 </style>

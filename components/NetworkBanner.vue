@@ -73,7 +73,7 @@ watch(
     background-color: v-bind(bgColor);
     font-weight: bold;
     font-size: 0.6rem;
-    color: var(--black-500);
+    color: #000000;
   }
 }
 </style>

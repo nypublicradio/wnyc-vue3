@@ -42,7 +42,7 @@ const accountDeleteSideBar = useAccountDeleteSideBar()
     position: relative;
     flex: none;
     background-color: #ffffff;
-    color: var(--night--500);
+    color: var(--p-surface-950);
     border-radius: 50%;
     img {
       object-fit: cover;

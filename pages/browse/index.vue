@@ -267,7 +267,7 @@ watch(
           height: 0;
           border-left: 10px solid transparent;
           border-right: 10px solid transparent;
-          border-top: 10px solid var(--red);
+          border-top: 10px solid var(--p-red-500);
           z-index: -1;
         }
         &.activetopicholder {

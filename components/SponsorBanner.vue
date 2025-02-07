@@ -24,7 +24,7 @@ const props = defineProps({
 .sponsor-banner {
   background-color: #000000;
   padding: 3rem;
-  color: var(--text-color);
+  color: var(--p-text-color);
   .content {
     display: flex;
     flex-direction: column;

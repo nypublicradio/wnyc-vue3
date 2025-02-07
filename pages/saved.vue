@@ -131,7 +131,7 @@ onMounted(() => {
         min-width: 130px;
       }
       &.selected .item-btn {
-        background-color: var(--red);
+        background-color: var(--p-red-500);
         color: #ffffff;
       }
     }

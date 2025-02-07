@@ -302,7 +302,7 @@ defineExpose({
   }
   .p-submenu-header-replace {
     background: transparent;
-    color: var(--text-color);
+    color: var(--p-text-color);
     font-weight: var(--font-weight-700);
     font-size: 1.625rem;
     font-family: var(--font-family-header);
