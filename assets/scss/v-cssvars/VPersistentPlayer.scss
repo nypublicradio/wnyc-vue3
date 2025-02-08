@@ -12,7 +12,7 @@
     --persistent-player-maximize-btn-color: var(--p-surface-950) --persistent-player-maximize-btn-bg:
         var(--persistent-player-bg);
     --persistent-player-maximize-btn-bg-hover: var(--p-surface-200);
-    --persistent-player-z-index: var(--z-index-10);
+    --persistent-player-z-index: 1000;
 
     --persistent-player-live-indicator-bg: var(--p-text-color);
     --persistent-player-live-indicator-color: var(--p-surface-0);

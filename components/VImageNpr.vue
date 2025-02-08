@@ -395,7 +395,7 @@ const srcset = computed(() => {
       top: var(--v-image-button-padding);
       left: var(--v-image-button-padding);
       .enlarge-button {
-        background-color: rgba(var(--primary-color-rgb), 0.8);
+        background-color: rgba(var(--p-primary-500-rgb), 0.8);
         border-color: transparent;
       }
     }

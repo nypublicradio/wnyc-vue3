@@ -1,7 +1,5 @@
 @use 'sass:map';
-:root {
-    font-size: var(--font-size);
-}
+
 // use the font size scale reference helper in the README to set the font size
 $type-header1: (
     'default': (

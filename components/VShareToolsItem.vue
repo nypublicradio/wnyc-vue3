@@ -241,9 +241,9 @@ const share = () => {
   &:hover {
     cursor: pointer;
     svg > * {
-      fill: var(--primary-color) !important;
+      fill: var(--p-primary-500) !important;
     }
-    color: var(--primary-color) !important;
+    color: var(--p-primary-500) !important;
   }
 }
 .follow-link.phone svg {
@@ -252,7 +252,7 @@ const share = () => {
 .follow-link.site {
   width: auto;
   &:hover {
-    color: var(--primary-color);
+    color: var(--p-primary-500);
     text-decoration: underline;
   }
 }

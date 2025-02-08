@@ -90,7 +90,7 @@ const onClick = () => {
   width: 100%;
   min-height: 50px;
 
-  border: 1px solid var(--shade-400);
+  border: 1px solid var(--stroke-toggle-color);
   border-left: none;
   border-right: none;
   margin-top: -1px;
@@ -119,7 +119,7 @@ const onClick = () => {
   }
   .label {
     font-size: 1rem;
-    margin-right: 15px;
+    margin: 0 15px 0 0;
   }
   .description {
     font-size: 0.75rem;

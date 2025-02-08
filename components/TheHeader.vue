@@ -76,7 +76,7 @@ if (messageData.value?.product_banners?.length > 0) {
 .the-header {
   background: var(--header-background);
   backdrop-filter: blur(4px);
-  border-bottom: 1px solid var(--shade-400);
+  border: 1px solid var(--stroke-toggle-color);
   height: var(--header-height);
   display: flex;
   .pi-bars {
