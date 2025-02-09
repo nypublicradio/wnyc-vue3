@@ -82,8 +82,9 @@ const { isMobile } = useDevice()
       &.large-card:last-child {
         margin-right: 3rem;
       }
+      &.btn,
       .btn {
-        margin-left: 1.25rem;
+        margin-left: 1.5rem;
       }
     }
   }

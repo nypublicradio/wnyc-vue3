@@ -143,48 +143,54 @@ const togglePlayHere = (item) => {
     <div class="wnyc-featured">
       <HorizontalScrollFeature :data="props.articles">
         <template #default>
-          <div class="item" v-for="(item, index) in props.articles" :key="item.label">
-            <CardLarge :item="item" :hide-date="true" class="large-card btn">
-              <template #play>
-                <PlayButton
-                  v-if="item.audio"
-                  :label="getMinutes(item.estimatedDuration, 1)"
-                  :data="item"
-                  @onClick="togglePlayHere(item)"
-                  class="z-2"
+          <!-- <div class="item" v-for="(item, index) in props.articles" :key="item.label"> -->
+          <CardLarge
+            v-for="(item, index) in props.articles"
+            :key="item.label"
+            :item="item"
+            :hide-date="true"
+            class="large-card item btn"
+          >
+            <template #play>
+              <PlayButton
+                v-if="item.audio"
+                :label="getMinutes(item.estimatedDuration, 1)"
+                :data="item"
+                @onClick="togglePlayHere(item)"
+                class="z-2"
+              />
+            </template>
+            <template #menu>
+              <div class="flex align-items-center">
+                <DownloadProgress
+                  v-if="progress[item.id] || isDownloaded[item.id]"
+                  class="mr-2"
+                  :isDownloaded="isDownloaded[item.id]"
+                  :progress="progress[item.id]"
                 />
-              </template>
-              <template #menu>
-                <div class="flex align-items-center">
-                  <DownloadProgress
-                    v-if="progress[item.id] || isDownloaded[item.id]"
-                    class="mr-2"
-                    :isDownloaded="isDownloaded[item.id]"
-                    :progress="progress[item.id]"
-                  />
-                  <BarsPlaying :data="item" />
-                  <DotMenu
-                    v-if="item.audio"
-                    :menuItems="getDotMenuItems(item)"
-                    label="Options"
-                    @changeEmit="onMenuChange"
-                    class="-mr-1 z-2"
-                  >
-                    <template #end v-if="item.embedCode">
-                      <div class="p-0">
-                        <Textarea
-                          disabled
-                          class="w-full text-xs mt-2"
-                          v-model="item.embedCode"
-                          rows="9"
-                        />
-                      </div>
-                    </template>
-                  </DotMenu>
-                </div>
-              </template>
-            </CardLarge>
-          </div>
+                <BarsPlaying :data="item" />
+                <DotMenu
+                  v-if="item.audio"
+                  :menuItems="getDotMenuItems(item)"
+                  label="Options"
+                  @changeEmit="onMenuChange"
+                  class="-mr-1 z-2"
+                >
+                  <template #end v-if="item.embedCode">
+                    <div class="p-0">
+                      <Textarea
+                        disabled
+                        class="w-full text-xs mt-2"
+                        v-model="item.embedCode"
+                        rows="9"
+                      />
+                    </div>
+                  </template>
+                </DotMenu>
+              </div>
+            </template>
+          </CardLarge>
+          <!-- </div> -->
         </template>
         <template #skeleton>
           <div class="flex w-full">

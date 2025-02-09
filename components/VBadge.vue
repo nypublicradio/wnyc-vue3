@@ -7,11 +7,11 @@ const props = defineProps({
   },
   bgColor: {
     type: String,
-    default: 'var(--p-yellow-500)',
+    default: "var(--p-yellow-500)",
   },
   color: {
     type: String,
-    default: 'var(--p-surface-950)',
+    default: "var(--p-surface-950)",
   },
 })
 </script>
@@ -26,16 +26,16 @@ const props = defineProps({
 .badge {
   text-transform: uppercase;
   font-family: var(--font-family);
-  font-size: 10px;
   display: flex;
   .content {
+    font-size: var(--font-size-2);
     padding: 1px 6px;
     border-radius: 2px;
     color: v-bind(color);
     background-color: v-bind(bgColor);
     width: auto;
     font-weight: var(--font-weight-600);
-    letter-spacing: -2%;
+    letter-spacing: 0.5px;
   }
 }
 </style>

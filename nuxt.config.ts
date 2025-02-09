@@ -101,6 +101,7 @@ export default defineNuxtConfig({
     "~/assets/scss/fonts/fonts.css",
     "~/assets/scss/primeflex.min.css",
     "primeicons/primeicons.css",
+    "~/assets/scss/_main.scss",
   ],
 
   //serverMiddleware: ['~/search/algolia-index'],

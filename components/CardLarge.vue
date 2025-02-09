@@ -60,7 +60,6 @@ const props = defineProps({
   overflow: hidden;
   max-width: 248px;
   min-width: 248px;
-  height: 400px;
   background-color: var(--p-surface-25);
   position: relative;
   .bottom {

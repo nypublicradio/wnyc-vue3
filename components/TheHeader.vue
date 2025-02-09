@@ -52,7 +52,7 @@ if (messageData.value?.product_banners?.length > 0) {
 
           <Button
             icon="pi pi-bars"
-            class="p-button-text"
+            class="p-button-text no-hover"
             severity="secondary"
             aria-label="settings menu"
             @click="

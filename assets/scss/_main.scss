@@ -1,0 +1,228 @@
+@import './accessibility';
+@import './transitions';
+@import './cssvars';
+@import './v-cssvars/_cssvars';
+figure {
+  margin: 0;
+}
+
+// hide outline when using a mouse but not when using a keyboard
+// https://github.com/WICG/focus-visible
+// .js-focus-visible :focus:not(.focus-visible) {
+//   outline: none;
+// }
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: #ffffff;
+  color: var(--p-text-color);
+  font-size: inherit;
+  padding: 0;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: lining-nums;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--background);
+  transform: none;
+  height: 100% !important;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  max-height: unset !important;
+  position: relative !important;
+  margin: auto;
+
+  &.show-header {
+    main {
+      padding-top: $headerHeight;
+    }
+  }
+  &.hide-bottom-menu {
+    .bottom-menu {
+      display: none;
+    }
+    main {
+      padding-bottom: 0px; // account for the sticky bottom menu
+    }
+  }
+  &.background-gradient {
+    background: $backgroundBlueGradient1;
+    transform: none;
+    height: 100% !important;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    max-height: unset !important;
+    position: relative !important;
+  }
+  &.solid-bg {
+    background: var(--solid-dark-bg-color);
+  }
+  main {
+    transition: padding-top var(--p-transition-duration) ease;
+    padding-bottom: calc(
+      $bottomMenuHeight + $playerHeight + env(safe-area-inset-bottom) + 20px
+    ); // account for the sticky bottom menu
+  }
+  &.no-bottom-padding {
+    main {
+      padding-bottom: 0px !important;
+    }
+  }
+}
+body.overlay-is-active {
+  overflow: hidden;
+}
+
+a {
+  -webkit-touch-callout: none; /* disable the iOS long press action */
+  -webkit-user-select: none; /* disable text selection */
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+.no-hyphens {
+  hyphens: none;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+}
+.col-fixed {
+  &.ad300 {
+    max-width: 316px;
+    width: 100%;
+  }
+}
+
+.font-meta {
+  font-family: var(--font-family-header);
+}
+
+.font-tisa {
+  font-family: var(--font-family-tisa);
+}
+
+label {
+  color: var(--p-text-color);
+}
+
+// match the prime vue Divider styles
+hr {
+  border: none;
+  height: 1px;
+  background: var(--p-surface-50);
+  &.dim {
+    opacity: 0.25;
+  }
+}
+
+.top-safe-cover {
+  height: env(safe-area-inset-top);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: var(--header-background);
+  width: 100vw;
+}
+
+section {
+  @include content-formatting();
+}
+
+.html-formatting {
+  @include html-formatting();
+}
+
+.p-error {
+  font-family: var(--font-family-header);
+  font-weight: var(--font-weight-500);
+}
+
+//remove sticky hover on mobile
+.p-button.no-hover:hover {
+  background: transparent !important;
+}
+//remove sticky hover on mobile
+.no-active:active {
+  background: transparent !important;
+}
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+// extensions
+
+/* Customizations to the theme for components that CAN"T be done with the tokens should be defined here */
+.tabs {
+  .p-tablist-tab-list {
+    gap: 1.5rem;
+    .p-tab {
+      font-family: var(--font-family);
+      font-size: var(--font-size-5);
+      line-height: normal;
+    }
+  }
+}
+
+.p-password {
+  .p-inputtext {
+    width: 100%;
+  }
+}
+
+.p-toast {
+  width: 90%;
+  max-width: 390px;
+  top: calc(20px + env(safe-area-inset-top)) !important;
+  .p-toast-message {
+    .p-toast-message-content {
+      .p-toast-message-icon {
+        margin-top: 2px;
+      }
+      .p-toast-message-text {
+        .p-toast-detail {
+          display: none;
+        }
+      }
+      .p-toast-close-button {
+        margin: 0;
+        right: 0;
+      }
+    }
+  }
+}
+
+form {
+  label {
+    font-family: var(--font-family-header);
+    font-size: var(--font-size-5);
+    line-height: var(--font-size-5);
+  }
+}
+
+html:not(.style-mode-dark) {
+  .p-inputtext {
+    // so when input text fields are on a white background, the background color is slightly grey to contrast off the white
+    &.on-white {
+      background-color: var(--p-surface-25);
+    }
+  }
+}

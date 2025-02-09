@@ -38,20 +38,3 @@ const props = defineProps({
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.latest-news-updates {
-  .card-small {
-    background-color: var(--p-surface-25);
-    padding: 10px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    cursor: pointer;
-    .news-title {
-      font-size: 0.813rem;
-    }
-  }
-}
-</style>

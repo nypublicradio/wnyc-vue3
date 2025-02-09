@@ -186,6 +186,11 @@ const sleepTimerSideBar = useSleepTimerSideBar()
   .p-drawer-header {
     padding: 0.75rem 0.75rem 0.75rem 1.25rem;
     justify-content: space-between;
+    .p-button {
+      &:hover {
+        background: transparent;
+      }
+    }
   }
   .p-drawer-content {
     padding: 0;

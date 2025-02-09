@@ -442,10 +442,6 @@ html.style-mode-dark .persistent-player {
     margin-right: 6px;
   }
 
-  .track-info .track-info-details .track-info-title .title div {
-    font-family: var(--font-family-header);
-    line-height: 18px;
-  }
   // because the desc is v-html and injecting a <p> tag that is overwriting the description styles
   .track-info-description * {
     text-decoration: none;

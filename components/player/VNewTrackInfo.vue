@@ -1,5 +1,4 @@
 <script setup>
-
 import { computed } from "vue"
 
 const props = defineProps({
@@ -178,7 +177,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         font-weight: var(--persistent-player-title-weight);
         font-size: var(--persistent-player-title-size);
         color: var(--persistent-player-title-color);
-        line-height: 1;
+        line-height: var(--persistent-player-title-height);
+        font-family: var(--persistent-player-title-font-family);
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -190,10 +190,13 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       display: block;
       font-weight: var(--persistent-player-desc-weight);
       font-size: var(--persistent-player-desc-size);
+      line-height: var(--persistent-player-desc-height);
       color: var(--persistent-player-desc-color);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-decoration: none;
+      pointer-events: none;
       * {
         font-weight: var(--persistent-player-desc-weight);
         font-size: var(--persistent-player-desc-size);

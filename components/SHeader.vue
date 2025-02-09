@@ -14,7 +14,7 @@ const emit = defineEmits(["close-sidebar"])
     <div class="flex justify-content-between align-items-center">
       <div class="flex align-items-center">
         <Button
-          class="-ml-3"
+          class="-ml-3 no-hover"
           icon="pi pi-chevron-left"
           rounded
           text
