@@ -165,7 +165,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       .track-info-livestream-station {
         font-family: var(--font-family);
         font-size: 10px;
-        font-weight: 400;
+        font-weight: var(--font-weight-400);
       }
     }
     .track-info-title {

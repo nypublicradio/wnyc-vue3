@@ -487,7 +487,7 @@ html.style-mode-dark .persistent-player {
         font-size: 18px;
         font-family: var(--font-family-header);
         line-height: 26.78px;
-        font-weight: 600;
+        font-weight: var(--font-weight-600);
       }
       .expanded-footer {
         background-color: var(--persistent-player-header-footer-bg);

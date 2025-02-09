@@ -377,7 +377,7 @@ defineExpose({
           padding: 0.75rem 0.75rem 0.75rem 1.5rem;
           color: var(--p-surface-0);
           font-size: 1rem;
-          font-weight: 600;
+          font-weight: var(--font-weight-600);
           &:hover {
             background: var(--menu-item-hover);
           }

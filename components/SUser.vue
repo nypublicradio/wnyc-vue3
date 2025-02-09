@@ -178,7 +178,7 @@ const avatarUrl = computed(() => {
       border-radius: 10px;
       left: -3px;
       bottom: -3px;
-      font-weight: 900;
+      font-weight: var(--font-weight-900);
       color: var(--p-surface-0) !important;
       pointer-events: none;
     }

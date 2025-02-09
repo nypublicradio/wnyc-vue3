@@ -1114,7 +1114,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     color: #f5f5f5;
     font-family: sans-serif;
     font-size: 9px;
-    font-weight: 900;
+    font-weight: var(--font-weight-900);
     letter-spacing: 1.5px;
     padding: 0px 4px;
     transition: color 0.3s ease;

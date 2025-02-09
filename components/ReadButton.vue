@@ -59,7 +59,7 @@ const emit = defineEmits(["on-click"])
   }
   .content {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: var(--font-weight-700);
     line-height: normal;
     align-items: center;
     * {

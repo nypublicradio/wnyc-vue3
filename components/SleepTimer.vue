@@ -227,7 +227,7 @@ watch(
 .footer {
   .custom-time {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-600);
   }
 }
 .sleep-timer {

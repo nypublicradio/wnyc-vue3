@@ -35,8 +35,8 @@ const props = defineProps({
   font-size: v-bind(fontSize);
   color: var(--p-surface-950);
   line-height: normal;
-  font-weight: 600;
+  font-weight: var(--font-weight-600);
   letter-spacing: 1px;
-  font-family: "ff-meta-web-pro";
+  font-family: var(--font-family-header);
 }
 </style>
