@@ -73,7 +73,7 @@ const toggleCaption = () => {
     overflow-y: auto;
     display: block;
     max-height: 100%;
-    font-size: 0.8725rem;
+    font-size: var(--font-size-5);
   }
 }
 </style>

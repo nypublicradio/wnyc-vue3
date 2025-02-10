@@ -704,47 +704,57 @@ const MyPreset = definePreset(Aura, {
         borderWidth: "0px",
       },
       icon: {
-        size: "1.25rem",
+        size: "1.75rem",
       },
       colorScheme: {
         light: {
           info: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{blue.300}',
           },
           success: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{green.300}',
           },
           warn: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{yellow.300}',
           },
           error: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{red.300}',
           },
           secondary: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{surface.300}',
           },
           contrast: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
           },
         },
         dark: {
           info: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{blue.300}',
           },
           success: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{green.300}',
           },
           warn: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{yellow.300}',
           },
           error: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{red.300}',
           },
           secondary: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{surface.300}',
           },
           contrast: {
-            background: "color-mix(in srgb, {surface.700}, transparent 10%)",
+            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
           },
         },
       },

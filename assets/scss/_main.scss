@@ -195,9 +195,10 @@ section {
   .p-toast-message {
     .p-toast-message-content {
       .p-toast-message-icon {
-        margin-top: 2px;
+        //margin-top: 2px;
       }
       .p-toast-message-text {
+        padding-top: 3px;
         .p-toast-detail {
           display: none;
         }

@@ -32,13 +32,13 @@
   a {
     -webkit-touch-callout: none; /* disable the iOS long press action */
     -webkit-user-select: none; /* disable text selection */
-    color: var(--p-link-500);
+    color: var(--link-button-color);
     &:hover,
     &:active {
-      color: var(--p-link-500);
+      color: var(--link-button-color);
     }
     &:visited {
-      color: var(--p-link-500);
+      color: var(--link-button-color);
     }
   }
   p,
