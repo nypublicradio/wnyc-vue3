@@ -391,7 +391,7 @@ const MyPreset = definePreset(Aura, {
       borderRadius: "{border.radius.md}",
     },
     mask: {
-      transitionDuration: "0.15s",
+      transitionDuration: "{transition.duration}",
     },
     navigation: {
       list: {
@@ -460,7 +460,7 @@ const MyPreset = definePreset(Aura, {
           focusColor: "{primary.800}",
         },
         mask: {
-          background: "rgba(0,0,0,0.8)",
+          background: "rgba(0,0,0,0.6)",
           color: "{surface.200}",
         },
         formField: {
@@ -586,7 +586,7 @@ const MyPreset = definePreset(Aura, {
           focusColor: "rgba(255,255,255,.87)",
         },
         mask: {
-          background: "rgba(11,14,25,0.9)",
+          background: "rgba(11,14,25,0.7)",
           color: "{surface.200}",
         },
         formField: {
