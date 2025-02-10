@@ -92,3 +92,22 @@ export const initLocalNotifications = async () => {
         }
     )
 }
+
+
+export const cancelAllPendingNotifications = async () => {
+    try {
+        const pending = await LocalNotifications.getPending();
+        if (pending.notifications.length > 0) {
+            const globalToast = useGlobalToast()
+            await LocalNotifications.cancel({ notifications: pending.notifications });
+            globalToast.value = {
+                severity: "warn",
+                summary: "Notifications are off. All scheduled show notifications have been cancelled",
+                life: 6000,
+                closable: true,
+            }
+        }
+    } catch (error) {
+        console.error('Error cancelling notifications:', error);
+    }
+};

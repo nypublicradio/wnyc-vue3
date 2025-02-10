@@ -10,6 +10,7 @@ import {
   getPathAndQuery,
   toSystemSettings,
 } from "~/utilities/helpers"
+import { cancelAllPendingNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
 
@@ -189,6 +190,9 @@ export default function useOneSignal() {
     if (accepted === undefined) {
       accepted = await checkPermissions()
     }
+
+    // if the user denies the permission, then cancel all pending notifications if any exist
+    if (!accepted) cancelAllPendingNotifications()
     // set profile to receive_general_notifications based on accepted
     currentUserProfile.value.receive_general_notifications = accepted
   }
