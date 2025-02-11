@@ -225,9 +225,6 @@ watch(globalError, (error) => {
     </Head>
   </Html>
   <NuxtLayout>
-    <VFlexibleLink to="/live">Live route</VFlexibleLink> -
-    <VFlexibleLink to="https://google.com">google</VFlexibleLink> -
-    <VFlexibleLink to="#anchor">anchor</VFlexibleLink>
     <NuxtPage />
   </NuxtLayout>
   <div id="anchor"></div>
