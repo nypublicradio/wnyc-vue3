@@ -34,7 +34,7 @@ import {
   FALLBACKUSERDARK,
   NPRIMAGEDOMAINSOURCES,
 } from "~/composables/globals"
-import { updateAllLiveStreams, updateLiveStream } from "~/composables/data/liveStream"
+import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"

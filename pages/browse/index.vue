@@ -40,7 +40,6 @@ const selectTopic = (topic) => {
 
 // handle the active tab for the featured and all shows to set url query
 const handleActiveTab = (e) => {
-  console.log("tab change", e)
   router.push({ query: { tab: e } })
   activeTab.value = e
 }

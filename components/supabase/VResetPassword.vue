@@ -1,7 +1,7 @@
 <script setup>
 import VFlexibleLink from '../VFlexibleLink.vue'
 import { useVuelidate } from '@vuelidate/core'
-import { email, helpers, minLength, required } from '@vuelidate/validators'
+import { helpers, minLength, required } from '@vuelidate/validators'
 import { useCurrentUser } from '~/composables/states'
 import InputText from 'primevue/inputtext'
 

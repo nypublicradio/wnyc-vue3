@@ -1,5 +1,4 @@
 <script setup>
-import { Browser } from "@capacitor/browser"
 import Button from "primevue/button"
 import Message from "primevue/message"
 import { ref } from "vue"

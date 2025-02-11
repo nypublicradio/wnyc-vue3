@@ -175,6 +175,7 @@ function handleSwipe() {
     reopenPanel()
   }
 }
+// handles the menu item click
 const onMenuUpdate = async (event) => {
   vModel.value = event.id
   event.command && event.command()
@@ -182,10 +183,11 @@ const onMenuUpdate = async (event) => {
   await nextTick()
   emit("change", event)
 }
-
+//toggles the dropdown
 const toggleDrawer = () => {
   visibleBottom.value = props.startOpen ? true : !visibleBottom.value
 }
+// toggles the dropdown on click wrapper
 const toggleDrawerClick = () => {
   if (props.blockClick) return
   toggleDrawer()

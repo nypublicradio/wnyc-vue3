@@ -71,8 +71,6 @@ const handleDragging = (value) => {
 const handleDragEnd = (data) => {
   emit("scrub-timeline-end", data.value)
   isDragging.value = false
-  console.log("progress.value =", progress.value)
-  console.log("data =", data)
   progress.value = data.value
 }
 // handles click on the timeline

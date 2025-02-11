@@ -204,7 +204,7 @@ const enlargeLoad = (target) => {
 const handleProvider = computed(() => {
   return isNaN(props.src) ? null : props.provider
 })
-
+// a function that returns the dimensions of the image
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
   const vRatio = Number(props.ratio[1])

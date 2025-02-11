@@ -262,7 +262,7 @@ const cssImageMinWidth = ref(
 )
 
 const cssRadius = ref(props.radius)
-const cssImageRatio = ref(`${props.imageRatio[0]} / ${props.imageRatio[1]}`)
+//const cssImageRatio = ref(`${props.imageRatio[0]} / ${props.imageRatio[1]}`)
 const cssContainerType = ref(props.justImage ? "unset" : "inline-size")
 </script>
 

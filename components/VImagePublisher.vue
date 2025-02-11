@@ -167,7 +167,7 @@ const srcRaw = formatRawPublisherImageUrl(props.src)
 
 const isVertical = ref(false)
 const loadingEnlargedImage = ref(false)
-
+// a function that returns the dimensions of the image
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
   const vRatio = Number(props.ratio[1])
@@ -193,12 +193,13 @@ const getDimensions = () => {
   }
 }
 
-const computedWidth = () => {
-  return isVertical.value
-    ? Math.round(props.maxWidth / (props.maxHeight / props.height))
-    : props.width
-}
+// const computedWidth = () => {
+//   return isVertical.value
+//     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
+//     : props.width
+// }
 
+// a function that formats the url template
 const computedSrc = () => {
   const template = srcFormatted
 
@@ -209,7 +210,7 @@ const computedSrc = () => {
         .replace(props.qualityToken, props.quality)
     : undefined
 }
-
+// a function that formats the url template for the blurred background image with low quality
 const computedSrcBg = () => {
   const template = srcFormatted
   return template
@@ -280,7 +281,7 @@ const closeEnlarge = () => {
 onMounted(async () => {
   await nextTick()
   thisWidth.value =
-    refThisImg.value.offsetWidth != 0
+    refThisImg.value.offsetWidth !== 0
       ? refThisImg.value.offsetWidth
       : typeof window === "undefined"
       ? props.defaultWidth

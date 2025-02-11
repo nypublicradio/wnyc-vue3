@@ -1,21 +1,21 @@
 <script setup>
 //import AudioIcon from '../assets/icons/AudioIcon.vue'
-import EmailIcon from '../assets/icons/EmailIcon.vue'
-import FacebookIcon from '../assets/icons/FacebookIcon.vue'
-import InstagramIcon from '../assets/icons/InstagramIcon.vue'
+import EmailIcon from "../assets/icons/EmailIcon.vue"
+import FacebookIcon from "../assets/icons/FacebookIcon.vue"
+import InstagramIcon from "../assets/icons/InstagramIcon.vue"
 //import NewsletterIcon from '../assets/icons/EmailIcon.vue'
-import LinkedinIcon from '../assets/icons/LinkedinIcon.vue'
-import PhoneIcon from '../assets/icons/PhoneIcon.vue'
-import RedditIcon from '../assets/icons/RedditIcon.vue'
-import SiteIcon from '../assets/icons/SiteIcon.vue'
-import SpotifyIcon from '../assets/icons/SpotifyIcon.vue'
-import TwitterIcon from '../assets/icons/TwitterIcon.vue'
-import YoutubeIcon from '../assets/icons/YoutubeIcon.vue'
-import { computed } from 'vue'
+import LinkedinIcon from "../assets/icons/LinkedinIcon.vue"
+import PhoneIcon from "../assets/icons/PhoneIcon.vue"
+import RedditIcon from "../assets/icons/RedditIcon.vue"
+import SiteIcon from "../assets/icons/SiteIcon.vue"
+import SpotifyIcon from "../assets/icons/SpotifyIcon.vue"
+import TwitterIcon from "../assets/icons/TwitterIcon.vue"
+import YoutubeIcon from "../assets/icons/YoutubeIcon.vue"
+import { computed } from "vue"
 
 const props = defineProps({
   action: {
-    default: 'follow',
+    default: "follow",
     type: String,
   },
   label: {
@@ -27,7 +27,7 @@ const props = defineProps({
     type: String,
   },
   service: {
-    default: 'site',
+    default: "site",
     type: String,
   },
   shareParameters: {
@@ -48,7 +48,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['share', 'follow'])
+const emit = defineEmits(["share", "follow"])
 
 const icons = {
   email: EmailIcon,
@@ -68,47 +68,47 @@ const URL_PLACEHOLDER_PATTERN = /%URL%/g
 const SOCIAL_SERVICE_MAP = {
   email: {
     omitUrl: true,
-    profileBase: 'mailto:',
-    shareBase: 'mailto:',
+    profileBase: "mailto:",
+    shareBase: "mailto:",
   },
   facebook: {
-    profileBase: 'https://www.facebook.com/',
-    shareBase: 'https://www.facebook.com/sharer.php',
-    urlKey: 'u',
+    profileBase: "https://www.facebook.com/",
+    shareBase: "https://www.facebook.com/sharer.php",
+    urlKey: "u",
   },
   instagram: {
-    profileBase: 'https://www.instagram.com/',
+    profileBase: "https://www.instagram.com/",
   },
   linkedin: {
-    profileBase: 'https://www.linkedin.com/in/',
-    shareBase: 'https://www.linkedin.com/sharing/share-offsite/',
+    profileBase: "https://www.linkedin.com/in/",
+    shareBase: "https://www.linkedin.com/sharing/share-offsite/",
   },
   phone: {
     omitUrl: true,
-    profileBase: 'tel:',
-    shareBase: 'tel:',
+    profileBase: "tel:",
+    shareBase: "tel:",
   },
   reddit: {
-    profileBase: 'https://www.reddit.com/r/',
-    shareBase: 'https://www.reddit.com/submit',
+    profileBase: "https://www.reddit.com/r/",
+    shareBase: "https://www.reddit.com/submit",
   },
   spotify: {
-    profileBase: 'https://open.spotify.com/playlist/',
+    profileBase: "https://open.spotify.com/playlist/",
   },
   twitter: {
-    profileBase: 'https://twitter.com/',
-    shareBase: 'https://twitter.com/intent/tweet',
+    profileBase: "https://twitter.com/",
+    shareBase: "https://twitter.com/intent/tweet",
   },
   youtube: {
-    profileBase: 'https://www.youtube.com/channel/',
+    profileBase: "https://www.youtube.com/channel/",
   },
 }
 
 const socialLink = computed(() => {
-  return SOCIAL_SERVICE_MAP[props.service]?.profileBase + props.username ?? ''
+  return SOCIAL_SERVICE_MAP[props.service]?.profileBase + props.username ?? ""
 })
 const shareBase = computed(() => {
-  return SOCIAL_SERVICE_MAP[props.service]?.shareBase ?? ''
+  return SOCIAL_SERVICE_MAP[props.service]?.shareBase ?? ""
 })
 const shareUrl = computed(() => {
   const utmParams = Object.entries(props.utmParameters).map(([key, value]) => {
@@ -116,46 +116,42 @@ const shareUrl = computed(() => {
   })
   let url = props.url
   if (utmParams.length > 0) {
-    url = `${url}?${utmParams.join('&')}`
+    url = `${url}?${utmParams.join("&")}`
   }
 
-  const shareParams = Object.entries(props.shareParameters).map(
-    ([key, value]) => {
-      return `${key}=${encodeURIComponent(
-        value.replace(URL_PLACEHOLDER_PATTERN, url)
-      )}`
-    }
-  )
+  const shareParams = Object.entries(props.shareParameters).map(([key, value]) => {
+    return `${key}=${encodeURIComponent(value.replace(URL_PLACEHOLDER_PATTERN, url))}`
+  })
 
   let params = shareParams
 
   const shouldOmitUrl = SOCIAL_SERVICE_MAP[props.service]?.omitUrl
   if (!shouldOmitUrl) {
-    const urlKey = SOCIAL_SERVICE_MAP[props.service]?.urlKey ?? 'url'
+    const urlKey = SOCIAL_SERVICE_MAP[props.service]?.urlKey ?? "url"
     const urlParam = `${urlKey}=${encodeURIComponent(url)}`
     params = [urlParam, ...params]
   }
 
-  return `${shareBase.value}?${params.join('&')}`
+  return `${shareBase.value}?${params.join("&")}`
 })
 const ariaLabel = computed(() => {
   if (props.label) {
     return props.label
-  } else if (props.action === 'follow') {
+  } else if (props.action === "follow") {
     return `Follow us on ${props.service}`
-  } else if (props.action === 'share') {
+  } else if (props.action === "share") {
     return `Share on ${props.service}`
   }
-  return ''
+  return ""
 })
 // handles the share feature
 const share = () => {
   if (!props.service) {
     return
   }
-  emit('share', props.service)
-  if (props.service === 'email') {
-    window.open(`${shareUrl.value}`, '_self')
+  emit("share", props.service)
+  if (props.service === "email") {
+    window.open(`${shareUrl.value}`, "_self")
     return
   }
 
@@ -179,16 +175,12 @@ const share = () => {
   const popupPosition = getPopupPosition()
   const newWindow = window.open(
     shareUrl.value,
-    'share window',
+    "share window",
     windowString(popupPosition)
   )
 
   // make sure it actually opened and bring it to the front
-  if (
-    typeof newWindow !== 'undefined' &&
-    newWindow !== null &&
-    newWindow.focus
-  ) {
+  if (typeof newWindow !== "undefined" && newWindow !== null && newWindow.focus) {
     newWindow.focus()
   }
 }

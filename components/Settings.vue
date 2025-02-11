@@ -49,9 +49,9 @@ const isDisabled = computed(() => {
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
 // main function to update the toast component
-const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
+const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
   globalToast.value = {
-    severity: mySverity,
+    severity: mySeverity,
     summary: myMessage,
     life: 3000,
   }
@@ -170,7 +170,7 @@ const editField = (field) => {
     )
   }
 }
-
+// handles the dropdown menu click event
 const clickThisMenu = (ref) => {
   ref.toggleDrawer()
 }

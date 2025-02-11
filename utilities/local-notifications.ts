@@ -93,7 +93,7 @@ export const initLocalNotifications = async () => {
     )
 }
 
-
+// cancel all pending notifications if they exist and alert the user
 export const cancelAllPendingNotifications = async () => {
     try {
         const pending = await LocalNotifications.getPending();

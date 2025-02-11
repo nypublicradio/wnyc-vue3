@@ -77,7 +77,8 @@ const errorMessage = shallowRef()
 const successMessage = shallowRef()
 const imageUrl = shallowRef(props.image)
 
-const resizeImage = async (file, maxWidth, maxHeight) => {
+// resize the image to a max of 600x600
+const resizeImage = (file, maxWidth, maxHeight) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (event) => {
@@ -192,9 +193,10 @@ const uploadLabel = computed(() => {
 })
 
 const fileUpload = ref(null)
+// trigger the file upload dialog
 function triggerFileUpload() {
-  let fileInput = fileUpload.value.$el.querySelector('input[type="file"]')
-  let clickEvent = new MouseEvent("click", {
+  const fileInput = fileUpload.value.$el.querySelector('input[type="file"]')
+  const clickEvent = new MouseEvent("click", {
     bubbles: true,
     cancelable: true,
     view: window,

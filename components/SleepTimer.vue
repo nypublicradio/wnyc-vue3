@@ -57,7 +57,7 @@ const buildSleepTimerDataFromId = (id) => {
 
 // start the timer
 const handleStartTimer = async (data) => {
-  let obj
+  let obj = null
   // data is already an object
   if (typeof data === "object") {
     obj = data
