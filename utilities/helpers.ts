@@ -585,7 +585,7 @@ export const getAndSetUserProfile = async () => {
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
-    const { data, error }: { data: any, error: any } = await client
+    const { data, error } = await client
       .from("profiles")
       .select("*")
       .eq("id", currentUser.value.id)
