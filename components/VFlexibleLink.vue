@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue"
 
 const props = defineProps({
   /**
@@ -13,14 +13,14 @@ const props = defineProps({
    * raw hover style
    */
   rawHover: {
-    default: 'none',
+    default: "none",
     type: String,
   },
   /**
    * link target value
    */
   target: {
-    default: '_blank',
+    default: "_blank",
     type: String,
   },
   /**
@@ -32,24 +32,23 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['flexible-link-click'])
+const emit = defineEmits(["flexible-link-click"])
 
 const isExternal = computed(() => {
   const reg = /^https?:\/\/|mailto:|tel:/i
-  return typeof props.to === 'string' && reg.test(props.to)
+  return typeof props.to === "string" && reg.test(props.to)
 })
 const isAnchor = computed(() => {
-  return props.to.charAt(0) === '#'
+  return props.to.charAt(0) === "#"
 })
 </script>
 
 <template>
-  <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
+  <div v-if="!to" class="flexible-link null">
     <slot name="default"></slot>
   </div>
   <a
     v-else-if="isExternal"
-    v-bind="{ ...$props, ...$attrs }"
     :href="to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
@@ -61,7 +60,6 @@ const isAnchor = computed(() => {
   </a>
   <a
     v-else-if="isAnchor"
-    v-bind="{ ...$props, ...$attrs }"
     :href="to"
     target="_self"
     class="flexible-link anchor"
@@ -75,7 +73,6 @@ const isAnchor = computed(() => {
     class="flexible-link internal"
     :class="{ ['raw']: raw }"
     :to="to"
-    v-bind="{ ...$attrs }"
     @click="emit('flexible-link-click', to)"
   >
     <slot name="default"></slot>

@@ -16,6 +16,7 @@ import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
+import { VFlexibleLink } from "#components"
 
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
@@ -224,8 +225,12 @@ watch(globalError, (error) => {
     </Head>
   </Html>
   <NuxtLayout>
+    <VFlexibleLink to="/live">Live route</VFlexibleLink> -
+    <VFlexibleLink to="https://google.com">google</VFlexibleLink> -
+    <VFlexibleLink to="#anchor">anchor</VFlexibleLink>
     <NuxtPage />
   </NuxtLayout>
+  <div id="anchor"></div>
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />
