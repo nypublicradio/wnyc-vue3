@@ -358,7 +358,7 @@ const onDeleteAccountClick = () => {
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model:data.sync="currentUserProfile.dark_mode"
+          v-model:data="currentUserProfile.dark_mode"
           @change="
             () => {
               setDarkMode(currentUserProfile.dark_mode)

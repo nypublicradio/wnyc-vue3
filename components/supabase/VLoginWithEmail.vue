@@ -145,7 +145,6 @@ const submitForm = async () => {
       </template>
       <Button
         :label="props.label"
-        v-bind="{ ...$attrs }"
         class="w-full"
         :aria-label="`${props.label} button`"
         type="submit"

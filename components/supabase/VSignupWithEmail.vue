@@ -253,7 +253,6 @@ const submitForm = async () => {
           <slot name="aboveSubmit" />
           <Button
             :label="props.label"
-            v-bind="{ ...$attrs }"
             class="w-full mt-3"
             :aria-label="`${props.label} button`"
             type="submit"

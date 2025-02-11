@@ -1,10 +1,10 @@
 <script setup>
-import { useVuelidate } from '@vuelidate/core'
-import { email, helpers, required } from '@vuelidate/validators'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Message from 'primevue/message'
-import { computed, reactive, ref } from 'vue'
+import { useVuelidate } from "@vuelidate/core"
+import { email, helpers, required } from "@vuelidate/validators"
+import Button from "primevue/button"
+import InputText from "primevue/inputtext"
+import Message from "primevue/message"
+import { computed, reactive, ref } from "vue"
 const props = defineProps({
   client: {
     default: null,
@@ -16,21 +16,21 @@ const props = defineProps({
   },
   error: {
     default:
-      'Sorry, there was a problem creating your magic link. Please try again! Error message:',
+      "Sorry, there was a problem creating your magic link. Please try again! Error message:",
     type: String,
   },
   label: {
-    default: 'Send magic link',
+    default: "Send magic link",
     type: String,
   },
   success: {
     default:
-      'Success! If you created an account with that email address, you will get an email to with a magic link to login.<br>If you created your account with Google or Apple, please log in with those options.',
+      "Success! If you created an account with that email address, you will get an email to with a magic link to login.<br>If you created your account with Google or Apple, please log in with those options.",
     type: String,
   },
 })
 
-const emit = defineEmits(['submit-click', 'submit-error', 'submit-success'])
+const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
@@ -42,18 +42,18 @@ if (!props.client && !props.config) {
 }
 
 const formData = reactive({
-  email: '',
-  password: '',
+  email: "",
+  password: "",
 })
 
-const sbErrorMsg = ref('')
-const sbSuccessMsg = ref('')
+const sbErrorMsg = ref("")
+const sbSuccessMsg = ref("")
 
 const rules = computed(() => {
   return {
     email: {
-      email: helpers.withMessage('Invalid email format', email),
-      required: helpers.withMessage('The email field is required', required),
+      email: helpers.withMessage("Invalid email format", email),
+      required: helpers.withMessage("The email field is required", required),
     },
   }
 })
@@ -62,9 +62,9 @@ const v$ = useVuelidate(rules, formData)
 
 const submitForm = async () => {
   // clear the error & success message so the message re-animates on each submit
-  sbErrorMsg.value = ''
-  sbSuccessMsg.value = ''
-  emit('submit-click')
+  sbErrorMsg.value = ""
+  sbSuccessMsg.value = ""
+  emit("submit-click")
   v$.value.$validate()
   if (!v$.value.$error) {
     //success with Vuelidate
@@ -74,11 +74,11 @@ const submitForm = async () => {
     )
     if (!sbError.error) {
       //success with Supabase
-      emit('submit-success')
+      emit("submit-success")
       sbSuccessMsg.value = props.success
     } else {
       // error with Supabase
-      emit('submit-error', sbError?.error?.message)
+      emit("submit-error", sbError?.error?.message)
       sbErrorMsg.value = `${props.error} ${sbError?.error?.message}`
     }
   }
@@ -97,11 +97,7 @@ const submitForm = async () => {
         <span v-html="sbSuccessMsg"></span>
       </Message>
     </template>
-    <form
-      v-if="formData && !sbSuccessMsg"
-      novalidate
-      @submit.prevent="submitForm"
-    >
+    <form v-if="formData && !sbSuccessMsg" novalidate @submit.prevent="submitForm">
       <div class="mb-2">
         <InputText
           v-model="formData.email"
@@ -122,7 +118,6 @@ const submitForm = async () => {
       <Button
         class="w-full"
         :label="props.label"
-        v-bind="{ ...$attrs }"
         :aria-label="`${props.label} button`"
         type="submit"
       >
