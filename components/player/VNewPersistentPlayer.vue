@@ -546,6 +546,13 @@ defineExpose({
     class="persistent-player"
     :class="[{ minimized: isMinimized }, { expanded: isExpanded }]"
   >
+    <!-- <i
+      v-if="
+        (props.canExpandWithSwipe && !isExpanded) ||
+        (props.canUnexpandWithSwipe && isExpanded)
+      "
+      class="pi pi-minus drag-closer-line absolute"
+    /> -->
     <div v-if="props.canMinimize" class="maximize-btn-holder">
       <Button
         title="maximize Player"
@@ -826,7 +833,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     right: 0;
     left: 0;
     margin: auto;
-    top: calc(-40px - var(--persistent-player-height-buffer));
+    top: calc(-20px - var(--persistent-player-height-buffer));
     width: 40px;
     height: 40px;
     overflow: hidden;
@@ -845,7 +852,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       transition: top 0.1s;
       -webkit-transition: top 0.1s;
       color: var(--persistent-player-maximize-btn-color);
-
+      border: none;
       &.show {
         transition: top 0.5s;
         -webkit-transition: top 0.5s;

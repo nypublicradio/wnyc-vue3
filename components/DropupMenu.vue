@@ -231,7 +231,7 @@ defineExpose({
       <template #header>
         <div class="style-mode-dark w-full">
           <div class="px-4">
-            <i class="pi pi-minus closer-line" @click="closeMenu" />
+            <i class="pi pi-minus drag-closer-line" @click="closeMenu" />
             <h3 v-if="props.label" class="p-submenu-header-replace">
               {{ props.label }}
             </h3>
@@ -295,13 +295,6 @@ defineExpose({
   }
 }
 .dropup-panel {
-  .pi-minus.closer-line {
-    color: #ffffff;
-    font-size: 30px;
-    text-align: center;
-    width: 100%;
-    opacity: 30%;
-  }
   .p-submenu-header-replace {
     background: transparent;
     color: var(--p-text-color);
