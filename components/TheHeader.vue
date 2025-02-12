@@ -86,6 +86,9 @@ if (messageData.value?.product_banners?.length > 0) {
     font-family: var(--font-family-header);
     line-height: 1rem;
     font-size: 0.9rem;
+    @include media("<xs") {
+      display: none;
+    }
   }
 }
 </style>
