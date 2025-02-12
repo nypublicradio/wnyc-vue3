@@ -713,7 +713,7 @@ const MyPreset = definePreset(Aura, {
         light: {
           info: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{blue.300}',
+            color: '{blue.100}',
           },
           success: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
@@ -729,7 +729,7 @@ const MyPreset = definePreset(Aura, {
           },
           secondary: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{surface.300}',
+            color: '{surface.100}',
           },
           contrast: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
@@ -738,7 +738,7 @@ const MyPreset = definePreset(Aura, {
         dark: {
           info: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{blue.300}',
+            color: '{blue.100}',
           },
           success: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
@@ -754,7 +754,7 @@ const MyPreset = definePreset(Aura, {
           },
           secondary: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{surface.300}',
+            color: '{surface.100}',
           },
           contrast: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
