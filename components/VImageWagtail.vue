@@ -161,10 +161,6 @@ const emit = defineEmits([
   "enlarge-image-load",
 ])
 
-defineOptions({
-  inheritAttrs: false,
-})
-
 const isVertical = ref(props.allowVerticalEffect && props.maxHeight > props.maxWidth)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)

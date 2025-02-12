@@ -144,10 +144,6 @@ const props = defineProps({
 })
 const emit = defineEmits(["image-click", "keypress", "image-enlarge-click"])
 
-defineOptions({
-  inheritAttrs: false,
-})
-
 // method to format the url to get the publisher image
 const formatPublisherImageUrl = (url) => {
   return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")

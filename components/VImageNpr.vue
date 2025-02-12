@@ -152,10 +152,6 @@ const emit = defineEmits([
   "enlarge-image-load",
 ])
 
-defineOptions({
-  inheritAttrs: false,
-})
-
 const theSrc = computed(() => {
   return props.src
     .replace("{width}", props.width)
