@@ -44,11 +44,12 @@ const isAnchor = computed(() => {
 </script>
 
 <template>
-  <div v-if="!to" class="flexible-link null">
+  <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
     <slot name="default"></slot>
   </div>
   <a
     v-else-if="isExternal"
+    v-bind="{ ...$props, ...$attrs }"
     :href="to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
@@ -60,6 +61,7 @@ const isAnchor = computed(() => {
   </a>
   <a
     v-else-if="isAnchor"
+    v-bind="{ ...$props, ...$attrs }"
     :href="to"
     target="_self"
     class="flexible-link anchor"
@@ -73,6 +75,7 @@ const isAnchor = computed(() => {
     class="flexible-link internal"
     :class="{ ['raw']: raw }"
     :to="to"
+    v-bind="{ ...$attrs }"
     @click="emit('flexible-link-click', to)"
   >
     <slot name="default"></slot>

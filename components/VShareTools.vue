@@ -18,7 +18,11 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="v-share-tools group" :class="[{ vertical: props.vertical }]">
+  <div
+    class="v-share-tools group"
+    :class="[{ vertical: props.vertical }]"
+    v-bind="{ ...$attrs }"
+  >
     <p v-if="props.label" class="label">
       {{ props.label }}
     </p>

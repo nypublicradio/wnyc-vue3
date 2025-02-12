@@ -118,6 +118,7 @@ const submitForm = async () => {
       <Button
         class="w-full"
         :label="props.label"
+        v-bind="{ ...$attrs }"
         :aria-label="`${props.label} button`"
         type="submit"
       >

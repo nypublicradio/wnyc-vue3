@@ -113,7 +113,12 @@ const pending = ref(false)
           </small>
         </div>
 
-        <Button :loading="pending" type="submit" :aria-label="`${props.label} button`">
+        <Button
+          :loading="pending"
+          type="submit"
+          v-bind="{ ...$attrs }"
+          :aria-label="`${props.label} button`"
+        >
           {{ props.label }}
         </Button>
       </div>
