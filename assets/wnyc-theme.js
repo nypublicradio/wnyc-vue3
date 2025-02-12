@@ -1,4 +1,7 @@
 import Aura from "@primevue/themes/aura"
+// link to Aura tokens to reference
+//https://github.com/primefaces/primeuix/blob/main/packages/themes/src/presets/aura/
+
 import { definePreset } from "@primevue/themes"
 
 const MyPreset = definePreset(Aura, {
@@ -815,6 +818,7 @@ const MyPreset = definePreset(Aura, {
         activeColor: "{text.color}",
         borderColor: "transparent",
         hoverBorderColor: "transparent",
+        activeBorderColor: "transparent",
       },
       activeBar: {
         height: "2px",
