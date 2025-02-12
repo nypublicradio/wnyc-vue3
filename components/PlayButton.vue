@@ -107,7 +107,7 @@ watch(
             v-if="props.live"
             font-size="14px"
             bg-color="transparent"
-            padding="1px 8px 1px 3px"
+            padding="1px 3px 1px 3px"
           />
           <DownloadedSmallIcon v-if="props.isDownloaded" class="ml-2" />
         </div>

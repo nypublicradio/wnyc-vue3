@@ -70,7 +70,7 @@ const togglePlayHere = async () => {
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                 />
-                <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />
+                <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
               </div>
             </div>
             <div
