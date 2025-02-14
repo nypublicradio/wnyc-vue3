@@ -56,6 +56,7 @@
     /* global */
 
     color-scheme: light;
+    --p-ripple-background: #{$p-ripple-background-light};
     --background: var(--p-surface-0);
     --background2: var(--p-surface-0);
     --background3: var(--p-surface-50);
@@ -81,6 +82,7 @@
 [data-style-mode='dark'],
 .style-mode-dark {
     color-scheme: dark;
+    --p-ripple-background: #{$p-ripple-background-dark};
     --background: #{$backgroundBlueGradient1};
     --background2: var(--p-surface-25);
     --background3: #ffffff1a;

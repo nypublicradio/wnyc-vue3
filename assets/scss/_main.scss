@@ -249,3 +249,18 @@ html:not(.style-mode-dark) {
     }
   }
 }
+
+// removes the sticky hover effect on mobile touch devices
+@media (hover: none) and (pointer: coarse) {
+  .p-button-secondary:hover {
+    background-color: var(--p-surface-0);
+  }
+}
+// makes the white buttons user the light ripple effect so you can see it.
+.p-button-secondary .p-ink,
+.p-ripple-light .p-ink {
+  background: $p-ripple-background-light !important;
+}
+.p-ripple-dark .p-ink {
+  background: $p-ripple-background-dark !important;
+}
