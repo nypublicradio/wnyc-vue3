@@ -733,6 +733,7 @@ const MyPreset = definePreset(Aura, {
           },
           contrast: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{surface.0}',
           },
         },
         dark: {
@@ -758,6 +759,7 @@ const MyPreset = definePreset(Aura, {
           },
           contrast: {
             background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            color: '{surface.0}',
           },
         },
       },

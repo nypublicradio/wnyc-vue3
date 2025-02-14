@@ -160,6 +160,41 @@ watch(globalError, (error) => {
     })
   }
 })
+
+onMounted(() => {
+  setTimeout(() => {
+    toast.add({
+      severity: "error",
+      summary: "This is a test error message",
+      closable: true,
+    })
+    toast.add({
+      severity: "success",
+      summary: "This is a test success message",
+      closable: true,
+    })
+    toast.add({
+      severity: "info",
+      summary: "This is a test info message",
+      closable: true,
+    })
+    toast.add({
+      severity: "warn",
+      summary: "This is a test warning message",
+      closable: true,
+    })
+    toast.add({
+      severity: "secondary",
+      summary: "This is a test secondary message",
+      closable: true,
+    })
+    toast.add({
+      severity: "contrast",
+      summary: "This is a test contrast message",
+      closable: true,
+    })
+  }, 2000)
+})
 </script>
 
 <template>
