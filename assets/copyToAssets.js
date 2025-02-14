@@ -1,8 +1,11 @@
 const fs = require('fs')
 
-const images = ['logo.png', 'splash.png']
-images.forEach((image) => {
-    fs.copyFile(`./public/${image}`, `./assets/${image}`, (err) => {
-        if (err) throw err
-    })
+fs.copyFile(`./public/splash.png`, `./assets/splash.png`, (err) => {
+    if (err) throw err
+})
+require('dotenv').config()
+const env = process.env.ENV
+console.log('process.env.ENV', process.env.ENV)
+fs.copyFile(`./public/icon-only-${env}.png`, `./assets/icon-only.png`, (err) => {
+    if (err) throw err
 })

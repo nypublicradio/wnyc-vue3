@@ -185,7 +185,6 @@ jobs:
       - node/install:
           node-version: 18.18.2
       - node/install-packages
-      - logo_swap
       - run:
           name: Capacitor Setup
           command: |
@@ -240,7 +239,6 @@ jobs:
       - node/install-packages:
           cache-path: ~/.npm
           cache-version: v1-npm-cache-{{ arch }}-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - logo_swap
       - run:
           name: Capacitor Setup
           command: |
@@ -277,12 +275,6 @@ commands:
           name: Setup Google Service Files on iOS and Android
           command: |
             bash ./scripts/gservice_config.sh
-  logo_swap:
-    steps:
-      - run:
-          name: Swap logos
-          command: |
-            bash ./scripts/logo_swap.sh
     
 executors:
   default:
