@@ -183,6 +183,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
 .p-drawer {
   padding-top: env(safe-area-inset-top);
   background: var(--p-surface-25);
+  border: none;
   .p-drawer-header {
     padding: 0.75rem 0.75rem 0.75rem 1.25rem;
     justify-content: space-between;
