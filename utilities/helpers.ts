@@ -822,6 +822,7 @@ interface SavedItem {
   media_id: string
   slug: string
   reading_time: string
+  estimatedDuration: number
   title: string
   image: any
   producingOrganizations: any
@@ -894,6 +895,7 @@ export const saveFavorite = async (
     const slug = thisSlug
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
+    const estimatedDuration = media?.estimatedDuration
     const image = media?.image
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
@@ -908,6 +910,7 @@ export const saveFavorite = async (
       media_id,
       slug,
       reading_time,
+      estimatedDuration,
       image,
       title,
       authors,
@@ -1058,10 +1061,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
   const accountPromptSideBar = useAccountPromptSideBar();
   if (user.value) {
     const globalToast = useGlobalToast();
-
     const episode = {
       ...item,
       slug: item.meta?.slug ?? item.slug,
+      estimatedDuration: item.estimatedDuration || item.duration,
     };
     if (isFavorited) {
       await deleteFavorite(episode);
