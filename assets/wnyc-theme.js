@@ -707,58 +707,66 @@ const MyPreset = definePreset(Aura, {
         borderWidth: "0px",
       },
       icon: {
-        size: "1.75rem",
+        size: "1.15rem",
+      },
+      summary: {
+        fontWeight: "500",
+        fontSize: '0.875rem'
+      },
+      detail: {
+        fontWeight: "400",
+        fontSize: '0.75rem'
       },
       colorScheme: {
         light: {
           info: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{blue.100}',
+            background: "#333333",
+            color: '#ffffff',
           },
           success: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{green.300}',
+            background: "#333333",
+            color: '{green.500}',
           },
           warn: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{yellow.300}',
+            background: "#333333",
+            color: '{yellow.500}',
           },
           error: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{red.300}',
+            background: "#333333",
+            color: '#FD5757',
           },
           secondary: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{surface.100}',
+            background: "#333333",
+            color: '{link.100}',
           },
           contrast: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            background: "#333333",
             color: '{surface.0}',
           },
         },
         dark: {
           info: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{blue.100}',
+            background: "#333333",
+            color: '#ffffff',
           },
           success: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{green.300}',
+            background: "#333333",
+            color: '{green.500}',
           },
           warn: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{yellow.300}',
+            background: "#333333",
+            color: '{yellow.500}',
           },
           error: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{red.300}',
+            background: "#333333",
+            color: '#FD5757',
           },
           secondary: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
-            color: '{surface.100}',
+            background: "#333333",
+            color: '{link.100}',
           },
           contrast: {
-            background: "color-mix(in srgb, {surface.800}, transparent 0%)",
+            background: "#333333",
             color: '{surface.0}',
           },
         },

@@ -165,7 +165,8 @@ onMounted(() => {
   setTimeout(() => {
     toast.add({
       severity: "error",
-      summary: "This is a test error message",
+      summary:
+        "This is a test error message This is a test error message This is a test error messageThis is a test error message This is a test error message This is a test error message This is a test error message This is a test error message This is a test error message This is a test error message This is a test error message This is a test error message This is a test error message This is a test error message",
       closable: true,
     })
     toast.add({
@@ -181,16 +182,6 @@ onMounted(() => {
     toast.add({
       severity: "warn",
       summary: "This is a test warning message",
-      closable: true,
-    })
-    toast.add({
-      severity: "secondary",
-      summary: "This is a test secondary message",
-      closable: true,
-    })
-    toast.add({
-      severity: "contrast",
-      summary: "This is a test contrast message",
       closable: true,
     })
   }, 2000)
@@ -265,6 +256,6 @@ onMounted(() => {
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />
-  <Toast position="top-center" />
+  <Toast position="top-center" successIcon="ci-check" warn="ci-warn" />
   <!-- <PullToRefresh /> -->
 </template>
