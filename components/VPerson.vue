@@ -298,7 +298,7 @@ const cssContainerType = ref(props.justImage ? "unset" : "inline-size")
           <VFlexibleLink
             v-if="props.showName"
             class="name-link"
-            :class="props.onStaffPage ? 'no-hover' : ''"
+            :class="props.onStaffPage ? 'no-hover-link' : ''"
             :to="profileLink"
             @click="emit('name-click', profileLink)"
           >
@@ -409,7 +409,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
           &:hover {
             text-decoration: var(--person-name-hover-decoration);
           }
-          &.no-hover {
+          &.no-hover-link {
             text-decoration: none;
             pointer-events: none;
           }

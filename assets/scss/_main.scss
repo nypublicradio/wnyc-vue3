@@ -154,15 +154,6 @@ section {
   font-weight: var(--font-weight-500);
 }
 
-//remove sticky hover on mobile
-.p-button.no-hover:hover {
-  background: transparent !important;
-}
-//remove sticky hover on mobile
-.no-active:active {
-  background: transparent !important;
-}
-
 .drag-closer-line {
   color: #ffffff;
   font-size: 30px;
@@ -300,10 +291,19 @@ html:not(.style-mode-dark) {
   }
 }
 
+.p-button.no-hover-desktop:hover {
+  background: transparent !important;
+}
 // removes the sticky hover effect on mobile touch devices
 @media (hover: none) and (pointer: coarse) {
+  .p-button.no-hover:hover {
+    background: transparent !important;
+  }
+  .no-active:active {
+    background: transparent !important;
+  }
   .p-button-secondary:hover {
-    background-color: var(--p-surface-0);
+    background-color: transparent !important;
   }
 }
 // makes the white buttons user the light ripple effect so you can see it.
