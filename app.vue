@@ -256,6 +256,6 @@ onMounted(() => {
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />
-  <Toast position="top-center" successIcon="ci-check" warn="ci-warn" />
+  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
   <!-- <PullToRefresh /> -->
 </template>

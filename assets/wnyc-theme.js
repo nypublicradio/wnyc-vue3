@@ -711,11 +711,11 @@ const MyPreset = definePreset(Aura, {
       },
       summary: {
         fontWeight: "500",
-        fontSize: '0.875rem'
+        fontSize: '1rem'
       },
       detail: {
         fontWeight: "400",
-        fontSize: '0.75rem'
+        fontSize: '0.875rem'
       },
       colorScheme: {
         light: {
