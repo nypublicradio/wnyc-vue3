@@ -291,19 +291,21 @@ html:not(.style-mode-dark) {
   }
 }
 
-.p-button.no-hover-desktop:hover {
-  background: transparent !important;
-}
-// removes the sticky hover effect on mobile touch devices
+// removes the sticky hover effect on mobile touch devices by setting the hover color to the same as the default color
 @media (hover: none) and (pointer: coarse) {
   .p-button.no-hover:hover {
-    background: transparent !important;
+    background: var(--p-primary-500);
+    border-color: var(--p-primary-500);
   }
-  .no-active:active {
-    background: transparent !important;
+  .p-button-text.p-button.no-hover:hover {
+    background: transparent;
   }
-  .p-button-secondary:hover {
-    background-color: transparent !important;
+  .p-button-secondary.no-hover:hover {
+    background: var(--p-surface-0);
+    border-color: var(--p-button-secondary-hover-border-color);
+  }
+  .p-button-text.p-button-secondary.no-hover:hover {
+    background: transparent;
   }
 }
 // makes the white buttons user the light ripple effect so you can see it.
