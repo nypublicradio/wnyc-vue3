@@ -394,7 +394,7 @@ onUnmounted(() => {
             text
             plain
             rounded
-            class="flex-none no-hover"
+            class="flex-none"
             aria-label="set notification"
             @click="handleScheduleLocalNotification(entry)"
           >
