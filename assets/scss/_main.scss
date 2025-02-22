@@ -241,6 +241,7 @@ section {
   max-width: 390px;
   top: calc(20px + env(safe-area-inset-top)) !important;
   .p-toast-message {
+    position: relative;
     .p-toast-message-content {
       width: fit-content;
       margin: auto;
