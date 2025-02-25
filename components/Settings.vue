@@ -278,7 +278,7 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox label="Allow Notifications" :ripple="false" class="px-3">
+      <SBox label="Allow Notifications" :ripple="false">
         <VToggleSwitch
           yes="ON"
           no="OFF"
@@ -305,7 +305,6 @@ const onDeleteAccountClick = () => {
         :description="channel.description"
         :key="channel.key"
         :ripple="false"
-        class="px-3"
       >
         <VToggleSwitch
           yes="ON"
@@ -354,7 +353,7 @@ const onDeleteAccountClick = () => {
           @change="onUpdateTextSize"
         />
       </SBox>
-      <SBox label="Dark theme" :ripple="false" class="px-3">
+      <SBox label="Dark theme" :ripple="false">
         <VToggleSwitch
           yes="ON"
           no="OFF"
@@ -443,7 +442,7 @@ const onDeleteAccountClick = () => {
       ></SBox>
       <SBox
         v-if="currentUser"
-        :is-link="true"
+        :is-route="true"
         label="Delete account"
         :ripple="false"
         @click="onDeleteAccountClick"

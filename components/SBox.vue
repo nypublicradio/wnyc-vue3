@@ -18,7 +18,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isLink: {
+  isRoute: {
     type: Boolean,
     default: false,
   },
@@ -43,7 +43,7 @@ const onClick = () => {
 <template>
   <div
     class="s-box relative overflow-hidden"
-    :class="[{ 'is-link': props.link || props.isLink, clickable: props.clickable }]"
+    :class="[{ 'is-link': props.link || props.isRoute, clickable: props.clickable }]"
   >
     <div
       class="content flex justify-content-between align-items-center"
@@ -58,7 +58,7 @@ const onClick = () => {
           aria-label="menu item"
         />
       </VFlexibleLink>
-      <VFlexibleLink v-else-if="isLink" raw class="w-full py-1">
+      <VFlexibleLink v-else-if="isRoute" raw class="w-full py-1">
         <Button
           :label="label"
           class="w-full text-left line-height-3"
@@ -97,20 +97,6 @@ const onClick = () => {
   &.clickable {
     cursor: pointer;
   }
-  &.is-link {
-    padding: 0;
-    .flexible-link {
-      .p-button {
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
-        color: var(--bw-toggle);
-        font-weight: var(--font-weight-500);
-        &:hover {
-          background: var(--background3);
-        }
-      }
-    }
-  }
   .content {
     width: 100%;
     height: 100%;
@@ -133,19 +119,32 @@ const onClick = () => {
 .s-box {
   .content {
     &.killRipple {
-      padding: 0;
-      .p-button {
-        justify-content: left;
-        .p-button-label {
-          font-weight: var(--font-weight-500);
-        }
-      }
       .p-ink,
       .p-ink-active {
         display: none !important;
       }
       .label-holder {
         cursor: default !important;
+      }
+    }
+  }
+  &.is-link {
+    .content {
+      padding: 0;
+      .flexible-link {
+        .p-button {
+          justify-content: left;
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+          color: var(--bw-toggle);
+          font-weight: var(--font-weight-500);
+          &:hover {
+            background: var(--background3);
+          }
+          .p-button-label {
+            font-weight: var(--font-weight-500);
+          }
+        }
       }
     }
   }
