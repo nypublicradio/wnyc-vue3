@@ -218,12 +218,22 @@ function triggerFileUpload() {
       <img :src="imageUrl" alt="profile photo" />
     </Button>
     <template v-if="errorMessage">
-      <Message :sticky="false" :life="6000" class="mt-0 text-only error" severity="error">
+      <Message
+        :sticky="false"
+        :life="6000"
+        class="center mt-0 text-only error"
+        severity="error"
+      >
         <div class="text-center" v-html="errorMessage"></div>
       </Message>
     </template>
     <template v-if="successMessage">
-      <Message :sticky="false" :life="6000" class="mt-0 text-only" severity="success">
+      <Message
+        :sticky="false"
+        :life="6000"
+        class="center mt-0 text-only"
+        severity="success"
+      >
         <div class="text-center" v-html="successMessage"></div>
       </Message>
     </template>

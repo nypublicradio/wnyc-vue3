@@ -88,12 +88,17 @@ const submitForm = async () => {
 <template>
   <div>
     <template v-if="sbErrorMsg">
-      <Message class="mb-4" severity="error" :closable="false">
+      <Message
+        class="center mb-4"
+        severity="error"
+        :closable="false"
+        icon="pi pi-times-circle"
+      >
         <span v-html="sbErrorMsg"></span>
       </Message>
     </template>
     <template v-if="sbSuccessMsg">
-      <Message class="mb-4" severity="success" :closable="false">
+      <Message class="center mb-4" severity="success" :closable="false" icon="ci-check">
         <span v-html="sbSuccessMsg"></span>
       </Message>
     </template>

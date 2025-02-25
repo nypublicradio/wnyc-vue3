@@ -236,6 +236,14 @@ section {
   }
 }
 
+.p-message {
+  &.center {
+    .p-message-content {
+      justify-content: center;
+    }
+  }
+}
+
 .p-toast {
   width: 90%;
   max-width: 390px;

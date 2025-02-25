@@ -123,12 +123,24 @@ const pending = ref(false)
         </Button>
       </div>
       <template v-if="sbErrorMsg">
-        <Message :sticky="false" :life="5000" class="mt-4" severity="error">
+        <Message
+          :sticky="false"
+          :life="5000"
+          class="center mt-4"
+          severity="error"
+          icon="pi pi-times-circle"
+        >
           Sorry, there was an error updating your password: {{ sbErrorMsg }}
         </Message>
       </template>
       <template v-if="sbSuccessMsg">
-        <Message :sticky="true" :life="5000" class="mt-4" severity="success">
+        <Message
+          :sticky="true"
+          :life="5000"
+          class="center mt-4"
+          severity="success"
+          icon="ci-check"
+        >
           {{ sbSuccessMsg }}
         </Message>
         <p class="mb-2 text-center">

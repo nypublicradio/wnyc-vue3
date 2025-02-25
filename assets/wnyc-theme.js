@@ -701,6 +701,141 @@ const MyPreset = definePreset(Aura, {
         },
       },
     },
+    message: {
+      root: {
+        borderRadius: "0px",
+        borderWidth: '0px',
+      },
+      content: {
+        padding: '1rem 1.5rem',
+      },
+      colorScheme: {
+        light: {
+          info: {
+            background: "#333333",
+            color: '#ffffff',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          success: {
+            background: "#333333",
+            color: '{green.500}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          warn: {
+            background: "#333333",
+            color: '{yellow.500}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          error: {
+            background: "#333333",
+            color: '#FD5757',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          secondary: {
+            background: "#333333",
+            color: '{link.100}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          contrast: {
+            background: "#333333",
+            color: '{surface.0}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+        },
+        dark: {
+          info: {
+            background: "#13182a",
+            color: '#ffffff',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          success: {
+            background: "#13182a",
+            color: '{green.500}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          warn: {
+            background: "#13182a",
+            color: '{yellow.500}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          error: {
+            background: "#13182a",
+            color: '#FD5757',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          secondary: {
+            background: "#13182a",
+            color: '{link.100}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+          contrast: {
+            background: "#13182a",
+            color: '{surface.0}',
+            closeButton: {
+              hoverBackground: 'rgba(255, 255, 255, 0.15)',
+              focusRing: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              }
+            }
+          },
+        },
+      },
+    },
     toast: {
       root: {
         borderRadius: "0px",
@@ -782,7 +917,7 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           info: {
-            background: "#333333",
+            background: "#13182a",
             color: '#ffffff',
             closeButton: {
               hoverBackground: 'rgba(255, 255, 255, 0.15)',
@@ -792,7 +927,7 @@ const MyPreset = definePreset(Aura, {
             }
           },
           success: {
-            background: "#333333",
+            background: "#13182a",
             color: '{green.500}',
             closeButton: {
               hoverBackground: 'rgba(255, 255, 255, 0.15)',
@@ -802,7 +937,7 @@ const MyPreset = definePreset(Aura, {
             }
           },
           warn: {
-            background: "#333333",
+            background: "#13182a",
             color: '{yellow.500}',
             closeButton: {
               hoverBackground: 'rgba(255, 255, 255, 0.15)',
@@ -812,7 +947,7 @@ const MyPreset = definePreset(Aura, {
             }
           },
           error: {
-            background: "#333333",
+            background: "#13182a",
             color: '#FD5757',
             closeButton: {
               hoverBackground: 'rgba(255, 255, 255, 0.15)',
@@ -822,7 +957,7 @@ const MyPreset = definePreset(Aura, {
             }
           },
           secondary: {
-            background: "#333333",
+            background: "#13182a",
             color: '{link.100}',
             closeButton: {
               hoverBackground: 'rgba(255, 255, 255, 0.15)',
@@ -832,7 +967,7 @@ const MyPreset = definePreset(Aura, {
             }
           },
           contrast: {
-            background: "#333333",
+            background: "#13182a",
             color: '{surface.0}',
             closeButton: {
               hoverBackground: 'rgba(255, 255, 255, 0.15)',

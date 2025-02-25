@@ -139,7 +139,13 @@ const submitForm = async () => {
         </small>
       </div>
       <template v-if="sbErrorMsg">
-        <Message severity="error" :sticky="false" :closable="false">
+        <Message
+          severity="error"
+          :sticky="false"
+          :closable="false"
+          icon="pi pi-times-circle"
+          class="center mb-4"
+        >
           <span v-html="sbErrorMsg"></span>
         </Message>
       </template>

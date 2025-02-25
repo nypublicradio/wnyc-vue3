@@ -63,7 +63,12 @@ const capFirstChar = (str) => {
 <template>
   <div>
     <template v-if="errorMessage">
-      <Message class="mb-4" severity="error" :closable="false">
+      <Message
+        class="center mb-4"
+        severity="error"
+        :closable="false"
+        icon="pi pi-times-circle"
+      >
         Sorry, there was a problem logging in to your
         {{ capFirstChar(props.provider) }} account:
         {{ errorMessage }}

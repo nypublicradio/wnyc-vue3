@@ -139,7 +139,12 @@ const submitForm = async () => {
 <template>
   <div>
     <template v-if="sbErrorMsg && sbErrorMsg !== undefined">
-      <Message class="mb-3" severity="warning" @close="clearMsg()">
+      <Message
+        class="center mb-3"
+        severity="warning"
+        @close="clearMsg()"
+        icons="ci-warn "
+      >
         <span v-html="sbErrorMsg"></span>
       </Message>
     </template>
@@ -147,7 +152,7 @@ const submitForm = async () => {
     <Transition name="fade" mode="out-in">
       <div v-if="sbSuccessMsg" key="1">
         <div>
-          <Message class="mb-3" severity="success">
+          <Message class="center mb-3" severity="success" icon="ci-check">
             <span v-html="sbSuccessMsg"></span>
           </Message>
           <slot name="success">
