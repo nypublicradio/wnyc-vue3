@@ -15,6 +15,7 @@ export const usePendingLocalNotifications = () => useState('usePendingLocalNotif
 // update the global state
 export const setPendingLocalNotifications = async () => {
     const pendingLocalNotifications = usePendingLocalNotifications()
+    await nextTick()
     pendingLocalNotifications.value = await LocalNotifications.getPending()
 }
 
@@ -72,6 +73,15 @@ export const scheduleLocalNotification = async (entry) => {
         } else {
             await LocalNotifications.cancel(notificationBody)
             setPendingLocalNotifications()
+            globalToast.value = {
+                severity: "success",
+                summary: `Notification canceled for ${formatDate(
+                    entry.attributes.start,
+                    "h:mm a EEE, MMM do "
+                )}`,
+                life: 3000,
+                closable: true,
+            }
         }
     } else {
         // ask permissions and try again
@@ -96,11 +106,15 @@ export const initLocalNotifications = async () => {
 // cancel all pending notifications if they exist and alert the user
 export const cancelAllPendingNotifications = async () => {
     try {
-        const pending = await LocalNotifications.getPending();
-        if (pending.notifications.length > 0) {
+        //const pending = await LocalNotifications.getPending();
+        const pendingLocalNotifications = usePendingLocalNotifications()
+        if (pendingLocalNotifications.value?.notifications.length > 0) {
             const globalToast = useGlobalToast()
-            await LocalNotifications.cancel({ notifications: pending.notifications });
+            await LocalNotifications.cancel({ notifications: pendingLocalNotifications.value.notifications });
+            const pending = await LocalNotifications.getPending();
+            console.log('pending notifications after cancelling:', pending);
             setPendingLocalNotifications()
+            console.log('pendingLocalNotifications after cancelling:', pendingLocalNotifications.value);
             globalToast.value = {
                 severity: "warn",
                 summary: "Notifications are off. All scheduled show notifications have been cancelled",
