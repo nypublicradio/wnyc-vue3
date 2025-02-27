@@ -100,10 +100,11 @@ export const cancelAllPendingNotifications = async () => {
         if (pending.notifications.length > 0) {
             const globalToast = useGlobalToast()
             await LocalNotifications.cancel({ notifications: pending.notifications });
+            setPendingLocalNotifications()
             globalToast.value = {
                 severity: "warn",
                 summary: "Notifications are off. All scheduled show notifications have been cancelled",
-                life: 6000,
+                //life: 6000,
                 closable: true,
             }
         }
