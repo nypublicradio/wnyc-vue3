@@ -86,8 +86,12 @@ export const scheduleLocalNotification = async (entry) => {
         }
     } else {
         // ask permissions and try again
-        await LocalNotifications.requestPermissions()
-        //await toggleAskNotificationPermissions()
+        console.log('=========== permitted:', permitted)
+        if (permitted.display === "prompt") {
+            await LocalNotifications.requestPermissions()
+        } else {
+            await toggleAskNotificationPermissions()
+        }
     }
 }
 
