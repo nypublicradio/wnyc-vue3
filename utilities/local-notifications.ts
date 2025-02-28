@@ -56,7 +56,8 @@ export const scheduleLocalNotification = async (entry) => {
             },
         ],
     }
-    if (currentUserProfile.value.receive_general_notifications) {
+    const permitted = await LocalNotifications.checkPermissions()
+    if (permitted.display === "granted") {
         if (!checkNotificationsList(entry)) {
             await LocalNotifications.schedule(notificationBody)
             setPendingLocalNotifications()
@@ -85,7 +86,8 @@ export const scheduleLocalNotification = async (entry) => {
         }
     } else {
         // ask permissions and try again
-        await toggleAskNotificationPermissions()
+        await LocalNotifications.requestPermissions()
+        //await toggleAskNotificationPermissions()
     }
 }
 
@@ -109,12 +111,20 @@ export const cancelAllPendingNotifications = async () => {
         //const pending = await LocalNotifications.getPending();
         const pendingLocalNotifications = usePendingLocalNotifications()
         if (pendingLocalNotifications.value?.notifications.length > 0) {
-            const globalToast = useGlobalToast()
-            await LocalNotifications.cancel({ notifications: pendingLocalNotifications.value.notifications });
+
+            const idsArray = pendingLocalNotifications.value.notifications.map(notification => ({ id: notification.id }));
+            console.log('-----------canceling')
+            await LocalNotifications.cancel({ notifications: idsArray });
+
             const pending = await LocalNotifications.getPending();
+
             console.log('pending notifications after cancelling:', pending);
             setPendingLocalNotifications()
             console.log('pendingLocalNotifications after cancelling:', pendingLocalNotifications.value);
+
+
+
+            const globalToast = useGlobalToast()
             globalToast.value = {
                 severity: "warn",
                 summary: "Notifications are off. All scheduled show notifications have been cancelled",
