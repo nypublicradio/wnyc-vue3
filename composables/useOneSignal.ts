@@ -10,10 +10,12 @@ import {
   getPathAndQuery,
   toSystemSettings,
 } from "~/utilities/helpers"
-import { cancelAllPendingNotifications } from "~/utilities/local-notifications"
+import { cancelAllPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
-
+import { useGlobalToast } from "~/composables/states"
+import { Capacitor } from "@capacitor/core"
+import { LocalNotifications } from "@capacitor/local-notifications"
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
 
@@ -185,14 +187,55 @@ export default function useOneSignal() {
   // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
     await nextTick()
+    const globalToast = useGlobalToast()
     const currentUserProfile = useCurrentUserProfile()
+
+    const currentSystemNotificationPermission = currentUserProfile.value.receive_general_notifications
+
     // if accepted is not defined, then check the permissions
     if (accepted === undefined) {
       accepted = await checkPermissions()
     }
 
-    // if the user denies the permission, then cancel all pending notifications if any exist
-    if (!accepted) cancelAllPendingNotifications()
+
+    // ANDROID:  if system notification are off, then cancel all pending notifications if any exist and inform the user
+    if (!accepted && Capacitor.getPlatform() === "android") {
+
+      const pendingLocalNotifications = usePendingLocalNotifications()
+      if (pendingLocalNotifications.value?.notifications.length > 0) {
+
+        cancelAllPendingLocalNotifications(pendingLocalNotifications.value)
+
+        globalToast.value = {
+          severity: "warn",
+          summary: "Notifications are off. All scheduled show notifications have been cancelled",
+          //life: 6000,
+          closable: true,
+        }
+      }
+    }
+
+    // iOS: iOS does not allow access to the scheduled local notifications when the system notifications are off, so we can't cancel them when they turn them back on.
+
+    // if the system notification permission has been turned off, then inform the user
+    if (Capacitor.getPlatform() === "ios") {
+      if (!accepted) {
+        globalToast.value = {
+          severity: "warn",
+          summary: "Notifications are off. All scheduled show notifications have been cancelled",
+          //life: 6000,
+          closable: true,
+        }
+      }
+
+      // check if the user has changed the system notification permission to ON
+      if (currentSystemNotificationPermission !== accepted && accepted) {
+        // now cancel them, because they are now available to cancel
+        const pendingLocalNotifications = await LocalNotifications.getPending()
+        cancelAllPendingLocalNotifications(pendingLocalNotifications)
+      }
+    }
+
     // set profile to receive_general_notifications based on accepted
     currentUserProfile.value.receive_general_notifications = accepted
   }

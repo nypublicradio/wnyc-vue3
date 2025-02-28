@@ -1,6 +1,7 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { useGlobalToast, useCurrentUserProfile } from "~/composables/states"
+import { useGlobalToast } from "~/composables/states"
 import { formatDate, toggleAskNotificationPermissions } from "~/utilities/helpers"
+//import { Capacitor } from "@capacitor/core"
 
 // assembles the proper title for the schedule entry
 export const getEntryTitle = (entry) => {
@@ -20,7 +21,7 @@ export const setPendingLocalNotifications = async () => {
 }
 
 // check if the entry is in the local notifications list
-const checkNotificationsList = (entry) => {
+export const checkNotificationsList = (entry) => {
     const pendingLocalNotifications = usePendingLocalNotifications()
     return pendingLocalNotifications.value?.notifications.some(
         (notification) => notification.extra.id === entry.id
@@ -31,7 +32,6 @@ const checkNotificationsList = (entry) => {
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
     const id = Number(idNumber[1])
-    const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
@@ -85,8 +85,15 @@ export const scheduleLocalNotification = async (entry) => {
             }
         }
     } else {
-        // ask permissions and try again
-        console.log('=========== permitted:', permitted)
+        //ask alarm permission Android only
+        // if (Capacitor.getPlatform() === "android") {
+        //     const alarmPermitted = await LocalNotifications.checkExactNotificationSetting()
+        //     if (alarmPermitted.exact_alarm !== "granted") {
+        //         await LocalNotifications.changeExactNotificationSetting()
+        //     }
+        // }
+
+        // ask permissions
         if (permitted.display === "prompt") {
             await LocalNotifications.requestPermissions()
         } else {
@@ -110,32 +117,13 @@ export const initLocalNotifications = async () => {
 }
 
 // cancel all pending notifications if they exist and alert the user
-export const cancelAllPendingNotifications = async () => {
+export const cancelAllPendingLocalNotifications = async (pendingLocalNotifications) => {
     try {
-        //const pending = await LocalNotifications.getPending();
-        const pendingLocalNotifications = usePendingLocalNotifications()
-        if (pendingLocalNotifications.value?.notifications.length > 0) {
+        const idsArray = pendingLocalNotifications.notifications.map(notification => ({ id: notification.id }));
+        await LocalNotifications.cancel({ notifications: idsArray });
 
-            const idsArray = pendingLocalNotifications.value.notifications.map(notification => ({ id: notification.id }));
-            console.log('-----------canceling')
-            await LocalNotifications.cancel({ notifications: idsArray });
-
-            const pending = await LocalNotifications.getPending();
-
-            console.log('pending notifications after cancelling:', pending);
-            setPendingLocalNotifications()
-            console.log('pendingLocalNotifications after cancelling:', pendingLocalNotifications.value);
-
-
-
-            const globalToast = useGlobalToast()
-            globalToast.value = {
-                severity: "warn",
-                summary: "Notifications are off. All scheduled show notifications have been cancelled",
-                //life: 6000,
-                closable: true,
-            }
-        }
+        setPendingLocalNotifications()
+        console.log('=========== notifications canceled')
     } catch (error) {
         console.error('Error cancelling notifications:', error);
     }
