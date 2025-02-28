@@ -50,7 +50,7 @@ import {
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
-import { LocalNotifications } from "@capacitor/local-notifications"
+
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
@@ -438,17 +438,6 @@ export const setDisplaySettings = async (data) => {
 // generate a random number between min and max
 export const getRandomNumber = (min, max) => {
   return Math.random() * (max - min) + min
-}
-
-export const toAlarmSettings = async () => {
-  const alarmsAndReminders = await LocalNotifications.checkExactNotificationSetting()
-  if (alarmsAndReminders.exact_alarm !== "granted") {
-    LocalNotifications.changeExactNotificationSetting()
-  } else {
-    NativeSettings.openAndroid({
-      option: AndroidSettings.AppNotification,
-    })
-  }
 }
 
 // will take the user to their native os system settings
@@ -1144,8 +1133,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 }
 
 // handles the permissions for push & local notifications
-export const askNotificationPermissions = () => {
-  useOneSignal().requestNotificationPermission()
+export const askNotificationPermissions = async () => {
+  const oneSignal = useOneSignal();
+  oneSignal.requestNotificationPermission();
 }
 
 // handles iOS asking permission for tracking

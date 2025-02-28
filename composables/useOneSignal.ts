@@ -192,6 +192,15 @@ export default function useOneSignal() {
 
     const currentSystemNotificationPermission = currentUserProfile.value.receive_general_notifications
 
+    const alertUser = () => {
+      globalToast.value = {
+        severity: "warn",
+        summary: "Notifications are off. All scheduled live show notifications have been cancelled",
+        //life: 6000,
+        closable: true,
+      }
+    }
+
     // if accepted is not defined, then check the permissions
     if (accepted === undefined) {
       accepted = await checkPermissions()
@@ -206,12 +215,7 @@ export default function useOneSignal() {
 
         cancelAllPendingLocalNotifications(pendingLocalNotifications.value)
 
-        globalToast.value = {
-          severity: "warn",
-          summary: "Notifications are off. All scheduled show notifications have been cancelled",
-          //life: 6000,
-          closable: true,
-        }
+        alertUser()
       }
     }
 
@@ -220,12 +224,7 @@ export default function useOneSignal() {
     // if the system notification permission has been turned off, then inform the user
     if (Capacitor.getPlatform() === "ios") {
       if (!accepted) {
-        globalToast.value = {
-          severity: "warn",
-          summary: "Notifications are off. All scheduled show notifications have been cancelled",
-          //life: 6000,
-          closable: true,
-        }
+        alertUser()
       }
 
       // check if the user has changed the system notification permission to ON
