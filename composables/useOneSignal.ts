@@ -10,7 +10,7 @@ import {
   getPathAndQuery,
   toSystemSettings,
 } from "~/utilities/helpers"
-import { cancelAllPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
+import { cancelAllPendingLocalNotifications, setPendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
 import { useGlobalToast } from "~/composables/states"
@@ -222,6 +222,11 @@ export default function useOneSignal() {
 
     // if the system notification permission has been turned off, then inform the user
     if (Capacitor.getPlatform() === "ios") {
+
+      if (!accepted) {
+        //sets the state of usePendingLocalNotifications to the LocalNotifications.getPending() which is currently set to [] in iOS... essentially clearing the state
+        setPendingLocalNotifications()
+      }
 
       // check if the user has changed the system notification permission from OFF to ON
       if (!currentSystemNotificationPermission && accepted) {

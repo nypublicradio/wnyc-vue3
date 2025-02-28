@@ -74,15 +74,15 @@ export const scheduleLocalNotification = async (entry) => {
         } else {
             await LocalNotifications.cancel(notificationBody)
             setPendingLocalNotifications()
-            globalToast.value = {
-                severity: "success",
-                summary: `Notification canceled for ${formatDate(
-                    entry.attributes.start,
-                    "h:mm a EEE, MMM do "
-                )}`,
-                life: 3000,
-                closable: true,
-            }
+            /*             globalToast.value = {
+                            severity: "success",
+                            summary: `Notification canceled for ${formatDate(
+                                entry.attributes.start,
+                                "h:mm a EEE, MMM do "
+                            )}`,
+                            life: 3000,
+                            closable: true,
+                        } */
         }
     } else {
         //ask alarm permission Android only
@@ -123,7 +123,6 @@ export const cancelAllPendingLocalNotifications = async (pendingLocalNotificatio
         await LocalNotifications.cancel({ notifications: idsArray });
 
         setPendingLocalNotifications()
-        console.log('=========== notifications canceled')
     } catch (error) {
         console.error('Error cancelling notifications:', error);
     }

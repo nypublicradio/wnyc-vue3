@@ -13,12 +13,7 @@ import {
   useIsApp,
 } from "~/composables/states"
 
-import {
-  scheduleLocalNotification,
-  getEntryTitle,
-  usePendingLocalNotifications,
-} from "~/utilities/local-notifications"
-import { LocalNotifications } from "@capacitor/local-notifications"
+import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 const config = useRuntimeConfig()
 
 const allCurrentStations = useAllCurrentStations()
@@ -298,10 +293,6 @@ onMounted(async () => {
 onUnmounted(() => {
   clearAllTimeout()
 })
-
-const pendingLocalNotifications = usePendingLocalNotifications()
-const pending = ref(null)
-pending.value = await LocalNotifications.getPending()
 </script>
 <template>
   <div class="live-page">
@@ -379,9 +370,6 @@ pending.value = await LocalNotifications.getPending()
     </div>
     <section class="schedule">
       <h2>Schedule</h2>
-      plugin: {{ pending }}
-      <br />
-      state: {{ pendingLocalNotifications }}
       <div v-if="scheduleRef">
         <div
           v-for="(entry, index) in scheduleRef"
