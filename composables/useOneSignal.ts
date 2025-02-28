@@ -189,13 +189,14 @@ export default function useOneSignal() {
     await nextTick()
     const globalToast = useGlobalToast()
     const currentUserProfile = useCurrentUserProfile()
+    const pendingLocalNotifications = await LocalNotifications.getPending()
 
     const currentSystemNotificationPermission = currentUserProfile.value.receive_general_notifications
 
-    const alertUser = () => {
+    const alertUser = (summary) => {
       globalToast.value = {
         severity: "warn",
-        summary: "Notifications are off. All scheduled live show notifications have been cancelled",
+        summary,
         //life: 6000,
         closable: true,
       }
@@ -209,13 +210,11 @@ export default function useOneSignal() {
 
     // ANDROID:  if system notification are off, then cancel all pending notifications if any exist and inform the user
     if (!accepted && Capacitor.getPlatform() === "android") {
+      if (pendingLocalNotifications.notifications.length > 0) {
 
-      const pendingLocalNotifications = usePendingLocalNotifications()
-      if (pendingLocalNotifications.value?.notifications.length > 0) {
+        cancelAllPendingLocalNotifications(pendingLocalNotifications)
 
-        cancelAllPendingLocalNotifications(pendingLocalNotifications.value)
-
-        alertUser()
+        alertUser("Notifications are off. All scheduled live show notifications have been cancelled")
       }
     }
 
@@ -223,15 +222,16 @@ export default function useOneSignal() {
 
     // if the system notification permission has been turned off, then inform the user
     if (Capacitor.getPlatform() === "ios") {
-      if (!accepted) {
-        alertUser()
-      }
 
-      // check if the user has changed the system notification permission to ON
-      if (currentSystemNotificationPermission !== accepted && accepted) {
-        // now cancel them, because they are now available to cancel
-        const pendingLocalNotifications = await LocalNotifications.getPending()
-        cancelAllPendingLocalNotifications(pendingLocalNotifications)
+      // check if the user has changed the system notification permission from OFF to ON
+      if (!currentSystemNotificationPermission && accepted) {
+        // check if there are any pending local notifications
+        if (pendingLocalNotifications.notifications.length > 0) {
+          // now cancel them, because they are now available to cancel
+          cancelAllPendingLocalNotifications(pendingLocalNotifications)
+          //alert the user
+          alertUser("All previously scheduled live show notifications have been cancelled")
+        }
       }
     }
 
