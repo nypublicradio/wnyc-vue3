@@ -1269,7 +1269,7 @@ export const refreshData = async (refreshUser = false) => {
   } catch (error) {
     console.error(error)
   }
-  // refresh streams here but don't set it
+  // refresh streams but set it to the current stream, not the user default
   updateAllLiveStreams(false)
   //update media session
   initMediaSession(currentEpisode.value)
