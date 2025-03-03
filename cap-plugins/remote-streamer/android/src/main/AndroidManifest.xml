@@ -4,7 +4,7 @@
 
     <application>
         <service
-            android:name=".RemoteStreamerService"
+            android:name="org.nypublicradio.streamer.RemoteStreamerService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback">

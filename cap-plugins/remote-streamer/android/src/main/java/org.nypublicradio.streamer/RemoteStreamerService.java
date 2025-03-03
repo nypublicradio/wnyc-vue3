@@ -1,4 +1,4 @@
-package co.broadcastapp.muckabout;
+package org.nypublicradio.streamer;
 
 
 import android.annotation.SuppressLint;
@@ -10,19 +10,17 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Binder;
-import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import androidx.media.session.MediaButtonReceiver;
 import androidx.media.app.NotificationCompat.MediaStyle;
+
+import org.nypublicradio.streamer.R;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,7 +28,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-    public class RemoteStreamerService extends Service {
+
+public class RemoteStreamerService extends Service {
         private static final String TAG = "RemoteStreamerService";
 
         private MediaSessionCompat mediaSession;

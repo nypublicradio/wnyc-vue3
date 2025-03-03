@@ -1,6 +1,4 @@
-package co.broadcastapp.muckabout;
-
-import static java.util.Set.of;
+package org.nypublicradio.streamer;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -31,6 +28,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -45,7 +43,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @CapacitorPlugin(name = "RemoteStreamer")
 public class RemoteStreamerPlugin extends Plugin implements AudioManager.OnAudioFocusChangeListener {
@@ -139,6 +136,7 @@ public class RemoteStreamerPlugin extends Plugin implements AudioManager.OnAudio
         handler.post(() -> {
             releasePlayer();
             player = new ExoPlayer.Builder(getContext()).build();
+            MetadataListener metadataListener = new MetadataListener();
 
             MediaSource mediaSource;
             if (url.contains(".m3u8")) {
@@ -188,6 +186,11 @@ public class RemoteStreamerPlugin extends Plugin implements AudioManager.OnAudio
                         stop(true);
                         break;
                 }
+            }
+
+            @Override
+            public void onMetadata(Metadata metadata) {
+                Log.d("RemoteStreamerPlugin", "metadata: " + metadata.toString());
             }
 
             @Override

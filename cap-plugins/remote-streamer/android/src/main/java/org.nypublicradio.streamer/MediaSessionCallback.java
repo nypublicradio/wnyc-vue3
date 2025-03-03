@@ -1,4 +1,4 @@
-package co.broadcastapp.muckabout;
+package org.nypublicradio.streamer;
 
 import android.support.v4.media.session.MediaSessionCompat;
 
