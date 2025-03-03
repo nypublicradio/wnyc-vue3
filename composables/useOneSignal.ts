@@ -10,7 +10,7 @@ import {
   getPathAndQuery,
   toSystemSettings,
 } from "~/utilities/helpers"
-import { cancelAllPendingLocalNotifications, setPendingLocalNotifications } from "~/utilities/local-notifications"
+import { cancelAllPendingLocalNotifications, setPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
 import { useGlobalToast } from "~/composables/states"
@@ -224,18 +224,21 @@ export default function useOneSignal() {
     if (Capacitor.getPlatform() === "ios") {
 
       if (!accepted) {
-        //sets the state of usePendingLocalNotifications to the LocalNotifications.getPending() which is currently set to [] in iOS... essentially clearing the state
+        const pendingLocalNotificationsState = usePendingLocalNotifications()
+        if (pendingLocalNotificationsState.value.notifications.length > 0) {
+          //alert the user
+          alertUser("Notifications are off. All scheduled live show notifications have been cancelled")
+        }
+        // clears pendingLocalNotificationsState.value.notifications = []
         setPendingLocalNotifications()
       }
 
       // check if the user has changed the system notification permission from OFF to ON
       if (!currentSystemNotificationPermission && accepted) {
-        // check if there are any pending local notifications
+        // check if there are any pending plugin local notifications
         if (pendingLocalNotifications.notifications.length > 0) {
           // now cancel them, because they are now available to cancel
           cancelAllPendingLocalNotifications(pendingLocalNotifications)
-          //alert the user
-          alertUser("All previously scheduled live show notifications have been cancelled")
         }
       }
     }
