@@ -285,7 +285,12 @@ export default function useOneSignal() {
     await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
     // listener for when the user changes the notification permissions at the OS level
-    await OneSignal.Notifications.addEventListener("permissionChange", updateNotificationSetting)
+    await OneSignal.Notifications.addEventListener("permissionChange", () => {
+      // delay added so the notificationPermissionSync can detect that the change before it happens. This is so Ios can detect that the notification were OFF before they were turned ON
+      setTimeout(() => {
+        updateNotificationSetting()
+      }, 1500);
+    })
 
     //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
 
