@@ -1133,7 +1133,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 }
 
 // handles the permissions for push & local notifications
-export const askNotificationPermissions = async () => {
+export const askNotificationPermissions = () => {
   const oneSignal = useOneSignal();
   oneSignal.requestNotificationPermission();
 }

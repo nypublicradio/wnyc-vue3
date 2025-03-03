@@ -4,6 +4,7 @@ import {
   useCurrentUser,
   useSettingSideBar,
   useIsApp,
+  useGlobalToast,
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -13,7 +14,6 @@ import {
 import { cancelAllPendingLocalNotifications, setPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
-import { useGlobalToast } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
 // shared state for in-app notification
@@ -201,6 +201,7 @@ export default function useOneSignal() {
 
     const currentSystemNotificationPermission = currentUserProfile.value.receive_general_notifications
 
+    // function to alert the user and pass in the summary
     const alertUser = (summary) => {
       globalToast.value = {
         severity: "warn",
