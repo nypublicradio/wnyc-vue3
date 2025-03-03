@@ -112,6 +112,7 @@ onMounted(async () => {
 
       // update user profile when coming back from the system settings
       if (isApp.value) {
+        console.log("========= App is in focus")
         await notificationPermissionSync(undefined)
       }
     }

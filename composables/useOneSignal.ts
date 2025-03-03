@@ -186,6 +186,7 @@ export default function useOneSignal() {
 
   // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
+    console.log('========notificationPermissionSync', accepted)
     await nextTick()
     const globalToast = useGlobalToast()
     const currentUserProfile = useCurrentUserProfile()
@@ -277,7 +278,7 @@ export default function useOneSignal() {
     await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
     // listener for when the user changes the notification permissions at the OS level
-    await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionSync)
+    //await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionSync)
 
     //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
 
