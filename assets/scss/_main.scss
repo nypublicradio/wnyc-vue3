@@ -230,6 +230,10 @@ section {
   }
 }
 
+.p-toast {
+  z-index: 999999999;
+}
+
 .p-password {
   .p-inputtext {
     width: 100%;

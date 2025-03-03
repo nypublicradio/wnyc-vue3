@@ -185,8 +185,15 @@ export default function useOneSignal() {
   }
 
   // triggered when the listener for permissionChange is called
+  const updateNotificationSetting = async () => {
+    const currentUserProfile = useCurrentUserProfile()
+    const accepted = await checkPermissions()
+    // set profile to receive_general_notifications based on accepted
+    currentUserProfile.value.receive_general_notifications = accepted
+  }
+
+  // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
-    console.log('========notificationPermissionSync', accepted)
     await nextTick()
     const globalToast = useGlobalToast()
     const currentUserProfile = useCurrentUserProfile()
@@ -278,7 +285,7 @@ export default function useOneSignal() {
     await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
 
     // listener for when the user changes the notification permissions at the OS level
-    //await OneSignal.Notifications.addEventListener("permissionChange", notificationPermissionSync)
+    await OneSignal.Notifications.addEventListener("permissionChange", updateNotificationSetting)
 
     //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
 
@@ -305,19 +312,19 @@ export default function useOneSignal() {
     // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
     // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
-    local.one_signal_notification_channels = local.one_signal_notification_channels.filter(existingChannel =>
+    local.one_signal_notification_channels = local.one_signal_notification_channels?.filter(existingChannel =>
       master.some(newChannel => newChannel.key === existingChannel.key)
     );
 
     // Add any new channels from masterNotificationChannelsArray & update any labels tha tmay have changed
     master.forEach(newChannel => {
-      const existingChannel = local.one_signal_notification_channels.find(
+      const existingChannel = local.one_signal_notification_channels?.find(
         channel => channel.key === newChannel.key
       );
 
       //add new channel
       if (!existingChannel) {
-        local.one_signal_notification_channels.push(newChannel);
+        local.one_signal_notification_channels?.push(newChannel);
       }
 
       // update label
@@ -331,7 +338,7 @@ export default function useOneSignal() {
     if (isApp.value) {
       const currentUser = useCurrentUser()
       if (currentUser.value) {
-        local.one_signal_notification_channels.forEach((channel) => {
+        local.one_signal_notification_channels?.forEach((channel) => {
           toggleOneSignalUserTag(channel.key, channel.value)
         })
       }
