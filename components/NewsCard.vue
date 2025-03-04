@@ -1,12 +1,5 @@
 <script setup>
 import { getMinutes, howLongAgo } from "~/utilities/helpers"
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
 
 const props = defineProps({
   newsData: {
@@ -23,11 +16,11 @@ const props = defineProps({
   },
   bagdeColor: {
     type: String,
-    default: "var(--night-500)",
+    default: "var(--p-surface-950)",
   },
   badgeBgColor: {
     type: String,
-    default: "var(--yellow)",
+    default: "var(--p-yellow-500)",
   },
 })
 
@@ -37,7 +30,7 @@ const emit = defineEmits(["on-click"])
 <template>
   <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
     <div>
-      <Badge
+      <VBadge
         :label="props.badgeLabel"
         :color="props.bagdeColor"
         :bg-color="props.badgeBgColor"
@@ -77,7 +70,7 @@ const emit = defineEmits(["on-click"])
 
 <style lang="scss" scoped>
 .news-card {
-  background-color: var(--background2);
+  background-color: var(--p-surface-25);
   padding: 10px;
   border-radius: 8px;
   display: flex;

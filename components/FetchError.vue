@@ -2,7 +2,7 @@
 const props = defineProps({
   msg: {
     type: String,
-    default: "An error occured while loading this page.",
+    default: "An error occurred while loading this page.",
   },
   refreshRoute: {
     type: String,
@@ -14,7 +14,7 @@ const emit = defineEmits(["on-click"])
 
 // hard refresh to the home page
 const handleReloadHome = () => {
-  window.location.href = props.refreshRoute
+  clearError({ redirect: props.refreshRoute })
 }
 //handle try again button
 // refreshes all useFetch calls related to the page

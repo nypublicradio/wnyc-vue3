@@ -1,0 +1,79 @@
+:root,
+[data-style-mode='light'],
+.style-mode-light {
+    --persistent-player-image-size: 60px;
+    --persistent-player-height: 60px;
+    --persistent-player-padding: 0px 1rem 0 0 !important;
+    --persistent-player-height-buffer: 20px;
+    --persistent-player-bg: var(--p-surface-0);
+    --persistent-player-minimize-btn-color: var(--p-surface-950) --persistent-player-minimize-btn-bg:
+        var(--persistent-player-bg);
+    --persistent-player-minimize-btn-bg-hover: var(--p-surface-200);
+    --persistent-player-maximize-btn-color: var(--p-surface-950) --persistent-player-maximize-btn-bg:
+        var(--persistent-player-bg);
+    --persistent-player-maximize-btn-bg-hover: var(--p-surface-200);
+    --persistent-player-z-index: 1000;
+
+    --persistent-player-live-indicator-bg: var(--p-text-color);
+    --persistent-player-live-indicator-color: var(--p-surface-0);
+
+    --persistent-player-text-button-color: var(--p-text-color);
+    --persistent-player-text-button-color-hover: inherit;
+    --persistent-player-text-button-radius: 15px;
+
+    --persistent-player-button-width: 40px;
+    --persistent-player-button-height: 40px;
+    --persistent-player-button-radius: 50%;
+    --persistent-player-button-color: var(--p-surface-950);
+    --persistent-player-button-color-hover: var(--p-surface-950);
+    --persistent-player-button-bg-color: var(--p-surface-950) --persistent-player-button-bg-color-hover:
+        var(--p-surface-200);
+
+    --persistent-player-title-size: var(--font-size-6);
+    --persistent-player-title-font-family: var(--font-family-header);
+    --persistent-player-title-height: var(--font-size-8);
+    --persistent-player-title-weight: var(--font-weight-500);
+    --persistent-player-title-color: var(--p-text-color);
+    --persistent-player-title-decoration: none;
+    --persistent-player-title-hover-decoration: underline;
+
+    --persistent-player-desc-size: var(--font-size-3);
+    --persistent-player-desc-height: var(--font-size-5);
+    --persistent-player-desc-weight: var(--font-weight-400);
+    --persistent-player-desc-color: var(--p-text-color);
+
+    --persistent-player-time-size: var(--font-size-4);
+    --persistent-player-time-weight: var(--font-weight-400);
+    --persistent-player-time-color: var(--p-text-color);
+
+    --persistent-player-header-footer-bg: var(--p-surface-0);
+    --persistent-player-header-footer-bg-opacity: 0.9;
+    --persistent-player-header-footer-bg-blur: 4px;
+}
+
+[data-style-mode='dark'],
+.style-mode-dark {
+    --persistent-player-bg: var(--p-surface-800);
+    --persistent-player-minimize-btn-bg: var(--persistent-player-bg);
+    --persistent-player-minimize-btn-color: var(--p-surface-0);
+    --persistent-player-maximize-btn-bg: var(--persistent-player-bg);
+    --persistent-player-maximize-btn-color: var(--p-surface-0);
+    --persistent-player-live-indicator-bg: var(--p-surface-0);
+    --persistent-player-live-indicator-color: var(--p-surface-950) --persistent-player-button-color:
+        var(--p-surface-950);
+    --persistent-player-button-bg-color: var(--p-surface-0);
+    --persistent-player-button-bg-color-hover: var(--p-surface-300);
+    --persistent-player-title-color: var(--p-text-color);
+    --persistent-player-desc-color: var(--p-text-color);
+    --persistent-player-time-color: var(--p-text-color);
+    --persistent-player-header-footer-bg: var(--p-surface-800);
+}
+
+// darkmode in global darkmode
+html.style-mode-dark {
+    [data-style-mode='dark'],
+    .style-mode-dark {
+        --persistent-player-bg: var(--p-darkblue-700);
+        --persistent-player-header-footer-bg: var(--p-darkblue-700);
+    }
+}

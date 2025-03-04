@@ -1,5 +1,4 @@
 <script setup>
-import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
 import { trackClickEvent, goToStoryPage, getUserFallBackImage } from "~/utilities/helpers"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"
@@ -196,7 +195,7 @@ watch(loadMoreRefVisible, (val) => {
 <style lang="scss">
 .staff-page {
   hr {
-    background: var(--text-color);
+    background: var(--p-text-color);
   }
 }
 </style>

@@ -132,7 +132,7 @@ onMounted(() => {
     color: RGB(var(--color-white));
     border: #191716;
     .p-dropdown-label p {
-      font-weight: 700;
+      font-weight: var(--font-weight-700);
       text-transform: uppercase;
       font-feature-settings: 'lnum';
     }
@@ -175,7 +175,7 @@ onMounted(() => {
         line-height: normal;
         font-feature-settings: 'lnum';
         &:first-child {
-          font-weight: 700;
+          font-weight: var(--font-weight-700);
         }
       }
     }

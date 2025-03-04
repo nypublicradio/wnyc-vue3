@@ -32,7 +32,7 @@ const handleClick = () => {
 .sleep-timer-button {
   position: relative;
   .p-button .o-icon {
-    color: var(--text-color);
+    fill: var(--p-text-color);
   }
   .badge {
     top: -25px;

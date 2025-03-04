@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "162090348678",
     "project_id": "wnyc-app-demo",
-    "storage_bucket": "wnyc-app-demo.appspot.com"
+    "storage_bucket": "wnyc-app-demo.firebasestorage.app"
   },
   "client": [
     {

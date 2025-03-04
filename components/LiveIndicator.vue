@@ -13,14 +13,14 @@
   .live-indicator-dot {
     height: 6px;
     width: 6px;
-    background: var(--red-500);
+    background: var(--p-red-500);
     border-radius: 50%;
   }
 
   .live-indicator-dot-pulse {
     height: 6px;
     width: 6px;
-    border: 3px solid var(--red-500);
+    border: 3px solid var(--p-red-500);
     border-radius: 50%;
     animation: pulsate 2s ease-out;
     animation-iteration-count: infinite;

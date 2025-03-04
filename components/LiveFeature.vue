@@ -1,6 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import {
   useTogglePlayTrigger,
   useCurrentEpisode,
@@ -8,14 +6,6 @@ import {
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
-
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -80,7 +70,7 @@ const togglePlayHere = async () => {
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                 />
-                <BarsPlaying class="mr-2" :data="currentEpisodeHolder" />
+                <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
               </div>
             </div>
             <div
@@ -130,13 +120,12 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   container-type: inline-size;
   position: relative;
   background-color: var(--live-feature-background);
-
   .image-holder {
     position: relative;
     flex: none;
     width: 138px;
     height: 138px;
-    //background-color: #ffffff;
+    background-color: #ffffff99;
     .image,
     .image-loader-anim {
       width: 138px;

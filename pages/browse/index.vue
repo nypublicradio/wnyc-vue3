@@ -4,7 +4,9 @@ import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error } = useLazyFetch(`${config.public.BFF_URL}/api/v2/shows`)
+const { data: shows, pending, error } = useLazyFetch(
+  `${config.public.BFF_URL}/api/v2/shows`
+)
 
 const router = useRouter()
 const route = useRoute()
@@ -38,8 +40,8 @@ const selectTopic = (topic) => {
 
 // handle the active tab for the featured and all shows to set url query
 const handleActiveTab = (e) => {
-  router.push({ query: { tab: e.index } })
-  activeTab.value = e.index
+  router.push({ query: { tab: e } })
+  activeTab.value = e
 }
 
 watch(searchFieldValue, () => {
@@ -90,26 +92,26 @@ watch(
       </Head>
     </Html>
     <section class="search z-2">
-      <span class="p-input-icon-left w-full">
-        <i v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-        <i v-else class="pi pi-search text-color" />
+      <IconField>
+        <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
+        <InputIcon v-else class="pi pi-search text-color" />
         <InputText
           v-model="searchFieldValue"
           placeholder="Search"
-          class="search-field w-full pr-6"
+          class="w-full on-white"
         />
-        <Button
-          v-if="searchFieldValue"
-          class="closer"
-          rounded
-          text
-          plain
-          icon="pi pi-times"
-          aria-label="clear search"
-          @click="clearSearchField"
-        ></Button>
-        <!-- <i class="pi pi-spin pi-spinner" /> -->
-      </span>
+        <InputIcon v-if="searchFieldValue" class="relative">
+          <Button
+            rounded
+            text
+            plain
+            icon="pi pi-times text-color"
+            aria-label="clear search"
+            class="absolute right-0 top-0 bottom-0 m-auto"
+            @click="clearSearchField"
+          ></Button>
+        </InputIcon>
+      </IconField>
     </section>
     <div class="content-holder">
       <div v-if="!searchFieldValue">
@@ -117,12 +119,16 @@ watch(
           <section>
             <h2>Browse By Topic</h2>
           </section>
-          <HorizontalScrollFeature class="topics-holder">
-            <div class="flex gap-3 w-full">
-              <div v-for="topic in showTopics" class="station-holder" :key="topic.label">
+          <HorizontalScrollFeature class="topics-holder" :data="shows">
+            <div class="flex w-full">
+              <div
+                v-for="topic in showTopics"
+                class="station-holder item"
+                :key="topic.label"
+              >
                 <div class="relative topic-btn-holder">
                   <Button
-                    class="topic-btn text-sm white-space-nowrap font-meta"
+                    class="topic-btn text-sm white-space-nowrap font-meta btn"
                     :label="topic.label"
                     :aria-label="`${topic.label} topic button`"
                     @click="selectTopic(topic)"
@@ -135,46 +141,53 @@ watch(
         </div>
         <FetchError v-if="error" />
         <section class="tabs mt-2">
-          <TabView
+          <Tabs
+            value="0"
             :lazy="true"
             :activeIndex="Number(activeTab)"
-            @tab-change="handleActiveTab"
+            @update:value="handleActiveTab"
           >
-            <TabPanel header="Featured Shows">
-              <div class="shows flex flex-column gap-5">
-                <template v-if="!pending">
-                  <ShowItem
-                    v-for="show in shows?.featuredShows"
-                    :data="show"
-                    :key="show.title"
-                    @onClick="goToShowPage(show)"
+            <TabList>
+              <Tab value="0">Featured Shows</Tab>
+              <Tab value="1">All Shows</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel value="0">
+                <div class="shows flex flex-column gap-5">
+                  <template v-if="!pending">
+                    <ShowItem
+                      v-for="show in shows?.featuredShows"
+                      :data="show"
+                      :key="show.title"
+                      @onClick="goToShowPage(show)"
+                    />
+                  </template>
+                  <skeleton-show-item
+                    v-else
+                    v-for="(show, index) in 27"
+                    :key="`sk1-${index}`"
                   />
-                </template>
-                <skeleton-show-item
-                  v-else
-                  v-for="(show, index) in 27"
-                  :key="`sk1-${index}`"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel header="All Shows">
-              <div class="shows flex flex-column gap-5">
-                <template v-if="!pending">
-                  <ShowItem
-                    v-for="show in shows?.all"
-                    :data="show"
-                    :key="show.title"
-                    @onClick="goToShowPage(show)"
+                </div>
+              </TabPanel>
+              <TabPanel value="1">
+                <div class="shows flex flex-column gap-5">
+                  <template v-if="!pending">
+                    <ShowItem
+                      v-for="show in shows?.all"
+                      :data="show"
+                      :key="show.title"
+                      @onClick="goToShowPage(show)"
+                    />
+                  </template>
+                  <skeleton-show-item
+                    v-else
+                    v-for="(show, index) in 27"
+                    :key="`sk2-${index}`"
                   />
-                </template>
-                <skeleton-show-item
-                  v-else
-                  v-for="(show, index) in 27"
-                  :key="`sk2-${index}`"
-                />
-              </div>
-            </TabPanel>
-          </TabView>
+                </div>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </section>
       </div>
       <div v-else>
@@ -226,26 +239,8 @@ watch(
   .search {
     position: sticky;
     top: env(safe-area-inset-top);
-    background: var(--backgroundSimple);
+    background: var(--background2);
     z-index: 1;
-    .search-field {
-      background-color: var(--searchFieldBackground);
-    }
-  }
-  .closer {
-    position: absolute;
-    top: 50%;
-    margin-top: -1.25rem;
-    margin-left: -2.5rem;
-  }
-  .topics-holder {
-    .station-holder {
-      &:first-child {
-        @include media(">=md") {
-          margin-left: calc(((100% - 768px) / 2) + 48px);
-        }
-      }
-    }
   }
   .content-holder {
     .topics {
@@ -271,7 +266,7 @@ watch(
           height: 0;
           border-left: 10px solid transparent;
           border-right: 10px solid transparent;
-          border-top: 10px solid var(--red);
+          border-top: 10px solid var(--p-red-500);
           z-index: -1;
         }
         &.activetopicholder {

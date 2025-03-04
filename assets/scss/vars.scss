@@ -6,96 +6,10 @@ $bottomMenuHeight: 60px;
 $playerHeight: 60px;
 $toolsBreakPoint: 472px;
 $padding: 1.5rem;
+$mobileBreakpoint: '<md';
+$page-gutter-padding: 32px;
 
-// DS UPDATE
-$backgroundGradient1: linear-gradient(to top, #234670ff, #1c233eff);
-//
+$p-ripple-background-light: rgba(0, 0, 0, 0.2);
+$p-ripple-background-dark: rgba(255, 255, 255, 0.5);
 
-:root {
-    --background-gradient-1: #{$backgroundGradient1};
-    --header-height: #{$headerHeight};
-    --bottom-menu-height: #{$bottomMenuHeight};
-    --bottom-menu-icon-color: var(--white, #ffffff) !important;
-    --player-height: #{$playerHeight};
-    --header-z-index: 900;
-    --line-clamp: 3;
-
-    --v-input-switch-slider-size: 1.15rem;
-    //--v-input-switch-padding-buffer: 8px;
-
-    --v-caption-bg-color: 17, 17, 17; //#111111
-    --v-caption-bg-color-opacity: 0.9;
-    --button-hover-plain-background: #e8e8e8;
-    --donation-text: #ffffff !important;
-    --persistent-player-slider-buffer: var(--secondary);
-}
-
-// component cssvar theme control and base component overrides
-:root,
-[data-style-mode='light'],
-.style-mode-light {
-    --placeholder-color: #757575;
-    --focus-outline-color: #2b6f99;
-    --solid-bg-color: var(--night-500, #101012) !important;
-    --persistent-player-slider-thumb-border: var(--night-500);
-    --wnyc-logo-color: var(--red, #de1e3d) !important;
-    --bottom-menu-bg-color: var(--night-500, #101012) !important;
-    --v-card-title-hover-color: var(--link-button-hover-color) !important;
-    --s-box-background-color: var(--background) !important;
-    --s-box-stroke-color: var(--background) !important;
-    --header-background: #ffffffe6 !important;
-    --expandedHeaderBackgroundTransparent: #2f2f2fe6 !important;
-    --live-feature-background: var(--background2) !important;
-    --horzScrollGradient: var(--background);
-    --donation-bg: var(--night-500, #101012) !important;
-    --searchFieldBackground: var(--background2) !important;
-    --backgroundSimple: var(--background) !important;
-    --persistent-player-bg-transparent: #2f2f2fcc !important;
-    --error-text-color: var(--#EB0000) !important;
-}
-[data-style-mode='dark'],
-.style-mode-dark {
-    --placeholder-color: #a3a3a3;
-    --focus-outline-color: var(--spanish-orange);
-    --solid-bg-color: var(--dark-blue-500, #101012) !important;
-    --wnyc-logo-color: var(--white, #ffffff) !important;
-    --bottom-menu-bg-color: var(--dark-blue-500, #101012) !important;
-    --v-card-title-hover-color: var(--link-button-hover-color) !important;
-    --s-box-background-color: #32384f !important;
-    --header-background: #{map-get($colors-dark-mode, 'dark-blue')} !important;
-    --expandedHeaderBackgroundTransparent: #13182ae6 !important;
-    --live-feature-background: var(--background3) !important;
-    --horzScrollGradient: var(--dark-blue);
-    --donation-bg: var(--dark-blue-500, #101012) !important;
-    --donation-text: var(--text-color) !important;
-    --searchFieldBackground: var(--s-box-background-color) !important;
-    --backgroundSimple: var(--background2) !important;
-    --persistent-player-slider-progress: #000;
-    --button-hover-plain-background: #e8e8e826;
-    --error-text-color: var(--#FD5757) !important;
-}
-html.style-mode-dark {
-    [data-style-mode='dark'],
-    .style-mode-dark {
-        --persistent-player-slider-progress: var(--indigo);
-        --persistent-player-slider-thumb-border: var(--indigo);
-        --persistent-player-slider-thumb-shadow: var(--indigo);
-        --persistent-player-slider-thumb-bg: var(--white);
-        --persistent-player-slider-thumb--hover-bg: var(--indigo);
-        --persistent-player-slider-bg: var(--white);
-        //--persistent-player-slider-buffer: var(--secondary);
-    }
-}
-
-// :root {
-//     --cyan-50: #f3f3f3;`
-//     --cyan-100: #c6c6c6;
-//     --cyan-200: #989899;
-//     --cyan-300: #6b6b6c;
-//     --cyan-400: #3d3d3f;
-//     --cyan-500: #101012;
-//     --cyan-600: #0e0e0f;
-//     --cyan-700: #0b0b0d;
-//     --cyan-800: #09090a;
-//     --cyan-900: #060607;
-// }
+$backgroundBlueGradient1: linear-gradient(to top, #234670ff, #1c233eff);

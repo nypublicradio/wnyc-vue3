@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { requestAccountDeletion } from "~/utilities/helpers"
 import { useAccountDeleteSideBar } from "~/composables/states.ts"
 
@@ -43,7 +42,7 @@ const accountDeleteSideBar = useAccountDeleteSideBar()
     position: relative;
     flex: none;
     background-color: #ffffff;
-    color: var(--night--500);
+    color: var(--p-surface-950);
     border-radius: 50%;
     img {
       object-fit: cover;

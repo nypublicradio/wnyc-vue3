@@ -134,7 +134,7 @@ onUnmounted(() => {
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.75);
   .refresh-indicator {
     font-size: 24px;
-    color: var(--night-500, #000000);
+    color: var(--p-surface-950);
   }
 }
 </style>

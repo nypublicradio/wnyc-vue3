@@ -20,7 +20,7 @@ import {
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
-import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings"
+import { NativeSettings, AndroidSettings } from "capacitor-native-settings"
 import { Browser } from "@capacitor/browser"
 import {
   cmsSources,
@@ -38,7 +38,6 @@ import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
 import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
-import { PushNotifications } from "@capacitor/push-notifications"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
@@ -49,6 +48,8 @@ import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
+import useOneSignal from "~/composables/useOneSignal"
+import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -61,7 +62,7 @@ export const checkUrl404 = async (url) => {
   }
 }
 
-// rreturn organization name from CMS source
+// return organization name from CMS source
 export const getOrg = (cmsSource) => {
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
@@ -446,9 +447,8 @@ export const toSystemSettings = () => {
       option: AndroidSettings.AppNotification,
     })
   } else {
-    NativeSettings.openIOS({
-      option: IOSSettings.App,
-    })
+    // for iOS, we are using a custom plugin
+    capacitorIosNotificationSettings.openNotificationSettings();
   }
 }
 
@@ -572,7 +572,7 @@ export const convertTime = (val) => {
   return hhmmss.startsWith("00:") ? hhmmss.substring(3) : hhmmss
 }
 
-// get and set the user profiel
+// get and set the user profile
 export const getAndSetUserProfile = async () => {
   const isNetworkConnected = useIsNetworkConnected()
   const isApp = useIsApp()
@@ -582,7 +582,8 @@ export const getAndSetUserProfile = async () => {
   const config = useRuntimeConfig()
   const client = useSupabaseClient()
   const user = await client.auth.getSession()
-
+  const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels } = useOneSignal()
+  const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
     const { data, error } = await client
@@ -599,11 +600,16 @@ export const getAndSetUserProfile = async () => {
         location.reload()
       }
     } else if (data) {
-      if (data.initial) {
-        const lsSTRING = await Preferences.get({ key: localUserProfileKey })
-        const ls = JSON.parse(lsSTRING.value)
+      const lsSTRING = await Preferences.get({ key: localUserProfileKey })
+      const ls = JSON.parse(lsSTRING.value)
 
-        // some odd timeing hack to fix the text_size and default station if they come over as an object
+      //what the user has already selected in the local storage OR the default
+      const defaultNotificationChannels = ls?.one_signal_notification_channels || masterNotificationChannelsArray
+
+      if (data.initial) {
+        // FIRST INITIAL LOGIN EVER
+
+        // some odd timing hack to fix the text_size and default station if they come over as an object
         if (typeof ls.text_size === 'object') {
           ls.text_size = ls.text_size.label;
         }
@@ -612,46 +618,108 @@ export const getAndSetUserProfile = async () => {
         }
 
         // get the system's notification permission and apply it to the ls
-        if (isApp.value) {
-          await PushNotifications.checkPermissions().then((result) => {
-            if (result.receive === "denied") {
-              ls.receive_general_notifications = false
-            }
-            if (result.receive === "granted") {
-              ls.receive_general_notifications = true
-            }
-          })
-        }
+        ls.receive_general_notifications = await useOneSignal().checkPermissions()
 
-        // if first time logging in with new profile
+
+        // if first time logging in with new profile, set preferences from the local storage
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
         data.receive_general_notifications = ls.receive_general_notifications
+        data.one_signal_notification_channels = defaultNotificationChannels
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
 
         // update supabase profile data
-        // set the supabase prferences with what is currently set in the local storage
+        // set the supabase preferences with what is currently set in the local storage
         await client
           .from("profiles")
           .update({
-            initial: false,
-            autodownload: ls.autodownload,
-            default_live_stream: ls.default_live_stream,
-            receive_general_notifications: ls.receive_general_notifications,
-            dark_mode: ls.dark_mode,
-            text_size: ls.text_size,
+            initial: data.initial,
+            autodownload: data.autodownload,
+            default_live_stream: data.default_live_stream,
+            receive_general_notifications: data.receive_general_notifications,
+            one_signal_notification_channels: data.one_signal_notification_channels,
+            dark_mode: data.dark_mode,
+            text_size: data.text_size,
           })
           .match({ id: currentUser.value.id })
 
         // set the current user profile state
         currentUserProfile.value = data
+        // One Signal login
+        await OneSignalLogin()
+
+        // initially add the user tags to OneSignal profile
+        masterNotificationChannelsArray.forEach((channel: { key: string }) => {
+          toggleOneSignalUserTag(channel.key, true)
+        })
+
         updateAllLiveStreams()
         setDisplaySettings(data)
+
       } else {
+
+        // NOT FIRST LOGIN EVER
+
         // set the current user profile state
         currentUserProfile.value = data
+
+        // One Signal login
+        await OneSignalLogin()
+
+        // FIRST TIME POPULATING THE NOTIFICATION CHANNELS ON EXISTING PROFILES
+        // if data.one_signal_notification_channels is not set (defaults as NULL), set it to the defaultNotificationChannels
+        if (!data.one_signal_notification_channels || data.one_signal_notification_channels.length === 0) {
+
+          // update data object with the defaultNotificationChannels
+          data.one_signal_notification_channels = defaultNotificationChannels
+
+          // get the system's notification permission and apply it to the data.receive_general_notifications
+          data.receive_general_notifications = await useOneSignal().checkPermissions()
+
+          // update supabase profile data with the updated data.one_signal_notification_channels
+          await client
+            .from("profiles")
+            .update({
+              one_signal_notification_channels: data.one_signal_notification_channels,
+              receive_general_notifications: data.receive_general_notifications,
+            })
+            .match({ id: currentUser.value.id })
+
+          // initially add the user tags to OneSignal profile
+          masterNotificationChannelsArray.forEach((channel: { key: string }) => {
+            toggleOneSignalUserTag(channel.key, true)
+          })
+
+          // set the current user profile state again after updating the channels
+          currentUserProfile.value = data
+
+        } else {
+
+          // CHANNELS ALREADY SET
+
+          // check if supabase master notification channels changed and sync them with supabase and OneSignal
+          data.one_signal_notification_channels = await syncMasterNotificationChannels(data, masterNotificationChannelsArray)
+
+          // get the system's notification permission and apply it to the data.receive_general_notifications
+          data.receive_general_notifications = await useOneSignal().checkPermissions()
+
+          // update supabase profile data with the updated data.one_signal_notification_channels
+          await client
+            .from("profiles")
+            .update({
+              one_signal_notification_channels: data.one_signal_notification_channels,
+              receive_general_notifications: data.receive_general_notifications,
+            })
+            .match({ id: currentUser.value.id })
+
+          // set the current user profile state again after the sync
+          currentUserProfile.value = data
+
+        }
+
+        // update streams and settings
         updateAllLiveStreams()
         setDisplaySettings(data)
       }
@@ -696,16 +764,8 @@ export const getAndSetUserProfile = async () => {
           defaults.dark_mode = detectSystemDarkMode()
 
           // get the system's notification permission and apply it to the initial defaults
-          if (isApp.value) {
-            await PushNotifications.checkPermissions().then((result) => {
-              if (result.receive === "denied") {
-                defaults.receive_general_notifications = false
-              }
-              if (result.receive === "granted") {
-                defaults.receive_general_notifications = true
-              }
-            })
-          }
+          defaults.receive_general_notifications = await useOneSignal().checkPermissions()
+
 
           const defaultsSTRING = JSON.stringify(defaults)
           await Preferences.set({
@@ -719,20 +779,25 @@ export const getAndSetUserProfile = async () => {
           //set display settings
           setDisplaySettings(defaults)
         } else {
+
+          const localUserProfile = JSON.parse(isLocalUserProfile.value)
+
+          // check if supabase master notification channels changed and sync them with the local storage and supabase and OneSignal
+          localUserProfile.one_signal_notification_channels = await syncMasterNotificationChannels(localUserProfile, masterNotificationChannelsArray)
+
+          // set local storage with the updated data.one_signal_notification_channels
+          const localUserProfileSTRING = JSON.stringify(localUserProfile)
+          await Preferences.set({
+            key: localUserProfileKey,
+            value: localUserProfileSTRING,
+          })
+
           // local storage is set, so set currentUserProfile to the local storage settings
-          currentUserProfile.value = JSON.parse(isLocalUserProfile.value)
+          currentUserProfile.value = localUserProfile
 
           // get the system's notification permission and apply it to the currentUserProfile.value
-          if (isApp.value) {
-            await PushNotifications.checkPermissions().then((result) => {
-              if (result.receive === "denied") {
-                currentUserProfile.value.receive_general_notifications = false
-              }
-              if (result.receive === "granted") {
-                currentUserProfile.value.receive_general_notifications = true
-              }
-            })
-          }
+          currentUserProfile.value.receive_general_notifications = await useOneSignal().checkPermissions()
+
 
           updateAllLiveStreams()
           //set display settings
@@ -741,6 +806,7 @@ export const getAndSetUserProfile = async () => {
       } else {
         // if they are a user, get their profile data
         await getProfile()
+
         // get the device id if it's an app and not a browser
         if (isApp.value) {
           await initDeviceId()
@@ -757,6 +823,7 @@ interface SavedItem {
   media_id: string
   slug: string
   reading_time: string
+  estimatedDuration: number
   title: string
   image: any
   producingOrganizations: any
@@ -829,6 +896,7 @@ export const saveFavorite = async (
     const slug = thisSlug
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
+    const estimatedDuration = media?.estimatedDuration
     const image = media?.image
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
@@ -843,6 +911,7 @@ export const saveFavorite = async (
       media_id,
       slug,
       reading_time,
+      estimatedDuration,
       image,
       title,
       authors,
@@ -993,10 +1062,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
   const accountPromptSideBar = useAccountPromptSideBar();
   if (user.value) {
     const globalToast = useGlobalToast();
-
     const episode = {
       ...item,
       slug: item.meta?.slug ?? item.slug,
+      estimatedDuration: item.estimatedDuration || item.duration,
     };
     if (isFavorited) {
       await deleteFavorite(episode);
@@ -1064,18 +1133,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 }
 
 // handles the permissions for push & local notifications
-export const askNotificationPermisstions = async () => {
-  const currentUserProfile = useCurrentUserProfile()
-  await PushNotifications.requestPermissions().then((result) => {
-    //alert('push request' + JSON.stringify(result))
-    if (result.receive === "granted") {
-      // Register with Apple / Google to receive push via APNS/FCM
-      PushNotifications.register()
-      currentUserProfile.value.receive_general_notifications = true
-    } else {
-      currentUserProfile.value.receive_general_notifications = false
-    }
-  })
+export const askNotificationPermissions = () => {
+  const oneSignal = useOneSignal();
+  oneSignal.requestNotificationPermission();
 }
 
 // handles iOS asking permission for tracking
@@ -1100,18 +1160,9 @@ export const askTrackingPermissions = async () => {
   }
 }
 
-// handles the toggling of permissions for push & local notifications. Either to use the available propt, or route to the system settings to manually change it
-export const toggleAskNotificationPermisstions = async (isEnabled = true) => {
-  await nextTick()
-  const permStatus = await PushNotifications.checkPermissions()
-  if (
-    isEnabled === true &&
-    (permStatus.receive === "prompt" || permStatus.receive === "prompt-with-rationale")
-  ) {
-    askNotificationPermisstions()
-  } else {
-    toSystemSettings()
-  }
+// handles the toggling of permissions for push & local notifications. Either to use the available prompt, or route to the system settings to manually change it
+export const toggleAskNotificationPermissions = async () => {
+  await useOneSignal().checkPermissions() ? toSystemSettings() : askNotificationPermissions()
 }
 
 // log out the current user
@@ -1135,6 +1186,9 @@ export const logOutUser = async () => {
 
   // clear the local storage
   await Preferences.clear()
+
+  // logout of OneSignal
+  useOneSignal().logout()
 
   getAndSetUserProfile()
 }
@@ -1215,9 +1269,19 @@ export const refreshData = async (refreshUser = false) => {
   } catch (error) {
     console.error(error)
   }
-  // refresh streams here
-  updateAllLiveStreams()
+  // refresh streams but set it to the current stream, not the user default
+  updateAllLiveStreams(false)
   //update media session
   initMediaSession(currentEpisode.value)
+}
 
+// function that gets a URL and returns the path and query only
+export function getPathAndQuery(urlString) {
+  try {
+    const url = new URL(urlString);
+    return `${url.pathname}${url.search}`;
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return null;
+  }
 }

@@ -1,6 +1,6 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 //import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -292,23 +292,28 @@ onMounted(() => {
     </div>
     <!-- tabs for the future segment split -->
     <div class="tabs mt-5">
-      <TabView :lazy="true">
-        <TabPanel header="Episodes" v-if="hasEpisodes">
-          <div v-if="!pending" class="flex flex-column gap-5 mt-2">
-            <template v-for="ep in episodes" :key="ep.id">
-              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-              <EpisodeItem
-                v-if="
-                  ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
-                "
-                :data="ep"
-                @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
-                :fallback-image="getEpisodeFallBackImage()"
-              />
-            </template>
-          </div>
-        </TabPanel>
-        <!-- <TabPanel header="Segments" v-if="hasSegments">
+      <Tabs :lazy="true" value="0">
+        <TabList>
+          <Tab value="0">Episodes</Tab>
+          <!-- <Tab value="1">Segments</Tab> -->
+        </TabList>
+        <TabPanels>
+          <TabPanel value="0" v-if="hasEpisodes">
+            <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+              <template v-for="ep in episodes" :key="ep.id">
+                <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
+                <EpisodeItem
+                  v-if="
+                    ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
+                  "
+                  :data="ep"
+                  @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
+                  :fallback-image="getEpisodeFallBackImage()"
+                />
+              </template>
+            </div>
+          </TabPanel>
+          <!-- <TabPanel value="1"  v-if="hasSegments">
           <div v-if="!pending" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
               {{ ep?.esitmatedDuration }}
@@ -321,7 +326,8 @@ onMounted(() => {
             </template>
           </div>
         </TabPanel> -->
-      </TabView>
+        </TabPanels>
+      </Tabs>
     </div>
     <div v-if="pending">
       <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />

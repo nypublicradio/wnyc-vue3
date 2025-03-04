@@ -10,10 +10,6 @@ const props = defineProps({
     type: String,
     default: "label",
   },
-  data: {
-    type: [String, Object],
-    default: null,
-  },
   label: {
     type: String,
     default: null,
@@ -22,21 +18,13 @@ const props = defineProps({
     type: String,
     default: "Select",
   },
-  customButton: {
-    type: Boolean,
-    default: false,
-  },
   width: {
     type: String,
-    default: "42px",
+    default: "40px",
   },
   height: {
     type: String,
-    default: "42px",
-  },
-  normal: {
-    type: Boolean,
-    default: false,
+    default: "40px",
   },
   startOpen: {
     type: Boolean,
@@ -44,16 +32,17 @@ const props = defineProps({
   },
   checkMark: {
     type: Boolean,
-    default: true,
+    default: false,
+  },
+  blockClick: {
+    type: Boolean,
+    default: false,
   },
 })
 
-const emit = defineEmits(["update:data", "swipe-down"])
+const emit = defineEmits(["change", "swipe-down"])
 
-const dataRef = ref(props.data)
-
-const dropdownRootRef = ref(null)
-const sDropDownRef = ref(null)
+const drawerRef = ref(null)
 const panel = ref(null)
 // to match the total height of the shadow that is being applied to the panel
 const shadowHeight = 70
@@ -69,6 +58,11 @@ let distanceThreshold = 125
 const distanceThresholdDivider = 2.2
 let isDraggingDown = false
 
+const visibleBottom = ref(false)
+
+// 2way binding to the currentUserProfile on the parent prop v-model
+const vModel = defineModel()
+
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
   event.preventDefault()
@@ -82,8 +76,7 @@ const removeBodyTouch = () => {
 
 // clicks the dropdown again to close it
 const closeMenu = () => {
-  sDropDownRef.value.click()
-  sDropDownRef.value.blur()
+  drawerRef.value.hide()
   removeBodyTouch()
 }
 
@@ -96,7 +89,7 @@ const reopenPanel = () => {
 // when the dropdown is opened, set the panel ref
 const setPanel = async () => {
   await nextTick()
-  panel.value = document.getElementById("p-dropup-panel")
+  panel.value = document.getElementById("dropup-panel")
   // removes class to the css animation so the drag will be 1:1 with the finger
   panel.value.classList.remove("release")
   document.body.addEventListener("touchmove", preventScrollOnTouch, {
@@ -115,6 +108,7 @@ const unsetPanel = () => {
 // swipe setup
 const swipe = useSwipe(panel, {
   passive: true,
+  threshold: 1,
   onSwipeStart() {
     // removes class to the css animation so the drag will be 1:1 with the finger
     panel.value.classList.remove("release")
@@ -124,7 +118,7 @@ const swipe = useSwipe(panel, {
   },
   onSwipe() {
     touchCurrentY = swipe.lengthY.value
-    // so it does not drag hight than the height of the panel
+    // so it does not drag higher than the height of the panel
     if (touchCurrentY < 0) {
       panel.value.style.bottom = `${touchCurrentY}px`
     }
@@ -138,7 +132,7 @@ const swipe = useSwipe(panel, {
   },
 })
 
-// handles the detection of the direction of the drag movment
+// handles the detection of the direction of the drag movement
 function handleSwipeDirection() {
   const tempBool = isDraggingDown
   if (touchCurrentY < touchPrevY) {
@@ -181,236 +175,216 @@ function handleSwipe() {
     reopenPanel()
   }
 }
+// handles the menu item click
+const onMenuUpdate = async (event) => {
+  vModel.value = event.id
+  event.command && event.command()
+  closeMenu()
+  await nextTick()
+  emit("change", event)
+}
+//toggles the dropdown
+const toggleDrawer = () => {
+  visibleBottom.value = props.startOpen ? true : !visibleBottom.value
+}
+// toggles the dropdown on click wrapper
+const toggleDrawerClick = () => {
+  if (props.blockClick) return
+  toggleDrawer()
+}
 
 onMounted(() => {
-  if (props.startOpen) dropdownRootRef.value.show()
+  if (props.startOpen) {
+    toggleDrawer()
+  }
 })
 onUnmounted(() => {
   unsetPanel()
 })
+
+defineExpose({
+  closeMenu,
+  toggleDrawer,
+})
 </script>
 <template>
-  <Dropdown
-    ref="dropdownRootRef"
-    v-model="dataRef"
-    :options="props.options"
-    :optionLabel="props.optionLabel"
-    :placeholder="props.placeholder"
-    class="s-dropup"
-    :class="[{ customButton: props.customButton, normal: props.normal }]"
-    @update:modelValue="$emit('update:data', $event)"
-    @show="setPanel"
-    @hide="unsetPanel"
-    :panelClass="`p-dropup-panel ${props.customButton ? 'is-customButton' : ''} ${
-      !props.checkMark ? 'hideCheckMark' : ''
-    }`"
-    :panelProps="{ id: 'p-dropup-panel' }"
-    @click.prevent
-  >
-    <template #value="slotProps">
-      <div ref="sDropDownRef" class="ans">
-        <slot name="customButton" label="">
-          <!-- populate from LocalStorage -->
-          <div
-            v-if="slotProps.value[props.optionLabel] && !props.customButton"
-            class="flex align-items-center justify-content-end"
-          >
-            <div class="ans">
-              {{ slotProps.value[props.optionLabel] }}
+  <div class="dropup-panel-holder">
+    <div class="ans" @click="toggleDrawerClick">
+      <slot name="customButton" label="">
+        <div class="ans">
+          {{ vModel }}
+        </div>
+      </slot>
+    </div>
+
+    <Drawer
+      v-model:visible="visibleBottom"
+      ref="drawerRef"
+      position="bottom"
+      style="height: auto"
+      :showCloseIcon="false"
+      id="dropup-panel"
+      class="dropup-panel"
+      @show="setPanel"
+      @hide="unsetPanel"
+    >
+      <template #header>
+        <div class="style-mode-dark w-full">
+          <div class="px-4">
+            <i class="pi pi-minus drag-closer-line" @click="closeMenu" />
+            <h3 v-if="props.label" class="p-submenu-header-replace">
+              {{ props.label }}
+            </h3>
+          </div>
+          <slot name="header" />
+        </div>
+      </template>
+      <template #default>
+        <div class="p-menu-list">
+          <div class="p-menu-item">
+            <div
+              v-for="item in options"
+              :key="item.label"
+              class="style-mode-dark item p-menu-item-content relative"
+              @click="onMenuUpdate(item)"
+              :class="[
+                {
+                  selected:
+                    item.id === (typeof vModel === 'object' ? vModel.id : vModel) &&
+                    props.checkMark,
+                },
+              ]"
+            >
+              <!-- id = {{ item }}
+              <br />
+              Vmodel = {{ vModel }} -->
+              <div :key="item.label" class="flex align-items-center station-options">
+                <img
+                  v-if="item.image"
+                  :alt="item.label"
+                  :src="item.image"
+                  class="mr-3"
+                  style="width: 40px; height: 40px"
+                />
+                <i v-if="item.icon" class="mr-3" :class="item.icon"></i>
+                <component
+                  class="mr-3 custom-icon"
+                  :active="item.active ?? false"
+                  v-if="item.customIcon"
+                  :is="item.customIcon"
+                />
+                <div class="option">{{ item.label }}</div>
+              </div>
             </div>
           </div>
-          <span v-else>
-            <!-- populate from Supabase -->
-            <div class="ans">
-              {{ data }}
-            </div>
-          </span>
-        </slot>
-      </div>
-    </template>
-    <template #header>
-      <div class="style-mode-dark">
-        <div class="px-4">
-          <i class="pi pi-minus closer-line" @click="closeMenu" />
-          <h3 v-if="props.label" class="p-submenu-header-replace">
-            {{ props.label }}
-          </h3>
         </div>
-        <slot name="header" />
-      </div>
-    </template>
-    <template #option="slotProps">
-      <!--  <pre>{{ slotProps.option }}</pre> -->
-      <div class="style-mode-dark">
-        <div
-          :key="slotProps.option[props.optionLabel]"
-          class="flex align-items-center station-options"
-          :class="[{ selected: slotProps.option[props.optionLabel] === dataRef }]"
-        >
-          <img
-            v-if="slotProps.option.image"
-            :alt="slotProps.option.label"
-            :src="slotProps.option.image"
-            class="mr-3"
-            style="width: 18px; height: 18px"
-          />
-          <i v-if="slotProps.option.icon" class="mr-3" :class="slotProps.option.icon"></i>
-          <component
-            class="mr-3 custom-icon"
-            :active="slotProps.option.active ?? false"
-            v-if="slotProps.option.customIcon"
-            :is="slotProps.option.customIcon"
-          />
-          <div class="option">{{ slotProps.option[props.optionLabel] }}</div>
+      </template>
+      <template #footer="slotProps">
+        <div class="footer">
+          <slot name="footer"></slot>
         </div>
-      </div>
-    </template>
-    <template #footer="slotProps">
-      <div class="footer">
-        <slot name="footer"></slot>
-      </div>
-    </template>
-  </Dropdown>
+      </template>
+    </Drawer>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.s-dropup:not(.normal) {
-  width: v-bind(width);
-  height: v-bind(height);
-  background: transparent;
-  border: none;
-  text-align: right;
-  &.p-focus {
-    outline: none;
-    box-shadow: none;
-  }
-  .p-dropdown-trigger {
-    display: none !important;
-  }
-  //&:hover {
-  //background: var(--background3);
-  //}
-}
-</style>
-<style lang="scss">
-@mixin checkMark {
-  &:after {
-    font-family: primeicons;
-    content: "\e909";
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    right: 20px;
-    width: 1rem;
-    height: 1rem;
-  }
-}
-.s-dropup:not(.normal) {
-  .p-dropdown-trigger {
-    display: none !important;
-  }
-  .p-dropdown-label {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
+.dropup-panel-holder {
   .ans {
     @include font-config($type-paragraph1);
   }
-  &.customButton .p-dropdown-label {
-    justify-content: center;
-  }
 }
-.p-dropup-panel {
-  // move the panel above the bottom-menu
-  z-index: 10010;
-  &.release {
-    transition: bottom 0.25s;
-    -webkit-transition: bottom 0.25s;
-  }
-  &.is-customButton {
-    .p-highlight:after {
-      display: none !important;
-    }
-  }
-  position: fixed !important;
-  display: block !important;
-  top: unset !important;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  transform-origin: center bottom !important;
-  border-radius: 28px 28px 0px 0px;
-  -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
-  box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
-  background: var(--background4) !important;
-  .pi-minus.closer-line {
-    color: #ffffff;
-    font-size: 30px;
-    text-align: center;
-    width: 100%;
-    opacity: 30%;
-  }
+.dropup-panel {
   .p-submenu-header-replace {
     background: transparent;
-    color: var(--text-color);
+    color: var(--p-text-color);
     font-weight: var(--font-weight-700);
     font-size: 1.625rem;
     font-family: var(--font-family-header);
     margin-top: 20px;
     margin-bottom: 20px;
   }
-  .p-dropdown-items-wrapper {
-    max-height: unset !important;
-    padding: 5px 0px 0px 0px;
-    .p-dropdown-item {
-      color: #ffffff !important;
-      font-weight: var(--font-weight-600);
-      font-size: 0.938rem;
-      padding: 0.75rem 20px;
-      background: unset !important;
-      &:hover {
-        background: #ffffff3d !important;
-      }
-      &.p-highlight {
-        background: unset !important;
-        @include checkMark;
-      }
-      .station-options {
-        //margin: 10px 0;
-        word-wrap: break-word;
-        width: 100%;
-        img {
-          width: 40px !important;
-          height: 40px !important;
-        }
-        .option {
-          font-size: 16px;
-          white-space: wrap;
-        }
-        &.selected {
-          @include checkMark;
-        }
-      }
-      .custom-icon {
-        width: 2rem;
-        height: 2rem;
-        flex: none;
-      }
-    }
+}
+</style>
+
+<style lang="scss">
+:root,
+[data-style-mode="light"],
+.style-mode-light {
+  --dropupBg: var(--p-surface-700);
+  --menu-item-hover: var(--p-surface-500);
+}
+[data-style-mode="dark"],
+.style-mode-dark {
+  --dropupBg: var(--p-surface-25);
+  --menu-item-hover: #ffffff3d;
+}
+@mixin checkMark {
+  &:after {
+    font-family: primeicons;
+    content: "\e909";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    right: 20px;
+    width: 1rem;
+    height: 1rem;
+    color: #ffffff;
   }
-  .footer {
-    //padding: 0px 20px calc($bottomMenuHeight + $playerHeight) 20px;
-    padding: 0px 20px calc($bottomMenuHeight + 20px) 20px;
-  }
-  &.hideCheckMark {
-    .p-highlight:after {
-      display: none !important;
+}
+
+.p-drawer-mask {
+  .p-drawer.dropup-panel {
+    max-height: 100vh;
+    z-index: 10010;
+    background-color: var(--dropupBg);
+    border: none;
+    &.release {
+      transition: bottom 0.25s;
+      -webkit-transition: bottom 0.25s;
     }
-    .station-options .selected:after {
-      display: none !important;
+    -webkit-box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -20px 40px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 28px 28px 0px 0px;
+    .p-drawer-header {
+      padding: 0;
+    }
+    .p-drawer-content {
+      padding: 0;
+    }
+    .p-menu {
+      border: none;
+      background-color: transparent;
+    }
+    .p-menu-list {
+      padding: 0;
+      overflow-y: auto;
+      .p-menu-item {
+        position: relative;
+        .custom-icon {
+          width: 24px;
+          height: 24px;
+          flex: none;
+        }
+        .p-menu-item-content {
+          border-radius: 0;
+          padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+          color: var(--p-surface-0);
+          font-size: 1rem;
+          font-weight: var(--font-weight-600);
+          &:hover {
+            background: var(--menu-item-hover);
+          }
+          &:focus {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+          &.selected {
+            @include checkMark;
+          }
+        }
+      }
     }
   }
 }

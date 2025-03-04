@@ -37,8 +37,15 @@ watch(
 .back-to-top-button {
   .p-scrolltop {
     margin-bottom: calc(env(safe-area-inset-bottom) + v-bind(bottomBuffer));
-    border-radius: 50%;
     z-index: 1;
+    background: #000000b3;
+    border: none;
+    box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+    height: 2rem;
+    width: 2rem;
+    &:hover {
+      background: #000000;
+    }
   }
 }
 </style>

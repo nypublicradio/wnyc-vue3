@@ -1,6 +1,4 @@
 <script setup>
-import VImage from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue'
-import VFlexibleLink from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue'
 const props = defineProps({
   name: {
     type: String,
@@ -23,15 +21,7 @@ const props = defineProps({
     default: 40,
   },
 })
-const emit = defineEmits(['on-click'])
-
-// TEMP fix to make ripple work+
-import { usePrimeVue } from 'primevue/config'
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
+const emit = defineEmits(["on-click"])
 </script>
 
 <template>

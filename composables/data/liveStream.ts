@@ -1,4 +1,4 @@
-import { useCurrentEpisodeHolder, useAllCurrentStations, useCurrentUserProfile, useGlobalToast } from '~/composables/states'
+import { useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast } from '~/composables/states'
 import { saveRecentlyPlayed } from '~/utilities/helpers'
 
 
@@ -23,32 +23,39 @@ export async function updateLiveStream(slug: string, save = true) {
     }
 }
 
-export async function updateAllLiveStreams() {
+export async function updateAllLiveStreams(init = true) {
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
+    const currentStreamStation = useCurrentStreamStation()
     const currentUserProfile = useCurrentUserProfile()
     const config = useRuntimeConfig()
     // BFF
     try {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
-        // set all streams
+        // set all streams to the filtered array
         allCurrentStations.value = fetchingAll.filter(Boolean)
-        //allCurrentStations.value = allCurrentStationsImport
 
-        // set initial stream with the `currentStreamStation` value in the states.ts file
-        const initialStation = allCurrentStations.value.find(
-            (option) => {
-                //console.log('currentUserProfile.value  = ', currentUserProfile.value)
-                if (currentUserProfile.value) {
+        let thisStation = null
+
+        if (init) {
+            // set initial stream with the `currentStreamStation` value in the states.ts file
+            thisStation = allCurrentStations.value.find(
+                (option) => {
                     const profile = typeof currentUserProfile.value.default_live_stream === 'string' ? currentUserProfile.value.default_live_stream : currentUserProfile.value.default_live_stream.station
+                    // set the current stream station slug
+                    currentStreamStation.value = option.slug
                     return option.station === profile
-                } else {
-                    return null
                 }
-            }
-        )
-        currentEpisodeHolder.value = initialStation
-        //console.log('currentEpisodeHolder STREAM= ', currentEpisodeHolder.value)
+            )
+        } else {
+            thisStation = allCurrentStations.value.find(
+                (option) => {
+                    return option.slug === currentStreamStation.value
+                }
+            )
+        }
+        currentEpisodeHolder.value = thisStation
+
     } catch (error) {
         const globalToast = useGlobalToast()
         globalToast.value = {

@@ -107,7 +107,7 @@ watch(
             v-if="props.live"
             font-size="14px"
             bg-color="transparent"
-            padding="1px 8px 1px 3px"
+            padding="1px 3px 1px 3px"
           />
           <DownloadedSmallIcon v-if="props.isDownloaded" class="ml-2" />
         </div>
@@ -119,14 +119,11 @@ watch(
 <style lang="scss" scoped>
 .small-play {
   .p-button {
-    padding: 0.219rem 0.75rem;
-    min-height: 28px;
     &.active {
-      //border: var(--night) 1px solid;
+      //border: var(--bw-toggle) 1px solid;
     }
   }
   .icon {
-    margin-right: 0.25rem;
     .circular-progress-bar {
       position: absolute;
       left: -6px;
@@ -139,7 +136,6 @@ watch(
       }
     }
     &:not(.live) {
-      margin-right: 0.5rem;
       .pause-icon {
         height: 8px;
       }
@@ -155,7 +151,7 @@ watch(
   }
   .content {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: var(--font-weight-700);
     line-height: normal;
     align-items: center;
     * {

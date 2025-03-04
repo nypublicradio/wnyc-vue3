@@ -12,6 +12,7 @@ const config: CapacitorConfig = {
   ios: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
     appendUserAgent: 'iOS-WNYC-App',
+    handleApplicationNotifications: false,
   },
   plugins: {
     CapacitorCookies: {

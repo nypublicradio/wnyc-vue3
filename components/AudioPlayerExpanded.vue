@@ -1,6 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
 import {
   trackClickEvent,
   shareAPI,
@@ -48,13 +46,17 @@ const showDownload = ref(true)
 watchEffect(async () => {
   // hide share if it is a segment, which is only set in NPR direct show episodes
   currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
-
   isFavorited.value = await checkIsFavorited(
-    currentEpisode.value.showSlug || currentEpisode.value.slug
+    currentEpisode.value.showSlug ||
+      currentEpisode.value.slug ||
+      currentEpisode.value.meta?.slug ||
+      null
   )
   // show/hide download button based on show title
   const showsWithoutDownload = ["nyc now", "wnyc news"]
-  const showTitle = currentEpisode.value.showTitle.toLowerCase()
+  const showTitle = (
+    currentEpisode.value.showTitle || currentEpisode.value.title
+  )?.toLowerCase()
   showDownload.value = showTitle
     ? !showsWithoutDownload.includes(showTitle) || !isApp.value
     : true
@@ -264,7 +266,7 @@ const getDotMenuItems = () => {
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 // handles the click on the bottom fixed footer
@@ -342,8 +344,6 @@ const moreFromClick = () => {
         <DotMenu
           :menuItems="getDotMenuItems()"
           size="large"
-          width="37px"
-          height="37px"
           class="-mr-2"
           @changeEmit="onMenuChange"
         >
@@ -359,7 +359,7 @@ const moreFromClick = () => {
           </template>
           <template #header-bottom>
             <div>
-              <div class="flex gap-3 px-4 align-items-center">
+              <div class="flex gap-3 align-items-center px-4">
                 <VImage
                   :src="
                     templatizePublisherImageUrl(currentEpisode.image) ??
@@ -467,8 +467,8 @@ const moreFromClick = () => {
         bottom: 0;
         left: 0;
         width: 100%;
-        transition: bottom $transitionDuration;
-        -webkit-transition: bottom $transitionDuration;
+        transition: bottom var(--p-transition-duration);
+        -webkit-transition: bottom var(--p-transition-duration);
       }
 
       .tools {

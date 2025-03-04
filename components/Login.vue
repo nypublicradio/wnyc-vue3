@@ -1,6 +1,6 @@
 <script async setup>
-import VLoginWithEmail from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue"
-import VLoginWithProvider from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue"
+import VLoginWithEmail from "~/components/supabase/VLoginWithEmail.vue"
+import VLoginWithProvider from "~/components/supabase/VLoginWithProvider.vue"
 
 import {
   useSignupSideBar,
@@ -53,14 +53,11 @@ const openForgotPassword = () => {
     <section>
       <p>
         Don't have an account yet?
-        <Button
-          link
-          label="Sign up"
-          class="link"
-          @click="onSignupClick"
-          aria-label="sign up"
-        />
+        <VFlexibleLink to="#" aria-label="sign up" @click="onSignupClick">
+          Sign up
+        </VFlexibleLink>
       </p>
+
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -79,7 +76,11 @@ const openForgotPassword = () => {
         class="center"
         @submit-success="onLogin('apple')"
       />
-      <Divider class="my-4" align="center">
+      <Divider
+        class="my-4"
+        align="center"
+        pt:content:style="background:var(--p-surface-25)"
+      >
         <b>or</b>
       </Divider>
       <VLoginWithEmail
@@ -92,13 +93,14 @@ const openForgotPassword = () => {
         <template #belowSubmit>
           <div class="mt-4 relative">
             <p class="text-center">
-              <Button
-                link
-                label="Forgot password?"
+              <VFlexibleLink
+                to="#"
                 class="link m-auto block"
                 aria-label="forgot password"
                 @click="openForgotPassword"
-              />
+              >
+                Forgot password?
+              </VFlexibleLink>
             </p>
           </div>
         </template>

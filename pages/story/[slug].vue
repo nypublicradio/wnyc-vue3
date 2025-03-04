@@ -1,8 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VImageCaption from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue"
-import VImageGallery from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageGallery.vue"
-import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
 import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -195,7 +191,7 @@ const togglePlayHere = (story) => {
         </template>
         <template #belowImage>
           <div>
-            <p class="text-left px-4 mt-1 text-xs">
+            <p class="text-right px-4 mt-1 type-fineprint">
               {{ storyData.image.credit }}
             </p>
           </div>
@@ -287,7 +283,7 @@ const togglePlayHere = (story) => {
   width: 28px;
 }
 .story-page .v-byline .flexible-link {
-  color: var(--text-color) !important;
+  color: var(--p-text-color) !important;
   text-decoration: none !important;
 }
 

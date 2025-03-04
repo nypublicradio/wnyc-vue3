@@ -9,17 +9,20 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate"
+    "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
+    "build-theme": "node assets/build-theme.js"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
     "@nuxtjs/device": "^3.1.0",
     "@nuxtjs/ionic": "0.13.1",
+    "@primevue/nuxt-module": "^4.2.5",
     "@sentry/vite-plugin": "^2.21.1",
-    "@vueuse/nuxt": "^10.11.0",
+    "@vueuse/nuxt": "12.5.0",
     "date-fns": "^2.30.0",
     "nuxt": "^3.12.3",
-    "sass": "1.69.7"
+    "sass": "1.69.7",
+    "vitest": "0.32.4"
   },
   "dependencies": {
     "@capacitor-firebase/analytics": "^6.1.0",
@@ -44,8 +47,9 @@
     "@hypernym/nuxt-gsap": "^2.4.2",
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",
+    "@nypublicradio/capacitor-ios-notification-settings": "^1.0.3",
     "@nypublicradio/capacitor-remote-streamer": "^0.3.9",
-    "@nypublicradio/nypr-design-system-vue3": "^2.1.51",
+    "@primevue/themes": "^4.2.5",
     "@sentry/integrations": "^7.114.0",
     "@sentry/tracing": "^7.114.0",
     "@sentry/vue": "^7.118.0",
@@ -54,7 +58,7 @@
     "@types/humps": "^2.0.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
-    "@vueuse/core": "^10.11.0",
+    "@vueuse/core": "12.5.0",
     "@vueuse/integrations": "^10.11.0",
     "axios": "1.6.5",
     "bp-capacitor-background-mode": "^2.0.10",
@@ -68,11 +72,12 @@
     "jsdom": "^21.1.2",
     "memoize": "^10.0.0",
     "music-metadata": "^7.14.0",
+    "onesignal-cordova-plugin": "^5.2.7",
     "podcast-feed-parser": "^1.0.4",
-    "primeflex": "^3.3.0",
-    "primevue": "3.46.0",
+    "primeflex": "^3.3.1",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.2.5",
     "ufo": "^1.5.4",
-    "vitest": "0.32.4",
     "vue": "3.4.6",
     "worker-timers": "^8.0.4"
   }

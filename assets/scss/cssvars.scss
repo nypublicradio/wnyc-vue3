@@ -1,0 +1,110 @@
+:root,
+[data-style-mode='light'],
+.style-mode-light {
+    /* global */
+    --font-size: 1rem;
+    font-size: var(--font-size);
+    --font-ratio: 1.125;
+
+    --font-family: 'Open Sans', sans-serif;
+    --font-family-header: 'ff-meta-web-pro', sans-serif;
+    --font-family-tisa: 'ff-tisa-web-pro', sans-serif;
+
+    --font-size-1: calc(var(--font-size-2) / var(--font-ratio));
+    --font-size-2: calc(var(--font-size-3) / var(--font-ratio));
+    --font-size-3: calc(var(--font-size-4) / var(--font-ratio));
+    --font-size-4: calc(var(--font-size-5) / var(--font-ratio));
+    --font-size-5: calc(var(--font-size-6) / var(--font-ratio));
+    --font-size-6: var(--font-size);
+    --font-size-7: calc(var(--font-size-6) * var(--font-ratio));
+    --font-size-8: calc(var(--font-size-7) * var(--font-ratio));
+    --font-size-9: calc(var(--font-size-8) * var(--font-ratio));
+    --font-size-10: calc(var(--font-size-9) * var(--font-ratio));
+    --font-size-11: calc(var(--font-size-10) * var(--font-ratio));
+    --font-size-12: calc(var(--font-size-11) * var(--font-ratio));
+    --font-size-13: calc(var(--font-size-12) * var(--font-ratio));
+    --font-size-14: calc(var(--font-size-13) * var(--font-ratio));
+    --font-size-15: calc(var(--font-size-14) * var(--font-ratio));
+    --font-size-16: calc(var(--font-size-15) * var(--font-ratio));
+    --font-size-17: calc(var(--font-size-16) * var(--font-ratio));
+    --font-size-18: calc(var(--font-size-17) * var(--font-ratio));
+    --font-size-19: calc(var(--font-size-18) * var(--font-ratio));
+    --font-size-20: calc(var(--font-size-19) * var(--font-ratio));
+
+    --font-weight: normal;
+    --font-weight-100: 100;
+    --font-weight-200: 200;
+    --font-weight-300: 300;
+    --font-weight-400: 400;
+    --font-weight-500: 500;
+    --font-weight-600: 600;
+    --font-weight-700: 700;
+    --font-weight-800: 800;
+    --font-weight-900: 900;
+
+    --header-height: #{$headerHeight};
+    --bottom-menu-height: #{$bottomMenuHeight};
+    --bottom-menu-icon-color: #ffffff;
+    --player-height: #{$playerHeight};
+
+    --teal-lake: #298c9a;
+    --electric-violet: #9747ff;
+    --honolulu-blue: #0b7bbc;
+    --berry: #bb339e;
+    --spanish-orange: #f06000;
+    --sea-green: #469c78;
+    /* global */
+
+    color-scheme: light;
+    --p-ripple-background: #{$p-ripple-background-light};
+    --background: var(--p-surface-0);
+    --background2: var(--p-surface-0);
+    --background3: var(--p-surface-50);
+    --solid-dark-bg-color: var(--p-surface-950);
+    --stroke-toggle-color: var(--p-surface-50);
+    --wnyc-logo-color: #de1e3d;
+    --link-button-color: var(--p-link-500);
+    --link-button-hover-color: var(--p-link-400);
+    --link-button-text-hover-decoration: underline;
+    --link-button-focus-shadow: 0 0 0.2rem 0.2rem var(--p-link-600);
+    --focus-outline: 0 none;
+    --focus-outline-offset: 0;
+    --focus-shadow: 0 0 0.2rem 0.2rem var(--p-link-500);
+    --focus-ring: var(--focus-shadow);
+
+    --s-box-background-color: var(--background);
+    --header-background: #ffffffe6;
+    --live-feature-background: var(--p-surface-25);
+    --bw-toggle: var(--p-surface-950);
+    --success: var(--p-green-500);
+    --error: var(--p-red-500);
+}
+[data-style-mode='dark'],
+.style-mode-dark {
+    color-scheme: dark;
+    --p-ripple-background: #{$p-ripple-background-dark};
+    --background: #{$backgroundBlueGradient1};
+    --background2: var(--p-surface-25);
+    --background3: #ffffff1a;
+    --solid-dark-bg-color: var(--p-darkblue-500);
+    --stroke-toggle-color: var(--p-surface-25);
+    --wnyc-logo-color: #ffffff;
+    --link-button-color: var(--p-surface-0);
+    --link-button-hover-color: var(--p-surface-300);
+    --link-button-focus-shadow: 0 0 0.2rem 0.2rem var(--p-surface-500);
+    --focus-shadow: 0 0 0.2rem 0.2rem var(--p-surface-0);
+
+    --s-box-background-color: var(--p-slate-500);
+    --header-background: #1b223ce6;
+    --live-feature-background: var(--background3);
+    --bw-toggle: var(--p-surface-0);
+    --success: var(--p-green-400);
+    --error: var(--p-red-400);
+}
+
+// darkmode in global darkmode
+html.style-mode-dark {
+    [data-style-mode='dark'],
+    .style-mode-dark {
+    }
+}

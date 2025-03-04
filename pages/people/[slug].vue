@@ -1,6 +1,5 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VPerson from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VPerson.vue"
+
 import {
   trackClickEvent,
   getUserFallBackImage,
@@ -147,7 +146,7 @@ const routeBack = () => {
 <style lang="scss">
 .person-page {
   hr {
-    background: var(--text-color);
+    background: var(--p-text-color);
   }
 }
 </style>

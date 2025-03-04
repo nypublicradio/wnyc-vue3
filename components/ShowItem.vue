@@ -1,15 +1,7 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
 import { checkIsFavorited, addToFavorites2 } from "~/utilities/helpers"
 import { useCurrentEpisodeHolder, useCurrentEpisode } from "~/composables/states"
-
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -62,7 +54,7 @@ const handleAddToFavorites = () => {
 }
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 // set the items for the Dot menu
@@ -102,7 +94,7 @@ const getDotMenuItems = (bucketItem) => {
         :ratio="[1, 1]"
         :srcset="[2]"
         class="flex-none"
-        style="height: 116px; width: 116px; background-color: var(--background2)"
+        style="height: 116px; width: 116px; background-color: var(--p-surface-25)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
@@ -120,8 +112,6 @@ const getDotMenuItems = (bucketItem) => {
       label=""
       @changeEmit="onMenuChange"
       class="z-1"
-      height="32px"
-      width="32px"
     />
     <Button
       v-else

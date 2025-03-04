@@ -1,6 +1,6 @@
 <template>
-  <div class="skeleton-holder flex gap-3">
-    <Skeleton class="flex-none" height="116px" width="116px" borderRadius="0px" />
+  <div class="skeleton-holder show-item flex gap-3">
+    <Skeleton class="flex-none v-image" height="116px" width="116px" borderRadius="0px" />
     <div class="flex w-full flex-column py-1">
       <div>
         <Skeleton

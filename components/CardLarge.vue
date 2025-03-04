@@ -1,9 +1,5 @@
 <script setup>
 import { getDate } from "~/utilities/helpers"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
 
 const props = defineProps({
   item: {
@@ -15,15 +11,10 @@ const props = defineProps({
     default: false,
   },
 })
-
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
 </script>
 
 <template>
-  <div v-if="props.item" class="card-large mb-4 p-ripple">
+  <div v-if="props.item" class="card-large p-ripple" v-ripple>
     <VFlexibleLink
       class="card-click w-full h-full absolute top-0 left-0 z-1"
       raw
@@ -68,10 +59,9 @@ defineExpose({
   border-radius: 8px;
   overflow: hidden;
   max-width: 248px;
-  background-color: var(--background2);
+  min-width: 248px;
+  background-color: var(--p-surface-25);
   position: relative;
-  .top {
-  }
   .bottom {
     padding: 1rem;
     height: 100%;

@@ -13,18 +13,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  width: {
-    type: String,
-    default: "42px",
-  },
-  height: {
-    type: String,
-    default: "42px",
-  },
-  customButton: {
-    type: Boolean,
-    default: true,
-  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -35,14 +23,12 @@ const emit = defineEmits(["changeEmit"])
     :options="props.menuItems"
     :label="props.label"
     @change="emit('changeEmit', $event)"
-    :customButton="props.customButton"
-    :width="props.width"
-    :height="props.height"
   >
     <template #customButton="slotProps">
       <slot name="myCustomButton" label="">
         <Button
-          class="text-cyan-500 hover:bg-cyan-50 rounded"
+          class="rounded"
+          severity="secondary"
           icon="pi pi-ellipsis-v"
           text
           rounded
@@ -61,9 +47,3 @@ const emit = defineEmits(["changeEmit"])
     </template>
   </DropupMenu>
 </template>
-
-<style lang="scss" scoped>
-.p-dropdown {
-  border-radius: 50%;
-}
-</style>

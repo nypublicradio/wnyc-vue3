@@ -1,6 +1,5 @@
 <script setup>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
-import VUploadImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VUploadImage.vue"
+import VUploadImage from "~/components/supabase/VUploadImage.vue"
 import UserIcon from "~/components/icons/UserIcon.vue"
 import {
   useSettingSideBar,
@@ -110,12 +109,10 @@ const avatarUrl = computed(() => {
       <template #icon v-if="!avatarUrl">
         <UserIcon />
 
-        <Button
+        <i
           v-if="currentUser && props.isEmail"
-          icon="pi pi-plus"
-          severity="secondary"
-          rounded
-          aria-label="upload image"
+          class="pi pi-plus"
+          aria-label="upload image plus icon"
         />
       </template>
     </Avatar>
@@ -131,7 +128,8 @@ const avatarUrl = computed(() => {
         :currentUserProfile="currentUserProfile"
         :client="client"
         :config="config"
-        :maxFileSize="2500000"
+        :maxFileSize="8500000"
+        :userId="`${currentUserProfile?.name}-${currentUser?.id}`"
         @close-dialog="() => (imageUploadModal = false)"
         @imageUploaded="
           (imageUrl) => {
@@ -169,16 +167,20 @@ const avatarUrl = computed(() => {
     position: relative;
     flex: none;
     background-color: #ffffff;
-    color: var(--night--500);
+    color: var(--p-surface-950);
     border-radius: 50%;
-    .p-button {
+    .pi-plus {
+      font-size: 0.5rem;
       position: absolute;
-      transform: scale(0.5);
-      left: -15px;
-      bottom: -10px;
-      &:before {
-        font-weight: 900;
-      }
+      background-color: var(--p-primary-500);
+      padding: 3px;
+      line-height: normal;
+      border-radius: 10px;
+      left: -3px;
+      bottom: -3px;
+      font-weight: var(--font-weight-900);
+      color: var(--p-surface-0) !important;
+      pointer-events: none;
     }
   }
 }

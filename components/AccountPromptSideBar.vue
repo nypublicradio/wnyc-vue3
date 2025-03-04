@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
 
 const props = defineProps({
@@ -9,7 +8,7 @@ const props = defineProps({
   },
   bgColor: {
     type: [String, Promise],
-    default: "var(--solid-bg-color)",
+    default: "var(--p-surface-950)",
   },
 })
 

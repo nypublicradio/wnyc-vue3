@@ -1,6 +1,5 @@
 <script setup>
 import { templatizePublisherImageUrl } from "~/utilities/helpers"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 
 const props = defineProps({
   data: {
@@ -51,7 +50,7 @@ const handleClick = () => {
         </h2>
         <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
         <div
-          class="blurb truncate t3lines html-formating"
+          class="blurb truncate t3lines html-formating p1"
           v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
         />
       </div>
@@ -85,6 +84,11 @@ const handleClick = () => {
     width: v-bind(size);
   }
 }
-.skeleton {
+</style>
+<style lang="scss">
+.live-item {
+  .v-image-publisher.image .image {
+    background-color: #ffffff;
+  }
 }
 </style>

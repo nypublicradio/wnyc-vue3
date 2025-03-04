@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VSmartHeader from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VSmartHeader.vue"
 const route = useRoute()
 useHead({
   bodyAttrs: {
@@ -31,7 +30,7 @@ useHead({
 header {
   .v-smart-header {
     margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -1) !important;
-    transition: margin-top $transitionDuration ease;
+    transition: margin-top var(--p-transition-duration) ease;
   }
 }
 header.show {

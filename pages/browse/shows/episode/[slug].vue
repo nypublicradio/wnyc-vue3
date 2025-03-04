@@ -1,5 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import { useCurrentUser, useCurrentEpisode } from "~/composables/states"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -158,7 +157,7 @@ const getDotMenuItems = (bucketItem) => {
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 // handle the toggle play button and tracking
@@ -326,13 +325,11 @@ const getEpisodeImage = () => {
               :menuItems="getDotMenuItems(episodeData)"
               label=""
               @changeEmit="onMenuChange"
-              width="32px"
-              height="32px"
               class="-mr-1"
             >
               <template #header-bottom>
                 <div>
-                  <div class="flex gap-3 px-4 align-items-center">
+                  <div class="flex gap-3 align-items-center px-4">
                     <VImage
                       :src="episodeData?.image?.template || getEpisodeImage()"
                       :alt="`${episodeData?.title} show image`"
@@ -431,7 +428,7 @@ const getEpisodeImage = () => {
   font-size: var(--font-size-4);
   font-weight: var(--font-weight-400);
   line-height: var(--font-size-6);
-  color: var(--text-color);
+  color: var(--p-text-color);
   text-decoration: none;
   opacity: 70%;
 }

@@ -5,7 +5,8 @@ import {
   getYear,
   setFontSize,
   setDarkMode,
-  toggleAskNotificationPermisstions,
+  toggleAskNotificationPermissions,
+  //toSystemSettings,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -15,13 +16,14 @@ import {
   useEditProfileSideBar,
   useIsLiveStream,
   useIsApp,
-  useAccountDeleteSideBar
+  useAccountDeleteSideBar,
+  useGlobalToast,
 } from "~/composables/states.ts"
-import VInputSwitch from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VInputSwitch.vue"
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
-
+import useOneSignal from "~/composables/useOneSignal"
+const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -35,6 +37,9 @@ const allCurrentStations = useAllCurrentStations()
 const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
+const defaultStreamRef = ref(null)
+const textSizeRef = ref(null)
+
 //const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
 const isEmail = currentUser.value?.app_metadata?.provider === "email"
@@ -42,17 +47,14 @@ const isDisabled = computed(() => {
   return !isEmail
 })
 
-const isMessage = shallowRef(false)
-const severity = shallowRef("success")
-const theMessage = shallowRef("Settings updated")
-
-// main function to update the message component
-const showMessage = async (mySverity = "success", myMessage = "Settings updated.") => {
-  isMessage.value = false
-  await nextTick()
-  isMessage.value = true
-  severity.value = mySverity
-  theMessage.value = myMessage
+const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
+// main function to update the toast component
+const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
+  globalToast.value = {
+    severity: mySeverity,
+    summary: myMessage,
+    life: 3000,
+  }
 }
 
 // formats the station list for the dropdown
@@ -61,6 +63,7 @@ const initializeStationList = (val) => {
 
   val.forEach((station) => {
     tempMenuData.push({
+      id: station.station,
       label: station.title,
       name: station.title,
       station: station.station,
@@ -89,6 +92,8 @@ const updateProfile = async () => {
         dark_mode: currentUserProfile.value.dark_mode,
         receive_general_notifications:
           currentUserProfile.value.receive_general_notifications,
+        one_signal_notification_channels:
+          currentUserProfile.value.one_signal_notification_channels,
         text_size: currentUserProfile.value.text_size.label,
         autodownload: currentUserProfile.value.autodownload,
       })
@@ -121,27 +126,22 @@ watch(currentUserProfile.value, () => {
 })
 
 // handles setting the font size and tracking the event
-const onUpdateTextSize = () => {
-  setFontSize(currentUserProfile.value.text_size.pixel)
-
-  trackClickEvent(
-    "Click Tracking - Test size",
-    "Settings Sidebar - Display",
-    currentUserProfile.value.text_size.label
-  )
+const onUpdateTextSize = (data) => {
+  setFontSize(data.pixel)
+  trackClickEvent("Click Tracking - Test size", "Settings Sidebar - Display", data.label)
 }
 
 // handles tracking the station change event
-const onUpdateStation = () => {
+const onUpdateStation = (data) => {
+  // if not playing, update the live stream so the home page updates with the new default stream
+  if (!isLiveStream.value) {
+    updateLiveStream(data.slug)
+  }
   trackClickEvent(
     "Click Tracking - Default stream",
     "Settings Sidebar - Listening Preferences",
-    currentUserProfile.value.default_live_stream.station
+    data.station
   )
-  // if not playing, update the live stream so the home page updates with the new default stream
-  if (!isLiveStream.value) {
-    updateLiveStream(currentUserProfile.value.default_live_stream.slug)
-  }
 }
 
 const accountHeader = computed(() => {
@@ -170,24 +170,45 @@ const editField = (field) => {
     )
   }
 }
-
-const clickThisId = (id) => {
-  document.getElementById(id).click()
+// handles the dropdown menu click event
+const clickThisMenu = (ref) => {
+  ref.toggleDrawer()
 }
 
 // handles the notification switch change event
 const handleNotificationChange = async (e) => {
-  await toggleAskNotificationPermisstions(e)
+  await toggleAskNotificationPermissions()
   trackClickEvent(
-    "Click Tracking - General switch",
+    "Click Tracking - General notification switch",
     "Settings Sidebar - Notifications",
-    currentUserProfile.receive_general_notifications
+    e
   )
+}
+
+// handles the notification channel switch change events
+const handleNotificationChannelChange = (channel) => {
+  const key = channel.key
+  const val = currentUserProfile.value.one_signal_notification_channels.find(
+    (c) => c.key === channel.key
+  ).value
+
+  trackClickEvent(
+    "Click Tracking - Notification Channel switch",
+    "Settings Sidebar - Notifications",
+    `${key}: ${val}`
+  )
+  // update the user tag in OneSignal
+  toggleOneSignalUserTag(key, val)
+
+  //supabase user profile is updated by the watch that triggers updateProfile()
 }
 
 // handle the delete account sidebar when the user clicks on the delete account link
 const onDeleteAccountClick = () => {
-  trackClickEvent("Click Tracking - delete account", "Delete Account Sidebar - user section")
+  trackClickEvent(
+    "Click Tracking - delete account",
+    "Delete Account Sidebar - user section"
+  )
   accountDeleteSideBar.value = true
 }
 </script>
@@ -211,8 +232,12 @@ const onDeleteAccountClick = () => {
       >
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
-      <SBox label="Email" @click="editField('email')" :clickable="!isDisabled"
-      :ripple="!isDisabled">
+      <SBox
+        label="Email"
+        @click="editField('email')"
+        :clickable="!isDisabled"
+        :ripple="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
       <SBox
@@ -229,17 +254,23 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox label="Default stream" @labelClick="clickThisId('default-stream')">
+      <SBox
+        label="Default stream"
+        class="cursor-pointer"
+        @click="clickThisMenu(defaultStreamRef)"
+      >
         <DropupMenu
+          ref="defaultStreamRef"
           id="default-stream"
-          v-model:data.sync="currentUserProfile.default_live_stream"
+          v-model="currentUserProfile.default_live_stream"
           :options="stationsMenuData"
           optionLabel="station"
           placeholder="Select a station"
           label="Default stream"
-          width="80%"
-          class="-mr-2"
+          width="auto"
           @change="onUpdateStation"
+          blockClick
+          checkMark
         />
       </SBox>
     </section>
@@ -247,39 +278,86 @@ const onDeleteAccountClick = () => {
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox label="General" :ripple="false">
-        <VInputSwitch
+      <SBox label="Allow Notifications" :ripple="false">
+        <VToggleSwitch
           yes="ON"
           no="OFF"
-          static-width
-          v-model:data.sync="currentUserProfile.receive_general_notifications"
+          v-model:data="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
         />
       </SBox>
+    </section>
+    <section
+      v-if="
+        currentUserProfile.receive_general_notifications &&
+        masterNotificationChannelsArray.length > 0 &&
+        isApp
+      "
+      class="notifications p-0"
+    >
+      <div class="flex s-title-holder">
+        <div class="s-title">Notification Types</div>
+      </div>
+
+      <SBox
+        v-for="channel in masterNotificationChannelsArray"
+        :label="channel.label"
+        :description="channel.description"
+        :key="channel.key"
+        :ripple="false"
+      >
+        <VToggleSwitch
+          yes="ON"
+          no="OFF"
+          v-model:data="
+            currentUserProfile.one_signal_notification_channels.find(
+              (c) => c.key === channel.key
+            ).value
+          "
+          @change="handleNotificationChannelChange(channel)"
+        />
+      </SBox>
+      <!-- 
+      <SBox
+        label="System options"
+        :ripple="true"
+        @click="
+          () => {
+            toSystemSettings()
+            trackClickEvent(
+              'Click Tracking - System options',
+              'Settings Sidebar',
+              'System options'
+            )
+          }
+        "
+      ></SBox> -->
     </section>
     <section class="display p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Display</div>
       </div>
-      <SBox label="Text size" @labelClick="clickThisId('text-size')">
+      <!-- <pre class="text-xs">{{ currentUserProfile }}</pre> -->
+      <SBox label="Text size" class="cursor-pointer" @click="clickThisMenu(textSizeRef)">
         <DropupMenu
+          ref="textSizeRef"
           id="text-size"
-          v-model:data.sync="currentUserProfile.text_size"
+          v-model="currentUserProfile.text_size"
           :options="textSizeOptions"
           optionLabel="label"
           placeholder="Select a Text Size"
           label="Text Size"
-          width="80%"
-          class="-mr-2"
+          width="auto"
+          blockClick
+          checkMark
           @change="onUpdateTextSize"
         />
       </SBox>
       <SBox label="Dark theme" :ripple="false">
-        <VInputSwitch
+        <VToggleSwitch
           yes="ON"
           no="OFF"
-          static-width
-          v-model:data.sync="currentUserProfile.dark_mode"
+          v-model:data="currentUserProfile.dark_mode"
           @change="
             () => {
               setDarkMode(currentUserProfile.dark_mode)
@@ -364,27 +442,17 @@ const onDeleteAccountClick = () => {
       ></SBox>
       <SBox
         v-if="currentUser"
-        :is-link="true"
+        :is-route="true"
         label="Delete account"
         :ripple="false"
         @click="onDeleteAccountClick"
       ></SBox>
     </section>
     <section class="footer mb-4">
-      <WnycLogo style="fill: var(--night)" />
+      <WnycLogo style="fill: var(--bw-toggle)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version {{ config.public.APP_VERSION }}</p>
     </section>
-    <Transition name="zoom">
-      <Message
-        v-if="isMessage"
-        class="settings-message"
-        :severity="severity"
-        :closable="false"
-        :sticky="false"
-        >{{ theMessage }}</Message
-      >
-    </Transition>
   </div>
 </template>
 
@@ -400,10 +468,10 @@ const onDeleteAccountClick = () => {
       font-size: 13px;
       text-transform: uppercase;
       opacity: 0.7;
-      color: var(--text-color);
+      color: var(--p-text-color);
     }
     .pi {
-      color: var(--text-color);
+      color: var(--p-text-color);
     }
   }
   .user {
@@ -422,7 +490,7 @@ const onDeleteAccountClick = () => {
       width: 60px;
       height: auto;
       margin-bottom: 10px;
-      fill: var(--night-500);
+      fill: var(--p-surface-950);
     }
   }
   .p-inplace {
@@ -459,8 +527,8 @@ const onDeleteAccountClick = () => {
       display: flex;
       justify-content: flex-end;
       .p-inputtext {
-        text-align: right;
-        width: 100%;
+        // text-align: right;
+        // width: 100%;
         @include font-config($type-paragraph1);
       }
     }

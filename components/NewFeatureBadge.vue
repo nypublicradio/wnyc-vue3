@@ -5,8 +5,8 @@
 <style lang="scss" scoped>
 .new-feature-badge {
   pointer-events: none;
-  background-color: var(--yellow);
-  color: var(--black-500);
+  background-color: var(--p-yellow-500);
+  color: #000000;
   padding: 0.15rem 0.3rem;
   border-radius: 0.15rem;
   font-size: 0.7rem;
@@ -22,7 +22,7 @@
     transform: rotate(-90deg);
     border-top: 0.25rem solid transparent;
     border-bottom: 0.25rem solid transparent;
-    border-right: 0.5rem solid var(--yellow);
+    border-right: 0.5rem solid var(--p-yellow-500);
   }
 }
 </style>

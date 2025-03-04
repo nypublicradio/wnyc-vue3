@@ -67,7 +67,7 @@ const menuClick = (item) => {
   }
 }
 .bottom-menu {
-  background-color: var(--bottom-menu-bg-color);
+  background-color: var(--solid-dark-bg-color);
   position: fixed;
   bottom: 0;
   left: 0;
@@ -105,8 +105,8 @@ const menuClick = (item) => {
           display: flex;
           flex-direction: column;
           align-items: center;
-          font-size: 12px;
-          line-height: 15px;
+          font-size: var(--font-size-4);
+          line-height: var(--font-size-5);
           font-weight: var(--font-weight-500);
           font-family: var(--font-family-header);
           text-decoration: none;

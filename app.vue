@@ -1,19 +1,9 @@
 <script setup lang="ts">
-import {
-  getAndSetUserProfile,
-  askNotificationPermisstions,
-  askTrackingPermissions,
-  refreshData,
-} from "~/utilities/helpers"
+import { getAndSetUserProfile, refreshData } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
-import {
-  //PushNotificationSchema,
-  PushNotifications,
-} from "@capacitor/push-notifications"
-import type { ActionPerformed, Token } from "@capacitor/push-notifications"
 import {
   useIsApp,
   useCurrentUserProfile,
@@ -25,6 +15,7 @@ import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
+import useOneSignal from "~/composables/useOneSignal"
 
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
@@ -33,7 +24,6 @@ initFeatureSessionCount()
 const toast = useToast()
 
 const route = useRoute()
-const router = useRouter()
 const config = useRuntimeConfig()
 const currentUserProfile = useCurrentUserProfile()
 const browserTopColor = useBrowserTopColor()
@@ -41,12 +31,10 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-
-const fcmToken = ref("")
-//const nNotification = ref(null)
-const appLaunchUrl = ref(null)
+const { initOneSignal, notificationPermissionSync } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
+
 useHead({
   htmlAttrs: {
     lang: "en",
@@ -69,65 +57,25 @@ isNetworkConnected.value = initNewtworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  // Ask for notification permissions
-  await askNotificationPermisstions()
-  // Ask for tracking permissions (iOS only)
-  await askTrackingPermissions()
-
-  // On success, we should be able to receive notifications
-  await PushNotifications.addListener("registration", (token: Token) => {
-    fcmToken.value = token.value
-    //alert('Push registration success, token: ' + token.value)
-  })
-
-  // Some issue with our setup and push will not work
-  await PushNotifications.addListener("registrationError", (/* error: any */) => {
-    //alert('Error on registration: ' + JSON.stringify(error))
-  })
-
-  // Show us the notification payload if the app is open on our device
-  await PushNotifications.addListener(
-    "pushNotificationReceived",
-    (/* notification: PushNotificationSchema */) => {
-      //nNotification.value = notification
-      //alert('Push received: ' + JSON.stringify(notification))
-    }
-  )
-
-  // Method called when tapping on a local notification
-  await PushNotifications.addListener(
-    "pushNotificationActionPerformed",
-    (notification: ActionPerformed) => {
-      //nNotification.value = notification
-      //alert('Push action performed: ' + JSON.stringify(notification))
-      const slug = notification.notification.data.slug
-      if (slug) {
-        router.push(`/${slug}`)
-      }
-    }
-  )
   // fired when the app becomes active (ios only)
   await App.addListener("appStateChange", (/* { isActive } */) => {
     //alert("App state changed. ", JSON.stringify(isActive))
   })
 
-  // this is for deep links
+  // this is for auth redirect from the web
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
-    //when redirected to the app from a deep link, we need to exchange the url parame code for a session
-    //console.log("event = ", event)
-    const code = event.url.split("=")[1]
-    //alert("code = " + JSON.stringify(code))
-    // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
-    const cleanCode = code.replace("#", "")
-    //console.log("code = ", code)
-    if (cleanCode) {
+    //if the url has a query var "code" then we need to exchange it for a session
+    if (event.url.includes("code=")) {
+      //when redirected to the app from a apple or google auth, we need to exchange the url parame code for a session
+      const code = event.url.split("=")[1]
+      // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
+      const cleanCode = code.replace("#", "")
       try {
         await client.auth.exchangeCodeForSession(cleanCode)
-        //alert("route")
         navigateTo("/")
-        //alert("refresh")
         window.location.reload()
+        return
       } catch (error) {
         console.error(error)
         toast.add({
@@ -135,58 +83,37 @@ const addListeners = async () => {
           summary: "Authentication failed",
           life: 6000,
         })
+        return
       }
-    } else {
-      console.error("No code or wrong code in the auth event.url")
-      // show toast error
-      toast.add({
-        severity: "error",
-        summary: "Authentication failed",
-        life: 6000,
-      })
     }
   })
 }
 
-// get the URL the app was loaded from (if any)
-const checkAppLaunchUrl = async () => {
-  const url = await App.getLaunchUrl()
-  appLaunchUrl.value = url
-  // so in the future, if we have it set up where certain URLs open the app, then we can read it and do something with it
-  //alert("App opened with URL: " + JSON.stringify(url))
-  // get data from UA
-}
-
 onMounted(async () => {
+  // OneSignal
+  if (isApp.value) initOneSignal()
+
   await getAndSetUserProfile()
 
   if (isApp.value) {
-    // init downloads files system for the app
     await initFileSystem()
-
     await addListeners()
-    // if APP then add listeners
-    await checkAppLaunchUrl()
-    // init local notifications
     await initLocalNotifications()
+
+    // initial check for notification permission
+    await notificationPermissionSync(undefined)
   }
 
-  //refresh data and check notification permissions every time the tab is in focus or the App is in focus
+  //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
-      // update user profile when coming back from  the system settings
-      if (isApp.value) {
-        await PushNotifications.checkPermissions().then((result) => {
-          if (result.receive === "denied") {
-            currentUserProfile.value.receive_general_notifications = false
-          }
-          if (result.receive === "granted") {
-            currentUserProfile.value.receive_general_notifications = true
-          }
-        })
-      }
       // refresh data
       refreshData()
+
+      // update user profile when coming back from the system settings
+      if (isApp.value) {
+        await notificationPermissionSync(undefined)
+      }
     }
   })
 
@@ -228,7 +155,7 @@ watch(globalError, (error) => {
   if (error) {
     toast.add({
       severity: "error",
-      summary: error,
+      summary: `${error}`,
       life: 6000,
     })
   }
@@ -299,9 +226,10 @@ watch(globalError, (error) => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <div id="anchor"></div>
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
-  <Sidebars class="z-2" />
-  <Toast position="top-center" />
+  <Drawers class="z-2" />
+  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
   <!-- <PullToRefresh /> -->
 </template>

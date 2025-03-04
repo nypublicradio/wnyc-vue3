@@ -1,7 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 //import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
@@ -17,11 +14,6 @@ import {
 } from "~/utilities/helpers"
 import { useCurrentUser } from "~/composables/states"
 import { getDownloadedImageUri } from "~/utilities/file-system"
-
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -146,7 +138,7 @@ const getDotMenuItems = (bucketItem) => {
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 const imgSrcUrl = ref("")
@@ -219,7 +211,9 @@ const handleClick = () => {
           :showValue="false"
           ></ProgressBar> -->
         </div>
-        <div class="flex justify-content-between align-items-center flex-wrap">
+        <div
+          class="button-holder flex justify-content-between align-items-center flex-wrap"
+        >
           <ReadButton
             class="z-1"
             :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
@@ -233,12 +227,10 @@ const handleClick = () => {
               label=""
               @changeEmit="onMenuChange"
               class="z-1"
-              height="28px"
-              width="32px"
             >
               <template #header-bottom>
                 <div>
-                  <div class="flex gap-3 px-4 align-items-center">
+                  <div class="flex gap-3 align-items-center px-4">
                     <VImage
                       :src="imgSrcUrl"
                       :alt="`${props.data?.showTitle} show image`"
@@ -286,6 +278,9 @@ const handleClick = () => {
   cursor: pointer;
   .card-title-title {
     @include cardTitle();
+  }
+  .button-holder {
+    margin-bottom: -6px;
   }
 }
 </style>

@@ -1,6 +1,14 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { useGlobalToast, useCurrentUserProfile } from "~/composables/states"
-import { formatDate, toggleAskNotificationPermisstions } from "~/utilities/helpers"
+import { useGlobalToast } from "~/composables/states"
+import { formatDate, toggleAskNotificationPermissions } from "~/utilities/helpers"
+//import { Capacitor } from "@capacitor/core"
+
+// assembles the proper title for the schedule entry
+export const getEntryTitle = (entry) => {
+    return entry.attributes.parentTitle && entry.attributes.scheduleEventTitle
+        ? `${entry.attributes.parentTitle}: ${entry.attributes.scheduleEventTitle}`
+        : entry.attributes.scheduleEventTitle ?? entry.attributes.parentTitle
+}
 
 // local notifications list state
 export const usePendingLocalNotifications = () => useState('usePendingLocalNotifications', () => null)
@@ -8,11 +16,12 @@ export const usePendingLocalNotifications = () => useState('usePendingLocalNotif
 // update the global state
 export const setPendingLocalNotifications = async () => {
     const pendingLocalNotifications = usePendingLocalNotifications()
+    await nextTick()
     pendingLocalNotifications.value = await LocalNotifications.getPending()
 }
 
 // check if the entry is in the local notifications list
-const checkNotificationsList = (entry) => {
+export const checkNotificationsList = (entry) => {
     const pendingLocalNotifications = usePendingLocalNotifications()
     return pendingLocalNotifications.value?.notifications.some(
         (notification) => notification.extra.id === entry.id
@@ -23,11 +32,11 @@ const checkNotificationsList = (entry) => {
 export const scheduleLocalNotification = async (entry) => {
     const idNumber = entry.id.split(":")
     const id = Number(idNumber[1])
-    const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
-    const title = `${entry.attributes.parentTitle} is starting now on ${entry.station}!`
+    //const entryStartDateInFiveSeconds = new Date(Date.now() + 5000)
+    const title = `${getEntryTitle(entry)} is starting now on ${entry.station}!`
 
     const body = entry.attributes.scheduleEventTitle ? `${entry.attributes.scheduleEventTitle}` : ''
     const serializedEntry = JSON.stringify(entry);
@@ -39,7 +48,7 @@ export const scheduleLocalNotification = async (entry) => {
                 title,
                 body,
                 id,
-                schedule: { at: entryStartDate, allowWhileIdle: true },
+                schedule: { at: /* entryStartDateInFiveSeconds */entryStartDate, allowWhileIdle: true },
                 //schedule: { at: new Date(Date.now() + 5000) },
                 sound: "notification.wav",
                 actionTypeId: "route-live",
@@ -47,7 +56,8 @@ export const scheduleLocalNotification = async (entry) => {
             },
         ],
     }
-    if (currentUserProfile.value.receive_general_notifications) {
+    const permitted = await LocalNotifications.checkPermissions()
+    if (permitted.display === "granted") {
         if (!checkNotificationsList(entry)) {
             await LocalNotifications.schedule(notificationBody)
             setPendingLocalNotifications()
@@ -64,10 +74,31 @@ export const scheduleLocalNotification = async (entry) => {
         } else {
             await LocalNotifications.cancel(notificationBody)
             setPendingLocalNotifications()
+            /*             globalToast.value = {
+                            severity: "success",
+                            summary: `Notification canceled for ${formatDate(
+                                entry.attributes.start,
+                                "h:mm a EEE, MMM do "
+                            )}`,
+                            life: 3000,
+                            closable: true,
+                        } */
         }
     } else {
-        // ask permissions and try again
-        await toggleAskNotificationPermisstions()
+        //ask alarm permission Android only
+        // if (Capacitor.getPlatform() === "android") {
+        //     const alarmPermitted = await LocalNotifications.checkExactNotificationSetting()
+        //     if (alarmPermitted.exact_alarm !== "granted") {
+        //         await LocalNotifications.changeExactNotificationSetting()
+        //     }
+        // }
+
+        // ask permissions
+        if (permitted.display === "prompt") {
+            await LocalNotifications.requestPermissions()
+        } else {
+            await toggleAskNotificationPermissions()
+        }
     }
 }
 
@@ -77,11 +108,22 @@ export const initLocalNotifications = async () => {
     // Method called when tapping on a push notification
     await LocalNotifications.addListener(
         "localNotificationActionPerformed",
-        (/* notification */) => {
-            //alert('local notifications action performed: ' + JSON.stringify(notification))
+        (data) => {
 
-            // the notification object will contain the all the data that was added to the locaal notification. so in the future we can add more data to the notification and use it here to do whatever we want. As of now, we are just hard loading the LIVE page
-            window.location.href = "/live"
+            // we use the slug in the notification data to create the query variable
+            window.location.href = `/live?slug=${data.notification.extra.slug}`
         }
     )
 }
+
+// cancel all pending notifications if they exist and alert the user
+export const cancelAllPendingLocalNotifications = async (pendingLocalNotifications) => {
+    try {
+        const idsArray = pendingLocalNotifications.notifications.map(notification => ({ id: notification.id }));
+        await LocalNotifications.cancel({ notifications: idsArray });
+
+        setPendingLocalNotifications()
+    } catch (error) {
+        console.error('Error cancelling notifications:', error);
+    }
+};

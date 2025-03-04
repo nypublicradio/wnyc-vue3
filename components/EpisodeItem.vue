@@ -1,8 +1,4 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
-import VByline from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VByline.vue"
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import TrashIcon from "~/components/icons/TrashIcon.vue"
@@ -30,11 +26,6 @@ import {
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
-
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -197,7 +188,7 @@ const getDotMenuItems = (bucketItem) => {
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e.value.command()
+  e?.value?.command()
 }
 
 const imgSrcUrl = ref("")
@@ -309,7 +300,9 @@ const handleHasAudio = computed(() => {
           :showValue="false"
           ></ProgressBar> -->
         </div>
-        <div class="flex justify-content-between align-items-center flex-wrap">
+        <div
+          class="button-holder flex justify-content-between align-items-center flex-wrap"
+        >
           <PlayButton
             v-if="handleHasAudio"
             :data="props.data"
@@ -339,12 +332,10 @@ const handleHasAudio = computed(() => {
                 label=""
                 @changeEmit="onMenuChange"
                 class="z-1"
-                height="28px"
-                width="32px"
               >
                 <template #header-bottom>
                   <div>
-                    <div class="flex gap-3 px-4 align-items-center">
+                    <div class="flex gap-3 align-items-center px-4">
                       <VImage
                         :src="imgSrcUrl"
                         :alt="`${props.data.showTitle} show image`"
@@ -394,6 +385,9 @@ const handleHasAudio = computed(() => {
   cursor: pointer;
   .card-title-title {
     @include cardTitle();
+  }
+  .button-holder {
+    margin-bottom: -6px;
   }
 }
 </style>

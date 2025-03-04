@@ -188,6 +188,7 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
+            npm run generate-splash
             npm run generate
             npx cap sync ios
       - run:
@@ -243,6 +244,7 @@ jobs:
           name: Capacitor Setup
           command: |
             patch node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/CapacitorWebView.java -i kludge/BackgroundPlay.diff
+            npm run generate-splash
             npm run generate
             npx cap sync android
       - run:

@@ -22,10 +22,10 @@ const { platform, osVersion } = await Device.getInfo()
 const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
-  { label: "15 minutes", value: 900 },
-  { label: "30 minutes", value: 1800 },
-  { label: "45 minutes", value: 2700 },
-  { label: "60 minutes", value: 3600 },
+  { id: "15 minutes", label: "15 minutes", value: 900 },
+  { id: "30 minutes", label: "30 minutes", value: 1800 },
+  { id: "45 minutes", label: "45 minutes", value: 2700 },
+  { id: "60 minutes", label: "60 minutes", value: 3600 },
 ]
 
 const timeToIncrement = 5
@@ -49,8 +49,23 @@ const handleCurrentTimeChange = (inc) => {
   }
 }
 
+// build the object from the id
+const buildSleepTimerDataFromId = (id) => {
+  const obj = timeLengthOptions.find((option) => option.id === id)
+  return { entry: obj }
+}
+
 // start the timer
-const handleStartTimer = async (obj) => {
+const handleStartTimer = async (data) => {
+  let obj = null
+  // data is already an object
+  if (typeof data === "object") {
+    obj = data
+  } else {
+    // dropdown menu: id that builds the object
+    obj = buildSleepTimerDataFromId(data)
+  }
+
   // ios only
   if (platform === "ios" && parseInt(osVersion) < 17) {
     globalToast.value = {
@@ -79,6 +94,24 @@ const handleStartTimer = async (obj) => {
   // start the timer
   onUpdateDuration(obj)
 }
+
+//adds the custom time to the timeLengthOptions so it renders in the select menu
+watch(
+  sleepTimerSelectedTime,
+  () => {
+    if (
+      !timeLengthOptions.some(
+        (option) => option.value === sleepTimerSelectedTime.value.entry.value
+      )
+    ) {
+      timeLengthOptions.push(sleepTimerSelectedTime.value.entry)
+    }
+  },
+  {
+    immediate: true,
+    once: true,
+  }
+)
 </script>
 
 <template>
@@ -94,16 +127,25 @@ const handleStartTimer = async (obj) => {
       >
         <DropupMenu
           id="sleep-timer-duration"
-          v-model="sleepTimerSelectedTime"
+          v-model="sleepTimerSelectedTime.entry"
           :options="timeLengthOptions"
           optionLabel="label"
           placeholder="Select a Sleep Timer Duration"
           label="Sleep Timer"
-          @change="handleStartTimer"
-          normal
-          :checkMark="false"
+          @update:modelValue="handleStartTimer"
+          checkMark
         >
-          <template #footer="slotpProps">
+          <template #customButton="slotProps">
+            <Select
+              :options="timeLengthOptions"
+              v-model="sleepTimerSelectedTime.entry"
+              optionLabel="label"
+              placeholder="Select a Time"
+              class="w-full"
+              overlayClass="sleep-timer-overlay"
+            />
+          </template>
+          <template #footer="slotProps">
             <div class="style-mode-dark">
               <hr />
               <p>Custom time:</p>
@@ -112,7 +154,11 @@ const handleStartTimer = async (obj) => {
                 class="flex align-items-center justify-content-between"
                 @click="
                   handleStartTimer({
-                    value: { value: customTime * 60, label: `${customTime} minutes` },
+                    entry: {
+                      id: `${customTime} minutes`,
+                      label: `${customTime} minutes`,
+                      value: customTime * 60,
+                    },
                   })
                 "
               >
@@ -139,11 +185,7 @@ const handleStartTimer = async (obj) => {
             </div>
           </template>
         </DropupMenu>
-        <Button
-          label="Start"
-          severity=""
-          @click="handleStartTimer({ value: sleepTimerSelectedTime })"
-        />
+        <Button label="Start" @click="handleStartTimer(sleepTimerSelectedTime)" />
       </div>
       <div v-else>
         <div class="count-down">
@@ -185,7 +227,7 @@ const handleStartTimer = async (obj) => {
 .footer {
   .custom-time {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-600);
   }
 }
 .sleep-timer {
@@ -197,7 +239,7 @@ const handleStartTimer = async (obj) => {
     margin: auto;
     display: block;
     path {
-      fill: var(--text-color);
+      fill: var(--p-text-color);
     }
   }
   .count-down {
@@ -217,5 +259,8 @@ const handleStartTimer = async (obj) => {
   .p-dropdown .p-dropdown-label .ans div {
     justify-content: start !important;
   }
+}
+.sleep-timer-overlay.p-select-overlay {
+  display: none;
 }
 </style>

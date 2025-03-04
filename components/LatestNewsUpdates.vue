@@ -1,14 +1,6 @@
 <script setup>
 import { togglePlayEpisode } from "~/utilities/helpers"
 
-// TEMP fix to make ripple work
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
-
 const props = defineProps({
   localNewscast: {
     type: Object,
@@ -38,28 +30,11 @@ const props = defineProps({
           :newsData="props.nationalNewscast"
           sourceLabel="NPR"
           badgeLabel="U.S. & WORLD NEWS"
-          bagdeColor="var(--background-500)"
-          badgeBgColor="var(--indigo-500)"
+          bagdeColor="var(--p-surface-0)"
+          badgeBgColor="var(--p-indigo-500)"
           @onClick="togglePlayEpisode(props.nationalNewscast)"
         />
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.latest-news-updates {
-  .card-small {
-    background-color: var(--background2);
-    padding: 10px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    cursor: pointer;
-    .news-title {
-      font-size: 0.813rem;
-    }
-  }
-}
-</style>

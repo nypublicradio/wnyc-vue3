@@ -1,8 +1,7 @@
 <script setup>
-import VSignupWithEmail from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VSignupWithEmail.vue"
-//import VLoginWithEmail from '@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithEmail.vue'
-import VLoginWithProvider from "@nypublicradio/nypr-design-system-vue3/v2/src/components/supabase/VLoginWithProvider.vue"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
+import VSignupWithEmail from "~/components/supabase/VSignupWithEmail.vue"
+//import VLoginWithEmail from '~/components/supabase/VLoginWithEmail.vue'
+import VLoginWithProvider from "~/components/supabase/VLoginWithProvider.vue"
 
 import {
   useSignupSideBar,
@@ -52,13 +51,9 @@ const closeAll = () => {
     <section>
       <p>
         Already have an account?
-        <Button
-          link
-          label="Log in"
-          class="link"
-          aria-label="login"
-          @click="onLoginClick"
-        />
+        <VFlexibleLink to="#" aria-label="log in" @click="onLoginClick">
+          Log in
+        </VFlexibleLink>
       </p>
       <VLoginWithProvider
         :client="client"
@@ -78,7 +73,11 @@ const closeAll = () => {
         label="Sign up with Apple"
         @login-success="onSignup('apple')"
       />
-      <Divider class="my-4" align="center">
+      <Divider
+        class="my-4"
+        align="center"
+        pt:content:style="background:var(--p-surface-25)"
+      >
         <b>or</b>
       </Divider>
       <VSignupWithEmail

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
+
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
@@ -547,6 +546,13 @@ defineExpose({
     class="persistent-player"
     :class="[{ minimized: isMinimized }, { expanded: isExpanded }]"
   >
+    <!-- <i
+      v-if="
+        (props.canExpandWithSwipe && !isExpanded) ||
+        (props.canUnexpandWithSwipe && isExpanded)
+      "
+      class="pi pi-minus drag-closer-line absolute"
+    /> -->
     <div v-if="props.canMinimize" class="maximize-btn-holder">
       <Button
         title="maximize Player"
@@ -716,6 +722,7 @@ defineExpose({
                 class="show-image m-auto"
                 :ratio="[1, 1]"
                 role="presentation"
+                style="background-color: #ffffff"
               />
 
               <div v-if="isLiveStream" class="flex flex-column gap-2">
@@ -803,10 +810,10 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   position: fixed;
   z-index: var(--persistent-player-z-index);
   width: 100%;
-  color: var(--text-color);
+  color: var(--p-text-color);
   background-color: var(--persistent-player-bg);
-  transition: bottom 0.25s, height calc(var(--transition-duration) * 2);
-  -webkit-transition: bottom 0.25s, height calc(var(--transition-duration) * 2);
+  transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
+  -webkit-transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
   display: flex;
   flex-direction: column;
   &.minimized {
@@ -826,7 +833,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     right: 0;
     left: 0;
     margin: auto;
-    top: calc(-40px - var(--persistent-player-height-buffer));
+    top: calc(-20px - var(--persistent-player-height-buffer));
     width: 40px;
     height: 40px;
     overflow: hidden;
@@ -845,7 +852,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       transition: top 0.1s;
       -webkit-transition: top 0.1s;
       color: var(--persistent-player-maximize-btn-color);
-
+      border: none;
       &.show {
         transition: top 0.5s;
         -webkit-transition: top 0.5s;
@@ -918,11 +925,11 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 //expand-delay
 .expand-delay-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out;
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out;
 }
 
 .expand-delay-leave-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-in;
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-in;
 }
 
 .expand-delay-enter-from,
@@ -932,8 +939,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 //expand
 .expand-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--transition-duration) * 2.25);
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out;
+  transition-delay: calc(var(--p-transition-duration) * 2.25);
 }
 
 .expand-leave-active {
@@ -947,9 +954,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 //skipBtnR
 .skipBtnR-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out,
-    transform calc(var(--transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--transition-duration) * 2.25);
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out,
+    transform calc(var(--p-transition-duration) * 2) ease-out;
+  transition-delay: calc(var(--p-transition-duration) * 2.25);
 }
 
 .skipBtnR-leave-active {
@@ -967,9 +974,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 }
 //skipBtnL
 .skipBtnL-enter-active {
-  transition: opacity calc(var(--transition-duration) * 2) ease-out,
-    transform calc(var(--transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--transition-duration) * 2.25);
+  transition: opacity calc(var(--p-transition-duration) * 2) ease-out,
+    transform calc(var(--p-transition-duration) * 2) ease-out;
+  transition-delay: calc(var(--p-transition-duration) * 2.25);
 }
 
 .skipBtnL-leave-active {
@@ -1005,6 +1012,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   .track-info-image {
+    background-color: #ffffff;
     display: block;
 
     // prettier-ignore
@@ -1029,8 +1037,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     background: none;
 
     * {
-      color: var(--text-color);
-      fill: var(--text-color);
+      color: var(--p-text-color);
+      fill: var(--p-text-color);
     }
 
     &:hover {
@@ -1108,12 +1116,12 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
   .media-live-indicator-text {
     text-transform: uppercase;
-    background-color: var(--red);
+    background-color: var(--p-red-500);
     border-radius: 2px;
     color: #f5f5f5;
     font-family: sans-serif;
     font-size: 9px;
-    font-weight: 900;
+    font-weight: var(--font-weight-900);
     letter-spacing: 1.5px;
     padding: 0px 4px;
     transition: color 0.3s ease;

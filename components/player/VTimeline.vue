@@ -108,16 +108,6 @@ const handleClick = () => {
 .timeline {
   position: relative;
   width: 100%;
-  height: 6px !important;
-  background: var(--persistent-player-slider-buffer);
-  .p-slider-range {
-    background: var(--persistent-player-slider-progress);
-    border-radius: 6px;
-  }
-  .p-slider-handle {
-    border: 1px solid var(--persistent-player-slider-thumb-border);
-    background-color: var(--persistent-player-slider-thumb-bg);
-  }
   &.minimized {
     position: absolute;
     left: 0;

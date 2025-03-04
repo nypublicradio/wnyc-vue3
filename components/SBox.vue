@@ -1,11 +1,14 @@
 <script setup>
-import VFlexibleLink from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VFlexibleLink.vue"
 import { useSettingSideBar } from "~/composables/states.ts"
 const props = defineProps({
   label: {
     type: String,
     default: "",
     required: true,
+  },
+  description: {
+    type: String,
+    default: null,
   },
   link: {
     type: String,
@@ -15,7 +18,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isLink: {
+  isRoute: {
     type: Boolean,
     default: false,
   },
@@ -25,13 +28,6 @@ const props = defineProps({
   },
 })
 
-// TEMP fix to make ripple work+
-import { usePrimeVue } from "primevue/config"
-const $primevue = usePrimeVue()
-defineExpose({
-  $primevue,
-})
-// TEMP fix to make ripple work
 const settingSideBar = useSettingSideBar()
 const emit = defineEmits(["link-click", "label-click"])
 
@@ -47,29 +43,42 @@ const onClick = () => {
 <template>
   <div
     class="s-box relative overflow-hidden"
-    :class="[{ 'is-link': props.link || props.isLink, clickable: props.clickable }]"
+    :class="[{ 'is-link': props.link || props.isRoute, clickable: props.clickable }]"
   >
     <div
       class="content flex justify-content-between align-items-center"
       v-ripple
       :class="[{ killRipple: !props.ripple }]"
     >
-      <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full">
-        <Button :label="label" class="w-full text-left" text aria-label="menu item" />
+      <VFlexibleLink @click="onClick" v-if="link" raw :to="link" class="w-full py-1">
+        <Button
+          :label="label"
+          class="w-full text-left line-height-3"
+          text
+          aria-label="menu item"
+        />
       </VFlexibleLink>
-      <VFlexibleLink v-else-if="isLink" raw class="w-full">
-        <Button :label="label" class="w-full text-left" text aria-label="menu item" />
+      <VFlexibleLink v-else-if="isRoute" raw class="w-full py-1">
+        <Button
+          :label="label"
+          class="w-full text-left line-height-3"
+          text
+          aria-label="menu item"
+        />
       </VFlexibleLink>
-      <div v-else>
+      <template v-else>
         <div
-          class="label-holder flex h-full py-3 align-items-center cursor-pointer"
+          class="label-holder flex flex-column gap-1 h-full w-auto py-3 justify-items-center cursor-pointer"
           @click="emit('label-click')"
         >
-          <p class="label white-space-nowrap">
+          <p class="label">
             {{ label }}
           </p>
+          <p v-if="description" class="description">
+            {{ description }}
+          </p>
         </div>
-      </div>
+      </template>
       <slot />
     </div>
   </div>
@@ -79,36 +88,29 @@ const onClick = () => {
 .s-box {
   background-color: var(--s-box-background-color);
   width: 100%;
-  height: 50px;
-  padding: 0 1.25rem;
-  border: 1px solid var(--shade-400);
+  min-height: 50px;
+
+  border: 1px solid var(--stroke-toggle-color);
   border-left: none;
   border-right: none;
   margin-top: -1px;
   &.clickable {
     cursor: pointer;
   }
-  &.is-link {
-    padding: 0;
-    .flexible-link {
-      .p-button {
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
-        color: var(--night);
-        font-weight: var(--font-weight-500);
-        &:hover {
-          background: var(--background3);
-        }
-      }
-    }
-  }
   .content {
     width: 100%;
     height: 100%;
     font-size: 0.8125rem;
+    padding: 0 1.25rem;
   }
   .label {
     font-size: 1rem;
+    margin: 0 15px 0 0;
+  }
+  .description {
+    font-size: 0.75rem;
+    line-height: normal;
+    opacity: 0.7;
     margin-right: 15px;
   }
 }
@@ -123,6 +125,26 @@ const onClick = () => {
       }
       .label-holder {
         cursor: default !important;
+      }
+    }
+  }
+  &.is-link {
+    .content {
+      padding: 0;
+      .flexible-link {
+        .p-button {
+          justify-content: left;
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+          color: var(--bw-toggle);
+          font-weight: var(--font-weight-500);
+          &:hover {
+            background: var(--background3);
+          }
+          .p-button-label {
+            font-weight: var(--font-weight-500);
+          }
+        }
       }
     }
   }

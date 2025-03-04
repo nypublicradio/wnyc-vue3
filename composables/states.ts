@@ -1,13 +1,17 @@
+import { masterNotificationChannelsArray } from "~/composables/useOneSignal"
 // Homepage data
 // // global state for the Bff useHomepageData data
 // export const useHomepageData = () => useState('useHomepageData', () => null)
 
+// global state
+
 // default settings that are overwritten by user data
 const localUserProfileDefault: object = {
     autodownload: false,
-    default_live_stream: 'WNYC 93.9 FM',
+    default_live_stream: "WNYC 93.9 FM",
     receive_general_notifications: false,
-    text_size: 'Normal',
+    one_signal_notification_channels: masterNotificationChannelsArray,
+    text_size: "Normal",
     dark_mode: false,
     sleep_timer: 90,
 }
@@ -54,7 +58,7 @@ export const useSleepTimerCurrentTime = () =>
 
 // sleep timer selected state
 export const useSleepTimerSelectedTime = () =>
-    useState("useSleepTimerSelectedTime", () => ({ label: "30 minutes", value: 1800 }));
+    useState("useSleepTimerSelectedTime", () => ({ entry: { id: "30 minutes", label: "30 minutes", value: 1800 } }));
 
 // sleep timer running state
 export const useSleepTimerRunning = () => useState("useSleepTimerRunning", () => false)
@@ -163,11 +167,6 @@ const playerSeek = { bool: false, time: 20 }
  */
 export const usePlayerSeek = () => useState('usePlayerSeek', (bool, time) => playerSeek)
 
-/**
- * Global var for the height of the audio player
- */
-export const audioPlayerHeight = 60
-
 const currentStreamStation = 'wnyc-fm939'
 /**
  * Global state for the current streaming station / initial selection in the stream switcher dropdown. 
@@ -200,9 +199,9 @@ const bottomMenuState: object = {}
 export const useBottomMenuState = () => useState('bottomMenuState', () => bottomMenuState)
 
 const textSizeOptionsArr = [
-    { label: 'Normal', value: 'Normal', pixel: '16px' },
-    { label: 'Large', value: 'Large', pixel: '18px' },
-    { label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
+    { id: "Normal", label: 'Normal', value: 'Normal', pixel: '16px' },
+    { id: "Large", label: 'Large', value: 'Large', pixel: '18px' },
+    { id: "Extra Large", label: 'Extra Large', value: 'Extra Large', pixel: '20px' },
 ]
 
 /**

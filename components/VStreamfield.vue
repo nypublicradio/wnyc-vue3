@@ -1,8 +1,6 @@
 <script setup>
-import VImage from "@nypublicradio/nypr-design-system-vue3/v2/src/components/VImage.vue"
 import { trackClickEvent } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
-//import VImageCaption from '@nypublicradio/nypr-design-system-vue3/v2/src/components/VImageCaption.vue'
 const props = defineProps({
   article: {
     type: Object,

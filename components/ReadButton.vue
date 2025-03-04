@@ -54,15 +54,12 @@ const emit = defineEmits(["on-click"])
     padding: 0.219rem 0.75rem;
     min-height: 28px;
     &.active {
-      //border: var(--night) 1px solid;
+      //border: var(--bw-toggle) 1px solid;
     }
-  }
-  .icon {
-    margin-right: 0.5rem;
   }
   .content {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: var(--font-weight-700);
     line-height: normal;
     align-items: center;
     * {
