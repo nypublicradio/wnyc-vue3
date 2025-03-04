@@ -101,6 +101,7 @@ const clearAllTimeout = () => {
 
 // Fetch the schedule
 const fetchSchedule = async () => {
+  console.log("fetching schedule")
   clearAllTimeout()
   scheduleRef.value = null
   //const localDate = new Date()
@@ -174,8 +175,8 @@ const switchStation = async (station, isPLayingCheck = true) => {
       currentStreamStation.value = station.slug
       currentEpisodeHolder.value = station
     }
-    await fetchSchedule()
-    scrollToActiveStation()
+    //await fetchSchedule()
+    //scrollToActiveStation()
 
     trackClickEvent(
       "Click Tracking - Station Button",
@@ -217,6 +218,15 @@ watch(
   },
   { once: true }
 )
+// fetches the schedule currentEpisodeHolder changes
+watch(currentEpisodeHolder, async (oldData, newData) => {
+  //console.log("old", oldData?.id)
+  //console.log("new", newData?.id)
+  //if (newData && oldData.id !== newData.id) {
+  await fetchSchedule()
+  scrollToActiveStation()
+  //}
+})
 
 // Function to get the station by slug and play it when all stations are loaded
 const getStationBySlugAndPlayIt = async (querySlug) => {
@@ -279,6 +289,8 @@ onMounted(async () => {
     }
     // select station, and don't check if it is playing
     switchStation(currentEpisodeHolder.value, false)
+    await fetchSchedule()
+    scrollToActiveStation()
   }
 
   // send GA page view

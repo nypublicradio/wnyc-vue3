@@ -261,9 +261,16 @@ const handleSkipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
 
-watch(currentEpisode, (val) => {
-  if (val !== null) {
-    switchEpisode(val)
+watch(currentEpisode, (newVal, oldVal) => {
+  console.log("newVal", newVal)
+  console.log("oldVal", oldVal)
+  if (
+    newVal !== null &&
+    (newVal?.audio !== oldVal?.audio ||
+      newVal?.hls !== oldVal?.hls ||
+      newVal?.file !== oldVal?.file)
+  ) {
+    switchEpisode(newVal)
   }
 })
 

@@ -55,9 +55,6 @@ export async function updateAllLiveStreams(init = true) {
                     return option.slug === currentStreamStation.value
                 }
             )
-            // also update the current stream data, the media session data and the schedule
-
-
         }
         currentEpisodeHolder.value = thisStation
 

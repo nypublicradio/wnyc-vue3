@@ -2,6 +2,7 @@ import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
+  useCurrentEpisodeHolder,
   useDeviceId,
   useTextSizeOption,
   useIsApp,
@@ -1261,13 +1262,19 @@ export const deduplicateArray = (array) => {
 // a func to refresh all data
 export const refreshData = async (refreshUser = false) => {
   const currentEpisode = useCurrentEpisode()
+  const currentEpisodeHolder = useCurrentEpisodeHolder()
   const isRefreshing = useIsRefreshing()
+  const isLiveStream = useIsLiveStream()
 
   isRefreshing.value = true
 
   if (refreshUser) {
     await getAndSetUserProfile()
   }
+
+  // refresh streams but set it to the current stream, not the user default
+  await updateAllLiveStreams(false)
+
   // refresh all nuxt data
   try {
     await refreshNuxtData()
@@ -1276,8 +1283,19 @@ export const refreshData = async (refreshUser = false) => {
   } finally {
     isRefreshing.value = false
   }
-  // refresh streams but set it to the current stream, not the user default
-  updateAllLiveStreams(false)
+
+  // update the schedule data
+
+  // update currentEpisode data and prep for player
+  if (isLiveStream.value) {
+    currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
+  } else {
+    if (currentEpisode.value) {
+      currentEpisode.value = prepForPlayer(currentEpisode.value)
+    }
+  }
+
+
   //update media session
   initMediaSession(currentEpisode.value)
 }
