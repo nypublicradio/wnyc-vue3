@@ -227,6 +227,7 @@ watch(globalError, (error) => {
     <NuxtPage />
   </NuxtLayout>
   <div id="anchor"></div>
+  <VProgressBar />
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />

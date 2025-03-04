@@ -1260,6 +1260,10 @@ export const deduplicateArray = (array) => {
 // a func to refresh all data
 export const refreshData = async (refreshUser = false) => {
   const currentEpisode = useCurrentEpisode()
+  const isStreamLoading = useIsStreamLoading()
+
+  isStreamLoading.value = true
+
   if (refreshUser) {
     await getAndSetUserProfile()
   }
@@ -1268,6 +1272,8 @@ export const refreshData = async (refreshUser = false) => {
     await refreshNuxtData()
   } catch (error) {
     console.error(error)
+  } finally {
+    isStreamLoading.value = false
   }
   // refresh streams but set it to the current stream, not the user default
   updateAllLiveStreams(false)
