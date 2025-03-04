@@ -126,6 +126,12 @@ const isStreamLoading = false
  */
 export const useIsStreamLoading = () => useState('useIsStreamLoading', () => isStreamLoading)
 
+const isRefreshing = false
+/**
+ * Global state for the refreshing .
+ */
+export const useIsRefreshing = () => useState('useIsRefreshing', () => isRefreshing)
+
 /**
  * Global state for the current audio file is a live stream or not.
  */

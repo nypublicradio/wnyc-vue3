@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useIsStreamLoading } from "~/composables/states"
+import { useIsRefreshing } from "~/composables/states"
 
-const isStreamLoading = useIsStreamLoading()
+const isRefreshing = useIsRefreshing()
 </script>
 <template>
   <ProgressBar
-    v-if="isStreamLoading"
+    v-if="isRefreshing"
     class="fixed w-full"
     mode="indeterminate"
     style="height: 2px; top: env(safe-area-inset-top); z-index: 5001"

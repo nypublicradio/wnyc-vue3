@@ -17,6 +17,7 @@ import {
   useIsLiveStream,
   useAccountDeleteSideBar,
   useSettingSideBar,
+  useIsRefreshing,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -1260,9 +1261,9 @@ export const deduplicateArray = (array) => {
 // a func to refresh all data
 export const refreshData = async (refreshUser = false) => {
   const currentEpisode = useCurrentEpisode()
-  const isStreamLoading = useIsStreamLoading()
+  const isRefreshing = useIsRefreshing()
 
-  isStreamLoading.value = true
+  isRefreshing.value = true
 
   if (refreshUser) {
     await getAndSetUserProfile()
@@ -1273,7 +1274,7 @@ export const refreshData = async (refreshUser = false) => {
   } catch (error) {
     console.error(error)
   } finally {
-    isStreamLoading.value = false
+    isRefreshing.value = false
   }
   // refresh streams but set it to the current stream, not the user default
   updateAllLiveStreams(false)

@@ -1,4 +1,4 @@
-import { useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast } from '~/composables/states'
+import { useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast, useIsRefreshing } from '~/composables/states'
 import { saveRecentlyPlayed } from '~/utilities/helpers'
 
 
@@ -28,7 +28,9 @@ export async function updateAllLiveStreams(init = true) {
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentStreamStation = useCurrentStreamStation()
     const currentUserProfile = useCurrentUserProfile()
+    const isRefreshing = useIsRefreshing()
     const config = useRuntimeConfig()
+    isRefreshing.value = true
     // BFF
     try {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
@@ -55,6 +57,7 @@ export async function updateAllLiveStreams(init = true) {
             )
             // also update the current stream data, the media session data and the schedule
 
+
         }
         currentEpisodeHolder.value = thisStation
 
@@ -67,5 +70,7 @@ export async function updateAllLiveStreams(init = true) {
             closable: true,
         }
         console.error('error = ', error)
+    } finally {
+        isRefreshing.value = false
     }
 }
