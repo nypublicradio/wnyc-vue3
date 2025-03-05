@@ -135,7 +135,7 @@ export const useIsRefreshing = () => useState('useIsRefreshing', () => isRefresh
 /**
  * Global state for the current audio file is a live stream or not.
  */
-export const useIsLiveStream = () => useState('useIsLiveStream', () => null)
+export const useIsLiveStream = () => useState('useIsLiveStream', () => true)
 
 /**
  * Global state for the player expanded.

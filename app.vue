@@ -11,12 +11,23 @@ import {
   useIsNetworkConnected,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
+import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
+const {
+  getStationBySlugAndPlayIt,
+  switchStation,
+  scrollToActiveStation,
+  fetchSchedule,
+  clearAllTimeout,
+  getTheTime,
+  togglePlayHere,
+  liveScheduleData,
+} = useLiveStream()
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
 initFeatureSessionCount()
@@ -116,6 +127,9 @@ onMounted(async () => {
       }
     }
   })
+
+  // initial fetch of the schedule to start the live stream refresh loop
+  fetchSchedule()
 
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {

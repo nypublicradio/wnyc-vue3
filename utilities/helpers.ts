@@ -1287,7 +1287,7 @@ export const refreshData = async (refreshUser = false) => {
   // watch on the live.vue handles this schedule data
 
   // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
-  if (isLiveStream.value) {
+  if (currentEpisode.value && isLiveStream.value) {
     currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
     //update media session
     initMediaSession(currentEpisode.value)
