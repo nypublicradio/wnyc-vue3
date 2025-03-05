@@ -101,7 +101,6 @@ const clearAllTimeout = () => {
 
 // Fetch the schedule
 const fetchSchedule = async () => {
-  console.log("fetching schedule")
   clearAllTimeout()
   scheduleRef.value = null
   //const localDate = new Date()
