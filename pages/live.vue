@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, togglePlayEpisode } from "~/utilities/helpers"
+import { trackClickEvent, togglePlayEpisode, refreshData } from "~/utilities/helpers"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useTogglePlayTrigger,
@@ -101,6 +101,7 @@ const clearAllTimeout = () => {
 
 // Fetch the schedule
 const fetchSchedule = async () => {
+  console.log("fetching schedule")
   clearAllTimeout()
   scheduleRef.value = null
   //const localDate = new Date()
@@ -126,7 +127,7 @@ const fetchSchedule = async () => {
     if (scheduleRef.value[0]) {
       // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
       const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
-      timeout = setTimeout(fetchSchedule, delay)
+      timeout = setTimeout(refreshData, delay)
     }
   } catch (error) {
     globalToast.value = {
