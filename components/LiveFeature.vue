@@ -13,12 +13,6 @@ const currentEpisode = useCurrentEpisode()
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 const togglePlayHere = async () => {
-  // updates the stream to the current station
-  if (currentEpisode.value) {
-    await updateLiveStream(currentEpisode.value.slug, false)
-  } else {
-    await updateAllLiveStreams()
-  }
   if (
     currentEpisode.value?.slug !== currentEpisodeHolder.value?.slug ||
     currentEpisode.value?.timeStart !== currentEpisodeHolder.value?.timeStart
@@ -26,6 +20,12 @@ const togglePlayHere = async () => {
     togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
   } else {
     togglePlayTrigger.value = !togglePlayTrigger.value
+  }
+  // updates the stream to the current station
+  if (currentEpisode.value) {
+    await updateLiveStream(currentEpisode.value.slug, false)
+  } else {
+    await updateAllLiveStreams()
   }
 }
 </script>

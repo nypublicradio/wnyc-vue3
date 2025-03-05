@@ -1272,7 +1272,7 @@ export const refreshData = async (refreshUser = false) => {
     await getAndSetUserProfile()
   }
 
-  // refresh streams but set it to the current stream, not the user default
+  // refresh streams data to display on liveFeature and live page, but set it to the current stream, not the user default
   await updateAllLiveStreams(false)
 
   // refresh all nuxt data
@@ -1285,19 +1285,15 @@ export const refreshData = async (refreshUser = false) => {
   }
 
   // update the schedule data
+  // watch on the live.vue handles this schedule data
 
-  // update currentEpisode data and prep for player
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
   if (isLiveStream.value) {
     currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
-  } else {
-    if (currentEpisode.value) {
-      currentEpisode.value = prepForPlayer(currentEpisode.value)
-    }
+    //update media session
+    initMediaSession(currentEpisode.value)
   }
 
-
-  //update media session
-  initMediaSession(currentEpisode.value)
 }
 
 // function that gets a URL and returns the path and query only

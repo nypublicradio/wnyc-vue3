@@ -134,7 +134,7 @@ const switchEpisode = async (val) => {
     enableCommandCenterSeek: !isLiveStream.value,
   })
 
-  // initiallizes the media session in ~/utilities/media-session.js
+  // initializes the media session in ~/utilities/media-session.js
   initMediaSession(currentEpisode.value)
   setTimeout(() => {
     showPlayer.value = true
@@ -252,7 +252,7 @@ watch(isNetworkConnected, () => {
 //   console.log("watch: isBuffering = ", isBuffering.value, e)
 // })
 
-// function that handles the skip ahead toggle triiger
+// function that handles the skip ahead toggle trigger
 const handleSkipAhead = () => {
   skipAheadTrigger.value = !skipAheadTrigger.value
 }
@@ -262,8 +262,9 @@ const handleSkipBack = () => {
 }
 
 watch(currentEpisode, (newVal, oldVal) => {
-  console.log("newVal", newVal)
-  console.log("oldVal", oldVal)
+  //console.log("newVal", newVal)
+  //console.log("oldVal", oldVal)
+  // only switches the episode if the new value is not null and the audio, hls, or file values have changed. so when coming back into focus, the data can be updated in the currentEpisode, like if it was live and the show changed.
   if (
     newVal !== null &&
     (newVal?.audio !== oldVal?.audio ||
