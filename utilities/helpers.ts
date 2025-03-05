@@ -1268,34 +1268,30 @@ export const refreshData = async (refreshUser = false) => {
 
   isRefreshing.value = true
 
+  if (refreshUser) {
+    await getAndSetUserProfile()
+  }
+  // refresh streams data to display on liveFeature and live page, but set it to the current stream, not the user default
+  await updateAllLiveStreams(false)
   try {
-    if (refreshUser) {
-      await getAndSetUserProfile()
-    }
-    // refresh streams data to display on liveFeature and live page, but set it to the current stream, not the user default
-    await updateAllLiveStreams(false)
 
     // refresh all nuxt data
     await refreshNuxtData()
-
-    // update the schedule data
-    // watch on the live.vue handles this schedule data
-
-    // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
-    if (isLiveStream.value) {
-      currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
-      //update media session
-      initMediaSession(currentEpisode.value)
-    }
 
   } catch (error) {
     console.error(error)
   } finally {
     isRefreshing.value = false
   }
+  // update the schedule data
+  // watch on the live.vue handles this schedule data
 
-
-
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
+  if (isLiveStream.value) {
+    currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
+    //update media session
+    initMediaSession(currentEpisode.value)
+  }
 }
 
 // function that gets a URL and returns the path and query only
