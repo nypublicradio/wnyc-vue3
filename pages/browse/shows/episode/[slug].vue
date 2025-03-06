@@ -7,7 +7,7 @@ import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 //import FollowIcon from "~/components/icons/FollowIcon.vue"
-//import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
   trackClickEvent,
@@ -24,16 +24,17 @@ import useSleepTimer from "~/composables/useSleepTimer"
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-
 const currentEpisode = useCurrentEpisode()
 
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
-const { data: episode, pending, error } = useFetch(
+const { data: episode, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`
 )
 
-const episodeData = ref(episode?.value ?? null)
+const episodeData = ref(null)
+const theShowTitle = ref(null)
+const theSlug = ref(null)
 const hasSegments = ref(Array.isArray(episode?.value?.audio))
 
 const user = useCurrentUser()
@@ -82,6 +83,16 @@ const handleAddToFavorites = (bucketItem) => {
 //   // update SB and LS with new state
 //   trackClickEvent("Click Tracking - Add to Queue", "Episode Slug", bucketItem.title)
 // }
+
+// handles the click on the show image and dots menu
+const moreFromClick = () => {
+  trackClickEvent(
+    `Click Tracking - Show image`,
+    `Episode slug page: ${theSlug.value}`,
+    theShowTitle.value
+  )
+  navigateTo(`/browse/shows/${theSlug.value}`)
+}
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -135,14 +146,14 @@ const getDotMenuItems = (bucketItem) => {
     //     handleAddToQueue(bucketItem)
     //   },
     // },
-    // {
-    //   label: "More episodes",
-    //   customIcon: MoreEpisodesIcon,
-    //   title: bucketItem?.title,
-    //   command: () => {
-    //     handleFollow()
-    //   },
-    // },
+    {
+      label: "More episodes",
+      customIcon: MoreEpisodesIcon,
+      title: bucketItem?.title,
+      command: () => {
+        moreFromClick()
+      },
+    },
     {
       label: "Sleep Timer",
       customIcon: SleepIcon,
@@ -168,6 +179,11 @@ const togglePlayHere = (epData, index = 0) => {
 watch(episode, () => {
   episodeData.value = episode.value
   hasSegments.value = Array.isArray(episode.value.audio)
+
+  // set the title and slug for the GA page view
+  theShowTitle.value = episodeData.value?.showTitle || episodeData.value?.title
+  theSlug.value = episodeData.value?.showSlug || episodeData.value?.show
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -229,7 +245,7 @@ const getEpisodeImage = () => {
     <FetchError v-if="error" />
     <div class="relative mb-4">
       <v-image
-        v-if="!pending"
+        v-if="status == 'success'"
         :src="getEpisodeImage()"
         :width="390"
         :height="360"
@@ -245,14 +261,17 @@ const getEpisodeImage = () => {
         class="episode-page-image mb-2 opacity-60"
       />
       <v-image
-        v-if="!pending"
+        v-if="status == 'success'"
         :src="episodeData?.headers.brand.logoImage.template"
         :width="70"
         :height="70"
         :srcset="[2]"
         :ratio="[1, 1]"
         :alt="episodeData?.show"
-        class="episode-page-show-image mb-2"
+        class="episode-page-show-image mb-2 cursor-pointer"
+        :aria-label="`More from ${theShowTitle} button`"
+        :title="`More from ${theShowTitle}`"
+        @click="moreFromClick"
       />
       <Skeleton
         v-else
@@ -262,7 +281,7 @@ const getEpisodeImage = () => {
         class="episode-page-show-image mb-2 absolute"
       />
     </div>
-    <div v-if="!pending">
+    <div v-if="status == 'success'">
       <section>
         <p class="episode-page-date my-1">
           {{ getDate(episodeData, "LLL d, yyyy") }}
@@ -289,7 +308,7 @@ const getEpisodeImage = () => {
               <i class="pi pi-exclamation-triangle mr-1"></i>No Audio
             </div> -->
           </div>
-          <div class="flex gap-3">
+          <div class="flex gap-3 align-items-center">
             <Button
               class="w-2rem h-2rem"
               text

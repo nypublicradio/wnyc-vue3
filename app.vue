@@ -106,6 +106,7 @@ onMounted(async () => {
   fetchSchedule()
 
   // fired when the app becomes active
+  //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
     if (isActive) {
       // refresh data
@@ -117,19 +118,6 @@ onMounted(async () => {
       }
     }
   })
-
-  //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
-  // document.addEventListener("visibilitychange", async () => {
-  //   if (!document.hidden) {
-  //     // refresh data
-  //     refreshData()
-
-  //     // update user profile when coming back from the system settings
-  //     if (isApp.value) {
-  //       await notificationPermissionSync(undefined)
-  //     }
-  //   }
-  // })
 
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {
