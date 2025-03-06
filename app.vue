@@ -18,16 +18,7 @@ import { useToast } from "primevue/usetoast"
 import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
-const {
-  getStationBySlugAndPlayIt,
-  switchStation,
-  scrollToActiveStation,
-  fetchSchedule,
-  clearAllTimeout,
-  getTheTime,
-  togglePlayHere,
-  liveScheduleData,
-} = useLiveStream()
+const { fetchSchedule } = useLiveStream()
 // temp system to handle the new feature badge on the sleep timer
 const { initFeatureSessionCount } = useNewFeatureBadge()
 initFeatureSessionCount()
@@ -246,5 +237,5 @@ watch(globalError, (error) => {
   <AudioPlayer />
   <Drawers class="z-2" />
   <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
-  <!-- <PullToRefresh v-if="isApp"/> -->
+  <!-- <PullToRefresh v-if="isApp" /> -->
 </template>
