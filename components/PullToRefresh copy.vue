@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue"
 import { useIsNetworkConnected } from "~/composables/states"
-import { refreshData } from "~/utilities/helpers"
 const isNetworkConnected = useIsNetworkConnected()
 const { $gsap } = useNuxtApp()
 
@@ -39,11 +38,9 @@ const removeSwipeMoveEndListeners = () => {
 
 let backToTopAnim = ref(false)
 // animate the pull to refresh indicator back to the top
-let backTimeout = null
 const backToTop = (delay = 0) => {
   backToTopAnim.value = true
-  clearTimeout(backTimeout)
-  backTimeout = setTimeout(() => {
+  setTimeout(() => {
     visualIndicatorY.value = startPosition
     backToTopAnim.value = false
   }, backToTopAnimDuration.value * 1000 + delay)
@@ -51,41 +48,76 @@ const backToTop = (delay = 0) => {
 // handle the pull to refresh action
 let tl = null
 let tlDone = null
-
 // reset the animation
 const resetAnimation = () => {
-  tl?.seek(0).pause()
-  tlDone?.seek(0).pause()
+  tl?.revert()
+  tl?.kill()
+  tlDone?.revert()
+  tlDone?.kill()
 }
 // handle the refresh and animation
 const refresh = async () => {
   refreshing.value = true
   removeSwipeStartListeners()
-  removeSwipeMoveEndListeners()
+  resetAnimation()
 
-  tl.resume()
+  tl = $gsap.timeline()
+  tlDone = $gsap.timeline()
   try {
-    await refreshData()
-    //window.location.reload()
+    //updateAllLiveStreams()
+    // refresh all data (still not sure ecactly how this works)
+    // await refreshNuxtData()
+
+    // animate the pull to refresh indicator icon
+    tl.set(ptrIconRef.value, {
+      rotate: 0,
+      overwrite: true,
+    })
+    tl.set(ptrRef.value, {
+      rotateY: 0,
+      overwrite: true,
+    })
+    tl.to(ptrIconRef.value, {
+      duration: 0.75,
+      rotate: 360,
+      ease: "none",
+      repeat: -1,
+    })
   } finally {
-    tlDone.resume()
     setTimeout(() => {
       tl.pause()
-      backToTop()
-      refreshing.value = false
+      tlDone.to(ptrIconRef.value, {
+        duration: 0.5,
+        scale: 0,
+        ease: "circ.out",
+        overwrite: true,
+      })
+      tlDone.to(ptrIconDoneRef.value, {
+        duration: 0.5,
+        scale: 0.8,
+        opacity: 1,
+        ease: "back.out",
+        delay: -0.5,
+      })
+      tlDone.call(() => {
+        location.reload()
+        // backToTop()
+        // setTimeout(() => {
+        //   resetAnimation()
+        //   refreshing.value = false
+        //   addSwipeStartListeners()
+        // }, backToTopAnimDuration * 1000)
+      })
     }, 750)
-    setTimeout(() => {
-      resetAnimation()
-      addSwipeStartListeners()
-    }, 1000)
   }
 }
 
 // handle the pull to refresh START event
 function swipeStart(e) {
-  console.log("start")
   // Check if the page is scrolled to the top
   if (window.scrollY < 10) {
+    //console.log("swipeStart")
+    resetAnimation()
     addSwipeMoveEndListeners()
     if (typeof e.targetTouches !== "undefined") {
       const touch = e.targetTouches[0]
@@ -98,6 +130,7 @@ function swipeStart(e) {
 
 // handle the pull to refresh MOVE/UPDATE event to track the offset and move the indicator
 function swipeMove(e) {
+  //console.log("swipeMove")
   swipeMoved.value = true
 
   const touch = e.targetTouches[0]
@@ -105,19 +138,10 @@ function swipeMove(e) {
   visualIndicatorY.value = offset >= maxOffset ? maxOffset : offset
 }
 
-// check if the swipe was a pull down all the way or not
-function swipeCheck() {
-  const changeY = pStart.value.y - pStop.value.y
-  if (isPullDown(changeY) && window.scrollY === 0) {
-    refresh()
-  } else {
-    backToTop()
-  }
-}
-
 // handle the pull to refresh END event, when the user releases the touch
 function swipeEnd(e) {
   if (swipeMoved.value) {
+    //console.log("swipeEnd")
     if (typeof e.changedTouches !== "undefined") {
       const touch = e.changedTouches[0]
       pStop.value.y = touch.screenY
@@ -135,38 +159,19 @@ function isPullDown(dY) {
   return Math.abs(dY) >= maxOffset - startPosition
 }
 
-onMounted(() => {
-  addSwipeStartListeners()
+// check if the swipe was a pull down all the way or not
+function swipeCheck() {
+  const changeY = pStart.value.y - pStop.value.y
+  if (isPullDown(changeY) && window.scrollY === 0) {
+    refresh()
+  } else {
+    backToTop()
+  }
+}
 
-  tl = $gsap.timeline()
-  tlDone = $gsap.timeline()
-  tl.pause()
-  tlDone.pause()
-  tl.set(ptrIconRef.value, {
-    rotate: 0,
-  })
-  tl.set(ptrRef.value, {
-    rotateY: 0,
-  })
-  tl.to(ptrIconRef.value, {
-    duration: 0.5,
-    rotate: 360,
-    ease: "none",
-    repeat: -1,
-  })
-  tlDone.to(ptrIconRef.value, {
-    duration: 0.5,
-    scale: 0,
-    ease: "circ.out",
-    overwrite: false,
-  })
-  tlDone.to(ptrIconDoneRef.value, {
-    duration: 0.5,
-    scale: 0.8,
-    opacity: 1,
-    ease: "back.out",
-    delay: -0.5,
-  })
+onMounted(() => {
+  //console.log("PullToRefresh mounted")
+  addSwipeStartListeners()
 })
 
 onBeforeUnmount(() => {
@@ -212,7 +217,7 @@ onBeforeUnmount(() => {
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  outline: 2px solid var(--p-surface-950, #000000);
+  border: 2px solid var(--solid-bg-color);
   background-color: #ffffff;
   left: 0;
   right: 0;
@@ -227,7 +232,7 @@ onBeforeUnmount(() => {
   }
   .refresh-indicator {
     font-size: 24px;
-    color: var(--p-surface-950, #000000);
+    color: var(--night-500, #000000);
   }
   .done-indicator {
     display: flex;
@@ -237,11 +242,11 @@ onBeforeUnmount(() => {
     width: 34px;
     height: 34px;
     border-radius: 20px;
-    background-color: var(--p-green-500, #00ff00);
+    background-color: var(--success, #00ff00);
     opacity: 0;
     transform: scale(0);
     &.error {
-      background-color: var(--p-red-500, #ff0000);
+      background-color: var(--error, #ff0000);
     }
     .error,
     .check {
