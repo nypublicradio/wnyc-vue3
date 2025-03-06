@@ -59,11 +59,6 @@ isNetworkConnected.value = initNewtworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  // fired when the app becomes active (ios only)
-  await App.addListener("appStateChange", (/* { isActive } */) => {
-    //alert("App state changed. ", JSON.stringify(isActive))
-  })
-
   // this is for auth redirect from the web
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
@@ -106,9 +101,12 @@ onMounted(async () => {
     await notificationPermissionSync(undefined)
   }
 
-  //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
-  document.addEventListener("visibilitychange", async () => {
-    if (!document.hidden) {
+  // initial fetch of the schedule to start the live stream refresh loop
+  fetchSchedule()
+
+  // fired when the app becomes active
+  await App.addListener("appStateChange", async ({ isActive }) => {
+    if (isActive) {
       // refresh data
       refreshData()
 
@@ -119,8 +117,18 @@ onMounted(async () => {
     }
   })
 
-  // initial fetch of the schedule to start the live stream refresh loop
-  fetchSchedule()
+  //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
+  // document.addEventListener("visibilitychange", async () => {
+  //   if (!document.hidden) {
+  //     // refresh data
+  //     refreshData()
+
+  //     // update user profile when coming back from the system settings
+  //     if (isApp.value) {
+  //       await notificationPermissionSync(undefined)
+  //     }
+  //   }
+  // })
 
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {
