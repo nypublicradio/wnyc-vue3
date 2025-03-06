@@ -246,5 +246,5 @@ watch(globalError, (error) => {
   <AudioPlayer />
   <Drawers class="z-2" />
   <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
-  <PullToRefresh />
+  <!-- <PullToRefresh v-if="isApp"/> -->
 </template>

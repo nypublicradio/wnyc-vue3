@@ -1281,7 +1281,9 @@ export const refreshData = async (refreshUser = false) => {
   } catch (error) {
     console.error(error)
   } finally {
-    isRefreshing.value = false
+    setTimeout(() => {
+      isRefreshing.value = false
+    }, 1000)
   }
   // update the schedule data
   // watch on the live.vue handles this schedule data

@@ -32,7 +32,7 @@ export async function updateAllLiveStreams(init = true) {
     const currentUserProfile = useCurrentUserProfile()
     const isRefreshing = useIsRefreshing()
     const config = useRuntimeConfig()
-    isRefreshing.value = true
+    //isRefreshing.value = true
     // BFF
     try {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
@@ -70,7 +70,7 @@ export async function updateAllLiveStreams(init = true) {
         }
         console.error('error = ', error)
     } finally {
-        isRefreshing.value = false
+        //isRefreshing.value = false
     }
 }
 
