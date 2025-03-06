@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import SleepIcon from "@/components/icons/SleepIcon.vue"
-import { useNewFeatureBadge } from "@/composables/useNewFeatureBadge"
+//import { useNewFeatureBadge } from "@/composables/useNewFeatureBadge"
 
-const { isNewFeature, handleFeatureClick } = useNewFeatureBadge()
+//const { isNewFeature, handleFeatureClick } = useNewFeatureBadge()
 const props = defineProps({
   isActive: {
     type: Boolean,
@@ -14,7 +14,7 @@ const emit = defineEmits(["emit-click"])
 
 // handle click event on the button
 const handleClick = () => {
-  handleFeatureClick()
+  //handleFeatureClick()
   emit("emit-click")
 }
 </script>
@@ -24,7 +24,7 @@ const handleClick = () => {
     <Button text severity="secondary" rounded @click="handleClick">
       <template #icon> <SleepIcon :active="props.isActive" /></template>
     </Button>
-    <NewFeatureBadge class="badge" v-if="isNewFeature" />
+    <!--  <NewFeatureBadge class="badge" v-if="isNewFeature" /> -->
   </div>
 </template>
 

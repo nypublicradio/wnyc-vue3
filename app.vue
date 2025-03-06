@@ -15,13 +15,14 @@ import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
-import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
+//import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
 const { fetchSchedule } = useLiveStream()
+
 // temp system to handle the new feature badge on the sleep timer
-const { initFeatureSessionCount } = useNewFeatureBadge()
-initFeatureSessionCount()
+//const { initFeatureSessionCount } = useNewFeatureBadge()
+//initFeatureSessionCount()
 
 const toast = useToast()
 
