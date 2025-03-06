@@ -191,8 +191,8 @@ export default function useLiveStream() {
 
             // init setTimeouts to refetch the schedule when the current event starts
             if (liveScheduleData.value[0]) {
-                // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-                const delay = (await getTimeDifference(liveScheduleData.value[0].attributes.end)) + 2000
+                // delay plus 30 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
+                const delay = (await getTimeDifference(liveScheduleData.value[0].attributes.end)) + 30000
                 timeout = setTimeout(refreshData, delay)
             }
         } catch (error) {
