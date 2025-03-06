@@ -3,7 +3,7 @@ import {
     useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast, useIsRefreshing
 } from '~/composables/states'
 import { saveRecentlyPlayed } from '~/utilities/helpers'
-
+import { clearTimeout, setTimeout } from 'worker-timers';
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string, save = true) {
     const config = useRuntimeConfig()
