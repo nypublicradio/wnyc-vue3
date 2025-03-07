@@ -7,7 +7,8 @@ import {
     useGlobalToast,
     useTogglePlayTrigger,
     useIsApp,
-    useCurrentUser
+    useCurrentUser,
+    useIsLiveStream
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core';
 import { prepForPlayer, getEpisodeFallBackImage, imageSolver } from "~/utilities/helpers"
@@ -404,6 +405,8 @@ export const fetchAndStoreMp3 = async (file) => {
 // handle playing the stored mp3 files and it stored image
 export const playStoredMp3 = async (file) => {
     const currentEpisode = useCurrentEpisode()
+    const isLiveStream = useIsLiveStream()
+    isLiveStream.value = false
     const togglePlayTrigger = useTogglePlayTrigger()
     if (currentEpisode.value?.id !== file.id) {
         file = await prepForPlayer(file)
