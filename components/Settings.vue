@@ -48,6 +48,7 @@ const isDisabled = computed(() => {
 })
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
+
 // main function to update the toast component
 const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
   globalToast.value = {
@@ -211,6 +212,15 @@ const onDeleteAccountClick = () => {
   )
   accountDeleteSideBar.value = true
 }
+
+// show the notification types section if the user has notifications enabled, is an app, and the topics are available
+const showNotificationTypes = computed(() => {
+  return (
+    currentUserProfile.value.receive_general_notifications &&
+    masterNotificationChannelsArray.value.length > 0 &&
+    isApp.value
+  )
+})
 </script>
 
 <template>
@@ -287,14 +297,7 @@ const onDeleteAccountClick = () => {
         />
       </SBox>
     </section>
-    <section
-      v-if="
-        currentUserProfile.receive_general_notifications &&
-        masterNotificationChannelsArray.length > 0 &&
-        isApp
-      "
-      class="notifications p-0"
-    >
+    <section v-if="showNotificationTypes" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notification Types</div>
       </div>
