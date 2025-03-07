@@ -10,12 +10,19 @@ class RemoteStreamer: NSObject {
     private var playerTimeControlStatusObserver: NSKeyValueObservation?
     private var playerStatusObserver: NSKeyValueObservation?
     
+    // Add these new properties
+    private var shouldBePlaying: Bool = false
+    private var currentURL: String?
+    private var playbackStallTimer: Timer?
+    
     override init() {
         super.init()
         setupInterruptionObserver()
     }
     
     func play(url: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        shouldBePlaying = true
+        currentURL = url
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let osVersion = UIDevice.current.systemVersion
         let deviceModel = UIDevice.current.model
@@ -37,14 +44,18 @@ class RemoteStreamer: NSObject {
     }
     
     func pause() {
+        shouldBePlaying = false
         player?.pause()
     }
     
     func resume() {
+        shouldBePlaying = true
         player?.play()
     }
     
     func stop() {
+        shouldBePlaying = false
+        currentURL = nil
         player?.pause()
         player?.replaceCurrentItem(with: nil)
         removeObservers()
@@ -78,9 +89,11 @@ class RemoteStreamer: NSObject {
     private func setupObservers(playerItem: AVPlayerItem) {
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
         
-        playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty, options: [.new, .initial]) { item, change in
+        playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty, options: [.new, .initial]) { [weak self] item, change in
             if change.newValue == true {
                 print("Buffer is empty")
+                // Notify about buffering state
+                NotificationCenter.default.post(name: Notification.Name("RemoteStreamerBuffering"), object: nil)
             }
         }
         
@@ -118,6 +131,7 @@ class RemoteStreamer: NSObject {
         }
         
         setupTimeObserver()
+        setupPlaybackMonitoring(playerItem: playerItem)
     }
     
     private func removeObservers() {
@@ -128,6 +142,9 @@ class RemoteStreamer: NSObject {
         playerTimeControlStatusObserver?.invalidate()
         playerStatusObserver?.invalidate()
         removeTimeObserver()
+        
+        playbackStallTimer?.invalidate()
+        playbackStallTimer = nil
     }
     
     private func setupTimeObserver() {
@@ -181,6 +198,31 @@ class RemoteStreamer: NSObject {
             }
         @unknown default:
             break
+        }
+    }
+    
+    private func setupPlaybackMonitoring(playerItem: AVPlayerItem) {
+        // Cancel any existing timer
+        playbackStallTimer?.invalidate()
+        
+        // Create a new timer that checks playback status every 5 seconds
+        playbackStallTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+            guard let self = self,
+                  let player = self.player,
+                  self.shouldBePlaying,
+                  let currentURL = self.currentURL else { return }
+            
+            let isStalled = player.timeControlStatus == .waitingToPlayAtSpecifiedRate ||
+                           player.currentItem?.isPlaybackBufferEmpty == true
+            
+            let noProgress = player.rate == 0 && self.shouldBePlaying
+            
+            if isStalled || noProgress {
+                print("Playback stalled, attempting to restart stream")
+                // Attempt to restart the stream
+                self.stop()
+                self.play(url: currentURL) { _ in }
+            }
         }
     }
     
