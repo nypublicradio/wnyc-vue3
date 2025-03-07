@@ -1,12 +1,10 @@
 <script setup>
-import { useCurrentUser, useCurrentEpisode } from "~/composables/states"
+import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
-//import QueueIcon from "~/components/icons/QueueIcon.vue"
-//import FollowIcon from "~/components/icons/FollowIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
@@ -20,24 +18,55 @@ import {
   hasAudio,
 } from "~/utilities/helpers"
 import useSleepTimer from "~/composables/useSleepTimer"
-
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const currentEpisode = useCurrentEpisode()
-
-const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+const user = useCurrentUser()
+const globalToast = useGlobalToast()
+const progress = ref({})
 
 const { data: episode, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
+  {
+    onResponse({ response }) {
+      const res = response._data
+      $analytics.sendPageView({
+        page_title: res.title,
+        page_type: "episode_page",
+        content_group: "on_demand_episode",
+        article_authors: res?.authors?.map((author) => author.name).join(","),
+        article_publish_date: res.publicationDate,
+        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
+        article_title: res.title,
+      })
+
+      // check route param autoplay exists and if so, play the first segment
+      if (route.query.autoplay === "true") {
+        togglePlayEpisode(res.audio[0])
+        // remove the autoplay query param
+        router.replace({ query: { ...route.query, autoplay: null } })
+      }
+    },
+    onResponseError() {
+      globalToast.value = {
+        severity: "error",
+        summary: "We are having a problem loading this episode. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+    },
+  }
 )
 
-const episodeData = ref(null)
-const theShowTitle = ref(null)
-const theSlug = ref(null)
-const hasSegments = ref(Array.isArray(episode?.value?.audio))
-
-const user = useCurrentUser()
+const episodeData = computed(() => episode.value)
+const theShowTitle = computed(
+  () => episodeData.value?.showTitle || episodeData.value?.title
+)
+const theSlug = computed(() => episodeData.value?.showSlug || episodeData.value?.show)
+const hasSegments = computed(() => Array.isArray(episodeData.value?.audio))
 
 // navigate back to home and track it
 const backHome = () => {
@@ -45,7 +74,6 @@ const backHome = () => {
   router.go(-1)
 }
 
-const progress = ref({})
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
   trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
@@ -55,10 +83,6 @@ const handleDownload = async (epD) => {
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }
-
-// const handleFollow = () => {
-//   // follow the show
-// }
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -77,12 +101,6 @@ const handleAddToFavorites = (bucketItem) => {
     isFavorited.value = !isFavorited.value
   }
 }
-
-// const handleAddToQueue = (bucketItem) => {
-//   // toggle active state
-//   // update SB and LS with new state
-//   trackClickEvent("Click Tracking - Add to Queue", "Episode Slug", bucketItem.title)
-// }
 
 // handles the click on the show image and dots menu
 const moreFromClick = () => {
@@ -129,23 +147,6 @@ const getDotMenuItems = (bucketItem) => {
         handleShare()
       },
     },
-    // {
-    //   label: "Follow",
-    //   customIcon: FollowIcon,
-    //   title: bucketItem?.title,
-    //   command: () => {
-    //     handleFollow()
-    //   },
-    // },
-    // {
-    //   label: "Add to Queue",
-    //   active: true,
-    //   customIcon: QueueIcon,
-    //   title: bucketItem?.title,
-    //   command: () => {
-    //     handleAddToQueue(bucketItem)
-    //   },
-    // },
     {
       label: "More episodes",
       customIcon: MoreEpisodesIcon,
@@ -176,36 +177,6 @@ const togglePlayHere = (epData, index = 0) => {
   togglePlayEpisode(epData, index)
 }
 
-watch(episode, () => {
-  episodeData.value = episode.value
-  hasSegments.value = Array.isArray(episode.value.audio)
-
-  // set the title and slug for the GA page view
-  theShowTitle.value = episodeData.value?.showTitle || episodeData.value?.title
-  theSlug.value = episodeData.value?.showSlug || episodeData.value?.show
-
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: episodeData.value.title,
-    page_type: "episode_page",
-    content_group: "on_demand_episode",
-    article_authors: episodeData.value?.authors?.map((author) => author.name).join(","),
-    article_publish_date: episodeData.value.publicationDate,
-    article_updated_date: episodeData.value.updatedDate
-      ? episodeData.value.updatedDate
-      : episodeData.value.publicationDate,
-    article_title: episodeData.value.title,
-  })
-
-  // check route param autoplay exists and if so, play the first segment
-  if (route.query.autoplay === "true") {
-    togglePlayEpisode(episodeData.value.audio[0])
-    // remove the autoplay query param
-    router.replace({ query: { ...route.query, autoplay: null } })
-  }
-})
-
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
   const epImage = episodeData.value?.image?.template
@@ -227,7 +198,6 @@ const getEpisodeImage = () => {
         <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
       </Head>
     </Html>
-    <!--  <pre class="text-xs">{{ episodeData }}</pre> -->
     <section class="">
       <div class="flex align-items-center">
         <Button
@@ -371,7 +341,6 @@ const getEpisodeImage = () => {
           </div>
         </div>
         <!-- SEGMENTS -->
-        <!-- <pre class="text-xs">{{ episodeData?.audio }}</pre> -->
         <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 segment-list">
           <li
             v-for="segment in episodeData?.audio"
@@ -386,16 +355,6 @@ const getEpisodeImage = () => {
               class=""
             />
           </li>
-
-          <!-- <div v-if="episodeData?.audio[index]" class="flex gap-3 align-items-center">
-              <PlayButton
-                :label="getMinutes(segment.audioDurationReadable, 1)"
-                :data="episodeData"
-                :index="index"
-                @onClick="togglePlayHere(episodeData, index)"
-              />
-              <p class="truncate t2lines">{{ segment.title }}</p>
-            </div> -->
         </ol>
         <HtmlConvert :htmlContent="episodeData?.body" class="mt-5" />
       </section>
