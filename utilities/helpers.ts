@@ -1261,6 +1261,10 @@ export const deduplicateArray = (array) => {
 
 // a func to refresh all data
 export const refreshData = async (refreshUser = false) => {
+  const isNetworkConnected = useIsNetworkConnected()
+  if (!isNetworkConnected.value) {
+    return
+  }
   const currentEpisode = useCurrentEpisode()
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   const isRefreshing = useIsRefreshing()
