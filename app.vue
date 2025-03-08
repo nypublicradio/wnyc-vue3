@@ -50,10 +50,21 @@ useHead({
   // },
 })
 
+const clearAllToasts = () => {
+  toast.removeAllGroups()
+}
+
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
+  if (status.connected) {
+    setTimeout(() => {
+      refreshData()
+      clearAllToasts()
+    }, 1000)
+  }
 })
+
 // set the initial network status
 const initNewtworkStatus = await Network.getStatus()
 isNetworkConnected.value = initNewtworkStatus.connected

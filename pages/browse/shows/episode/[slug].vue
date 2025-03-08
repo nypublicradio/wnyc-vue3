@@ -63,9 +63,17 @@ const { data: episode, status, error } = useFetch(
 
 const episodeData = computed(() => episode.value)
 const theShowTitle = computed(
-  () => episodeData.value?.showTitle || episodeData.value?.title
+  () =>
+    episodeData.value?.showTitle ||
+    episodeData.value?.headers.brand.title ||
+    episodeData.value?.title
 )
-const theSlug = computed(() => episodeData.value?.showSlug || episodeData.value?.show)
+const theSlug = computed(
+  () =>
+    episodeData.value?.showSlug ||
+    episodeData.value?.headers.brand.slug ||
+    episodeData.value?.show
+)
 const hasSegments = computed(() => Array.isArray(episodeData.value?.audio))
 
 // navigate back to home and track it
@@ -251,6 +259,12 @@ const getEpisodeImage = () => {
         class="episode-page-show-image mb-2 absolute"
       />
     </div>
+    <!-- slug: {{ theSlug }}
+    <br />
+    titles: {{ theShowTitle }}
+    <br />
+    episodeData:
+    <pre class="text-xs">{{ episodeData }}</pre> -->
     <div v-if="status == 'success'">
       <section>
         <p class="episode-page-date my-1">
