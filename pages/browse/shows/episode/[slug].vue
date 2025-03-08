@@ -71,8 +71,8 @@ const theShowTitle = computed(
 const theSlug = computed(
   () =>
     episodeData.value?.showSlug ||
-    episodeData.value?.headers.brand.slug ||
-    episodeData.value?.show
+    episodeData.value?.show ||
+    episodeData.value?.headers.brand.slug
 )
 const hasSegments = computed(() => Array.isArray(episodeData.value?.audio))
 
