@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { refreshData } from "./utilities/helpers"
+
 defineProps({
   error: {
     type: Object,
@@ -9,12 +11,14 @@ defineProps({
 function handleGoHome() {
   //nuxt global
   clearError({ redirect: "/home" })
+  refreshData()
 }
 
 //clear error and try again
 function handleTryAgain() {
   //nuxt global
   clearError()
+  refreshData()
 }
 </script>
 
