@@ -147,7 +147,6 @@ export default defineEventHandler(async (event) => {
         let episodes;
         // Get show details
         const show = await getShow(slug);
-        console.log('show', show);
         if (show?.type === cmsSources.NPR) {
             episodes = await getNPREpisodes(slug, show.type, show?.title);
         } else {

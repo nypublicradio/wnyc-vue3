@@ -199,7 +199,7 @@ export default function useLiveStream() {
             globalToast.value = {
                 severity: "error",
                 summary:
-                    "Sorry. We are having trouble getting the schedule. Please try again later.",
+                    "Sorry. We are having trouble. Please try again later.",
                 life: null,
                 closable: true,
             }
