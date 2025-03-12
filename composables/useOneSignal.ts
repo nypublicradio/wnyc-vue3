@@ -271,7 +271,7 @@ export default function useOneSignal() {
   // function to initialize OneSignal
   async function initOneSignal() {
     const config = useRuntimeConfig()
-
+    await OneSignal.Debug.setLogLevel(6);
     await OneSignal.setConsentRequired(false)
     await OneSignal.setConsentGiven(true)
     await OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)
