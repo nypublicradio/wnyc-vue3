@@ -29,6 +29,7 @@ export class NyprDb {
         return data;
     }
 
+    // return the slug for NPR shows from Supabase by providing the showId
     async getNPRSlugFromSupabase(showId) {
         const { data, error } = await this.supabase
             .from("shows")

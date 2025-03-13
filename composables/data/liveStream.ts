@@ -1,8 +1,7 @@
-import { trackClickEvent, togglePlayEpisode, refreshData } from "~/utilities/helpers"
+import { trackClickEvent, togglePlayEpisode, refreshData, saveRecentlyPlayed } from "~/utilities/helpers"
 import {
     useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast, useIsRefreshing
 } from '~/composables/states'
-import { saveRecentlyPlayed } from '~/utilities/helpers'
 import { clearTimeout, setTimeout } from 'worker-timers';
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream(slug: string, save = true) {
@@ -30,9 +29,7 @@ export async function updateAllLiveStreams(init = true) {
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     const currentStreamStation = useCurrentStreamStation()
     const currentUserProfile = useCurrentUserProfile()
-    const isRefreshing = useIsRefreshing()
     const config = useRuntimeConfig()
-    //isRefreshing.value = true
     // BFF
     try {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
@@ -69,8 +66,6 @@ export async function updateAllLiveStreams(init = true) {
             closable: true,
         }
         console.error('error = ', error)
-    } finally {
-        //isRefreshing.value = false
     }
 }
 
@@ -90,7 +85,8 @@ export default function useLiveStream() {
     const isEpisodePlaying = useIsEpisodePlaying()
     const isStreamLoading = useIsStreamLoading()
     const globalToast = useGlobalToast()
-
+    // toggle play here
+    // not sure why I am using this, probably should use the helper function
     const togglePlayHere = () => {
         if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
             //update slug

@@ -113,7 +113,7 @@ const handleAddToFavorites = (bucketItem) => {
 // handles the click on the show image and dots menu
 const moreFromClick = () => {
   trackClickEvent(
-    `Click Tracking - Show image`,
+    "Click Tracking - Show image",
     `Episode slug page: ${theSlug.value}`,
     theShowTitle.value
   )

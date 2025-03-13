@@ -50,6 +50,7 @@ useHead({
   // },
 })
 
+// to clear all displayed toasts
 const clearAllToasts = () => {
   toast.removeAllGroups()
 }

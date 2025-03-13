@@ -1,6 +1,6 @@
 <script setup>
 import { trackClickEvent } from "~/utilities/helpers"
-import { updateLiveStream } from "~/composables/data/liveStream"
+import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -11,9 +11,6 @@ import {
 } from "~/composables/states"
 
 import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
-
-import useLiveStream from "~/composables/data/liveStream"
-
 const {
   getStationBySlugAndPlayIt,
   switchStation,

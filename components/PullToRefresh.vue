@@ -37,9 +37,9 @@ const removeSwipeMoveEndListeners = () => {
   window.removeEventListener("touchend", swipeEnd, false)
 }
 
-let backToTopAnim = ref(false)
-// animate the pull to refresh indicator back to the top
+const backToTopAnim = ref(false)
 let backTimeout = null
+// animate the pull to refresh indicator back to the top
 const backToTop = (delay = 0) => {
   backToTopAnim.value = true
   clearTimeout(backTimeout)
@@ -83,7 +83,6 @@ const refresh = async () => {
 
 // handle the pull to refresh START event
 function swipeStart(e) {
-  console.log("start")
   // Check if the page is scrolled to the top
   if (window.scrollY < 10) {
     addSwipeMoveEndListeners()
