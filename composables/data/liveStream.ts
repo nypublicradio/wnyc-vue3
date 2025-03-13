@@ -1,6 +1,6 @@
 import { trackClickEvent, togglePlayEpisode, refreshData, saveRecentlyPlayed } from "~/utilities/helpers"
 import {
-    useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast, useIsRefreshing
+    useCurrentEpisodeHolder, useCurrentStreamStation, useAllCurrentStations, useCurrentUserProfile, useGlobalToast
 } from '~/composables/states'
 import { clearTimeout, setTimeout } from 'worker-timers';
 // Get a list of article pages using the Aviary /pages api
