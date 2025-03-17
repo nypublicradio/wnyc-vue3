@@ -31,6 +31,7 @@ watch(
       }, 4000)
       // refreshData() is called when the network is re-connected
       // true will also refresh the user profile
+      console.log("====== Newwork connection issue")
       refreshData(true)
     } else {
       shouldFadeIn.value = true

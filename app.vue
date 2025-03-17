@@ -60,6 +60,7 @@ Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
   if (status.connected) {
     setTimeout(() => {
+      console.log("====== networkStatusChange")
       refreshData()
       clearAllToasts()
     }, 1000)
@@ -122,6 +123,7 @@ onMounted(async () => {
   await App.addListener("appStateChange", async ({ isActive }) => {
     if (isActive) {
       // refresh data
+      console.log("====== appStateChange")
       refreshData()
 
       // update user profile when coming back from the system settings

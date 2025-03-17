@@ -164,6 +164,7 @@ export default function useLiveStream() {
 
     // Fetch the schedule
     const fetchSchedule = async () => {
+        console.log('====== fetchSchedule')
         clearAllTimeout()
         liveScheduleData.value = null
         //const localDate = new Date()
