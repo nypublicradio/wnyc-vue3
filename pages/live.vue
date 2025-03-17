@@ -1,200 +1,38 @@
 <script setup>
-import { trackClickEvent, togglePlayEpisode } from "~/utilities/helpers"
-import { updateLiveStream } from "~/composables/data/liveStream"
+import { trackClickEvent } from "~/utilities/helpers"
+import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
 import {
-  useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
-  useCurrentStreamStation,
   useAllCurrentStations,
   useIsEpisodePlaying,
   useIsStreamLoading,
-  useGlobalToast,
   useIsApp,
 } from "~/composables/states"
 
 import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
-const config = useRuntimeConfig()
+const {
+  getStationBySlugAndPlayIt,
+  switchStation,
+  scrollToActiveStation,
+  fetchSchedule,
+  clearAllTimeout,
+  getTheTime,
+  togglePlayHere,
+  liveScheduleData,
+} = useLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
 
 const currentEpisodeHolder = useCurrentEpisodeHolder()
-const isLiveStream = useIsLiveStream()
-const currentStreamStation = useCurrentStreamStation()
-const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 const isApp = useIsApp()
 
-const globalToast = useGlobalToast()
-const scheduleRef = ref(null)
-
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
-
-// get the time for the schedule entry
-const getTheTime = (startArg, endArg, index) => {
-  const start = new Date(startArg)
-  const startTime = start.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  })
-  const end = new Date(endArg)
-  const endTime = end.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  })
-  return index === 0 ? `Now Until ${endTime}` : startTime
-}
-
-// Function to calculate the time difference between now and the target time
-function getTimeDifference(targetTime) {
-  const now = new Date()
-  const target = new Date(targetTime)
-
-  // Convert both dates to UTC
-  const nowUtc = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-    now.getUTCHours(),
-    now.getUTCMinutes(),
-    now.getUTCSeconds()
-  )
-  let targetUtc = Date.UTC(
-    target.getUTCFullYear(),
-    target.getUTCMonth(),
-    target.getUTCDate(),
-    target.getUTCHours(),
-    target.getUTCMinutes(),
-    target.getUTCSeconds()
-  )
-
-  // If the target time is in the past, calculate the time until the next occurrence
-  if (nowUtc > targetUtc) {
-    target.setUTCDate(target.getUTCDate() + 1)
-    targetUtc = Date.UTC(
-      target.getUTCFullYear(),
-      target.getUTCMonth(),
-      target.getUTCDate(),
-      target.getUTCHours(),
-      target.getUTCMinutes(),
-      target.getUTCSeconds()
-    )
-  }
-
-  return targetUtc - nowUtc
-}
-let timeout = null
-
-// Function to clear all timeouts
-const clearAllTimeout = () => {
-  if (timeout) {
-    clearTimeout(timeout)
-    timeout = null
-  }
-}
-
-// Fetch the schedule
-const fetchSchedule = async () => {
-  clearAllTimeout()
-  scheduleRef.value = null
-  //const localDate = new Date()
-  try {
-    const schedule = await $fetch(
-      `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
-      {
-        method: "POST",
-        // params: {
-        //   localDate: String(localDate),
-        // },
-      }
-    )
-
-    // add the slug to the schedule data to pass to the local notification system
-    schedule.forEach((entry) => {
-      entry.slug = currentStreamStation.value
-    })
-
-    scheduleRef.value = schedule
-
-    // init setTimeouts to refetch the schedule when the current event starts
-    if (scheduleRef.value[0]) {
-      // delay plus 2 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-      const delay = (await getTimeDifference(scheduleRef.value[0].attributes.end)) + 2000
-      timeout = setTimeout(fetchSchedule, delay)
-    }
-  } catch (error) {
-    globalToast.value = {
-      severity: "error",
-      summary:
-        "Sorry. We are having trouble getting the schedule. Please try again later.",
-      life: null,
-      closable: true,
-    }
-    clearAllTimeout()
-    console.error("error = ", error)
-  }
-}
-
-// targets the active station and scrolls to it
-const scrollToActiveStation = () => {
-  const activeStation = document.getElementsByClassName("activestation")
-  if (activeStation[0]) {
-    //console.log('scrolling')
-    activeStation[0].scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "start",
-    })
-  }
-}
-
-// switch the station and track it
-const switchStation = async (station, isPLayingCheck = true) => {
-  if (!isStreamLoading.value) {
-    if (isEpisodePlaying.value && isPLayingCheck) {
-      if (station?.slug !== currentStreamStation.value) {
-        await updateLiveStream(station.slug)
-        togglePlayTrigger.value = !togglePlayTrigger.value
-        currentEpisode.value = station
-        currentStreamStation.value = station.slug
-        isLiveStream.value = true
-      }
-    } else {
-      if (isPLayingCheck) {
-        if (station?.slug !== currentStreamStation.value) {
-          currentEpisode.value = null
-        }
-      }
-      currentStreamStation.value = station.slug
-      currentEpisodeHolder.value = station
-    }
-    await fetchSchedule()
-    scrollToActiveStation()
-
-    trackClickEvent(
-      "Click Tracking - Station Button",
-      "Live Page",
-      `switch station ${station?.station}`
-    )
-  }
-}
-// handle the toggle play button and tracking
-const togglePlayHere = () => {
-  if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
-    //update slug
-    currentStreamStation.value = currentEpisodeHolder.value.slug
-    //currentEpisode.value = currentEpisodeHolder.value
-    togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
-  } else {
-    togglePlayTrigger.value = !togglePlayTrigger.value
-  }
-}
 
 // schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
@@ -217,35 +55,13 @@ watch(
   },
   { once: true }
 )
-
-// Function to get the station by slug and play it when all stations are loaded
-const getStationBySlugAndPlayIt = async (querySlug) => {
-  // If stations aren't loaded, wait for them to load then continue
-  if (!allCurrentStations.value) {
-    await new Promise((resolve) => {
-      // because the watch is in a Promise, it will not be destroyed when the component is unmounted, so we need to unwatch it
-      const unwatch = watch(
-        allCurrentStations,
-        () => {
-          resolve()
-          unwatch()
-        },
-        { once: true }
-      )
-    })
+// fetches the schedule currentEpisodeHolder changes
+watch(currentEpisodeHolder, async (oldData, newData) => {
+  if (newData) {
+    await fetchSchedule()
+    scrollToActiveStation()
   }
-
-  const targetStation = allCurrentStations.value.find(
-    (station) => station.slug === querySlug
-  )
-
-  if (targetStation) {
-    setTimeout(() => {
-      switchStation(targetStation)
-      togglePlayHere()
-    }, 100)
-  }
-}
+})
 
 // watcher for triggering a play of the live stream from a route variable
 watch(
@@ -279,6 +95,8 @@ onMounted(async () => {
     }
     // select station, and don't check if it is playing
     switchStation(currentEpisodeHolder.value, false)
+    //await fetchSchedule()
+    scrollToActiveStation("instant")
   }
 
   // send GA page view
@@ -359,7 +177,6 @@ onUnmounted(() => {
         </div>
       </HorizontalScrollFeature>
       <section class="current-station-info">
-        <!-- <pre class="text-xs text-color overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
         <LiveItem :data="currentEpisodeHolder" :size="100" />
       </section>
       <PlayAndSkipButtons
@@ -370,9 +187,9 @@ onUnmounted(() => {
     </div>
     <section class="schedule">
       <h2>Schedule</h2>
-      <div v-if="scheduleRef">
+      <div v-if="liveScheduleData">
         <div
-          v-for="(entry, index) in scheduleRef"
+          v-for="(entry, index) in liveScheduleData"
           :key="`${entry.id}-${index}`"
           class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
           :class="[{ selected: index === 0 }]"

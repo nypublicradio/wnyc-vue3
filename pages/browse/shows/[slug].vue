@@ -22,16 +22,16 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
-const { data: show, pending, error } = useFetch(
+const { data: show, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
 )
 
-const page = ref(show?.value?.episodes?.meta?.pagination?.page ?? null)
-const episodes = ref(show?.value?.episodes?.data ?? null)
-let maxPages = show?.value?.episodes?.meta?.pagination?.pages ?? null
-const showImage = ref(show?.value?.show?.image?.template ?? null)
-const showTitle = ref(show?.value?.show?.title ?? null)
-const showTease = ref(show?.value?.show?.description ?? null)
+const page = ref(null)
+const episodes = ref(null)
+let maxPages = null
+const showImage = ref(null)
+const showTitle = ref(null)
+const showTease = ref(null)
 
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
@@ -225,7 +225,7 @@ onMounted(() => {
       borderRadius="0px"
     />
     <div
-      v-if="!pending"
+      v-if="status === 'success'"
       class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
     >
       <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
@@ -260,7 +260,7 @@ onMounted(() => {
       <Skeleton height="48px" width="48px" borderRadius="24px" />
       <Skeleton height="37px" width="37px" borderRadius="20px" />
     </div>
-    <div v-if="!pending">
+    <div v-if="status === 'success'">
       <h2 class="text-lg mt-2">{{ showTitle }}</h2>
       <HtmlConvert :htmlContent="showTease" class="text-sm mt-2" />
     </div>
@@ -299,7 +299,7 @@ onMounted(() => {
         </TabList>
         <TabPanels>
           <TabPanel value="0" v-if="hasEpisodes">
-            <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+            <div v-if="status === 'success'" class="flex flex-column gap-5 mt-2">
               <template v-for="ep in episodes" :key="ep.id">
                 <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
                 <EpisodeItem
@@ -314,7 +314,7 @@ onMounted(() => {
             </div>
           </TabPanel>
           <!-- <TabPanel value="1"  v-if="hasSegments">
-          <div v-if="!pending" class="flex flex-column gap-5 mt-2">
+          <div v-if="status === 'success'" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
               {{ ep?.esitmatedDuration }}
               <EpisodeItem
@@ -329,7 +329,7 @@ onMounted(() => {
         </TabPanels>
       </Tabs>
     </div>
-    <div v-if="pending">
+    <div v-if="status === 'pending'">
       <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
       <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
     </div>

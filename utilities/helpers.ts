@@ -2,6 +2,7 @@ import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import {
   useCurrentEpisode,
+  useCurrentEpisodeHolder,
   useDeviceId,
   useTextSizeOption,
   useIsApp,
@@ -17,6 +18,7 @@ import {
   useIsLiveStream,
   useAccountDeleteSideBar,
   useSettingSideBar,
+  useIsRefreshing,
 } from "~/composables/states"
 import { Capacitor } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
@@ -1259,20 +1261,43 @@ export const deduplicateArray = (array) => {
 
 // a func to refresh all data
 export const refreshData = async (refreshUser = false) => {
+  const isNetworkConnected = useIsNetworkConnected()
+  if (!isNetworkConnected.value) {
+    return
+  }
   const currentEpisode = useCurrentEpisode()
+  const currentEpisodeHolder = useCurrentEpisodeHolder()
+  const isRefreshing = useIsRefreshing()
+  const isLiveStream = useIsLiveStream()
+
+  isRefreshing.value = true
+
   if (refreshUser) {
     await getAndSetUserProfile()
   }
-  // refresh all nuxt data
+  // refresh streams data to display on liveFeature and live page, but set it to the current stream, not the user default
+  await updateAllLiveStreams(false)
   try {
+
+    // refresh all nuxt data
     await refreshNuxtData()
+
   } catch (error) {
     console.error(error)
+  } finally {
+    setTimeout(() => {
+      isRefreshing.value = false
+    }, 1000)
   }
-  // refresh streams but set it to the current stream, not the user default
-  updateAllLiveStreams(false)
-  //update media session
-  initMediaSession(currentEpisode.value)
+  // update the schedule data
+  // watch on the live.vue handles this schedule data
+
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
+  if (currentEpisode.value && isLiveStream.value) {
+    currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
+    //update media session
+    initMediaSession(currentEpisode.value)
+  }
 }
 
 // function that gets a URL and returns the path and query only

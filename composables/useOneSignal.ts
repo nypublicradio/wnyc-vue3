@@ -5,6 +5,7 @@ import {
   useSettingSideBar,
   useIsApp,
   useGlobalToast,
+  useIsNetworkConnected
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -194,6 +195,8 @@ export default function useOneSignal() {
 
   // triggered when the listener for permissionChange is called
   const notificationPermissionSync = async (accepted) => {
+    const isNetworkConnected = useIsNetworkConnected()
+    if (!isNetworkConnected.value) return
     await nextTick()
     const globalToast = useGlobalToast()
     const currentUserProfile = useCurrentUserProfile()
@@ -268,7 +271,7 @@ export default function useOneSignal() {
   // function to initialize OneSignal
   async function initOneSignal() {
     const config = useRuntimeConfig()
-
+    //await OneSignal.Debug.setLogLevel(6);
     await OneSignal.setConsentRequired(false)
     await OneSignal.setConsentGiven(true)
     await OneSignal.initialize(`${config.public.ONESIGNAL_APP_ID}`)

@@ -1,10 +1,11 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
 
-import { useSettingSideBar } from "~/composables/states.ts"
+import { useSettingSideBar, useIsNetworkConnected } from "~/composables/states.ts"
 
 const config = useRuntimeConfig()
 const settingsSideBar = useSettingSideBar()
+const isNetworkConnected = useIsNetworkConnected()
 
 const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
@@ -51,6 +52,7 @@ if (messageData.value?.product_banners?.length > 0) {
           </VFlexibleLink>
 
           <Button
+            :disabled="!isNetworkConnected"
             icon="pi pi-bars"
             class="p-button-text"
             severity="secondary"

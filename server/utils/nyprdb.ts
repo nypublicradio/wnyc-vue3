@@ -28,4 +28,19 @@ export class NyprDb {
             .eq('slug', slug);
         return data;
     }
+
+    // return the slug for NPR shows from Supabase by providing the showId
+    async getNPRSlugFromSupabase(showId) {
+        const { data, error } = await this.supabase
+            .from("shows")
+            .select("slug")
+            .eq("showId", showId)
+            .single()
+
+        if (error) {
+            console.error("Error fetching slug:", error)
+            return null
+        }
+        return data?.slug
+    }
 }

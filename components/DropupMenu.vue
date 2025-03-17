@@ -273,7 +273,7 @@ defineExpose({
                   v-if="item.customIcon"
                   :is="item.customIcon"
                 />
-                <div class="option">{{ item.label }}</div>
+                <div class="option pointer-events-none">{{ item.label }}</div>
               </div>
             </div>
           </div>

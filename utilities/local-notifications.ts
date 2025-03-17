@@ -74,25 +74,8 @@ export const scheduleLocalNotification = async (entry) => {
         } else {
             await LocalNotifications.cancel(notificationBody)
             setPendingLocalNotifications()
-            /*             globalToast.value = {
-                            severity: "success",
-                            summary: `Notification canceled for ${formatDate(
-                                entry.attributes.start,
-                                "h:mm a EEE, MMM do "
-                            )}`,
-                            life: 3000,
-                            closable: true,
-                        } */
         }
     } else {
-        //ask alarm permission Android only
-        // if (Capacitor.getPlatform() === "android") {
-        //     const alarmPermitted = await LocalNotifications.checkExactNotificationSetting()
-        //     if (alarmPermitted.exact_alarm !== "granted") {
-        //         await LocalNotifications.changeExactNotificationSetting()
-        //     }
-        // }
-
         // ask permissions
         if (permitted.display === "prompt") {
             await LocalNotifications.requestPermissions()

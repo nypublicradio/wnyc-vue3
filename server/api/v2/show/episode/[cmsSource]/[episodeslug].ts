@@ -2,9 +2,12 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
+import { NyprDb } from '~/server/utils/nyprdb'
+import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
-
 const config = useRuntimeConfig()
+
+
 
 // Get NPR episode data
 const getNPREpisode = async (slug: string) => {
@@ -26,9 +29,16 @@ const getNPREpisode = async (slug: string) => {
     // Fetching the audio from the NPR API
     const audio = await npr.findAudio(id, show, showImage?.template);
     // Fallback image to show image when no image is available
+
+    // Fetching the slug of the show from the supabase
+    const supabase = supabaseClient();
+    const nyprDb = new NyprDb(supabase);
+
     return {
         data: {
             id,
+            showId: show.resources[0].id,
+            showSlug: await nyprDb.getNPRSlugFromSupabase(show.resources[0].id),
             title: resData.resources[0].title,
             tease: resData.resources[0].teaser,
             meta: {

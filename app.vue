@@ -11,15 +11,18 @@ import {
   useIsNetworkConnected,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
+import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
-import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
+//import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
+const { fetchSchedule } = useLiveStream()
+
 // temp system to handle the new feature badge on the sleep timer
-const { initFeatureSessionCount } = useNewFeatureBadge()
-initFeatureSessionCount()
+//const { initFeatureSessionCount } = useNewFeatureBadge()
+//initFeatureSessionCount()
 
 const toast = useToast()
 
@@ -47,27 +50,34 @@ useHead({
   // },
 })
 
+// to clear all displayed toasts
+const clearAllToasts = () => {
+  toast.removeAllGroups()
+}
+
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
   isNetworkConnected.value = status.connected
+  if (status.connected) {
+    setTimeout(() => {
+      refreshData()
+      clearAllToasts()
+    }, 1000)
+  }
 })
+
 // set the initial network status
-const initNewtworkStatus = await Network.getStatus()
-isNetworkConnected.value = initNewtworkStatus.connected
+const initNetworkStatus = await Network.getStatus()
+isNetworkConnected.value = initNetworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  // fired when the app becomes active (ios only)
-  await App.addListener("appStateChange", (/* { isActive } */) => {
-    //alert("App state changed. ", JSON.stringify(isActive))
-  })
-
   // this is for auth redirect from the web
   const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
     //if the url has a query var "code" then we need to exchange it for a session
     if (event.url.includes("code=")) {
-      //when redirected to the app from a apple or google auth, we need to exchange the url parame code for a session
+      //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
       const code = event.url.split("=")[1]
       // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
       const cleanCode = code.replace("#", "")
@@ -104,9 +114,13 @@ onMounted(async () => {
     await notificationPermissionSync(undefined)
   }
 
+  // initial fetch of the schedule to start the live stream refresh loop
+  fetchSchedule()
+
+  // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
-  document.addEventListener("visibilitychange", async () => {
-    if (!document.hidden) {
+  await App.addListener("appStateChange", async ({ isActive }) => {
+    if (isActive) {
       // refresh data
       refreshData()
 
@@ -227,9 +241,10 @@ watch(globalError, (error) => {
     <NuxtPage />
   </NuxtLayout>
   <div id="anchor"></div>
+  <VProgressBar />
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />
   <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
-  <!-- <PullToRefresh /> -->
+  <!-- <PullToRefresh v-if="isApp" /> -->
 </template>
