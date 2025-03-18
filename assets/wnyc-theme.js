@@ -1137,6 +1137,11 @@ const MyPreset = definePreset(Aura, {
               },
             },
           },
+          link: {
+            color: '{text.color}',
+            hoverColor: '{primary.color}',
+            activeColor: '{primary.color}'
+          },
         },
         dark: {
           root: {
@@ -1171,6 +1176,11 @@ const MyPreset = definePreset(Aura, {
             secondary: {
               color: "{surface.0}",
             },
+          },
+          link: {
+            color: '{text.color}',
+            hoverColor: '{primary.color}',
+            activeColor: '{primary.color}'
           },
         },
       },

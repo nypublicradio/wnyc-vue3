@@ -1,11 +1,18 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
 
-import { useSettingSideBar, useIsNetworkConnected } from "~/composables/states.ts"
+import {
+  useSettingSideBar,
+  useIsNetworkConnected,
+  useIsApp,
+  useCurrentUser,
+} from "~/composables/states.ts"
 
 const config = useRuntimeConfig()
 const settingsSideBar = useSettingSideBar()
 const isNetworkConnected = useIsNetworkConnected()
+const isApp = useIsApp()
+const currentUser = useCurrentUser()
 
 const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
@@ -29,9 +36,56 @@ if (messageData.value?.product_banners?.length > 0) {
         <div class="flex align-items-center">
           <WnycLogo class="w-5rem mr-3" />
 
-          <span class="head-date font-meta">{{ getDate() }}</span>
+          <span v-if="isApp" class="head-date font-meta">{{ getDate() }}</span>
         </div>
-        <div class="flex">
+        <div class="flex gap-4 align-items-center">
+          <VFlexibleLink
+            v-if="!isApp"
+            raw
+            to="/mobile"
+            @flexible-link-click="
+              trackClickEvent(
+                `Click Tracking - Header Get the App Button`,
+                'Header',
+                'Get the App Button'
+              )
+            "
+          >
+            <Button
+              label="Get the App"
+              aria-label="Get the App button"
+              size="small"
+              variant="link"
+            >
+              <template #icon>
+                <DevicesIcon />
+              </template>
+            </Button>
+          </VFlexibleLink>
+          <VFlexibleLink
+            v-if="!currentUser"
+            raw
+            to="/mobile"
+            @flexible-link-click="
+              trackClickEvent(
+                `Click Tracking - Header Log in/Sign up Button`,
+                'Header',
+                'Log in/Sign up Button'
+              )
+            "
+          >
+            <Button
+              label="Log in/Sign up"
+              aria-label="Log in/Sign up button"
+              severity="secondary"
+              size="small"
+              variant="link"
+            >
+              <template #icon>
+                <UserIcon />
+              </template>
+            </Button>
+          </VFlexibleLink>
           <VFlexibleLink
             v-if="donateButtonText && donateButtonLink"
             raw
@@ -47,7 +101,7 @@ if (messageData.value?.product_banners?.length > 0) {
             <Button
               :label="donateButtonText"
               aria-label="donate"
-              class="px-3 sm:px-5 mr-3"
+              class="px-3 sm:px-5 -mr-2"
             />
           </VFlexibleLink>
 
