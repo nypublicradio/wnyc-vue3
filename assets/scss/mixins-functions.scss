@@ -190,36 +190,42 @@ $spacing-base: 0.25; //  matches prime-flex
   hyphens: auto;
 
   // fade text's last word, if clamped ()
-  &::after {
-    content: '';
-    height: 2ch;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    pointer-events: none;
-    //background: linear-gradient(90deg, transparent, var(--bg));
-    background: inherit; // it's easier to work with inheritance
-    mask-image: linear-gradient(to left, black, transparent);
-    transition: 0.2s;
-    width: 3em;
-  }
+  // &::after {
+  //   content: '';
+  //   height: 2ch;
+  //   position: absolute;
+  //   bottom: 0;
+  //   right: 0;
+  //   pointer-events: none;
+  //   //background: linear-gradient(90deg, transparent, var(--bg));
+  //   background: inherit; // it's easier to work with inheritance
+  //   mask-image: linear-gradient(to left, black, transparent);
+  //   transition: 0.2s;
+  //   width: 3em;
+  // }
   &.t2lines {
     -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
   &.t3lines {
     -webkit-line-clamp: 3;
+    line-clamp: 3;
   }
   &.t4lines {
     -webkit-line-clamp: 4;
+    line-clamp: 4;
   }
   &.t5lines {
     -webkit-line-clamp: 5;
+    line-clamp: 5;
   }
   &.t6lines {
     -webkit-line-clamp: 6;
+    line-clamp: 6;
   }
   &.t7lines {
     -webkit-line-clamp: 7;
+    line-clamp: 7;
   }
 }
 

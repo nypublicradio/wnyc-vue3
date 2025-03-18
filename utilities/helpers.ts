@@ -1271,7 +1271,6 @@ export const refreshData = async (refreshUser = false) => {
   const isLiveStream = useIsLiveStream()
 
   isRefreshing.value = true
-  console.log("====== refreshData")
 
   if (refreshUser) {
     await getAndSetUserProfile()
