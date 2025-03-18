@@ -57,13 +57,13 @@ const clearAllToasts = () => {
 
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
-  isNetworkConnected.value = status.connected
-  if (status.connected) {
+  if (!isNetworkConnected.value && status.connected) {
     setTimeout(() => {
       refreshData()
       clearAllToasts()
     }, 1000)
   }
+  isNetworkConnected.value = status.connected
 })
 
 // set the initial network status
