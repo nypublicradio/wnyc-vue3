@@ -48,6 +48,9 @@ body {
   &.show-header {
     main {
       padding-top: $headerHeight;
+      @include media('>lg') {
+        padding-top: calc($headerHeight + $headerBottomHeight)- 6px;
+      }
     }
   }
   &.hide-bottom-menu {
