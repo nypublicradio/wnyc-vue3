@@ -1,26 +1,9 @@
-<script setup>
-definePageMeta({
-  middleware: ["check-logged-in"],
-  pageTransition: false, // Disable page transition
-})
-
-onMounted(() => {
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: "Login",
-    page_type: "login_page",
-    content_group: "login",
-  })
-})
-</script>
-
 <template>
-  <Login isRoute />
+  <section class="py-6">
+    <h1>Log in</h1>
+    <NuxtLink to="/signup">Sign up</NuxtLink>
+    <br />
+    <br />
+    <NuxtLink to="/home">GO back home</NuxtLink>
+  </section>
 </template>
-
-<style lang="scss">
-.page.login {
-  background: var(--p-surface-25);
-}
-</style>
