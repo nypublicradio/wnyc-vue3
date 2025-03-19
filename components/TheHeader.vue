@@ -6,6 +6,7 @@ import {
   useIsNetworkConnected,
   useIsApp,
   useCurrentUser,
+  useCurrentUserProfile,
 } from "~/composables/states.ts"
 
 const config = useRuntimeConfig()
@@ -13,10 +14,19 @@ const settingsSideBar = useSettingSideBar()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
 const currentUser = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
 
 const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
 
+const menuData = ref(null)
+
+// get menu data from CMS
+const { data } = await useFetch("https://cms.prod.nypr.digital/api/v2/navigation/1/")
+if (data) {
+  menuData.value = data.value
+}
+console.log("menuData", menuData.value.primary_navigation)
 // check if donate button should be visible and get the button link and text
 const { data: messageData } = await useFetch(`${config.public.SYSTEM_MESSAGES_API}`)
 if (messageData.value?.product_banners?.length > 0) {
@@ -65,8 +75,9 @@ if (messageData.value?.product_banners?.length > 0) {
               </Button>
             </VFlexibleLink>
             <VFlexibleLink
-              v-if="!currentUser && !isApp"
+              v-if="!isApp"
               class="hidden md:block"
+              :class="{ 'user-logged-in': currentUser }"
               raw
               to="/login"
               @flexible-link-click="
@@ -78,11 +89,14 @@ if (messageData.value?.product_banners?.length > 0) {
               "
             >
               <Button
-                label="Log in/Sign up"
+                :label="`${
+                  currentUser ? 'Hi, ' + currentUserProfile.name : 'Log in/Sign up'
+                }`"
                 aria-label="Log in/Sign up button"
                 severity="secondary"
                 size="small"
                 variant="link"
+                :disabled="currentUser"
               >
                 <template #icon>
                   <UserIcon />
@@ -129,18 +143,33 @@ if (messageData.value?.product_banners?.length > 0) {
         </div>
       </section>
     </div>
-    <div class="bottom">
+    <div v-if="!isApp && menuData" class="bottom hidden lg:block">
       <section class="full-width py-0 -mt-3">
         <Divider class="my-0" />
       </section>
-      <section class="content full-width">
-        <Button
-          label="Login "
-          aria-label="Log in/Sign up button"
-          severity="secondary"
-          size="small"
-          variant="link"
-        />
+      <section class="content full-width flex gap-3">
+        <VFlexibleLink
+          v-for="(item, index) in menuData.primary_navigation"
+          :key="index"
+          raw
+          :to="item.value.url"
+          @flexible-link-click="
+            trackClickEvent(
+              `Click Tracking - Header ${item.value.title} Button`,
+              'Header',
+              `${item.value.title} Button`
+            )
+          "
+        >
+          <Button
+            raw
+            :label="item.value.title"
+            :aria-label="`${item.value.title} button`"
+            severity="secondary"
+            size="small"
+            variant="link"
+          />
+        </VFlexibleLink>
       </section>
     </div>
   </div>
@@ -173,11 +202,19 @@ if (messageData.value?.product_banners?.length > 0) {
         display: none;
       }
     }
+    .user-logged-in {
+      .p-button {
+        opacity: 1;
+      }
+    }
   }
   .bottom {
     height: var(--header-bottom-height);
     .content {
-      display: flex;
+      margin-left: -12px;
+      .p-button-label {
+        font-weight: 700;
+      }
     }
   }
 }
