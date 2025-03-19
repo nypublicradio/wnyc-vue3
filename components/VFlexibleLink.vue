@@ -44,7 +44,12 @@ const isAnchor = computed(() => {
 </script>
 
 <template>
-  <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
+  <div
+    v-if="!to"
+    class="flexible-link null"
+    v-bind="{ ...$attrs }"
+    @click="emit('flexible-link-click', to)"
+  >
     <slot name="default"></slot>
   </div>
   <a

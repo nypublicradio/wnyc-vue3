@@ -31,100 +31,118 @@ if (messageData.value?.product_banners?.length > 0) {
 
 <template>
   <div class="the-header">
-    <section class="full-width">
-      <div class="flex justify-content-between align-items-center">
-        <div class="flex align-items-center">
-          <WnycLogo class="w-5rem mr-3" />
+    <div class="top">
+      <section class="full-width">
+        <div class="flex justify-content-between align-items-center">
+          <div class="flex align-items-center">
+            <WnycLogo class="wnyc-logo" />
 
-          <span v-if="isApp" class="head-date font-meta">{{ getDate() }}</span>
-        </div>
-        <div class="flex gap-4 align-items-center">
-          <VFlexibleLink
-            v-if="!isApp"
-            raw
-            to="/mobile"
-            @flexible-link-click="
-              trackClickEvent(
-                `Click Tracking - Header Get the App Button`,
-                'Header',
-                'Get the App Button'
-              )
-            "
-          >
-            <Button
-              label="Get the App"
-              aria-label="Get the App button"
-              size="small"
-              variant="link"
-            >
-              <template #icon>
-                <DevicesIcon />
-              </template>
-            </Button>
-          </VFlexibleLink>
-          <VFlexibleLink
-            v-if="!currentUser"
-            raw
-            to="/mobile"
-            @flexible-link-click="
-              trackClickEvent(
-                `Click Tracking - Header Log in/Sign up Button`,
-                'Header',
-                'Log in/Sign up Button'
-              )
-            "
-          >
-            <Button
-              label="Log in/Sign up"
-              aria-label="Log in/Sign up button"
-              severity="secondary"
-              size="small"
-              variant="link"
-            >
-              <template #icon>
-                <UserIcon />
-              </template>
-            </Button>
-          </VFlexibleLink>
-          <VFlexibleLink
-            v-if="donateButtonText && donateButtonLink"
-            raw
-            :to="donateButtonLink"
-            @flexible-link-click="
-              trackClickEvent(
-                `Click Tracking - Header Donate Button`,
-                'Header',
-                'Donate Button'
-              )
-            "
-          >
-            <Button
-              :label="donateButtonText"
-              aria-label="donate"
-              class="px-3 sm:px-5 -mr-2"
-            />
-          </VFlexibleLink>
-
-          <Button
-            :disabled="!isNetworkConnected"
-            icon="pi pi-bars"
-            class="p-button-text"
-            severity="secondary"
-            aria-label="settings menu"
-            @click="
-              () => {
-                settingsSideBar = true
+            <span v-if="isApp" class="head-date font-meta">{{ getDate() }}</span>
+          </div>
+          <div class="flex gap-3 sm:gap-4 align-items-center">
+            <VFlexibleLink
+              v-if="!isApp"
+              class="get-app-button"
+              raw
+              to="/mobile"
+              @flexible-link-click="
                 trackClickEvent(
-                  'Click Tracking - Header Hamburger Menu',
+                  `Click Tracking - Header Get the App Button`,
                   'Header',
-                  `Open Sidebar`
+                  'Get the App Button'
                 )
-              }
-            "
-          />
+              "
+            >
+              <Button
+                label="Get the App"
+                aria-label="Get the App button"
+                size="small"
+                variant="link"
+              >
+                <template #icon>
+                  <DevicesIcon />
+                </template>
+              </Button>
+            </VFlexibleLink>
+            <VFlexibleLink
+              v-if="!currentUser && !isApp"
+              class="hidden md:block"
+              raw
+              to="/login"
+              @flexible-link-click="
+                trackClickEvent(
+                  `Click Tracking - Header Log in/Sign up Button`,
+                  'Header',
+                  'Log in/Sign up Button'
+                )
+              "
+            >
+              <Button
+                label="Log in/Sign up"
+                aria-label="Log in/Sign up button"
+                severity="secondary"
+                size="small"
+                variant="link"
+              >
+                <template #icon>
+                  <UserIcon />
+                </template>
+              </Button>
+            </VFlexibleLink>
+            <VFlexibleLink
+              v-if="donateButtonText && donateButtonLink"
+              raw
+              :to="donateButtonLink"
+              @flexible-link-click="
+                trackClickEvent(
+                  `Click Tracking - Header Donate Button`,
+                  'Header',
+                  'Donate Button'
+                )
+              "
+            >
+              <Button
+                :label="donateButtonText"
+                aria-label="donate"
+                class="px-3 sm:px-5 -mr-2"
+              />
+            </VFlexibleLink>
+
+            <Button
+              :disabled="!isNetworkConnected"
+              icon="pi pi-bars"
+              class="p-button-text -mr-2"
+              severity="secondary"
+              aria-label="settings menu"
+              @click="
+                () => {
+                  settingsSideBar = true
+                  trackClickEvent(
+                    'Click Tracking - Header Hamburger Menu',
+                    'Header',
+                    `Open Sidebar`
+                  )
+                }
+              "
+            />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
+    <div class="bottom">
+      <section class="full-width py-0 -mt-3">
+        <Divider class="my-0" />
+      </section>
+      <section class="content full-width">
+        <Button
+          label="Login "
+          aria-label="Log in/Sign up button"
+          severity="secondary"
+          size="small"
+          variant="link"
+        />
+      </section>
+    </div>
   </div>
 </template>
 
@@ -133,17 +151,33 @@ if (messageData.value?.product_banners?.length > 0) {
   background: var(--header-background);
   backdrop-filter: blur(4px);
   border: 1px solid var(--stroke-toggle-color);
-  height: var(--header-height);
-  display: flex;
-  .pi-bars {
-    font-size: var(--font-size-8);
+  .top {
+    height: var(--header-height);
+    display: flex;
+    .pi-bars {
+      font-size: var(--font-size-8);
+    }
+    .head-date {
+      font-family: var(--font-family-header);
+      line-height: 1rem;
+      font-size: 0.9rem;
+      @include media("<xs") {
+        display: none;
+      }
+    }
+    .wnyc-logo {
+      width: 75px;
+    }
+    .get-app-button {
+      @include media("<=422px") {
+        display: none;
+      }
+    }
   }
-  .head-date {
-    font-family: var(--font-family-header);
-    line-height: 1rem;
-    font-size: 0.9rem;
-    @include media("<xs") {
-      display: none;
+  .bottom {
+    height: var(--header-bottom-height);
+    .content {
+      display: flex;
     }
   }
 }
