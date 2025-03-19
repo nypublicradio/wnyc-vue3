@@ -37,8 +37,6 @@ const { isMobile } = useDevice()
 
 <style lang="scss" scoped>
 .horizontal-scroll-feature {
-  max-width: fit-content;
-  margin: auto;
   background: transparent;
   position: relative;
   .scroll {

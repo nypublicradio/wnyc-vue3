@@ -130,7 +130,7 @@ const handleLogoClick = () => {
             <Button
               :disabled="!isNetworkConnected"
               icon="pi pi-bars"
-              class="p-button-text -mr-2"
+              class="p-button-text -mr-3 md:-mr-2"
               severity="secondary"
               aria-label="settings menu"
               @click="
@@ -209,7 +209,7 @@ const handleLogoClick = () => {
       }
     }
     .get-app-button {
-      @include media("<=422px") {
+      @include media("<416px") {
         display: none;
       }
     }

@@ -29,7 +29,13 @@ useHead({
 <style lang="scss">
 header {
   .v-smart-header {
-    margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -1) !important;
+    margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -2) !important;
+    @include media(">lg") {
+      margin-top: calc(
+        (var(--header-height) + var(--header-bottom-height) + env(safe-area-inset-top)) *
+          -1
+      ) !important;
+    }
     transition: margin-top var(--p-transition-duration) ease;
   }
 }
