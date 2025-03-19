@@ -52,7 +52,7 @@ const handleLogoClick = () => {
           <div class="flex align-items-center">
             <WnycLogo class="wnyc-logo cursor-pointer" @click="handleLogoClick" />
 
-            <span v-if="isApp" class="head-date font-meta">{{ getDate() }}</span>
+            <span v-if="!isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
           </div>
           <div class="flex gap-3 sm:gap-4 align-items-center">
             <VFlexibleLink
