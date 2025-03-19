@@ -37,6 +37,11 @@ if (messageData.value?.product_banners?.length > 0) {
     }
   })
 }
+
+const handleLogoClick = () => {
+  navigateTo("/home")
+  trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
+}
 </script>
 
 <template>
@@ -45,7 +50,7 @@ if (messageData.value?.product_banners?.length > 0) {
       <section class="full-width">
         <div class="flex justify-content-between align-items-center">
           <div class="flex align-items-center">
-            <WnycLogo class="wnyc-logo" />
+            <WnycLogo class="wnyc-logo cursor-pointer" @click="handleLogoClick" />
 
             <span v-if="isApp" class="head-date font-meta">{{ getDate() }}</span>
           </div>
@@ -144,7 +149,7 @@ if (messageData.value?.product_banners?.length > 0) {
       </section>
     </div>
     <div v-if="!isApp && menuData" class="bottom hidden lg:block">
-      <section class="full-width py-0 -mt-3">
+      <section class="full-width py-0 -mt-2">
         <Divider class="my-0" />
       </section>
       <section class="content full-width flex gap-3">
@@ -195,7 +200,13 @@ if (messageData.value?.product_banners?.length > 0) {
       }
     }
     .wnyc-logo {
-      width: 75px;
+      width: 120px;
+      @include media("<lg") {
+        width: 100px;
+      }
+      @include media("<md") {
+        width: 75px;
+      }
     }
     .get-app-button {
       @include media("<=422px") {
