@@ -45,7 +45,8 @@ body {
   position: relative !important;
   margin: auto;
 
-  &.show-header {
+  &.show-header,
+  &.browser {
     main {
       padding-top: $headerHeight;
       @include media('>lg') {
