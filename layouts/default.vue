@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useIsApp } from "~/composables/states"
+
+const isApp = useIsApp()
 const route = useRoute()
 useHead({
   bodyAttrs: {
-    class: "template-default",
+    class: "template-default" + (isApp.value ? " app" : " browser"),
   },
 })
 </script>
@@ -11,7 +14,7 @@ useHead({
   <div class="page" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
 
-    <header :class="[{ show: route.name === 'home' }]">
+    <header :class="[{ show: route.name === 'home', browser: !isApp, app: isApp }]">
       <VSmartHeader :hero-buffer="400" :resume-delay="0">
         <TheHeader />
       </VSmartHeader>
@@ -39,7 +42,8 @@ header {
     transition: margin-top var(--p-transition-duration) ease;
   }
 }
-header.show {
+header.show,
+header.browser {
   .v-smart-header {
     margin-top: 0 !important;
   }

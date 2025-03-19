@@ -1,9 +1,12 @@
 <script setup>
+import { useIsApp } from "~/composables/states.ts"
+
+const isApp = useIsApp()
 const route = useRoute()
 
 useHead({
   bodyAttrs: {
-    class: "template-blank",
+    class: "template-blank" + (isApp.value ? " app" : " browser"),
   },
 })
 </script>
