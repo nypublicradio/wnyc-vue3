@@ -79,6 +79,9 @@
     --bw-toggle: var(--p-surface-950);
     --success: var(--p-green-500);
     --error: var(--p-red-500);
+
+    --header-menu-background: var(--p-surface-0);
+    --header-submenu-background: var(--p-surface-25);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -101,6 +104,9 @@
     --bw-toggle: var(--p-surface-0);
     --success: var(--p-green-400);
     --error: var(--p-red-400);
+
+    --header-menu-background: var(--p-darkblue-500);
+    --header-submenu-background: #ffffff0d;
 }
 
 // darkmode in global darkmode

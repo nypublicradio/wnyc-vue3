@@ -192,7 +192,6 @@ const handleMouseleave = () => {
               <Menu
                 :model="item.items[0]"
                 v-if="activeItemIndex === item.id && item.items[0]"
-                class="absolute"
               >
                 <template #item="{ item }">
                   <VFlexibleLink
@@ -274,15 +273,20 @@ const handleMouseleave = () => {
         font-weight: 700;
       }
       .p-menu {
+        position: absolute;
         border: none;
+        -webkit-border-radius: 0 0 20px 20px;
+        padding-bottom: 1rem;
+        border-radius: 0 0 20px 20px;
         -webkit-box-shadow: 0 7px 5px 0 rgba(0, 0, 0, 0.2);
         box-shadow: 0 7px 5px 0 rgba(0, 0, 0, 0.2);
+        background-color: var(--header-menu-background);
         ul {
           padding: 0;
           li {
             .p-menu-item-content {
               &:hover {
-                background-color: var(--p-surface-50);
+                background-color: var(--header-submenu-background);
               }
             }
           }
@@ -292,6 +296,7 @@ const handleMouseleave = () => {
         width: 100%;
         justify-content: flex-start;
         border-radius: 0;
+        padding: 0.5rem 1rem;
         .p-button-label {
           font-weight: 400;
           text-align: left;

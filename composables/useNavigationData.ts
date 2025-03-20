@@ -43,6 +43,14 @@ const headerMenuTemplate = [
                     label: "Favorites",
                     url: "/browse"
                 },
+                {
+                    label: "Followed Shows",
+                    url: "/browse"
+                },
+                {
+                    label: "Listening History",
+                    url: "/browse"
+                },
             ],
         ],
     },
