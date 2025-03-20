@@ -22,7 +22,7 @@ const donateButtonLink = ref(null)
 const menuData = ref(null)
 
 // get menu data from CMS
-const { data } = await useFetch("https://cms.prod.nypr.digital/api/v2/navigation/1/")
+const { data } = await useFetch("https://cms.demo.nypr.digital/api/v2/navigation/3/")
 if (data) {
   menuData.value = data.value
 }
@@ -42,6 +42,159 @@ const handleLogoClick = () => {
   navigateTo("/home")
   trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
 }
+
+const items = ref([
+  {
+    label: "Live Radio",
+    icon: "",
+    items: [
+      [
+        {
+          label: "Live Radio",
+          items: [
+            { label: "Accessories", url: "/live" },
+            { label: "Armchair" },
+            { label: "Coffee Table" },
+            { label: "Couch" },
+            { label: "TV Stand" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Kitchen",
+          items: [{ label: "Bar stool" }, { label: "Chair" }, { label: "Table" }],
+        },
+        {
+          label: "Bathroom",
+          items: [{ label: "Accessories" }],
+        },
+      ],
+      [
+        {
+          label: "Bedroom",
+          items: [
+            { label: "Bed" },
+            { label: "Chaise lounge" },
+            { label: "Cupboard" },
+            { label: "Dresser" },
+            { label: "Wardrobe" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Office",
+          items: [
+            { label: "Bookcase" },
+            { label: "Cabinet" },
+            { label: "Chair" },
+            { label: "Desk" },
+            { label: "Executive Chair" },
+          ],
+        },
+      ],
+    ],
+  },
+  {
+    label: "Electronics",
+    icon: "pi pi-mobile",
+    items: [
+      [
+        {
+          label: "Computer",
+          items: [
+            { label: "Monitor" },
+            { label: "Mouse" },
+            { label: "Notebook" },
+            { label: "Keyboard" },
+            { label: "Printer" },
+            { label: "Storage" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Home Theater",
+          items: [{ label: "Projector" }, { label: "Speakers" }, { label: "TVs" }],
+        },
+      ],
+      [
+        {
+          label: "Gaming",
+          items: [
+            { label: "Accessories" },
+            { label: "Console" },
+            { label: "PC" },
+            { label: "Video Games" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Appliances",
+          items: [
+            { label: "Coffee Machine" },
+            { label: "Fridge" },
+            { label: "Oven" },
+            { label: "Vaccum Cleaner" },
+            { label: "Washing Machine" },
+          ],
+        },
+      ],
+    ],
+  },
+  {
+    label: "Sports",
+    icon: "pi pi-clock",
+    items: [
+      [
+        {
+          label: "Football",
+          items: [
+            { label: "Kits" },
+            { label: "Shoes" },
+            { label: "Shorts" },
+            { label: "Training" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Running",
+          items: [
+            { label: "Accessories" },
+            { label: "Shoes" },
+            { label: "T-Shirts" },
+            { label: "Shorts" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Swimming",
+          items: [
+            { label: "Kickboard" },
+            { label: "Nose Clip" },
+            { label: "Swimsuits" },
+            { label: "Paddles" },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Tennis",
+          items: [
+            { label: "Balls" },
+            { label: "Rackets" },
+            { label: "Shoes" },
+            { label: "Training" },
+          ],
+        },
+      ],
+    ],
+  },
+])
 </script>
 
 <template>
@@ -152,29 +305,73 @@ const handleLogoClick = () => {
       <section class="full-width py-0 -mt-2">
         <Divider class="my-0" />
       </section>
-      <section class="content full-width flex gap-3">
-        <VFlexibleLink
-          v-for="(item, index) in menuData.primary_navigation"
-          :key="index"
-          raw
-          :to="item.value.url"
-          @flexible-link-click="
-            trackClickEvent(
-              `Click Tracking - Header ${item.value.title} Button`,
-              'Header',
-              `${item.value.title} Button`
-            )
-          "
-        >
-          <Button
+      <section class="content full-width py-1">
+        <MegaMenu :model="items">
+          <template #item="{ item, index }">
+            <VFlexibleLink
+              :key="index"
+              raw
+              :to="item.url"
+              @flexible-link-click="
+                trackClickEvent(
+                  `Click Tracking - Header ${item.label} Button`,
+                  'Header',
+                  `${item.label} Button`
+                )
+              "
+            >
+              <Button
+                raw
+                :label="item.label"
+                :aria-label="`${item.label} button`"
+                severity="secondary"
+                size="small"
+                variant="link"
+              />
+            </VFlexibleLink>
+            <!-- <div v-if="activeItemIndex === index && item.items">
+                <div v-for="(column, colIndex) in item.items" :key="colIndex">
+                  <div v-for="(subItem, subIndex) in column" :key="subIndex">
+                    {{ subItem.label }}
+                    <div v-if="subItem.items">
+                      <div
+                        v-for="(nestedItem, nestedIndex) in subItem.items"
+                        :key="nestedIndex"
+                      >
+                        <a :href="nestedItem.to">
+                          {{ nestedItem.label }}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+          </template>
+        </MegaMenu>
+        <!-- <div class="flex gap-3">
+          <VFlexibleLink
+            v-for="(item, index) in menuData.primary_navigation"
+            :key="index"
             raw
-            :label="item.value.title"
-            :aria-label="`${item.value.title} button`"
-            severity="secondary"
-            size="small"
-            variant="link"
-          />
-        </VFlexibleLink>
+            :to="item.value.url"
+            @flexible-link-click="
+              trackClickEvent(
+                `Click Tracking - Header ${item.value.title} Button`,
+                'Header',
+                `${item.value.title} Button`
+              )
+            "
+          >
+            <Button
+              raw
+              :label="item.value.title"
+              :aria-label="`${item.value.title} button`"
+              severity="secondary"
+              size="small"
+              variant="link"
+            />
+          </VFlexibleLink>
+        </div> -->
       </section>
     </div>
   </div>

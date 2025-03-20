@@ -1185,6 +1185,15 @@ const MyPreset = definePreset(Aura, {
         },
       },
     },
+    megamenu: {
+      root: {
+        background: "transparent",
+        borderColor: "transparent",
+        horizontalOrientation: {
+          padding: '0.5rem 0rem',
+        },
+      }
+    }
   },
 })
 
