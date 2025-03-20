@@ -52,7 +52,7 @@ const handleLogoClick = () => {
           <div class="flex align-items-center">
             <WnycLogo class="wnyc-logo cursor-pointer" @click="handleLogoClick" />
 
-            <span v-if="!isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
+            <span v-if="isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
           </div>
           <div class="flex gap-3 sm:gap-4 align-items-center">
             <VFlexibleLink
@@ -130,7 +130,7 @@ const handleLogoClick = () => {
             <Button
               :disabled="!isNetworkConnected"
               icon="pi pi-bars"
-              class="p-button-text -mr-3 md:-mr-2"
+              class="p-button-text -mr-2"
               severity="secondary"
               aria-label="settings menu"
               @click="
@@ -209,7 +209,7 @@ const handleLogoClick = () => {
       }
     }
     .get-app-button {
-      @include media("<416px") {
+      @include media("<425px") {
         display: none;
       }
     }
