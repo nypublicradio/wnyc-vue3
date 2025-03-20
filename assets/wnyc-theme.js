@@ -352,6 +352,11 @@ const MyPreset = definePreset(Aura, {
       900: "{red.900}",
       950: "{red.950}",
     },
+    overlay: {
+      navigation: {
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5)'
+      },
+    },
     formField: {
       paddingX: "0.75rem",
       paddingY: "0.75rem",
@@ -1192,6 +1197,26 @@ const MyPreset = definePreset(Aura, {
         horizontalOrientation: {
           padding: '0.5rem 0rem',
         },
+      },
+      item: {
+        focusBackground: "transparent",
+        activeBackground: "transparent",
+      },
+    },
+    menu: {
+      root: {
+        borderColor: "transparent",
+      },
+      list: {
+        padding: '0',
+        borderRadius: '0',
+      },
+      item: {
+        padding: '0',
+        borderRadius: '0',
+      },
+      submenuLabel: {
+        padding: '0',
       }
     }
   },

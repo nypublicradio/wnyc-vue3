@@ -1,5 +1,6 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
+import useNavigationData from "~/composables/useNavigationData"
 
 import {
   useSettingSideBar,
@@ -19,14 +20,10 @@ const currentUserProfile = useCurrentUserProfile()
 const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
 
-const menuData = ref(null)
+const { headerMenuData } = useNavigationData()
 
-// get menu data from CMS
-const { data } = await useFetch("https://cms.demo.nypr.digital/api/v2/navigation/3/")
-if (data) {
-  menuData.value = data.value
-}
-console.log("menuData", menuData.value.primary_navigation)
+const menuData = ref(headerMenuData)
+
 // check if donate button should be visible and get the button link and text
 const { data: messageData } = await useFetch(`${config.public.SYSTEM_MESSAGES_API}`)
 if (messageData.value?.product_banners?.length > 0) {
@@ -43,158 +40,15 @@ const handleLogoClick = () => {
   trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
 }
 
-const items = ref([
-  {
-    label: "Live Radio",
-    icon: "",
-    items: [
-      [
-        {
-          label: "Live Radio",
-          items: [
-            { label: "Accessories", url: "/live" },
-            { label: "Armchair" },
-            { label: "Coffee Table" },
-            { label: "Couch" },
-            { label: "TV Stand" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Kitchen",
-          items: [{ label: "Bar stool" }, { label: "Chair" }, { label: "Table" }],
-        },
-        {
-          label: "Bathroom",
-          items: [{ label: "Accessories" }],
-        },
-      ],
-      [
-        {
-          label: "Bedroom",
-          items: [
-            { label: "Bed" },
-            { label: "Chaise lounge" },
-            { label: "Cupboard" },
-            { label: "Dresser" },
-            { label: "Wardrobe" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Office",
-          items: [
-            { label: "Bookcase" },
-            { label: "Cabinet" },
-            { label: "Chair" },
-            { label: "Desk" },
-            { label: "Executive Chair" },
-          ],
-        },
-      ],
-    ],
-  },
-  {
-    label: "Electronics",
-    icon: "pi pi-mobile",
-    items: [
-      [
-        {
-          label: "Computer",
-          items: [
-            { label: "Monitor" },
-            { label: "Mouse" },
-            { label: "Notebook" },
-            { label: "Keyboard" },
-            { label: "Printer" },
-            { label: "Storage" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Home Theater",
-          items: [{ label: "Projector" }, { label: "Speakers" }, { label: "TVs" }],
-        },
-      ],
-      [
-        {
-          label: "Gaming",
-          items: [
-            { label: "Accessories" },
-            { label: "Console" },
-            { label: "PC" },
-            { label: "Video Games" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Appliances",
-          items: [
-            { label: "Coffee Machine" },
-            { label: "Fridge" },
-            { label: "Oven" },
-            { label: "Vaccum Cleaner" },
-            { label: "Washing Machine" },
-          ],
-        },
-      ],
-    ],
-  },
-  {
-    label: "Sports",
-    icon: "pi pi-clock",
-    items: [
-      [
-        {
-          label: "Football",
-          items: [
-            { label: "Kits" },
-            { label: "Shoes" },
-            { label: "Shorts" },
-            { label: "Training" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Running",
-          items: [
-            { label: "Accessories" },
-            { label: "Shoes" },
-            { label: "T-Shirts" },
-            { label: "Shorts" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Swimming",
-          items: [
-            { label: "Kickboard" },
-            { label: "Nose Clip" },
-            { label: "Swimsuits" },
-            { label: "Paddles" },
-          ],
-        },
-      ],
-      [
-        {
-          label: "Tennis",
-          items: [
-            { label: "Balls" },
-            { label: "Rackets" },
-            { label: "Shoes" },
-            { label: "Training" },
-          ],
-        },
-      ],
-    ],
-  },
-])
+const activeItemIndex = ref(null)
+
+const handleMouseover = (id) => {
+  activeItemIndex.value = id
+}
+
+const handleMouseleave = () => {
+  activeItemIndex.value = null
+}
 </script>
 
 <template>
@@ -306,72 +160,68 @@ const items = ref([
         <Divider class="my-0" />
       </section>
       <section class="content full-width py-1">
-        <MegaMenu :model="items">
-          <template #item="{ item, index }">
-            <VFlexibleLink
-              :key="index"
-              raw
-              :to="item.url"
-              @flexible-link-click="
-                trackClickEvent(
-                  `Click Tracking - Header ${item.label} Button`,
-                  'Header',
-                  `${item.label} Button`
-                )
-              "
+        <MegaMenu :model="menuData">
+          <template #item="{ item }">
+            <div
+              :key="item.id"
+              @click.prevent="handleMouseover(item.id)"
+              @mouseover="handleMouseover(item.id)"
+              @mouseleave="handleMouseleave"
             >
-              <Button
+              <VFlexibleLink
                 raw
-                :label="item.label"
-                :aria-label="`${item.label} button`"
-                severity="secondary"
-                size="small"
-                variant="link"
-              />
-            </VFlexibleLink>
-            <!-- <div v-if="activeItemIndex === index && item.items">
-                <div v-for="(column, colIndex) in item.items" :key="colIndex">
-                  <div v-for="(subItem, subIndex) in column" :key="subIndex">
-                    {{ subItem.label }}
-                    <div v-if="subItem.items">
-                      <div
-                        v-for="(nestedItem, nestedIndex) in subItem.items"
-                        :key="nestedIndex"
-                      >
-                        <a :href="nestedItem.to">
-                          {{ nestedItem.label }}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
+                :to="item.url"
+                @flexible-link-click="
+                  trackClickEvent(
+                    `Click Tracking - Header ${item.label} Button`,
+                    'Header',
+                    `${item.label} Button`
+                  )
+                "
+              >
+                <Button
+                  raw
+                  :label="item.label"
+                  :aria-label="`${item.label} button`"
+                  severity="secondary"
+                  size="small"
+                  variant="link"
+                />
+              </VFlexibleLink>
+
+              <Menu
+                :model="item.items[0]"
+                v-if="activeItemIndex === item.id && item.items[0]"
+                class="absolute"
+              >
+                <template #item="{ item }">
+                  <VFlexibleLink
+                    raw
+                    :to="item.url"
+                    class="w-full"
+                    @flexible-link-click="
+                      trackClickEvent(
+                        `Click Tracking - Header ${item.label} Button`,
+                        'Header',
+                        `${item.label} Button`
+                      )
+                    "
+                  >
+                    <Button
+                      raw
+                      class="submenu-btn"
+                      :label="item.label"
+                      :aria-label="`${item.label} button`"
+                      severity="secondary"
+                      size="small"
+                      variant="link"
+                    />
+                  </VFlexibleLink>
+                </template>
+              </Menu>
+            </div>
           </template>
         </MegaMenu>
-        <!-- <div class="flex gap-3">
-          <VFlexibleLink
-            v-for="(item, index) in menuData.primary_navigation"
-            :key="index"
-            raw
-            :to="item.value.url"
-            @flexible-link-click="
-              trackClickEvent(
-                `Click Tracking - Header ${item.value.title} Button`,
-                'Header',
-                `${item.value.title} Button`
-              )
-            "
-          >
-            <Button
-              raw
-              :label="item.value.title"
-              :aria-label="`${item.value.title} button`"
-              severity="secondary"
-              size="small"
-              variant="link"
-            />
-          </VFlexibleLink>
-        </div> -->
       </section>
     </div>
   </div>
@@ -423,6 +273,33 @@ const items = ref([
       .p-button-label {
         font-weight: 700;
       }
+      .p-menu {
+        border: none;
+        -webkit-box-shadow: 0 7px 5px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 7px 5px 0 rgba(0, 0, 0, 0.2);
+        ul {
+          padding: 0;
+          li {
+            .p-menu-item-content {
+              &:hover {
+                background-color: var(--p-surface-50);
+              }
+            }
+          }
+        }
+      }
+      .submenu-btn {
+        width: 100%;
+        justify-content: flex-start;
+        border-radius: 0;
+        .p-button-label {
+          font-weight: 400;
+          text-align: left;
+        }
+      }
+    }
+    .p-megamenu-overlay {
+      display: none !important;
     }
   }
 }
