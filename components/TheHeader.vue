@@ -10,30 +10,13 @@ import {
   useCurrentUserProfile,
 } from "~/composables/states.ts"
 
-const config = useRuntimeConfig()
 const settingsSideBar = useSettingSideBar()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 
-const donateButtonText = ref(null)
-const donateButtonLink = ref(null)
-
-const { headerMenuData } = useNavigationData()
-
-const menuData = ref(headerMenuData)
-
-// check if donate button should be visible and get the button link and text
-const { data: messageData } = await useFetch(`${config.public.SYSTEM_MESSAGES_API}`)
-if (messageData.value?.product_banners?.length > 0) {
-  messageData.value.product_banners.forEach((banner) => {
-    if (banner.value?.title === "WNYC App Donate Button") {
-      donateButtonText.value = banner.value?.button_text
-      donateButtonLink.value = banner.value?.button_link
-    }
-  })
-}
+const { donateButtonData, headerNavigationData } = await useNavigationData()
 
 const handleLogoClick = () => {
   navigateTo("/home")
@@ -42,11 +25,12 @@ const handleLogoClick = () => {
 
 const activeItemIndex = ref(null)
 
-const handleMouseover = (id) => {
-  activeItemIndex.value = id
+const handleMouseEnter = (item, event) => {
+  event.stopPropagation()
+  if (item.items) activeItemIndex.value = item.id
 }
 
-const handleMouseleave = () => {
+const handleMouseLeave = () => {
   activeItemIndex.value = null
 }
 </script>
@@ -116,9 +100,9 @@ const handleMouseleave = () => {
               </Button>
             </VFlexibleLink>
             <VFlexibleLink
-              v-if="donateButtonText && donateButtonLink"
+              v-if="donateButtonData.buttonText"
               raw
-              :to="donateButtonLink"
+              :to="donateButtonData.buttonLink"
               @flexible-link-click="
                 trackClickEvent(
                   `Click Tracking - Header Donate Button`,
@@ -128,7 +112,7 @@ const handleMouseleave = () => {
               "
             >
               <Button
-                :label="donateButtonText"
+                :label="donateButtonData.buttonText"
                 aria-label="donate"
                 class="px-3 sm:px-5 -mr-2"
               />
@@ -155,18 +139,16 @@ const handleMouseleave = () => {
         </div>
       </section>
     </div>
-    <div v-if="!isApp && menuData" class="bottom hidden lg:block">
+    <div v-if="!isApp && headerNavigationData" class="bottom hidden lg:block">
       <section class="full-width py-0 -mt-2">
         <Divider class="my-0" />
       </section>
       <section class="content full-width py-1">
-        <MegaMenu :model="menuData">
+        <MegaMenu :model="headerNavigationData">
           <template #item="{ item }">
             <div
-              :key="item.id"
-              @click.prevent="handleMouseover(item.id)"
-              @mouseover="handleMouseover(item.id)"
-              @mouseleave="handleMouseleave"
+              @mouseenter="handleMouseEnter(item, $event)"
+              @mouseleave="handleMouseLeave"
             >
               <VFlexibleLink
                 raw
