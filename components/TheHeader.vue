@@ -248,7 +248,7 @@ const handleMouseLeave = () => {
     }
   }
   .bottom {
-    height: var(--header-bottom-height);
+    //height: var(--header-bottom-height);
     .content {
       margin-left: -12px;
       .p-button-label {
