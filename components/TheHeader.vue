@@ -196,7 +196,18 @@ const handleMouseLeave = () => {
                       severity="secondary"
                       size="small"
                       variant="link"
-                    />
+                    >
+                      <div class="flex align-items-center">
+                        <img
+                          v-if="item.image"
+                          :alt="item.label"
+                          :src="item.image"
+                          class="mr-3"
+                          style="width: 60px; height: 60px"
+                        />
+                        <div class="p-button-label">{{ item.label }}</div>
+                      </div>
+                    </Button>
                   </VFlexibleLink>
                 </template>
               </Menu>

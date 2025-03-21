@@ -5,9 +5,10 @@ import {
   getEpisodeFallBackImage,
   goToNprPage,
 } from "~/utilities/helpers"
-import { useCurrentEpisode } from "~/composables/states"
+import { useCurrentEpisode, useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
+const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`

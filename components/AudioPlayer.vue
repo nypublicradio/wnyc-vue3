@@ -424,9 +424,18 @@ html.style-mode-dark .persistent-player {
     backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
   }
 }
-
+body {
+  .app {
+    .persistent-player:not(.expanded) {
+      bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+    }
+    &.browser {
+      bottom: env(safe-area-inset-bottom);
+    }
+  }
+}
 .persistent-player:not(.expanded) {
-  bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+  //bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
 
   // no live icon
   .track-info-livestream {

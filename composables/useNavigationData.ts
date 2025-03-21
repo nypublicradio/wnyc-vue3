@@ -69,20 +69,39 @@ const normalizeWagtailMenuData = (menuData) => {
         'hasSubmenu': false,
     }))
 }
+const normalizeStationsMenuData = (menuData) => {
+    return menuData.map((item) => ({
+        'label': item.station,
+        'url': `/live?slug=${item.slug}`,
+        'icon': '',
+        'image': item.image,
+        'id': String(item.id),
+        'type': item.cmsSource,
+        'hasSubmenu': false,
+    }))
+}
 
 export default async function useNavigationData() {
     // Fetch data concurrently using Promise.all
-    const [wagtailNavigationResponse, donateResponse] = await Promise.all([
+    const [wagtailNavigationResponse, donateResponse, stationsResponse] = await Promise.all([
         useFetch(config.public.HEADER_NAVIGATION_API),
-        useFetch(config.public.SYSTEM_MESSAGES_API)
+        useFetch(config.public.SYSTEM_MESSAGES_API),
+        useFetch(`${config.public.BFF_URL}/api/streams`)
     ]);
 
     const wagtailNavigationData = ref(wagtailNavigationResponse.data.value);
+    const allCurrentStations = ref(stationsResponse.data.value);
     const headerNavigationData = useState('headerNavigationDataM', () => null);
     const donateButtonData = useState('donateButtonData', () => ({
         buttonText: '',
         buttonLink: ''
     }));
+
+    // Process radio stations data and normalize it
+    const stationsData = normalizeStationsMenuData(allCurrentStations.value);
+
+    // merge radio stations data into the Live Radio menu items
+    headerMenuTemplate[0].items[0].splice(0, 0, ...stationsData);
 
     // Process navigation data and normalize it
     const primaryNavigation = normalizeWagtailMenuData(wagtailNavigationData.value.primary_navigation);
@@ -90,6 +109,8 @@ export default async function useNavigationData() {
     // merge wagtailNavigationData with headerMenuTemplate at the 2 index
     headerNavigationData.value = headerMenuTemplate;
     headerNavigationData.value.splice(2, 0, ...primaryNavigation);
+
+
 
 
     // Process donate data
