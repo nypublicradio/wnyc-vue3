@@ -54,7 +54,8 @@ body {
       }
     }
   }
-  &.hide-bottom-menu {
+  &.hide-bottom-menu,
+  &.browser {
     .bottom-menu {
       display: none;
     }

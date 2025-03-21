@@ -141,6 +141,7 @@ onMounted(() => {
       </section>
     </div>
     <SponsorBanner
+      v-if="isApp"
       class="mt-4"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '-5rem'}`"
     />
