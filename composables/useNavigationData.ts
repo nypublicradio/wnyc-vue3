@@ -80,17 +80,31 @@ const normalizeStationsMenuData = (menuData) => {
         'hasSubmenu': false,
     }))
 }
+const normalizeShowsMenuData = (menuData, limit) => {
+    return menuData.featuredShows.slice(0, limit).map((item) => ({
+        'label': item.station,
+        'url': `/live?slug=${item.slug}`,
+        'icon': '',
+        'image': item.image,
+        'id': String(item.id),
+        'type': item.cmsSource,
+        'hasSubmenu': false,
+    }));
+}
 
 export default async function useNavigationData() {
     // Fetch data concurrently using Promise.all
-    const [wagtailNavigationResponse, donateResponse, stationsResponse] = await Promise.all([
+    const [wagtailNavigationResponse, donateResponse, stationsResponse, showsResponse] = await Promise.all([
         useFetch(config.public.HEADER_NAVIGATION_API),
         useFetch(config.public.SYSTEM_MESSAGES_API),
-        useFetch(`${config.public.BFF_URL}/api/streams`)
+        useFetch(`${config.public.BFF_URL}/api/streams`),
+        useFetch(`${config.public.BFF_URL}/api/v2/shows`),
+
     ]);
 
     const wagtailNavigationData = ref(wagtailNavigationResponse.data.value);
     const allCurrentStations = ref(stationsResponse.data.value);
+    const showsData = ref(showsResponse.data.value);
     const headerNavigationData = useState('headerNavigationDataM', () => null);
     const donateButtonData = useState('donateButtonData', () => ({
         buttonText: '',
@@ -110,8 +124,9 @@ export default async function useNavigationData() {
     headerNavigationData.value = headerMenuTemplate;
     headerNavigationData.value.splice(2, 0, ...primaryNavigation);
 
-
-
+    // process shows data and normalize it
+    const shows = normalizeShowsMenuData(showsData.value, 5);
+    console.log('shows', shows);
 
     // Process donate data
     if (donateResponse.data.value?.product_banners?.length > 0) {
