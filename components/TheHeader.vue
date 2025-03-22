@@ -198,11 +198,22 @@ const handleMouseLeave = () => {
                       variant="link"
                     >
                       <div class="flex align-items-center">
+                        <VImage
+                          v-if="item?.image && typeof item?.image === 'object'"
+                          class="flex-none mr-3"
+                          :alt="item.image.altText"
+                          :src="item.image.template"
+                          :height="60"
+                          :width="60"
+                          :ratio="[1, 1]"
+                          :srcset="[2]"
+                          style="height: 60px; width: 60px"
+                        />
                         <img
-                          v-if="item.image"
+                          v-else-if="item.image"
                           :alt="item.label"
                           :src="item.image"
-                          class="mr-3"
+                          class="flex-none mr-3"
                           style="width: 60px; height: 60px"
                         />
                         <div class="p-button-label">{{ item.label }}</div>
