@@ -81,9 +81,10 @@ const normalizeStationsMenuData = (menuData) => {
     }))
 }
 const normalizeShowsMenuData = (menuData, limit) => {
+    console.log('menuData', menuData);
     return menuData.featuredShows.slice(0, limit).map((item) => ({
-        'label': item.station,
-        'url': `/live?slug=${item.slug}`,
+        'label': item.title,
+        'url': `/brose/shows/${item.slug}`,
         'icon': '',
         'image': item.image,
         'id': String(item.id),
@@ -126,7 +127,9 @@ export default async function useNavigationData() {
 
     // process shows data and normalize it
     const shows = normalizeShowsMenuData(showsData.value, 5);
-    console.log('shows', shows);
+
+    //merge shows data into the Browse All Shows menu items
+    headerNavigationData.value[1].items[0].splice(0, 0, ...shows);
 
     // Process donate data
     if (donateResponse.data.value?.product_banners?.length > 0) {
