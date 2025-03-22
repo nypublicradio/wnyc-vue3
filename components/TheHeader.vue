@@ -182,11 +182,14 @@ const handleMouseLeave = () => {
                     @click.stop
                     class="w-full"
                     @flexible-link-click="
-                      trackClickEvent(
-                        `Click Tracking - Header ${item.label} Button`,
-                        'Header',
-                        `${item.label} Button`
-                      )
+                      () => {
+                        handleMouseLeave()
+                        trackClickEvent(
+                          `Click Tracking - Header ${item.label} Button`,
+                          'Header',
+                          `${item.label} Button`
+                        )
+                      }
                     "
                   >
                     <Button
@@ -286,6 +289,7 @@ const handleMouseLeave = () => {
         -webkit-box-shadow: 0 7px 5px 0 rgba(0, 0, 0, 0.2);
         box-shadow: 0 7px 5px 0 rgba(0, 0, 0, 0.2);
         background-color: var(--header-menu-background);
+        z-index: 1;
         ul {
           padding: 0;
           li {
