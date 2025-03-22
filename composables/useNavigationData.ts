@@ -81,7 +81,6 @@ const normalizeStationsMenuData = (menuData) => {
     }))
 }
 const normalizeShowsMenuData = (menuData, limit) => {
-    console.log('menuData', menuData);
     return menuData.featuredShows.slice(0, limit).map((item) => ({
         'label': item.title,
         'url': `/browse/shows/${item.slug}`,
