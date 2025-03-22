@@ -179,6 +179,7 @@ const handleMouseLeave = () => {
                   <VFlexibleLink
                     raw
                     :to="item.url"
+                    @click.stop
                     class="w-full"
                     @flexible-link-click="
                       trackClickEvent(
