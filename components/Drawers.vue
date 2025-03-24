@@ -9,6 +9,7 @@ import {
   useAccountPromptSideBar,
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
+  useIsApp,
 } from "~/composables/states"
 
 const settingsSideBar = useSettingSideBar()
@@ -19,6 +20,7 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
+const isApp = useIsApp()
 </script>
 
 <template>
@@ -28,6 +30,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       :baseZIndex="10000"
       position="right"
       class="w-full"
+      :class="[{ 'style-mode-dark': !isApp, browser: !isApp }]"
       id="settings-sidebar"
       @hide="
         () => {
@@ -40,7 +43,8 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <template #header><span></span></template>
-      <Settings />
+      <Settings v-if="isApp" />
+      <SettingsBrowser v-else />
     </Drawer>
     <Drawer
       v-model:visible="loginSideBar"
@@ -210,6 +214,12 @@ const sleepTimerSideBar = useSleepTimerSideBar()
   }
   &.no-safe-area {
     padding-top: 0 !important;
+  }
+  &.style-mode-dark.browser {
+    .p-drawer-header,
+    .p-drawer-content {
+      background: var(--p-surface-950);
+    }
   }
 }
 </style>
