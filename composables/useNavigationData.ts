@@ -1,63 +1,5 @@
+import allMenuData from './menuData'
 const config = useRuntimeConfig()
-
-const headerMenuTemplate = [
-    {
-        label: "Live Radio",
-        //url: "/live",
-        id: "0",
-        icon: "",
-        hasSubmenu: true,
-        items: [
-            [
-                {
-                    label: "All Streams",
-                    url: "/live"
-                },
-                {
-                    label: "Daily Schedule",
-                    url: "/live"
-                },
-            ],
-        ],
-    },
-    {
-        label: "Browse All Shows",
-        id: "1",
-        icon: "",
-        hasSubmenu: true,
-        items: [
-            [
-                {
-                    label: "All Shows",
-                    url: "/browse"
-                },
-            ],
-        ],
-    },
-    {
-        label: "Saved",
-        id: "2",
-        icon: "",
-        hasSubmenu: true,
-        items: [
-            [
-                {
-                    label: "Favorites",
-                    url: "/browse"
-                },
-                {
-                    label: "Followed Shows",
-                    url: "/browse"
-                },
-                {
-                    label: "Listening History",
-                    url: "/browse"
-                },
-            ],
-        ],
-    },
-
-]
 
 const normalizeWagtailMenuData = (menuData) => {
     return menuData.map((item) => ({
@@ -67,6 +9,7 @@ const normalizeWagtailMenuData = (menuData) => {
         'id': String(item.id),
         'type': item.type,
         'hasSubmenu': false,
+        'inHeaderMenu': true,
     }))
 }
 const normalizeStationsMenuData = (menuData) => {
@@ -106,6 +49,7 @@ export default async function useNavigationData() {
     const allCurrentStations = ref(stationsResponse.data.value);
     const showsData = ref(showsResponse.data.value);
     const headerNavigationData = useState('headerNavigationDataM', () => null);
+    const allNavigationData = useState('allNavigationData', () => null);
     const donateButtonData = useState('donateButtonData', () => ({
         buttonText: '',
         buttonLink: ''
@@ -115,13 +59,13 @@ export default async function useNavigationData() {
     const stationsData = normalizeStationsMenuData(allCurrentStations.value);
 
     // merge radio stations data into the Live Radio menu items
-    headerMenuTemplate[0].items[0].splice(0, 0, ...stationsData);
+    allMenuData[0].items[0].splice(0, 0, ...stationsData);
 
     // Process navigation data and normalize it
     const primaryNavigation = normalizeWagtailMenuData(wagtailNavigationData.value.primary_navigation);
 
-    // merge wagtailNavigationData with headerMenuTemplate at the 2 index
-    headerNavigationData.value = headerMenuTemplate;
+    // merge wagtailNavigationData with allMenuData at the 2 index
+    headerNavigationData.value = allMenuData;
     headerNavigationData.value.splice(2, 0, ...primaryNavigation);
 
     // process shows data and normalize it
@@ -129,6 +73,11 @@ export default async function useNavigationData() {
 
     //merge shows data into the Browse All Shows menu items
     headerNavigationData.value[1].items[0].splice(0, 0, ...shows);
+
+    allNavigationData.value = headerNavigationData.value;
+
+    // remove items not to display in the header menu by the inHeaderMenu key
+    headerNavigationData.value = headerNavigationData.value.filter((item) => item.inHeaderMenu);
 
     // Process donate data
     if (donateResponse.data.value?.product_banners?.length > 0) {
@@ -140,6 +89,6 @@ export default async function useNavigationData() {
         });
     }
 
-    return { headerNavigationData, donateButtonData };
+    return { headerNavigationData, allNavigationData, donateButtonData };
 }
 
