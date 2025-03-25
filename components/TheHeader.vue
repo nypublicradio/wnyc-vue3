@@ -4,19 +4,17 @@ import useNavigationData from "~/composables/useNavigationData"
 
 import {
   useSettingSideBar,
+  useSettingsSideBarBrowser,
   useIsNetworkConnected,
   useIsApp,
-  useCurrentUser,
-  useCurrentUserProfile,
 } from "~/composables/states.ts"
 
 const settingsSideBar = useSettingSideBar()
+const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-const currentUser = useCurrentUser()
-const currentUserProfile = useCurrentUserProfile()
 
-const { donateButtonData, headerNavigationData } = await useNavigationData()
+const { headerNavigationData } = await useNavigationData()
 
 const handleLogoClick = () => {
   navigateTo("/home")
@@ -46,77 +44,9 @@ const handleMouseLeave = () => {
             <span v-if="isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
           </div>
           <div class="flex gap-3 sm:gap-4 align-items-center">
-            <VFlexibleLink
-              v-if="!isApp"
-              class="get-app-button"
-              raw
-              to="/mobile"
-              @flexible-link-click="
-                trackClickEvent(
-                  `Click Tracking - Header Get the App Button`,
-                  'Header',
-                  'Get the App Button'
-                )
-              "
-            >
-              <Button
-                label="Get the App"
-                aria-label="Get the App button"
-                size="small"
-                variant="link"
-              >
-                <template #icon>
-                  <DevicesIcon />
-                </template>
-              </Button>
-            </VFlexibleLink>
-            <VFlexibleLink
-              v-if="!isApp"
-              class="hidden md:block"
-              :class="{ 'user-logged-in': currentUser }"
-              raw
-              to="/login"
-              @flexible-link-click="
-                trackClickEvent(
-                  `Click Tracking - Header Log in/Sign up Button`,
-                  'Header',
-                  'Log in/Sign up Button'
-                )
-              "
-            >
-              <Button
-                :label="`${
-                  currentUser ? 'Hi, ' + currentUserProfile.name : 'Log in/Sign up'
-                }`"
-                aria-label="Log in/Sign up button"
-                severity="secondary"
-                size="small"
-                variant="link"
-                :disabled="currentUser"
-              >
-                <template #icon>
-                  <UserIcon />
-                </template>
-              </Button>
-            </VFlexibleLink>
-            <VFlexibleLink
-              v-if="donateButtonData.buttonText"
-              raw
-              :to="donateButtonData.buttonLink"
-              @flexible-link-click="
-                trackClickEvent(
-                  `Click Tracking - Header Donate Button`,
-                  'Header',
-                  'Donate Button'
-                )
-              "
-            >
-              <Button
-                :label="donateButtonData.buttonText"
-                aria-label="donate"
-                class="px-3 sm:px-5 -mr-2"
-              />
-            </VFlexibleLink>
+            <GetTheAppBtn v-if="!isApp" />
+            <LoginSignupBtn v-if="!isApp" class="hidden md:block" />
+            <DonateBtn class="-mr-2" />
 
             <Button
               :disabled="!isNetworkConnected"
@@ -126,7 +56,7 @@ const handleMouseLeave = () => {
               aria-label="settings menu"
               @click="
                 () => {
-                  settingsSideBar = true
+                  isApp ? (settingsSideBar = true) : (settingsSideBarBrowser = true)
                   trackClickEvent(
                     'Click Tracking - Header Hamburger Menu',
                     'Header',
@@ -262,14 +192,9 @@ const handleMouseLeave = () => {
         width: 75px;
       }
     }
-    .get-app-button {
+    .get-the-app-btn {
       @include media("<425px") {
         display: none;
-      }
-    }
-    .user-logged-in {
-      .p-button {
-        opacity: 1;
       }
     }
   }
