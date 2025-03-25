@@ -77,20 +77,31 @@ export default async function useNavigationData() {
     // Merge radio stations data into the Live Radio menu items
     allMenuData[0].items[0].splice(0, 0, ...stationsData);
 
-    // Process navigation data and normalize it
-    const primaryNavigation = normalizeWagtailMenuData(wagtailNavigationData.primary_navigation);
-
-    // Merge wagtailNavigationData with allMenuData at the 2 index
-    headerNavigationData.value = allMenuData;
-    headerNavigationData.value.splice(2, 0, ...primaryNavigation);
-
     // Process shows data and normalize it
     const shows = normalizeShowsMenuData(showsData, 5);
+
+    // initially set the headerNavigationData to the allMenuData
+    headerNavigationData.value = allMenuData;
 
     // Merge shows data into the Browse All Shows menu items
     headerNavigationData.value[1].items[0].splice(0, 0, ...shows);
 
-    allNavigationData.value = headerNavigationData.value;
+
+    // set allNavigationData to the same value as headerNavigationData BEFORE the wagtail primary nav data gets injected
+    // the spread operator sets the data at this point and stops the reactivity from updating the value
+    allNavigationData.value = [...headerNavigationData.value]
+
+
+    // Process WAGTAIL navigation data and normalize it
+    const primaryNavigation = normalizeWagtailMenuData(wagtailNavigationData.primary_navigation);
+
+    // Merge wagtailNavigationData with allMenuData at the 2 index
+    headerNavigationData.value.splice(2, 0, ...primaryNavigation);
+
+
+    // inject the wagtailNavigationData into the allNavigationData Collections menu item ID 7
+    const collectionsMenuItem = allNavigationData.value.find((item) => item.label === "Collections");
+    collectionsMenuItem.items[0] = primaryNavigation;
 
     // Remove items not to display in the header menu by the inHeaderMenu key
     headerNavigationData.value = headerNavigationData.value.filter((item) => item.inHeaderMenu);
