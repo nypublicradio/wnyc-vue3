@@ -67,8 +67,6 @@ export default async function useNavigationData() {
         useFetch(`${config.public.BFF_URL}/api/v2/shows`),
     ]);
 
-    console.log('fetched')
-
     const wagtailNavigationData = wagtailNavigationResponse.data.value;
     const allCurrentStations = stationsResponse.data.value;
     const showsData = showsResponse.data.value;

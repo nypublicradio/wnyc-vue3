@@ -29,7 +29,7 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       v-model:visible="settingsSideBarBrowser"
       :baseZIndex="10000"
       position="right"
-      class="w-full style-mode-dark"
+      class="w-full style-mode-dark hamburger-drawer"
       id="settings-sidebar-browser"
       @hide="
         () => {
@@ -42,12 +42,22 @@ const sleepTimerSideBar = useSleepTimerSideBar()
       "
     >
       <template #header>
-        <div class="flex align-items-center w-full gap-4 style-mode-dark">
-          <WnycLogo class="w-1" />
-          <ListenLiveBtn trackingLocation="Hamburger Menu" />
-          <GetTheAppBtn trackingLocation="Hamburger Menu" />
-          <LoginSignupBtn trackingLocation="Hamburger Menu" />
-          <DonateBtn trackingLocation="Hamburger Menu" />
+        <div
+          class="flex w-full align-items-start lg:align-items-center justify-content-between style-mode-dark p-2"
+        >
+          <div
+            class="flex gap-3 flex-column align-items-start lg:flex-row lg:align-items-center p-2"
+          >
+            <WnycLogo class="flex-none w-6rem lg:w-8rem" />
+            <ListenLiveBtn class="-ml-3 lg:ml-0" trackingLocation="Hamburger Menu" />
+            <GetTheAppBtn class="-ml-3 lg:ml-0" trackingLocation="Hamburger Menu" />
+            <LoginSignupBtn
+              class="-ml-3 lg:ml-0"
+              trackingLocation="Hamburger Menu"
+              label="Create Free Account"
+            />
+          </div>
+          <DonateBtn class="mt-2 lg:mt-0" trackingLocation="Hamburger Menu" />
         </div>
       </template>
       <SettingsBrowser />
@@ -214,7 +224,10 @@ const sleepTimerSideBar = useSleepTimerSideBar()
   background: var(--p-surface-25);
   border: none;
   .p-drawer-header {
-    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    padding: 0.75rem;
+    @include media("<lg") {
+      padding: 0.5rem;
+    }
     justify-content: space-between;
   }
   .p-drawer-content {
@@ -241,9 +254,21 @@ const sleepTimerSideBar = useSleepTimerSideBar()
     padding-top: 0 !important;
   }
   &.style-mode-dark {
+    background: var(--p-surface-950);
     .p-drawer-header,
     .p-drawer-content {
       background: var(--p-surface-950);
+    }
+  }
+  &.hamburger-drawer {
+    .p-drawer-header {
+      border-bottom: 1px solid var(--p-text-color);
+      @include media("<lg") {
+        align-items: flex-start;
+        .p-drawer-close-button {
+          margin-top: 14px;
+        }
+      }
     }
   }
 }
