@@ -1,3 +1,5 @@
+import { logOutUser } from "~/utilities/helpers"
+
 const allMenuData = [
     {
         label: "Live Radio",
@@ -31,6 +33,18 @@ const allMenuData = [
                     label: "All Shows",
                     url: "/browse"
                 },
+            ],
+        ],
+    },
+    {
+        label: "Collections",
+        id: "7",
+        icon: "",
+        hasSubmenu: true,
+        inHeaderMenu: false,
+        items: [
+            [
+
             ],
         ],
     },
@@ -121,15 +135,25 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: false,
+        class: "account",
         items: [
             [
                 {
                     label: "Create Free Account",
-                    url: "/signup"
+                    url: "/signup",
+                    class: "signup",
                 },
                 {
                     label: "Log in",
+                    class: "login",
                     url: "/login"
+                },
+                {
+                    label: "Log out",
+                    class: "logout",
+                    command: () => {
+                        logOutUser()
+                    },
                 },
             ],
         ],
@@ -140,6 +164,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: true,
+        class: "saved",
         items: [
             [
                 {
