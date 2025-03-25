@@ -2,6 +2,7 @@
 import { trackClickEvent } from "~/utilities/helpers"
 import {
   useSettingSideBar,
+  useSettingsSideBarBrowser,
   useLoginSideBar,
   useSignupSideBar,
   useForgotPasswordSideBar,
@@ -9,10 +10,10 @@ import {
   useAccountPromptSideBar,
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
-  useIsApp,
 } from "~/composables/states"
 
 const settingsSideBar = useSettingSideBar()
+const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const loginSideBar = useLoginSideBar()
 const signinSideBar = useSignupSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
@@ -20,17 +21,42 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
-const isApp = useIsApp()
 </script>
 
 <template>
   <div class="sidebars">
     <Drawer
+      v-model:visible="settingsSideBarBrowser"
+      :baseZIndex="10000"
+      position="right"
+      class="w-full style-mode-dark"
+      id="settings-sidebar-browser"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Settings Sidebar Browser Close Button',
+            'Settings Sidebar Browser',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <template #header>
+        <div class="flex align-items-center w-full gap-4 style-mode-dark">
+          <WnycLogo class="w-1" />
+          <ListenLiveBtn trackingLocation="Hamburger Menu" />
+          <GetTheAppBtn trackingLocation="Hamburger Menu" />
+          <LoginSignupBtn trackingLocation="Hamburger Menu" />
+          <DonateBtn trackingLocation="Hamburger Menu" />
+        </div>
+      </template>
+      <SettingsBrowser />
+    </Drawer>
+    <Drawer
       v-model:visible="settingsSideBar"
       :baseZIndex="10000"
       position="right"
       class="w-full"
-      :class="[{ 'style-mode-dark': !isApp, browser: !isApp }]"
       id="settings-sidebar"
       @hide="
         () => {
@@ -43,8 +69,7 @@ const isApp = useIsApp()
       "
     >
       <template #header><span></span></template>
-      <Settings v-if="isApp" />
-      <SettingsBrowser v-else />
+      <Settings />
     </Drawer>
     <Drawer
       v-model:visible="loginSideBar"
@@ -215,7 +240,7 @@ const isApp = useIsApp()
   &.no-safe-area {
     padding-top: 0 !important;
   }
-  &.style-mode-dark.browser {
+  &.style-mode-dark {
     .p-drawer-header,
     .p-drawer-content {
       background: var(--p-surface-950);

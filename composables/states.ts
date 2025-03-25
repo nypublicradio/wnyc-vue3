@@ -40,6 +40,9 @@ export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () 
 // setting sidebar state
 export const useSettingSideBar = () => useState('useSettingSideBar', () => false)
 
+// setting sidebar state
+export const useSettingsSideBarBrowser = () => useState('useSettingsSideBarBrowser', () => false)
+
 // login sidebar state
 export const useLoginSideBar = () => useState('useLoginSideBar', () => false)
 
