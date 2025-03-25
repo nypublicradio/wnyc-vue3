@@ -57,7 +57,10 @@ const sleepTimerSideBar = useSleepTimerSideBar()
               label="Create Free Account"
             />
           </div>
-          <DonateBtn class="mt-2 lg:mt-0" trackingLocation="Hamburger Menu" />
+          <div class="flex gap-3 align-items-center">
+            <DarkModeIconToggleBtn />
+            <DonateBtn class="mt-2 lg:mt-0" trackingLocation="Hamburger Menu" />
+          </div>
         </div>
       </template>
       <SettingsBrowser />
