@@ -7,11 +7,13 @@ import {
   useSettingsSideBarBrowser,
   useIsNetworkConnected,
   useIsApp,
+  useCurrentUser,
 } from "~/composables/states.ts"
 
 const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
+const currentUser = useCurrentUser()
 const isApp = useIsApp()
 
 const { headerNavigationData } = await useNavigationData()
@@ -73,16 +75,21 @@ const handleMouseLeave = () => {
       <section class="full-width py-0 -mt-2">
         <Divider class="my-0" />
       </section>
-      <section class="content full-width py-1">
+      <section
+        class="content full-width py-1"
+        :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
+      >
         <MegaMenu :model="headerNavigationData">
           <template #item="{ item }">
             <div
               @mouseenter="handleMouseEnter(item, $event)"
               @mouseleave="handleMouseLeave"
+              class="menu-item"
             >
               <VFlexibleLink
                 raw
                 :to="item.url"
+                :class="item.class"
                 @flexible-link-click="
                   trackClickEvent(
                     `Click Tracking - Header ${item.label} Button`,
@@ -235,6 +242,13 @@ const handleMouseLeave = () => {
           font-weight: 400;
           text-align: left;
         }
+      }
+      &.logged-out {
+        .saved {
+          display: none;
+        }
+      }
+      &.logged-in {
       }
     }
     .p-megamenu-overlay {
