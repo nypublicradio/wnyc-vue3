@@ -15,6 +15,10 @@ const props = defineProps({
     type: String,
     default: "/login",
   },
+  loggedInRoute: {
+    type: String,
+    default: "/dashboard",
+  },
 })
 const emit = defineEmits(["emit-click"])
 
@@ -26,7 +30,7 @@ const currentUserProfile = useCurrentUserProfile()
     class="login-signup-btn"
     :class="{ 'user-logged-in': currentUser }"
     raw
-    :to="props.route"
+    :to="currentUser ? props.loggedInRoute : props.route"
     @flexible-link-click="
       () => {
         emit('emit-click')
@@ -44,7 +48,6 @@ const currentUserProfile = useCurrentUserProfile()
       severity="secondary"
       size="small"
       variant="link"
-      :disabled="currentUser"
     >
       <template #icon>
         <UserIcon />
@@ -52,11 +55,3 @@ const currentUserProfile = useCurrentUserProfile()
     </Button>
   </VFlexibleLink>
 </template>
-
-<style lang="scss" scoped>
-.login-signup-btn {
-  .p-button {
-    opacity: 1;
-  }
-}
-</style>
