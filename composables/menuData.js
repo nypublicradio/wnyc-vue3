@@ -130,6 +130,30 @@ const allMenuData = [
         ],
     },
     {
+        label: "Saved",
+        id: "2",
+        icon: "",
+        hasSubmenu: true,
+        inHeaderMenu: true,
+        class: "saved",
+        items: [
+            [
+                {
+                    label: "Favorites",
+                    url: "/browse"
+                },
+                {
+                    label: "Followed Shows",
+                    url: "/browse"
+                },
+                {
+                    label: "Listening History",
+                    url: "/browse"
+                },
+            ],
+        ],
+    },
+    {
         label: "Account",
         id: "6",
         icon: "",
@@ -154,30 +178,6 @@ const allMenuData = [
                     command: () => {
                         logOutUser()
                     },
-                },
-            ],
-        ],
-    },
-    {
-        label: "Saved",
-        id: "2",
-        icon: "",
-        hasSubmenu: true,
-        inHeaderMenu: true,
-        class: "saved",
-        items: [
-            [
-                {
-                    label: "Favorites",
-                    url: "/browse"
-                },
-                {
-                    label: "Followed Shows",
-                    url: "/browse"
-                },
-                {
-                    label: "Listening History",
-                    url: "/browse"
                 },
             ],
         ],
