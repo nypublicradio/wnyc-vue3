@@ -49,17 +49,27 @@ const sleepTimerSideBar = useSleepTimerSideBar()
             class="flex gap-3 flex-column align-items-start lg:flex-row lg:align-items-center p-2"
           >
             <WnycLogo class="flex-none w-6rem lg:w-8rem" />
-            <ListenLiveBtn class="-ml-3 lg:ml-0" trackingLocation="Hamburger Menu" />
-            <GetTheAppBtn class="-ml-3 lg:ml-0" trackingLocation="Hamburger Menu" />
+            <ListenLiveBtn
+              class="-ml-3 lg:ml-0"
+              trackingLocation="Hamburger Menu"
+              @emit-click="settingsSideBarBrowser = false"
+            />
+            <GetTheAppBtn
+              class="-ml-3 lg:ml-0"
+              trackingLocation="Hamburger Menu"
+              @emit-click="settingsSideBarBrowser = false"
+            />
             <LoginSignupBtn
               class="-ml-3 lg:ml-0"
               trackingLocation="Hamburger Menu"
               label="Create Free Account"
+              route="/signup"
+              @emit-click="settingsSideBarBrowser = false"
             />
           </div>
-          <div class="flex gap-3 align-items-center">
-            <DarkModeIconToggleBtn />
-            <DonateBtn class="mt-2 lg:mt-0" trackingLocation="Hamburger Menu" />
+          <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
+            <DarkModeIconToggleBtn class="hidden sm:block" />
+            <DonateBtn trackingLocation="Hamburger Menu" />
           </div>
         </div>
       </template>

@@ -10,6 +10,7 @@ const props = defineProps({
     default: "Header",
   },
 })
+const emit = defineEmits(["emit-click"])
 </script>
 <template>
   <VFlexibleLink
@@ -17,11 +18,14 @@ const props = defineProps({
     raw
     to="/live"
     @flexible-link-click="
-      trackClickEvent(
-        `Click Tracking - ${props.label} Button`,
-        props.trackingLocation,
-        `${props.label} Button`
-      )
+      () => {
+        emit('emit-click')
+        trackClickEvent(
+          `Click Tracking - ${props.label} Button`,
+          props.trackingLocation,
+          `${props.label} Button`
+        )
+      }
     "
   >
     <Button

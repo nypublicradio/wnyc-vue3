@@ -11,7 +11,12 @@ const props = defineProps({
     type: String,
     default: "Header",
   },
+  route: {
+    type: String,
+    default: "/login",
+  },
 })
+const emit = defineEmits(["emit-click"])
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -21,13 +26,16 @@ const currentUserProfile = useCurrentUserProfile()
     class="login-signup-btn"
     :class="{ 'user-logged-in': currentUser }"
     raw
-    to="/login"
+    :to="props.route"
     @flexible-link-click="
-      trackClickEvent(
-        `Click Tracking - ${props.label} up Button`,
-        props.trackingLocation,
-        `${props.label} up Button`
-      )
+      () => {
+        emit('emit-click')
+        trackClickEvent(
+          `Click Tracking - ${props.label} up Button`,
+          props.trackingLocation,
+          `${props.label} up Button`
+        )
+      }
     "
   >
     <Button

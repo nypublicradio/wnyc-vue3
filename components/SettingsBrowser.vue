@@ -47,7 +47,7 @@ const { allNavigationData } = await useNavigationData()
     class="settings-desktop style-mode-dark"
     :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
   >
-    <div class="menu px-4 py-6 flex">
+    <div class="menu py-4 px-4 lg:py-6 flex">
       <!-- <p class="text-xs"><pre>{{ allNavigationData }}</pre></p> -->
       <div
         v-for="item in allNavigationData"
@@ -88,11 +88,11 @@ const { allNavigationData } = await useNavigationData()
         </div>
       </div>
     </div>
-    <section class="footer mb-4">
+    <!-- <section class="footer mb-4">
       <WnycLogo style="fill: var(--bw-toggle)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version {{ config.public.APP_VERSION }}</p>
-    </section>
+    </section> -->
   </div>
 </template>
 
@@ -116,20 +116,20 @@ const { allNavigationData } = await useNavigationData()
       }
     }
     .menu-holder {
-      min-width: 25vh;
+      min-width: 300px;
       .menu-btn {
       }
     }
   }
-  .footer {
-    text-align: center;
-    .wnyc-logo {
-      width: 60px;
-      height: auto;
-      margin-bottom: 10px;
-      fill: var(--p-surface-950);
-    }
-  }
+  // .footer {
+  //   text-align: center;
+  //   .wnyc-logo {
+  //     width: 60px;
+  //     height: auto;
+  //     margin-bottom: 10px;
+  //     fill: var(--p-surface-950);
+  //   }
+  // }
   &.logged-out {
     .menu-holder {
       &.saved {
