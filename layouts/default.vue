@@ -26,6 +26,9 @@ useHead({
       </div>
     </main>
     <BottomMenu />
+    <footer>
+      <TheFooter />
+    </footer>
   </div>
 </template>
 
