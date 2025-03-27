@@ -72,14 +72,14 @@ const submitForm = (event) => {
         </div>
       </div>
     </div>
-    <div class="flex justify-content-between align-items-center mt-7">
+    <div class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7">
       <NyprLogosBracket />
       <div class="flex align-items-center gap-3">
         <p class="flex-none">WNYC is supported by</p>
         <JLGreene class="w-7rem text-color-fill" />
       </div>
     </div>
-    <Divider />
+    <Divider class="mt-4" />
     <div class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter">
       <div class="flex flex-wrap gap-3 -ml-2">
         <VFlexibleLink v-for="item in footerLegalLinksData" :key="item.id" raw :to="item.url" class="footer-legal-links"
