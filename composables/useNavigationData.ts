@@ -131,6 +131,8 @@ export default function useNavigationData() {
                 // Reset state or set error indicators if needed
                 headerNavigationData.value = [];
                 allNavigationData.value = [];
+                footerNavigationData.value = [];
+                footerLegalLinksData.value = [];
                 donateButtonData.value = { buttonText: '', buttonLink: '' };
             }
         },
