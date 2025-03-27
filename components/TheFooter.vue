@@ -1,14 +1,18 @@
 <script lang="ts" setup>
 import { allSocialData } from "~/composables/menuData"
 import { trackClickEvent } from "~/utilities/helpers"
-import NewsletterForm from "./NewsletterForm.vue"
-const { footerNavigationData } = await useNavigationData()
+const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
+
+const submitForm = (event) => {
+  event.preventDefault()
+}
+
 </script>
 
 <template>
   <section class="the-footer style-mode-dark py-5">
-    <div class="grid content">
-      <div class="col-12 xl:col">
+    <div class="grid content mb-5">
+      <div class="col-12 xl:col mb-5">
         <div class="flex gap-5 flex-column">
           <div class="flex gap-5 align-items-center">
             <div class="w-5rem flex-none">
@@ -68,6 +72,32 @@ const { footerNavigationData } = await useNavigationData()
         </div>
       </div>
     </div>
+    <div class="flex justify-content-between align-items-center mt-7">
+      <NyprLogosBracket />
+      <div class="flex align-items-center gap-3">
+        <p class="flex-none">WNYC is supported by</p>
+        <JLGreene class="w-7rem text-color-fill" />
+      </div>
+    </div>
+    <Divider />
+    <div class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter">
+      <div class="flex flex-wrap gap-3 -ml-2">
+        <VFlexibleLink v-for="item in footerLegalLinksData" :key="item.id" raw :to="item.url" class="footer-legal-links"
+          :class="item.class" @flexible-link-click="
+            () => {
+              trackClickEvent(
+                `Click Tracking - ${item.label} Button`,
+                'hamburger menu',
+                `${item.label} Button`
+              )
+            }
+          ">
+          <Button raw :label="item.label" :aria-label="`${item.label} button`" severity="secondary" size="small"
+            variant="link" />
+        </VFlexibleLink>
+      </div>
+      <p class="flex-none mt-1 ">&copy; 2025 New York Public Radio. All rights reserved.</p>
+    </div>
   </section>
 </template>
 
@@ -93,6 +123,21 @@ const { footerNavigationData } = await useNavigationData()
 
       @include media("<sm") {
         min-width: 150px;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+.the-footer {
+  .footer-legal-links {
+    .p-button {
+      text-decoration: underline;
+
+      .p-button-label {
+        font-weight: 400;
+        ;
       }
     }
   }

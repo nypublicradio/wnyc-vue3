@@ -181,6 +181,12 @@ section {
   }
 }
 
+.text-color-fill {
+  path {
+    fill: var(--p-text-color);
+  }
+}
+
 ////////////////////////////
 ////////////////////////////
 // custom icons

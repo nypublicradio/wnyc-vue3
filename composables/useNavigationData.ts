@@ -44,6 +44,7 @@ export default function useNavigationData() {
     const headerNavigationData = useState<any[]>("headerNavigationData", () => []);
     const allNavigationData = useState<any[]>("allNavigationData", () => []);
     const footerNavigationData = useState<any[]>("footerNavigationData", () => []);
+    const footerLegalLinksData = useState<any[]>("footerLegalLinksData", () => []);
     const donateButtonData = useState<{ buttonText: string, buttonLink: string }>("donateButtonData", () => ({
         buttonText: '',
         buttonLink: ''
@@ -97,6 +98,9 @@ export default function useNavigationData() {
                     collectionsMenuItem.items[0] = primaryNavItems;
                 }
 
+                // Wagtail Secondary Navigation
+                const legalLinkItems = normalizeWagtailMenuData(wagtailResponse?.legal_links);
+
                 // Filter header navigation based on 'inHeaderMenu' flag
                 workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false);
 
@@ -117,9 +121,9 @@ export default function useNavigationData() {
                 headerNavigationData.value = workingHeaderNav;
                 allNavigationData.value = workingAllNav;
                 footerNavigationData.value = footerNavItems;
+                footerLegalLinksData.value = legalLinkItems;
                 donateButtonData.value = finalDonateData;
 
-                console.log('footerNavigationData.value ', footerNavigationData.value);
                 //console.log('Navigation state updated.');
 
             } catch (fetchError) {
@@ -138,6 +142,7 @@ export default function useNavigationData() {
         headerNavigationData,
         allNavigationData,
         footerNavigationData,
+        footerLegalLinksData,
         donateButtonData,
         status,
         error
