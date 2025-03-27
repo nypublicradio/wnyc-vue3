@@ -43,7 +43,7 @@ export default function useNavigationData() {
     // 1. Define shared state (initialize appropriately)
     const headerNavigationData = useState<any[]>("headerNavigationData", () => []);
     const allNavigationData = useState<any[]>("allNavigationData", () => []);
-    const footerNavigationData = useState<any[]>("allNavigationData", () => []);
+    const footerNavigationData = useState<any[]>("footerNavigationData", () => []);
     const donateButtonData = useState<{ buttonText: string, buttonLink: string }>("donateButtonData", () => ({
         buttonText: '',
         buttonLink: ''
@@ -119,6 +119,7 @@ export default function useNavigationData() {
                 footerNavigationData.value = footerNavItems;
                 donateButtonData.value = finalDonateData;
 
+                console.log('footerNavigationData.value ', footerNavigationData.value);
                 //console.log('Navigation state updated.');
 
             } catch (fetchError) {

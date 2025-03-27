@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { allSocialData } from "~/composables/menuData"
 import { trackClickEvent } from "~/utilities/helpers"
-const { allNavigationData } = await useNavigationData()
+const { footerNavigationData } = await useNavigationData()
 </script>
 
 <template>
@@ -23,31 +23,21 @@ const { allNavigationData } = await useNavigationData()
       <div class="col">
         <div class="social flex gap-3 align-items-center">
           <p>Connect with us!</p>
-          <VFlexibleLink
-            v-for="item in allSocialData"
-            raw
-            :to="item.url"
-            @flexible-link-click="
-              () => {
-                trackClickEvent(
-                  `Click Tracking - ${item.label} social Button`,
-                  'footer',
-                  `${item.label} social Button`
-                )
-              }
-            "
-          >
+          <VFlexibleLink v-for="item in allSocialData" raw :to="item.url" @flexible-link-click="
+            () => {
+              trackClickEvent(
+                `Click Tracking - ${item.label} social Button`,
+                'footer',
+                `${item.label} social Button`
+              )
+            }
+          ">
             <Button :icon="item.icon" severity="secondary" size="large" rounded />
           </VFlexibleLink>
         </div>
         <div class="menu pt-6 flex gap-4">
-          <ExpandedMenuItem
-            v-for="item in allNavigationData"
-            :key="item.id"
-            :item="item"
-            :class="`menu-holder ${item.class}`"
-            :menuData="item"
-          />
+          <ExpandedMenuItem v-for="item in footerNavigationData" :key="item.id" :item="item"
+            :class="`menu-holder ${item.class}`" :menuData="item" />
         </div>
       </div>
     </div>
@@ -58,12 +48,14 @@ const { allNavigationData } = await useNavigationData()
 .the-footer {
   max-width: 100%;
   background-color: var(--p-surface-950);
+
   .social {
     .p-button {
       width: 30px;
       height: 30px;
     }
   }
+
   .menu {
     .menu-holder {
       min-width: 200px;
