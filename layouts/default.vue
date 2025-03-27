@@ -11,7 +11,7 @@ useHead({
 </script>
 
 <template>
-  <div class="page" :class="[`${String(route.name)}`]">
+  <div class="page flex flex-column h-screen" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
 
     <header :class="[{ show: route.name === 'home', browser: !isApp, app: isApp }]">
@@ -20,13 +20,13 @@ useHead({
       </VSmartHeader>
     </header>
 
-    <main>
+    <main class="flex-grow-1">
       <div class="content">
         <slot />
       </div>
     </main>
     <BottomMenu />
-    <footer>
+    <footer v-if="!isApp">
       <TheFooter />
     </footer>
   </div>
@@ -36,15 +36,15 @@ useHead({
 header {
   .v-smart-header {
     margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -2) !important;
+
     @include media(">lg") {
-      margin-top: calc(
-        (var(--header-height) + var(--header-bottom-height) + env(safe-area-inset-top)) *
-          -1
-      ) !important;
+      margin-top: calc((var(--header-height) + var(--header-bottom-height) + env(safe-area-inset-top)) * -1) !important;
     }
+
     transition: margin-top var(--p-transition-duration) ease;
   }
 }
+
 header.show,
 header.browser {
   .v-smart-header {
