@@ -8,6 +8,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: true,
+        inFooterMenu: false,
         items: [
             [
                 {
@@ -27,6 +28,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: true,
+        inFooterMenu: false,
         items: [
             [
                 {
@@ -42,6 +44,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: false,
+        inFooterMenu: false,
         items: [
             [
 
@@ -54,6 +57,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: false,
+        inFooterMenu: true,
         items: [
             [
                 {
@@ -81,6 +85,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: false,
+        inFooterMenu: true,
         items: [
             [
                 {
@@ -108,6 +113,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: false,
+        inFooterMenu: true,
         items: [
             [
                 {
@@ -135,6 +141,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: true,
+        inFooterMenu: false,
         class: "saved",
         items: [
             [
@@ -159,6 +166,7 @@ const allMenuData = [
         icon: "",
         hasSubmenu: true,
         inHeaderMenu: false,
+        inFooterMenu: false,
         class: "account",
         items: [
             [
@@ -166,6 +174,16 @@ const allMenuData = [
                     label: "Create Free Account",
                     url: "/signup",
                     class: "signup",
+                },
+                {
+                    label: "Saved",
+                    url: "/saved",
+                    class: "saved",
+                },
+                {
+                    label: "Manage Account",
+                    url: "/dashboard",
+                    class: "manage",
                 },
                 {
                     label: "Log in",
@@ -185,4 +203,31 @@ const allMenuData = [
 
 ]
 
-export default allMenuData
+const allSocialData = [
+    {
+        label: "Instagram",
+        url: "https://www.instagram.com/wnyc",
+        id: "3",
+        icon: "pi pi-instagram",
+    },
+    {
+        label: "X",
+        url: "https://x.com/wnyc",
+        id: "1",
+        icon: "pi pi-twitter",
+    },
+    {
+        label: "YouTube",
+        url: "https://www.youtube.com/@WnycOrg",
+        id: "2",
+        icon: "pi pi-youtube",
+    },
+    {
+        label: "Facebook",
+        url: "http://www.facebook.com/wnyc",
+        id: "0",
+        icon: "pi pi-facebook",
+    },
+]
+
+export { allMenuData, allSocialData }

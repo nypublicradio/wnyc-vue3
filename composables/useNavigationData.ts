@@ -1,13 +1,8 @@
-import allMenuData from './menuData'
+// Import the base menu structure directly
+import { allMenuData } from './menuData';
 
-// let headerNavigationData = null;
-// let allNavigationData = null;
-// let donateButtonData = {
-//     buttonText: '',
-//     buttonLink: ''
-// };
-
-const normalizeWagtailMenuData = (menuData) => {
+// --- Normalization Functions (Keep as they are) ---
+const normalizeWagtailMenuData = (menuData = []) => { // Add default value
     return menuData.map((item) => ({
         'label': item.value.title,
         'url': item.value.url,
@@ -19,7 +14,7 @@ const normalizeWagtailMenuData = (menuData) => {
     }));
 };
 
-const normalizeStationsMenuData = (menuData) => {
+const normalizeStationsMenuData = (menuData = []) => { // Add default value
     return menuData.map((item) => ({
         'label': item.station,
         'url': `/live?slug=${item.slug}`,
@@ -32,6 +27,7 @@ const normalizeStationsMenuData = (menuData) => {
 };
 
 const normalizeShowsMenuData = (menuData, limit) => {
+    if (!menuData?.featuredShows) return []; // Safety check
     return menuData.featuredShows.slice(0, limit).map((item) => ({
         'label': item.title,
         'url': `/browse/shows/${item.slug}`,
@@ -43,78 +39,106 @@ const normalizeShowsMenuData = (menuData, limit) => {
     }));
 };
 
-export default async function useNavigationData() {
-    const headerNavigationData = useState("headerNavigationData", () => null);
-    const allNavigationData = useState("allNavigationData", () => null);
-    const donateButtonData = useState("donateButtonData", () => ({
+export default function useNavigationData() {
+    // 1. Define shared state (initialize appropriately)
+    const headerNavigationData = useState<any[]>("headerNavigationData", () => []);
+    const allNavigationData = useState<any[]>("allNavigationData", () => []);
+    const footerNavigationData = useState<any[]>("allNavigationData", () => []);
+    const donateButtonData = useState<{ buttonText: string, buttonLink: string }>("donateButtonData", () => ({
         buttonText: '',
         buttonLink: ''
     }));
 
-    // prevent multiple fetches
-    if (allNavigationData.value) {
-        // Return cached data if it has already been fetched
-        return { headerNavigationData, allNavigationData, donateButtonData };
-    }
+    // 2. Fetch and process data once using useAsyncData
+    const { status, error } = useAsyncData(
+        'navigation-data-fetch', // Unique key for deduplication
+        async () => {
+            //console.log('Fetching and processing navigation data...');
+            const config = useRuntimeConfig();
 
-    const config = useRuntimeConfig();
+            try {
+                // Fetch all data concurrently
+                const [wagtailResponse, donateResponse, stationsResponse, showsResponse] = await Promise.all([
+                    $fetch(config.public.HEADER_NAVIGATION_API),
+                    $fetch(config.public.SYSTEM_MESSAGES_API),
+                    $fetch(`${config.public.BFF_URL}/api/streams`),
+                    $fetch(`${config.public.BFF_URL}/api/v2/shows`),
+                ]);
 
-    // Fetch data concurrently using Promise.all
-    const [wagtailNavigationResponse, donateResponse, stationsResponse, showsResponse] = await Promise.all([
-        useFetch(config.public.HEADER_NAVIGATION_API),
-        useFetch(config.public.SYSTEM_MESSAGES_API),
-        useFetch(`${config.public.BFF_URL}/api/streams`),
-        useFetch(`${config.public.BFF_URL}/api/v2/shows`),
-    ]);
+                // --- Data Processing ---
 
-    const wagtailNavigationData = wagtailNavigationResponse.data.value;
-    const allCurrentStations = stationsResponse.data.value;
-    const showsData = showsResponse.data.value;
+                // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
+                let workingHeaderNav = JSON.parse(JSON.stringify(allMenuData));
 
-    // Process radio stations data and normalize it
-    const stationsData = normalizeStationsMenuData(allCurrentStations);
+                // Normalize and merge Stations
+                const stationsItems = normalizeStationsMenuData(stationsResponse);
+                if (workingHeaderNav[0]?.items?.[0]) {
+                    workingHeaderNav[0].items[0].splice(0, 0, ...stationsItems);
+                }
 
-    // Merge radio stations data into the Live Radio menu items
-    allMenuData[0].items[0].splice(0, 0, ...stationsData);
+                // Normalize and merge Shows
+                const showsItems = normalizeShowsMenuData(showsResponse, 5);
+                if (workingHeaderNav[1]?.items?.[0]) {
+                    workingHeaderNav[1].items[0].splice(0, 0, ...showsItems);
+                }
 
-    // Process shows data and normalize it
-    const shows = normalizeShowsMenuData(showsData, 5);
+                // Create the 'allNavigationData' state *before* header-specific modifications
+                // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
+                let workingAllNav = JSON.parse(JSON.stringify(workingHeaderNav));
 
-    // initially set the headerNavigationData to the allMenuData
-    headerNavigationData.value = allMenuData;
+                // Normalize and merge Wagtail Primary Navigation
+                const primaryNavItems = normalizeWagtailMenuData(wagtailResponse?.primary_navigation);
+                workingHeaderNav.splice(2, 0, ...primaryNavItems);
 
-    // Merge shows data into the Browse All Shows menu items
-    headerNavigationData.value[1].items[0].splice(0, 0, ...shows);
+                // Inject primary nav into the 'Collections' section of 'allNav'
+                const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections");
+                if (collectionsMenuItem?.items) {
+                    // Assuming replacement of the first item list
+                    collectionsMenuItem.items[0] = primaryNavItems;
+                }
 
+                // Filter header navigation based on 'inHeaderMenu' flag
+                workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false);
 
-    // set allNavigationData to the same value as headerNavigationData BEFORE the wagtail primary nav data gets injected
-    // the spread operator sets the data at this point and stops the reactivity from updating the value
-    allNavigationData.value = [...headerNavigationData.value]
+                // Process Donate Button data
+                const donateBanner = donateResponse?.product_banners?.find(
+                    (banner: any) => banner.value.title === "WNYC App Donate Button"
+                );
+                const finalDonateData = { buttonText: '', buttonLink: '' };
+                if (donateBanner) {
+                    finalDonateData.buttonText = donateBanner.value.button_text;
+                    finalDonateData.buttonLink = donateBanner.value.button_link;
+                }
 
+                // filter for the footerNavigationData
+                const footerNavItems = allNavigationData.value.filter((item) => item.inFooterMenu !== false);
 
-    // Process WAGTAIL navigation data and normalize it
-    const primaryNavigation = normalizeWagtailMenuData(wagtailNavigationData.primary_navigation);
+                // --- Update Shared State ---
+                headerNavigationData.value = workingHeaderNav;
+                allNavigationData.value = workingAllNav;
+                footerNavigationData.value = footerNavItems;
+                donateButtonData.value = finalDonateData;
 
-    // Merge wagtailNavigationData with allMenuData at the 2 index
-    headerNavigationData.value.splice(2, 0, ...primaryNavigation);
+                //console.log('Navigation state updated.');
 
-
-    // inject the wagtailNavigationData into the allNavigationData Collections menu item ID 7
-    const collectionsMenuItem = allNavigationData.value.find((item) => item.label === "Collections");
-    collectionsMenuItem.items[0] = primaryNavigation;
-
-    // Remove items not to display in the header menu by the inHeaderMenu key
-    headerNavigationData.value = headerNavigationData.value.filter((item) => item.inHeaderMenu);
-
-    // Process donate data
-    if (donateResponse.data.value?.product_banners?.length > 0) {
-        donateResponse.data.value.product_banners.forEach((banner) => {
-            if (banner.value.title === "WNYC App Donate Button") {
-                donateButtonData.value.buttonText = banner.value.button_text;
-                donateButtonData.value.buttonLink = banner.value.button_link;
+            } catch (fetchError) {
+                console.error("Failed to fetch or process navigation data:", fetchError);
+                // Reset state or set error indicators if needed
+                headerNavigationData.value = [];
+                allNavigationData.value = [];
+                donateButtonData.value = { buttonText: '', buttonLink: '' };
             }
-        });
-    }
+        },
+        { server: true } // Fetch on server-side (default, but good to be explicit)
+    );
 
-    return { headerNavigationData, allNavigationData, donateButtonData };
+    // 3. Return the reactive state refs and status
+    return {
+        headerNavigationData,
+        allNavigationData,
+        footerNavigationData,
+        donateButtonData,
+        status,
+        error
+    };
 }

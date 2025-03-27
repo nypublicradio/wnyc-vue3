@@ -43,7 +43,7 @@ const currentUserProfile = useCurrentUserProfile()
     "
   >
     <Button
-      :label="`${currentUser ? 'Hi, ' + currentUserProfile.name : props.label}`"
+      :label="`${currentUser ? 'Hi, ' + currentUserProfile?.name : props.label}`"
       :aria-label="`${props.label} up button`"
       severity="secondary"
       size="small"

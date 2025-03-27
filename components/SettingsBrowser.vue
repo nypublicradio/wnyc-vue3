@@ -1,43 +1,7 @@
 <script setup>
-import useNavigationData from "~/composables/useNavigationData"
-import { onMounted } from "vue"
-import {
-  trackClickEvent,
-  getYear,
-  setFontSize,
-  setDarkMode,
-  toggleAskNotificationPermissions,
-  //toSystemSettings,
-} from "~/utilities/helpers"
-import {
-  useAllCurrentStations,
-  useTextSizeOption,
-  useCurrentUser,
-  useCurrentUserProfile,
-  useEditProfileSideBar,
-  useIsLiveStream,
-  useIsApp,
-  useAccountDeleteSideBar,
-  useGlobalToast,
-  useSettingsSideBarBrowser,
-} from "~/composables/states.ts"
-import { Preferences } from "@capacitor/preferences"
-import { localUserProfileKey } from "~/composables/globals"
-import { updateLiveStream } from "~/composables/data/liveStream"
-const globalToast = useGlobalToast()
-const config = useRuntimeConfig()
+import { trackClickEvent } from "~/utilities/helpers"
+import { useCurrentUser, useSettingsSideBarBrowser } from "~/composables/states.ts"
 const currentUser = useCurrentUser()
-const currentUserProfile = useCurrentUserProfile()
-const textSizeOptions = useTextSizeOption()
-const editProfileSideBar = useEditProfileSideBar()
-const isLiveStream = useIsLiveStream()
-const isApp = useIsApp()
-const accountDeleteSideBar = useAccountDeleteSideBar()
-
-const allCurrentStations = useAllCurrentStations()
-const stationsMenuData = ref([])
-const client = useSupabaseClient()
-
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const { allNavigationData } = await useNavigationData()
 </script>
@@ -48,8 +12,15 @@ const { allNavigationData } = await useNavigationData()
     :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
   >
     <div class="menu py-4 px-4 lg:py-6 flex">
-      <!-- <p class="text-xs"><pre>{{ allNavigationData }}</pre></p> -->
-      <div
+      <ExpandedMenuItem
+        v-for="item in allNavigationData"
+        :key="item.id"
+        :item="item"
+        :class="`menu-holder ${item.class}`"
+        :menuData="item"
+        @emit-click="settingsSideBarBrowser = false"
+      />
+      <!-- <div
         v-for="item in allNavigationData"
         :key="item.id"
         class="menu-holder"
@@ -86,7 +57,7 @@ const { allNavigationData } = await useNavigationData()
             />
           </VFlexibleLink>
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- <section class="footer mb-4">
       <WnycLogo style="fill: var(--bw-toggle)" />
@@ -96,7 +67,7 @@ const { allNavigationData } = await useNavigationData()
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .settings-desktop {
   background-color: var(--p-surface-950);
   height: 100%;
@@ -106,37 +77,27 @@ const { allNavigationData } = await useNavigationData()
   .menu {
     gap: 4rem;
     flex-wrap: wrap;
-    .menu-h1 {
-      margin-bottom: 16px;
-      @include media("<lg") {
-        font-size: 0.813rem;
-        text-transform: uppercase;
-        font-weight: var(--font-weight-400);
-        margin-bottom: 8px;
+
+    .menu-holder {
+      min-width: 290px;
+      .menu-btn {
+        .p-button-label {
+          text-align: left;
+        }
       }
     }
-    .menu-holder {
-      min-width: 300px;
-      .menu-btn {
-      }
+    .saved {
+      display: none;
     }
   }
-  // .footer {
-  //   text-align: center;
-  //   .wnyc-logo {
-  //     width: 60px;
-  //     height: auto;
-  //     margin-bottom: 10px;
-  //     fill: var(--p-surface-950);
-  //   }
-  // }
   &.logged-out {
     .menu-holder {
       &.saved {
         display: none;
       }
       &.account {
-        .logout {
+        .logout,
+        .manage {
           display: none;
         }
       }
@@ -149,18 +110,6 @@ const { allNavigationData } = await useNavigationData()
         .signup {
           display: none;
         }
-      }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-.settings-desktop {
-  .menu-holder {
-    .menu-btn {
-      .p-button-label {
-        text-align: left;
       }
     }
   }
