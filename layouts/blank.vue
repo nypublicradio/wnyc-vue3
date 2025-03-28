@@ -6,7 +6,7 @@ const route = useRoute()
 
 useHead({
   bodyAttrs: {
-    class: "template-blank" + (isApp.value ? " app" : " browser"),
+    class: `template-blank ${isApp.value ? " app" : " browser"}`,
   },
 })
 </script>
