@@ -4,6 +4,7 @@ import { allSocialData } from "~/composables/menuData"
 import { trackClickEvent } from "~/utilities/helpers"
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
 const isEpisodePlaying = useIsEpisodePlaying()
+// placeholder function for submitting the form
 const submitForm = (event) => {
   event.preventDefault()
 }
@@ -57,7 +58,7 @@ const submitForm = (event) => {
         <div class="col">
           <div class="social flex gap-3 align-items-center">
             <p>Connect with us!</p>
-            <VFlexibleLink v-for="item in allSocialData" raw :to="item.url" @flexible-link-click="
+            <VFlexibleLink v-for="item in allSocialData" raw :to="item.url" :key="item.id" @flexible-link-click="
               () => {
                 trackClickEvent(
                   `Click Tracking - ${item.label} social Button`,

@@ -5,7 +5,7 @@ const isApp = useIsApp()
 const route = useRoute()
 useHead({
   bodyAttrs: {
-    class: "template-default" + (isApp.value ? " app" : " browser"),
+    class: `template-default ${isApp.value ? "app" : "browser"}`,
   },
 })
 </script>
