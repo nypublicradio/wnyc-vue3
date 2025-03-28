@@ -74,4 +74,6 @@ export default defineNuxtRouteMiddleware(async () => {
       return navigateTo(redirectSlug)
     }
   }
+  return null
+
 })
