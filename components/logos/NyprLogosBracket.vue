@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <div class="nypr-logos-bracket flex">
     <logo-nypr />

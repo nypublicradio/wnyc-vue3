@@ -1,7 +1,7 @@
 // Import the base menu structure directly
 import { allMenuData } from './menuData';
 
-// --- Normalization Functions (Keep as they are) ---
+// normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => { // Add default value
     return menuData.map((item) => ({
         'label': item.value.title,
@@ -13,7 +13,7 @@ const normalizeWagtailMenuData = (menuData = []) => { // Add default value
         'inHeaderMenu': true,
     }));
 };
-
+// normalize for menu function for station data
 const normalizeStationsMenuData = (menuData = []) => { // Add default value
     return menuData.map((item) => ({
         'label': item.station,
@@ -25,7 +25,7 @@ const normalizeStationsMenuData = (menuData = []) => { // Add default value
         'hasSubmenu': false,
     }));
 };
-
+// normalize for menu function for shows data
 const normalizeShowsMenuData = (menuData, limit) => {
     if (!menuData?.featuredShows) return []; // Safety check
     return menuData.featuredShows.slice(0, limit).map((item) => ({
@@ -41,10 +41,10 @@ const normalizeShowsMenuData = (menuData, limit) => {
 
 export default function useNavigationData() {
     // 1. Define shared state (initialize appropriately)
-    const headerNavigationData = useState<any[]>("headerNavigationData", () => []);
-    const allNavigationData = useState<any[]>("allNavigationData", () => []);
-    const footerNavigationData = useState<any[]>("footerNavigationData", () => []);
-    const footerLegalLinksData = useState<any[]>("footerLegalLinksData", () => []);
+    const headerNavigationData = useState("headerNavigationData", () => []);
+    const allNavigationData = useState("allNavigationData", () => []);
+    const footerNavigationData = useState("footerNavigationData", () => []);
+    const footerLegalLinksData = useState("footerLegalLinksData", () => []);
     const donateButtonData = useState<{ buttonText: string, buttonLink: string }>("donateButtonData", () => ({
         buttonText: '',
         buttonLink: ''
@@ -85,7 +85,7 @@ export default function useNavigationData() {
 
                 // Create the 'allNavigationData' state *before* header-specific modifications
                 // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
-                let workingAllNav = JSON.parse(JSON.stringify(workingHeaderNav));
+                const workingAllNav = JSON.parse(JSON.stringify(workingHeaderNav));
 
                 // Normalize and merge Wagtail Primary Navigation
                 const primaryNavItems = normalizeWagtailMenuData(wagtailResponse?.primary_navigation);
@@ -106,7 +106,7 @@ export default function useNavigationData() {
 
                 // Process Donate Button data
                 const donateBanner = donateResponse?.product_banners?.find(
-                    (banner: any) => banner.value.title === "WNYC App Donate Button"
+                    (banner) => banner.value.title === "WNYC App Donate Button"
                 );
                 const finalDonateData = { buttonText: '', buttonLink: '' };
                 if (donateBanner) {

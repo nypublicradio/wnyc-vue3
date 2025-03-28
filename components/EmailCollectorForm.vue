@@ -40,10 +40,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits<{
-  (e: 'submit', value: any): void
-  (e: 'noThanksClick'): void
-}>()
+const emit = defineEmits(['submit', 'noThanksClick'])
 
 const email = ref('')
 const checked = ref(true)
