@@ -11,7 +11,8 @@ const submitForm = (event) => {
 </script>
 
 <template>
-  <section class="the-footer style-mode-dark py-5">
+  <section class="the-footer style-mode-dark py-5 overflow-hidden relative">
+    <LogoWnyc3d class="logo3d" />
     <div :class="[{ 'is-playing': isEpisodePlaying }]">
       <div class="grid content mb-5">
         <div class="col-12 xl:col mb-5">
@@ -21,7 +22,7 @@ const submitForm = (event) => {
                 <WnycLogo class="wnyc-logo cursor-pointer" />
               </div>
               <div>
-                <p class="line-height-3 text-xs">
+                <p class="blurb line-height-3 text-xs">
                   Listener-supported WNYC is the home for independent journalism and courageous
                   conversation on air and online. Broadcasting live from New York City on 93.9
                   FM and AM 820 and available online and on the go.
@@ -32,7 +33,7 @@ const submitForm = (event) => {
               <div class="w-5rem flex-none hidden xl:block">
                 <WnycLogo class="hidden" />
               </div>
-              <div>
+              <div class="newsletter">
                 <h2 class="mb-3">
                   Sign up for our newsletter
                 </h2>
@@ -41,7 +42,7 @@ const submitForm = (event) => {
                   <VFlexibleLink to="/newsletter">See More
                   </VFlexibleLink>
                 </p>
-                <email-collector-form class="mt-3" @submit="submitForm">
+                <email-collector-form class="form mt-5" @submit="submitForm">
                   By submitting your information, you're agreeing to receive
                   communications from New York Public Radio in accordance with our
                   <VFlexibleLink to="https://www.wnyc.org/terms/">
@@ -128,6 +129,26 @@ const submitForm = (event) => {
         min-width: 150px;
       }
     }
+  }
+
+  .blurb {
+    max-width: 430px;
+  }
+
+  .newsletter {
+    max-width: 420px;
+  }
+
+  .logo3d {
+    position: absolute;
+    top: 0;
+    right: -20vw;
+    z-index: 0;
+    opacity: 1;
+    height: 100%;
+    width: 80vw;
+    opacity: 0.05;
+    pointer-events: none;
   }
 }
 </style>
