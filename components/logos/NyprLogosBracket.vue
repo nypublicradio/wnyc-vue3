@@ -6,10 +6,10 @@
     <logo-nypr />
     <div class="bracket bracket-line" />
 
-    <VFlexibleLink to="https://www.wnyc.org/" target="_blank">
+    <VFlexibleLink to="https://www.wnyc.org/100" target="_blank">
       <logo-wnyc />
     </VFlexibleLink>
-    <VFlexibleLink to="/" target="_blank">
+    <VFlexibleLink to="http://gothamist.com/" target="_blank">
       <logo-gothamist />
     </VFlexibleLink>
     <!-- <VFlexibleLink to="https://www.wnycstudios.org/" target="_blank">
