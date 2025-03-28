@@ -32,57 +32,46 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
-  if (process.client) {
-    if (currentUser.value) {
-      // check local storage for the auth token
-      const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
+  if (user.data.session) {
+    // check local storage for the auth token
+    const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
 
-
-      if (supabaseAuthToken.value) {
-        currentUser.value = supabaseAuthToken.user
-      }
-
-      // check supabase session for logged in user
-      if (user?.data?.session?.user) {
-        currentUser.value = user?.data?.session?.user
-      }
-
-      // redirect to home if the user is logged in
-      if (currentUser.value) {
-        await updateUser()
-        navigateTo(redirectSlug)
-      }
-
-      // sometimes the supabase token doesn't get detected right away when magic links are used
-      // i don't think we should have to do this, but here we are
-      setTimeout(async () => {
-        // check if the user is logged in
-        if (user?.data?.session?.user) {
-          currentUser.value = user?.data?.session?.user
-        }
-        // redirect to home if the user is logged in
-        if (currentUser.value) {
-
-          //('currentUser setTimeout found', currentUser.value)
-          await updateUser()
-          navigateTo(redirectSlug)
-        }
-
-
-      }, 1000)
-    } else {
-      // if the app has been launched before (set the local user profile), redirect to the home page
-      const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
-      if (userLocalStorage.value) {
-        // a delay is needed for an unknown reason
-        setTimeout(async () => {
-          await updateUser()
-          navigateTo(redirectSlug)
-        }, 1000)
-      }
+    if (supabaseAuthToken.value) {
+      currentUser.value = supabaseAuthToken.user
     }
 
-    // if not logged in and no local user profile is set, this is the first time the user has launched the app and they see the index page
-  }
+    // check supabase session for logged in user
+    if (user?.data?.session?.user) {
+      currentUser.value = user?.data?.session?.user
+    }
 
+    // redirect to home if the user is logged in
+    if (currentUser.value) {
+      await updateUser()
+      return navigateTo(redirectSlug)
+    }
+
+    // check if the user is logged in
+    if (user?.data?.session?.user) {
+      currentUser.value = user?.data?.session?.user
+    }
+    // redirect to home if the user is logged in
+    if (currentUser.value) {
+
+      //('currentUser setTimeout found', currentUser.value)
+      await updateUser()
+      return navigateTo(redirectSlug)
+    }
+  } else {
+    // if the app has been launched before (set the local user profile), redirect to the home page
+    const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
+    if (userLocalStorage.value) {
+      // a delay is needed for an unknown reason
+      await updateUser()
+      return navigateTo(redirectSlug)
+    } else {
+      // this will always make sure to move to the home page
+      return navigateTo(redirectSlug)
+    }
+  }
 })
