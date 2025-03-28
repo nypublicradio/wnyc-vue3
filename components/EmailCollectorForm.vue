@@ -48,17 +48,8 @@ const emit = defineEmits<{
 const email = ref('')
 const checked = ref(true)
 const submitButtonRef = ref(null)
-const submitButtonWidth = ref(40)
+
 const emailErrorText = ref(null)
-onMounted(() => {
-  // for some reason the submit button is not always rendered when the component is mounted coming from a route transition, so I have to add a slight delay to make sure it gets access to the button.
-  // this is a known bug: https://github.com/nuxt/framework/issues/3587
-  setTimeout(() => {
-    // gets the width of the submit button to set the padding right on the input field
-    if (submitButtonRef.value)
-      submitButtonWidth.value = submitButtonRef.value.offsetWidth + 20
-  }, 500)
-})
 
 // function to check if the email is a valid format and to set the error text
 function validateEmail() {
@@ -107,24 +98,13 @@ function submitForm() {
         <div class="flex-grow-1">
           <p class="mb-2" :class="emailErrorText ? 'p-error' : ''" for="email">Email address</p>
           <div class="flex align-items-center w-full gap-2">
-            <!-- <i ref="submitButtonRef" class="submit-icon" :class="[
-              { altDesignIcon: altDesign && submitButtonIcon },
-            ]" :data-style-mode="dark ? 'dark' : 'default'">
-              <Button :disabled="isSubmitting || !checked" class="submit-btn p-button-rounded"
-                :class="[{ 'p-button-outlined': outlined }]" :icon="submitButtonIcon ? `pi ${submitButtonIcon}` : null"
-                icon-pos="right" :label="submitButtonIcon ? null : submitButtonText" :aria-label="submitButtonText"
-                @click="submitForm">
-                <i v-if="isSubmitting" class="pi pi-spin pi-spinner" />
-              </Button>
-            </i> -->
             <div class="field m-0 flex flex-grow-1">
-              <InputText v-model="email" :disabled="isSubmitting" class="p-inputtext-lg w-full" :class="[
+              <InputText v-model="email" :disabled="isSubmitting" class="w-full" :class="[
                 { 'p-invalid': emailErrorText },
                 { 'alt-design': altDesign },
                 { dark },
-              ]" :style="`padding-right: ${submitButtonWidth}px`" type="email" placeholder="your@email.com"
-                aria-label="sign up" aria-describedby="email-address-field" autocomplete="email" name="email"
-                @keypress.enter="submitForm" />
+              ]" type="email" placeholder="your@email.com" aria-label="sign up" aria-describedby="email-address-field"
+                autocomplete="email" name="email" @keypress.enter="submitForm" />
 
             </div>
             <i ref="submitButtonRef" class="submit-icon flex-none" :class="[
@@ -133,7 +113,7 @@ function submitForm() {
               <Button :disabled="isSubmitting || !checked" class="submit-btn p-button-rounded"
                 :class="[{ 'p-button-outlined': outlined }]" :icon="submitButtonIcon ? `pi ${submitButtonIcon}` : null"
                 icon-pos="right" :label="submitButtonIcon ? null : submitButtonText" :aria-label="submitButtonText"
-                severity="secondary" @click="submitForm">
+                @click="submitForm">
                 <i v-if="isSubmitting" class="pi pi-spin pi-spinner" />
               </Button>
             </i>
@@ -165,35 +145,10 @@ function submitForm() {
 </template>
 
 <style lang="scss">
-.email-collector-form .p-input-icon-right {
-  .submit-icon {
-    .p-button {
-      min-height: 41px;
-      min-width: 41px;
-      padding: 0px 16px;
-    }
-
-    &.altDesignIcon {
-      margin-top: 0;
-
-      .p-button {
-        padding: 0;
-        min-height: unset;
-        min-width: unset;
-        border-radius: 20px;
-        height: 1.4rem;
-        width: 2rem;
-
-        .pi {
-          font-size: 0.75rem;
-        }
-      }
-    }
-  }
-
-  .p-inputtext {
-    padding-right: 100px;
-  }
+.email-collector-form .submit-btn {
+  background-color: #ffffff1a;
+  border-color: #737373;
+  width: 92px;
 }
 
 .email-collector-form .pi-spinner {
@@ -217,6 +172,17 @@ function submitForm() {
   .field-checkbox {
     .p-checkbox {
       align-self: flex-start;
+
+      &.p-checkbox-checked {
+        .p-checkbox-box {
+          background-color: var(--p-surface-0);
+          border-color: var(--p-surface-200);
+
+          .p-checkbox-icon {
+            color: var(--p-surface-950);
+          }
+        }
+      }
     }
 
     label {
@@ -225,7 +191,8 @@ function submitForm() {
   }
 
   .p-error {
-    text-align: right;
+    color: var(--p-red-400);
+    text-align: left;
   }
 }
 </style>
