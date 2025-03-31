@@ -51,17 +51,23 @@ export default defineNuxtRouteMiddleware(async () => {
       return navigateTo(redirectSlug)
     }
 
-    // check if the user is logged in
-    if (user?.data?.session?.user) {
-      currentUser.value = user?.data?.session?.user
-    }
-    // redirect to home if the user is logged in
-    if (currentUser.value) {
+    // sometimes the supabase token doesn't get detected right away when magic links are used
+    // i don't think we should have to do this, but here we are
+    // this is for the FORGOT PASSWORD flow
+    setTimeout(async () => {
+      // check if the user is logged in
+      if (user?.data?.session?.user) {
+        currentUser.value = user?.data?.session?.user
+      }
+      // redirect to home if the user is logged in
+      if (currentUser.value) {
 
-      //('currentUser setTimeout found', currentUser.value)
-      await updateUser()
-      return navigateTo(redirectSlug)
-    }
+        //('currentUser setTimeout found', currentUser.value)
+        await updateUser()
+        return navigateTo(redirectSlug)
+      }
+    }, 1000)
+
   } else {
     // if the app has been launched before (set the local user profile), redirect to the home page
     const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
