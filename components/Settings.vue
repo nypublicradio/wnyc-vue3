@@ -77,9 +77,8 @@ const initializeStationList = (val) => {
 
   stationsMenuData.value = tempMenuData
 }
-
+// handles updating the profile settings in supabase and local storage
 const updateProfile = async () => {
-  console.log("updating currentUserProfile", currentUserProfile.value)
   // update supabase and local storage
   if (currentUser.value && currentUserProfile.value) {
     const { error } = await client
