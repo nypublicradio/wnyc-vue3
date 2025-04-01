@@ -17,6 +17,13 @@ const currentUser = useCurrentUser()
 const isApp = useIsApp()
 
 const { headerNavigationData } = await useNavigationData()
+
+// const config = useRuntimeConfig()
+// const { data: vData, error } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
+// const headerNavigationData = vData.value.data.headerNavigationData
+// console.log("error", error.value)
+// console.log("headerNavigationData", headerNavigationData)
+
 // handle when the logo is clicked
 const handleLogoClick = () => {
   navigateTo("/home")
@@ -50,8 +57,13 @@ const handleMouseLeave = () => {
             <LoginSignupBtn v-if="!isApp" class="hidden md:block" />
             <DonateBtn class="-mr-2" />
 
-            <Button :disabled="!isNetworkConnected" icon="pi pi-bars" class="p-button-text -mr-2" severity="secondary"
-              aria-label="settings menu" @click="
+            <Button
+              :disabled="!isNetworkConnected"
+              icon="pi pi-bars"
+              class="p-button-text -mr-2"
+              severity="secondary"
+              aria-label="settings menu"
+              @click="
                 () => {
                   isApp ? (settingsSideBar = true) : (settingsSideBarBrowser = true)
                   trackClickEvent(
@@ -60,7 +72,8 @@ const handleMouseLeave = () => {
                     `Open Sidebar`
                   )
                 }
-              " />
+              "
+            />
           </div>
         </div>
       </section>
@@ -69,41 +82,88 @@ const handleMouseLeave = () => {
       <section class="full-width py-0 -mt-2">
         <Divider class="my-0" />
       </section>
-      <section class="content full-width py-1" :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]">
+      <section
+        class="content full-width py-1"
+        :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
+      >
         <MegaMenu :model="headerNavigationData">
           <template #item="{ item }">
-            <div @mouseenter="handleMouseEnter(item, $event)" @mouseleave="handleMouseLeave" class="menu-item">
-              <VFlexibleLink raw :to="item.url" :class="item.class" @flexible-link-click="
-                trackClickEvent(
-                  `Click Tracking - Header ${item.label} Button`,
-                  'Header',
-                  `${item.label} Button`
-                )
-                ">
-                <Button raw :label="item.label" :aria-label="`${item.label} button`" severity="secondary" size="small"
-                  variant="link" />
+            <div
+              @mouseenter="handleMouseEnter(item, $event)"
+              @mouseleave="handleMouseLeave"
+              class="menu-item"
+            >
+              <VFlexibleLink
+                raw
+                :to="item.url"
+                :class="item.class"
+                @flexible-link-click="
+                  trackClickEvent(
+                    `Click Tracking - Header ${item.label} Button`,
+                    'Header',
+                    `${item.label} Button`
+                  )
+                "
+              >
+                <Button
+                  raw
+                  :label="item.label"
+                  :aria-label="`${item.label} button`"
+                  severity="secondary"
+                  size="small"
+                  variant="link"
+                />
               </VFlexibleLink>
 
-              <Menu :model="item.items[0]" v-if="activeItemIndex === item.id && item.items[0]">
+              <Menu
+                :model="item.items[0]"
+                v-if="activeItemIndex === item.id && item.items[0]"
+              >
                 <template #item="{ item }">
-                  <VFlexibleLink raw :to="item.url" @click.stop class="w-full" @flexible-link-click="
-                    () => {
-                      handleMouseLeave()
-                      trackClickEvent(
-                        `Click Tracking - Header ${item.label} Button`,
-                        'Header',
-                        `${item.label} Button`
-                      )
-                    }
-                  ">
-                    <Button raw class="submenu-btn" :label="item.label" :aria-label="`${item.label} button`"
-                      severity="secondary" size="small" variant="link">
+                  <VFlexibleLink
+                    raw
+                    :to="item.url"
+                    @click.stop
+                    class="w-full"
+                    @flexible-link-click="
+                      () => {
+                        handleMouseLeave()
+                        trackClickEvent(
+                          `Click Tracking - Header ${item.label} Button`,
+                          'Header',
+                          `${item.label} Button`
+                        )
+                      }
+                    "
+                  >
+                    <Button
+                      raw
+                      class="submenu-btn"
+                      :label="item.label"
+                      :aria-label="`${item.label} button`"
+                      severity="secondary"
+                      size="small"
+                      variant="link"
+                    >
                       <div class="flex align-items-center">
-                        <VImage v-if="item?.image && typeof item?.image === 'object'" class="flex-none mr-3"
-                          :alt="item.image.altText" :src="item.image.template" :height="60" :width="60" :ratio="[1, 1]"
-                          :srcset="[2]" style="height: 60px; width: 60px" />
-                        <img v-else-if="item.image" :alt="item.label" :src="item.image" class="flex-none mr-3"
-                          style="width: 60px; height: 60px" />
+                        <VImage
+                          v-if="item?.image && typeof item?.image === 'object'"
+                          class="flex-none mr-3"
+                          :alt="item.image.altText"
+                          :src="item.image.template"
+                          :height="60"
+                          :width="60"
+                          :ratio="[1, 1]"
+                          :srcset="[2]"
+                          style="height: 60px; width: 60px"
+                        />
+                        <img
+                          v-else-if="item.image"
+                          :alt="item.label"
+                          :src="item.image"
+                          class="flex-none mr-3"
+                          style="width: 60px; height: 60px"
+                        />
                         <div class="p-button-label">{{ item.label }}</div>
                       </div>
                     </Button>
@@ -162,7 +222,6 @@ const handleMouseLeave = () => {
   }
 
   .bottom {
-
     //height: var(--header-bottom-height);
     .content {
       margin-left: -12px;
@@ -213,7 +272,8 @@ const handleMouseLeave = () => {
         }
       }
 
-      &.logged-in {}
+      &.logged-in {
+      }
     }
 
     .p-megamenu-overlay {

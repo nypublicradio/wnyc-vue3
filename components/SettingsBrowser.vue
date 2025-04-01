@@ -6,10 +6,19 @@ const { allNavigationData } = await useNavigationData()
 </script>
 
 <template>
-  <div class="settings-desktop style-mode-dark" :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]">
+  <div
+    class="settings-desktop style-mode-dark"
+    :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
+  >
     <div class="menu py-4 px-4 lg:py-6 flex">
-      <ExpandedMenuItem v-for="item in allNavigationData" :key="item.id" :item="item"
-        :class="`menu-holder ${item.class}`" :menuData="item" @emit-click="settingsSideBarBrowser = false" />
+      <ExpandedMenuItem
+        v-for="item in allNavigationData"
+        :key="item.id"
+        :item="item"
+        :class="`menu-holder ${item.class}`"
+        :menuData="item"
+        @emit-click="settingsSideBarBrowser = false"
+      />
     </div>
     <!-- <section class="footer mb-4">
       <WnycLogo style="fill: var(--bw-toggle)" />
@@ -54,7 +63,6 @@ const { allNavigationData } = await useNavigationData()
       }
 
       &.account {
-
         .logout,
         .manage {
           display: none;
@@ -66,7 +74,6 @@ const { allNavigationData } = await useNavigationData()
   &.logged-in {
     .menu-holder {
       &.account {
-
         .login,
         .signup {
           display: none;
