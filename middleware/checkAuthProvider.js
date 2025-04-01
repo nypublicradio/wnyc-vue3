@@ -10,7 +10,6 @@ export default defineNuxtRouteMiddleware(async () => {
   const client = useSupabaseClient()
   const config = useRuntimeConfig()
   const currentUser = useCurrentUser()
-  const redirectSlug = '/home'
   const user = await client.auth.getSession()
 
   // update the user's profile (name and image) if they signed up with google
@@ -32,54 +31,61 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
-  if (user.data.session) {
-    // check local storage for the auth token
-    const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
+  const routeToHome = () => {
+    setTimeout(() => {
+      navigateTo('/home')
+    }, 500)
+  }
 
-    if (supabaseAuthToken.value) {
-      currentUser.value = supabaseAuthToken.user
-    }
+  const checkSession = async () => {
+    if (user.data.session) {
+      // check local storage for the auth token
+      const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
 
-    // check supabase session for logged in user
-    if (user?.data?.session?.user) {
-      currentUser.value = user?.data?.session?.user
-    }
+      if (supabaseAuthToken.value) {
+        currentUser.value = supabaseAuthToken.user
+      }
 
-    // redirect to home if the user is logged in
-    if (currentUser.value) {
-      await updateUser()
-      return navigateTo(redirectSlug)
-    }
-
-    // sometimes the supabase token doesn't get detected right away when magic links are used
-    // i don't think we should have to do this, but here we are
-    // this is for the FORGOT PASSWORD flow
-    setTimeout(async () => {
-      // check if the user is logged in
+      // check supabase session for logged in user
       if (user?.data?.session?.user) {
         currentUser.value = user?.data?.session?.user
       }
+
       // redirect to home if the user is logged in
       if (currentUser.value) {
-
-        //('currentUser setTimeout found', currentUser.value)
         await updateUser()
-        return navigateTo(redirectSlug)
+        routeToHome()
+        return
       }
-    }, 1000)
 
-  } else {
-    // if the app has been launched before (set the local user profile), redirect to the home page
-    const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
-    if (userLocalStorage.value) {
-      // a delay is needed for an unknown reason
-      await updateUser()
-      return navigateTo(redirectSlug)
+      // sometimes the supabase token doesn't get detected right away when magic links are used
+      // i don't think we should have to do this, but here we are
+      // this is for the FORGOT PASSWORD flow
+      setTimeout(async () => {
+        // check if the user is logged in
+        if (user?.data?.session?.user) {
+          currentUser.value = user?.data?.session?.user
+        }
+        // redirect to home if the user is logged in
+        if (currentUser.value) {
+          await updateUser()
+          routeToHome()
+        }
+      }, 1000)
+
     } else {
-      // this will always make sure to move to the home page
-      return navigateTo(redirectSlug)
+      // if the app has been launched before (set the local user profile), redirect to the home page
+      const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
+      if (userLocalStorage.value) {
+        await updateUser()
+        routeToHome()
+      } else {
+        // this will always make sure to move to the home page
+        routeToHome()
+      }
     }
   }
-  return null
+
+  checkSession()
 
 })

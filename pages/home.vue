@@ -47,27 +47,21 @@ onMounted(() => {
 <template>
   <div>
     <Html lang="en">
-      <Head>
-        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
+
+    <Head>
+      <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+      <Meta name="og:title" content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News" />
+      <Meta name="twitter:title" content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News" />
+    </Head>
+
     </Html>
     <LiveFeature />
 
     <section>
       <FetchError v-if="error || error2 || error3" />
       <h2 class="mt-4 mb-3">Latest News Updates</h2>
-      <LatestNewsUpdates
-        :localNewscast="latestNewsUpdatesData?.local_newscast"
-        :nationalNewscast="latestNewsUpdatesData?.national_newscast"
-      />
+      <LatestNewsUpdates :localNewscast="latestNewsUpdatesData?.local_newscast"
+        :nationalNewscast="latestNewsUpdatesData?.national_newscast" />
     </section>
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
@@ -76,11 +70,8 @@ onMounted(() => {
       <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
+        <story-htlAd layout="rectangle" slotClass="htlad-wnyc_homepage_rectangle"
+          fineprint="WNYC is funded by sponsors and member donations" />
       </div>
     </section>
     <div v-for="section in pagedata?.home_template" :key="section.title">
@@ -90,15 +81,8 @@ onMounted(() => {
         </section>
         <section v-if="section.componentType === 'default'">
           <div class="grid">
-            <EpisodeItem
-              v-for="ep in section.data"
-              :data="ep"
-              :key="`home-${ep.id}`"
-              @onClick="goToEpisodePage(ep)"
-              showPlayButton
-              :fallback-image="ep.headers.brand.logoImage.template"
-              class="col-12 md:col-6 mb-3"
-            />
+            <EpisodeItem v-for="ep in section.data" :data="ep" :key="`home-${ep.id}`" @onClick="goToEpisodePage(ep)"
+              showPlayButton :fallback-image="ep.headers.brand.logoImage.template" class="col-12 md:col-6 mb-3" />
           </div>
         </section>
         <WNYCFeatured v-else class="mt-2 mb-4" :articles="section.data" />
@@ -107,32 +91,13 @@ onMounted(() => {
     <div v-if="pagedata?.npr_stories?.length">
       <section>
         <h2 class="my-3">NPR Stories</h2>
-        <div
-          v-for="(section, index) in pagedata?.npr_stories"
-          :key="`NPR-conetnet-${index}`"
-        >
+        <div v-for="(section, index) in pagedata?.npr_stories" :key="`NPR-conetnet-${index}`">
           <div v-if="section.componentType === 'default'">
             <div class="grid">
-              <div
-                class="col-12 md:col-6 mb-3"
-                v-for="article in section.articles"
-                :key="article.id"
-              >
-                <EpisodeItem
-                  v-if="hasAudio(article.audio)"
-                  :data="article"
-                  @on-click="goToNprPage(article)"
-                  showPlayButton
-                  :fallback-image="getEpisodeFallBackImage()"
-                  :showShare="false"
-                />
-                <StoryItem
-                  v-else
-                  :data="article"
-                  :index="index"
-                  @on-click="goToNprPage(article)"
-                  :showShare="false"
-                />
+              <div class="col-12 md:col-6 mb-3" v-for="article in section.articles" :key="article.id">
+                <EpisodeItem v-if="hasAudio(article.audio)" :data="article" @on-click="goToNprPage(article)"
+                  showPlayButton :fallback-image="getEpisodeFallBackImage()" :showShare="false" />
+                <StoryItem v-else :data="article" :index="index" @on-click="goToNprPage(article)" :showShare="false" />
               </div>
             </div>
           </div>
@@ -140,9 +105,6 @@ onMounted(() => {
         </div>
       </section>
     </div>
-    <SponsorBanner
-      class="mt-4"
-      :style="`margin-bottom:${currentEpisode ? '-20px' : '-5rem'}`"
-    />
+    <SponsorBanner class="mt-4" :style="`margin-bottom:${currentEpisode ? '-20px' : '-5rem'}`" />
   </div>
 </template>

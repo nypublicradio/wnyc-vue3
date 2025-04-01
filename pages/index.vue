@@ -1,109 +1,32 @@
 <script setup async>
 import { setStatusDarkMode } from "~/utilities/helpers"
-import { useCurrentUserProfile, useCurrentUser } from "~/composables/states.ts"
-import { useBrowserTopColorDarkMode, localUserProfileKey } from "~/composables/globals.ts"
-import { Preferences } from '@capacitor/preferences'
-import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
-
+import { useCurrentUserProfile } from "~/composables/states.ts"
+import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
 
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu",
+    class: "no-bottom-padding hide-bottom-menu solid-bg",
   },
 })
 
 definePageMeta({
   layout: "default",
-  //middleware: ["check-auth-provider"],
+  middleware: ["check-auth-provider"],
 })
 
-const client = useSupabaseClient()
-const config = useRuntimeConfig()
-const currentUser = useCurrentUser()
-const redirectSlug = '/home'
-const redirectDelay = 500
 const currentUserProfile = useCurrentUserProfile()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
-const user = await client.auth.getSession()
 
-// update the user's profile (name and image) if they signed up with google
-const updateUser = async () => {
-  if (user.data.session?.user.app_metadata.provider === 'google') {
-    await client
-      .from('profiles')
-      .update({
-        updated_at: new Date().toISOString(),
-        name: user.data.session.user.user_metadata.full_name,
-        avatar_image_url: user.data.session.user.user_metadata.avatar_url,
-      })
-      .match({ id: user.data.session.user.id })
-  }
-  if (currentUser.value) {
-    await FirebaseAnalytics.setUserId({
-      userId: currentUser.value.id,
-    })
-  }
-}
+onBeforeMount(() => {
+  // this page has the body class "style-mode-dark", so we need to force the status bar to be dark as well
+  setStatusDarkMode(true)
+})
 
-const delayNavigateTo = async () => {
-  // delay the navigation to the home page
-  setTimeout(() => {
-    navigateTo(redirectSlug)
-  }, redirectDelay)
-}
-
-const checkSession = async () => {
-  if (user.data.session) {
-    // check local storage for the auth token
-    const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
-
-    if (supabaseAuthToken.value) {
-      currentUser.value = supabaseAuthToken.user
-    }
-
-    // check supabase session for logged in user
-    if (user?.data?.session?.user) {
-      currentUser.value = user?.data?.session?.user
-    }
-
-    // redirect to home if the user is logged in
-    if (currentUser.value) {
-      await updateUser()
-      delayNavigateTo(redirectSlug)
-      return
-    }
-
-    // sometimes the supabase token doesn't get detected right away when magic links are used
-    // i don't think we should have to do this, but here we are
-    // this is for the FORGOT PASSWORD flow
-    setTimeout(async () => {
-      // check if the user is logged in
-      if (user?.data?.session?.user) {
-        currentUser.value = user?.data?.session?.user
-      }
-      // redirect to home if the user is logged in
-      if (currentUser.value) {
-
-        await updateUser()
-        delayNavigateTo(redirectSlug)
-      }
-    }, 1000)
-
-  } else {
-    // if the app has been launched before (set the local user profile), redirect to the home page
-    const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
-    if (userLocalStorage.value) {
-      await updateUser()
-      delayNavigateTo(redirectSlug)
-    } else {
-      // this will always make sure to move to the home page
-      delayNavigateTo(redirectSlug)
-    }
-  }
-}
-
-checkSession()
+onUnmounted(() => {
+  // check if are set to light mode first, if yes, then set the status bar back to light mode
+  setStatusDarkMode(currentUserProfile.value?.dark_mode)
+})
 
 </script>
 <template>
@@ -120,11 +43,10 @@ checkSession()
     </Head>
 
     </Html>
-    <div class="page" :class="[`${String(route.name)} ${currentUserProfile?.dark_mode ? 'style-mode-dark' : ''}`]">
+    <div class="page style-mode-dark" :class="[`${String(route.name)}`]">
       <Transition name="fade">
         <section class="loading-holder">
-          <WnycLoader class="loader-anim" :color="`${currentUserProfile?.dark_mode ? '#ffffff'
-            : '#de1e3d'}`" />
+          <WnycLoader class="loader-anim" />
         </section>
       </Transition>
     </div>
