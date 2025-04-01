@@ -23,8 +23,10 @@ const emit = defineEmits(["emit-click"])
         :class="item.class"
         @flexible-link-click="
           () => {
+            if (item.command) {
+              item.command()
+            }
             emit('emit-click')
-            item.command()
             trackClickEvent(
               `Click Tracking - ${item.label} Button`,
               'hamburger menu',

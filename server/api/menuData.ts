@@ -1,4 +1,4 @@
-import { logOutUser } from "~/utilities/helpers"
+//import { logOutUser } from "~/utilities/helpers"
 
 const allMenuData = [
     {
@@ -193,7 +193,6 @@ const allMenuData = [
                 {
                     label: "Log out",
                     class: "logout",
-                    command: () => { logOutUser() },
                 },
             ],
         ],
