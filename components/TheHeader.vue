@@ -18,11 +18,13 @@ const isApp = useIsApp()
 
 const { headerNavigationData } = await useNavigationData()
 
+// BFF ATTEMPT
 // const config = useRuntimeConfig()
 // const { data: vData, error } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
 // const headerNavigationData = vData.value.data.headerNavigationData
 // console.log("error", error.value)
 // console.log("headerNavigationData", headerNavigationData)
+// BFF ATTEMPT
 
 // handle when the logo is clicked
 const handleLogoClick = () => {

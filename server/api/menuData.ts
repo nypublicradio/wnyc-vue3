@@ -1,4 +1,4 @@
-//import { logOutUser } from "~/utilities/helpers"
+import { logOutUser } from "~/utilities/helpers"
 
 const allMenuData = [
     {
@@ -193,6 +193,15 @@ const allMenuData = [
                 {
                     label: "Log out",
                     class: "logout",
+                    command: () => {
+                        console.log("triying to Logging out...");
+                        if (typeof window !== "undefined") {
+                            console.log("Logging out...");
+                            logOutUser();
+                        } else {
+                            console.error("logOutUser cannot be executed on the server.");
+                        }
+                    },
                 },
             ],
         ],

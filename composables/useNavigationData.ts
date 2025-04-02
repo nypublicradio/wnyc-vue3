@@ -1,6 +1,5 @@
 // Import the base menu structure directly
 import { allMenuData } from './menuData';
-
 // Shared state variables (singleton pattern)
 let isInitialized = false;
 let headerNavigationData = null;
@@ -11,7 +10,7 @@ let donateButtonData = null;
 let fetchStatus = null;
 let fetchError = null;
 
-// normalize for menu function for Wagtail menu data
+//normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => {
     return menuData.map((item) => ({
         label: item.value.title,
@@ -44,7 +43,7 @@ const normalizeShowsMenuData = (menuData, limit) => {
         label: item.title,
         url: `/browse/shows/${item.slug}`,
         icon: '',
-        image: item.image,
+        image: item.image ?? '/fallback-ep.png',
         id: String(item.id),
         type: item.cmsSource,
         hasSubmenu: false,
@@ -130,7 +129,7 @@ export default function useNavigationData() {
                     footerLegalLinksData.value = legalLinkItems;
                     donateButtonData.value = finalDonateData;
 
-
+                    // BFF ATTEMPT
                     // const config = useRuntimeConfig()
                     // const { data: vData, error } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
                     // const bffData = vData.value.data
@@ -143,6 +142,7 @@ export default function useNavigationData() {
                     // footerNavigationData.value = bffData.footerNavigationData;
                     // footerLegalLinksData.value = bffData.footerLegalLinksData;
                     // donateButtonData.value = bffData.donateButtonData;
+                    // BFF ATTEMPT
 
                 } catch (fetchError) {
                     console.error("Failed to fetch or process navigation data:", fetchError);
