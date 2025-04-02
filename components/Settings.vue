@@ -65,7 +65,7 @@ const initializeStationList = (val) => {
   val.forEach((station) => {
     tempMenuData.push({
       id: station.station,
-      label: station.station,
+      label: station.title,
       name: station.title,
       station: station.station,
       code: station.title,
@@ -74,6 +74,7 @@ const initializeStationList = (val) => {
       times: `${station.timeStart} - ${station.timeEnd}`,
     })
   })
+
   stationsMenuData.value = tempMenuData
 }
 // handles updating the profile settings in supabase and local storage
@@ -416,7 +417,7 @@ const showNotificationTypes = computed(() => {
       ></SBox>
       <SBox
         label="Get tech support"
-        link="https://newyorkpublicradio.my.site.com/wnyc/s/topic/0TO5f0000009Eq7GAE/website-app-help"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/website-or-app-support"
         :ripple="false"
         @linkClick="
           (link) => {
