@@ -24,9 +24,9 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  setTimeout(() => {
-    navigateTo("/home")
-  }, 500)
+  //setTimeout(() => {
+  navigateTo("/home")
+  //}, 500)
 })
 
 onUnmounted(() => {
