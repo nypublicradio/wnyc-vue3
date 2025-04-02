@@ -11,7 +11,7 @@ useHead({
 
 definePageMeta({
   layout: "default",
-  middleware: ["check-auth-provider"],
+  //middleware: ["check-auth-provider"],
 })
 
 const currentUserProfile = useCurrentUserProfile()
