@@ -1,5 +1,5 @@
 // Import the base menu structure directly
-import { allMenuData } from './menuData';
+import { allMenuData } from './navigationData';
 // Shared state variables (singleton pattern)
 let isInitialized = false;
 let headerNavigationData = null;
@@ -50,10 +50,12 @@ const normalizeShowsMenuData = (menuData, limit) => {
     }));
 };
 
-export default function useNavigationData() {
+export default async function useNavigationData() {
     // Initialize shared state only once
     if (!isInitialized) {
         isInitialized = true;
+
+        const config = useRuntimeConfig()
 
         // Define shared state (singleton)
         headerNavigationData = useState("headerNavigationData", () => []);
@@ -65,99 +67,71 @@ export default function useNavigationData() {
             buttonLink: ''
         }));
 
-        // Fetch and process data once
-        const { status, error } = useAsyncData(
-            'navigation-data-fetch',
-            async () => {
-                const config = useRuntimeConfig();
+        try {
+            // BFF
+            const { data: nData, error, status } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
+            const bffData = nData.value.data
+            fetchStatus = status;
+            fetchError = error;
 
-                try {
-                    const [wagtailResponse, donateResponse, stationsResponse, showsResponse] = await Promise.all([
-                        $fetch(config.public.HEADER_NAVIGATION_API),
-                        $fetch(config.public.SYSTEM_MESSAGES_API),
-                        $fetch(`${config.public.BFF_URL}/api/streams`),
-                        $fetch(`${config.public.BFF_URL}/api/v2/shows`),
-                    ]);
+            // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
+            let workingHeaderNav = allMenuData.map(item => ({ ...item }));
 
-                    // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
-                    let workingHeaderNav = allMenuData.map(item => ({ ...item }));
+            // Normalize and merge Stations
+            const stationsItems = normalizeStationsMenuData(bffData.stationsResponse);
+            if (workingHeaderNav[0]?.items?.[0]) {
+                workingHeaderNav[0].items[0].splice(0, 0, ...stationsItems);
+            }
 
-                    // Normalize and merge Stations
-                    const stationsItems = normalizeStationsMenuData(stationsResponse);
-                    if (workingHeaderNav[0]?.items?.[0]) {
-                        workingHeaderNav[0].items[0].splice(0, 0, ...stationsItems);
-                    }
+            // Normalize and merge Shows
+            const showsItems = normalizeShowsMenuData(bffData.showsResponse, 5);
+            if (workingHeaderNav[1]?.items?.[0]) {
+                workingHeaderNav[1].items[0].splice(0, 0, ...showsItems);
+            }
 
-                    // Normalize and merge Shows
-                    const showsItems = normalizeShowsMenuData(showsResponse, 5);
-                    if (workingHeaderNav[1]?.items?.[0]) {
-                        workingHeaderNav[1].items[0].splice(0, 0, ...showsItems);
-                    }
+            // Create the 'allNavigationData' state *before* header-specific modifications
+            // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
+            const workingAllNav = workingHeaderNav.map(item => ({ ...item }));
 
-                    // Create the 'allNavigationData' state *before* header-specific modifications
-                    // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
-                    const workingAllNav = workingHeaderNav.map(item => ({ ...item }));
+            // Normalize and merge Wagtail Primary Navigation
+            const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation);
+            workingHeaderNav.splice(2, 0, ...primaryNavItems);
 
-                    // Normalize and merge Wagtail Primary Navigation
-                    const primaryNavItems = normalizeWagtailMenuData(wagtailResponse?.primary_navigation);
-                    workingHeaderNav.splice(2, 0, ...primaryNavItems);
+            const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections");
+            if (collectionsMenuItem?.items) {
+                collectionsMenuItem.items[0] = primaryNavItems;
+            }
 
-                    const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections");
-                    if (collectionsMenuItem?.items) {
-                        collectionsMenuItem.items[0] = primaryNavItems;
-                    }
+            const legalLinkItems = normalizeWagtailMenuData(bffData.wagtailResponse?.legal_links);
 
-                    const legalLinkItems = normalizeWagtailMenuData(wagtailResponse?.legal_links);
+            workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false);
 
-                    workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false);
+            const donateBanner = bffData.donateResponse?.product_banners?.find(
+                (banner) => banner.value.title === "WNYC App Donate Button"
+            );
+            const finalDonateData = { buttonText: '', buttonLink: '' };
+            if (donateBanner) {
+                finalDonateData.buttonText = donateBanner.value.button_text;
+                finalDonateData.buttonLink = donateBanner.value.button_link;
+            }
 
-                    const donateBanner = donateResponse?.product_banners?.find(
-                        (banner) => banner.value.title === "WNYC App Donate Button"
-                    );
-                    const finalDonateData = { buttonText: '', buttonLink: '' };
-                    if (donateBanner) {
-                        finalDonateData.buttonText = donateBanner.value.button_text;
-                        finalDonateData.buttonLink = donateBanner.value.button_link;
-                    }
+            const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false);
 
-                    const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false);
+            // Update shared state
+            headerNavigationData.value = workingHeaderNav;
+            allNavigationData.value = workingAllNav;
+            footerNavigationData.value = footerNavItems;
+            footerLegalLinksData.value = legalLinkItems;
+            donateButtonData.value = finalDonateData;
 
-                    // Update shared state
-                    headerNavigationData.value = workingHeaderNav;
-                    allNavigationData.value = workingAllNav;
-                    footerNavigationData.value = footerNavItems;
-                    footerLegalLinksData.value = legalLinkItems;
-                    donateButtonData.value = finalDonateData;
-
-                    // BFF ATTEMPT
-                    // const config = useRuntimeConfig()
-                    // const { data: vData, error } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
-                    // const bffData = vData.value.data
-
-                    // console.log('bffData', bffData)
-
-                    // // Update shared state
-                    // headerNavigationData.value = bffData.headerNavigationData;
-                    // allNavigationData.value = bffData.allNavigationData;
-                    // footerNavigationData.value = bffData.footerNavigationData;
-                    // footerLegalLinksData.value = bffData.footerLegalLinksData;
-                    // donateButtonData.value = bffData.donateButtonData;
-                    // BFF ATTEMPT
-
-                } catch (fetchError) {
-                    console.error("Failed to fetch or process navigation data:", fetchError);
-                    headerNavigationData.value = [];
-                    allNavigationData.value = [];
-                    footerNavigationData.value = [];
-                    footerLegalLinksData.value = [];
-                    donateButtonData.value = { buttonText: '', buttonLink: '' };
-                }
-            },
-            { server: true }
-        );
-
-        fetchStatus = status;
-        fetchError = error;
+        } catch (fetchError) {
+            console.error("Failed to fetch or process navigation data:", fetchError);
+            headerNavigationData.value = [];
+            allNavigationData.value = [];
+            footerNavigationData.value = [];
+            footerLegalLinksData.value = [];
+            donateButtonData.value = { buttonText: '', buttonLink: '' };
+        }
     }
 
     // Return the shared state and status
