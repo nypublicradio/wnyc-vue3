@@ -31,12 +31,14 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
+  // navigate to the home page with delay
   const routeToHome = () => {
     setTimeout(() => {
       navigateTo('/home')
     }, 500)
   }
 
+  // check if the user is logged in, updates and routes
   const checkSession = async () => {
     if (user.data.session) {
       // check local storage for the auth token

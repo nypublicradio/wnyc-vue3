@@ -34,6 +34,7 @@ const client = useSupabaseClient()
 const config = useRuntimeConfig()
 const imageUploadModal = shallowRef(false)
 
+const user = await client.auth.getSession()
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
   loginSideBar.value = true
@@ -87,7 +88,11 @@ const handleModal = () => {
 }
 
 const avatarUrl = computed(() => {
+  console.log("currentUser", currentUser.value)
+  console.log("currentUserProfile", currentUserProfile.value)
+  console.log("user", user)
   return (
+    user.value?.data?.user?.user_metadata?.avatar_url ||
     currentUser.value?.user_metadata?.avatar_url ||
     currentUserProfile.value?.avatar_image_url ||
     null
