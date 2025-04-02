@@ -11,7 +11,7 @@ useHead({
 
 definePageMeta({
   layout: "default",
-  middleware: ["check-auth-provider"],
+  //middleware: ["check-auth-provider"],
 })
 
 const currentUserProfile = useCurrentUserProfile()
@@ -23,25 +23,34 @@ onBeforeMount(() => {
   setStatusDarkMode(true)
 })
 
+onMounted(() => {
+  setTimeout(() => {
+    navigateTo("/home")
+  }, 500)
+})
+
 onUnmounted(() => {
   // check if are set to light mode first, if yes, then set the status bar back to light mode
   setStatusDarkMode(currentUserProfile.value?.dark_mode)
 })
-
 </script>
 <template>
   <div>
     <Html>
-
-    <Head>
-      <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
-      <Meta name="og:title" content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News" />
-      <Meta name="twitter:title" content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News" />
-      <!-- force browser top color dark -->
-      <Meta name="theme-color" :content="browserTopColorDarkMode" />
-      <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
-    </Head>
-
+      <Head>
+        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Meta
+          name="og:title"
+          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <!-- force browser top color dark -->
+        <Meta name="theme-color" :content="browserTopColorDarkMode" />
+        <Meta name="msapplication-TileColor" :content="browserTopColorDarkMode" />
+      </Head>
     </Html>
     <div class="page style-mode-dark" :class="[`${String(route.name)}`]">
       <Transition name="fade">
