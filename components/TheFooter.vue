@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import { getYear } from "~/utilities/helpers"
 import { useIsEpisodePlaying } from "~/composables/states"
-import { allSocialData } from "~/composables/menuData"
+import { allSocialData } from "~/composables/menuData.js"
 import { trackClickEvent } from "~/utilities/helpers"
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -8,7 +9,6 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const submitForm = (event) => {
   event.preventDefault()
 }
-
 </script>
 
 <template>
@@ -24,9 +24,9 @@ const submitForm = (event) => {
               </div>
               <div>
                 <p class="blurb line-height-3 text-xs">
-                  Listener-supported WNYC is the home for independent journalism and courageous
-                  conversation on air and online. Broadcasting live from New York City on 93.9
-                  FM and AM 820 and available online and on the go.
+                  Listener-supported WNYC is the home for independent journalism and
+                  courageous conversation on air and online. Broadcasting live from New
+                  York City on 93.9 FM and AM 820 and available online and on the go.
                 </p>
               </div>
             </div>
@@ -35,20 +35,16 @@ const submitForm = (event) => {
                 <WnycLogo class="hidden" />
               </div>
               <div class="newsletter">
-                <h2 class="mb-3">
-                  Sign up for our newsletter
-                </h2>
+                <h2 class="mb-3">Sign up for our newsletter</h2>
                 <p class="line-height-3 text-xs">
-                  Sign up for for a weekly, behind-the-scenes update from the people behind your favorite shows.
-                  <VFlexibleLink to="/newsletter">See More
-                  </VFlexibleLink>
+                  Sign up for for a weekly, behind-the-scenes update from the people
+                  behind your favorite shows.
+                  <VFlexibleLink to="/newsletter">See More </VFlexibleLink>
                 </p>
                 <email-collector-form class="form mt-5" @submit="submitForm">
                   By submitting your information, you're agreeing to receive
                   communications from New York Public Radio in accordance with our
-                  <VFlexibleLink to="https://www.wnyc.org/terms/">
-                    Terms
-                  </VFlexibleLink>.
+                  <VFlexibleLink to="https://www.wnyc.org/terms/"> Terms </VFlexibleLink>.
                 </email-collector-form>
               </div>
             </div>
@@ -58,25 +54,38 @@ const submitForm = (event) => {
         <div class="col">
           <div class="social flex gap-3 align-items-center">
             <p>Connect with us!</p>
-            <VFlexibleLink v-for="item in allSocialData" raw :to="item.url" :key="item.id" @flexible-link-click="
-              () => {
-                trackClickEvent(
-                  `Click Tracking - ${item.label} social Button`,
-                  'footer',
-                  `${item.label} social Button`
-                )
-              }
-            ">
+            <VFlexibleLink
+              v-for="item in allSocialData"
+              raw
+              :to="item.url"
+              :key="item.id"
+              @flexible-link-click="
+                () => {
+                  trackClickEvent(
+                    `Click Tracking - ${item.label} social Button`,
+                    'footer',
+                    `${item.label} social Button`
+                  )
+                }
+              "
+            >
               <Button :icon="item.icon" severity="secondary" size="large" rounded />
             </VFlexibleLink>
           </div>
           <div class="menu pt-6 flex flex-wrap md:flex-nowrap gap-4">
-            <ExpandedMenuItem v-for="item in footerNavigationData" :key="item.id" :item="item"
-              :class="`menu-holder ${item.class}`" :menuData="item" />
+            <ExpandedMenuItem
+              v-for="item in footerNavigationData"
+              :key="item.id"
+              :item="item"
+              :class="`menu-holder ${item.class}`"
+              :menuData="item"
+            />
           </div>
         </div>
       </div>
-      <div class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7">
+      <div
+        class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7"
+      >
         <NyprLogosBracket />
         <div class="flex align-items-center gap-3">
           <p class="flex-none">WNYC is supported by</p>
@@ -84,10 +93,18 @@ const submitForm = (event) => {
         </div>
       </div>
       <Divider class="mt-4" />
-      <div class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter">
+      <div
+        class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter"
+      >
         <div class="flex flex-wrap gap-3 -ml-2">
-          <VFlexibleLink v-for="item in footerLegalLinksData" :key="item.id" raw :to="item.url"
-            class="footer-legal-links" :class="item.class" @flexible-link-click="
+          <VFlexibleLink
+            v-for="item in footerLegalLinksData"
+            :key="item.id"
+            raw
+            :to="item.url"
+            class="footer-legal-links"
+            :class="item.class"
+            @flexible-link-click="
               () => {
                 trackClickEvent(
                   `Click Tracking - ${item.label} Button`,
@@ -95,12 +112,21 @@ const submitForm = (event) => {
                   `${item.label} Button`
                 )
               }
-            ">
-            <Button raw :label="item.label" :aria-label="`${item.label} button`" severity="secondary" size="small"
-              variant="link" />
+            "
+          >
+            <Button
+              raw
+              :label="item.label"
+              :aria-label="`${item.label} button`"
+              severity="secondary"
+              size="small"
+              variant="link"
+            />
           </VFlexibleLink>
         </div>
-        <p class="flex-none mt-1 ">&copy; 2025 New York Public Radio. All rights reserved.</p>
+        <p class="flex-none mt-1">
+          &copy; {{ getYear() }} New York Public Radio. All rights reserved.
+        </p>
       </div>
     </div>
   </section>
@@ -165,7 +191,6 @@ const submitForm = (event) => {
 
       .p-button-label {
         font-weight: 400;
-        ;
       }
     }
   }

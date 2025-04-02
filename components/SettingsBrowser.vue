@@ -1,8 +1,10 @@
 <script setup>
+import { getYear } from "~/utilities/helpers"
 import { useCurrentUser, useSettingsSideBarBrowser } from "~/composables/states.ts"
 const currentUser = useCurrentUser()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const { allNavigationData } = await useNavigationData()
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -19,12 +21,12 @@ const { allNavigationData } = await useNavigationData()
         :menuData="item"
         @emit-click="settingsSideBarBrowser = false"
       />
+      <section class="footer mb-4">
+        <WnycLogo style="fill: var(--bw-toggle)" />
+        <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
+        <p>Version {{ config.public.APP_VERSION }}</p>
+      </section>
     </div>
-    <!-- <section class="footer mb-4">
-      <WnycLogo style="fill: var(--bw-toggle)" />
-      <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
-      <p>Version {{ config.public.APP_VERSION }}</p>
-    </section> -->
   </div>
 </template>
 
@@ -79,6 +81,16 @@ const { allNavigationData } = await useNavigationData()
           display: none;
         }
       }
+    }
+  }
+  .footer {
+    text-align: center;
+
+    .wnyc-logo {
+      width: 60px;
+      height: auto;
+      margin-bottom: 10px;
+      fill: var(--p-surface-950);
     }
   }
 }
