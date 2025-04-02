@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { getYear } from "~/utilities/helpers"
+import { getYear, trackClickEvent } from "~/utilities/helpers"
 import { useIsEpisodePlaying } from "~/composables/states"
 import { allSocialData } from "~/composables/navigationData.js"
-import { trackClickEvent } from "~/utilities/helpers"
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
 const isEpisodePlaying = useIsEpisodePlaying()
 // placeholder function for submitting the form

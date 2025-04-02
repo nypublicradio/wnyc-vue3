@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const config = useRuntimeConfig();
 
+// BFF for fetching the data only for the navigation
 async function useNavigationData() {
     let wagtailResponse = null;
     let donateResponse = null;
