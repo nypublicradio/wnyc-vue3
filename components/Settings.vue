@@ -65,7 +65,7 @@ const initializeStationList = (val) => {
   val.forEach((station) => {
     tempMenuData.push({
       id: station.station,
-      label: station.title,
+      label: station.station,
       name: station.title,
       station: station.station,
       code: station.title,
@@ -74,7 +74,6 @@ const initializeStationList = (val) => {
       times: `${station.timeStart} - ${station.timeEnd}`,
     })
   })
-
   stationsMenuData.value = tempMenuData
 }
 // handles updating the profile settings in supabase and local storage
@@ -233,15 +232,30 @@ const showNotificationTypes = computed(() => {
         <i :class="`${accountHeader.icon}`"></i>
         <div class="s-title">{{ accountHeader.label }}</div>
       </div>
-      <SBox v-if="currentUserProfile?.name" label="Name" @click="editField('name')" :clickable="!isDisabled"
-        :ripple="!isDisabled">
+      <SBox
+        v-if="currentUserProfile?.name"
+        label="Name"
+        @click="editField('name')"
+        :clickable="!isDisabled"
+        :ripple="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
       </SBox>
-      <SBox label="Email" @click="editField('email')" :clickable="!isDisabled" :ripple="!isDisabled">
+      <SBox
+        label="Email"
+        @click="editField('email')"
+        :clickable="!isDisabled"
+        :ripple="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
       </SBox>
-      <SBox label="Password" v-if="isEmail" @click="editField('password')" :clickable="!isDisabled"
-        :ripple="!isDisabled">
+      <SBox
+        label="Password"
+        v-if="isEmail"
+        @click="editField('password')"
+        :clickable="!isDisabled"
+        :ripple="!isDisabled"
+      >
         <p :class="[{ disabled: isDisabled }]">*********</p>
       </SBox>
     </section>
@@ -249,10 +263,24 @@ const showNotificationTypes = computed(() => {
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox label="Default stream" class="cursor-pointer" @click="clickThisMenu(defaultStreamRef)">
-        <DropupMenu ref="defaultStreamRef" id="default-stream" v-model="currentUserProfile.default_live_stream"
-          :options="stationsMenuData" optionLabel="station" placeholder="Select a station" label="Default stream"
-          width="auto" @change="onUpdateStation" blockClick checkMark />
+      <SBox
+        label="Default stream"
+        class="cursor-pointer"
+        @click="clickThisMenu(defaultStreamRef)"
+      >
+        <DropupMenu
+          ref="defaultStreamRef"
+          id="default-stream"
+          v-model="currentUserProfile.default_live_stream"
+          :options="stationsMenuData"
+          optionLabel="station"
+          placeholder="Select a station"
+          label="Default stream"
+          width="auto"
+          @change="onUpdateStation"
+          blockClick
+          checkMark
+        />
       </SBox>
     </section>
     <section v-if="isApp" class="notifications p-0">
@@ -260,8 +288,12 @@ const showNotificationTypes = computed(() => {
         <div class="s-title">Notifications</div>
       </div>
       <SBox label="Allow Notifications" :ripple="false">
-        <VToggleSwitch yes="ON" no="OFF" v-model:data="currentUserProfile.receive_general_notifications"
-          @change="handleNotificationChange" />
+        <VToggleSwitch
+          yes="ON"
+          no="OFF"
+          v-model:data="currentUserProfile.receive_general_notifications"
+          @change="handleNotificationChange"
+        />
       </SBox>
     </section>
     <section v-if="showNotificationTypes" class="notifications p-0">
@@ -269,12 +301,23 @@ const showNotificationTypes = computed(() => {
         <div class="s-title">Notification Types</div>
       </div>
 
-      <SBox v-for="channel in masterNotificationChannelsArray" :label="channel.label" :description="channel.description"
-        :key="channel.key" :ripple="false">
-        <VToggleSwitch yes="ON" no="OFF" v-model:data="currentUserProfile.one_signal_notification_channels.find(
-          (c) => c.key === channel.key
-        ).value
-          " @change="handleNotificationChannelChange(channel)" />
+      <SBox
+        v-for="channel in masterNotificationChannelsArray"
+        :label="channel.label"
+        :description="channel.description"
+        :key="channel.key"
+        :ripple="false"
+      >
+        <VToggleSwitch
+          yes="ON"
+          no="OFF"
+          v-model:data="
+            currentUserProfile.one_signal_notification_channels.find(
+              (c) => c.key === channel.key
+            ).value
+          "
+          @change="handleNotificationChannelChange(channel)"
+        />
       </SBox>
       <!-- 
       <SBox
@@ -298,21 +341,36 @@ const showNotificationTypes = computed(() => {
       </div>
       <!-- <pre class="text-xs">{{ currentUserProfile }}</pre> -->
       <SBox label="Text size" class="cursor-pointer" @click="clickThisMenu(textSizeRef)">
-        <DropupMenu ref="textSizeRef" id="text-size" v-model="currentUserProfile.text_size" :options="textSizeOptions"
-          optionLabel="label" placeholder="Select a Text Size" label="Text Size" width="auto" blockClick checkMark
-          @change="onUpdateTextSize" />
+        <DropupMenu
+          ref="textSizeRef"
+          id="text-size"
+          v-model="currentUserProfile.text_size"
+          :options="textSizeOptions"
+          optionLabel="label"
+          placeholder="Select a Text Size"
+          label="Text Size"
+          width="auto"
+          blockClick
+          checkMark
+          @change="onUpdateTextSize"
+        />
       </SBox>
       <SBox label="Dark theme" :ripple="false">
-        <VToggleSwitch yes="ON" no="OFF" v-model:data="currentUserProfile.dark_mode" @change="
-          () => {
-            setDarkMode(currentUserProfile.dark_mode)
-            trackClickEvent(
-              'Click Tracking - Dark theme',
-              'Settings Sidebar - Display',
-              currentUserProfile.dark_mode
-            )
-          }
-        " />
+        <VToggleSwitch
+          yes="ON"
+          no="OFF"
+          v-model:data="currentUserProfile.dark_mode"
+          @change="
+            () => {
+              setDarkMode(currentUserProfile.dark_mode)
+              trackClickEvent(
+                'Click Tracking - Dark theme',
+                'Settings Sidebar - Display',
+                currentUserProfile.dark_mode
+              )
+            }
+          "
+        />
       </SBox>
     </section>
     <section class="wnyc p-0">
@@ -332,13 +390,21 @@ const showNotificationTypes = computed(() => {
           }
         "
       ></SBox> -->
-      <SBox label="Donate" :link="config.public.SETTINGS_MENU_DONATION_URL" :ripple="false" @linkClick="
-        (link) => {
-          trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
-        }
-      "></SBox>
-      <SBox label="Submit app feedback" link="https://www.surveymonkey.com/r/wnyc-app-feedback-settings-menu"
-        :ripple="false" @linkClick="
+      <SBox
+        label="Donate"
+        :link="config.public.SETTINGS_MENU_DONATION_URL"
+        :ripple="false"
+        @linkClick="
+          (link) => {
+            trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
+          }
+        "
+      ></SBox>
+      <SBox
+        label="Submit app feedback"
+        link="https://www.surveymonkey.com/r/wnyc-app-feedback-settings-menu"
+        :ripple="false"
+        @linkClick="
           (link) => {
             trackClickEvent(
               'Click Tracking - Submit app feedback',
@@ -346,9 +412,13 @@ const showNotificationTypes = computed(() => {
               link
             )
           }
-        "></SBox>
-      <SBox label="Get tech support" link="https://newyorkpublicradio.my.site.com/wnyc/s/website-or-app-support"
-        :ripple="false" @linkClick="
+        "
+      ></SBox>
+      <SBox
+        label="Get tech support"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/website-or-app-support"
+        :ripple="false"
+        @linkClick="
           (link) => {
             trackClickEvent(
               'Click Tracking - Get tech support',
@@ -356,17 +426,29 @@ const showNotificationTypes = computed(() => {
               link
             )
           }
-        "></SBox>
-      <SBox label="Contact us" link="https://newyorkpublicradio.my.site.com/wnyc/s/" :ripple="false" @linkClick="
-        (link) => {
-          trackClickEvent(
-            'Click Tracking - Contact Us',
-            'Settings Sidebar - links',
-            link
-          )
-        }
-      "></SBox>
-      <SBox v-if="currentUser" :is-route="true" label="Delete account" :ripple="false" @click="onDeleteAccountClick">
+        "
+      ></SBox>
+      <SBox
+        label="Contact us"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/"
+        :ripple="false"
+        @linkClick="
+          (link) => {
+            trackClickEvent(
+              'Click Tracking - Contact Us',
+              'Settings Sidebar - links',
+              link
+            )
+          }
+        "
+      ></SBox>
+      <SBox
+        v-if="currentUser"
+        :is-route="true"
+        label="Delete account"
+        :ripple="false"
+        @click="onDeleteAccountClick"
+      >
       </SBox>
     </section>
     <section class="footer mb-4">
@@ -399,7 +481,8 @@ const showNotificationTypes = computed(() => {
     }
   }
 
-  .user {}
+  .user {
+  }
 
   .user-preferences {
     p.disabled {

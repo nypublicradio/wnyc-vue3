@@ -88,9 +88,6 @@ const handleModal = () => {
 }
 
 const avatarUrl = computed(() => {
-  console.log("currentUser", currentUser.value)
-  console.log("currentUserProfile", currentUserProfile.value)
-  console.log("user", user)
   return (
     user.value?.data?.user?.user_metadata?.avatar_url ||
     currentUser.value?.user_metadata?.avatar_url ||
