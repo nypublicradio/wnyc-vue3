@@ -3,20 +3,29 @@ import { trackClickEvent } from "~/utilities/helpers"
 const props = defineProps({
   label: {
     type: String,
-    default: "Listen Live",
+    default: "Get the App",
   },
   trackingLocation: {
     type: String,
     default: "Header",
+  },
+  route: {
+    type: String,
+    required: true,
+  },
+  size: {
+    type: String,
+    default: "normal",
+    validator: (value: string) => ["normal", "small", "large"].includes(value),
   },
 })
 const emit = defineEmits(["emit-click"])
 </script>
 <template>
   <VFlexibleLink
-    class="listen-live-btn"
+    class="get-the-app-btn"
     raw
-    to="/live"
+    :to="props.route"
     @flexible-link-click="
       () => {
         emit('emit-click')
@@ -31,11 +40,12 @@ const emit = defineEmits(["emit-click"])
     <Button
       :label="props.label"
       :aria-label="`${props.label} button`"
-      size="small"
+      :size="props.size"
       variant="link"
+      tabindex="-1"
     >
       <template #icon>
-        <LiveLinesIcon />
+        <slot name="icon" />
       </template>
     </Button>
   </VFlexibleLink>

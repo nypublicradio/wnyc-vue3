@@ -12,7 +12,6 @@ async function useNavigationData() {
             axios.get(`${config.public.BFF_URL}/api/streams`),
             axios.get(`${config.public.BFF_URL}/api/v2/shows`),
         ]);
-
         return {
             wagtailResponse: wagtail.data,
             donateResponse: donate.data,
