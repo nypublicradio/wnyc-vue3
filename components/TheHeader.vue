@@ -99,7 +99,7 @@ const handleLogoClick = () => {
         <Divider class="my-0" />
       </section>
       <section
-        class="content full-width py-1"
+        class="content full-width"
         :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
       >
         <NavButton
@@ -221,6 +221,8 @@ const handleLogoClick = () => {
   .bottom {
     //height: var(--header-bottom-height);
     .content {
+      padding-top: 11px;
+      padding-bottom: 11px;
       margin-left: -12px;
 
       .p-menu {
