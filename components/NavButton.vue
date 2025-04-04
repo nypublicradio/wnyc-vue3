@@ -9,9 +9,16 @@ const props = defineProps({
     type: String,
     default: "Header",
   },
+  severity: {
+    type: String,
+    default: "secondary",
+  },
+  variant: {
+    type: String,
+    default: "link",
+  },
   route: {
     type: String,
-    required: true,
   },
   size: {
     type: String,
@@ -19,34 +26,80 @@ const props = defineProps({
     validator: (value: string) => ["normal", "small", "large"].includes(value),
   },
 })
-const emit = defineEmits(["emit-click"])
+const emit = defineEmits(["emit-click", "emit-mouseenter", "emit-mouseleave"])
+
+const op = ref()
+
+const handleMouseEnter = (event: MouseEvent) => {
+  op?.value.show(event)
+  emit("emit-mouseenter", event)
+}
+
+const handleMouseLeave = () => {
+  op?.value.hide()
+  emit("emit-mouseleave")
+}
 </script>
 <template>
-  <VFlexibleLink
-    class="get-the-app-btn"
-    raw
-    :to="props.route"
-    @flexible-link-click="
-      () => {
-        emit('emit-click')
-        trackClickEvent(
-          `Click Tracking - ${props.label} Button`,
-          props.trackingLocation,
-          `${props.label} Button`
-        )
-      }
-    "
-  >
-    <Button
-      :label="props.label"
-      :aria-label="`${props.label} button`"
-      :size="props.size"
-      variant="link"
-      tabindex="-1"
+  <div class="nav-button" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+    <VFlexibleLink
+      class="relative"
+      :class="[$attrs.class]"
+      raw
+      :to="props.route"
+      @flexible-link-click="
+        () => {
+          emit('emit-click')
+          trackClickEvent(
+            `Click Tracking - ${props.label} Button`,
+            props.trackingLocation,
+            `${props.label} Button`
+          )
+        }
+      "
     >
-      <template #icon>
-        <slot name="icon" />
-      </template>
-    </Button>
-  </VFlexibleLink>
+      <Button
+        :label="props.label"
+        :aria-label="`${props.label} button`"
+        :size="props.size"
+        :variant="props.variant"
+        :severity="props.severity"
+        tabindex="-1"
+      >
+        <template #icon>
+          <slot name="icon" />
+        </template>
+      </Button>
+    </VFlexibleLink>
+    <Popover ref="op" appendTo="self">
+      <slot name="menu" />
+    </Popover>
+  </div>
 </template>
+
+<style scoped lang="scss">
+.nav-button {
+  &.bold {
+    .p-button {
+      .p-button-label {
+        font-weight: 700;
+      }
+    }
+  }
+}
+</style>
+<style lang="scss">
+.nav-button {
+  .p-popover {
+    border: none;
+    background: none;
+    box-shadow: none;
+    top: 0 !important;
+    left: 0 !important;
+    &:before,
+    &:after {
+      display: none;
+    }
+  }
+}
+</style>
