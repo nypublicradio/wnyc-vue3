@@ -8,12 +8,14 @@ import {
   useIsNetworkConnected,
   useIsApp,
   useCurrentUser,
+  useCurrentUserProfile,
 } from "~/composables/states.ts"
 
 const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
 const currentUser = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
 const isApp = useIsApp()
 
 const { headerNavigationData } = await useNavigationData()
@@ -55,8 +57,30 @@ const handleMouseLeave = () => {
             <span v-if="isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
           </div>
           <div class="flex gap-3 sm:gap-4 align-items-center">
-            <GetTheAppBtn v-if="!isApp" />
-            <LoginSignupBtn v-if="!isApp" class="hidden md:block" />
+            <NavButton
+              v-if="!isApp"
+              size="small"
+              label="Get the App"
+              trackingLocation="utility nav"
+              route="/mobile"
+            >
+              <template #icon>
+                <DevicesIcon />
+              </template>
+            </NavButton>
+            <NavButton
+              v-if="!isApp"
+              class="hidden md:block"
+              :label="`${currentUser ? currentUserProfile?.name : 'Log in/Sign up'}`"
+              size="small"
+              trackingLocation="utility nav"
+              route="/login"
+              :to="currentUser ? '/dashboard' : 'login'"
+            >
+              <template #icon>
+                <UserIcon />
+              </template>
+            </NavButton>
             <DonateBtn class="-mr-2" />
 
             <Button

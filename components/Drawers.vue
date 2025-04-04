@@ -10,6 +10,8 @@ import {
   useAccountPromptSideBar,
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
+  useCurrentUser,
+  useCurrentUserProfile,
 } from "~/composables/states"
 
 const settingsSideBar = useSettingSideBar()
@@ -21,6 +23,8 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
+const currentUser = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
 </script>
 
 <template>
@@ -49,12 +53,19 @@ const sleepTimerSideBar = useSleepTimerSideBar()
             class="flex gap-3 flex-column align-items-start lg:flex-row lg:align-items-center p-2"
           >
             <WnycLogo class="flex-none w-6rem lg:w-8rem" />
-            <ListenLiveBtn
+            <NavButton
               class="-ml-3 lg:ml-0"
+              size="small"
+              label="Listen Live"
               trackingLocation="Hamburger Menu"
+              route="/live"
               @emit-click="settingsSideBarBrowser = false"
-            />
-            <GetTheAppBtn
+            >
+              <template #icon>
+                <LiveLinesIcon />
+              </template>
+            </NavButton>
+            <!-- <GetTheAppBtn
               class="-ml-3 lg:ml-0"
               trackingLocation="Hamburger Menu"
               @emit-click="settingsSideBarBrowser = false"
@@ -65,7 +76,32 @@ const sleepTimerSideBar = useSleepTimerSideBar()
               label="Create Free Account"
               route="/signup"
               @emit-click="settingsSideBarBrowser = false"
-            />
+            /> -->
+            <NavButton
+              class="-ml-3 lg:ml-0"
+              size="small"
+              label="Get the App"
+              trackingLocation="Hamburger Menu"
+              route="/mobile"
+              @emit-click="settingsSideBarBrowser = false"
+            >
+              <template #icon>
+                <DevicesIcon />
+              </template>
+            </NavButton>
+            <NavButton
+              class="-ml-3 lg:ml-0"
+              :label="`${currentUser ? currentUserProfile?.name : 'Log in/Sign up'}`"
+              size="small"
+              trackingLocation="Hamburger Menu"
+              route="/login"
+              :to="currentUser ? '/dashboard' : 'login'"
+              @emit-click="settingsSideBarBrowser = false"
+            >
+              <template #icon>
+                <UserIcon />
+              </template>
+            </NavButton>
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
             <DarkModeIconToggleBtn class="hidden sm:block" />

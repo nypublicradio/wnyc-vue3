@@ -186,7 +186,7 @@ export default defineNuxtConfig({
         "https://cms.prod.nypr.digital/api/v2/navigation/3/",
       SYSTEM_MESSAGES_API:
         process.env.SYSTEM_MESSAGES_API ??
-        "https://cms.prod.nypr.digital/api/v2/system_messages/3/",
+        "https://cms.demo.nypr.digital/api/v2/system_messages/3/",
       SYSTEM_NAVIGATION_API:
         process.env.SYSTEM_NAVIGATION_API ??
         "https://cms.prod.nypr.digital/api/v2/navigation/3/",
