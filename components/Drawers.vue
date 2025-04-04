@@ -57,7 +57,7 @@ const currentUserProfile = useCurrentUserProfile()
               class="-ml-3 lg:ml-0"
               size="small"
               label="Listen Live"
-              trackingLocation="Hamburger Menu"
+              trackingLocation="header Hamburger Menu"
               route="/live"
               @emit-click="settingsSideBarBrowser = false"
             >
@@ -65,23 +65,11 @@ const currentUserProfile = useCurrentUserProfile()
                 <LiveLinesIcon />
               </template>
             </NavButton>
-            <!-- <GetTheAppBtn
-              class="-ml-3 lg:ml-0"
-              trackingLocation="Hamburger Menu"
-              @emit-click="settingsSideBarBrowser = false"
-            />
-            <LoginSignupBtn
-              class="-ml-3 lg:ml-0"
-              trackingLocation="Hamburger Menu"
-              label="Create Free Account"
-              route="/signup"
-              @emit-click="settingsSideBarBrowser = false"
-            /> -->
             <NavButton
               class="-ml-3 lg:ml-0"
               size="small"
               label="Get the App"
-              trackingLocation="Hamburger Menu"
+              trackingLocation="header Hamburger Menu"
               route="/mobile"
               @emit-click="settingsSideBarBrowser = false"
             >
@@ -93,7 +81,7 @@ const currentUserProfile = useCurrentUserProfile()
               class="-ml-3 lg:ml-0"
               :label="`${currentUser ? currentUserProfile?.name : 'Log in/Sign up'}`"
               size="small"
-              trackingLocation="Hamburger Menu"
+              trackingLocation="header Hamburger Menu"
               route="/login"
               :to="currentUser ? '/dashboard' : 'login'"
               @emit-click="settingsSideBarBrowser = false"
@@ -105,7 +93,7 @@ const currentUserProfile = useCurrentUserProfile()
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
             <DarkModeIconToggleBtn class="hidden sm:block" />
-            <DonateBtn trackingLocation="Hamburger Menu" />
+            <DonateBtn trackingLocation="header Hamburger Menu" />
           </div>
         </div>
       </template>

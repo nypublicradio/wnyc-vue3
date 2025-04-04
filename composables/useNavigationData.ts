@@ -110,7 +110,6 @@ export default async function useNavigationData() {
                 (banner) => banner.value.title === "WNYC App Donate Button"
             );
 
-            console.log('donateBanner', donateBanner);
             const finalDonateData = { buttonText: '', buttonLink: '' };
             if (donateBanner) {
                 finalDonateData.buttonText = donateBanner.value.button_text;
@@ -125,8 +124,6 @@ export default async function useNavigationData() {
             footerNavigationData.value = footerNavItems;
             footerLegalLinksData.value = legalLinkItems;
             donateButtonData.value = finalDonateData;
-
-            console.log('donateButtonData', donateButtonData.value);
 
         } catch (fetchError) {
             console.error("Failed to fetch or process navigation data:", fetchError);

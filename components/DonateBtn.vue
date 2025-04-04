@@ -26,6 +26,7 @@ const props = defineProps({
       :label="donateButtonData.buttonText"
       :aria-label="`${donateButtonData.buttonText} donate`"
       class="px-3 sm:px-5"
+      tabindex="-1"
     />
   </VFlexibleLink>
 </template>
