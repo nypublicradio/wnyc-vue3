@@ -41,7 +41,13 @@ const handleLogoClick = () => {
       <section class="full-width">
         <div class="flex justify-content-between align-items-center">
           <div class="flex align-items-center">
-            <WnycLogo class="wnyc-logo cursor-pointer" @click="handleLogoClick" />
+            <WnycLogo
+              class="wnyc-logo cursor-pointer"
+              tabindex="0"
+              @click="handleLogoClick"
+              @keydown.enter="handleLogoClick"
+              @keydown.space.prevent="handleLogoClick"
+            />
 
             <span v-if="isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
           </div>

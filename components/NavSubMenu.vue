@@ -79,6 +79,7 @@ const emit = defineEmits(["emit-click"])
   min-width: 250px;
   margin-top: 8px;
   padding-top: 9px;
+  margin-left: -1rem;
 
   ul {
     padding: 0;

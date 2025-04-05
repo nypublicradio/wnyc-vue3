@@ -80,18 +80,6 @@ const handleMouseLeave = () => {
 <style scoped lang="scss">
 .nav-button {
   position: relative;
-  &.p-button {
-    .p-button-label {
-      pointer-events: none;
-    }
-  }
-  &.bold {
-    .p-button {
-      .p-button-label {
-        font-weight: 700;
-      }
-    }
-  }
 }
 </style>
 <style lang="scss">
@@ -105,6 +93,18 @@ const handleMouseLeave = () => {
     &:before,
     &:after {
       display: none;
+    }
+  }
+  &.bold {
+    .p-button {
+      .p-button-label {
+        font-weight: 700;
+      }
+    }
+  }
+  .p-button {
+    .p-button-label {
+      pointer-events: none;
     }
   }
 }
