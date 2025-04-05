@@ -41,45 +41,46 @@ const handleMouseLeave = () => {
 }
 </script>
 <template>
-  <div class="nav-button" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-    <VFlexibleLink
-      class="relative"
-      :class="[$attrs.class]"
-      raw
-      :to="props.route"
-      @flexible-link-click="
-        () => {
-          emit('emit-click')
-          trackClickEvent(
-            `Click Tracking - ${props.label} Button`,
-            props.trackingLocation,
-            `${props.label} Button`
-          )
-        }
-      "
+  <VFlexibleLink
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    class="nav-button flex-none"
+    :class="[$attrs.class]"
+    raw
+    :to="props.route"
+    @flexible-link-click="
+      () => {
+        emit('emit-click')
+        trackClickEvent(
+          `Click Tracking - ${props.label} Button`,
+          props.trackingLocation,
+          `${props.label} Button`
+        )
+      }
+    "
+  >
+    <Button
+      :label="props.label"
+      :aria-label="`${props.label} button`"
+      :size="props.size"
+      :variant="props.variant"
+      :severity="props.severity"
+      tabindex="-1"
     >
-      <Button
-        :label="props.label"
-        :aria-label="`${props.label} button`"
-        :size="props.size"
-        :variant="props.variant"
-        :severity="props.severity"
-        tabindex="-1"
-      >
-        <template #icon>
-          <slot name="icon" />
-        </template>
-      </Button>
-    </VFlexibleLink>
+      <template #icon>
+        <slot name="icon" />
+      </template>
+    </Button>
     <Popover ref="op" appendTo="self">
       <slot name="menu" />
     </Popover>
-  </div>
+  </VFlexibleLink>
 </template>
 
 <style scoped lang="scss">
 .nav-button {
-  .p-button {
+  position: relative;
+  &.p-button {
     .p-button-label {
       pointer-events: none;
     }

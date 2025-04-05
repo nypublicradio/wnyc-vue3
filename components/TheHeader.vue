@@ -169,9 +169,10 @@ const handleLogoClick = () => {
   .bottom {
     //height: var(--header-bottom-height);
     .content {
-      padding-top: 11px;
-      padding-bottom: 11px;
       margin-left: -12px;
+      display: flex;
+      gap: 0rem 1rem;
+      flex-wrap: wrap;
 
       &.logged-out {
         .saved {

@@ -77,7 +77,8 @@ const emit = defineEmits(["emit-click"])
   background-color: var(--header-menu-background);
   z-index: 1;
   min-width: 250px;
-  padding-top: 1.1rem;
+  margin-top: 8px;
+  padding-top: 9px;
 
   ul {
     padding: 0;
