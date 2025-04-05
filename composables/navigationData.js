@@ -1,9 +1,10 @@
+import { url } from "@vuelidate/validators"
 import { logOutUser } from "~/utilities/helpers"
 
 const allMenuData = [
     {
         label: "Live Radio",
-        //url: "/live",
+        url: "/live",
         id: "0",
         icon: "",
         hasSubmenu: true,
@@ -24,6 +25,7 @@ const allMenuData = [
     },
     {
         label: "Browse All Shows",
+        url: "/browse",
         id: "1",
         icon: "",
         hasSubmenu: true,
@@ -137,6 +139,7 @@ const allMenuData = [
     },
     {
         label: "Saved",
+        url: "/saved",
         id: "2",
         icon: "",
         hasSubmenu: true,
