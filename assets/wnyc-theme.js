@@ -1103,7 +1103,7 @@ const MyPreset = definePreset(Aura, {
         paddingY: "0.38rem",
         paddingX: "0.75rem",
         label: {
-          fontWeight: "700",
+          fontWeight: "600",
         },
         gap: "0.5rem",
       },

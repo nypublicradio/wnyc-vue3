@@ -15,9 +15,10 @@ useHead({
     <div class="top-safe-cover" />
     <SkipToContent />
     <header :class="[{ show: route.name === 'home', browser: !isApp, app: isApp }]">
-      <VSmartHeader :hero-buffer="400" :resume-delay="0">
-        <TheHeader />
+      <VSmartHeader v-if="isApp" :hero-buffer="400" :resume-delay="0">
+        <TheHeaderApp />
       </VSmartHeader>
+      <TheHeader v-else />
     </header>
 
     <main class="flex-grow-1">

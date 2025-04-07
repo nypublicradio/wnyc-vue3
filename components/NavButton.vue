@@ -98,7 +98,7 @@ const handleMouseLeave = () => {
   &.bold {
     .p-button {
       .p-button-label {
-        font-weight: 700;
+        font-weight: 600;
       }
     }
   }
