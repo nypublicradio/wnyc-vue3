@@ -115,7 +115,6 @@ export default async function useNavigationData() {
                 finalDonateData.buttonText = donateBanner.value.button_text;
                 finalDonateData.buttonLink = donateBanner.value.button_link;
             }
-
             const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false);
 
             // Update shared state
