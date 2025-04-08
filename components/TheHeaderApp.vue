@@ -23,7 +23,7 @@ if (messageData.value?.product_banners?.length > 0) {
 </script>
 
 <template>
-  <div class="the-header">
+  <div class="the-header-app">
     <section class="full-width">
       <div class="flex justify-content-between align-items-center">
         <div class="flex align-items-center">
@@ -75,7 +75,7 @@ if (messageData.value?.product_banners?.length > 0) {
 </template>
 
 <style lang="scss">
-.the-header {
+.the-header-app {
   background: var(--header-background);
   backdrop-filter: blur(4px);
   border: 1px solid var(--stroke-toggle-color);

@@ -15,7 +15,12 @@ useHead({
     <div class="top-safe-cover" />
     <SkipToContent />
     <header :class="[{ show: route.name === 'home', browser: !isApp, app: isApp }]">
-      <VSmartHeader v-if="isApp" :hero-buffer="400" :resume-delay="0">
+      <VSmartHeader
+        v-if="isApp"
+        :hero-buffer="400"
+        :resume-delay="0"
+        class="the-smart-header-app"
+      >
         <TheHeaderApp />
       </VSmartHeader>
       <TheHeader v-else />
@@ -35,7 +40,7 @@ useHead({
 
 <style lang="scss">
 header {
-  .v-smart-header {
+  .the-smart-header-app {
     margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -2) !important;
 
     @include media(">lg") {
@@ -46,13 +51,6 @@ header {
     }
 
     transition: margin-top var(--p-transition-duration) ease;
-  }
-}
-
-header.show,
-header.browser {
-  .v-smart-header {
-    margin-top: 0 !important;
   }
 }
 </style>
