@@ -4,13 +4,13 @@ import { useIsApp } from "~/composables/states"
 const isApp = useIsApp()
 const route = useRoute()
 // control pages that show the smart header for app
-const pagesToShowSmartAppHeaderArray = ["home"]
-const showSmartAppHeader = ref(false)
+const pagesToShowAppSmartHeaderArray = ["home"]
+const showAppSmartHeader = ref(false)
 
 const bodyClass = computed(
   () =>
     `template-default ${isApp.value ? "app" : "browser"} ${
-      showSmartAppHeader.value && isApp.value ? "show-app-header" : ""
+      showAppSmartHeader.value && isApp.value ? "show-app-header" : ""
     }`
 )
 
@@ -24,8 +24,8 @@ useHead({
 watch(
   () => route.path,
   () => {
-    showSmartAppHeader.value = isApp.value
-      ? pagesToShowSmartAppHeaderArray.includes(route.name as string)
+    showAppSmartHeader.value = isApp.value
+      ? pagesToShowAppSmartHeaderArray.includes(route.name as string)
       : true
   },
   { immediate: true }
@@ -42,7 +42,7 @@ watch(
         :hero-buffer="400"
         :resume-delay="0"
         class="the-smart-header-app"
-        :hide="!showSmartAppHeader"
+        :hide="!showAppSmartHeader"
         headerHeightCssVar="var(--header-height-app)"
       >
         <TheHeaderApp />
