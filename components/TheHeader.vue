@@ -1,6 +1,5 @@
 <script setup>
-import { trackClickEvent, getDate } from "~/utilities/helpers"
-import useNavigationData from "~/composables/useNavigationData"
+import { trackClickEvent } from "~/utilities/helpers"
 
 import {
   useSettingSideBar,
@@ -11,22 +10,11 @@ import {
   useCurrentUserProfile,
 } from "~/composables/states.ts"
 
-const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const isApp = useIsApp()
-
-const { headerNavigationData } = await useNavigationData()
-
-// BFF ATTEMPT
-// const config = useRuntimeConfig()
-// const { data: vData, error } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
-// const headerNavigationData = vData.value.data.headerNavigationData
-// console.log("error", error.value)
-// console.log("headerNavigationData", headerNavigationData)
-// BFF ATTEMPT
 
 // handle when the logo is clicked
 const handleLogoClick = () => {
@@ -95,34 +83,7 @@ const handleLogoClick = () => {
         </div>
       </section>
     </div>
-    <!-- <pre>{{ headerNavigationData[0].items[0] }}</pre> -->
     <TheHeaderMenu />
-    <!-- <div v-if="headerNavigationData" class="bottom hidden lg:block">
-      <section class="full-width py-0 -mt-2">
-        <Divider class="my-0" />
-      </section>
-      <section
-        class="content full-width"
-        :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
-      >
-        <NavButton
-          v-for="item in headerNavigationData"
-          :key="item.id"
-          :index="item.id"
-          class="bold inline relative"
-          :class="item.class"
-          size="normal"
-          :label="item.label"
-          trackingLocation="header main nav"
-          :route="item.url"
-          @emit-click="settingsSideBarBrowser = false"
-        >
-          <template #menu v-if="item.items">
-            <NavSubMenu :model="item?.items[0]" />
-          </template>
-        </NavButton>
-      </section>
-    </div> -->
   </div>
 </template>
 
@@ -155,25 +116,6 @@ const handleLogoClick = () => {
     .get-the-app-btn {
       @include media("<425px") {
         display: none;
-      }
-    }
-  }
-
-  .bottom {
-    //height: var(--header-bottom-height);
-    .content {
-      margin-left: -12px;
-      display: flex;
-      gap: 0rem 1rem;
-      flex-wrap: wrap;
-
-      &.logged-out {
-        .saved {
-          display: none;
-        }
-      }
-
-      &.logged-in {
       }
     }
   }

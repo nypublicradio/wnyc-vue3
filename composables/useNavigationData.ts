@@ -76,7 +76,6 @@ export default async function useNavigationData() {
 
             // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
             let workingHeaderNav = allMenuData.map(item => ({ ...item }));
-
             // Normalize and merge Stations
             const stationsItems = normalizeStationsMenuData(bffData.stationsResponse);
             if (workingHeaderNav[0]?.items?.[0]) {
