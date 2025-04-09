@@ -43,10 +43,15 @@ watch(
         :resume-delay="0"
         class="the-smart-header-app"
         :hide="!showSmartAppHeader"
+        headerHeightCssVar="var(--header-height-app)"
       >
         <TheHeaderApp />
       </VSmartHeader>
+
       <TheHeader v-else />
+      <!-- <VSmartHeader :hero-buffer="100" :resume-delay="0" class="the-smart-header">
+          <TheHeaderMenu />
+        </VSmartHeader> -->
     </header>
 
     <main class="flex-grow-1">
@@ -61,7 +66,7 @@ watch(
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 body {
   &.show-app-header {
     main {
@@ -71,21 +76,22 @@ body {
       }
     }
   }
-}
-</style>
-<style lang="scss" scoped>
-.skip-to-content-link {
-  z-index: 1000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  clip: rect(1px, 1px, 1px, 1px);
-  padding: 1rem;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-}
-.content {
-  z-index: 10;
-  position: relative;
+  header {
+    z-index: 11;
+  }
+  .skip-to-content-link {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 1rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+  }
+  .content {
+    z-index: 10;
+    position: relative;
+  }
 }
 </style>
