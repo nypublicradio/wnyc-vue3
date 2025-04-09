@@ -1,6 +1,6 @@
 <script setup>
-import { useScroll } from '@vueuse/core'
-import { onMounted, ref, shallowRef, watch } from 'vue'
+import { useScroll } from "@vueuse/core"
+import { onMounted, ref, shallowRef, watch } from "vue"
 
 const props = defineProps({
   /**
@@ -24,6 +24,13 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * class to force the header to hide
+   */
+  hide: {
+    default: false,
+    type: Boolean,
+  },
 })
 
 // scroll handler
@@ -34,7 +41,7 @@ if (process.client) {
       ? document.getElementsByClassName(props.targetWindowClass)[0]
       : window,
     {
-      behavior: 'smooth',
+      behavior: "smooth",
     }
   )
 }
@@ -52,17 +59,30 @@ onMounted(() => {
 })
 
 const isMinimized = shallowRef(false)
-watch(
-  [scroll?.y, scroll?.directions, scroll?.isScrolling],
-  ([y, top, isScrolling]) => {
-    if (isScrolling) {
-      y > props.heroBuffer && top.top
-        ? (isMinimized.value = false)
-        : !top.top && y > props.heroBuffer
-        ? (isMinimized.value = true)
-        : (isMinimized.value = false)
-    }
+watch([scroll?.y, scroll?.directions, scroll?.isScrolling], ([y, top, isScrolling]) => {
+  if (props.hide) {
+    isMinimized.value = true
+    return
   }
+  if (isScrolling) {
+    y > props.heroBuffer && top.top
+      ? (isMinimized.value = false)
+      : !top.top && y > props.heroBuffer
+      ? (isMinimized.value = true)
+      : (isMinimized.value = false)
+  }
+})
+
+watch(
+  () => props.hide,
+  (newValue) => {
+    if (newValue) {
+      isMinimized.value = true
+    } else {
+      isMinimized.value = false
+    }
+  },
+  { immediate: true }
 )
 </script>
 
@@ -88,10 +108,10 @@ watch(
 }
 //expand
 .v-smart-header-minimize-enter-active {
-  transition: top calc(var(--p-transition-duration) * 2) ease-out;
+  transition: top calc(var(--p-transition-duration)) ease;
 }
 .v-smart-header-minimize-leave-active {
-  transition: top calc(var(--p-transition-duration) * 2) ease-in;
+  transition: top calc(var(--p-transition-duration)) ease;
   transition-delay: calc(var(--p-transition-duration) * v-bind(resumeDelay));
 }
 .v-smart-header-minimize-enter-from,

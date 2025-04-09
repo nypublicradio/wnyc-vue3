@@ -3,23 +3,46 @@ import { useIsApp } from "~/composables/states"
 
 const isApp = useIsApp()
 const route = useRoute()
+// control pages that show the smart header for app
+const pagesToShowSmartHeaderArray = ["home"]
+const showSmartHeader = ref(false)
+
+const bodyClass = computed(
+  () =>
+    `template-default ${isApp.value ? "app" : "browser"} ${
+      showSmartHeader.value ? "show-header" : ""
+    }`
+)
+
 useHead({
   bodyAttrs: {
-    class: `template-default ${isApp.value ? "app" : "browser"}`,
+    class: bodyClass,
   },
 })
+
+//check when the route changes
+watch(
+  () => route.path,
+  () => {
+    showSmartHeader.value = isApp.value
+      ? pagesToShowSmartHeaderArray.includes(route.name as string)
+      : true
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
   <div class="page flex flex-column h-screen" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
     <SkipToContent />
-    <header :class="[{ show: route.name === 'home', browser: isApp, app: !isApp }]">
+    <header>
       <VSmartHeader
-        v-if="!isApp"
+        v-if="isApp"
         :hero-buffer="400"
         :resume-delay="0"
         class="the-smart-header-app"
+        :hide="!showSmartHeader"
       >
         <TheHeaderApp />
       </VSmartHeader>
@@ -46,19 +69,6 @@ body {
       @include media(">lg") {
         padding-top: calc($headerHeight)- 6px;
       }
-    }
-  }
-  header {
-    .the-smart-header-app {
-      margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -2) !important;
-
-      @include media(">lg") {
-        margin-top: calc(
-          (var(--header-height) + env(safe-area-inset-top)) * -1
-        ) !important;
-      }
-
-      transition: margin-top var(--p-transition-duration) ease;
     }
   }
 }
