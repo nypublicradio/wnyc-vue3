@@ -48,12 +48,9 @@ const handleLogoClick = () => {
               @keydown.enter="handleLogoClick"
               @keydown.space.prevent="handleLogoClick"
             />
-
-            <span v-if="isApp" class="head-date font-meta ml-3">{{ getDate() }}</span>
           </div>
           <div class="flex gap-3 sm:gap-4 align-items-center">
             <NavButton
-              v-if="!isApp"
               size="small"
               label="Get the App"
               trackingLocation="header utility nav"
@@ -64,7 +61,6 @@ const handleLogoClick = () => {
               </template>
             </NavButton>
             <NavButton
-              v-if="!isApp"
               class="hidden md:block"
               :label="`${currentUser ? currentUserProfile?.name : 'Log in/Sign up'}`"
               size="small"
@@ -86,7 +82,7 @@ const handleLogoClick = () => {
               aria-label="settings menu"
               @click="
                 () => {
-                  isApp ? (settingsSideBar = true) : (settingsSideBarBrowser = true)
+                  settingsSideBarBrowser = true
                   trackClickEvent(
                     'Click Tracking - Header Hamburger Menu Button',
                     'Header',
@@ -100,7 +96,8 @@ const handleLogoClick = () => {
       </section>
     </div>
     <!-- <pre>{{ headerNavigationData[0].items[0] }}</pre> -->
-    <div v-if="!isApp && headerNavigationData" class="bottom hidden lg:block">
+    <TheHeaderMenu />
+    <!-- <div v-if="headerNavigationData" class="bottom hidden lg:block">
       <section class="full-width py-0 -mt-2">
         <Divider class="my-0" />
       </section>
@@ -125,7 +122,7 @@ const handleLogoClick = () => {
           </template>
         </NavButton>
       </section>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -141,16 +138,6 @@ const handleLogoClick = () => {
 
     .pi-bars {
       font-size: var(--font-size-8);
-    }
-
-    .head-date {
-      font-family: var(--font-family-header);
-      line-height: 1rem;
-      font-size: 0.9rem;
-
-      @include media("<xs") {
-        display: none;
-      }
     }
 
     .wnyc-logo {

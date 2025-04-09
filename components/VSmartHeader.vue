@@ -6,12 +6,19 @@ const props = defineProps({
   /**
    * number of pixels at the top of the page before the header minimizes
    */
+  headerHeightCssVar: {
+    default: "var(--header-height-app)",
+    type: String,
+  },
+  /**
+   * number of pixels at the top of the page before the header minimizes
+   */
   heroBuffer: {
     default: 400,
     type: Number,
   },
   /**
-   * multipyler of the --transition-duration css var that determines the delay before the header minimizes when resuming to scroll down after scrolling up to show the menu
+   * multiplier of the --transition-duration css var that determines the delay before the header minimizes when resuming to scroll down after scrolling up to show the menu
    */
   resumeDelay: {
     default: 3,
@@ -33,9 +40,12 @@ const props = defineProps({
   },
 })
 
-// scroll handler
+// set the css var for the header height
+const headerHeightCssVar = ref(props.headerHeightCssVar)
+
+// scroll handlers
 let scroll = null
-if (process.client) {
+if (import.meta.client) {
   scroll = useScroll(
     props.targetWindowClass
       ? document.getElementsByClassName(props.targetWindowClass)[0]
@@ -46,22 +56,9 @@ if (process.client) {
   )
 }
 
-// vars
-const headerRef = ref(null)
-const headerHeight = shallowRef(null)
-
-// cssVars
-const cssHeaderHeight = shallowRef(null)
-
-onMounted(() => {
-  headerHeight.value = headerRef.value.clientHeight
-  cssHeaderHeight.value = `${headerHeight.value}px`
-})
-
-const isMinimized = shallowRef(false)
+const isMinimized = ref(false)
 watch([scroll?.y, scroll?.directions, scroll?.isScrolling], ([y, top, isScrolling]) => {
   if (props.hide) {
-    isMinimized.value = true
     return
   }
   if (isScrolling) {
@@ -87,13 +84,11 @@ watch(
 </script>
 
 <template>
-  <div>
-    <Transition name="v-smart-header-minimize">
-      <div v-show="!isMinimized" ref="headerRef" class="v-smart-header">
-        <slot />
-      </div>
-    </Transition>
-  </div>
+  <Transition name="v-smart-header-minimize">
+    <div v-show="!isMinimized" class="v-smart-header">
+      <slot />
+    </div>
+  </Transition>
 </template>
 
 <style lang="scss" scoped>
@@ -108,14 +103,14 @@ watch(
 }
 //expand
 .v-smart-header-minimize-enter-active {
-  transition: top calc(var(--p-transition-duration)) ease;
+  transition: top calc(var(--p-transition-duration) * 2) ease-out;
 }
 .v-smart-header-minimize-leave-active {
-  transition: top calc(var(--p-transition-duration)) ease;
+  transition: top calc(var(--p-transition-duration) * 2) ease-in;
   transition-delay: calc(var(--p-transition-duration) * v-bind(resumeDelay));
 }
 .v-smart-header-minimize-enter-from,
 .v-smart-header-minimize-leave-to {
-  top: calc(v-bind(cssHeaderHeight) * -1);
+  top: calc(-1 * v-bind(headerHeightCssVar));
 }
 </style>
