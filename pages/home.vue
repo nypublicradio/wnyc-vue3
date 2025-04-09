@@ -30,7 +30,7 @@ definePageMeta({
 })
 useHead({
   bodyAttrs: {
-    class: "show-header",
+    //class: "show-header",
   },
 })
 
