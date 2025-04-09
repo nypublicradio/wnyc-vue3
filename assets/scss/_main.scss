@@ -45,24 +45,6 @@ body {
   position: relative !important;
   margin: auto;
 
-  &.show-header,
-  &.browser {
-    main {
-      padding-top: $headerHeight;
-      @include media('>lg') {
-        padding-top: calc($headerHeight + $headerBottomHeight)- 6px;
-      }
-    }
-  }
-  &.hide-bottom-menu,
-  &.browser {
-    .bottom-menu {
-      display: none;
-    }
-    main {
-      padding-bottom: 0px; // account for the sticky bottom menu
-    }
-  }
   &.background-gradient {
     background: $backgroundBlueGradient1;
     transform: none;

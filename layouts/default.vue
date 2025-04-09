@@ -14,9 +14,9 @@ useHead({
   <div class="page flex flex-column h-screen" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
     <SkipToContent />
-    <header :class="[{ show: route.name === 'home', browser: !isApp, app: isApp }]">
+    <header :class="[{ show: route.name === 'home', browser: isApp, app: !isApp }]">
       <VSmartHeader
-        v-if="isApp"
+        v-if="!isApp"
         :hero-buffer="400"
         :resume-delay="0"
         class="the-smart-header-app"
@@ -39,18 +39,27 @@ useHead({
 </template>
 
 <style lang="scss">
-header {
-  .the-smart-header-app {
-    margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -2) !important;
-
-    @include media(">lg") {
-      margin-top: calc(
-        (var(--header-height) + var(--header-bottom-height) + env(safe-area-inset-top)) *
-          -1
-      ) !important;
+body {
+  &.show-header {
+    main {
+      padding-top: $headerHeight;
+      @include media(">lg") {
+        padding-top: calc($headerHeight)- 6px;
+      }
     }
+  }
+  header {
+    .the-smart-header-app {
+      margin-top: calc((var(--header-height) + env(safe-area-inset-top)) * -2) !important;
 
-    transition: margin-top var(--p-transition-duration) ease;
+      @include media(">lg") {
+        margin-top: calc(
+          (var(--header-height) + env(safe-area-inset-top)) * -1
+        ) !important;
+      }
+
+      transition: margin-top var(--p-transition-duration) ease;
+    }
   }
 }
 </style>
