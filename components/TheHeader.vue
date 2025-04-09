@@ -2,13 +2,19 @@
 import { trackClickEvent } from "~/utilities/helpers"
 
 import {
-  useSettingSideBar,
   useSettingsSideBarBrowser,
   useIsNetworkConnected,
   useIsApp,
   useCurrentUser,
   useCurrentUserProfile,
 } from "~/composables/states.ts"
+
+const props = defineProps({
+  showMenu: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
@@ -83,7 +89,7 @@ const handleLogoClick = () => {
         </div>
       </section>
     </div>
-    <TheHeaderMenu />
+    <TheHeaderMenu v-if="props.showMenu" />
   </div>
 </template>
 

@@ -48,7 +48,7 @@ watch(
         <TheHeaderApp />
       </VSmartHeader>
       <div v-else>
-        <TheHeader />
+        <TheHeader showMenu />
         <VSmartHeader
           :hero-buffer="120"
           :resume-delay="0"
@@ -56,7 +56,8 @@ watch(
           headerHeightCssVar="var(--header-height)"
           reverse
         >
-          <TheHeaderMenu />
+          <!-- <TheHeaderMenu /> -->
+          <TheHeader />
         </VSmartHeader>
       </div>
       <!-- <VSmartHeader :hero-buffer="100" :resume-delay="0" class="the-smart-header">
