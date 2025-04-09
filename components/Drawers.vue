@@ -92,7 +92,7 @@ const currentUserProfile = useCurrentUserProfile()
             </NavButton>
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
-            <DarkModeIconToggleBtn class="hidden sm:block" />
+            <DarkModeIconToggleBtn class="hidden sm:flex" />
             <DonateBtn trackingLocation="header Hamburger Menu" />
           </div>
         </div>

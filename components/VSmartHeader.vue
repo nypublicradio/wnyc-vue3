@@ -38,6 +38,13 @@ const props = defineProps({
     default: false,
     type: Boolean,
   },
+  /**
+   * class to force the header to show instead of hiding
+   */
+  reverse: {
+    default: false,
+    type: Boolean,
+  },
 })
 
 // set the css var for the header height
@@ -56,28 +63,29 @@ if (import.meta.client) {
   )
 }
 
-const isMinimized = ref(false)
+const isMinimized = ref(props.reverse ? true : false)
+
 watch([scroll?.y, scroll?.directions, scroll?.isScrolling], ([y, top, isScrolling]) => {
   if (props.hide) {
     return
   }
   if (isScrolling) {
-    y > props.heroBuffer && top.top
-      ? (isMinimized.value = false)
-      : !top.top && y > props.heroBuffer
-      ? (isMinimized.value = true)
-      : (isMinimized.value = false)
+    const minimized =
+      y > props.heroBuffer && props.reverse
+        ? true
+        : top.top
+        ? false
+        : !top.top && y > props.heroBuffer
+        ? true
+        : false
+    isMinimized.value = props.reverse ? !minimized : minimized
   }
 })
 
 watch(
   () => props.hide,
   (newValue) => {
-    if (newValue) {
-      isMinimized.value = true
-    } else {
-      isMinimized.value = false
-    }
+    isMinimized.value = props.reverse ? !newValue : newValue
   },
   { immediate: true }
 )

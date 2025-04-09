@@ -7,6 +7,7 @@ const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const currentUser = useCurrentUser()
 
 const { headerNavigationData } = await useNavigationData()
+console.log("headerNavigationData", headerNavigationData)
 </script>
 
 <template>
@@ -42,6 +43,7 @@ const { headerNavigationData } = await useNavigationData()
 <style lang="scss">
 .bottom {
   //height: var(--header-bottom-height);
+  background: var(--header-background);
   .content {
     margin-left: -12px;
     display: flex;
