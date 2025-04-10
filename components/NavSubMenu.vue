@@ -10,13 +10,14 @@ const emit = defineEmits(["emit-click"])
 </script>
 
 <template>
-  <Menu :model="props.model" :tabindex="-1">
+  <Menu :model="props.model">
     <template #item="{ item: itemMenu }">
       <VFlexibleLink
         raw
         :to="itemMenu.url"
         @keydown.enter="() => navigateTo(itemMenu.url)"
         class="w-full"
+        role="menuitem"
         @flexible-link-click="
           () => {
             emit('emit-click')
