@@ -1,7 +1,9 @@
 <script setup>
 definePageMeta({
   middleware: ["check-logged-in"],
+  pageTransition: false, // Disable page transition
 })
+
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()

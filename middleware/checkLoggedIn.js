@@ -18,7 +18,7 @@ export default defineNuxtRouteMiddleware(async () => {
         closable: true,
       }
     }, 500)
-    router.push('/home')
+    router.replace('/home')
   }
   // check if the user is logged in 
   const checkSession = async () => {
