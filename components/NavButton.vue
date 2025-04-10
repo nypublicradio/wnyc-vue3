@@ -53,6 +53,7 @@ const handleMouseLeave = () => {
     :class="[$attrs.class]"
     raw
     :to="props.route"
+    :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
     @flexible-link-click="
       () => {
         emit('emit-click')

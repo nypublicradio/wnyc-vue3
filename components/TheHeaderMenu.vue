@@ -1,9 +1,8 @@
 <script setup>
 import useNavigationData from "~/composables/useNavigationData"
 
-import { useSettingsSideBarBrowser, useCurrentUser } from "~/composables/states.ts"
+import { useCurrentUser } from "~/composables/states.ts"
 
-const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const currentUser = useCurrentUser()
 
 const { headerNavigationData } = await useNavigationData()
