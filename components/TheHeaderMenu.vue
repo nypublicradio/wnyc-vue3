@@ -7,7 +7,6 @@ const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const currentUser = useCurrentUser()
 
 const { headerNavigationData } = await useNavigationData()
-console.log("headerNavigationData", headerNavigationData)
 </script>
 
 <template>
@@ -30,7 +29,6 @@ console.log("headerNavigationData", headerNavigationData)
         :label="item.label"
         trackingLocation="header main nav"
         :route="item.url"
-        @emit-click="settingsSideBarBrowser = false"
       >
         <template #menu v-if="item.items">
           <NavSubMenu :model="item?.items[0]" />

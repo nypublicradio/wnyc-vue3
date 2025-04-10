@@ -30,6 +30,13 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * url or slug or anchor to go to
+   */
+  tabIndexNumber: {
+    default: 0,
+    type: Number,
+  },
 })
 
 const emit = defineEmits(["flexible-link-click"])
@@ -61,6 +68,7 @@ const isAnchor = computed(() => {
     class="flexible-link external"
     :class="{ ['raw']: raw }"
     @click="emit('flexible-link-click', to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </a>
@@ -72,6 +80,7 @@ const isAnchor = computed(() => {
     class="flexible-link anchor"
     :class="{ ['raw']: raw }"
     @click="emit('flexible-link-click', to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </a>
@@ -82,6 +91,7 @@ const isAnchor = computed(() => {
     :to="to"
     v-bind="{ ...$attrs }"
     @click="emit('flexible-link-click', to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </nuxt-link>

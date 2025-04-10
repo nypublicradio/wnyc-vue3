@@ -27,22 +27,27 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(["emit-click", "emit-mouseenter", "emit-mouseleave"])
-
+const hasMenuSlot = ref(!!useSlots().menu)
 const op = ref()
 
 const handleMouseEnter = (event: MouseEvent) => {
-  op?.value.show(event)
+  if (hasMenuSlot.value) {
+    op?.value.show(event)
+  }
   emit("emit-mouseenter", event)
 }
 
 const handleMouseLeave = () => {
-  op?.value.hide()
+  if (hasMenuSlot.value) {
+    op?.value.hide()
+  }
   emit("emit-mouseleave")
 }
 </script>
 <template>
   <VFlexibleLink
     @mouseenter="handleMouseEnter"
+    @keydown.enter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
     class="nav-button flex-none"
     :class="[$attrs.class]"
@@ -71,7 +76,7 @@ const handleMouseLeave = () => {
         <slot name="icon" />
       </template>
     </Button>
-    <Popover ref="op" appendTo="self">
+    <Popover ref="op" appendTo="self" v-if="hasMenuSlot">
       <slot name="menu" />
     </Popover>
   </VFlexibleLink>
