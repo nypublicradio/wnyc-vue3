@@ -10,12 +10,12 @@ const emit = defineEmits(["emit-click"])
 </script>
 
 <template>
-  <Menu :model="props.model">
+  <Menu :model="props.model" :tabindex="-1">
     <template #item="{ item: itemMenu }">
       <VFlexibleLink
         raw
         :to="itemMenu.url"
-        @click.stop
+        @keydown.enter="() => navigateTo(itemMenu.url)"
         class="w-full"
         @flexible-link-click="
           () => {
@@ -49,6 +49,7 @@ const emit = defineEmits(["emit-click"])
               :ratio="[1, 1]"
               :srcset="[2]"
               style="height: 60px; width: 60px"
+              isDecorative
             />
             <img
               v-else-if="itemMenu.image"
@@ -56,6 +57,7 @@ const emit = defineEmits(["emit-click"])
               :src="itemMenu.image"
               class="flex-none mr-3"
               style="width: 60px; height: 60px"
+              tabindex="-1"
             />
             <div class="p-button-label">{{ itemMenu.label }}</div>
           </div>
