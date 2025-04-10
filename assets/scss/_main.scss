@@ -315,6 +315,11 @@ html:not(.style-mode-dark) {
     background: transparent;
     border-color: transparent;
   }
+  .p-button-link.p-button-secondary:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--p-button-secondary-text-color);
+  }
 }
 // makes the white buttons user the light ripple effect so you can see it.
 .p-button-secondary .p-ink,

@@ -56,13 +56,9 @@ watch(
           headerHeightCssVar="var(--header-height)"
           reverse
         >
-          <!-- <TheHeaderMenu /> -->
           <TheHeader />
         </VSmartHeader>
       </div>
-      <!-- <VSmartHeader :hero-buffer="100" :resume-delay="0" class="the-smart-header">
-          <TheHeaderMenu />
-        </VSmartHeader> -->
     </header>
 
     <main class="flex-grow-1">

@@ -106,6 +106,11 @@ const handleMouseLeave = () => {
     .p-button-label {
       pointer-events: none;
     }
+    &:hover {
+      // background: none;
+      // border: none;
+      // outline: none;
+    }
   }
 }
 </style>
