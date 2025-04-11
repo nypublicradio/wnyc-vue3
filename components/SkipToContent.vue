@@ -57,6 +57,7 @@ function skipToContent() {
   p {
     font-weight: 600;
     margin: 0;
+    color: var(--p-secondary-text-color);
   }
   outline: none;
 }
