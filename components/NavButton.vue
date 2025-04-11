@@ -26,10 +26,25 @@ const props = defineProps({
     validator: (value: string) => ["normal", "small", "large"].includes(value),
   },
 })
-const emit = defineEmits(["emit-click", "emit-mouseenter", "emit-mouseleave"])
+const emit = defineEmits([
+  "emit-click",
+  "emit-mouseenter",
+  "emit-mouseenter-key",
+  "emit-mouseleave",
+])
 const hasMenuSlot = ref(!!useSlots().menu)
 const op = ref()
 
+const handleMouseEnterKey = (event: MouseEvent) => {
+  if (hasMenuSlot.value) {
+    if (op?.value?.visible) {
+      op?.value.hide()
+    } else {
+      op?.value.show(event)
+    }
+  }
+  emit("emit-mouseenter-key", event)
+}
 const handleMouseEnter = (event: MouseEvent) => {
   if (hasMenuSlot.value) {
     op?.value.show(event)
@@ -47,7 +62,7 @@ const handleMouseLeave = () => {
 <template>
   <VFlexibleLink
     @mouseenter="handleMouseEnter"
-    @keydown.enter="handleMouseEnter"
+    @keydown.enter.prevent="handleMouseEnterKey"
     @mouseleave="handleMouseLeave"
     class="nav-button flex-none"
     :class="[$attrs.class]"

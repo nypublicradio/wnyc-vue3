@@ -6,31 +6,61 @@ const props = defineProps({
   },
 })
 
-const menuRef = ref()
-
-onMounted(() => {
-  const menuItems = menuRef.value?.getElementsByClassName("p-menu-item")
-  console.log("menuItems", menuItems)
-  if (menuItems) {
-    Array.from(menuItems).forEach((item) => {
-      item.setAttribute("tabindex", "-1")
-    })
-  }
-})
-
 const emit = defineEmits(["emit-click"])
+
+const onFocusOut = (e, index, length) => {
+  const checkTabbingBackward =
+    e.relatedTarget &&
+    e.relatedTarget.compareDocumentPosition(e.target) & Node.DOCUMENT_POSITION_PRECEDING
+  const isTabbingBackward = !!!checkTabbingBackward
+
+  const itemLength = length - 1
+
+  // tabbing forward
+  if (itemLength === index && !isTabbingBackward) {
+    const parentMenu = e.target.parentElement.parentElement.parentElement.parentElement
+    if (parentMenu) {
+      parentMenu.nextElementSibling.focus()
+      //parentMenu.focus()
+      const enterEvent = new KeyboardEvent("keydown", {
+        key: "Enter",
+        code: "Enter",
+        keyCode: 13,
+        which: 13,
+        bubbles: true,
+      })
+      parentMenu.dispatchEvent(enterEvent)
+    }
+  }
+
+  // tabbing backward
+  if (index === 0 && isTabbingBackward) {
+    const parentMenu = e.target.parentElement.parentElement.parentElement.parentElement
+    if (parentMenu) {
+      parentMenu.previousElementSibling.focus()
+      //parentMenu.focus()
+      const enterEvent = new KeyboardEvent("keydown", {
+        key: "Enter",
+        code: "Enter",
+        keyCode: 13,
+        which: 13,
+        bubbles: true,
+      })
+      parentMenu.dispatchEvent(enterEvent)
+    }
+  }
+}
 </script>
 
 <template>
-  <!-- <Menu :model="props.model" ref="menuRef">
-    <template #item="{ item: itemMenu }"> -->
   <div class="nav-sub-menu">
     <VFlexibleLink
-      v-for="itemMenu in props.model"
+      v-for="(itemMenu, index) in props.model"
       :key="itemMenu.id"
       raw
       :to="itemMenu.url"
       @keydown.enter="() => navigateTo(itemMenu.url)"
+      @focusout="onFocusOut($event, index, props.model.length)"
       class="w-full menu-item"
       role="menuitem"
       @flexible-link-click="
@@ -80,8 +110,6 @@ const emit = defineEmits(["emit-click"])
       </Button>
     </VFlexibleLink>
   </div>
-  <!-- </template>
-  </Menu> -->
 </template>
 
 <style lang="scss">
