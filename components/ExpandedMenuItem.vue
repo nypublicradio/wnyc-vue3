@@ -42,6 +42,7 @@ const emit = defineEmits(["emit-click"])
           severity="secondary"
           size="small"
           variant="link"
+          tabindex="-1"
         />
       </VFlexibleLink>
     </div>
