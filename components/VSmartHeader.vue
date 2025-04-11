@@ -1,6 +1,6 @@
 <script setup>
 import { useScroll } from "@vueuse/core"
-import { onMounted, ref, shallowRef, watch } from "vue"
+import { ref, watch } from "vue"
 
 const props = defineProps({
   /**
@@ -44,6 +44,13 @@ const props = defineProps({
   reverse: {
     default: false,
     type: Boolean,
+  },
+  /**
+   * animation name
+   */
+  transitionName: {
+    default: "v-smart-header-minimize",
+    type: String,
   },
 })
 
@@ -92,7 +99,7 @@ watch(
 </script>
 
 <template>
-  <Transition name="v-smart-header-minimize">
+  <Transition :name="props.transitionName">
     <div v-show="!isMinimized" class="v-smart-header">
       <slot />
     </div>

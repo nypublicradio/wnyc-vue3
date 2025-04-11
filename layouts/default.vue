@@ -55,6 +55,7 @@ watch(
           class="the-smart-header-browser"
           headerHeightCssVar="var(--header-height)"
           reverse
+          transitionName="fade"
         >
           <TheHeader />
         </VSmartHeader>
@@ -66,7 +67,7 @@ watch(
         <slot />
       </div>
     </main>
-    <BottomMenu />
+    <BottomMenu v-if="isApp" />
     <footer v-if="!isApp">
       <TheFooter />
     </footer>
