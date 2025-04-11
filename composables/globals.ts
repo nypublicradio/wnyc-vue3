@@ -66,7 +66,7 @@ export const showTopics = [
         label: 'News',
         value: 'news',
         url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-news&api_key=atc',
-        color: 'var(--p-primary-500)',
+        color: 'var(--p-primary-color)',
     },
     {
         label: 'Politics',
