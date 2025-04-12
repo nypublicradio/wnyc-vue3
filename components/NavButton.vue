@@ -25,13 +25,27 @@ const props = defineProps({
     default: "normal",
     validator: (value: string) => ["normal", "small", "large"].includes(value),
   },
+  fontWeight: {
+    type: String,
+    default: "400",
+  },
+  rounded: {
+    type: Boolean,
+    default: true,
+  },
+  buttonClass: {
+    type: String,
+    default: "",
+  },
 })
+
 const emit = defineEmits([
   "emit-click",
   "emit-mouseenter",
   "emit-mouseenter-key",
   "emit-mouseleave",
 ])
+const fontWeight = ref(props.fontWeight)
 const hasMenuSlot = ref(!!useSlots().menu)
 const op = ref()
 
@@ -87,9 +101,12 @@ const handleMouseLeave = () => {
       :variant="props.variant"
       :severity="props.severity"
       tabindex="-1"
+      :rounded="props.rounded"
+      :class="props.buttonClass"
     >
       <template #icon>
         <slot name="icon" />
+        <slot name="image" />
       </template>
     </Button>
     <Popover ref="op" appendTo="self" v-if="hasMenuSlot">
@@ -116,21 +133,22 @@ const handleMouseLeave = () => {
       display: none;
     }
   }
-  &.bold {
-    .p-button {
-      .p-button-label {
-        font-weight: 600;
-      }
-    }
-  }
   .p-button {
     .p-button-label {
       pointer-events: none;
+      font-weight: v-bind(fontWeight);
     }
-    &:hover {
-      // background: none;
-      // border: none;
-      // outline: none;
+  }
+  &:focus {
+    .p-button:first-child:not(.nav-p-button) {
+      svg {
+        color: var(--p-button-link-hover-color);
+      }
+
+      .p-button-label {
+        color: var(--p-button-link-hover-color);
+        text-decoration: underline;
+      }
     }
   }
 }

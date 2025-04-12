@@ -22,12 +22,13 @@ const { headerNavigationData } = await useNavigationData()
         v-for="item in headerNavigationData"
         :key="item.id"
         :index="item.id"
-        class="bold inline relative"
+        class="inline relative"
         :class="item.class"
         size="normal"
         :label="item.label"
         trackingLocation="header main nav"
         :route="item.url"
+        fontWeight="600"
       >
         <template #menu v-if="item.items">
           <NavSubMenu :model="item?.items[0]" />

@@ -17,8 +17,10 @@ const submitForm = (event) => {
       <div class="grid content mb-5">
         <div class="col-12 xl:col mb-5">
           <div class="flex gap-5 flex-column">
-            <div class="flex gap-5 align-items-center">
-              <div class="w-5rem flex-none">
+            <div
+              class="flex flex-column gap-2 align-items-start md:flex-row md:gap-5 md:align-items-start"
+            >
+              <div class="w-5rem flex-none md:mt-1">
                 <WnycLogo class="wnyc-logo cursor-pointer" />
               </div>
               <div>
@@ -68,7 +70,13 @@ const submitForm = (event) => {
                 }
               "
             >
-              <Button :icon="item.icon" severity="secondary" size="large" rounded />
+              <Button
+                :icon="item.icon"
+                severity="secondary"
+                size="large"
+                rounded
+                tabindex="-1"
+              />
             </VFlexibleLink>
           </div>
           <div class="menu pt-6 flex flex-wrap md:flex-nowrap gap-4">
@@ -96,32 +104,15 @@ const submitForm = (event) => {
         class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter"
       >
         <div class="flex flex-wrap gap-3 -ml-2">
-          <VFlexibleLink
+          <NavButton
             v-for="item in footerLegalLinksData"
             :key="item.id"
-            raw
-            :to="item.url"
+            :label="item.label"
+            :route="item.url"
             class="footer-legal-links"
             :class="item.class"
-            @flexible-link-click="
-              () => {
-                trackClickEvent(
-                  `Click Tracking - ${item.label} Button`,
-                  'hamburger menu',
-                  `${item.label} Button`
-                )
-              }
-            "
-          >
-            <Button
-              raw
-              :label="item.label"
-              :aria-label="`${item.label} button`"
-              severity="secondary"
-              size="small"
-              variant="link"
-            />
-          </VFlexibleLink>
+            size="small"
+          />
         </div>
         <p class="flex-none mt-1">
           &copy; {{ getYear() }} New York Public Radio. All rights reserved.
@@ -187,10 +178,6 @@ const submitForm = (event) => {
   .footer-legal-links {
     .p-button {
       text-decoration: underline;
-
-      .p-button-label {
-        font-weight: 400;
-      }
     }
   }
 

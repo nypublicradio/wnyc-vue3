@@ -3,7 +3,7 @@
     <logo-nypr />
     <div class="bracket bracket-line" />
 
-    <VFlexibleLink to="https://www.wnyc.org/100" target="_blank">
+    <VFlexibleLink to="/home" target="_blank">
       <logo-wnyc />
     </VFlexibleLink>
     <VFlexibleLink to="http://gothamist.com/" target="_blank">
@@ -37,15 +37,11 @@
   align-items: center;
   gap: 1rem 1.25rem;
 
-  @include media('<xl') {
-    gap: 1rem 0.75rem;
-  }
-
-  @include media('<lg') {
+  @include media("<lg") {
     gap: 1rem 1rem;
   }
 
-  @include media('<sm') {
+  @include media("<sm") {
     gap: 1rem 0.65rem;
   }
 
@@ -77,13 +73,10 @@
       border-right: none;
       border-top: none;
       border-bottom: none;
-
-
     }
 
     &.bracket-left {
       border-right: none;
-
     }
 
     &.bracket-right {
