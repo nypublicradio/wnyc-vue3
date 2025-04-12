@@ -54,7 +54,44 @@ const onFocusOut = (e, index, length) => {
 
 <template>
   <div class="nav-sub-menu">
-    <VFlexibleLink
+    <NavButton
+      v-for="(itemMenu, index) in props.model"
+      :label="itemMenu.label"
+      :route="itemMenu.url"
+      :key="itemMenu.id"
+      class="w-full menu-item"
+      :class="itemMenu.class"
+      size="small"
+      :rounded="false"
+      @keydown.enter="() => navigateTo(itemMenu.url)"
+      @focusout="onFocusOut($event, index, props.model.length)"
+      buttonClass="nav-p-button"
+    >
+      <template #icon>
+        <VImage
+          v-if="itemMenu?.image && typeof itemMenu?.image === 'object'"
+          class="flex-none mr-3"
+          :alt="itemMenu.image.altText"
+          :src="itemMenu.image.template"
+          :height="60"
+          :width="60"
+          :ratio="[1, 1]"
+          :srcset="[2]"
+          style="height: 60px; width: 60px"
+          isDecorative
+        />
+        <img
+          v-else-if="itemMenu.image"
+          :alt="itemMenu.label"
+          :src="itemMenu.image"
+          class="flex-none mr-3"
+          style="width: 60px; height: 60px"
+          tabindex="-1"
+        />
+      </template>
+    </NavButton>
+
+    <!-- <VFlexibleLink
       v-for="(itemMenu, index) in props.model"
       :key="itemMenu.id"
       raw
@@ -108,7 +145,7 @@ const onFocusOut = (e, index, length) => {
           <div class="p-button-label">{{ itemMenu.label }}</div>
         </div>
       </Button>
-    </VFlexibleLink>
+    </VFlexibleLink> -->
   </div>
 </template>
 
@@ -134,16 +171,19 @@ const onFocusOut = (e, index, length) => {
     &:hover,
     &:focus {
       background-color: var(--header-submenu-background);
+      .p-button-label {
+        color: var(--p-button-link-hover-color);
+        text-decoration: underline;
+      }
     }
   }
-  .submenu-btn {
+  .p-button {
     width: 100%;
     justify-content: flex-start;
     border-radius: 0;
     padding: 0.5rem 1rem;
 
     .p-button-label {
-      font-weight: 400;
       text-align: left;
     }
   }

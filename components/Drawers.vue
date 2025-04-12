@@ -35,6 +35,7 @@ const currentUserProfile = useCurrentUserProfile()
       position="right"
       class="w-full style-mode-dark hamburger-drawer"
       id="settings-sidebar-browser"
+      :style="{ transition: 'transform 0.6s ease-in-out' }"
       @hide="
         () => {
           trackClickEvent(
