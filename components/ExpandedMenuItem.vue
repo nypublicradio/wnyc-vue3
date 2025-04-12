@@ -19,7 +19,6 @@ const emit = defineEmits(["emit-click"])
         :key="item.id"
         class="menu-item"
         :class="item.class"
-        size="small"
       />
     </div>
   </div>
@@ -29,6 +28,7 @@ const emit = defineEmits(["emit-click"])
 .expanded-menu-item {
   .menu-h1 {
     margin-bottom: 16px;
+    margin-left: 4px;
     @include media("<lg") {
       font-size: 0.813rem;
       text-transform: uppercase;
