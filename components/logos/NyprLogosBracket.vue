@@ -3,10 +3,10 @@
     <logo-nypr />
     <div class="bracket bracket-line" />
 
-    <VFlexibleLink to="/home" target="_blank">
+    <VFlexibleLink raw to="/home" target="_blank">
       <logo-wnyc />
     </VFlexibleLink>
-    <VFlexibleLink to="http://gothamist.com/" target="_blank">
+    <VFlexibleLink raw to="http://gothamist.com/" target="_blank">
       <logo-gothamist />
     </VFlexibleLink>
     <!-- <VFlexibleLink to="https://www.wnycstudios.org/" target="_blank">
@@ -15,7 +15,7 @@
     <!-- <VFlexibleLink to="https://www.wnyc.org/series/new-jersey-public-radio/" target="_blank">
       <logo-njpr />
     </VFlexibleLink> -->
-    <VFlexibleLink to="https://www.wqxr.org/" target="_blank" class="mt-1">
+    <VFlexibleLink raw to="https://www.wqxr.org/" target="_blank" class="mt-1">
       <logo-wqxr />
     </VFlexibleLink>
     <!-- <VFlexibleLink to="https://www.newsounds.org/" target="_blank">
@@ -85,7 +85,8 @@
   }
 
   .flexible-link {
-    &:hover {
+    &:hover,
+    &:focus {
       svg {
         path {
           fill: var(--p-primary-color) !important;
