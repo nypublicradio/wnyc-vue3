@@ -33,9 +33,8 @@ const currentUserProfile = useCurrentUserProfile()
       v-model:visible="settingsSideBarBrowser"
       :baseZIndex="10000"
       position="right"
-      class="w-full style-mode-dark hamburger-drawer"
+      class="w-full style-mode-dark hamburger-drawer-browser"
       id="settings-sidebar-browser"
-      :style="{ transition: 'transform 0.6s ease-in-out' }"
       @hide="
         () => {
           trackClickEvent(
@@ -48,12 +47,12 @@ const currentUserProfile = useCurrentUserProfile()
     >
       <template #header>
         <div
-          class="flex w-full align-items-start lg:align-items-center justify-content-between style-mode-dark p-2"
+          class="flex w-full align-items-start lg:align-items-center justify-content-between style-mode-dark p-2 pr-2 lg:pr-3"
         >
           <div
             class="flex gap-3 flex-column align-items-start lg:flex-row lg:align-items-center p-2"
           >
-            <WnycLogo class="flex-none w-6rem lg:w-8rem" />
+            <WnycLogo class="flex-none w-6rem lg:w-7rem" />
             <NavButton
               class="-ml-3 lg:ml-0"
               size="small"
@@ -262,7 +261,7 @@ const currentUserProfile = useCurrentUserProfile()
   background: var(--p-surface-25);
   border: none;
   .p-drawer-header {
-    padding: 0.75rem;
+    padding: 0.4rem 0.75rem;
     @include media("<lg") {
       padding: 0.5rem;
     }
@@ -298,10 +297,19 @@ const currentUserProfile = useCurrentUserProfile()
       background: var(--p-surface-950);
     }
   }
-  &.hamburger-drawer {
+  &.hamburger-drawer-browser {
+    transition: transform 0.4s ease-in-out;
+    @include media(">=lg") {
+      transition-delay: 0s;
+      transition: 0s linear;
+    }
     .p-drawer-header {
+      padding-right: 42px;
+      padding-left: 33px;
       border-bottom: 1px solid var(--p-text-color);
       @include media("<lg") {
+        padding-right: 10px;
+        padding-left: 10px;
         align-items: flex-start;
         .p-drawer-close-button {
           margin-top: 14px;

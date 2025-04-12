@@ -32,7 +32,7 @@ const handleLogoClick = () => {
 <template>
   <div class="the-header">
     <div class="top">
-      <section class="full-width">
+      <section class="full-width pr-3 md:pr-6">
         <div class="flex justify-content-between align-items-center">
           <div class="flex align-items-center">
             <WnycLogo
@@ -43,7 +43,7 @@ const handleLogoClick = () => {
               @keydown.space.prevent="handleLogoClick"
             />
           </div>
-          <div class="flex gap-3 sm:gap-4 align-items-center">
+          <div class="flex gap-2 sm:gap-4 align-items-center">
             <NavButton
               size="small"
               label="Get the App"
@@ -66,7 +66,7 @@ const handleLogoClick = () => {
                 <UserIcon />
               </template>
             </NavButton>
-            <DonateBtn class="-mr-2" />
+            <DonateBtn class="-mr-2 -ml-2 sm:ml-0" />
 
             <Button
               :disabled="!isNetworkConnected"
@@ -108,7 +108,7 @@ const handleLogoClick = () => {
     }
 
     .wnyc-logo {
-      width: 120px;
+      width: 7rem;
 
       @include media("<lg") {
         width: 100px;
@@ -116,6 +116,9 @@ const handleLogoClick = () => {
 
       @include media("<md") {
         width: 75px;
+      }
+      @include media("<400px") {
+        width: 50px;
       }
     }
 

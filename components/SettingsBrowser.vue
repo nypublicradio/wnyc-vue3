@@ -12,7 +12,7 @@ const config = useRuntimeConfig()
     class="settings-desktop style-mode-dark"
     :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
   >
-    <div class="menu py-4 px-4 lg:py-6 flex">
+    <div class="menu py-4 px-4 md:px-6 lg:py-6 flex">
       <ExpandedMenuItem
         v-for="item in allNavigationData"
         :key="item.id"
