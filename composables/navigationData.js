@@ -150,15 +150,15 @@ const allMenuData = [
             [
                 {
                     label: "Favorites",
-                    url: "/browse"
+                    url: "/saved"
                 },
                 {
                     label: "Followed Shows",
-                    url: "/browse"
+                    url: "/saved"
                 },
                 {
                     label: "Listening History",
-                    url: "/browse"
+                    url: "/saved"
                 },
             ],
         ],
