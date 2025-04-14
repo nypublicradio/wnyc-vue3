@@ -74,16 +74,9 @@ const handleMouseLeave = () => {
 }
 </script>
 <template>
-  <VFlexibleLink
-    @mouseenter="handleMouseEnter"
-    @keydown.enter.prevent="handleMouseEnterKey"
-    @mouseleave="handleMouseLeave"
-    class="nav-button flex-none"
-    :class="[$attrs.class]"
-    raw
-    :to="props.route"
-    :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
-    @flexible-link-click="
+  <VFlexibleLink @mouseenter="handleMouseEnter" @keydown.enter.prevent="handleMouseEnterKey"
+    @mouseleave="handleMouseLeave" class="nav-button flex-none" :class="[$attrs.class]" raw :to="props.route"
+    :aria-haspopup="hasMenuSlot ? 'true' : 'false'" @flexible-link-click="
       () => {
         emit('emit-click')
         trackClickEvent(
@@ -92,18 +85,9 @@ const handleMouseLeave = () => {
           `${props.label} Button`
         )
       }
-    "
-  >
-    <Button
-      :label="props.label"
-      :aria-label="`${props.label} button`"
-      :size="props.size"
-      :variant="props.variant"
-      :severity="props.severity"
-      tabindex="-1"
-      :rounded="props.rounded"
-      :class="props.buttonClass"
-    >
+    ">
+    <Button :label="props.label" :aria-label="`${props.label} button`" :size="props.size" :variant="props.variant"
+      :severity="props.severity" tabindex="-1" :rounded="props.rounded" :class="props.buttonClass">
       <template #icon>
         <slot name="icon" />
         <slot name="image" />
@@ -126,19 +110,28 @@ const handleMouseLeave = () => {
     border: none;
     background: none;
     box-shadow: none;
-    top: 0 !important;
+    top: 26px !important;
     left: 0 !important;
+
     &:before,
     &:after {
       display: none;
     }
+
+    .p-popover-content {
+      padding: 0;
+    }
   }
+
   .p-button {
+    z-index: 1002;
+
     .p-button-label {
       pointer-events: none;
       font-weight: v-bind(fontWeight);
     }
   }
+
   &:focus {
     .p-button:first-child:not(.nav-p-button) {
       svg {
