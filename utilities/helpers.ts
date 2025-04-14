@@ -387,12 +387,14 @@ export async function setStatusDarkMode(bool: boolean) {
  * helper function to toggle darkmode
  */
 export async function setDarkMode(bool: boolean) {
-  bool
+  // TEMP, no dark ode for browser yet
+  const dmBool = useIsApp().value ? bool : false
+  dmBool
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
-  await setStatusDarkMode(bool)
+  await setStatusDarkMode(dmBool)
   const isDarkMode = useIsDarkMode()
-  isDarkMode.value = bool
+  isDarkMode.value = dmBool
 }
 
 // function to get the EPISODE fallback image for the episode depending on darkmode
@@ -426,6 +428,8 @@ export const getTextSizePixel = (label) => {
 
 // detect system theme preference
 export const detectSystemDarkMode = () => {
+  // TEMP, no dark mode for browser yet
+  if (!useIsApp().value) return false
   return Boolean(
     window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
   )
