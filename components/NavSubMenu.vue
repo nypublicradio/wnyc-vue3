@@ -57,7 +57,7 @@ const onFocusOut = (e, index, length) => {
       <NavButton v-for="(itemMenu, index) in props.model" :label="itemMenu.label" :route="itemMenu.url"
         :key="itemMenu.id" class="w-full menu-item" :class="itemMenu.class" :rounded="false"
         @keydown.enter="() => navigateTo(itemMenu.url)" @focusout="onFocusOut($event, index, props.model.length)"
-        buttonClass="nav-p-button">
+        buttonClass="nav-p-button" @emit-click="() => emit('emit-click', itemMenu)">
         <template #icon>
           <VImage v-if="itemMenu?.image && typeof itemMenu?.image === 'object'" class="flex-none mr-3"
             :alt="itemMenu.image.altText" :src="itemMenu.image.template" :height="60" :width="60" :ratio="[1, 1]"

@@ -19,6 +19,7 @@ const emit = defineEmits(["emit-click"])
         :key="item.id"
         class="menu-item"
         :class="item.class"
+        @emit-click="() => emit('emit-click', item)"
       />
     </div>
   </div>
@@ -29,6 +30,7 @@ const emit = defineEmits(["emit-click"])
   .menu-h1 {
     margin-bottom: 16px;
     margin-left: 4px;
+
     @include media("<lg") {
       font-size: 0.813rem;
       text-transform: uppercase;
@@ -36,6 +38,7 @@ const emit = defineEmits(["emit-click"])
       margin-bottom: 8px;
     }
   }
+
   .menu-btn {
     .p-button-label {
       text-align: left;
