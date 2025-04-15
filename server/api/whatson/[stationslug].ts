@@ -51,7 +51,7 @@ const formatShowData = (apiResponse: any) => {
 		file: apiResponse.data[0].attributes['mobile-mp3'],
 		hls: apiResponse.data[0].attributes['hls'],
 		id,
-		image: imageData ? `https://media.wnyc.org/i/448/448/l/80/'${imageData.attributes.name}` : apiResponse.data[0].attributes['image-logo'],
+		image: imageData ? `https://media.wnyc.org/i/448/448/l/80/${imageData.attributes.name}` : apiResponse.data[0].attributes['image-logo'],
 		slug: apiResponse.data[0].attributes.slug,
 		station: apiResponse.data[0].attributes.name,
 		stationImage: apiResponse.data[0].attributes['image-logo'],
