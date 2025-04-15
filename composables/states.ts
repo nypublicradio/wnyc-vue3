@@ -169,13 +169,6 @@ const skipBackTrigger = false
  */
 export const useSkipBackTrigger = () => useState('useSkipBackTrigger', () => skipBackTrigger)
 
-
-const playerSeek = { bool: false, time: 20 }
-/**
- * Global state to trigger the skip back.
- */
-export const usePlayerSeek = () => useState('usePlayerSeek', (bool, time) => playerSeek)
-
 const currentStreamStation = 'wnyc-fm939'
 /**
  * Global state for the current streaming station / initial selection in the stream switcher dropdown. 

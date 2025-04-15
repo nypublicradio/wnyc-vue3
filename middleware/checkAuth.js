@@ -1,4 +1,4 @@
 import { getAndSetUserProfile } from '~/utilities/helpers'
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(() => {
     getAndSetUserProfile()
 })
