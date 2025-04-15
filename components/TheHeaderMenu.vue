@@ -25,7 +25,7 @@ const { headerNavigationData } = await useNavigationData()
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .bottom {
   //height: var(--header-bottom-height);
   background: var(--header-background);

@@ -124,8 +124,6 @@ const handleMouseLeave = () => {
   }
 
   .p-button {
-    z-index: 1002;
-
     .p-button-label {
       pointer-events: none;
       font-weight: v-bind(fontWeight);
