@@ -11,6 +11,7 @@ import {
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
 } from "~/composables/states"
+import { set } from "date-fns"
 
 const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
@@ -21,13 +22,29 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
+
+const scrollPosition = ref(0)
+
+const saveScrollPosition = () => {
+  scrollPosition.value = window.scrollY
+}
+const restoreScrollPosition = () => {
+  if (scrollPosition.value > 0) {
+    document.body.classList.remove('p-overflow-hidden')
+    window.scrollTo(0, parseInt(scrollPosition.value))
+    scrollPosition.value = 0
+  }
+}
+
 </script>
 
 <template>
   <div class="sidebars">
-    <Drawer v-model:visible="settingsSideBarBrowser" :baseZIndex="10000" position="right"
-      class="w-full style-mode-dark hamburger-drawer-browser" id="settings-sidebar-browser" @hide="
+    <Drawer v-model:visible="settingsSideBarBrowser" :baseZIndex="10000" position="right" blockScroll
+      @show="saveScrollPosition" class="w-full style-mode-dark hamburger-drawer-browser" id="settings-sidebar-browser"
+      @hide="
         () => {
+          restoreScrollPosition()
           trackClickEvent(
             'Click Tracking - Settings Sidebar Browser Close Button',
             'Settings Sidebar Browser',
