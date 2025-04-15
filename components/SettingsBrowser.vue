@@ -8,19 +8,28 @@ const config = useRuntimeConfig()
 </script>
 
 <template>
-  <div class="settings-desktop style-mode-dark" :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]">
+  <div
+    class="settings-desktop style-mode-dark"
+    :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
+  >
     <div class="flex flex-column gap-3 py-4 px-4 lg:hidden">
       <SettingsBrowserButtons />
     </div>
     <div class="menu py-4 px-4 md:px-6 lg:py-6 flex">
-      <ExpandedMenuItem v-for="item in allNavigationData" :key="item.id" :item="item"
-        :class="`menu-holder ${item.class}`" :menuData="item" @emit-click="settingsSideBarBrowser = false" />
-      <section class="footer mb-4">
-        <WnycLogo style="fill: var(--bw-toggle)" />
-        <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
-        <p>Version {{ config.public.APP_VERSION }}</p>
-      </section>
+      <ExpandedMenuItem
+        v-for="item in allNavigationData"
+        :key="item.id"
+        :item="item"
+        :class="`menu-holder ${item.class}`"
+        :menuData="item"
+        @emit-click="settingsSideBarBrowser = false"
+      />
     </div>
+    <section class="footer mb-4">
+      <WnycLogo style="fill: var(--bw-toggle)" />
+      <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
+      <p>Version {{ config.public.APP_VERSION }}</p>
+    </section>
   </div>
 </template>
 
@@ -59,7 +68,6 @@ const config = useRuntimeConfig()
       }
 
       &.account {
-
         .logout,
         .manage {
           display: none;
@@ -71,7 +79,6 @@ const config = useRuntimeConfig()
   &.logged-in {
     .menu-holder {
       &.account {
-
         .login,
         .signup {
           display: none;

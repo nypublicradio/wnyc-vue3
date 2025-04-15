@@ -8,14 +8,16 @@ const props = defineProps({
 
 const emit = defineEmits(["emit-click"])
 
+// handle the focus out event
 const onFocusOut = (e, index, length) => {
   const checkTabbingBackward =
     e.relatedTarget &&
     e.relatedTarget.compareDocumentPosition(e.target) & Node.DOCUMENT_POSITION_PRECEDING
-  const isTabbingBackward = !!!checkTabbingBackward
+  const isTabbingBackward = !Boolean(checkTabbingBackward)
 
   const itemLength = length - 1
-  const parentMenu = e.target.parentElement.parentElement.parentElement.parentElement.parentElement
+  const parentMenu =
+    e.target.parentElement.parentElement.parentElement.parentElement.parentElement
   // tabbing forward
   if (itemLength === index && !isTabbingBackward) {
     if (parentMenu) {
@@ -54,16 +56,40 @@ const onFocusOut = (e, index, length) => {
   <div class="nav-sub-menu-holder">
     <div class="blank-spacer"></div>
     <div class="nav-sub-menu">
-      <NavButton v-for="(itemMenu, index) in props.model" :label="itemMenu.label" :route="itemMenu.url"
-        :key="itemMenu.id" class="w-full menu-item" :class="itemMenu.class" :rounded="false"
-        @keydown.enter="() => navigateTo(itemMenu.url)" @focusout="onFocusOut($event, index, props.model.length)"
-        buttonClass="nav-p-button" @emit-click="() => emit('emit-click', itemMenu)">
+      <NavButton
+        v-for="(itemMenu, index) in props.model"
+        :label="itemMenu.label"
+        :route="itemMenu.url"
+        :key="itemMenu.id"
+        class="w-full menu-item"
+        :class="itemMenu.class"
+        :rounded="false"
+        @keydown.enter="() => navigateTo(itemMenu.url)"
+        @focusout="onFocusOut($event, index, props.model.length)"
+        buttonClass="nav-p-button"
+        @emit-click="() => emit('emit-click', itemMenu)"
+      >
         <template #icon>
-          <VImage v-if="itemMenu?.image && typeof itemMenu?.image === 'object'" class="flex-none mr-3"
-            :alt="itemMenu.image.altText" :src="itemMenu.image.template" :height="60" :width="60" :ratio="[1, 1]"
-            :srcset="[2]" style="height: 60px; width: 60px" isDecorative />
-          <img v-else-if="itemMenu.image" :alt="itemMenu.label" :src="itemMenu.image" class="flex-none mr-3"
-            style="width: 60px; height: 60px" tabindex="-1" />
+          <VImage
+            v-if="itemMenu?.image && typeof itemMenu?.image === 'object'"
+            class="flex-none mr-3"
+            :alt="itemMenu.image.altText"
+            :src="itemMenu.image.template"
+            :height="60"
+            :width="60"
+            :ratio="[1, 1]"
+            :srcset="[2]"
+            style="height: 60px; width: 60px"
+            isDecorative
+          />
+          <img
+            v-else-if="itemMenu.image"
+            :alt="itemMenu.label"
+            :src="itemMenu.image"
+            class="flex-none mr-3"
+            style="width: 60px; height: 60px"
+            tabindex="-1"
+          />
         </template>
       </NavButton>
     </div>
@@ -84,7 +110,6 @@ const onFocusOut = (e, index, length) => {
   }
 
   .nav-sub-menu {
-
     position: absolute;
     border: none;
     -webkit-border-radius: 0 0 20px 20px;

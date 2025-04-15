@@ -36,6 +36,7 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
     }
 };
 
+// TODO: implement publisher api to get staff data
 const getPublisherStaffData = async (staffSlug: string) => {
     console.error('Publisher API not implemented yet to get data for:', staffSlug);
     //todo: call publisher api to get staff data with article list

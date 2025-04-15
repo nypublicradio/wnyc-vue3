@@ -5,6 +5,7 @@ import { cmsSources } from '~/composables/globals'
 
 const config = useRuntimeConfig()
 
+// format the show data from API response
 const formatShowData = (apiResponse: any) => {
 	const showData = apiResponse?.included?.find((obj) => obj.type === 'show')
 	const scheduleData = apiResponse?.included?.find((obj) => obj.type === 'show-schedule')
@@ -80,6 +81,7 @@ const formatShowData = (apiResponse: any) => {
 	}
 };
 
+// Fetch the livestream data from the API
 const getLivestream = async (slug: string) => {
 	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
 	return humps.camelizeKeys(formatShowData(res.data))
