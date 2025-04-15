@@ -18,7 +18,9 @@ const props = defineProps({
     default: "link",
   },
   route: {
+    required: true,
     type: String,
+    default: "/home",
   },
   size: {
     type: String,
@@ -46,9 +48,10 @@ const emit = defineEmits([
   "emit-mouseleave",
 ])
 const fontWeight = ref(props.fontWeight)
-const hasMenuSlot = ref(!!useSlots().menu)
+const hasMenuSlot = ref(Boolean(useSlots().menu))
 const op = ref()
 
+// handle the pressing of the enter key
 const handleMouseEnterKey = (event: MouseEvent) => {
   if (hasMenuSlot.value) {
     if (op?.value?.visible) {
@@ -59,13 +62,14 @@ const handleMouseEnterKey = (event: MouseEvent) => {
   }
   emit("emit-mouseenter-key", event)
 }
+// handle the mouseenter hover event
 const handleMouseEnter = (event: MouseEvent) => {
   if (hasMenuSlot.value) {
     op?.value.show(event)
   }
   emit("emit-mouseenter", event)
 }
-
+// handle the mouseleave event
 const handleMouseLeave = () => {
   if (hasMenuSlot.value) {
     op?.value.hide()
@@ -74,9 +78,16 @@ const handleMouseLeave = () => {
 }
 </script>
 <template>
-  <VFlexibleLink @mouseenter="handleMouseEnter" @keydown.enter.prevent="handleMouseEnterKey"
-    @mouseleave="handleMouseLeave" class="nav-button flex-none" :class="[$attrs.class]" raw :to="props.route"
-    :aria-haspopup="hasMenuSlot ? 'true' : 'false'" @flexible-link-click="
+  <VFlexibleLink
+    @mouseenter="handleMouseEnter"
+    @keydown.enter.prevent="handleMouseEnterKey"
+    @mouseleave="handleMouseLeave"
+    class="nav-button flex-none"
+    :class="[$attrs.class]"
+    raw
+    :to="props.route"
+    :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
+    @flexible-link-click="
       () => {
         emit('emit-click')
         trackClickEvent(
@@ -85,9 +96,18 @@ const handleMouseLeave = () => {
           `${props.label} Button`
         )
       }
-    ">
-    <Button :label="props.label" :aria-label="`${props.label} button`" :size="props.size" :variant="props.variant"
-      :severity="props.severity" tabindex="-1" :rounded="props.rounded" :class="props.buttonClass">
+    "
+  >
+    <Button
+      :label="props.label"
+      :aria-label="`${props.label} button`"
+      :size="props.size"
+      :variant="props.variant"
+      :severity="props.severity"
+      tabindex="-1"
+      :rounded="props.rounded"
+      :class="props.buttonClass"
+    >
       <template #icon>
         <slot name="icon" />
         <slot name="image" />

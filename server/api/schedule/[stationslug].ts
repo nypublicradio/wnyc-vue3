@@ -24,6 +24,7 @@ const removeFutureShows = (schedule: any) => {
     return filteredSchedule;
 };
 
+//Get schedule for a specific date
 const getSchedule = async (slug: string, schedDate: string) => {
     const options = {
         method: 'GET',
