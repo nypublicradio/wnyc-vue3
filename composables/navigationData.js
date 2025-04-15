@@ -1,4 +1,3 @@
-import { url } from "@vuelidate/validators"
 import { logOutUser } from "~/utilities/helpers"
 
 const allMenuData = [

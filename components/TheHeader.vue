@@ -4,7 +4,6 @@ import { trackClickEvent } from "~/utilities/helpers"
 import {
   useSettingsSideBarBrowser,
   useIsNetworkConnected,
-  useIsApp,
   useCurrentUser,
   useCurrentUserProfile,
 } from "~/composables/states.ts"
@@ -20,7 +19,6 @@ const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-const isApp = useIsApp()
 
 // handle when the logo is clicked
 const handleLogoClick = () => {
@@ -117,6 +115,7 @@ const handleLogoClick = () => {
       @include media("<md") {
         width: 75px;
       }
+
       @include media("<400px") {
         width: 50px;
       }

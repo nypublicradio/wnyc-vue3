@@ -11,7 +11,6 @@ import {
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
 } from "~/composables/states"
-import { set } from "date-fns"
 
 const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
