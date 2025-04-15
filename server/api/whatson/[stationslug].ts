@@ -4,10 +4,6 @@ import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
 
 const config = useRuntimeConfig()
-const getLivestream = async (slug: string) => {
-	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-	return humps.camelizeKeys(formatShowData(res.data))
-}
 
 const formatShowData = (apiResponse: any) => {
 	const showData = apiResponse?.included?.find((obj) => obj.type === 'show')
@@ -55,7 +51,7 @@ const formatShowData = (apiResponse: any) => {
 		file: apiResponse.data[0].attributes['mobile-mp3'],
 		hls: apiResponse.data[0].attributes['hls'],
 		id,
-		image: imageData ? 'https://media.wnyc.org/i/448/448/l/80/' + imageData.attributes.name : apiResponse.data[0].attributes['image-logo'],
+		image: imageData ? `https://media.wnyc.org/i/448/448/l/80/'${imageData.attributes.name}` : apiResponse.data[0].attributes['image-logo'],
 		slug: apiResponse.data[0].attributes.slug,
 		station: apiResponse.data[0].attributes.name,
 		stationImage: apiResponse.data[0].attributes['image-logo'],
@@ -84,9 +80,12 @@ const formatShowData = (apiResponse: any) => {
 	}
 };
 
+const getLivestream = async (slug: string) => {
+	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
+	return humps.camelizeKeys(formatShowData(res.data))
+}
 
-
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
 	const slug: string | undefined = event?.context?.params?.stationslug;
 	if (slug) {
 		return getLivestream(slug);
