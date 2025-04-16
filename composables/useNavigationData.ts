@@ -10,11 +10,21 @@ let donateButtonData = null;
 let fetchStatus = null;
 let fetchError = null;
 
+// strip https://www.wnyc.org from the url for local routes
+const stripWNYCUrl = (url) => {
+    if (url) {
+        const strippedUrl = url.replace('https://www.wnyc.org', '');
+        return strippedUrl;
+    }
+    return url;
+};
+
 //normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => {
+
     return menuData.map((item) => ({
         label: item.value.title,
-        url: item.value.url,
+        url: stripWNYCUrl(item.value.url),
         icon: '',
         id: String(item.id),
         type: item.type,

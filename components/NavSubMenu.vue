@@ -54,7 +54,7 @@ const onFocusOut = (e, index, length) => {
 
 <template>
   <div class="nav-sub-menu-holder">
-    <div class="blank-spacer"></div>
+    <div class="blank-spacer" tabindex="-1"></div>
     <div class="nav-sub-menu">
       <NavButton
         v-for="(itemMenu, index) in props.model"
@@ -107,6 +107,7 @@ const onFocusOut = (e, index, length) => {
     min-width: 280px;
     margin-left: -12px;
     margin-top: 0;
+    cursor: default;
   }
 
   .nav-sub-menu {

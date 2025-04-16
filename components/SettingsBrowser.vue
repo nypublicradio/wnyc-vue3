@@ -12,7 +12,7 @@ const config = useRuntimeConfig()
     class="settings-desktop style-mode-dark"
     :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
   >
-    <div class="flex flex-column gap-3 py-4 px-4 lg:hidden">
+    <div class="flex flex-column gap-3 py-4 px-4 md:px-6 lg:py-6 lg:hidden">
       <SettingsBrowserButtons />
     </div>
     <div class="menu py-4 px-4 md:px-6 lg:py-6 flex">
@@ -44,6 +44,15 @@ const config = useRuntimeConfig()
 
   .menu {
     gap: 4rem;
+    @include media("<1010px") {
+      gap: 4rem 3rem;
+    }
+    @include media(">=1010px") {
+      gap: 4rem 1rem;
+    }
+    @include media(">=1025px") {
+      gap: 4rem;
+    }
     flex-wrap: wrap;
 
     .menu-holder {

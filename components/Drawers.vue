@@ -30,8 +30,8 @@ const saveScrollPosition = () => {
 }
 // restore the user to their saved scroll position
 const restoreScrollPosition = () => {
+  document.body.classList.remove("p-overflow-hidden")
   if (scrollPosition.value > 0) {
-    document.body.classList.remove("p-overflow-hidden")
     window.scrollTo(0, parseInt(scrollPosition.value))
     scrollPosition.value = 0
   }
@@ -67,9 +67,9 @@ const restoreScrollPosition = () => {
             class="flex flex-wrap gap-3 flex-column align-items-start lg:flex-row lg:align-items-center p-2"
           >
             <WnycLogo class="flex-none w-6rem lg:w-7rem" />
-            <template class="hidden lg:block">
+            <span class="hidden lg:flex gap-3">
               <SettingsBrowserButtons />
-            </template>
+            </span>
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
             <!-- <DarkModeIconToggleBtn class="hidden sm:flex" /> -->
@@ -290,12 +290,12 @@ const restoreScrollPosition = () => {
   }
 
   &.hamburger-drawer-browser {
-    transition: transform 0.4s ease-in-out;
+    // transition: transform 0.4s ease-in-out;
 
-    @include media(">=lg") {
-      transition-delay: 0s;
-      transition: 0s linear;
-    }
+    // @include media(">=lg") {
+    //   transition-delay: 0.4s;
+    //   transition: 0.4s ease-in-out;
+    // }
 
     .p-drawer-header {
       padding-right: 58px;

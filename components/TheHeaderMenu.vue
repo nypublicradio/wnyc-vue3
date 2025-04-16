@@ -6,6 +6,7 @@ import { useCurrentUser } from "~/composables/states.ts"
 const currentUser = useCurrentUser()
 
 const { headerNavigationData } = await useNavigationData()
+console.log("headerNavigationData", headerNavigationData)
 </script>
 
 <template>
@@ -13,10 +14,22 @@ const { headerNavigationData } = await useNavigationData()
     <section class="full-width py-0 -mt-2">
       <Divider class="my-0" />
     </section>
-    <section class="content full-width" :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]">
-      <NavButton v-for="item in headerNavigationData" :key="item.id" :index="item.id" class="inline relative"
-        :class="item.class" size="normal" :label="item.label" trackingLocation="header main nav" :route="item.url"
-        fontWeight="600">
+    <section
+      class="content full-width"
+      :class="[{ 'logged-in': currentUser, 'logged-out': !currentUser }]"
+    >
+      <NavButton
+        v-for="item in headerNavigationData"
+        :key="item.id"
+        :index="item.id"
+        class="inline relative"
+        :class="item.class"
+        size="normal"
+        :label="item.label"
+        trackingLocation="header main nav"
+        :route="item.url"
+        fontWeight="600"
+      >
         <template #menu v-if="item.items">
           <NavSubMenu :model="item?.items[0]" />
         </template>
@@ -42,7 +55,8 @@ const { headerNavigationData } = await useNavigationData()
       }
     }
 
-    &.logged-in {}
+    &.logged-in {
+    }
   }
 }
 </style>
