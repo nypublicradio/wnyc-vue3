@@ -27,6 +27,11 @@ watch(
     showAppSmartHeader.value = isApp.value
       ? pagesToShowAppSmartHeaderArray.includes(route.name as string)
       : true
+    // set the focus to the header
+    const header = document.querySelector("the-header")
+    if (header) {
+      header.focus()
+    }
   },
   { immediate: true }
 )

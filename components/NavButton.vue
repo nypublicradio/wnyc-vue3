@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { trackClickEvent } from "~/utilities/helpers"
+import { useIsApp } from "~/composables/states"
+
 const props = defineProps({
   label: {
     type: String,
@@ -47,6 +49,7 @@ const emit = defineEmits([
   "emit-mouseenter-key",
   "emit-mouseleave",
 ])
+const isApp = useIsApp()
 const fontWeight = ref(props.fontWeight)
 const hasMenuSlot = ref(Boolean(useSlots().menu))
 const op = ref()
@@ -79,13 +82,14 @@ const handleMouseLeave = () => {
 <template>
   <VFlexibleLink
     @mouseenter="handleMouseEnter"
-    @keydown.enter.prevent="handleMouseEnterKey"
+    @keydown.enter="handleMouseEnterKey"
     @mouseleave="handleMouseLeave"
     class="nav-button flex-none"
     :class="[$attrs.class]"
     raw
-    :to="props.route"
+    :to="hasMenuSlot ? null : props.route"
     :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
+    :tabindex="0"
     @flexible-link-click="
       () => {
         emit('emit-click')
@@ -105,7 +109,7 @@ const handleMouseLeave = () => {
       :severity="props.severity"
       tabindex="-1"
       :rounded="props.rounded"
-      :class="props.buttonClass"
+      :class="`${props.buttonClass} ${!isApp ? 'no-ripple' : ''}`"
     >
       <template #icon>
         <slot name="icon" />
@@ -143,6 +147,12 @@ const handleMouseLeave = () => {
   }
 
   .p-button {
+    // disable ripple on browser
+    &.no-ripple {
+      .p-ink {
+        display: none;
+      }
+    }
     .p-button-label {
       pointer-events: none;
       font-weight: v-bind(fontWeight);

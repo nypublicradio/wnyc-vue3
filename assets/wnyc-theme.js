@@ -330,10 +330,10 @@ const MyPreset = definePreset(Aura, {
   semantic: {
     transitionDuration: "0.25s",
     focusRing: {
-      width: "1px",
+      width: "2px",
       style: "solid",
       color: "{primary.color}",
-      offset: "2px",
+      offset: "4px",
       shadow: "none",
     },
     disabledOpacity: "0.6",
@@ -1172,7 +1172,7 @@ const MyPreset = definePreset(Aura, {
               hoverColor: "{surface-950}",
               activeColor: "{surface-950}",
               focusRing: {
-                color: "{surface.600}",
+                color: "{surface.0}",
                 shadow: "none",
               },
             },
