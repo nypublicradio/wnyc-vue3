@@ -54,11 +54,18 @@ const fontWeight = ref(props.fontWeight)
 const hasMenuSlot = ref(Boolean(useSlots().menu))
 const op = ref()
 
+// handle the closing of the popover
+const closePopover = () => {
+  if (hasMenuSlot.value) {
+    op?.value.hide()
+  }
+}
+
 // handle the pressing of the enter key
 const handleMouseEnterKey = (event: MouseEvent) => {
   if (hasMenuSlot.value) {
     if (op?.value?.visible) {
-      op?.value.hide()
+      closePopover()
     } else {
       op?.value.show(event)
     }
@@ -73,9 +80,7 @@ const handleMouseEnter = (event: MouseEvent) => {
 }
 // handle the mouseleave event
 const handleMouseLeave = () => {
-  if (hasMenuSlot.value) {
-    op?.value.hide()
-  }
+  closePopover()
   emit("emit-mouseleave")
 }
 </script>
@@ -92,6 +97,7 @@ const handleMouseLeave = () => {
     :tabindex="0"
     @flexible-link-click="
       () => {
+        closePopover()
         emit('emit-click')
         trackClickEvent(
           `Click Tracking - ${props.label} Button`,
