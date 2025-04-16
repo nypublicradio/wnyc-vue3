@@ -60,7 +60,6 @@ const handleMouseEnterKey = (event: MouseEvent) => {
       op?.value.show(event)
     }
   }
-  emit("emit-mouseenter-key", event)
 }
 // handle the mouseenter hover event
 const handleMouseEnter = (event: MouseEvent) => {
