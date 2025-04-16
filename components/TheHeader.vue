@@ -22,7 +22,6 @@ const currentUserProfile = useCurrentUserProfile()
 
 // handle when the logo is clicked
 const handleLogoClick = () => {
-  navigateTo("/home")
   trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
 }
 </script>
@@ -32,15 +31,15 @@ const handleLogoClick = () => {
     <div class="top">
       <section class="full-width pr-3 md:pr-6">
         <div class="flex justify-content-between align-items-center">
-          <div class="flex align-items-center">
-            <WnycLogo
-              class="wnyc-logo cursor-pointer"
-              tabindex="0"
-              @click="handleLogoClick"
-              @keydown.enter="handleLogoClick"
-              @keydown.space.prevent="handleLogoClick"
-            />
-          </div>
+          <NuxtLink
+            to="/home"
+            class="flex align-items-center"
+            aria-label="WNYC Home"
+            @click="handleLogoClick"
+            @keydown.enter="handleLogoClick"
+          >
+            <WnycLogo class="wnyc-logo" />
+          </NuxtLink>
           <div class="flex gap-2 sm:gap-4 align-items-center">
             <NavButton
               size="small"

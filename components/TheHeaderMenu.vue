@@ -6,7 +6,8 @@ import { useCurrentUser } from "~/composables/states.ts"
 const currentUser = useCurrentUser()
 
 const { headerNavigationData } = await useNavigationData()
-console.log("headerNavigationData", headerNavigationData)
+
+const emit = defineEmits(["emit-click"])
 </script>
 
 <template>
@@ -31,7 +32,7 @@ console.log("headerNavigationData", headerNavigationData)
         fontWeight="600"
       >
         <template #menu v-if="item.items">
-          <NavSubMenu :model="item?.items[0]" />
+          <NavSubMenu :model="item?.items[0]" @emit-click="emit('emit-click')" />
         </template>
       </NavButton>
     </section>
