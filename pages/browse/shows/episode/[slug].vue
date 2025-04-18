@@ -274,7 +274,7 @@ const getEpisodeImage = () => {
         <div class="flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="flex align-items-center gap-2">
             <PlayButton
-              v-if="!hasSegments"
+              v-if="!hasSegments && hasAudio(episodeData?.audio)"
               :label="getMinutes(episodeData?.estimatedDuration, 1)"
               :data="episodeData"
               @onClick="togglePlayHere(episodeData)"

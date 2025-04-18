@@ -31,7 +31,7 @@ export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promis
 			return 0;
 		}
 	} else {
-		console.error(`Failed to estimate duration of ${audioTrackUrl} because the audio URL is NULL or is an empty array`);
+		//console.error(`Failed to estimate duration of ${audioTrackUrl} because the audio URL is NULL or is an empty array`);
 		return 0
 	}
 });
