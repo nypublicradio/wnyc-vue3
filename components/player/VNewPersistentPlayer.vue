@@ -6,9 +6,7 @@ import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onMounted, ref, watch } from "vue"
-import {
-  useIsApp,
-} from "~/composables/states"
+import { useIsApp } from "~/composables/states"
 
 const props = defineProps({
   /**
@@ -212,10 +210,10 @@ const props = defineProps({
   /**
    * show the skip buttons
    */
-  // showSkip: {
-  //   default: true,
-  //   type: Boolean,
-  // },
+  showSkip: {
+    default: true,
+    type: Boolean,
+  },
   /**
    * show the skip buttons
    */
@@ -389,7 +387,8 @@ function handleSwipe() {
     }
   }
   if (props.canExpand && props.canUnexpandWithSwipe) {
-    if (isDraggingDown) {
+    // only swipe closes when the scroll position is at the top
+    if (isDraggingDown && expandedContentHolder.value.scrollTop === 0) {
       if (velocity > swipeThreshold) {
         //console.log('UNEXPAND')
         playerRef.value.addEventListener("touchmove", preventScrollOnTouch, {
@@ -544,8 +543,16 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="playerRef" class="persistent-player"
-    :class="[{ minimized: isMinimized }, { expanded: isExpanded }, { app: isApp }, { browser: !isApp }]">
+  <div
+    ref="playerRef"
+    class="persistent-player"
+    :class="[
+      { minimized: isMinimized },
+      { expanded: isExpanded },
+      { app: isApp },
+      { browser: !isApp },
+    ]"
+  >
     <!-- <i
       v-if="
         (props.canExpandWithSwipe && !isExpanded) ||
@@ -554,8 +561,13 @@ defineExpose({
       class="pi pi-minus drag-closer-line absolute"
     /> -->
     <div v-if="props.canMinimize" class="maximize-btn-holder">
-      <Button title="maximize Player" class="maximize-btn p-button-icon-only" :class="{ show: isMinimized }"
-        aria-label="maximize player" @click="toggleMinimize(!isMinimized)">
+      <Button
+        title="maximize Player"
+        class="maximize-btn p-button-icon-only"
+        :class="{ show: isMinimized }"
+        aria-label="maximize player"
+        @click="toggleMinimize(!isMinimized)"
+      >
         <img v-if="isEpisodePlaying" :src="soundAnimGif" alt="sounds wave animation" />
         <slot v-else name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
       </Button>
@@ -564,67 +576,112 @@ defineExpose({
     <Transition name="expand">
       <div v-show="!isExpanded">
         <div class="flex h-full align-items-center">
-          <div v-if="props.image" class="track-info-image flex-none"
-            :class="[{ hideImageOnMobile: props.hideImageOnMobile }]">
-            <div :class="[{ 'cursor-pointer': props.canClickAnywhere }]" @click="handleClickAnywhere">
-              <VFlexibleLink class="track-info-image-link" :to="props.titleLink ?? null" raw
-                :title="props.titleLink ?? null" @flexible-link-click="emit('image-click')">
-                <VImage :src="props.image" :width="props.imageSize" :height="props.imageSize"
-                  :sizes="`xs:${props.imageSize * 2}px`" :alt-text="props.title" :ratio="[1, 1]" role="presentation" />
+          <div
+            v-if="props.image"
+            class="track-info-image flex-none"
+            :class="[{ hideImageOnMobile: props.hideImageOnMobile }]"
+          >
+            <div
+              :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
+              @click="handleClickAnywhere"
+            >
+              <VFlexibleLink
+                class="track-info-image-link"
+                :to="props.titleLink ?? null"
+                raw
+                :title="props.titleLink ?? null"
+                @flexible-link-click="emit('image-click')"
+              >
+                <VImage
+                  :src="props.image"
+                  :width="props.imageSize"
+                  :height="props.imageSize"
+                  :sizes="`xs:${props.imageSize * 2}px`"
+                  :alt-text="props.title"
+                  :ratio="[1, 1]"
+                  role="presentation"
+                />
               </VFlexibleLink>
             </div>
           </div>
 
           <div class="flex h-full w-full align-items-center gap-2 px-2 relative">
-            <VNewTrackInfo v-bind="{ ...$props, ...$attrs }" :livestream="isLiveStream"
-              :class="[{ 'cursor-pointer': props.canClickAnywhere }]" @description-click="emit('description-click')"
-              @title-click="emit('title-click')" @click="handleClickAnywhere" />
-            <!-- <Transition name="skipBtnL">
+            <VNewTrackInfo
+              v-bind="{ ...$props, ...$attrs }"
+              :livestream="isLiveStream"
+              :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
+              @description-click="emit('description-click')"
+              @title-click="emit('title-click')"
+              @click="handleClickAnywhere"
+            />
+            <Transition name="skipBtnL">
               <Button
                 v-if="props.showSkip && !isLiveStream"
-                class="media-button flex-none p-button-icon-only"
+                class="media-button flex-none p-button-icon-only skip-btn"
                 severity="secondary"
                 @click="skipBack"
               >
                 <slot name="skipBack"><i class="pi pi-undo"></i></slot>
               </Button>
-            </Transition> -->
-            <Button ref="playButtonRef" :disabled="isStreamLoading" class="media-button play-button p-button-icon-only"
-              :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'" @click="togglePlay" severity="secondary">
+            </Transition>
+            <Button
+              ref="playButtonRef"
+              :disabled="isStreamLoading"
+              class="media-button play-button p-button-icon-only"
+              :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+              @click="togglePlay"
+              severity="secondary"
+            >
               <slot v-if="isStreamLoading" name="loading">
                 <i class="pi pi-spin pi-spinner"></i>
               </slot>
-              <slot v-else-if="!isEpisodePlaying" name="play"><i class="pi pi-play"></i></slot>
+              <slot v-else-if="!isEpisodePlaying" name="play"
+                ><i class="pi pi-play"></i
+              ></slot>
               <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
             </Button>
-            <!-- <Transition name="skipBtnR">
+            <Transition name="skipBtnR">
               <Button
                 v-if="props.showSkip && !isLiveStream"
-                class="media-button flex-none p-button-icon-only p-button-secondary"
+                class="media-button flex-none p-button-icon-only p-button-secondary skip-btn"
                 severity="secondary"
                 @click="skipAhead"
               >
                 <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
               </Button>
-            </Transition> -->
-            <player-v-timeline v-if="!isLiveStream" :currentEpisodeProgress :currentEpisodeDuration :isLiveStream
-              minimized />
+            </Transition>
+            <player-v-timeline
+              v-if="!isLiveStream"
+              :currentEpisodeProgress
+              :currentEpisodeDuration
+              :isLiveStream
+              minimized
+            />
           </div>
         </div>
       </div>
     </Transition>
 
-    <Button v-if="props.canMinimize && !props.canClickAnywhere" title="Minimize Player"
-      class="minimize-btn p-button-icon-only p-button-text p-button-secondary" aria-label="minimize player"
-      @click="toggleMinimize(!isMinimized)">
+    <Button
+      v-if="props.canMinimize && !props.canClickAnywhere"
+      title="Minimize Player"
+      class="minimize-btn p-button-icon-only p-button-text p-button-secondary"
+      aria-label="minimize player"
+      @click="toggleMinimize(!isMinimized)"
+    >
       <slot name="chevronDown">
         <i class="pi pi-chevron-down"></i>
       </slot>
     </Button>
 
-    <Button v-if="props.canExpand && !isExpanded && !props.canClickAnywhere" title="Expand Player"
-      class="expand-btn p-button-icon-only p-button-text p-button-secondary" :class="{ show: isExpanded }"
-      aria-label="expand player" @click="toggleExpanded(!isExpanded)">
+    <Button
+      v-if="props.canExpand && !isExpanded && !props.canClickAnywhere"
+      title="Expand Player"
+      class="expand-btn p-button-icon-only p-button-text p-button-secondary"
+      :class="{ show: isExpanded }"
+      aria-label="expand player"
+      @click="toggleExpanded(!isExpanded)"
+    >
       <slot name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
     </Button>
 
@@ -634,14 +691,25 @@ defineExpose({
           <div class="header">
             <slot name="expanded-header">
               <div class="flex justify-content-between">
-                <Button class="unexpand-btn p-button-icon-only p-button-text p-button-secondary"
-                  aria-label="close expanded player button" @click="toggleExpanded(!isExpanded)">
+                <Button
+                  class="unexpand-btn p-button-icon-only p-button-text p-button-secondary"
+                  aria-label="close expanded player button"
+                  @click="toggleExpanded(!isExpanded)"
+                >
                   <slot name="unexpanded-button-icon">
                     <i class="pi pi-chevron-down" />
                   </slot>
                 </Button>
-                <Button v-if="props.showCast" id="castBtn" severity="secondary" text rounded aria-label="Google Cast"
-                  class="cast-btn header-cast-btn" @click="handleCast">
+                <Button
+                  v-if="props.showCast"
+                  id="castBtn"
+                  severity="secondary"
+                  text
+                  rounded
+                  aria-label="Google Cast"
+                  class="cast-btn header-cast-btn"
+                  @click="handleCast"
+                >
                   <GoogleCastIcon />
                 </Button>
               </div>
@@ -652,9 +720,17 @@ defineExpose({
 
             <div class="flex flex-column gap-3">
               <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
-              <VImage :src="props.image" :alt="`${props.title} show image`" :width="props.imageSizeExpanded"
-                :height="props.imageSizeExpanded" :sizes="`xs:${props.imageSize * 2}px`" class="show-image m-auto"
-                :ratio="[1, 1]" role="presentation" style="background-color: #ffffff" />
+              <VImage
+                :src="props.image"
+                :alt="`${props.title} show image`"
+                :width="props.imageSizeExpanded"
+                :height="props.imageSizeExpanded"
+                :sizes="`xs:${props.imageSize * 2}px`"
+                class="show-image m-auto"
+                :ratio="[1, 1]"
+                role="presentation"
+                style="background-color: #ffffff"
+              />
 
               <div v-if="isLiveStream" class="flex flex-column gap-2">
                 <div class="live flex gap-2 align-items-center">
@@ -672,31 +748,50 @@ defineExpose({
             </div>
 
             <div class="expandedViewPlayer mt-5">
-              <player-v-timeline v-if="!isLiveStream" :currentEpisodeProgress :currentEpisodeDuration :isLiveStream
+              <player-v-timeline
+                v-if="!isLiveStream"
+                :currentEpisodeProgress
+                :currentEpisodeDuration
+                :isLiveStream
                 @scrub-timeline-end="emit('scrub-timeline-end', $event)"
                 @scrub-timeline-change="emit('scrub-timeline-change', $event)"
-                @scrub-timeline-click="emit('scrub-timeline-click', $event)" />
+                @scrub-timeline-click="emit('scrub-timeline-click', $event)"
+              />
 
               <div class="mt-2 flex justify-content-center align-items-center gap-2">
                 <Transition name="skipBtnL">
-                  <Button v-if="!isLiveStream" class="media-button flex-none p-button-icon-only" severity="secondary"
-                    @click="skipBack">
+                  <Button
+                    v-if="!isLiveStream"
+                    class="media-button flex-none p-button-icon-only"
+                    severity="secondary"
+                    @click="skipBack"
+                  >
                     <slot name="skipBack"><i class="pi pi-undo"></i></slot>
                   </Button>
                 </Transition>
-                <Button ref="playButtonRef" :disabled="isStreamLoading"
+                <Button
+                  ref="playButtonRef"
+                  :disabled="isStreamLoading"
                   class="media-button media-button-expanded-play play-button p-button-icon-only"
-                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'" @click="togglePlay"
-                  severity="secondary">
+                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+                  @click="togglePlay"
+                  severity="secondary"
+                >
                   <slot v-if="isStreamLoading" name="loading">
                     <i class="pi pi-spin pi-spinner"></i>
                   </slot>
-                  <slot v-else-if="!isEpisodePlaying" name="play"><i class="pi pi-play"></i></slot>
+                  <slot v-else-if="!isEpisodePlaying" name="play"
+                    ><i class="pi pi-play"></i
+                  ></slot>
                   <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
                 </Button>
                 <Transition name="skipBtnR">
-                  <Button v-if="!isLiveStream" class="media-button flex-none p-button-icon-only p-button-secondary"
-                    severity="secondary" @click="skipAhead">
+                  <Button
+                    v-if="!isLiveStream"
+                    class="media-button flex-none p-button-icon-only p-button-secondary"
+                    severity="secondary"
+                    @click="skipAhead"
+                  >
                     <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
                   </Button>
                 </Transition>
@@ -730,7 +825,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   flex-direction: column;
 
   &.minimized {
-    bottom: calc(calc(var(--persistent-player-height) * -1) - var(--persistent-player-height-buffer));
+    bottom: calc(
+      calc(var(--persistent-player-height) * -1) - var(--persistent-player-height-buffer)
+    );
   }
 
   &.expanded {
@@ -920,7 +1017,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 
 .persistent-player {
-
   // .media-player {
   media-controls {
     // override inline pointer-events: none which stops the image click
@@ -1007,6 +1103,12 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       .pause-icon {
         width: 11px;
         height: 13px;
+      }
+    }
+
+    &.skip-btn {
+      @include media("<=lg") {
+        display: none;
       }
     }
 
