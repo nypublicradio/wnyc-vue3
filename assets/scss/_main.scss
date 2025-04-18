@@ -61,7 +61,7 @@ body {
   main {
     transition: padding-top var(--p-transition-duration) ease;
     padding-bottom: calc(
-      $bottomMenuHeight + $playerHeight + env(safe-area-inset-bottom) + 20px
+      $bottomMenuHeight + var(--persistent-player-height) + env(safe-area-inset-bottom) + 20px
     ); // account for the sticky bottom menu
   }
   &.no-bottom-padding {

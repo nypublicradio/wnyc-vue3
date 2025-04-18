@@ -1,8 +1,12 @@
 :root,
 [data-style-mode='light'],
 .style-mode-light {
-    --persistent-player-image-size: 60px;
-    --persistent-player-height: 60px;
+    --persistent-player-height: #{$playerHeightBrowser};
+    @include media('<=lg') {
+        --persistent-player-height: #{$playerHeight};
+    }
+    --persistent-player-image-size: var(--persistent-player-height);
+
     --persistent-player-padding: 0px 1rem 0 0 !important;
     --persistent-player-height-buffer: 20px;
     --persistent-player-bg: var(--p-surface-0);
