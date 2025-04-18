@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { getYear, trackClickEvent } from "~/utilities/helpers"
-import { useIsEpisodePlaying } from "~/composables/states"
+import { useCurrentEpisode } from "~/composables/states"
 import { allSocialData } from "~/composables/navigationData.js"
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
-const isEpisodePlaying = useIsEpisodePlaying()
+const isCurrentEpisode = useCurrentEpisode()
 // placeholder function for submitting the form
 const submitForm = (event) => {
   event.preventDefault()
@@ -13,11 +13,13 @@ const submitForm = (event) => {
 <template>
   <section class="the-footer style-mode-dark py-5 overflow-hidden relative">
     <LogoWnyc3d class="logo3d" />
-    <div :class="[{ 'is-playing': isEpisodePlaying }]">
+    <div :class="[{ 'is-playing': isCurrentEpisode }]">
       <div class="grid content mb-5">
         <div class="col-12 xl:col mb-5">
           <div class="flex gap-5 flex-column">
-            <div class="flex flex-column gap-2 align-items-start md:flex-row md:gap-5 md:align-items-start">
+            <div
+              class="flex flex-column gap-2 align-items-start md:flex-row md:gap-5 md:align-items-start"
+            >
               <div class="w-5rem flex-none md:mt-1">
                 <WnycLogo class="wnyc-logo cursor-pointer" />
               </div>
@@ -53,25 +55,44 @@ const submitForm = (event) => {
         <div class="col">
           <div class="social flex gap-3 align-items-center">
             <p>Connect with us!</p>
-            <VFlexibleLink v-for="item in allSocialData" raw :to="item.url" :key="item.id" @flexible-link-click="
-              () => {
-                trackClickEvent(
-                  `Click Tracking - ${item.label} social Button`,
-                  'footer',
-                  `${item.label} social Button`
-                )
-              }
-            ">
-              <Button :icon="item.icon" severity="secondary" size="large" rounded tabindex="-1" />
+            <VFlexibleLink
+              v-for="item in allSocialData"
+              raw
+              :to="item.url"
+              :key="item.id"
+              @flexible-link-click="
+                () => {
+                  trackClickEvent(
+                    `Click Tracking - ${item.label} social Button`,
+                    'footer',
+                    `${item.label} social Button`
+                  )
+                }
+              "
+            >
+              <Button
+                :icon="item.icon"
+                severity="secondary"
+                size="large"
+                rounded
+                tabindex="-1"
+              />
             </VFlexibleLink>
           </div>
           <div class="menu pt-6 flex flex-wrap md:flex-nowrap gap-4">
-            <ExpandedMenuItem v-for="item in footerNavigationData" :key="item.id" :item="item"
-              :class="`menu-holder ${item.class}`" :menuData="item" />
+            <ExpandedMenuItem
+              v-for="item in footerNavigationData"
+              :key="item.id"
+              :item="item"
+              :class="`menu-holder ${item.class}`"
+              :menuData="item"
+            />
           </div>
         </div>
       </div>
-      <div class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7">
+      <div
+        class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7"
+      >
         <NyprLogosBracket />
         <div class="flex align-items-center gap-3">
           <p class="flex-none">WNYC is supported by</p>
@@ -79,10 +100,19 @@ const submitForm = (event) => {
         </div>
       </div>
       <Divider class="mt-4" />
-      <div class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter">
+      <div
+        class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter"
+      >
         <div class="flex flex-wrap gap-3 -ml-2">
-          <NavButton v-for="item in footerLegalLinksData" :key="item.id" :label="item.label" :route="item.url"
-            class="footer-legal-links" :class="item.class" size="small" />
+          <NavButton
+            v-for="item in footerLegalLinksData"
+            :key="item.id"
+            :label="item.label"
+            :route="item.url"
+            class="footer-legal-links"
+            :class="item.class"
+            size="small"
+          />
         </div>
         <p class="flex-none mt-1">
           &copy; {{ getYear() }} New York Public Radio. All rights reserved.
@@ -152,7 +182,7 @@ const submitForm = (event) => {
   }
 
   .is-playing {
-    padding-bottom: $playerHeight;
+    padding-bottom: var(--persistent-player-height);
   }
 }
 </style>

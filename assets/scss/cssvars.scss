@@ -47,7 +47,7 @@
     --header-bottom-height: #{$headerBottomHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
     --bottom-menu-icon-color: #ffffff;
-    --player-height: #{$playerHeight};
+    --player-height: var(--persistent-player-height);
 
     --teal-lake: #298c9a;
     --electric-violet: #9747ff;
