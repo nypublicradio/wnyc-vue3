@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
 
 import VNewTrackInfo from "./VNewTrackInfo.vue"
@@ -303,7 +302,7 @@ const isEpisodePlaying = computed(() => props.isEpisodePlaying)
 const isLiveStream = computed(() => props.isLiveStream)
 const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
 const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
-
+//const volume = ref(props.volume)
 //swipe setup
 const playerRef = ref(null)
 
@@ -438,6 +437,14 @@ const togglePlay = () => {
   emit("toggle-play", !isEpisodePlaying.value)
 }
 
+const volumeToggleMute = (e) => {
+  emit("volume-toggle-mute")
+}
+
+const volumeChange = (e) => {
+  emit("volume-change", e / 100)
+}
+
 // exposed method to handle the minimize toggle
 const toggleMinimize = (e) => {
   emit("is-minimized", e)
@@ -490,11 +497,6 @@ const handleCast = () => {
   }
 }
 
-// exposed method to handle the mute toggle
-const toggleMute = () => {
-  //$mediaPlayerRef.value.muted = !$mediaPlayerRef.value.muted
-}
-
 // handles the click anywhere prop. So if the user clicks anywhere on the player, except the buttons, the player will expand or minimize
 const handleClickAnywhere = (e) => {
   //console.log("anywhere click")
@@ -514,14 +516,14 @@ onMounted(async () => {
   window.addEventListener("keydown", (event) => {
     switch (event.code) {
       case "ArrowUp":
-        // if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume < 1) {
-        //   $mediaPlayerRef.value.volume += 0.1
-        // }
+        if (props.volume < 1) {
+          emit("volume-change", props.volume + 0.1)
+        }
         break
       case "ArrowDown":
-        // if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume > 0) {
-        //   $mediaPlayerRef.value.volume -= 0.1
-        // }
+        if (props.volume > 0) {
+          emit("volume-change", props.volume - 0.1)
+        }
         break
       default:
         /* code */
@@ -537,7 +539,6 @@ defineExpose({
   skipBack,
   toggleExpanded,
   toggleMinimize,
-  toggleMute,
   togglePlay,
 })
 </script>
@@ -553,26 +554,6 @@ defineExpose({
       { browser: !isApp },
     ]"
   >
-    <!-- <i
-      v-if="
-        (props.canExpandWithSwipe && !isExpanded) ||
-        (props.canUnexpandWithSwipe && isExpanded)
-      "
-      class="pi pi-minus drag-closer-line absolute"
-    /> -->
-    <div v-if="props.canMinimize" class="maximize-btn-holder">
-      <Button
-        title="maximize Player"
-        class="maximize-btn p-button-icon-only"
-        :class="{ show: isMinimized }"
-        aria-label="maximize player"
-        @click="toggleMinimize(!isMinimized)"
-      >
-        <img v-if="isEpisodePlaying" :src="soundAnimGif" alt="sounds wave animation" />
-        <slot v-else name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
-      </Button>
-    </div>
-
     <Transition name="expand">
       <div v-show="!isExpanded">
         <div class="flex h-full align-items-center">
@@ -650,6 +631,25 @@ defineExpose({
                 <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
               </Button>
             </Transition>
+            <div class="flex align-items-center gap-2">
+              <player-v-volume-control
+                v-if="props.showVolume"
+                class="hidden lg:flex"
+                :volume="props.volume * 100"
+                :is-muted="props.isMuted"
+                @volume-toggle-mute="volumeToggleMute"
+                @volume-change="volumeChange"
+              />
+              <Button
+                v-if="props.canExpand"
+                class="flex-none p-button-icon-only p-button-secondary"
+                severity="secondary"
+                variant="text"
+                @click="toggleExpanded(true)"
+              >
+                <slot name="expand"><i class="pi pi-expand"></i></slot>
+              </Button>
+            </div>
             <player-v-timeline
               v-if="!isLiveStream"
               :currentEpisodeProgress
@@ -661,29 +661,6 @@ defineExpose({
         </div>
       </div>
     </Transition>
-
-    <Button
-      v-if="props.canMinimize && !props.canClickAnywhere"
-      title="Minimize Player"
-      class="minimize-btn p-button-icon-only p-button-text p-button-secondary"
-      aria-label="minimize player"
-      @click="toggleMinimize(!isMinimized)"
-    >
-      <slot name="chevronDown">
-        <i class="pi pi-chevron-down"></i>
-      </slot>
-    </Button>
-
-    <Button
-      v-if="props.canExpand && !isExpanded && !props.canClickAnywhere"
-      title="Expand Player"
-      class="expand-btn p-button-icon-only p-button-text p-button-secondary"
-      :class="{ show: isExpanded }"
-      aria-label="expand player"
-      @click="toggleExpanded(!isExpanded)"
-    >
-      <slot name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
-    </Button>
 
     <Transition name="expand-delay">
       <div v-show="isExpanded" class="expanded-view">
@@ -833,72 +810,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   &.expanded {
     bottom: 0;
     height: 100%;
-  }
-
-  .maximize-btn-holder {
-    position: absolute;
-    display: block;
-    right: 0;
-    left: 0;
-    margin: auto;
-    top: calc(-20px - var(--persistent-player-height-buffer));
-    width: 40px;
-    height: 40px;
-    overflow: hidden;
-
-    .maximize-btn.p-button {
-      position: absolute;
-      display: block;
-      right: 0px;
-      top: 44px;
-      padding: 0.4rem 0.2rem !important;
-      width: 40px;
-      height: 40px;
-      border-radius: 4px 4px 0 0;
-      background-color: var(--persistent-player-maximize-btn-bg);
-      pointer-events: none;
-      transition: top 0.1s;
-      -webkit-transition: top 0.1s;
-      color: var(--persistent-player-maximize-btn-color);
-      border: none;
-
-      &.show {
-        transition: top 0.5s;
-        -webkit-transition: top 0.5s;
-        top: 1px;
-        pointer-events: all;
-      }
-
-      &:hover {
-        background-color: var(--persistent-player-maximize-btn-bg-hover);
-      }
-
-      .pi {
-        font-size: 0.7rem;
-      }
-
-      img {
-        width: 100%;
-        height: auto;
-      }
-    }
-  }
-
-  .minimize-btn,
-  .expand-btn {
-    position: absolute;
-    right: 0;
-    left: 0;
-    margin: auto;
-    top: 3px;
-    padding: 0.4rem 0.2rem !important;
-    background-color: var(--persistent-player-minimize-btn-bg);
-    color: var(--persistent-player-minimize-btn-color);
-    z-index: 100;
-
-    .pi {
-      font-size: 0.7rem;
-    }
   }
 
   .expanded-view {
@@ -1107,6 +1018,12 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
 
     &.skip-btn {
+      width: 24px;
+      height: 24px;
+      .o-icon {
+        width: 14px;
+        height: 14px;
+      }
       @include media("<=lg") {
         display: none;
       }

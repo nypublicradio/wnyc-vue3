@@ -119,13 +119,21 @@ const getConfiguredAudioUrl = computed(() => {
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
-//player release utility function
-// ios and web just calls stop(), android calls releasePlayer()
-const releasePlayer = async () => {
-  try {
-    await RemoteStreamer.releasePlayer()
-  } catch (error) {
-    console.warn("Failed to release player:", error)
+// setVolume
+const currentVolume = ref(1)
+const isMuted = ref(false)
+const setVolume = (e) => {
+  console.log("setVolume = ", e)
+  RemoteStreamer.setVolume({ volume: e })
+  currentVolume.value = e
+}
+const muteToggle = (e) => {
+  if (isMuted.value) {
+    RemoteStreamer.setVolume({ volume: currentVolume.value })
+    isMuted.value = false
+  } else {
+    RemoteStreamer.setVolume({ volume: 0 })
+    isMuted.value = true
   }
 }
 
@@ -133,16 +141,11 @@ const releasePlayer = async () => {
 const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
-
-  await releasePlayer()
-
-  // Small delay to ensure cleanup completes
-  await new Promise((resolve) => setTimeout(resolve, 100))
-
+  await RemoteStreamer.stop()
   currentEpisode.value = val
   isStreamLoading.value = true
+  //isLiveStream.value = val.hls ? true : false
   await nextTick()
-
   await RemoteStreamer.play({
     url: getConfiguredAudioUrl.value,
     enableCommandCenter: true,
@@ -174,22 +177,19 @@ const handleSeekTo = (e) => {
 const togglePlayHere = async (e) => {
   if (e && !isEpisodePlaying.value) {
     await RemoteStreamer.resume()
-    //await enableBackgroundMode()
     isEpisodePlaying.value = true
-
-    if (isNewEpisode.value) {
-      trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
-    } else {
-      trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
-    }
-    isNewEpisode.value = false
-  } else if (!e && isEpisodePlaying.value) {
-    // Pausing playback
+  }
+  if (!e && isEpisodePlaying.value) {
     await RemoteStreamer.pause()
-    //await disableBackgroundMode()
     isEpisodePlaying.value = false
   }
-  // Remove the redundant isEpisodePlaying.value = e line
+  if (isEpisodePlaying.value && isNewEpisode.value) {
+    trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
+  } else if (isEpisodePlaying.value && !isNewEpisode.value) {
+    trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
+  }
+  isEpisodePlaying.value = e
+  isNewEpisode.value = false
 }
 
 //const handleCast = () => {
@@ -207,9 +207,8 @@ const handleIsExpanded = (e) => {
 
 // function that handles the error event from the persistent player emit
 //I have to check for "e" it fires 2 times... once with the error and once without
-const handleError = async (e) => {
+const handleError = (e) => {
   if (e) {
-    await releasePlayer()
     globalToast.value = {
       severity: "error",
       summary: "We are having a problem loading the audio. Please try again later.",
@@ -232,7 +231,7 @@ const handleError = async (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = async () => {
+const episodeEnded = () => {
   if (isPlayerExpanded.value) {
     playerRef.value.toggleExpanded()
     handleIsExpanded(false)
@@ -245,7 +244,6 @@ const episodeEnded = async () => {
     currentEpisode.value = null
     handleIsExpanded(false)
   }
-  await releasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
@@ -380,8 +378,7 @@ onMounted(async () => {
         :station="currentEpisode?.name"
         :description="getDescription"
         :image="
-          templatizePublisherImageUrl(currentEpisode?.player_image) ??
-          getEpisodeFallBackImage()
+          templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
         "
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
@@ -391,12 +388,17 @@ onMounted(async () => {
         @skip-back="handleSkipBack"
         @error="handleError"
         @scrub-timeline-end="handleSeekTo($event)"
+        @volume-change="setVolume($event)"
+        @volume-toggle-mute="muteToggle"
         can-click-anywhere
+        :showVolume="true"
         :isStreamLoading
         :isEpisodePlaying
         :isLiveStream
         :currentEpisodeDuration
         :currentEpisodeProgress
+        :volume="currentVolume"
+        :isMuted="isMuted"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
