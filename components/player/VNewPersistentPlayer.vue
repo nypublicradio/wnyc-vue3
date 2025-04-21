@@ -138,7 +138,7 @@ const props = defineProps({
    * left image representing the audio
    */
   imageSize: {
-    default: 60,
+    default: 80,
     type: Number,
   },
   /**
@@ -587,7 +587,7 @@ defineExpose({
           </div>
 
           <div
-            class="flex justify-content-between w-full h-full pl-3 pr-2 gap-3 relative"
+            class="flex justify-content-between w-full h-full pl-3 pr-3 lg:pr-2 gap-3 relative"
           >
             <VNewTrackInfo
               v-bind="{ ...$props, ...$attrs }"
@@ -599,7 +599,7 @@ defineExpose({
               class="flex-grow-1"
             />
             <div
-              class="flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
+              class="middle-btns flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
             >
               <div class="flex align-items-center justify-content-center gap-2">
                 <Transition name="skipBtnL">
@@ -649,7 +649,9 @@ defineExpose({
                 @scrub-timeline-end="emit('scrub-timeline-end', $event)"
               />
             </div>
-            <div class="flex align-items-center justify-content-end gap-2 flex-grow-1">
+            <div
+              class="right-btns flex align-items-center justify-content-end gap-2 flex-grow-1"
+            >
               <player-v-volume-control
                 v-if="props.showVolume"
                 class="hidden lg:flex"
@@ -823,6 +825,16 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     height: 100%;
   }
 
+  .right-btns {
+    @include media("<lg") {
+      display: none !important;
+    }
+  }
+  .middle-btns {
+    @include media("<lg") {
+      flex-grow: 0 !important;
+    }
+  }
   .expanded-view {
     padding-top: env(safe-area-inset-top);
     position: relative;
