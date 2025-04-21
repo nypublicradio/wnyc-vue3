@@ -984,7 +984,7 @@ const MyPreset = definePreset(Aura, {
       track: {
         size: "6px",
         borderRadius: "6px",
-        background: "{surface.300}",
+        background: "{neutral.500}",
       },
       range: {
         background: "{primary.color}",
@@ -1011,10 +1011,10 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           range: {
-            background: "{sky.500}",
+            background: "{surface.950}",
           },
           handle: {
-            background: "{sky.500}",
+            background: "{surface.950}",
             hoverBackground: "{surface.0}",
             content: {
               background: "{surface.0}",

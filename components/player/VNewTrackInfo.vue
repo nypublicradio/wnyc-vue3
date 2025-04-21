@@ -141,9 +141,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 .track-info {
   display: flex;
   gap: 12px;
-  width: 100%;
+  //width: 100%;
   height: inherit;
-  flex: auto;
+  //flex: auto;
   align-self: center;
   .track-info-details {
     width: 0;

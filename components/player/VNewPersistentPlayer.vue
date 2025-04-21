@@ -586,7 +586,9 @@ defineExpose({
             </div>
           </div>
 
-          <div class="flex h-full w-full align-items-center gap-2 px-2 relative">
+          <div
+            class="flex justify-content-between w-full h-full pl-3 pr-2 gap-3 relative"
+          >
             <VNewTrackInfo
               v-bind="{ ...$props, ...$attrs }"
               :livestream="isLiveStream"
@@ -594,44 +596,60 @@ defineExpose({
               @description-click="emit('description-click')"
               @title-click="emit('title-click')"
               @click="handleClickAnywhere"
+              class="flex-grow-1"
             />
-            <Transition name="skipBtnL">
-              <Button
-                v-if="props.showSkip && !isLiveStream"
-                class="media-button flex-none p-button-icon-only skip-btn"
-                severity="secondary"
-                @click="skipBack"
-              >
-                <slot name="skipBack"><i class="pi pi-undo"></i></slot>
-              </Button>
-            </Transition>
-            <Button
-              ref="playButtonRef"
-              :disabled="isStreamLoading"
-              class="media-button play-button p-button-icon-only"
-              :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
-              @click="togglePlay"
-              severity="secondary"
+            <div
+              class="flex flex-column align-items-center justify-content-center gap-2 flex-grow-1"
             >
-              <slot v-if="isStreamLoading" name="loading">
-                <i class="pi pi-spin pi-spinner"></i>
-              </slot>
-              <slot v-else-if="!isEpisodePlaying" name="play"
-                ><i class="pi pi-play"></i
-              ></slot>
-              <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
-            </Button>
-            <Transition name="skipBtnR">
-              <Button
-                v-if="props.showSkip && !isLiveStream"
-                class="media-button flex-none p-button-icon-only p-button-secondary skip-btn"
-                severity="secondary"
-                @click="skipAhead"
-              >
-                <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
-              </Button>
-            </Transition>
-            <div class="flex align-items-center gap-2">
+              <div class="flex align-items-center justify-content-center gap-2">
+                <Transition name="skipBtnL">
+                  <Button
+                    v-if="props.showSkip && !isLiveStream"
+                    class="media-button flex-none p-button-icon-only skip-btn flex-grow-1"
+                    severity="secondary"
+                    @click="skipBack"
+                  >
+                    <slot name="skipBack"><i class="pi pi-undo"></i></slot>
+                  </Button>
+                </Transition>
+                <Button
+                  ref="playButtonRef"
+                  :disabled="isStreamLoading"
+                  class="media-button play-button p-button-icon-only"
+                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+                  @click="togglePlay"
+                  severity="secondary"
+                >
+                  <slot v-if="isStreamLoading" name="loading">
+                    <i class="pi pi-spin pi-spinner"></i>
+                  </slot>
+                  <slot v-else-if="!isEpisodePlaying" name="play"
+                    ><i class="pi pi-play"></i
+                  ></slot>
+                  <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
+                </Button>
+                <Transition name="skipBtnR">
+                  <Button
+                    v-if="props.showSkip && !isLiveStream"
+                    class="media-button flex-none p-button-icon-only p-button-secondary skip-btn"
+                    severity="secondary"
+                    @click="skipAhead"
+                  >
+                    <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
+                  </Button>
+                </Transition>
+              </div>
+              <player-v-timeline
+                :currentEpisodeProgress
+                :currentEpisodeDuration
+                :isLiveStream
+                minimized
+                slim
+                class="w-full"
+                @scrub-timeline-end="emit('scrub-timeline-end', $event)"
+              />
+            </div>
+            <div class="flex align-items-center justify-content-end gap-2 flex-grow-1">
               <player-v-volume-control
                 v-if="props.showVolume"
                 class="hidden lg:flex"
@@ -650,13 +668,6 @@ defineExpose({
                 <slot name="expand"><i class="pi pi-expand"></i></slot>
               </Button>
             </div>
-            <player-v-timeline
-              v-if="!isLiveStream"
-              :currentEpisodeProgress
-              :currentEpisodeDuration
-              :isLiveStream
-              minimized
-            />
           </div>
         </div>
       </div>

@@ -127,11 +127,13 @@ const setVolume = (e) => {
   RemoteStreamer.setVolume({ volume: e })
   currentVolume.value = e
 }
-const muteToggle = (e) => {
+const muteToggle = () => {
   if (isMuted.value) {
+    console.log("setting to current = ", currentVolume.value)
     RemoteStreamer.setVolume({ volume: currentVolume.value })
     isMuted.value = false
   } else {
+    console.log("setting to 0 = ")
     RemoteStreamer.setVolume({ volume: 0 })
     isMuted.value = true
   }
@@ -167,6 +169,7 @@ const handleSkipTo = (e) => {
 }
 //
 const handleSeekTo = (e) => {
+  console.log("handleSeekTo", e)
   // convert the percentage to the time
   const time = (e / 100) * currentEpisodeDuration.value
   RemoteStreamer.seekTo({ position: time })
@@ -476,7 +479,7 @@ body {
   }
 
   .track-info {
-    margin-left: 6px;
+    //margin-left: 6px;
   }
   media-play-button {
     margin-right: 6px;

@@ -27,11 +27,7 @@ const previousVolume = ref(props.volume)
 
 onUpdated(() => {
   previousVolume.value = props.volume
-  emit("volume-change", props.volume)
-})
-onMounted(() => {
-  previousVolume.value = props.volume
-  console.log("props.volume", props.volume)
+  //emit("volume-change", props.volume)
 })
 </script>
 
@@ -40,8 +36,18 @@ onMounted(() => {
     class="volume-control align-items-center"
     :class="{ 'show-volume': props.showVolume }"
   >
+    <button
+      class="volume-control-icon"
+      :disabled="disabled"
+      :aria-label="props.isMuted ? 'unmute' : 'mute'"
+      @click.prevent="emit('volume-toggle-mute')"
+      @keypress.space.enter="mute"
+    >
+      <i v-if="!props.isMuted" class="pi pi-volume-up"></i>
+      <i v-if="props.isMuted" class="pi pi-volume-off"></i>
+    </button>
     <Slider
-      v-if="!props.isMuted"
+      v-show="!props.isMuted"
       v-model="previousVolume"
       :disabled="disabled"
       class="volume-control-slider"
@@ -52,21 +58,12 @@ onMounted(() => {
       aria-labelledby="Volume slider"
       @change="emit('volume-change', previousVolume)"
     />
-    <button
-      class="volume-control-icon"
-      :disabled="disabled"
-      :aria-label="props.isMuted ? 'unmute' : 'mute'"
-      @click="emit('volume-toggle-mute')"
-      @keypress.space.enter="mute"
-    >
-      <i v-if="!props.isMuted" class="pi pi-volume-up"></i>
-      <i v-if="props.isMuted" class="pi pi-volume-off"></i>
-    </button>
   </div>
 </template>
 
 <style lang="scss">
 .volume-control {
+  position: relative;
   &:hover,
   &:focus-within,
   &:focus-visible {
@@ -106,6 +103,8 @@ onMounted(() => {
     }
   }
   .volume-control-slider {
+    position: absolute;
+    right: 40px;
     transition: width var(--transition-duration), opacity var(--transition-duration),
       margin-right var(--transition-duration);
     -webkit-transition: width var(--transition-duration),
