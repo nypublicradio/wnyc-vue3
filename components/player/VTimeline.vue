@@ -90,7 +90,7 @@ const handleClick = () => {
 
 <template>
   <div
-    class="timeline-holder align-items-center flex gap-2"
+    class="timeline-holder align-items-center flex gap-0 flex-column"
     :class="[{ minimized: props.minimized, slim: props.slim }]"
   >
     <Slider
@@ -134,6 +134,8 @@ const handleClick = () => {
   &.slim {
     display: inline-flex;
     align-self: center;
+    flex-direction: row !important;
+    gap: 0.75rem !important;
     .timeline {
       height: 3px !important;
     }
