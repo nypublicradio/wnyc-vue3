@@ -599,7 +599,7 @@ defineExpose({
               class="flex-grow-1"
             />
             <div
-              class="flex flex-column align-items-center justify-content-center gap-2 flex-grow-1"
+              class="flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
             >
               <div class="flex align-items-center justify-content-center gap-2">
                 <Transition name="skipBtnL">
