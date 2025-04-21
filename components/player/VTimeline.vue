@@ -90,7 +90,7 @@ const handleClick = () => {
 
 <template>
   <div
-    class="timeline-holder flex gap-2"
+    class="timeline-holder align-items-center flex gap-2"
     :class="[{ minimized: props.minimized, slim: props.slim }]"
   >
     <Slider
@@ -134,7 +134,12 @@ const handleClick = () => {
   &.slim {
     display: inline-flex;
     align-self: center;
-    height: 3px !important;
+    .timeline {
+      height: 3px !important;
+    }
+    //  {
+    //   height: 3px !important;
+    // }
     .p-slider-handle {
       background: transparent;
       transition: background var(--p-transition-duration);
@@ -160,6 +165,9 @@ const handleClick = () => {
       pointer-events: none;
       height: 2px !important;
       margin: 0;
+      .timeline {
+        height: 2px !important;
+      }
       .p-slider-handle {
         display: none;
       }

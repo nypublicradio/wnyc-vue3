@@ -123,17 +123,14 @@ const getConfiguredAudioUrl = computed(() => {
 const currentVolume = ref(1)
 const isMuted = ref(false)
 const setVolume = (e) => {
-  console.log("setVolume = ", e)
   RemoteStreamer.setVolume({ volume: e })
   currentVolume.value = e
 }
 const muteToggle = () => {
   if (isMuted.value) {
-    console.log("setting to current = ", currentVolume.value)
     RemoteStreamer.setVolume({ volume: currentVolume.value })
     isMuted.value = false
   } else {
-    console.log("setting to 0 = ")
     RemoteStreamer.setVolume({ volume: 0 })
     isMuted.value = true
   }
