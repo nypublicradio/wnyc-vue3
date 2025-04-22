@@ -106,6 +106,7 @@ const handleClick = () => {
       @click="handleClick"
       @update:modelValue="handleDragging"
     />
+
     <div v-else class="live-timeline hidden lg:block"><p>LIVE</p></div>
     <div
       class="time inline-flex align-self-center gap-1"
@@ -158,7 +159,7 @@ const handleClick = () => {
     display: inline-flex;
     align-self: center;
     flex-direction: row !important;
-    gap: 0.75rem !important;
+    gap: 0.5rem !important;
     .timeline {
       height: 3px !important;
     }
@@ -176,6 +177,11 @@ const handleClick = () => {
         &:before {
           transform: scale(1);
         }
+      }
+    }
+    .time {
+      p {
+        font-size: 0.7rem;
       }
     }
   }
