@@ -741,7 +741,6 @@ defineExpose({
 
             <div class="expandedViewPlayer mt-5">
               <player-v-timeline
-                v-if="!isLiveStream"
                 :currentEpisodeProgress
                 :currentEpisodeDuration
                 :isLiveStream
@@ -750,7 +749,10 @@ defineExpose({
                 @scrub-timeline-click="emit('scrub-timeline-click', $event)"
               />
 
-              <div class="mt-2 flex justify-content-center align-items-center gap-2">
+              <div
+                class="flex justify-content-center align-items-center gap-2"
+                :class="isLiveStream ? 'mt-5' : 'mt-2'"
+              >
                 <Transition name="skipBtnL">
                   <Button
                     v-if="!isLiveStream"
@@ -833,6 +835,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
   }
   .middle-btns {
+    max-width: 440px;
     .btns {
       gap: 0.8rem;
     }
