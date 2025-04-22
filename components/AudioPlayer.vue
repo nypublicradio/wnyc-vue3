@@ -166,7 +166,6 @@ const handleSkipTo = (e) => {
 }
 //
 const handleSeekTo = (e) => {
-  console.log("handleSeekTo", e)
   // convert the percentage to the time
   const time = (e / 100) * currentEpisodeDuration.value
   RemoteStreamer.seekTo({ position: time })

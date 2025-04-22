@@ -684,8 +684,11 @@ defineExpose({
             <slot name="expanded-header">
               <div class="flex justify-content-between">
                 <Button
-                  class="unexpand-btn p-button-icon-only p-button-text p-button-secondary"
+                  class="unexpand-btn p-button-icon-only p-button-secondary"
                   aria-label="close expanded player button"
+                  variant="text"
+                  severity="secondary"
+                  rounded
                   @click="toggleExpanded(!isExpanded)"
                 >
                   <slot name="unexpanded-button-icon">

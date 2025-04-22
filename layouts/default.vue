@@ -55,12 +55,12 @@ watch(
       <div v-else>
         <TheHeader showMenu />
         <VSmartHeader
-          :hero-buffer="120"
+          :hero-buffer="1"
           :resume-delay="0"
           class="the-smart-header-browser"
           headerHeightCssVar="var(--header-height)"
           reverse
-          transitionName="fade"
+          transitionName=""
         >
           <TheHeader />
         </VSmartHeader>

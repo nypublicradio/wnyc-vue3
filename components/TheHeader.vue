@@ -31,15 +31,16 @@ const handleLogoClick = () => {
     <div class="top">
       <section class="full-width pr-3 md:pr-6">
         <div class="flex justify-content-between align-items-center">
-          <NuxtLink
+          <VFlexibleLink
             to="/home"
             class="flex align-items-center"
             aria-label="WNYC Home"
             @click="handleLogoClick"
             @keydown.enter="handleLogoClick"
+            raw
           >
             <WnycLogo class="wnyc-logo" />
-          </NuxtLink>
+          </VFlexibleLink>
           <div class="flex gap-2 sm:gap-4 align-items-center">
             <NavButton
               size="small"
@@ -68,8 +69,10 @@ const handleLogoClick = () => {
             <Button
               :disabled="!isNetworkConnected"
               icon="pi pi-bars"
-              class="p-button-text -mr-2"
+              class="-mr-2"
+              variant="text"
               severity="secondary"
+              rounded
               aria-label="settings menu"
               @click="
                 () => {

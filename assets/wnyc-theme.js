@@ -332,7 +332,7 @@ const MyPreset = definePreset(Aura, {
     focusRing: {
       width: "2px",
       style: "solid",
-      color: "{primary.color}",
+      color: "#015fcc",
       offset: "4px",
       shadow: "none",
     },
@@ -1132,7 +1132,7 @@ const MyPreset = definePreset(Aura, {
               hoverColor: "{surface-950}",
               activeColor: "{surface-950}",
               focusRing: {
-                color: "{surface.600}",
+                color: "{focusRing.color}",
                 shadow: "none",
               },
             },
