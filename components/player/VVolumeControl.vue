@@ -105,10 +105,10 @@ onUpdated(() => {
   .volume-control-slider {
     position: absolute;
     right: 40px;
-    transition: width var(--transition-duration), opacity var(--transition-duration),
-      margin-right var(--transition-duration);
-    -webkit-transition: width var(--transition-duration),
-      opacity var(--transition-duration), margin-right var(--transition-duration);
+    transition: width var(--p-transition-duration), opacity var(--p-transition-duration),
+      margin-right var(--p-transition-duration);
+    -webkit-transition: width var(--p-transition-duration),
+      opacity var(--p-transition-duration), margin-right var(--p-transition-duration);
     margin-right: 0;
     width: 0px;
     opacity: 0;
