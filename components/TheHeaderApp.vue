@@ -54,8 +54,9 @@ if (messageData.value?.product_banners?.length > 0) {
           <Button
             :disabled="!isNetworkConnected"
             icon="pi pi-bars"
-            class="p-button-text"
+            variant="text"
             severity="secondary"
+            rounded
             aria-label="settings menu"
             @click="
               () => {

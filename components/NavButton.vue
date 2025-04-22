@@ -37,6 +37,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  radius: {
+    default: "2px",
+    type: String,
+  },
   buttonClass: {
     type: String,
     default: "",
@@ -64,6 +68,7 @@ const closePopover = () => {
 // handle the pressing of the enter key
 const handleMouseEnterKey = (event: MouseEvent) => {
   if (hasMenuSlot.value) {
+    event.preventDefault()
     if (op?.value?.visible) {
       closePopover()
     } else {
@@ -92,9 +97,10 @@ const handleMouseLeave = () => {
     class="nav-button flex-none"
     :class="[$attrs.class]"
     raw
-    :to="hasMenuSlot ? null : props.route"
+    :to="props.route"
     :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
     :tabindex="0"
+    :radius="props.radius"
     @flexible-link-click="
       () => {
         closePopover()

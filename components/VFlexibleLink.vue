@@ -37,9 +37,18 @@ const props = defineProps({
     default: 0,
     type: Number,
   },
+  /**
+   * radius on the link
+   */
+  radius: {
+    default: "2px",
+    type: String,
+  },
 })
 
 const emit = defineEmits(["flexible-link-click"])
+
+const radius = ref(props.radius)
 
 const isExternal = computed(() => {
   const reg = /^https?:\/\/|mailto:|tel:/i
@@ -97,6 +106,9 @@ const isAnchor = computed(() => {
   </nuxt-link>
 </template>
 <style lang="scss" scoped>
+.flexible-link {
+  border-radius: v-bind(radius);
+}
 .flexible-link:not(.raw):not(.null) {
   color: var(--link-button-color);
   transition: all var(--p-transition-duration);
@@ -112,9 +124,10 @@ const isAnchor = computed(() => {
     }
   }
   &:focus {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-    box-shadow: var(--link-button-focus-shadow);
+    outline-color: var(--p-focus-ring-color);
+    outline-offset: var(--p-focus-ring-offset);
+    box-shadow: var(--p-focus-ring-shadow);
+    outline-style: var(--p-focus-ring-style);
   }
 }
 .flexible-link.null {

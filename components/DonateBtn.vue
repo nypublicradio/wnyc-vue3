@@ -14,6 +14,7 @@ const props = defineProps({
     v-if="donateButtonData.buttonText"
     raw
     :to="donateButtonData.buttonLink"
+    radius="100px"
     @flexible-link-click="
       trackClickEvent(
         `Click Tracking - ${donateButtonData.buttonText} Button`,

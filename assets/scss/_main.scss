@@ -13,6 +13,17 @@ figure {
 // }
 
 * {
+  -webkit-focus-ring-color: var(--p-focus-ring-color);
+}
+
+a:focus-visible {
+  outline-color: var(--p-focus-ring-color);
+  outline-width: var(--p-focus-ring-width);
+  outline-offset: var(--p-focus-ring-offset);
+  outline-style: var(--p-focus-ring-style);
+}
+
+* {
   -webkit-tap-highlight-color: transparent;
 }
 
