@@ -43,6 +43,7 @@ const handleLogoClick = () => {
           </VFlexibleLink>
           <div class="flex gap-2 sm:gap-4 align-items-center">
             <NavButton
+              class="hidden xs:block"
               size="small"
               label="Get the App"
               trackingLocation="header utility nav"
@@ -118,9 +119,9 @@ const handleLogoClick = () => {
         width: 75px;
       }
 
-      @include media("<400px") {
-        width: 50px;
-      }
+      // @include media("<360px") {
+      //   width: 60px;
+      // }
     }
 
     .get-the-app-btn {

@@ -60,6 +60,7 @@ const submitForm = (event) => {
               raw
               :to="item.url"
               :key="item.id"
+              radius="50px"
               @flexible-link-click="
                 () => {
                   trackClickEvent(
