@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch } from "vue"
 
 const props = defineProps({
   showNoThanks: {
@@ -28,7 +28,7 @@ const props = defineProps({
   },
   submitButtonText: {
     type: String,
-    default: 'Sign up',
+    default: "Sign up",
   },
   submitButtonIcon: {
     type: String,
@@ -36,13 +36,13 @@ const props = defineProps({
   },
   thanksMessage: {
     type: String,
-    default: 'Thank you for signing up!',
+    default: "Thank you for signing up!",
   },
 })
 
-const emit = defineEmits(['submit', 'noThanksClick'])
+const emit = defineEmits(["submit", "noThanksClick"])
 
-const email = ref('')
+const email = ref("")
 const checked = ref(true)
 const submitButtonRef = ref(null)
 
@@ -56,9 +56,8 @@ function validateEmail() {
   emailErrorText.value = null
   if (validRegex.test(email.value)) {
     return true
-  }
-  else {
-    emailErrorText.value = 'Please enter a valid email address.'
+  } else {
+    emailErrorText.value = "Please enter a valid email address."
     return false
   }
 }
@@ -69,21 +68,20 @@ watch(
   () => {
     emailErrorText.value = null
     switch (props.submissionStatus) {
-      case 'success':
+      case "success":
         break
-      case 'error':
-        emailErrorText.value
-          = 'Sorry, there was an error with your submission. Please try again!'
+      case "error":
+        emailErrorText.value =
+          "Sorry, there was an error with your submission. Please try again!"
         break
       default:
     }
-  },
+  }
 )
 
 // submit the email value through the emit if the email is valid
 function submitForm() {
-  if (validateEmail())
-    emit('submit', email.value)
+  if (validateEmail()) emit("submit", email.value)
 }
 </script>
 
@@ -91,37 +89,71 @@ function submitForm() {
   <div>
     <div class="email-collector-form">
       <!-- when the submissionStatus is 'success' it will hide the form and show Thank you message -->
-      <span v-if="submissionStatus !== 'success'" class="flex flex-column lg:flex-row" style="gap: 1rem">
+      <span
+        v-if="submissionStatus !== 'success'"
+        class="flex flex-column lg:flex-row"
+        style="gap: 1rem"
+      >
         <div class="flex-grow-1">
-          <p class="mb-2" :class="emailErrorText ? 'p-error' : ''" for="email">Email address</p>
+          <p class="mb-2" :class="emailErrorText ? 'p-error' : ''" for="email">
+            Email address
+          </p>
           <div class="flex align-items-center w-full gap-2">
             <div class="field m-0 flex flex-grow-1">
-              <InputText v-model="email" :disabled="isSubmitting" class="w-full" :class="[
-                { 'p-invalid': emailErrorText },
-                { 'alt-design': altDesign },
-                { dark },
-              ]" type="email" placeholder="your@email.com" aria-label="sign up" aria-describedby="email-address-field"
-                autocomplete="email" name="email" @keypress.enter="submitForm" />
-
+              <InputText
+                v-model="email"
+                :disabled="isSubmitting"
+                class="w-full"
+                :class="[
+                  { 'p-invalid': emailErrorText },
+                  { 'alt-design': altDesign },
+                  { dark },
+                ]"
+                type="email"
+                placeholder="your@email.com"
+                aria-label="sign up"
+                aria-describedby="email-address-field"
+                autocomplete="email"
+                name="email"
+                @keypress.enter="submitForm"
+              />
             </div>
-            <i ref="submitButtonRef" class="submit-icon flex-none" :class="[
-              { altDesignIcon: altDesign && submitButtonIcon },
-            ]" :data-style-mode="dark ? 'dark' : 'default'">
-              <Button :disabled="isSubmitting || !checked" class="submit-btn p-button-rounded"
-                :class="[{ 'p-button-outlined': outlined }]" :icon="submitButtonIcon ? `pi ${submitButtonIcon}` : null"
-                icon-pos="right" :label="submitButtonIcon ? null : submitButtonText" :aria-label="submitButtonText"
-                @click="submitForm">
+            <i
+              ref="submitButtonRef"
+              class="submit-icon flex-none"
+              :class="[{ altDesignIcon: altDesign && submitButtonIcon }]"
+              :data-style-mode="dark ? 'dark' : 'default'"
+            >
+              <Button
+                :disabled="isSubmitting || !checked"
+                class="submit-btn p-button-rounded"
+                :class="[{ 'p-button-outlined': outlined }]"
+                :icon="submitButtonIcon ? `pi ${submitButtonIcon}` : null"
+                icon-pos="right"
+                :label="submitButtonIcon ? null : submitButtonText"
+                :aria-label="submitButtonText"
+                @click="submitForm"
+              >
                 <i v-if="isSubmitting" class="pi pi-spin pi-spinner" />
               </Button>
             </i>
           </div>
           <Transition name="fade">
-            <small v-if="emailErrorText" id="email-address-field" class="p-error mt-1 block">{{ emailErrorText
-              }}</small>
+            <small
+              v-if="emailErrorText"
+              id="email-address-field"
+              class="p-error mt-1 block"
+              >{{ emailErrorText }}</small
+            >
           </Transition>
           <div class="field-checkbox mt-3 mb-0">
-            <Checkbox v-model="checked" aria-label="Toggle agreement to the terms" :disabled="isSubmitting"
-              :binary="true" @click="!checked" />
+            <Checkbox
+              v-model="checked"
+              aria-label="Toggle agreement to the terms"
+              :disabled="isSubmitting"
+              :binary="true"
+              @click="!checked"
+            />
             <label for="binary">
               <slot />
             </label>
@@ -129,8 +161,12 @@ function submitForm() {
         </div>
         <div v-if="showNoThanks" class="flex justify-content-start">
           <div>
-            <Button class="no-thanks-btn p-button-link" label="No thanks"
-              :style="isSubmitting ? 'visibility: hidden' : ''" @click="emit('noThanksClick')" />
+            <Button
+              class="no-thanks-btn p-button-link"
+              label="No thanks"
+              :style="isSubmitting ? 'visibility: hidden' : ''"
+              @click="emit('noThanksClick')"
+            />
           </div>
         </div>
       </span>
@@ -146,6 +182,10 @@ function submitForm() {
   background-color: #ffffff1a;
   border-color: #737373;
   width: 92px;
+  &:hover {
+    background-color: var(--p-primary-color);
+    border-color: var(--p-primary-color);
+  }
 }
 
 .email-collector-form .pi-spinner {
@@ -160,7 +200,7 @@ function submitForm() {
   margin-top: 8px;
   text-decoration: underline;
 
-  @include media('<md') {
+  @include media("<md") {
     margin-top: -1rem;
   }
 }
