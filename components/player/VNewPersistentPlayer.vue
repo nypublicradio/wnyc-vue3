@@ -601,13 +601,14 @@ defineExpose({
             <div
               class="middle-btns flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
             >
-              <div class="flex align-items-center justify-content-center gap-2">
+              <div class="btns flex align-items-center justify-content-center">
                 <Transition name="skipBtnL">
                   <Button
-                    v-if="props.showSkip && !isLiveStream"
+                    v-if="props.showSkip"
                     class="media-button flex-none p-button-icon-only skip-btn flex-grow-1"
                     severity="secondary"
                     @click="skipBack"
+                    :disabled="isLiveStream"
                   >
                     <slot name="skipBack"><i class="pi pi-undo"></i></slot>
                   </Button>
@@ -615,7 +616,7 @@ defineExpose({
                 <Button
                   ref="playButtonRef"
                   :disabled="isStreamLoading"
-                  class="media-button play-button p-button-icon-only"
+                  class="media-button play-button p-button-icon-only z-1"
                   :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
                   @click="togglePlay"
                   severity="secondary"
@@ -630,9 +631,10 @@ defineExpose({
                 </Button>
                 <Transition name="skipBtnR">
                   <Button
-                    v-if="props.showSkip && !isLiveStream"
+                    v-if="props.showSkip"
                     class="media-button flex-none p-button-icon-only p-button-secondary skip-btn"
                     severity="secondary"
+                    :disabled="isLiveStream"
                     @click="skipAhead"
                   >
                     <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
@@ -826,11 +828,14 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   .right-btns {
-    @include media("<lg") {
+    @include media("<md") {
       display: none !important;
     }
   }
   .middle-btns {
+    .btns {
+      gap: 0.8rem;
+    }
     @include media("<lg") {
       flex-grow: 0 !important;
     }
@@ -1007,7 +1012,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     height: var(--persistent-player-button-height);
     color: var(--persistent-player-button-color);
     border-radius: var(--persistent-player-button-radius);
-    margin-right: 2.5px;
+    //margin-right: 2.5px;
     background: var(--persistent-player-button-bg-color);
     cursor: pointer;
 
@@ -1047,13 +1052,14 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         width: 14px;
         height: 14px;
       }
-      @include media("<=lg") {
+      @include media("<lg") {
         display: none;
       }
     }
 
     &:disabled {
-      opacity: 1;
+      pointer-events: none;
+      opacity: 0.3;
     }
   }
 

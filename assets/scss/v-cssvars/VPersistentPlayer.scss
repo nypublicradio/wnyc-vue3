@@ -2,7 +2,7 @@
 [data-style-mode='light'],
 .style-mode-light {
     --persistent-player-height: #{$playerHeightBrowser};
-    @include media('<=lg') {
+    @include media('<lg') {
         --persistent-player-height: #{$playerHeight};
     }
     --persistent-player-image-size: var(--persistent-player-height);
@@ -50,7 +50,7 @@
     --persistent-player-time-weight: var(--font-weight-400);
     --persistent-player-time-color: var(--p-text-color);
 
-    @include media('<=lg') {
+    @include media('<lg') {
         --persistent-player-title-size: var(--font-size-6);
         --persistent-player-title-height: var(--font-size-8);
         --persistent-player-desc-size: var(--font-size-3);

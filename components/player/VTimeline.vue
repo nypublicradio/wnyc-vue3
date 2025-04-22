@@ -91,7 +91,7 @@ const handleClick = () => {
 <template>
   <div
     class="timeline-holder align-items-center flex gap-0 flex-column"
-    :class="[{ minimized: props.minimized, slim: props.slim }]"
+    :class="[{ minimized: props.minimized, slim: props.slim, live: isLiveStream }]"
   >
     <Slider
       v-if="!isLiveStream"
@@ -106,7 +106,7 @@ const handleClick = () => {
       @click="handleClick"
       @update:modelValue="handleDragging"
     />
-    <div v-else>LIVE</div>
+    <div v-else class="live-timeline hidden lg:block"><p>LIVE</p></div>
     <div
       class="time inline-flex align-self-center gap-1"
       v-if="!isLiveStream && props.slim"
@@ -131,6 +131,29 @@ const handleClick = () => {
     position: relative;
     width: 100%;
   }
+  .live-timeline {
+    position: relative;
+    width: 100%;
+    height: 3px;
+    border-radius: 3px;
+    background-color: var(--p-neutral-500);
+    margin-top: 12px;
+    p {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1px;
+      bottom: 0;
+      margin: auto;
+      text-align: center;
+      vertical-align: middle;
+      height: 20px;
+      width: 26px;
+      background-color: var(--persistent-player-bg);
+      -webkit-box-shadow: 0 0 20px 19px var(--persistent-player-bg);
+      box-shadow: 0 0 20px 19px var(--persistent-player-bg);
+    }
+  }
   &.slim {
     display: inline-flex;
     align-self: center;
@@ -139,9 +162,6 @@ const handleClick = () => {
     .timeline {
       height: 3px !important;
     }
-    //  {
-    //   height: 3px !important;
-    // }
     .p-slider-handle {
       background: transparent;
       transition: background var(--p-transition-duration);
