@@ -111,6 +111,7 @@ const onFocusOut = (e, index, length) => {
   }
 
   .nav-sub-menu {
+    padding-top: 20px;
     position: absolute;
     border: none;
     -webkit-border-radius: 0 0 20px 20px;
@@ -126,7 +127,7 @@ const onFocusOut = (e, index, length) => {
       transition: background-color var(--p-transition-duration);
       -webkit-transition: background-color var(--p-transition-duration);
       display: block;
-      min-height: 50px;
+      min-height: 60px;
       display: flex;
 
       &:hover,

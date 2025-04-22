@@ -292,10 +292,10 @@ const restoreScrollPosition = () => {
   &.hamburger-drawer-browser {
     // transition: transform 0.4s ease-in-out;
 
-    // @include media(">=lg") {
-    //   transition-delay: 0.4s;
-    //   transition: 0.4s ease-in-out;
-    // }
+    @include media(">=lg") {
+      transition-delay: 0s;
+      transition: 0s;
+    }
 
     .p-drawer-header {
       padding-right: 58px;

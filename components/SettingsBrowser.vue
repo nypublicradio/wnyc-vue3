@@ -25,11 +25,11 @@ const config = useRuntimeConfig()
         @emit-click="settingsSideBarBrowser = false"
       />
     </div>
-    <section class="footer mb-4">
+    <!-- <section class="footer mb-4">
       <WnycLogo style="fill: var(--bw-toggle)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version {{ config.public.APP_VERSION }}</p>
-    </section>
+    </section> -->
   </div>
 </template>
 
