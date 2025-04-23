@@ -100,14 +100,13 @@ then we merge it all together and return it to the player as the source for the 
 */
 
 const getConfiguredAudioUrl = computed(() => {
-  const desktop = devicePlatform === "web"
-  // if it is not the desktop, then we use the hls value, else we use the file value
-  const url = !desktop
-    ? currentEpisode.value?.hls ||
-      currentEpisode.value?.file ||
-      currentEpisode.value?.audio ||
-      ""
-    : currentEpisode.value?.file || currentEpisode.value?.audio || ""
+  // we start with HLS, then file, then audio
+  // if none of those are set, then we return an empty string
+  const url =
+    currentEpisode.value?.hls ||
+    currentEpisode.value?.file ||
+    currentEpisode.value?.audio ||
+    ""
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
