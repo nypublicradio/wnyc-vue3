@@ -2,7 +2,6 @@
 const props = defineProps({
   model: {
     type: Object,
-    required: true,
   },
 })
 
@@ -57,6 +56,7 @@ const onFocusOut = (e, index, length) => {
     <div class="blank-spacer" tabindex="-1"></div>
     <div class="nav-sub-menu">
       <NavButton
+        v-if="props.model"
         v-for="(itemMenu, index) in props.model"
         :label="itemMenu.label"
         :route="itemMenu.url"
@@ -70,28 +70,33 @@ const onFocusOut = (e, index, length) => {
         @emit-click="() => emit('emit-click', itemMenu)"
       >
         <template #icon>
-          <VImage
-            v-if="itemMenu?.image && typeof itemMenu?.image === 'object'"
-            class="flex-none mr-3"
-            :alt="itemMenu.image.altText"
-            :src="itemMenu.image.template"
-            :height="60"
-            :width="60"
-            :ratio="[1, 1]"
-            :srcset="[2]"
-            style="height: 60px; width: 60px"
-            isDecorative
-          />
-          <img
-            v-else-if="itemMenu.image"
-            :alt="itemMenu.label"
-            :src="itemMenu.image"
-            class="flex-none mr-3"
-            style="width: 60px; height: 60px"
-            tabindex="-1"
-          />
+          <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
+            <VImage
+              v-if="typeof itemMenu?.image === 'object'"
+              class="flex-none"
+              :alt="itemMenu.image.altText"
+              :src="itemMenu.image.template"
+              :height="60"
+              :width="60"
+              :ratio="[1, 1]"
+              :srcset="[2]"
+              style="height: 60px; width: 60px"
+              isDecorative
+            />
+            <img
+              v-else
+              :alt="itemMenu.label"
+              :src="itemMenu.image"
+              class="flex-none"
+              style="width: 60px; height: 60px"
+              tabindex="-1"
+            />
+          </div>
         </template>
       </NavButton>
+      <div v-else>
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -117,8 +122,8 @@ const onFocusOut = (e, index, length) => {
     -webkit-border-radius: 0 0 20px 20px;
     padding-bottom: 1rem;
     border-radius: 0 0 20px 20px;
-    -webkit-box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.3);
     background-color: var(--header-menu-background);
     z-index: 1;
     min-width: 280px;
@@ -130,25 +135,42 @@ const onFocusOut = (e, index, length) => {
       min-height: 60px;
       display: flex;
 
+      &:focus-visible {
+        outline-offset: 0;
+      }
+
+      .image-holder {
+        overflow: hidden;
+        display: flex;
+        width: 60px;
+        height: 60px;
+        img {
+          transition: transform var(--p-transition-duration);
+          -webkit-transition: transform var(--p-transition-duration);
+        }
+      }
       &:hover,
       &:focus {
-        background-color: var(--header-submenu-background);
+        .image-holder {
+          img {
+            transform: scale(1.15);
+          }
+        }
 
         .p-button-label {
           color: var(--p-button-link-hover-color);
           text-decoration: underline;
         }
       }
-    }
+      .p-button {
+        width: 100%;
+        justify-content: flex-start;
+        border-radius: 0;
+        padding: 0.5rem 1rem;
 
-    .p-button {
-      width: 100%;
-      justify-content: flex-start;
-      border-radius: 0;
-      padding: 0.5rem 1rem;
-
-      .p-button-label {
-        text-align: left;
+        .p-button-label {
+          text-align: left;
+        }
       }
     }
   }

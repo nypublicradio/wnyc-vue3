@@ -128,7 +128,7 @@ const handleMouseLeave = () => {
         <slot name="image" />
       </template>
     </Button>
-    <Popover ref="op" appendTo="self" v-if="hasMenuSlot">
+    <Popover @click.prevent ref="op" appendTo="self" v-if="hasMenuSlot">
       <slot name="menu" />
     </Popover>
   </VFlexibleLink>
@@ -142,6 +142,7 @@ const handleMouseLeave = () => {
 <style lang="scss">
 .nav-button {
   .p-popover {
+    cursor: default;
     border: none;
     background: none;
     box-shadow: none;
