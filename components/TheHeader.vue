@@ -64,7 +64,48 @@ const handleLogoClick = () => {
               <template #icon>
                 <UserIcon />
               </template>
+              <template #menu>
+                <NavSubMenu>
+                  <div class="flex flex-column p-4 gap-3">
+                    <h1>Sign up for a free account, or log in</h1>
+                    <p>See your listening history, favorites, and more.</p>
+                    <Button
+                      label="Create Free Account"
+                      rounded
+                      aria-label="Create Free Account"
+                      @click="
+                        () => {
+                          navigateTo('/signup')
+                          trackClickEvent(
+                            'Click Tracking - Header Log In/Sign up dropdown Create Free Account Button',
+                            'Header',
+                            'Create Free Account'
+                          )
+                        }
+                      "
+                    />
+                    <p class="text-center">or</p>
+                    <Button
+                      label="Log In"
+                      severity="secondary"
+                      rounded
+                      aria-label="Log In"
+                      @click="
+                        () => {
+                          navigateTo('/login')
+                          trackClickEvent(
+                            'Click Tracking - Header Log In/Sign up dropdown Log In Button',
+                            'Header',
+                            'Log In'
+                          )
+                        }
+                      "
+                    />
+                  </div>
+                </NavSubMenu>
+              </template>
             </NavButton>
+
             <DonateBtn class="-mr-2 -ml-2 sm:ml-0" />
 
             <Button
@@ -81,7 +122,7 @@ const handleLogoClick = () => {
                   trackClickEvent(
                     'Click Tracking - Header Hamburger Menu Button',
                     'Header',
-                    `Open Sidebar`
+                    'Open Sidebar'
                   )
                 }
               "
@@ -118,10 +159,6 @@ const handleLogoClick = () => {
       @include media("<md") {
         width: 75px;
       }
-
-      // @include media("<360px") {
-      //   width: 60px;
-      // }
     }
 
     .get-the-app-btn {
