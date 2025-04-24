@@ -94,7 +94,7 @@ export const initLocalNotifications = async () => {
         (data) => {
 
             // we use the slug in the notification data to create the query variable
-            window.location.href = `/live?slug=${data.notification.extra.slug}`
+            window.location.href = `/live?slug=${data.notification.extra.slug}&autoplay=true`
         }
     )
 }

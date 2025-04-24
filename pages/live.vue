@@ -70,7 +70,7 @@ watch(
     // checking if the slug is in the query
     if (newQuery.slug) {
       routeSlug.value = newQuery.slug
-      getStationBySlugAndPlayIt(newQuery.slug)
+      getStationBySlugAndPlayIt(newQuery.slug, newQuery.autoplay)
     }
   },
   { immediate: true }

@@ -246,7 +246,7 @@ export default function useLiveStream() {
     }
 
     // Function to get the station by slug and play it when all stations are loaded
-    const getStationBySlugAndPlayIt = async (querySlug) => {
+    const getStationBySlugAndPlayIt = async (querySlug, autoplay = false) => {
         // If stations aren't loaded, wait for them to load then continue
         if (!allCurrentStations.value) {
             await new Promise((resolve) => {
@@ -269,7 +269,7 @@ export default function useLiveStream() {
         if (targetStation) {
             setTimeout(() => {
                 switchStation(targetStation)
-                togglePlayHere()
+                if (autoplay) togglePlayHere()
             }, 100)
         }
     }
