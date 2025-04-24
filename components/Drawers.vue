@@ -28,48 +28,47 @@ const hbAnimRef = ref(null)
 const hbAnimRef1 = ref(null)
 const hbAnimRef2 = ref(null)
 const hbAnimRef3 = ref(null)
-const tl = $gsap.timeline()
+
+const delay = 0.5
+const dur = 0.5
 
 const hbAnim = (isOpen) => {
   if (isOpen) {
     console.log("open")
     $gsap.to(hbAnimRef1.value, {
-      duration: 3,
+      duration: dur,
       ease: "power2.inOut",
-      rotation: 45,
-      transformOrigin: "0% 50%",
+      y: -5.8,
+      x: 0,
+      transformOrigin: "50% 50%",
+    })
+    $gsap.to(hbAnimRef3.value, {
+      duration: dur,
+      ease: "power2.inOut",
+      y: 5.8,
+      x: 0,
+      transformOrigin: "50% 50%",
+    })
+    $gsap.to(hbAnimRef1.value, {
+      duration: dur,
+      delay: delay,
+      ease: "power2.inOut",
+      rotation: -45,
+      transformOrigin: "50% 50%",
     })
     $gsap.to(hbAnimRef2.value, {
-      duration: 3,
+      duration: dur,
+      delay: delay,
       ease: "power2.inOut",
       scaleX: 0,
       transformOrigin: "50% 50%",
     })
     $gsap.to(hbAnimRef3.value, {
-      duration: 3,
+      duration: dur,
+      delay: delay,
       ease: "power2.inOut",
-      rotation: -45,
-      transformOrigin: "0% 50%",
-    })
-  } else {
-    console.log("close")
-    $gsap.to(hbAnimRef1.value, {
-      duration: 3,
-      ease: "power2.inOut",
-      rotation: 0,
-      transformOrigin: "0% 50%",
-    })
-    $gsap.to(hbAnimRef2.value, {
-      duration: 3,
-      ease: "power2.inOut",
-      scaleX: 1,
+      rotation: 45,
       transformOrigin: "50% 50%",
-    })
-    $gsap.to(hbAnimRef3.value, {
-      duration: 3,
-      ease: "power2.inOut",
-      rotation: 0,
-      transformOrigin: "0% 50%",
     })
   }
 }
@@ -116,18 +115,16 @@ const restoreScrollPosition = () => {
           ref="hbAnimRef"
           class="hb-anim relative"
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 10 10"
+          viewBox="0 0 24 24"
           stroke="#fff"
-          stroke-width=".5"
+          stroke-width=".8"
           fill="rgba(0,0,0,0)"
           stroke-linecap="round"
           style="cursor: pointer; padding: 3px"
         >
-          <path ref="hbAnimRef1" d="M2,3L5,3L8,3M2,0"></path>
-          <path ref="hbAnimRef2" d="M2,3M2,5L8,5M2,0"></path>
-          <path ref="hbAnimRef3" d="M2,7L5,7L8,7"></path>
-          <!-- <rect width="10" height="10" stroke="none"></rect>
-          <rect width="10" height="10" stroke="none"></rect> -->
+          <path ref="hbAnimRef1" d="M4 18L20 18"></path>
+          <path ref="hbAnimRef2" d="M4 12L20 12"></path>
+          <path ref="hbAnimRef3" d="M4 6L20 6"></path>
         </svg>
       </template>
       <template #header>
