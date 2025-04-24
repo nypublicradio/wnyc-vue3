@@ -21,62 +21,11 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
-const { $gsap } = useNuxtApp()
 const scrollPosition = ref(0)
-
-const hbAnimRef = ref(null)
-const hbAnimRef1 = ref(null)
-const hbAnimRef2 = ref(null)
-const hbAnimRef3 = ref(null)
-
-const delay = 0.5
-const dur = 0.5
-
-const hbAnim = (isOpen) => {
-  if (isOpen) {
-    console.log("open")
-    $gsap.to(hbAnimRef1.value, {
-      duration: dur,
-      ease: "power2.inOut",
-      y: -5.8,
-      x: 0,
-      transformOrigin: "50% 50%",
-    })
-    $gsap.to(hbAnimRef3.value, {
-      duration: dur,
-      ease: "power2.inOut",
-      y: 5.8,
-      x: 0,
-      transformOrigin: "50% 50%",
-    })
-    $gsap.to(hbAnimRef1.value, {
-      duration: dur,
-      delay: delay,
-      ease: "power2.inOut",
-      rotation: -45,
-      transformOrigin: "50% 50%",
-    })
-    $gsap.to(hbAnimRef2.value, {
-      duration: dur,
-      delay: delay,
-      ease: "power2.inOut",
-      scaleX: 0,
-      transformOrigin: "50% 50%",
-    })
-    $gsap.to(hbAnimRef3.value, {
-      duration: dur,
-      delay: delay,
-      ease: "power2.inOut",
-      rotation: 45,
-      transformOrigin: "50% 50%",
-    })
-  }
-}
 
 // save the users current scroll position
 const saveScrollPosition = () => {
   scrollPosition.value = window.scrollY
-  hbAnim(true)
 }
 // restore the user to their saved scroll position
 const restoreScrollPosition = () => {
@@ -85,7 +34,6 @@ const restoreScrollPosition = () => {
     window.scrollTo(0, parseInt(scrollPosition.value))
     scrollPosition.value = 0
   }
-  hbAnim(false)
 }
 </script>
 
@@ -111,21 +59,7 @@ const restoreScrollPosition = () => {
       "
     >
       <template #closeicon>
-        <svg
-          ref="hbAnimRef"
-          class="hb-anim relative"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          stroke="#fff"
-          stroke-width=".8"
-          fill="rgba(0,0,0,0)"
-          stroke-linecap="round"
-          style="cursor: pointer; padding: 3px"
-        >
-          <path ref="hbAnimRef1" d="M4 18L20 18"></path>
-          <path ref="hbAnimRef2" d="M4 12L20 12"></path>
-          <path ref="hbAnimRef3" d="M4 6L20 6"></path>
-        </svg>
+        <HamburgerCloseAnim :anim="true" />
       </template>
       <template #header>
         <div
@@ -140,7 +74,6 @@ const restoreScrollPosition = () => {
             </span>
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
-            <!-- <DarkModeIconToggleBtn class="hidden sm:flex" /> -->
             <DonateBtn trackingLocation="header Hamburger Menu" />
           </div>
         </div>
