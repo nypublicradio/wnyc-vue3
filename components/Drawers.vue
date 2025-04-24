@@ -21,12 +21,63 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
-
+const { $gsap } = useNuxtApp()
 const scrollPosition = ref(0)
+
+const hbAnimRef = ref(null)
+const hbAnimRef1 = ref(null)
+const hbAnimRef2 = ref(null)
+const hbAnimRef3 = ref(null)
+const tl = $gsap.timeline()
+
+const hbAnim = (isOpen) => {
+  if (isOpen) {
+    console.log("open")
+    $gsap.to(hbAnimRef1.value, {
+      duration: 3,
+      ease: "power2.inOut",
+      rotation: 45,
+      transformOrigin: "0% 50%",
+    })
+    $gsap.to(hbAnimRef2.value, {
+      duration: 3,
+      ease: "power2.inOut",
+      scaleX: 0,
+      transformOrigin: "50% 50%",
+    })
+    $gsap.to(hbAnimRef3.value, {
+      duration: 3,
+      ease: "power2.inOut",
+      rotation: -45,
+      transformOrigin: "0% 50%",
+    })
+  } else {
+    console.log("close")
+    $gsap.to(hbAnimRef1.value, {
+      duration: 3,
+      ease: "power2.inOut",
+      rotation: 0,
+      transformOrigin: "0% 50%",
+    })
+    $gsap.to(hbAnimRef2.value, {
+      duration: 3,
+      ease: "power2.inOut",
+      scaleX: 1,
+      transformOrigin: "50% 50%",
+    })
+    $gsap.to(hbAnimRef3.value, {
+      duration: 3,
+      ease: "power2.inOut",
+      rotation: 0,
+      transformOrigin: "0% 50%",
+    })
+  }
+}
 
 // save the users current scroll position
 const saveScrollPosition = () => {
   scrollPosition.value = window.scrollY
+  hbAnim(true)
 }
 // restore the user to their saved scroll position
 const restoreScrollPosition = () => {
@@ -35,6 +86,7 @@ const restoreScrollPosition = () => {
     window.scrollTo(0, parseInt(scrollPosition.value))
     scrollPosition.value = 0
   }
+  hbAnim(false)
 }
 </script>
 
@@ -59,6 +111,25 @@ const restoreScrollPosition = () => {
         }
       "
     >
+      <template #closeicon>
+        <svg
+          ref="hbAnimRef"
+          class="hb-anim relative"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 10 10"
+          stroke="#fff"
+          stroke-width=".5"
+          fill="rgba(0,0,0,0)"
+          stroke-linecap="round"
+          style="cursor: pointer; padding: 3px"
+        >
+          <path ref="hbAnimRef1" d="M2,3L5,3L8,3M2,0"></path>
+          <path ref="hbAnimRef2" d="M2,3M2,5L8,5M2,0"></path>
+          <path ref="hbAnimRef3" d="M2,7L5,7L8,7"></path>
+          <!-- <rect width="10" height="10" stroke="none"></rect>
+          <rect width="10" height="10" stroke="none"></rect> -->
+        </svg>
+      </template>
       <template #header>
         <div
           class="flex w-full align-items-start lg:align-items-center justify-content-between style-mode-dark p-2 pr-2 lg:pr-3"
