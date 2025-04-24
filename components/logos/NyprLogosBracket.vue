@@ -89,7 +89,7 @@
     &:focus {
       svg {
         path {
-          fill: var(--p-primary-color) !important;
+          fill: var(--p-button-secondary-hover-background) !important;
         }
       }
     }

@@ -27,7 +27,7 @@ const handleLogoClick = () => {
 </script>
 
 <template>
-  <div class="the-header">
+  <div class="the-header w-screen">
     <div class="top">
       <section class="full-width pr-3 md:pr-6">
         <div class="flex justify-content-between align-items-center">

@@ -12,7 +12,6 @@ const submitForm = (event) => {
 
 <template>
   <section class="the-footer style-mode-dark py-5 overflow-hidden relative">
-    <LogoWnyc3d class="logo3d" />
     <div :class="[{ 'is-playing': isCurrentEpisode }]">
       <div class="grid content mb-5">
         <div class="col-12 xl:col mb-5">

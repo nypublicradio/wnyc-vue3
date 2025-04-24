@@ -107,7 +107,7 @@ const handleClick = () => {
       @update:modelValue="handleDragging"
     />
 
-    <div v-else class="live-timeline hidden lg:block"><p>LIVE</p></div>
+    <div v-else class="live-timeline"><p>LIVE</p></div>
     <div
       class="time inline-flex align-self-center gap-1"
       v-if="!isLiveStream && props.slim"
