@@ -298,7 +298,7 @@ const restoreScrollPosition = () => {
     }
 
     .p-drawer-header {
-      padding-right: 58px;
+      padding-right: 42px;
       padding-left: 33px;
       border-bottom: 1px solid var(--p-text-color);
 
