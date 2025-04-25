@@ -12,10 +12,6 @@ const props = defineProps({
     type: Number,
     default: 0.2,
   },
-  color: {
-    type: String,
-    default: "#fff",
-  },
 })
 
 const { $gsap } = useNuxtApp()
@@ -89,9 +85,9 @@ watch(
     class="hb-anim relative"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    :stroke="props.color"
     stroke-width="1.5"
     fill="rgba(0,0,0,0)"
+    stroke="currentColor"
     stroke-linecap="round"
     style="cursor: pointer; padding: 3px"
   >
