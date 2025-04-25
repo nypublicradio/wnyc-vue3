@@ -128,13 +128,8 @@ const handleMouseLeave = () => {
         <slot name="image" />
       </template>
     </Button>
-    <Popover
-      @click.prevent
-      ref="op"
-      appendTo="self"
-      v-if="hasMenuSlot"
-      :pt="{ transition: { name: 'popover-transition' } }"
-    >
+    <Popover @click.prevent ref="op" appendTo="self" v-if="hasMenuSlot">
+      <!-- :pt="{ transition: { name: 'popover-transition' } }" -->
       <slot name="menu" />
     </Popover>
   </VFlexibleLink>
@@ -146,18 +141,6 @@ const handleMouseLeave = () => {
 }
 </style>
 <style lang="scss">
-.popover-transition-enter-active {
-  transition: all 0.2s ease-out;
-}
-.popover-transition-leave-active {
-  transition: all 0.2s ease-in;
-}
-.popover-transition-enter-from,
-.popover-transition-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-  transform: scale(0.9);
-}
 .nav-button {
   .p-popover {
     cursor: default;

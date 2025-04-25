@@ -174,5 +174,10 @@ const onFocusOut = (e, index, length) => {
       }
     }
   }
+  &.login-signup {
+    .blank-spacer {
+      height: 15px;
+    }
+  }
 }
 </style>
