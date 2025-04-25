@@ -127,7 +127,7 @@ const handleLogoClick = () => {
               "
             >
               <template #icon>
-                <HamburgerCloseAnim color="#000" :bool="settingsSideBarBrowser" />
+                <HamburgerCloseAnim :bool="settingsSideBarBrowser" />
               </template>
             </Button>
           </div>
