@@ -6,7 +6,7 @@ const props = defineProps({
   },
   speed: {
     type: Number,
-    default: 0.3,
+    default: 0.225,
   },
   delay: {
     type: Number,
@@ -36,7 +36,7 @@ onMounted(() => {
       delay: delay,
       duration: dur,
       ease: "power2.inOut",
-      y: (i) => (i === 0 ? -5 : 5), // Apply -5.8 to hbAnimRef1 and 5.8 to hbAnimRef3
+      y: (i) => (i === 0 ? -5 : 5),
       x: 0,
       transformOrigin: "50% 50%",
     },
@@ -72,8 +72,8 @@ onMounted(() => {
 watch(
   () => props.bool,
   async (newVal) => {
+    // next tick need to wait for the DOM to be updated because the immediate is true
     await nextTick()
-    console.log("newVal", newVal)
     if (newVal) {
       tl.play()
     } else {

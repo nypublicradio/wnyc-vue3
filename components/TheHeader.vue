@@ -65,7 +65,7 @@ const handleLogoClick = () => {
                 <UserIcon />
               </template>
               <template #menu>
-                <NavSubMenu v-if="!currentUser">
+                <NavSubMenu v-if="!currentUser" class="login-signup">
                   <div class="flex flex-column p-4 gap-3">
                     <h1>Sign up for a free account, or log in</h1>
                     <p>See your listening history, favorites, and more.</p>
