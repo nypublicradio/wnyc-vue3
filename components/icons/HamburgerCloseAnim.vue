@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps({
-  anim: {
+  bool: {
     type: Boolean,
     default: false,
   },
@@ -11,6 +11,10 @@ const props = defineProps({
   delay: {
     type: Number,
     default: 0.2,
+  },
+  color: {
+    type: String,
+    default: "#fff",
   },
 })
 
@@ -32,7 +36,7 @@ onMounted(() => {
       delay: delay,
       duration: dur,
       ease: "power2.inOut",
-      y: (i) => (i === 0 ? -5.8 : 5.8), // Apply -5.8 to hbAnimRef1 and 5.8 to hbAnimRef3
+      y: (i) => (i === 0 ? -5 : 5), // Apply -5.8 to hbAnimRef1 and 5.8 to hbAnimRef3
       x: 0,
       transformOrigin: "50% 50%",
     },
@@ -64,11 +68,20 @@ onMounted(() => {
       },
       "<"
     )
-
-  if (props.anim) {
-    tl.play()
-  }
 })
+watch(
+  () => props.bool,
+  async (newVal) => {
+    await nextTick()
+    console.log("newVal", newVal)
+    if (newVal) {
+      tl.play()
+    } else {
+      tl.reverse()
+    }
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <svg
@@ -76,14 +89,14 @@ onMounted(() => {
     class="hb-anim relative"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    stroke="#fff"
-    stroke-width="1"
+    :stroke="props.color"
+    stroke-width="1.5"
     fill="rgba(0,0,0,0)"
     stroke-linecap="round"
     style="cursor: pointer; padding: 3px"
   >
-    <path ref="hbAnimRef1" d="M4 18L20 18"></path>
+    <path ref="hbAnimRef1" d="M4 17L20 17"></path>
     <path ref="hbAnimRef2" d="M4 12L20 12"></path>
-    <path ref="hbAnimRef3" d="M4 6L20 6"></path>
+    <path ref="hbAnimRef3" d="M4 7L20 7"></path>
   </svg>
 </template>

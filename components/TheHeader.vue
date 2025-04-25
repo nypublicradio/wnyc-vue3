@@ -65,7 +65,7 @@ const handleLogoClick = () => {
                 <UserIcon />
               </template>
               <template #menu>
-                <NavSubMenu>
+                <NavSubMenu v-if="!currentUser">
                   <div class="flex flex-column p-4 gap-3">
                     <h1>Sign up for a free account, or log in</h1>
                     <p>See your listening history, favorites, and more.</p>
@@ -110,7 +110,6 @@ const handleLogoClick = () => {
 
             <Button
               :disabled="!isNetworkConnected"
-              icon="pi pi-bars"
               class="-mr-2"
               variant="text"
               severity="secondary"
@@ -126,7 +125,11 @@ const handleLogoClick = () => {
                   )
                 }
               "
-            />
+            >
+              <template #icon>
+                <HamburgerCloseAnim color="#000" :bool="settingsSideBarBrowser" />
+              </template>
+            </Button>
           </div>
         </div>
       </section>
