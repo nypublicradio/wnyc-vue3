@@ -59,7 +59,7 @@ const restoreScrollPosition = () => {
       "
     >
       <template #closeicon>
-        <HamburgerCloseAnim :anim="true" />
+        <HamburgerCloseAnim :bool="settingsSideBarBrowser" />
       </template>
       <template #header>
         <div
