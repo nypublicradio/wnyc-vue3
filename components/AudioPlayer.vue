@@ -360,7 +360,7 @@ onMounted(async () => {
     }
   })
   await RemoteStreamer.addListener("id3Metadata", (e) => {
-    console.log("id3Metadata", e.frag.title)
+    console.log("id3Metadata", e)
   })
 })
 </script>
