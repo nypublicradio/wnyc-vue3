@@ -2,26 +2,18 @@
 import {
   getMinutes,
   trackClickEvent,
-  //copyToClipBoard,
-  saveRecentlyPlayed,
-  prepForPlayer,
   shareAPI,
   checkIsFavorited,
   addToFavorites2,
   handleDelete,
+  togglePlayEpisode,
 } from "~/utilities/helpers"
-import {
-  useTogglePlayTrigger,
-  useCurrentEpisode,
-  useCurrentUser,
-} from "~/composables/states"
+import { useCurrentUser } from "~/composables/states"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import TrashIcon from "~/components/icons/TrashIcon.vue"
-const togglePlayTrigger = useTogglePlayTrigger()
-const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const props = defineProps({
   articles: {
@@ -130,11 +122,7 @@ const onMenuChange = (e) => {
 
 // handle the play button click
 const togglePlayHere = (item) => {
-  if (currentEpisode.value?.id !== item.id) {
-    currentEpisode.value = prepForPlayer(item)
-    saveRecentlyPlayed(item, mediaTypes.SEGMENT)
-  }
-  togglePlayTrigger.value = !togglePlayTrigger.value
+  togglePlayEpisode(item)
 }
 </script>
 
