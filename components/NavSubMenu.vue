@@ -73,7 +73,7 @@ const onFocusOut = (e, index, length) => {
           <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
             <VImage
               v-if="typeof itemMenu?.image === 'object'"
-              class="flex-none"
+              class="the-img flex-none"
               :alt="itemMenu.image.altText"
               :src="itemMenu.image.template"
               :height="60"
@@ -87,7 +87,7 @@ const onFocusOut = (e, index, length) => {
               v-else
               :alt="itemMenu.label"
               :src="itemMenu.image"
-              class="flex-none"
+              class="the-img flex-none"
               style="width: 60px; height: 60px"
               tabindex="-1"
             />
@@ -140,11 +140,11 @@ const onFocusOut = (e, index, length) => {
       }
 
       .image-holder {
-        overflow: hidden;
+        //overflow: unset !important;
         display: flex;
         width: 60px;
         height: 60px;
-        img {
+        .the-img {
           transition: transform var(--p-transition-duration);
           -webkit-transition: transform var(--p-transition-duration);
         }
@@ -152,7 +152,7 @@ const onFocusOut = (e, index, length) => {
       &:hover,
       &:focus {
         .image-holder {
-          img {
+          .the-img {
             transform: scale(1.15);
           }
         }
