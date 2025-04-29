@@ -176,7 +176,7 @@ const submitForm = (event) => {
   -webkit-transition: margin var(--p-transition-duration);
 
   .footer-legal-links {
-    .p-button {
+    .p-button .p-button-label {
       text-decoration: underline;
     }
   }
