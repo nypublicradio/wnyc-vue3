@@ -340,3 +340,21 @@ html:not(.style-mode-dark) {
 .p-ripple-dark .p-ink {
   background: $p-ripple-background-dark !important;
 }
+
+.p-button-link {
+  &:hover {
+    .p-button-label {
+      text-decoration-color: var(--p-button-link-hover-color);
+    }
+  }
+  .p-button-label {
+    text-decoration: underline; /* Add a default underline */
+    text-decoration-color: transparent; /* Make it transparent initially */
+    text-decoration-thickness: 1px; /* Match your desired height */
+    text-underline-offset: 3px; /* Adjust the distance from the text */
+    box-decoration-break: clone; /* Apply the underline to each line */
+    -webkit-box-decoration-break: clone; /* For Safari support */
+    transition: all calc(var(--p-transition-duration) * 1.5);
+    -webkit-transition: all calc(var(--p-transition-duration) * 1.5);
+  }
+}

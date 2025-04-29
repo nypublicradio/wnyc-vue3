@@ -142,6 +142,9 @@ const handleMouseLeave = () => {
 </style>
 <style lang="scss">
 .nav-button {
+  .p-button .p-button-label {
+    //text-decoration: none;
+  }
   .p-popover {
     cursor: default;
     border: none;
@@ -181,7 +184,7 @@ const handleMouseLeave = () => {
 
       .p-button-label {
         color: var(--p-button-link-hover-color);
-        text-decoration: underline;
+        text-decoration: underline !important;
       }
     }
   }
