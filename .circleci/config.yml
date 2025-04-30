@@ -289,7 +289,7 @@ executors:
       JOBS: 2
   macosg2:
     macos:
-      xcode: "15.2.0"
+      xcode: "16.2.0"
     resource_class: macos.m1.large.gen1
     environment:
       JOBS: 2
