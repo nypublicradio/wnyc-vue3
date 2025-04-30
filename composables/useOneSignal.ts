@@ -3,6 +3,7 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
   useSettingSideBar,
+  useSettingsSideBarBrowser,
   useIsApp,
   useGlobalToast,
   useIsNetworkConnected
@@ -17,7 +18,6 @@ import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
-import { useRouter } from 'vue-router';
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
 
@@ -51,12 +51,13 @@ export default function useOneSignal() {
 
   // function to handle the click actions of the notifications
   const linkOrRouteOrAction = async (event) => {
-    const router = useRouter();
     const url = event.result.url
     const action = event.result.actionId
     const settingSideBar = useSettingSideBar()
+    const settingsSideBarBrowser = useSettingsSideBarBrowser()
     // if settingSideBar is open, close it
     if (settingSideBar.value) settingSideBar.value = false
+    if (settingsSideBarBrowser.value) settingsSideBarBrowser.value = false
     if (url) {
       if (!url.includes("https://")) {
         // deep link
@@ -68,9 +69,8 @@ export default function useOneSignal() {
           `url = ${url}`
         )
         // slight delay needed for a cold start, or it will route home after the notification route
-        await router.isReady();
-        setTimeout(() => {
-          navigateTo(route)
+        setTimeout(async () => {
+          await navigateTo(route)
         }, 1000)
         return
       } else {
@@ -161,6 +161,7 @@ export default function useOneSignal() {
 
   // triggered when the listener for Notifications "click" is called
   const notificationClickListener = function (event) {
+    console.log("###### Notification Clicked: ", event)
     linkOrRouteOrAction(event)
   }
 
