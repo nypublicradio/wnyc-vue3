@@ -17,6 +17,7 @@ import { ref } from "vue"
 import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { useRouter } from 'vue-router';
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
 
@@ -49,7 +50,8 @@ export default function useOneSignal() {
   }
 
   // function to handle the click actions of the notifications
-  const linkOrRouteOrAction = (event) => {
+  const linkOrRouteOrAction = async (event) => {
+    const router = useRouter();
     const url = event.result.url
     const action = event.result.actionId
     const settingSideBar = useSettingSideBar()
@@ -66,6 +68,7 @@ export default function useOneSignal() {
           `url = ${url}`
         )
         // slight delay needed for a cold start, or it will route home after the notification route
+        await router.isReady();
         setTimeout(() => {
           navigateTo(route)
         }, 1000)
