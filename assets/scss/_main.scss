@@ -358,3 +358,8 @@ html:not(.style-mode-dark) {
     -webkit-transition: all calc(var(--p-transition-duration) * 1.5);
   }
 }
+
+// stops the svg in buttons from showing the focus outline
+.p-button svg {
+  outline: none;
+}
