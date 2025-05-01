@@ -668,6 +668,7 @@ defineExpose({
                 class="flex-none p-button-icon-only p-button-secondary"
                 severity="secondary"
                 variant="text"
+                title="Expand player button"
                 @click="toggleExpanded(true)"
               >
                 <slot name="expand"><i class="pi pi-expand"></i></slot>
@@ -690,6 +691,7 @@ defineExpose({
                   variant="text"
                   severity="secondary"
                   rounded
+                  title="Minimize player button"
                   @click="toggleExpanded(!isExpanded)"
                 >
                   <slot name="unexpanded-button-icon">
