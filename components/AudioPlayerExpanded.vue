@@ -48,9 +48,9 @@ watchEffect(async () => {
   currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
   isFavorited.value = await checkIsFavorited(
     currentEpisode.value.showSlug ||
-    currentEpisode.value.slug ||
-    currentEpisode.value.meta?.slug ||
-    null
+      currentEpisode.value.slug ||
+      currentEpisode.value.meta?.slug ||
+      null
   )
   // show/hide download button based on show title
   const showsWithoutDownload = ["nyc now", "wnyc news"]
@@ -144,121 +144,123 @@ const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-        {
-          label: `${isFavorited.value ? "Unfollow" : "Follow"} ${currentEpisode.value.title
+          {
+            label: `${isFavorited.value ? "Unfollow" : "Follow"} ${
+              currentEpisode.value.title
             }`,
-          customIcon: FollowIcon,
-          active: isFavorited.value,
-          title: currentEpisode.value.title,
-          command: () => {
-            handleFollow(currentEpisode.value.showSlug)
+            customIcon: FollowIcon,
+            active: isFavorited.value,
+            title: currentEpisode.value.title,
+            command: () => {
+              handleFollow(currentEpisode.value.showSlug)
+            },
           },
-        },
-        {
-          label: "Sleep Timer",
-          customIcon: SleepIcon,
-          active: sleepTimerRunning.value,
-          title: currentEpisode.value.title,
-          command: () => {
-            handleSleepTimer()
+          {
+            label: "Sleep Timer",
+            customIcon: SleepIcon,
+            active: sleepTimerRunning.value,
+            title: currentEpisode.value.title,
+            command: () => {
+              handleSleepTimer()
+            },
           },
-        },
-        // ...(showShare.value
-        //   ? [
-        //       {
-        //         label: "Share",
-        //         customIcon: ShareIcon,
-        //         title: currentEpisode.value.title,
-        //         command: () => {
-        //           handleShare()
-        //         },
-        //       },
-        //     ]
-        //   : []),
-        // {
-        //   label: "More Episodes",
-        //   customIcon: MoreEpisodesIcon,
-        //   title: currentEpisode.value.title,
-        //   command: () => {
-        //     handleMoreEpisodes()
-        //   },
-        // },
-      ]
+          // ...(showShare.value
+          //   ? [
+          //       {
+          //         label: "Share",
+          //         customIcon: ShareIcon,
+          //         title: currentEpisode.value.title,
+          //         command: () => {
+          //           handleShare()
+          //         },
+          //       },
+          //     ]
+          //   : []),
+          // {
+          //   label: "More Episodes",
+          //   customIcon: MoreEpisodesIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleMoreEpisodes()
+          //   },
+          // },
+        ]
       : [
-        ...(!currentEpisode.value.hideFavorite
-          ? [
-            {
-              label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
-                }`,
-              customIcon: StarIcon,
-              active: isFavorited.value,
-              title: currentEpisode.value.title,
-              command: () => {
-                handleAddToFavorites()
-              },
+          ...(!currentEpisode.value.hideFavorite
+            ? [
+                {
+                  label: `${
+                    isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
+                  }`,
+                  customIcon: StarIcon,
+                  active: isFavorited.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleAddToFavorites()
+                  },
+                },
+              ]
+            : []),
+          {
+            label: "Sleep Timer",
+            customIcon: SleepIcon,
+            active: sleepTimerRunning.value,
+            title: currentEpisode.value.title,
+            command: () => {
+              handleSleepTimer()
             },
-          ]
-          : []),
-        {
-          label: "Sleep Timer",
-          customIcon: SleepIcon,
-          active: sleepTimerRunning.value,
-          title: currentEpisode.value.title,
-          command: () => {
-            handleSleepTimer()
           },
-        },
-        ...(showDownload.value
-          ? [
-            {
-              label: "Download",
-              customIcon: DownloadIcon,
-              title: currentEpisode.value.title,
-              command: () => {
-                handleDownload()
-              },
-            },
-          ]
-          : []),
-        ...(showShare.value
-          ? [
-            {
-              label: "Share",
-              customIcon: ShareIcon,
-              title: currentEpisode.value.title,
-              command: () => {
-                handleShare()
-              },
-            },
-          ]
-          : []),
-        // {
-        //   label: "Add to Queue",
-        //   active: true,
-        //   customIcon: QueueIcon,
-        //   title: currentEpisode.value.title,
-        //   command: () => {
-        //     handleAddToQueue()
-        //   },
-        // },
-        // {
-        //   label: "More Episodes",
-        //   customIcon: MoreEpisodesIcon,
-        //   title: currentEpisode.value.title,
-        //   command: () => {
-        //     handleMoreEpisodes()
-        //   },
-        // },
-        // {
-        //   label: `Follow ${currentEpisode.value.showTitle}`,
-        //   customIcon: FollowIcon,
-        //   active: isFavorited.value,
-        //   title: currentEpisode.value.title,
-        //   command: () => {
-        //     handleAddToFavorites()
-        //   },
-        // },
-      ]),
+          ...(showDownload.value
+            ? [
+                {
+                  label: "Download",
+                  customIcon: DownloadIcon,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleDownload()
+                  },
+                },
+              ]
+            : []),
+          ...(showShare.value
+            ? [
+                {
+                  label: "Share",
+                  customIcon: ShareIcon,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleShare()
+                  },
+                },
+              ]
+            : []),
+          // {
+          //   label: "Add to Queue",
+          //   active: true,
+          //   customIcon: QueueIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleAddToQueue()
+          //   },
+          // },
+          // {
+          //   label: "More Episodes",
+          //   customIcon: MoreEpisodesIcon,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleMoreEpisodes()
+          //   },
+          // },
+          // {
+          //   label: `Follow ${currentEpisode.value.showTitle}`,
+          //   customIcon: FollowIcon,
+          //   active: isFavorited.value,
+          //   title: currentEpisode.value.title,
+          //   command: () => {
+          //     handleAddToFavorites()
+          //   },
+          // },
+        ]),
   ]
 }
 
@@ -286,48 +288,87 @@ const moreFromClick = () => {
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
-
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
       </div>
       <div v-else class="flex gap-3">
-        <Button text severity="secondary" rounded aria-label="add to favorites" @click="handleAddToFavorites"
-          v-if="!currentEpisode.hideFavorite">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="add to favorites"
+          @click="handleAddToFavorites"
+          v-if="!currentEpisode.hideFavorite"
+        >
           <template #icon>
             <StarIcon :active="isFavorited" />
           </template>
         </Button>
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
-        <Button text severity="secondary" rounded aria-label="download" @click="handleDownload"
-          v-if="currentEpisode.hideFavorite && showDownload">
+        <Button
+          text
+          severity="secondary"
+          rounded
+          aria-label="download"
+          @click="handleDownload"
+          v-if="currentEpisode.hideFavorite && showDownload"
+        >
           <template #icon>
             <DownloadIcon />
           </template>
         </Button>
-        <DownloadProgress v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
-          class="flex align-items-center" :isDownloaded="isAlreadyDownloaded(currentEpisode)"
-          :progress="progress[currentEpisode.id]" />
+        <DownloadProgress
+          v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
+          class="flex align-items-center"
+          :isDownloaded="isAlreadyDownloaded(currentEpisode)"
+          :progress="progress[currentEpisode.id]"
+        />
       </div>
 
       <div class="flex gap-1">
-        <Button v-if="showShare && !isLive" text severity="secondary" rounded aria-label="share" @click="handleShare">
+        <Button
+          v-if="showShare && !isLive"
+          text
+          severity="secondary"
+          rounded
+          aria-label="share"
+          @click="handleShare"
+        >
           <template #icon>
             <ShareIcon />
           </template>
         </Button>
 
-        <DotMenu :menuItems="getDotMenuItems()" size="large" class="-mr-2" @changeEmit="onMenuChange">
+        <DotMenu
+          :menuItems="getDotMenuItems()"
+          size="large"
+          class="-mr-2"
+          @changeEmit="onMenuChange"
+        >
           <template #end v-if="currentEpisode.embedCode">
             <div class="p-0">
-              <Textarea disabled class="w-full text-xs mt-2" v-model="currentEpisode.embedCode" rows="9" />
+              <Textarea
+                disabled
+                class="w-full text-xs mt-2"
+                v-model="currentEpisode.embedCode"
+                rows="9"
+              />
             </div>
           </template>
           <template #header-bottom>
             <div>
               <div class="flex gap-3 align-items-center px-4">
-                <VImage :src="templatizePublisherImageUrl(currentEpisode.image) ??
-                  getEpisodeFallBackImage()
-                  " :alt="`${currentEpisode.title} show image`" :width="116" :height="116"
-                  class="show-image-in-menu flex-none" :ratio="[1, 1]" style="height: 60px; width: 60px" />
+                <VImage
+                  :src="
+                    templatizePublisherImageUrl(currentEpisode.image) ??
+                    getEpisodeFallBackImage()
+                  "
+                  :alt="`${currentEpisode.title} show image`"
+                  :width="116"
+                  :height="116"
+                  class="show-image-in-menu flex-none"
+                  :ratio="[1, 1]"
+                  style="height: 60px; width: 60px"
+                />
 
                 <div class="info">
                   <h2>{{ currentEpisode.title }}</h2>
@@ -342,39 +383,72 @@ const moreFromClick = () => {
       </div>
     </div>
     <HtmlConvert :htmlContent="currentEpisode.details" />
-    <VImage v-if="currentEpisode.onTodaysShowImageTemplate" :src="currentEpisode.onTodaysShowImageTemplate"
-      :alt="`${currentEpisode.title} featured image`" :width="672" :sizes="[2]" class="show-feature-image">
+    <VImage
+      v-if="currentEpisode.onTodaysShowImageTemplate"
+      :src="currentEpisode.onTodaysShowImageTemplate"
+      :alt="`${currentEpisode.title} featured image`"
+      :width="672"
+      :sizes="[2]"
+      class="show-feature-image"
+    >
       <template #caption>
-        <VImageCaption v-if="currentEpisode.onTodaysShowImageCaption" :text="currentEpisode.onTodaysShowImageCaption"
-          class="caption" />
+        <VImageCaption
+          v-if="currentEpisode.onTodaysShowImageCaption"
+          :text="currentEpisode.onTodaysShowImageCaption"
+          class="caption"
+        />
       </template>
       <template #belowImage>
         <div class="text-xs mt-2">
           {{ currentEpisode.onTodaysShowImageCredits }}
         </div>
-        <HtmlConvert :htmlContent="currentEpisode.episodeBody" class="caption text-sm mt-2" />
+        <HtmlConvert
+          :htmlContent="currentEpisode.episodeBody"
+          class="caption text-sm mt-2"
+        />
       </template>
     </VImage>
 
     <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
       <h2>Host{{ currentEpisode.onTodaysShowHosts.length > 1 ? "s" : "" }}</h2>
       <div class="flex gap-4 flex-wrap my-3">
-        <Author v-for="author in currentEpisode.onTodaysShowHosts" :key="author.url" :imgSrc="author.image"
+        <Author
+          v-for="author in currentEpisode.onTodaysShowHosts"
+          :key="author.url"
+          :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
-          :to="currentEpisode.cmsSource = 'publisher' ? author.url : author.url.replace('people', 'staff')"
-          @on-click="emit('close-panel')" />
+          :to="
+            (currentEpisode.cmsSource = 'publisher'
+              ? author.url
+              : author.url.replace('people', 'staff'))
+          "
+          @on-click="emit('close-panel')"
+        />
       </div>
     </div>
     <div v-if="currentEpisode.episodeTranscript">
       <h2>Transcript</h2>
       <HtmlConvert :htmlContent="currentEpisode.episodeTranscript" />
     </div>
-    <div ref="expandedFooterRef" v-if="currentEpisode.showSlug || currentEpisode.show" class="expanded-footer">
+    <div
+      ref="expandedFooterRef"
+      v-if="currentEpisode.showSlug || currentEpisode.show"
+      class="expanded-footer"
+    >
       <section class="pb-2">
         <hr class="mb-2" />
-        <Button text severity="secondary" :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
-          :aria-label="`More from ${currentEpisode.showTitle || currentEpisode.title
-            } button`" icon="pi pi-chevron-right" iconPos="right" class="flex m-auto" @click="moreFromClick" />
+        <Button
+          text
+          severity="secondary"
+          :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
+          :aria-label="`More from ${
+            currentEpisode.showTitle || currentEpisode.title
+          } button`"
+          icon="pi pi-chevron-right"
+          iconPos="right"
+          class="flex m-auto"
+          @click="moreFromClick"
+        />
       </section>
     </div>
   </section>
@@ -386,7 +460,9 @@ const moreFromClick = () => {
 
   .persistent-player {
     .expanded-player {
-      padding-bottom: calc($bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem);
+      padding-bottom: calc(
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem
+      );
 
       .expanded-footer {
         background: var(--persistent-player-bg);
@@ -401,7 +477,8 @@ const moreFromClick = () => {
         -webkit-transition: bottom var(--p-transition-duration);
       }
 
-      .tools {}
+      .tools {
+      }
     }
 
     &.expanded {

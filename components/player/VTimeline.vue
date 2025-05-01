@@ -138,11 +138,12 @@ const handleClick = () => {
     height: 3px;
     border-radius: 3px;
     background-color: var(--p-neutral-500);
-    margin-top: 12px;
+    margin-top: 9px;
     p {
       position: absolute;
       left: 0;
       right: 0;
+      font-size: 11px;
       top: 1px;
       bottom: 0;
       margin: auto;
@@ -151,8 +152,8 @@ const handleClick = () => {
       height: 20px;
       width: 26px;
       background-color: var(--persistent-player-bg);
-      -webkit-box-shadow: 0 0 20px 19px var(--persistent-player-bg);
-      box-shadow: 0 0 20px 19px var(--persistent-player-bg);
+      -webkit-box-shadow: 0 0 15px 14px var(--persistent-player-bg);
+      box-shadow: 0 0 15px 14px var(--persistent-player-bg);
     }
   }
   &.slim {

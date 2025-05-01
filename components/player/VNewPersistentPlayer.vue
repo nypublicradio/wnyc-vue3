@@ -889,7 +889,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 }
 
 .expand-delay-leave-active {
-  transition: opacity calc(var(--p-transition-duration) * 2) ease-in;
+  transition: opacity calc(var(--p-transition-duration) * 1) ease-in;
 }
 
 .expand-delay-enter-from,
@@ -900,7 +900,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 //expand
 .expand-enter-active {
   transition: opacity calc(var(--p-transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--p-transition-duration) * 2.25);
+  transition-delay: calc(var(--p-transition-duration) * 1.5);
 }
 
 .expand-leave-active {
