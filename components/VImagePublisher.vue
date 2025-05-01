@@ -299,20 +299,14 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      style="width: 100%"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
-        <WnycLoader
-          v-if="!imageLoaded"
-          class="image-loader-anim"
-          size="1rem"
-          bg
-          spinner
-        />
+        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
         <div v-if="isVertical" class="bg">
           <img
             :src="computedSrcBg()"
