@@ -49,7 +49,7 @@ export default function useOneSignal() {
   }
 
   // function to handle the click actions of the notifications
-  const linkOrRouteOrAction = (event) => {
+  const linkOrRouteOrAction = async (event) => {
     const url = event.result.url
     const action = event.result.actionId
     const settingSideBar = useSettingSideBar()
@@ -66,8 +66,8 @@ export default function useOneSignal() {
           `url = ${url}`
         )
         // slight delay needed for a cold start, or it will route home after the notification route
-        setTimeout(() => {
-          navigateTo(route)
+        setTimeout(async () => {
+          await navigateTo(route)
         }, 1000)
         return
       } else {
