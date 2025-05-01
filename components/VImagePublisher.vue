@@ -142,7 +142,9 @@ const props = defineProps({
     type: [String, RegExp],
   },
 })
-const emit = defineEmits(["image-click", "keypress", "image-enlarge-click"])
+const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
+
+const imageLoaded = ref(false)
 
 // method to format the url to get the publisher image
 const formatPublisherImageUrl = (url) => {
@@ -304,13 +306,20 @@ onMounted(async () => {
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
+        <WnycLoader
+          v-if="!imageLoaded"
+          class="image-loader-anim"
+          size="1rem"
+          bg
+          spinner
+        />
         <div v-if="isVertical" class="bg">
           <img
             :src="computedSrcBg()"
             :width="getDimensions().width"
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
-            :loading="loading"
+            :loading="props.loading"
           />
         </div>
         <template v-if="allowPreview">
@@ -326,12 +335,18 @@ onMounted(async () => {
             :style="[isVertical ? `width:${getDimensions().width}px;` : '']"
             :alt="props.isDecorative ? '' : props.alt"
             :preview="allowPreview"
-            :loading="loading"
+            :loading="props.loading"
             @show="enlarge"
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
+            @load="
+              () => {
+                emit('image-load')
+                imageLoaded = true
+              }
+            "
           >
-            <template v-if="allowPreview" #indicatoricon>
+            <template v-if="allowPreview" #previewicon>
               <ClientOnly>
                 <Button
                   icon="pi pi-clone"
@@ -370,8 +385,14 @@ onMounted(async () => {
           :height="getDimensions().height"
           :style="[isVertical ? `width:auto;` : '']"
           :alt="props.isDecorative ? '' : props.alt"
-          :loading="loading"
+          :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
+          @load="
+            () => {
+              emit('image-load')
+              imageLoaded = true
+            }
+          "
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
