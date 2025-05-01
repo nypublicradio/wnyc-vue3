@@ -161,7 +161,6 @@ export default function useOneSignal() {
 
   // triggered when the listener for Notifications "click" is called
   const notificationClickListener = function (event) {
-    console.log("###### Notification Clicked: ", event)
     linkOrRouteOrAction(event)
   }
 
