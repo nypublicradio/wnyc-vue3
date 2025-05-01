@@ -42,6 +42,7 @@ onUpdated(() => {
       :aria-label="props.isMuted ? 'unmute' : 'mute'"
       @click.prevent="emit('volume-toggle-mute')"
       @keypress.space.enter="mute"
+      title="Volume button"
     >
       <i v-if="!props.isMuted" class="pi pi-volume-up"></i>
       <i v-if="props.isMuted" class="pi pi-volume-off"></i>
@@ -113,6 +114,16 @@ onUpdated(() => {
     width: 0px;
     opacity: 0;
     border: none;
+    // adds a background to the slider so it holds the hover in a wider area
+    &:before {
+      content: "";
+      position: absolute;
+      top: -17px;
+      right: -10%;
+      width: 110%;
+      height: 40px;
+      background-color: transparent;
+    }
   }
 }
 </style>
