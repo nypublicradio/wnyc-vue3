@@ -135,6 +135,7 @@ const svgWidth = 75
       margin: auto;
       width: v-bind(size);
       height: v-bind(size);
+      color: v-bind(color);
     }
   }
 

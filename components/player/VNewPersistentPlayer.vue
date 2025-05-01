@@ -971,7 +971,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   .track-info-image {
-    background-color: #ffffff;
+    //background-color: #ffffff;
     display: block;
 
     // prettier-ignore
