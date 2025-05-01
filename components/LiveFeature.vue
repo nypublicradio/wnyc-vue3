@@ -6,7 +6,7 @@ import {
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
-
+import PlayIcon from "~/components/icons/PlayIcon.vue"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
@@ -32,21 +32,21 @@ const togglePlayHere = async () => {
 
 <template>
   <div class="live-feature p-ripple" v-ripple>
-    <div class="holder">
+    <section class="holder">
       <VFlexibleLink raw to="/live" class="flex align-items-center">
-        <div class="image-holder">
+        <div class="image-holder relative">
           <transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
               :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
-              :width="138"
-              :height="138"
+              :width="116"
+              :height="116"
               :ratio="[1, 1]"
               alt="show poster image"
               class="image"
               :key="currentEpisodeHolder?.id"
             />
-            <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
+            <WnycLoader v-else class="image-loader-anim" size="1rem" bg spinner />
           </transition>
         </div>
         <div class="content w-full relative">
@@ -66,9 +66,10 @@ const togglePlayHere = async () => {
               <div class="flex align-items-center justify-content-between">
                 <PlayButton
                   :label="currentEpisodeHolder?.station"
-                  live
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
+                  severity="primary"
+                  live
                 />
                 <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
               </div>
@@ -97,7 +98,7 @@ const togglePlayHere = async () => {
           </transition>
         </div>
       </VFlexibleLink>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -116,27 +117,28 @@ const togglePlayHere = async () => {
 <style lang="scss" scoped>
 $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
 $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
+$container-breakpoint-lg: useBreakpointOrFallback("lg", 1024px);
 .live-feature {
   container-type: inline-size;
   position: relative;
-  background-color: var(--live-feature-background);
+  //background-color: var(--live-feature-background);
   .image-holder {
     position: relative;
     flex: none;
-    width: 138px;
-    height: 138px;
+    width: 116px;
+    height: 116px;
     background-color: #ffffff99;
     .image,
     .image-loader-anim {
-      width: 138px;
-      height: 138px;
+      width: 116px;
+      height: 116px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
   }
   .content {
-    min-height: 138px;
+    min-height: 116px;
     .skeleton-holder {
       gap: 0.5rem;
     }
@@ -144,7 +146,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 }
 @container (min-width: #{$container-breakpoint-md}) {
   .live-feature .holder {
-    max-width: 668px !important;
+    max-width: $contentWidth !important;
     margin: 0 auto;
   }
 }
