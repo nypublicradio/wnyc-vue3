@@ -49,6 +49,14 @@ const props = defineProps({
     default: "secondary",
     type: String,
   },
+  buttonClass: {
+    default: "",
+    type: String,
+  },
+  labelClass: {
+    default: "",
+    type: String,
+  },
 })
 
 const emit = defineEmits(["on-click"])
@@ -82,7 +90,7 @@ watch(
       :aria-disabled="isStreamLoading"
       aria-label="play"
       tabindex="0"
-      :class="[{ active: isPlaying }]"
+      :class="[{ active: isPlaying }, props.buttonClass]"
       class="flex align-items-center cursor-pointer"
     >
       <slot name="icon">
@@ -110,7 +118,7 @@ watch(
       </slot>
       <slot>
         <div class="content flex white-space-nowrap align-items-center">
-          <span class="center">{{ props.label }}</span>
+          <span class="center" :class="props.labelClass">{{ props.label }}</span>
           <LiveBadge
             v-if="props.liveBadge"
             font-size="14px"
