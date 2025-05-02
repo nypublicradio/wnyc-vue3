@@ -6,10 +6,12 @@ import {
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
-import PlayIcon from "~/components/icons/PlayIcon.vue"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+
+const defaultButtonLabel = "Listen Live"
+const buttonLabel = ref(defaultButtonLabel)
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 const togglePlayHere = async () => {
@@ -65,10 +67,12 @@ const togglePlayHere = async () => {
               ></div>
               <div class="flex align-items-center justify-content-between">
                 <PlayButton
-                  :label="currentEpisodeHolder?.station"
+                  :label="buttonLabel"
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                   severity="primary"
+                  buttonClass="p-button-lg"
+                  labelClass="md:pr-6 md:pl-5"
                   live
                 />
                 <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
