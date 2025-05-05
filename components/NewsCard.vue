@@ -28,7 +28,12 @@ const emit = defineEmits(["on-click"])
 </script>
 
 <template>
-  <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
+  <div
+    v-if="newsData"
+    class="news-card p-ripple p-2 md:p-3"
+    @click="emit('on-click')"
+    v-ripple
+  >
     <div>
       <VBadge
         :label="props.badgeLabel"
@@ -36,16 +41,23 @@ const emit = defineEmits(["on-click"])
         :bg-color="props.badgeBgColor"
       />
       <div class="news-title mt-2">
-        <h2 class="text-sm">{{ props.newsData?.cardTitle }}</h2>
-        <PipeData>
-          <template #left>{{ props.sourceLabel }}</template>
-          <template #right>
-            <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
-          </template>
-        </PipeData>
+        <h2 class="text-sm md:text-base">{{ props.newsData?.cardTitle }}</h2>
+        <div class="flex align-items-center justify-content-between">
+          <PipeData>
+            <template #left>{{ props.sourceLabel }}</template>
+            <template #right>
+              <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
+            </template>
+          </PipeData>
+          <PlayButton
+            class="hidden md:flex"
+            :label="getMinutes(props.newsData?.duration, 1)"
+            :data="props.newsData"
+          />
+        </div>
       </div>
     </div>
-    <div class="flex align-items-center justify-content-between">
+    <div class="flex align-items-center justify-content-between md:hidden">
       <PlayButton
         :label="getMinutes(props.newsData?.duration, 1)"
         :data="props.newsData"
@@ -71,7 +83,6 @@ const emit = defineEmits(["on-click"])
 <style lang="scss" scoped>
 .news-card {
   background-color: var(--p-surface-25);
-  padding: 10px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;

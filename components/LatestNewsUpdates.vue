@@ -16,7 +16,7 @@ const props = defineProps({
 <template>
   <div>
     <div class="latest-news-updates grid">
-      <div class="col-6">
+      <div class="col-6 lg:col-12">
         <NewsCard
           :newsData="props.localNewscast"
           sourceLabel="WNYC"
@@ -25,7 +25,7 @@ const props = defineProps({
         />
       </div>
 
-      <div class="col-6">
+      <div class="col-6 lg:col-12">
         <NewsCard
           :newsData="props.nationalNewscast"
           sourceLabel="NPR"

@@ -60,15 +60,20 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    <LiveFeature />
 
     <section>
-      <FetchError v-if="error || error2 || error3" />
-      <h2 class="mt-4 mb-3">Latest News Updates</h2>
-      <LatestNewsUpdates
-        :localNewscast="latestNewsUpdatesData?.local_newscast"
-        :nationalNewscast="latestNewsUpdatesData?.national_newscast"
-      />
+      <div class="home-top grid grid-nogutter gap-4">
+        <LiveFeature class="col-12 lg:col" />
+
+        <div class="latestNewsHolder">
+          <FetchError v-if="error || error2 || error3" />
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
+          <LatestNewsUpdates
+            :localNewscast="latestNewsUpdatesData?.local_newscast"
+            :nationalNewscast="latestNewsUpdatesData?.national_newscast"
+          />
+        </div>
+      </div>
     </section>
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
@@ -148,3 +153,16 @@ onMounted(() => {
     />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.home {
+  .home-top {
+    .latestNewsHolder {
+      width: 100%;
+      @include media(">lg") {
+        max-width: 300px;
+      }
+    }
+  }
+}
+</style>

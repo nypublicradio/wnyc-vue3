@@ -34,15 +34,15 @@ const togglePlayHere = async () => {
 
 <template>
   <div class="live-feature p-ripple" v-ripple>
-    <section class="holder">
-      <VFlexibleLink raw to="/live" class="flex align-items-center">
+    <div class="holder">
+      <VFlexibleLink raw to="/live" class="flex align-items-start">
         <div class="image-holder relative">
           <transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
               :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
-              :width="116"
-              :height="116"
+              :width="260"
+              :height="260"
               :ratio="[1, 1]"
               alt="show poster image"
               class="image"
@@ -55,26 +55,39 @@ const togglePlayHere = async () => {
           <transition name="fade">
             <div
               v-if="currentEpisodeHolder"
-              class="flex flex-column gap-2 justify-content-center p-3"
+              class="flex flex-column gap-2 lg:gap-3 justify-content-center px-3"
             >
-              <h2>{{ currentEpisodeHolder?.title }}</h2>
+              <h2 class="md:text-xl lg:text-4xl">
+                {{ currentEpisodeHolder?.title }}
+              </h2>
               <div
-                class="blurb truncate t2lines html-formating"
+                class="blurb truncate html-formating"
                 v-html="
                   currentEpisodeHolder?.onTodaysShowHeadline ??
                   currentEpisodeHolder?.details
                 "
               ></div>
               <div class="flex align-items-center justify-content-between">
-                <PlayButton
-                  :label="buttonLabel"
-                  :data="currentEpisodeHolder"
-                  @onClick="togglePlayHere"
-                  severity="primary"
-                  buttonClass="p-button-lg"
-                  labelClass="md:pr-6 md:pl-5"
-                  live
-                />
+                <div class="flex flex-column gap-3">
+                  <PlayButton
+                    :label="buttonLabel"
+                    :data="currentEpisodeHolder"
+                    @onClick="togglePlayHere"
+                    severity="primary"
+                    buttonClass="icon-wide"
+                    labelClass="md:px-6"
+                    live
+                  />
+                  <Button
+                    label="Get the App"
+                    severity="secondary"
+                    class="p-button-sm icon-wide hidden md:flex"
+                  >
+                    <template #icon>
+                      <DevicesIcon />
+                    </template>
+                  </Button>
+                </div>
                 <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
               </div>
             </div>
@@ -102,26 +115,60 @@ const togglePlayHere = async () => {
           </transition>
         </div>
       </VFlexibleLink>
-    </section>
+    </div>
   </div>
 </template>
 
 <style lang="scss">
-// removes extra tags from the blurb
-.live-feature .content {
-  .blurb {
-    font-size: 13px;
-    *:not(:first-child) {
-      display: none;
+.live-feature {
+  // for the buttons on the life feature in the home page. The Live button component and base Button component need some help to match
+  .p-button {
+    &.icon-wide {
+      min-width: 140px;
+      min-height: 34.16px;
+      svg {
+        height: 20px;
+      }
+      .devices-icon {
+        margin-left: -16px;
+        @include media("<md") {
+          margin-left: 0;
+        }
+      }
+      .icon {
+        margin-left: 5px;
+        @include media("<md") {
+          margin-left: 0px;
+          padding-right: 8px;
+        }
+      }
+      .p-button-label {
+        width: 150px;
+        @include media("<md") {
+          width: auto;
+        }
+        text-align: center;
+      }
+    }
+  }
+  .content {
+    .blurb {
+      * {
+        line-height: 1.5rem !important;
+      }
+      // removes extra tags from the blurb
+      *:not(:first-child) {
+        display: none;
+      }
     }
   }
 }
 </style>
 
 <style lang="scss" scoped>
-$container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
-$container-breakpoint-md: useBreakpointOrFallback("md", 768px);
-$container-breakpoint-lg: useBreakpointOrFallback("lg", 1024px);
+// $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
+// $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
+// $container-breakpoint-lg: useBreakpointOrFallback("lg", 992px);
 .live-feature {
   container-type: inline-size;
   position: relative;
@@ -129,33 +176,54 @@ $container-breakpoint-lg: useBreakpointOrFallback("lg", 1024px);
   .image-holder {
     position: relative;
     flex: none;
-    width: 116px;
-    height: 116px;
+    width: 260px;
+    height: 260px;
+    @include media("<xl") {
+      width: 172px;
+      height: 172px;
+    }
+    @include media("<md") {
+      width: 116px;
+      height: 116px;
+    }
     background-color: #ffffff99;
     .image,
     .image-loader-anim {
-      width: 116px;
-      height: 116px;
+      width: 260px;
+      height: 260px;
+      @include media("<xl") {
+        width: 172px;
+        height: 172px;
+      }
+      @include media("<md") {
+        width: 116px;
+        height: 116px;
+      }
       display: flex;
       align-items: center;
       justify-content: center;
     }
   }
   .content {
-    min-height: 116px;
     .skeleton-holder {
       gap: 0.5rem;
     }
+    .blurb {
+      @include t2lines();
+      @include media(">xl") {
+        @include t3lines();
+      }
+    }
   }
 }
-@container (min-width: #{$container-breakpoint-md}) {
+@include media("<md") {
   .live-feature .holder {
     max-width: $contentWidth !important;
     margin: 0 auto;
   }
 }
 
-@container (max-width: #{$container-breakpoint-xs}) {
+@include media("<xs") {
   .live-feature {
     .image-holder {
       flex: none;
@@ -168,7 +236,6 @@ $container-breakpoint-lg: useBreakpointOrFallback("lg", 1024px);
       }
     }
     .content {
-      min-height: 90px;
       .blurb {
         display: none;
       }
