@@ -41,8 +41,8 @@ const togglePlayHere = async () => {
             <VImage
               v-if="currentEpisodeHolder?.image"
               :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
-              :width="260"
-              :height="260"
+              :width="280"
+              :height="280"
               :ratio="[1, 1]"
               alt="show poster image"
               class="image"
@@ -57,6 +57,13 @@ const togglePlayHere = async () => {
               v-if="currentEpisodeHolder"
               class="flex flex-column gap-2 lg:gap-3 justify-content-center px-3"
             >
+              <div class="hidden md:flex align-items-center">
+                <LiveBadge fontSize="0.9rem" class="-ml-2" />
+                <p class="font-bold">
+                  {{ currentEpisodeHolder.timeStart }} -
+                  {{ currentEpisodeHolder.timeEnd }}
+                </p>
+              </div>
               <h2 class="md:text-xl lg:text-4xl">
                 {{ currentEpisodeHolder?.title }}
               </h2>
@@ -67,7 +74,7 @@ const togglePlayHere = async () => {
                   currentEpisodeHolder?.details
                 "
               ></div>
-              <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-start justify-content-between">
                 <div class="flex flex-column gap-3">
                   <PlayButton
                     :label="buttonLabel"
@@ -81,14 +88,14 @@ const togglePlayHere = async () => {
                   <Button
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm icon-wide hidden md:flex"
+                    class="p-button-sm icon-wide hidden xl:flex"
                   >
                     <template #icon>
                       <DevicesIcon />
                     </template>
                   </Button>
                 </div>
-                <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
+                <BarsPlaying class="mx-2 mt-2" :data="currentEpisodeHolder" />
               </div>
             </div>
             <div
@@ -96,13 +103,25 @@ const togglePlayHere = async () => {
               class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full absolute px-3"
             >
               <Skeleton
+                class="hidden md:block mb-2 mt-1"
+                height="0.75rem"
+                width="40%"
+                borderRadius="16px"
+              />
+              <Skeleton
                 class="hidden lg:block"
                 height="1.5rem"
                 width="40%"
                 borderRadius="16px"
               />
               <Skeleton
-                class="lg:hidden"
+                class="hidden md:block lg:hidden"
+                height="1.2rem"
+                width="40%"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="md:hidden"
                 height="1rem"
                 width="40%"
                 borderRadius="16px"
@@ -124,7 +143,7 @@ const togglePlayHere = async () => {
                 borderRadius="16px"
               />
               <Skeleton
-                class="mt-2 w-14rem hidden lg:block"
+                class="mt-2 w-14rem hidden xl:block"
                 height="28px"
                 width="9rem"
                 borderRadius="16px"
@@ -194,8 +213,8 @@ const togglePlayHere = async () => {
   .image-holder {
     position: relative;
     flex: none;
-    width: 260px;
-    height: 260px;
+    width: 280px;
+    height: 280px;
     @include media("<xl") {
       width: 172px;
       height: 172px;
@@ -207,8 +226,8 @@ const togglePlayHere = async () => {
     background-color: #ffffff99;
     .image,
     .image-loader-anim {
-      width: 260px;
-      height: 260px;
+      width: 280px;
+      height: 280px;
       @include media("<xl") {
         width: 172px;
         height: 172px;
@@ -227,9 +246,9 @@ const togglePlayHere = async () => {
       gap: 0.5rem;
     }
     .blurb {
-      @include t2lines();
-      @include media(">xl") {
-        @include t3lines();
+      @include t3lines();
+      @include media("<xl") {
+        @include t2lines();
       }
     }
   }

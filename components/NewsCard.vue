@@ -28,12 +28,7 @@ const emit = defineEmits(["on-click"])
 </script>
 
 <template>
-  <div
-    v-if="newsData"
-    class="news-card p-ripple p-2 md:p-3"
-    @click="emit('on-click')"
-    v-ripple
-  >
+  <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
     <div>
       <VBadge
         :label="props.badgeLabel"
@@ -42,7 +37,7 @@ const emit = defineEmits(["on-click"])
       />
       <div class="news-title mt-2">
         <h2 class="text-sm md:text-base">{{ props.newsData?.cardTitle }}</h2>
-        <div class="flex align-items-center justify-content-between">
+        <div class="flex align-items-center justify-content-between lg:text-base">
           <PipeData>
             <template #left>{{ props.sourceLabel }}</template>
             <template #right>
@@ -52,6 +47,10 @@ const emit = defineEmits(["on-click"])
           <PlayButton
             class="hidden md:flex"
             :label="getMinutes(props.newsData?.duration, 1)"
+            :data="props.newsData"
+          />
+          <BarsPlaying
+            class="hidden md:block absolute top-0 right-0 mt-3 mr-4"
             :data="props.newsData"
           />
         </div>
@@ -98,6 +97,10 @@ const emit = defineEmits(["on-click"])
   height: 100%;
   justify-content: space-between;
   cursor: pointer;
+  padding: 1.25rem;
+  @include media("<md") {
+    padding: 0.6rem;
+  }
   .news-title {
     font-size: 0.813rem;
   }
