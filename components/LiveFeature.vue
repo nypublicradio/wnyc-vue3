@@ -92,25 +92,43 @@ const togglePlayHere = async () => {
               </div>
             </div>
             <div
-              class="skeleton-holder flex flex-column justify-content-center w-full absolute p-3"
               v-else
+              class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full absolute px-3"
             >
               <Skeleton
-                height="20px"
-                width="6rem"
+                class="hidden lg:block"
+                height="1.5rem"
+                width="40%"
                 borderRadius="16px"
-                style="margin-bottom: 6px"
               />
-              <div class="w-full desc">
+              <Skeleton
+                class="lg:hidden"
+                height="1rem"
+                width="40%"
+                borderRadius="16px"
+                style="min-width: 120px !important"
+              />
+              <div class="w-full desc flex-column gap-2 hidden xs:flex">
+                <Skeleton height="1rem" width="85%" borderRadius="16px" />
+                <Skeleton height="1rem" width="90%" borderRadius="16px" />
                 <Skeleton
-                  height="13px"
-                  width="85%"
+                  class="hidden xl:block"
+                  height="1rem"
+                  width="90%"
                   borderRadius="16px"
-                  style="margin-bottom: 6px"
                 />
-                <Skeleton height="13px" width="90%" borderRadius="16px" />
               </div>
-              <Skeleton height="28px" width="9rem" borderRadius="16px" />
+              <Skeleton
+                class="mt-1 w-9rem lg:w-14rem"
+                height="28px"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="mt-2 w-14rem hidden lg:block"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
             </div>
           </transition>
         </div>
