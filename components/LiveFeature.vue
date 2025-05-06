@@ -33,9 +33,10 @@ const togglePlayHere = async () => {
 </script>
 
 <template>
-  <div class="live-feature p-ripple" v-ripple>
+  <div class="live-feature">
     <div class="holder">
-      <VFlexibleLink raw to="/live" class="flex align-items-start">
+      <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
+      <div class="flex align-items-start">
         <div class="image-holder relative">
           <transition name="fade" mode="out-in">
             <VImage
@@ -151,14 +152,14 @@ const togglePlayHere = async () => {
             </div>
           </transition>
         </div>
-      </VFlexibleLink>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .live-feature {
-  // for the buttons on the life feature in the home page. The Live button component and base Button component need some help to match
+  // for the buttons on the life feature in the home page. The Live button component and base Button component need some UGLY help to match
   .p-button {
     &.icon-wide {
       min-width: 140px;
@@ -181,10 +182,19 @@ const togglePlayHere = async () => {
       }
       .p-button-label {
         width: 150px;
+        padding-right: 10px;
         @include media("<md") {
           width: auto;
         }
         text-align: center;
+      }
+      .content .center {
+        padding-left: 2.5rem !important;
+        padding-right: 3.5rem !important;
+        @include media("<md") {
+          padding-left: unset !important;
+          padding-right: unset !important;
+        }
       }
     }
   }
