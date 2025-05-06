@@ -437,10 +437,12 @@ const togglePlay = () => {
   emit("toggle-play", !isEpisodePlaying.value)
 }
 
+// handle the volume toggle mute event
 const volumeToggleMute = (e) => {
-  emit("volume-toggle-mute")
+  emit("volume-toggle-mute", e)
 }
 
+// handle the volume change event
 const volumeChange = (e) => {
   emit("volume-change", e / 100)
 }

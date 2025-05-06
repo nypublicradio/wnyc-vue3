@@ -2,7 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
-import { parse, types, stringify } from 'hls-parser';
+//import { parse, types, stringify } from 'hls-parser';
 const config = useRuntimeConfig()
 
 // format the show data from API response
@@ -88,41 +88,41 @@ const getLivestream = async (slug: string) => {
 	return humps.camelizeKeys(formatShowData(res.data))
 }
 // Fetch the livestream data from the API
-const getLivestreamHlsMetadataTemp = async () => {
+// const getLivestreamHlsMetadataTemp = async () => {
 
-	const stream = "https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8";
+// 	const stream = "https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8";
 
-	const playlistResponse = await axios.get(stream);
-	console.log('Playlist Response:', playlistResponse);
-	const playlist = parse(playlistResponse.data);
+// 	const playlistResponse = await axios.get(stream);
+// 	console.log('Playlist Response:', playlistResponse);
+// 	const playlist = parse(playlistResponse.data);
 
-	if (playlist.isMasterPlaylist) {
-		console.log('Master Playlist detected');
+// 	if (playlist.isMasterPlaylist) {
+// 		console.log('Master Playlist detected');
 
-		// Get the first variant (or you can select a specific one based on bandwidth/resolution)
-		const variant = playlist.variants[0];
+// 		// Get the first variant (or you can select a specific one based on bandwidth/resolution)
+// 		const variant = playlist.variants[0];
 
-		// Make sure the URI is absolute (some playlists use relative URLs)
-		const variantUri = new URL(variant.uri, stream).toString();
+// 		// Make sure the URI is absolute (some playlists use relative URLs)
+// 		const variantUri = new URL(variant.uri, stream).toString();
 
-		// Fetch the media playlist
-		const mediaPlaylistResponse = await axios.get(variantUri);
-		const mediaPlaylist = parse(mediaPlaylistResponse.data);
+// 		// Fetch the media playlist
+// 		const mediaPlaylistResponse = await axios.get(variantUri);
+// 		const mediaPlaylist = parse(mediaPlaylistResponse.data);
 
-		//console.log('Media Playlist =', mediaPlaylist);
-	} else {
-		// Already a media playlist
-		//console.log('Media Playlist =', playlist);
-	}
-	//console.log('Playlist Metadata:', playlistMetaData);
+// 		//console.log('Media Playlist =', mediaPlaylist);
+// 	} else {
+// 		// Already a media playlist
+// 		//console.log('Media Playlist =', playlist);
+// 	}
+// 	//console.log('Playlist Metadata:', playlistMetaData);
 
-	// if (playlistMetaData.isMasterPlaylist && playlistMetaData.variants.length > 0) {
-	// 	const variantUri = playlistMetaData.variants[0].uri;
-	// 	const mediaPlaylistResponse = await axios.get(variantUri);
-	// 	const mediaPlaylistMetaData = HLS.parse(mediaPlaylistResponse.data);
-	// 	//console.log('Media Playlist Metadata:', mediaPlaylistMetaData);
-	// }
-}
+// 	// if (playlistMetaData.isMasterPlaylist && playlistMetaData.variants.length > 0) {
+// 	// 	const variantUri = playlistMetaData.variants[0].uri;
+// 	// 	const mediaPlaylistResponse = await axios.get(variantUri);
+// 	// 	const mediaPlaylistMetaData = HLS.parse(mediaPlaylistResponse.data);
+// 	// 	//console.log('Media Playlist Metadata:', mediaPlaylistMetaData);
+// 	// }
+// }
 
 export default defineEventHandler((event) => {
 

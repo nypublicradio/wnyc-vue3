@@ -88,6 +88,7 @@ const handleDownload = async (epD) => {
   progress.value = await fetchAndStoreMp3(epD)
 }
 
+//handle the share of the episode
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
 }

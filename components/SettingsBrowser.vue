@@ -1,10 +1,8 @@
 <script setup>
-import { getYear } from "~/utilities/helpers"
 import { useCurrentUser, useSettingsSideBarBrowser } from "~/composables/states.ts"
 const currentUser = useCurrentUser()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const { allNavigationData } = await useNavigationData()
-const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -25,11 +23,6 @@ const config = useRuntimeConfig()
         @emit-click="settingsSideBarBrowser = false"
       />
     </div>
-    <!-- <section class="footer mb-4">
-      <WnycLogo style="fill: var(--bw-toggle)" />
-      <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
-      <p>Version {{ config.public.APP_VERSION }}</p>
-    </section> -->
   </div>
 </template>
 

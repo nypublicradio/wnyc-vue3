@@ -63,7 +63,6 @@ const initializeStationList = (val) => {
   const tempMenuData = []
 
   val.forEach((station) => {
-    console.log(station)
     tempMenuData.push({
       id: station.station,
       label: station.station,

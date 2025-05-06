@@ -121,10 +121,12 @@ const getConfiguredAudioUrl = computed(() => {
 // setVolume
 const currentVolume = ref(1)
 const isMuted = ref(false)
+// function that handles the volume change
 const setVolume = (e) => {
   RemoteStreamer.setVolume({ volume: e })
   currentVolume.value = e
 }
+// function that handles the mute toggle
 const muteToggle = () => {
   if (isMuted.value) {
     RemoteStreamer.setVolume({ volume: currentVolume.value })
@@ -360,7 +362,7 @@ onMounted(async () => {
     }
   })
   await RemoteStreamer.addListener("id3Metadata", (e) => {
-    console.log("id3Metadata", e)
+    //console.log("id3Metadata", e)
   })
 })
 </script>
