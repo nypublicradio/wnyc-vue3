@@ -29,7 +29,7 @@ onMounted(() => {
   tl.to(
     [hbAnimRef1.value, hbAnimRef3.value],
     {
-      delay: delay,
+      delay,
       duration: dur,
       ease: "power2.inOut",
       y: (i) => (i === 0 ? -5 : 5),

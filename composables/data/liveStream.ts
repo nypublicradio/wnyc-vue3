@@ -24,6 +24,7 @@ export async function updateLiveStream(slug: string, save = true) {
     }
 }
 
+// Function to update all live streams
 export async function updateAllLiveStreams(init = true) {
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()

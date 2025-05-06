@@ -2,6 +2,7 @@
 const props = defineProps({
   model: {
     type: Object,
+    default: null,
   },
 })
 
@@ -55,45 +56,46 @@ const onFocusOut = (e, index, length) => {
   <div class="nav-sub-menu-holder">
     <div class="blank-spacer" tabindex="-1"></div>
     <div class="nav-sub-menu">
-      <NavButton
-        v-if="props.model"
-        v-for="(itemMenu, index) in props.model"
-        :label="itemMenu.label"
-        :route="itemMenu.url"
-        :key="itemMenu.id"
-        class="w-full menu-item"
-        :class="itemMenu.class"
-        :rounded="false"
-        @keydown.enter="() => navigateTo(itemMenu.url)"
-        @focusout="onFocusOut($event, index, props.model.length)"
-        buttonClass="nav-p-button"
-        @emit-click="() => emit('emit-click', itemMenu)"
-      >
-        <template #icon>
-          <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
-            <VImage
-              v-if="typeof itemMenu?.image === 'object'"
-              class="the-img flex-none"
-              :alt="itemMenu.image.altText"
-              :src="itemMenu.image.template"
-              :height="60"
-              :width="60"
-              :ratio="[1, 1]"
-              :srcset="[2]"
-              style="height: 60px; width: 60px"
-              isDecorative
-            />
-            <img
-              v-else
-              :alt="itemMenu.label"
-              :src="itemMenu.image"
-              class="the-img flex-none"
-              style="width: 60px; height: 60px"
-              tabindex="-1"
-            />
-          </div>
-        </template>
-      </NavButton>
+      <div v-if="props.model">
+        <NavButton
+          v-for="(itemMenu, index) in props.model"
+          :label="itemMenu.label"
+          :route="itemMenu.url"
+          :key="itemMenu.id"
+          class="w-full menu-item"
+          :class="itemMenu.class"
+          :rounded="false"
+          @keydown.enter="() => navigateTo(itemMenu.url)"
+          @focusout="onFocusOut($event, index, props.model.length)"
+          buttonClass="nav-p-button"
+          @emit-click="() => emit('emit-click', itemMenu)"
+        >
+          <template #icon>
+            <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
+              <VImage
+                v-if="typeof itemMenu?.image === 'object'"
+                class="the-img flex-none"
+                :alt="itemMenu.image.altText"
+                :src="itemMenu.image.template"
+                :height="60"
+                :width="60"
+                :ratio="[1, 1]"
+                :srcset="[2]"
+                style="height: 60px; width: 60px"
+                isDecorative
+              />
+              <img
+                v-else
+                :alt="itemMenu.label"
+                :src="itemMenu.image"
+                class="the-img flex-none"
+                style="width: 60px; height: 60px"
+                tabindex="-1"
+              />
+            </div>
+          </template>
+        </NavButton>
+      </div>
       <div v-else>
         <slot />
       </div>
