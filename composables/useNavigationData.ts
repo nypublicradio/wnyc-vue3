@@ -48,8 +48,8 @@ const normalizeStationsMenuData = (menuData = []) => {
 
 // normalize for menu function for shows data
 const normalizeShowsMenuData = (menuData, limit) => {
-    if (!menuData?.featuredShows) return [];
-    return menuData.featuredShows.slice(0, limit).map((item) => ({
+    if (!menuData?.featuredShowsInMenu) return [];
+    return menuData.featuredShowsInMenu.slice(0, limit).map((item) => ({
         label: item.title,
         url: `/browse/shows/${item.slug}`,
         icon: '',

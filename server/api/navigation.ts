@@ -10,7 +10,8 @@ async function useNavigationData() {
             axios.get(config.public.HEADER_NAVIGATION_API),
             axios.get(config.public.SYSTEM_MESSAGES_API),
             axios.get(`${config.public.BFF_URL}/api/streams`),
-            axios.get(`${config.public.BFF_URL}/api/v2/shows`),
+            axios.get(`${config.public.BFF_URL}/api/v2/showsmenu`),
+
         ]);
         return {
             wagtailResponse: wagtail.data,
