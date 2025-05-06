@@ -65,7 +65,7 @@ onMounted(() => {
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col" />
 
-        <div class="latestNewsHolder">
+        <div class="latestNewsHolder col">
           <FetchError v-if="error || error2 || error3" />
           <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
           <LatestNewsUpdates
@@ -155,13 +155,12 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.home {
-  .home-top {
-    .latestNewsHolder {
-      width: 100%;
-      @include media(">lg") {
-        max-width: 300px;
-      }
+.home-top {
+  .latestNewsHolder {
+    width: 100%;
+    max-width: 100%;
+    @include media(">lg") {
+      max-width: 300px !important;
     }
   }
 }
