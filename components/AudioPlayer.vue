@@ -361,9 +361,9 @@ onMounted(async () => {
       trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
     }
   })
-  await RemoteStreamer.addListener("id3Metadata", (e) => {
-    //console.log("id3Metadata", e)
-  })
+  // await RemoteStreamer.addListener("id3Metadata", (e) => {
+  //   console.log("id3Metadata", e)
+  // })
 })
 </script>
 
