@@ -951,12 +951,12 @@ export const prepForPlayer = (item) => {
     hls: item.hls,
     title: item.title,
     image:
+      item.headers?.brand?.logoImage?.template ??
+      item.headers?.brand?.logoImage ??
+      item.showImage ??
       item.image?.template ??
       item.image ??
       item.listingImage?.template ??
-      item.showImage ??
-      item.headers?.brand?.logoImage?.template ??
-      item.headers?.brand?.logoImage ??
       getEpisodeFallBackImage(),
     duration: item.estimatedDuration || item.duration,
     details: item.body,
