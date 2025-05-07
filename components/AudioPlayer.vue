@@ -451,13 +451,15 @@ html.style-mode-dark .persistent-player {
   }
 }
 body {
-  .app {
+  &.app {
     .persistent-player:not(.expanded) {
       bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
     }
   }
-  .browser {
-    bottom: env(safe-area-inset-bottom);
+  &.browser {
+    .persistent-player {
+      bottom: env(safe-area-inset-bottom);
+    }
   }
 }
 .persistent-player:not(.expanded) {
