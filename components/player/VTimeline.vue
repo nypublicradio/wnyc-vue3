@@ -109,7 +109,7 @@ const handleClick = () => {
 
     <div v-else class="live-timeline pointer-events-none"><p>LIVE</p></div>
     <div
-      class="time inline-flex align-self-center gap-1"
+      class="time inline-flex align-self-center gap-1 pointer-events-none"
       v-if="!isLiveStream && props.slim"
     >
       <p>{{ formatTime(currentEpisodeProgress) }}</p>
@@ -125,12 +125,22 @@ const handleClick = () => {
     </div>
   </div>
 </template>
-
+<style lang="scss">
+.timeline-holder {
+  &:hover {
+    .timeline {
+      height: 6px !important;
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .timeline-holder {
   .timeline {
     position: relative;
     width: 100%;
+    transition: height var(--p-transition-duration);
+    -webkit-transition: height var(--p-transition-duration);
   }
   .live-timeline {
     position: relative;
@@ -162,7 +172,7 @@ const handleClick = () => {
     flex-direction: row !important;
     gap: 0.5rem !important;
     .timeline {
-      height: 3px !important;
+      height: 3px;
     }
     .p-slider-handle {
       background: transparent;
