@@ -592,6 +592,8 @@ defineExpose({
           <div
             class="flex justify-content-between w-full h-full pl-3 pr-3 lg:pr-2 gap-3 relative"
           >
+            <!-- {{ props.title }}
+            {{ props.description }} -->
             <VNewTrackInfo
               v-bind="{ ...$props, ...$attrs }"
               :livestream="isLiveStream"
@@ -644,15 +646,17 @@ defineExpose({
                   </Button>
                 </Transition>
               </div>
-              <player-v-timeline
-                :currentEpisodeProgress
-                :currentEpisodeDuration
-                :isLiveStream
-                minimized
-                slim
-                class="w-full"
-                @scrub-timeline-end="emit('scrub-timeline-end', $event)"
-              />
+              <div class="hidden lg:block w-full">
+                <player-v-timeline
+                  :currentEpisodeProgress
+                  :currentEpisodeDuration
+                  :isLiveStream
+                  minimized
+                  slim
+                  class="w-full"
+                  @scrub-timeline-end="emit('scrub-timeline-end', $event)"
+                />
+              </div>
             </div>
             <div
               class="right-btns flex align-items-center justify-content-end gap-2 flex-grow-1"
@@ -731,7 +735,6 @@ defineExpose({
                 role="presentation"
                 style="background-color: #ffffff"
               />
-
               <div v-if="isLiveStream" class="flex flex-column gap-2">
                 <div class="live flex gap-2 align-items-center">
                   <div class="media-live-indicator">

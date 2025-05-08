@@ -38,7 +38,7 @@ const props = defineProps({
   /** * The desired height for the 1x sized image. * this will also be added as an attribute to the image tag
    */
   height: {
-    default: null,
+    default: 0,
     type: Number,
   },
   /** * Substring or regex within the url to be replaced with height values. */
@@ -133,7 +133,7 @@ const props = defineProps({
    * * this will also be added as an attribute to the image tag
    */
   width: {
-    default: null,
+    default: 0,
     type: Number,
   },
   /** * Substring or regex within the urlto be replaced with width values. */

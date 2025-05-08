@@ -63,21 +63,23 @@ const route = useRoute()
 let delay = 250
 const isError = ref(null)
 
-const getDescription = computed(() => {
-  if (isLiveStream.value) {
-    return currentEpisode?.value?.episodeTitle
-  } else {
-    return currentEpisode?.value?.showTitle
-  }
+// function that returns the image for the episode
+const getTitle = computed(() => {
+  return currentEpisode?.value?.episodeTitle ?? currentEpisode?.value?.title
 })
 
+// function that returns the media type for the episode
 const getMediaType = computed(() => {
   // if the hls value is set, then it is a live stream
   return currentEpisode?.value?.hls ? "live" : "on_demand"
 })
 
-const getTitle = computed(() => {
-  return currentEpisode?.value?.title
+// function that returns the description of the episode
+const getDescription = computed(() => {
+  // if the title and the description are the same, return null for description
+  return currentEpisode?.value?.showTitle !== getTitle.value
+    ? currentEpisode?.value?.showTitle
+    : null
 })
 
 /*function that updated the global useIsPlayerMinimized */
@@ -378,7 +380,7 @@ onMounted(async () => {
         :can-expand-with-swipe="true"
         :can-unexpand-with-swipe="true"
         :title="getTitle"
-        :station="currentEpisode?.name"
+        :station="currentEpisode?.station"
         :description="getDescription"
         :image="
           templatizePublisherImageUrl(currentEpisode?.image) ?? getEpisodeFallBackImage()
@@ -416,7 +418,7 @@ onMounted(async () => {
               {{ getDate(currentEpisode) }}
             </template>
           </PipeData>
-          <div class="expanded-title">{{ currentEpisode.title }}</div>
+          <div class="expanded-title">{{ getTitle }}</div>
         </template>
         <template #skipBack>
           <Previous10 />
