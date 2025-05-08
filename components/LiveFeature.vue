@@ -256,7 +256,7 @@ const togglePlayHere = async () => {
       gap: 0.5rem;
     }
     .blurb {
-      @include t3lines();
+      @include t4lines();
       @include media("<xl") {
         @include t2lines();
       }
