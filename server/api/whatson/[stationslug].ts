@@ -58,6 +58,7 @@ const formatShowData = (apiResponse: any) => {
 		stationImage: apiResponse.data[0].attributes['image-logo'],
 		timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
 		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
+		showTitle: title,
 		title,
 		titleLink,
 		showSlug,
