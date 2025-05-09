@@ -558,7 +558,7 @@ defineExpose({
   >
     <Transition name="expand">
       <div v-show="!isExpanded">
-        <div class="flex h-full align-items-center">
+        <div class="content flex h-full align-items-center">
           <div
             v-if="props.image"
             class="track-info-image flex-none"
@@ -687,10 +687,10 @@ defineExpose({
 
     <Transition name="expand-delay">
       <div v-show="isExpanded" class="expanded-view">
-        <div ref="expandedContentHolder" class="expanded-content-holder">
+        <div ref="expandedContentHolder" class="content expanded-content-holder">
           <div class="header">
             <slot name="expanded-header">
-              <div class="flex justify-content-between">
+              <div class="flex justify-content-between flex-row-reverse">
                 <Button
                   class="unexpand-btn p-button-icon-only p-button-secondary"
                   aria-label="close expanded player button"

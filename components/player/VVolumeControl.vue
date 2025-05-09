@@ -105,7 +105,7 @@ onUpdated(() => {
   }
   .volume-control-slider {
     position: absolute;
-    right: 40px;
+    right: 45px;
     transition: width var(--p-transition-duration), opacity var(--p-transition-duration),
       margin-right var(--p-transition-duration);
     -webkit-transition: width var(--p-transition-duration),

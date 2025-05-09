@@ -142,6 +142,8 @@ const handleLogoClick = () => {
 .the-header {
   background: var(--header-background);
   backdrop-filter: blur(4px);
+  max-width: $contentWidth;
+  margin: auto;
   //border: 1px solid var(--stroke-toggle-color);
 
   .top {

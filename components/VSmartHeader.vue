@@ -112,7 +112,7 @@ watch(
   left: 0;
   top: 0;
   top: env(safe-area-inset-top);
-  width: 100%;
+  width: 100vw;
   z-index: 999;
   //box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.36);
 }

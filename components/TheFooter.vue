@@ -12,7 +12,7 @@ const submitForm = (event) => {
 
 <template>
   <section class="the-footer style-mode-dark py-5 overflow-hidden relative">
-    <div :class="[{ 'is-playing': isCurrentEpisode }]">
+    <div class="content" :class="[{ 'is-playing': isCurrentEpisode }]">
       <div class="grid content mb-5">
         <div class="col-12 xl:col mb-5">
           <div class="flex gap-5 flex-column">
@@ -126,46 +126,49 @@ const submitForm = (event) => {
 .the-footer {
   max-width: 100%;
   background-color: var(--p-surface-950);
-
-  .social {
-    .p-button {
-      width: 30px;
-      height: 30px;
-    }
-  }
-
-  .menu {
-    .menu-holder {
-      min-width: 170px;
-
-      @include media(">xxl") {
-        min-width: 200px;
-      }
-
-      @include media("<sm") {
-        min-width: 150px;
+  .content {
+    max-width: $contentWidth;
+    margin: auto;
+    .social {
+      .p-button {
+        width: 30px;
+        height: 30px;
       }
     }
-  }
 
-  .blurb {
-    max-width: 430px;
-  }
+    .menu {
+      .menu-holder {
+        min-width: 170px;
 
-  .newsletter {
-    max-width: 420px;
-  }
+        @include media(">xxl") {
+          min-width: 200px;
+        }
 
-  .logo3d {
-    position: absolute;
-    top: 0;
-    right: -20vw;
-    z-index: 0;
-    opacity: 1;
-    height: 100%;
-    width: 80vw;
-    opacity: 0.05;
-    pointer-events: none;
+        @include media("<sm") {
+          min-width: 150px;
+        }
+      }
+    }
+
+    .blurb {
+      max-width: 430px;
+    }
+
+    .newsletter {
+      max-width: 420px;
+    }
+
+    .logo3d {
+      position: absolute;
+      top: 0;
+      right: -20vw;
+      z-index: 0;
+      opacity: 1;
+      height: 100%;
+      width: 80vw;
+      opacity: 0.05;
+      pointer-events: none;
+    }
   }
 }
 </style>

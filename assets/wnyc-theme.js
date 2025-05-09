@@ -1011,10 +1011,10 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           range: {
-            background: "{surface.950}",
+            background: "{surface.0}",
           },
           handle: {
-            background: "{surface.950}",
+            background: "transparent",
             hoverBackground: "{surface.0}",
             content: {
               background: "{surface.0}",
