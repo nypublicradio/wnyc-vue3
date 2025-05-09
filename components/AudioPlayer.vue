@@ -498,6 +498,11 @@ body {
 }
 
 .persistent-player {
+  .content {
+    max-width: $playerMaxWidth;
+    margin: auto;
+    width: 100vw;
+  }
   &.expanded {
     bottom: 0;
   }
