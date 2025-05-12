@@ -127,7 +127,8 @@ function submitForm() {
               <Button
                 :disabled="isSubmitting || !checked"
                 class="submit-btn p-button-rounded"
-                :class="[{ 'p-button-outlined': outlined }]"
+                :class="[{ 'p-button-outlined': outlined, disabled: !checked }]"
+                s
                 :icon="submitButtonIcon ? `pi ${submitButtonIcon}` : null"
                 icon-pos="right"
                 :label="submitButtonIcon ? null : submitButtonText"
@@ -185,6 +186,12 @@ function submitForm() {
   &:hover {
     background-color: var(--p-primary-color);
     border-color: var(--p-primary-color);
+  }
+  &.disabled {
+    &:hover {
+      background-color: #ffffff1a;
+      border-color: #737373;
+    }
   }
 }
 
