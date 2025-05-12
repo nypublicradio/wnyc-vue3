@@ -82,7 +82,7 @@ watch(
 <template>
   <svg
     ref="hbAnimRef"
-    class="hb-anim relative"
+    class="hb-anim relative w-full"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     stroke-width="1.5"

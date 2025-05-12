@@ -244,6 +244,9 @@ const restoreScrollPosition = () => {
 
   .p-drawer-header {
     padding: 0.4rem 0.75rem;
+    max-width: $contentWidth;
+    width: 100vw;
+    margin: auto;
 
     @include media("<lg") {
       padding: 0.5rem;
@@ -253,6 +256,9 @@ const restoreScrollPosition = () => {
   }
 
   .p-drawer-content {
+    max-width: $contentWidth;
+    width: 100vw;
+    margin: auto;
     padding: 0;
   }
 
