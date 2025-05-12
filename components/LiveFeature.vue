@@ -60,12 +60,17 @@ const togglePlayHere = async () => {
             >
               <div class="hidden md:flex align-items-center">
                 <LiveBadge fontSize="0.9rem" class="-ml-2" />
-                <p class="font-bold">
+                <p
+                  v-if="currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd"
+                  class="font-bold"
+                >
                   {{ currentEpisodeHolder.timeStart }} -
                   {{ currentEpisodeHolder.timeEnd }}
                 </p>
               </div>
-              <h2 class="md:text-xl lg:text-4xl">
+              <h2
+                class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t3lines"
+              >
                 {{ currentEpisodeHolder?.title }}
               </h2>
               <div
