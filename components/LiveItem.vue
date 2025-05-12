@@ -50,7 +50,7 @@ const handleClick = () => {
         </h2>
         <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
         <div
-          class="blurb truncate t3lines html-formating p1"
+          class="blurb truncate t3lines html-formatting p1"
           v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
         />
       </div>

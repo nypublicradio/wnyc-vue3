@@ -74,7 +74,11 @@ const togglePlayHere = async () => {
                 {{ currentEpisodeHolder?.title }}
               </h2>
               <div
-                class="blurb truncate html-formating"
+                v-if="
+                  currentEpisodeHolder?.onTodaysShowHeadline ||
+                  currentEpisodeHolder?.details
+                "
+                class="blurb truncate html-formatting"
                 v-html="
                   currentEpisodeHolder?.onTodaysShowHeadline ??
                   currentEpisodeHolder?.details
