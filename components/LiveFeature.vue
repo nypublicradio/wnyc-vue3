@@ -48,6 +48,7 @@ const togglePlayHere = async () => {
               alt="show poster image"
               class="image"
               :key="currentEpisodeHolder?.id"
+              loading="eager"
             />
             <WnycLoader v-else class="image-loader-anim" size="1rem" bg spinner />
           </transition>
