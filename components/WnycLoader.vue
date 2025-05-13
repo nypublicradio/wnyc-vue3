@@ -173,18 +173,18 @@ const svgWidth = 75
     background: -moz-radial-gradient(
       center,
       ellipse cover,
-      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0.15) 0%,
       rgba(rgb(255, 255, 255), 0) 100%
     );
     background: -webkit-radial-gradient(
       center,
       ellipse cover,
-      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0.15) 0%,
       rgba(rgb(255, 255, 255), 0) 100%
     );
     background: radial-gradient(
       ellipse at center,
-      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0.15) 0%,
       rgba(rgb(255, 255, 255), 0) 100%
     );
   }

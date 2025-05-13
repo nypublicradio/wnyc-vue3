@@ -57,7 +57,7 @@ const togglePlayHere = async () => {
           <transition name="fade">
             <div
               v-if="currentEpisodeHolder"
-              class="flex flex-column gap-2 lg:gap-3 justify-content-center px-3"
+              class="flex flex-column gap-2 xl:gap-3 justify-content-center px-3"
             >
               <div class="hidden md:flex align-items-center">
                 <LiveBadge fontSize="0.9rem" class="-ml-2" />
@@ -212,6 +212,8 @@ const togglePlayHere = async () => {
     .blurb {
       * {
         line-height: 1.5rem !important;
+        margin-block-start: 0em;
+        margin-block-end: 0em;
       }
       // removes extra tags from the blurb
       *:not(:first-child) {

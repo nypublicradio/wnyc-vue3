@@ -95,7 +95,7 @@ const togglePlayHere = (story) => {
 </script>
 
 <template>
-  <div class="story-page">
+  <div class="npr-story-page">
     <Html lang="en">
       <Head>
         <Title>{{ storyData?.title }} | WNYC</Title>
@@ -107,7 +107,7 @@ const togglePlayHere = (story) => {
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
-          class="back-btn text-color -ml-4"
+          class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"
           rounded
           text
@@ -127,7 +127,7 @@ const togglePlayHere = (story) => {
         :maxHeight="storyData.height"
         :width="768"
         :alt="storyData.alt"
-        class="story-page-image"
+        class="npr-story-page-image"
       >
         <template #caption>
           <VImageCaption
@@ -168,7 +168,7 @@ const togglePlayHere = (story) => {
           </template>
         </PipeData>
         <h1 class="mb-1 alt">{{ storyData?.title }}</h1>
-        <div class="story-page-author opacity-70 mb-3 text-xs mt-2">
+        <div class="npr-story-page-author opacity-70 mb-3 text-xs mt-2">
           <VByline v-if="storyData?.authors?.length > 0" :authors="storyData.authors" />
         </div>
         <div class="flex align-items-center justify-content-between gap-3 flex-wrap">
@@ -211,7 +211,7 @@ const togglePlayHere = (story) => {
       </section>
       <v-streamfield
         v-if="storyData?.body"
-        class="story-page-body"
+        class="npr-story-page-body"
         :article="storyData"
       />
 
@@ -229,29 +229,38 @@ const togglePlayHere = (story) => {
   </div>
 </template>
 
-<style lang="scss">
-.story-page h1.alt {
+<style lang="scss" scoped>
+.npr-story-page h1.alt {
   font-size: var(--font-size-8);
   font-weight: var(--font-weight-700);
   line-height: var(--font-size-10);
 }
 
-.story-page .star-icon {
+.npr-story-page .npr-story-page-image {
+  width: 100vw;
+  max-width: calc($contentWidth - 100px);
+  margin: auto;
+}
+
+.npr-story-page .star-icon {
   height: 28px;
   width: 28px;
 }
-.story-page .v-byline .flexible-link {
+.npr-story-page .v-byline .flexible-link {
   color: var(--p-text-color) !important;
   text-decoration: none !important;
 }
 
-.story-page .comments-btn {
+.npr-story-page .comments-btn {
   .comments-icon {
     margin-top: 3px;
   }
 }
+</style>
+
+<style lang="scss">
 // because it does not saw "read more" right now, we will center the name
-.article-footer .v-person .author-profile {
+.npr-story-page .article-footer .v-person .author-profile {
   align-items: center !important;
 }
 </style>

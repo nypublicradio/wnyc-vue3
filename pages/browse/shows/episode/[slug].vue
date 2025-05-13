@@ -210,7 +210,7 @@ const getEpisodeImage = () => {
     <section class="">
       <div class="flex align-items-center">
         <Button
-          class="back-btn text-color -ml-4"
+          class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"
           rounded
           text
@@ -222,7 +222,7 @@ const getEpisodeImage = () => {
       </div>
     </section>
     <FetchError v-if="error" />
-    <div class="relative mb-4">
+    <div class="episode-page-image-holder relative mb-4">
       <v-image
         v-if="status == 'success'"
         :src="getEpisodeImage()"
@@ -401,6 +401,11 @@ const getEpisodeImage = () => {
 </template>
 
 <style lang="scss">
+.episode-page .episode-page-image-holder {
+  width: 100vw;
+  max-width: calc($contentWidth - 100px);
+  margin: auto;
+}
 .episode-page .episode-page-image {
   width: 100%;
   height: auto;
