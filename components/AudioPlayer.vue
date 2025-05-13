@@ -32,11 +32,11 @@ import {
   hasQueryParams,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
-
+import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 
 const devicePlatform = Capacitor.getPlatform()
-
+const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -204,6 +204,11 @@ const togglePlayHere = async (e) => {
 
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
+  if (e) {
+    saveScrollPosition()
+  } else {
+    restoreScrollPosition()
+  }
   isPlayerExpanded.value = e
 }
 

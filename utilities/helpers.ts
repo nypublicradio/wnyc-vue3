@@ -971,7 +971,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
 
-  if (currentEpisode.value?.audio !== media.audio) {
+  if (currentEpisode.value?.id !== media.id) {
     currentEpisode.value = prepForPlayer(media)
     saveRecentlyPlayed(media, type)
   }
@@ -988,6 +988,7 @@ export const getCssVar = (name: string, px = false) => {
 // ROUTING
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
+  console.log("goToEpisodePage", ep)
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${ep.meta?.slug ?? ep.slug}`,
     query: params,
