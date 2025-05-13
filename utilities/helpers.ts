@@ -1045,15 +1045,10 @@ export const hasAudio = (audio) => {
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
-  let rawbody = ""
-  rawbody += bodyArr.map((item) => {
-    if (item.type === "paragraph") {
-      return item.value
-    } else {
-      return ""
-    }
-  })
-  return rawbody
+  return bodyArr
+    .filter((item) => item.type === "paragraph")
+    .map((item) => item.value.replace(/<\/?[^>]+(>|$)/g, "")) // Strip HTML tags
+    .join(" ");
 }
 
 // Define the interface for the function parameters
