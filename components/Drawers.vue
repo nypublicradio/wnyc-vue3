@@ -11,6 +11,7 @@ import {
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
 } from "~/composables/states"
+import useManageScrollPosition from "~/composables/useManageScrollPosition"
 
 const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
@@ -21,20 +22,7 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
-const scrollPosition = ref(0)
-
-// save the users current scroll position
-const saveScrollPosition = () => {
-  scrollPosition.value = window.scrollY
-}
-// restore the user to their saved scroll position
-const restoreScrollPosition = () => {
-  document.body.classList.remove("p-overflow-hidden")
-  if (scrollPosition.value > 0) {
-    window.scrollTo(0, parseInt(scrollPosition.value))
-    scrollPosition.value = 0
-  }
-}
+const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 </script>
 
 <template>
