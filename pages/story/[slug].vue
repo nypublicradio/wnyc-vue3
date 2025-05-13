@@ -156,7 +156,7 @@ const togglePlayHere = (story) => {
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
-          class="back-btn text-color -ml-4"
+          class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"
           rounded
           text
@@ -281,6 +281,12 @@ const togglePlayHere = (story) => {
 .story-page .star-icon {
   height: 28px;
   width: 28px;
+}
+
+.story-page .story-page-image {
+  width: 100vw;
+  max-width: calc($contentWidth - 100px);
+  margin: auto;
 }
 .story-page .v-byline .flexible-link {
   color: var(--p-text-color) !important;

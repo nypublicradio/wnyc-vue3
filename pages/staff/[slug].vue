@@ -124,7 +124,7 @@ watch(loadMoreRefVisible, (val) => {
     </Html>
     <div>
       <Button
-        class="back-btn text-color -ml-4"
+        class="back-btn text-color -ml-3"
         icon="pi pi-chevron-left"
         rounded
         text
@@ -157,7 +157,7 @@ watch(loadMoreRefVisible, (val) => {
             <div
               v-for="(article, index) in newPageData?.articles"
               :key="article?.uuid"
-              class="col-12 md:col-12 mb-3 md:px-8"
+              class="col-12 md:col-6 xl:col-4 mb-3"
             >
               <StoryItem
                 :data="article"
