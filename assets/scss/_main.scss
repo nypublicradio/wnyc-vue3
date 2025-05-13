@@ -27,6 +27,16 @@ a:focus-visible {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Target WebKit browsers (Chrome, Edge, Safari) on Windows */
+@media screen and (windows) and (-webkit-min-device-pixel-ratio: 0) {
+  ::-webkit-scrollbar {
+    width: 0px; /* Make the scrollbar visually non-existent */
+  }
+  ::-webkit-scrollbar-thumb {
+    background: transparent; /* Make the thumb transparent */
+  }
+}
+
 html {
   overflow-x: hidden !important;
   overflow-y: auto !important;
