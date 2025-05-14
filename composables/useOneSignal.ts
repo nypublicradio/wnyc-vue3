@@ -15,7 +15,7 @@ import {
 } from "~/utilities/helpers"
 import { cancelAllPendingLocalNotifications, setPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
-import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
+import { doActionId, doTrigger } from "~/server/utils/oneSignalNotificationCustomActions"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
 // shared state for in-app notification
@@ -73,6 +73,16 @@ export default function useOneSignal() {
           doActionId(actionId)
         }
 
+        const trigger = urlObj.searchParams.get("trigger")
+        const triggerValue = urlObj.searchParams.get("triggervalue") ?? "true"
+        if (trigger) {
+          trackClickEvent(
+            "In-App Trigger",
+            "Notification",
+            `trigger = ${trigger}`
+          )
+          doTrigger(actionId, triggerValue)
+        }
 
         // deep link
         const route = getPathAndQuery(url)
