@@ -51,8 +51,8 @@ export default function useOneSignal() {
 
   // function to handle the click actions of the notifications
   const linkOrRouteOrAction = async (event) => {
-    const url = event.result.url
-    const action = event.result.actionId
+    const url = event.result?.url ?? event.url ?? event
+    const action = event.result?.actionId
     const settingSideBar = useSettingSideBar()
     const settingsSideBarBrowser = useSettingsSideBarBrowser()
     // if settingSideBar is open, close it
@@ -60,6 +60,20 @@ export default function useOneSignal() {
     if (settingsSideBarBrowser.value) settingsSideBarBrowser.value = false
     if (url) {
       if (!url.includes("https://")) {
+
+        // check if the url has the query actionid to support actionId's from any wnyc:// link
+        const urlObj = new URL(url)
+        const actionId = urlObj.searchParams.get("actionid")
+        if (actionId) {
+          trackClickEvent(
+            "Action",
+            "Notification",
+            `action = ${action}`
+          )
+          doActionId(actionId)
+        }
+
+
         // deep link
         const route = getPathAndQuery(url)
 
@@ -403,5 +417,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels, linkOrRouteOrAction }
 }

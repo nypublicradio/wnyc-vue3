@@ -1,32 +1,22 @@
 <script setup lang="ts">
-import {
-  getAndSetUserProfile,
-  refreshData,
-  setStatusDarkMode,
-} from "~/utilities/helpers"
+import { getAndSetUserProfile, refreshData } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
-import { ScreenOrientation } from "@capacitor/screen-orientation"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
-  useIsActive,
 } from "~/composables/states"
-import {
-  useBrowserTopColor,
-  useBrowserTopColorDarkMode,
-} from "~/composables/globals"
+import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
-import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const { fetchSchedule } = useLiveStream()
 
@@ -43,10 +33,8 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
-const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
-  useOneSignal()
+const { initOneSignal, notificationPermissionSync, linkOrRouteOrAction } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -84,9 +72,32 @@ isNetworkConnected.value = initNetworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
+  // this is for auth redirect from the web
+  const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
-    //Handle the app url open event
-    handleAppUrlOpen(event)
+    //if the url has a query var "code" then we need to exchange it for a session
+    if (event.url.includes("code=")) {
+      //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
+      const code = event.url.split("=")[1]
+      // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
+      const cleanCode = code.replace("#", "")
+      try {
+        await client.auth.exchangeCodeForSession(cleanCode)
+        navigateTo("/")
+        window.location.reload()
+        return
+      } catch (error) {
+        console.error(error)
+        toast.add({
+          severity: "error",
+          summary: "Authentication failed",
+          life: 6000,
+        })
+        return
+      }
+    } else if (event.url.includes("wnyc://")) {
+      linkOrRouteOrAction(event)
+    }
   })
 }
 
@@ -94,14 +105,9 @@ onMounted(async () => {
   // OneSignal
   if (isApp.value) initOneSignal()
 
-  // check for stale auth return route
-  const { checkStaleAuthRoute } = useAuthReturnRoute()
-  await checkStaleAuthRoute()
-
   await getAndSetUserProfile()
 
   if (isApp.value) {
-    await ScreenOrientation.lock({ orientation: "portrait" })
     await initFileSystem()
     await addListeners()
     await initLocalNotifications()
@@ -116,8 +122,6 @@ onMounted(async () => {
   // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
-    // set global active state
-    isActiveGlobal.value = isActive
     if (isActive) {
       // refresh data
       refreshData()
@@ -126,9 +130,6 @@ onMounted(async () => {
       if (isApp.value) {
         await notificationPermissionSync(undefined)
       }
-
-      // set the system status bar to dark mode again
-      await setStatusDarkMode(currentUserProfile.value?.dark_mode)
     }
   })
 
@@ -182,9 +183,7 @@ watch(globalError, (error) => {
     <Head>
       <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
       <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title>
-        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
-      </Title>
+      <Title> WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News </Title>
       <Meta
         name="description"
         content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
@@ -229,17 +228,13 @@ watch(globalError, (error) => {
       <Meta
         name="theme-color"
         :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
+          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
         "
       />
       <Meta
         name="msapplication-TileColor"
         :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
+          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
         "
       />
     </Head>
