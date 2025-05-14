@@ -81,7 +81,7 @@ export default function useOneSignal() {
             "Notification",
             `trigger = ${trigger}`
           )
-          doTrigger(actionId, triggerValue)
+          doTrigger(trigger, triggerValue)
         }
 
         // deep link
