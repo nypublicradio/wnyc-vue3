@@ -3,9 +3,9 @@ import {
 } from "~/utilities/helpers"
 import OneSignal from "onesignal-cordova-plugin"
 
-const triggerInAppNotification = (id: string) => {
+export const doTrigger = async (id: string, val: string = 'true') => {
     if (typeof OneSignal !== 'undefined') {
-        OneSignal.InAppMessages.addTrigger(id, 'true');
+        await OneSignal.InAppMessages.addTrigger(id, val);
     } else {
         console.error('OneSignal SDK not initialized.');
     }
@@ -17,8 +17,8 @@ export async function doActionId(actionId: string) {
         case "tracking-permission":
             await askTrackingPermissions()
             break
-        case "donate":
-            triggerInAppNotification(actionId)
+        case "sample":
+            alert("Sample action triggered")
             break
         default:
             // do something
