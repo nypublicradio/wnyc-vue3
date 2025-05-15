@@ -3,7 +3,8 @@ import {
 } from "~/utilities/helpers"
 import OneSignal from "onesignal-cordova-plugin"
 
-export const doTrigger = async (id: string, val: string = 'true') => {
+// function to handle trigger actions from OneSignal
+export const doTrigger = async (id: string, val = 'true') => {
     if (typeof OneSignal !== 'undefined') {
         await OneSignal.InAppMessages.addTrigger(id, val);
     } else {
@@ -11,14 +12,14 @@ export const doTrigger = async (id: string, val: string = 'true') => {
     }
 }
 
-// repository switch case for custom actions that can be triggered by OneSignal notifications based on the actionId
+// switch case for custom actions that can be triggered by OneSignal notifications based on the actionId
 export async function doActionId(actionId: string) {
     switch (actionId) {
         case "tracking-permission":
             await askTrackingPermissions()
             break
         case "sample":
-            alert("Sample action triggered")
+            console.error("Sample action triggered")
             break
         default:
             // do something
