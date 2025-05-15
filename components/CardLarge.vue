@@ -13,8 +13,10 @@ const props = defineProps({
 })
 const emit = defineEmits(["on-click"])
 
+// handle the click event and navigate to the appropriate page
 const onClick = (item) => {
   emit("on-click")
+  //TODO: the audio condition should be changed to something more reliable
   if (hasAudio(item.audio)) {
     goToEpisodePage(props.item)
   } else {

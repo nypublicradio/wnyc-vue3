@@ -1,3 +1,4 @@
+// composable to manage scroll position when opening and closing drawers and modals
 export default function useManageScrollPosition() {
     const scrollPosition = useState('scrollPosition', () => 0)
 
