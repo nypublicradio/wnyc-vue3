@@ -34,7 +34,7 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync } = useOneSignal()
+const { initOneSignal, notificationPermissionSync, linkOrRouteOrAction } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -95,6 +95,8 @@ const addListeners = async () => {
         })
         return
       }
+    } else if (event.url.includes("wnyc://")) {
+      linkOrRouteOrAction(event)
     }
   })
 }

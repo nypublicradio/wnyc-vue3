@@ -14,7 +14,7 @@ import {
 } from "~/utilities/helpers"
 import { cancelAllPendingLocalNotifications, setPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
-import { doActionId } from "~/server/utils/oneSignalNotificationCustomActions"
+import { doActionId, doTrigger } from "~/server/utils/oneSignalNotificationCustomActions"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
 // shared state for in-app notification
@@ -50,13 +50,38 @@ export default function useOneSignal() {
 
   // function to handle the click actions of the notifications
   const linkOrRouteOrAction = async (event) => {
-    const url = event.result.url
-    const action = event.result.actionId
+    const url = event.result?.url ?? event.url ?? event
+    const action = event.result?.actionId
     const settingSideBar = useSettingSideBar()
     // if settingSideBar is open, close it
     if (settingSideBar.value) settingSideBar.value = false
     if (url) {
       if (!url.includes("https://")) {
+
+        // check if the url has the query actionid to support actionId's from any wnyc:// link
+        const urlObj = new URL(url)
+        const actionId = urlObj.searchParams.get("actionid")
+        if (actionId) {
+          trackClickEvent(
+            "Action",
+            "Notification",
+            `action = ${action}`
+          )
+          doActionId(actionId)
+        }
+
+        // check if the url has the query trigger to support triggers's from any wnyc:// link
+        const trigger = urlObj.searchParams.get("trigger")
+        const triggerValue = urlObj.searchParams.get("triggervalue") ?? "true"
+        if (trigger) {
+          trackClickEvent(
+            "In-App Trigger",
+            "Notification",
+            `trigger = ${trigger}`
+          )
+          doTrigger(trigger, triggerValue)
+        }
+
         // deep link
         const route = getPathAndQuery(url)
 
@@ -81,6 +106,7 @@ export default function useOneSignal() {
       }
     }
 
+    // action from the notification
     if (action) {
       // I would imagine that we would set and share action IDs to the team and react accordingly here
       trackClickEvent(
@@ -400,5 +426,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels, linkOrRouteOrAction }
 }
