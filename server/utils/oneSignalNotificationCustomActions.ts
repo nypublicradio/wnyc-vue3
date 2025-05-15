@@ -4,7 +4,7 @@ import {
 import OneSignal from "onesignal-cordova-plugin"
 
 // function to handle trigger actions from OneSignal
-export const doTrigger = async (id: string, val: string = 'true') => {
+export const doTrigger = async (id: string, val = 'true') => {
     if (typeof OneSignal !== 'undefined') {
         await OneSignal.InAppMessages.addTrigger(id, val);
     } else {
