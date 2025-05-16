@@ -24,11 +24,11 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!--<data android:scheme="wnycalpha" />
+                <data android:scheme="wnycalpha" />
                 <data android:scheme="wnyc" />
                 <data android:scheme="https" android:host="demo.native-app.wnyc.org" />
                 <data android:scheme="https" android:host="native-app.wnyc.org" />
-                <data android:scheme="https" android:host="wnyc.org" /> -->
+                <!--<data android:scheme="https" android:host="wnyc.org" /> -->
             </intent-filter>
         </activity>
 
