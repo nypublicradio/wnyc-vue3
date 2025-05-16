@@ -150,18 +150,23 @@ export default function useOneSignal() {
       doTrigger(trigger, triggerValue)
     }
 
-    // route to the url deep link
-    const route = getPathAndQuery(event.url)
+    // route to the url deep link if it is NOT the root url
+    // remove trailing slashes from the url
+    const normalizedPathname = urlObj.pathname.replace(/\/+$/, "");
+    const isIndexPath = normalizedPathname === "";
+    if (!isIndexPath) {
+      const route = getPathAndQuery(event.url)
 
-    trackClickEvent(
-      "Deep link",
-      "app opened from link",
-      `url = ${event.url}`
-    )
-    // slight delay needed for a cold start, or it will route home after the notification route
-    setTimeout(async () => {
-      await navigateTo(route)
-    }, 1000)
+      trackClickEvent(
+        "Deep link",
+        "app opened from link",
+        `url = ${event.url}`
+      )
+      // slight delay needed for a cold start, or it will route home after the notification route
+      setTimeout(async () => {
+        await navigateTo(route)
+      }, 1000)
+    }
   }
 
   // function to set the salesforce_id in OneSignal as a user tag
