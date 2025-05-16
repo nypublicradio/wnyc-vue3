@@ -49,38 +49,14 @@ export default function useOneSignal() {
   }
 
   // function to handle the click actions of the notifications
-  const linkOrRouteOrAction = async (event) => {
-    const url = event.result?.url ?? event.url ?? event
+  const handleAppNotificationUrlOpen = async (event) => {
+    const url = event.result?.url
     const action = event.result?.actionId
     const settingSideBar = useSettingSideBar()
     // if settingSideBar is open, close it
     if (settingSideBar.value) settingSideBar.value = false
     if (url) {
       if (!url.includes("https://")) {
-
-        // check if the url has the query actionid to support actionId's from any links in the appUrlProtocolsArr global array
-        const urlObj = new URL(url)
-        const actionId = urlObj.searchParams.get("actionid")
-        if (actionId) {
-          trackClickEvent(
-            "Action",
-            "Notification",
-            `action = ${action}`
-          )
-          doActionId(actionId)
-        }
-
-        // check if the url has the query trigger to support triggers's from  any links in the appUrlProtocolsArr global array
-        const trigger = urlObj.searchParams.get("trigger")
-        const triggerValue = urlObj.searchParams.get("triggervalue") ?? "true"
-        if (trigger) {
-          trackClickEvent(
-            "In-App Trigger",
-            "Notification",
-            `trigger = ${trigger}`
-          )
-          doTrigger(trigger, triggerValue)
-        }
 
         // deep link
         const route = getPathAndQuery(url)
@@ -116,6 +92,76 @@ export default function useOneSignal() {
       )
       doActionId(action)
     }
+  }
+
+  const handleAppUrlOpen = async (event) => {
+    // if settingSideBar is open, close it
+    const settingSideBar = useSettingSideBar()
+    if (settingSideBar.value) settingSideBar.value = false
+
+    const urlObj = new URL(event.url)
+
+    //if the url has a query var "code" then we need to exchange it for a session
+    const sessionCode = urlObj.searchParams.get("code")
+    if (sessionCode) {
+      //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
+      const code = event.url.split("=")[1]
+      // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
+      const cleanCode = code.replace("#", "")
+
+      const client = useSupabaseClient()
+      const globalToast = useGlobalToast()
+      try {
+        await client.auth.exchangeCodeForSession(cleanCode)
+        navigateTo("/")
+        window.location.reload()
+        return
+      } catch (error) {
+        console.error(error)
+        globalToast.value = {
+          severity: "error",
+          summary: "Authentication failed",
+          life: 6000,
+        }
+        return
+      }
+    }
+
+    // check if the url has the query actionid to support actionId's from any links in the appUrlProtocolsArr global array
+    const actionId = urlObj.searchParams.get("actionid")
+    if (actionId) {
+      trackClickEvent(
+        "Action",
+        "app opened from link",
+        `action = ${actionId}, url = ${event.url}`
+      )
+      doActionId(actionId)
+    }
+
+    // check if the url has the query trigger to support triggers's from  any links in the appUrlProtocolsArr global array
+    const trigger = urlObj.searchParams.get("trigger")
+    const triggerValue = urlObj.searchParams.get("triggervalue") ?? "true"
+    if (trigger) {
+      trackClickEvent(
+        "In-App Trigger",
+        "app opened from link",
+        `trigger = ${trigger}, url = ${event.url}`
+      )
+      doTrigger(trigger, triggerValue)
+    }
+
+    // route to the url deep link
+    const route = getPathAndQuery(event.url)
+
+    trackClickEvent(
+      "Deep link",
+      "app opened from link",
+      `url = ${event.url}`
+    )
+    // slight delay needed for a cold start, or it will route home after the notification route
+    setTimeout(async () => {
+      await navigateTo(route)
+    }, 1000)
   }
 
   // function to set the salesforce_id in OneSignal as a user tag
@@ -184,7 +230,7 @@ export default function useOneSignal() {
 
   // triggered when the listener for Notifications "click" is called
   const notificationClickListener = function (event) {
-    linkOrRouteOrAction(event)
+    handleAppNotificationUrlOpen(event)
   }
 
   // triggered when the listener for InAppMessages "didDisplay" is called isInAppNotificationActive to true
@@ -199,7 +245,7 @@ export default function useOneSignal() {
 
   // triggered when the listener for InAppMessages "click" is called
   const inAppNotificationClickListener = function (event) {
-    linkOrRouteOrAction(event)
+    handleAppNotificationUrlOpen(event)
   }
 
   // function to check the permissions for notifications
@@ -426,5 +472,5 @@ export default function useOneSignal() {
     await OneSignal.logout()
   }
 
-  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels, linkOrRouteOrAction }
+  return { initOneSignal, requestNotificationPermission, checkPermissions, notificationPermissionSync, OneSignalLogin, logout, toggleOneSignalUserTag, getUserTags, getMasterNotificationChannels, masterNotificationChannelsArray, syncMasterNotificationChannels, handleAppUrlOpen }
 }
