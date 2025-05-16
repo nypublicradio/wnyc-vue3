@@ -1,5 +1,6 @@
 import { useIsApp } from "./states"
 
+export const appUrlProtocolsArr = ['wnyc://', 'wnycalpha://']
 
 export const localUserProfileKey = 'localUserProfile'
 

@@ -58,7 +58,7 @@ export default function useOneSignal() {
     if (url) {
       if (!url.includes("https://")) {
 
-        // check if the url has the query actionid to support actionId's from any wnyc:// link
+        // check if the url has the query actionid to support actionId's from any links in the appUrlProtocolsArr global array
         const urlObj = new URL(url)
         const actionId = urlObj.searchParams.get("actionid")
         if (actionId) {
@@ -70,7 +70,7 @@ export default function useOneSignal() {
           doActionId(actionId)
         }
 
-        // check if the url has the query trigger to support triggers's from any wnyc:// link
+        // check if the url has the query trigger to support triggers's from  any links in the appUrlProtocolsArr global array
         const trigger = urlObj.searchParams.get("trigger")
         const triggerValue = urlObj.searchParams.get("triggervalue") ?? "true"
         if (trigger) {

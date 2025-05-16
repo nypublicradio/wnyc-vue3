@@ -10,7 +10,11 @@ import {
   useGlobalToast,
   useIsNetworkConnected,
 } from "~/composables/states"
-import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
+import {
+  useBrowserTopColor,
+  useBrowserTopColorDarkMode,
+  appUrlProtocolsArr,
+} from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
@@ -95,7 +99,7 @@ const addListeners = async () => {
         })
         return
       }
-    } else if (event.url.includes("wnyc://")) {
+    } else if (appUrlProtocolsArr.some((protocol) => event.url.startsWith(protocol))) {
       linkOrRouteOrAction(event)
     }
   })
