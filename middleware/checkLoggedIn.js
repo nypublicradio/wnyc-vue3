@@ -3,10 +3,10 @@ import {
   useGlobalToast,
 } from '~/composables/states'
 
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(() => {
   const currentUser = useCurrentUser()
   const router = useRouter()
-  
+
   // navigate to the home page and notify the user 
   const routeAndNotify = (name = '') => {
     setTimeout(() => {
@@ -24,7 +24,7 @@ export default defineNuxtRouteMiddleware(async () => {
   const checkSession = async () => {
     if (currentUser.value) {
       routeAndNotify(currentUser.value.user_metadata.name)
-    }else{
+    } else {
       const client = useSupabaseClient()
       const user = await client.auth.getSession()
       if (user.data.session) {
