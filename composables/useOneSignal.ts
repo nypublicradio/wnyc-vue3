@@ -59,6 +59,7 @@ export default function useOneSignal() {
     if (url) {
       if (!url.includes("https://")) {
 
+
         // deep link
         const route = getPathAndQuery(url)
 
@@ -169,7 +170,6 @@ export default function useOneSignal() {
       }, 1000)
     }
   }
-
 
   // function to set the salesforce_id in OneSignal as a user tag
   const setSalesForceId = async () => {
