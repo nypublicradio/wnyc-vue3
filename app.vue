@@ -34,7 +34,7 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync } = useOneSignal()
+const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -72,30 +72,9 @@ isNetworkConnected.value = initNetworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  // this is for auth redirect from the web
-  const client = useSupabaseClient()
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
-    //if the url has a query var "code" then we need to exchange it for a session
-    if (event.url.includes("code=")) {
-      //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
-      const code = event.url.split("=")[1]
-      // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
-      const cleanCode = code.replace("#", "")
-      try {
-        await client.auth.exchangeCodeForSession(cleanCode)
-        navigateTo("/")
-        window.location.reload()
-        return
-      } catch (error) {
-        console.error(error)
-        toast.add({
-          severity: "error",
-          summary: "Authentication failed",
-          life: 6000,
-        })
-        return
-      }
-    }
+    //Handle the app url open event
+    handleAppUrlOpen(event)
   })
 }
 
