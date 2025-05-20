@@ -34,12 +34,7 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-const {
-  initOneSignal,
-  notificationPermissionSync,
-  linkOrRouteOrAction,
-  handleAppUrlOpen,
-} = useOneSignal()
+const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
