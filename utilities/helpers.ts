@@ -52,6 +52,7 @@ import {
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -733,18 +734,28 @@ export const getAndSetUserProfile = async () => {
   }
 
   // check local storage for the auth token
-  if (process.client) {
+  if (import.meta.client) {
     const supabaseAuthToken = await Preferences.get({
       key: config.public.supabaseAuthTokenName,
     })
-
     if (supabaseAuthToken.value) {
-      currentUser.value = JSON.stringify(supabaseAuthToken.user)
+      currentUser.value = supabaseAuthToken.user
     }
-
     // check supabase session for logged in user
     if (user?.data?.session?.user) {
       currentUser.value = user?.data?.session?.user
+    }
+
+    // update the google account image if logged in provider is google
+    if (user.data.session?.user.app_metadata.provider === 'google') {
+      await client
+        .from('profiles')
+        .update({
+          updated_at: new Date().toISOString(),
+          name: user.data.session.user.user_metadata.full_name,
+          avatar_image_url: user.data.session.user.user_metadata.avatar_url,
+        })
+        .match({ id: user.data.session.user.id })
     }
 
     // if no network connection, get the user profile from local storage
@@ -812,6 +823,11 @@ export const getAndSetUserProfile = async () => {
       } else {
         // if they are a user, get their profile data
         await getProfile()
+
+        //init Firebase Analytics
+        await FirebaseAnalytics.setUserId({
+          userId: currentUser.value.id,
+        })
 
         // get the device id if it's an app and not a browser
         if (isApp.value) {

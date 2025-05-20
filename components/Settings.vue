@@ -74,7 +74,6 @@ const initializeStationList = (val) => {
       times: `${station.timeStart} - ${station.timeEnd}`,
     })
   })
-
   stationsMenuData.value = tempMenuData
 }
 // handles updating the profile settings in supabase and local storage
