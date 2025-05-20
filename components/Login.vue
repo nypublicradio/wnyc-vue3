@@ -11,6 +11,13 @@ import {
 
 import { trackClickEvent } from "~/utilities/helpers"
 
+const props = defineProps({
+  isRoute: {
+    type: Boolean,
+    default: false,
+  },
+})
+
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
@@ -21,8 +28,10 @@ const config = useRuntimeConfig()
 
 // handle the login and signup sidebars when the user clicks on the sign up link
 const onSignupClick = () => {
-  loginSideBar.value = false
-  signUpSideBar.value = true
+  if (!props.isRoute) {
+    loginSideBar.value = false
+    signUpSideBar.value = true
+  }
 }
 
 // actions to be taken with the login link is clicked
@@ -33,9 +42,11 @@ const onLogin = (provider) => {
 // close all sidebars
 const closeAll = () => {
   onLogin("email")
-  loginSideBar.value = false
-  signUpSideBar.value = false
-  settingsSideBar.value = false
+  if (!props.isRoute) {
+    loginSideBar.value = false
+    signUpSideBar.value = false
+    settingsSideBar.value = false
+  }
 }
 
 // open the forgot password sidebar
@@ -48,12 +59,19 @@ const openForgotPassword = () => {
 <template>
   <div class="login">
     <section>
-      <SHeader label="Log in" @close-sidebar="loginSideBar = false" />
+      <SHeader
+        label="Log in"
+        @close-sidebar="props.isRoute ? navigateTo('/home') : (loginSideBar = false)"
+      />
     </section>
     <section>
       <p>
         Don't have an account yet?
-        <VFlexibleLink to="#" aria-label="sign up" @click="onSignupClick">
+        <VFlexibleLink
+          :to="props.isRoute ? '/signup' : '#'"
+          aria-label="sign up"
+          @click="onSignupClick"
+        >
           Sign up
         </VFlexibleLink>
       </p>

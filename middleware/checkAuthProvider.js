@@ -10,7 +10,6 @@ export default defineNuxtRouteMiddleware(async () => {
   const client = useSupabaseClient()
   const config = useRuntimeConfig()
   const currentUser = useCurrentUser()
-  const redirectSlug = '/home'
   const user = await client.auth.getSession()
 
   // update the user's profile (name and image) if they signed up with google
@@ -32,11 +31,18 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
-  if (process.client) {
-    if (currentUser.value) {
+  // navigate to the home page with delay
+  const routeToHome = () => {
+    setTimeout(() => {
+      navigateTo('/home')
+    }, 500)
+  }
+
+  // check if the user is logged in, updates and routes
+  const checkSession = async () => {
+    if (user.data.session) {
       // check local storage for the auth token
       const supabaseAuthToken = await Preferences.get({ key: config.public.supabaseAuthTokenName })
-
 
       if (supabaseAuthToken.value) {
         currentUser.value = supabaseAuthToken.user
@@ -50,11 +56,13 @@ export default defineNuxtRouteMiddleware(async () => {
       // redirect to home if the user is logged in
       if (currentUser.value) {
         await updateUser()
-        navigateTo(redirectSlug)
+        routeToHome()
+        return
       }
 
       // sometimes the supabase token doesn't get detected right away when magic links are used
       // i don't think we should have to do this, but here we are
+      // this is for the FORGOT PASSWORD flow
       setTimeout(async () => {
         // check if the user is logged in
         if (user?.data?.session?.user) {
@@ -62,27 +70,24 @@ export default defineNuxtRouteMiddleware(async () => {
         }
         // redirect to home if the user is logged in
         if (currentUser.value) {
-
-          //('currentUser setTimeout found', currentUser.value)
           await updateUser()
-          navigateTo(redirectSlug)
+          routeToHome()
         }
-
-
       }, 1000)
+
     } else {
       // if the app has been launched before (set the local user profile), redirect to the home page
       const userLocalStorage = await Preferences.get({ key: localUserProfileKey })
       if (userLocalStorage.value) {
-        // a delay is needed for an unknown reason
-        setTimeout(async () => {
-          await updateUser()
-          navigateTo(redirectSlug)
-        }, 1000)
+        await updateUser()
+        routeToHome()
+      } else {
+        // this will always make sure to move to the home page
+        routeToHome()
       }
     }
-
-    // if not logged in and no local user profile is set, this is the first time the user has launched the app and they see the index page
   }
+
+  checkSession()
 
 })
