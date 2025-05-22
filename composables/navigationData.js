@@ -75,7 +75,7 @@ const allMenuData = [
                 },
                 {
                     label: "Diversity (DEI)",
-                    url: "/diversity-dei-overview"
+                    url: "https://www.nypublicradio.org/diversity-dei-overview/"
                 },
             ],
         ],
@@ -91,7 +91,7 @@ const allMenuData = [
             [
                 {
                     label: "Support Us",
-                    url: "/support"
+                    url: " https://www.nypublicradio.org/support/"
                 },
                 {
                     label: "Become a Sponsor",
@@ -119,7 +119,7 @@ const allMenuData = [
             [
                 {
                     label: "Contact Us",
-                    url: "/contact"
+                    url: "https://newyorkpublicradio.my.site.com/wnyc/s/"
                 },
                 {
                     label: "Get the App",
@@ -127,11 +127,11 @@ const allMenuData = [
                 },
                 {
                     label: "Careers",
-                    url: "/careers"
+                    url: " https://nypublicradio.org/careers/"
                 },
                 {
                     label: "Press",
-                    url: "/press"
+                    url: "https://nypublicradio.org/press-room/"
                 },
             ],
         ],

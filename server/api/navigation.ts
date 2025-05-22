@@ -3,7 +3,7 @@ import axios from 'axios'
 const config = useRuntimeConfig();
 
 // BFF for fetching the data only for the navigation
-async function useNavigationData() {
+async function getNavigationData() {
     try {
         // Fetch all data concurrently
         const [wagtail, donate, stations, shows] = await Promise.all([
@@ -33,7 +33,7 @@ async function useNavigationData() {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res;
     res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
-    const data = await useNavigationData();
+    const data = await getNavigationData();
 
     return { data };
 })
