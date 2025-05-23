@@ -382,6 +382,24 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
+    <VImage
+      v-if="currentEpisode.image"
+      :src="
+        currentEpisode.image?.template ?? currentEpisode.image ?? FALLBACKIMAGEWAGTAIL
+      "
+      :alt="`${currentEpisode.title} featured image`"
+      :width="672"
+      :sizes="[2]"
+      class="card-feature-image"
+    >
+      <template #caption>
+        <VImageCaption
+          v-if="currentEpisode.image.caption"
+          :text="currentEpisode.image.caption"
+          class="caption"
+        />
+      </template>
+    </VImage>
     <HtmlConvert :htmlContent="currentEpisode.details" />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"

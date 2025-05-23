@@ -76,7 +76,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <pre class="text-xs">{{ currentEpisode }}</pre>
+    <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
