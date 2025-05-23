@@ -2,6 +2,7 @@
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import { checkIsFavorited, addToFavorites2 } from "~/utilities/helpers"
 import { useCurrentEpisodeHolder, useCurrentEpisode } from "~/composables/states"
+import { FALLBACKIMAGEWAGTAIL } from "~/composables/globals"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -88,7 +89,7 @@ const getDotMenuItems = (bucketItem) => {
       :aria-label="`${props.data.title} show details`"
     >
       <VImage
-        :src="props.data.image.template ?? props.data.image.url"
+        :src="props.data.image?.template ?? props.data.image?.url ?? FALLBACKIMAGEWAGTAIL"
         :height="116"
         :width="116"
         :ratio="[1, 1]"
