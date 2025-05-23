@@ -45,6 +45,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  command: {
+    type: Function,
+    default: null,
+  },
 })
 
 const emit = defineEmits([
@@ -103,6 +107,9 @@ const handleMouseLeave = () => {
     :radius="props.radius"
     @flexible-link-click="
       () => {
+        if (props.command) {
+          props.command()
+        }
         closePopover()
         emit('emit-click')
         trackClickEvent(

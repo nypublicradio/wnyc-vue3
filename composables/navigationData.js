@@ -195,7 +195,10 @@ const allMenuData = [
                 {
                     label: "Log out",
                     class: "logout",
-                    command: () => { logOutUser() },
+                    url: "/home",
+                    command: () => {
+                        logOutUser()
+                    },
                 },
             ],
         ],

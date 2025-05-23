@@ -101,7 +101,6 @@ export default async function useNavigationData() {
             // Create the 'allNavigationData' state *before* header-specific modifications
             // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
             const workingAllNav = workingHeaderNav.map(item => ({ ...item }));
-
             // Normalize and merge Wagtail Primary Navigation
             const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation);
             workingHeaderNav.splice(2, 0, ...primaryNavItems);
