@@ -5,7 +5,6 @@ const props = defineProps({
     required: true,
   },
 })
-
 const emit = defineEmits(["emit-click"])
 </script>
 <template>
@@ -19,6 +18,7 @@ const emit = defineEmits(["emit-click"])
         :key="item.id"
         class="menu-item"
         :class="item.class"
+        :command="item.command"
         @emit-click="() => emit('emit-click', item)"
       />
     </div>
