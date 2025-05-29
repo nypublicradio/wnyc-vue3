@@ -383,7 +383,10 @@ const moreFromClick = () => {
       </div>
     </div>
     <VImage
-      v-if="currentEpisode.image"
+      v-if="
+        !!!currentEpisode.onTodaysShowImageTemplate ||
+        currentEpisode.player_image !== currentEpisode.image
+      "
       :src="
         currentEpisode.image?.template ?? currentEpisode.image ?? FALLBACKIMAGEWAGTAIL
       "
