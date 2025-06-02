@@ -964,20 +964,22 @@ export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
 
+  const theImage = item.headers?.brand?.logoImage?.template ??
+    item.headers?.brand?.logoImage ??
+    item.showImage ??
+    item.image?.template ??
+    item.image ??
+    item.listingImage?.template ??
+    getEpisodeFallBackImage()
+
   return {
     ...item,
     file: fileValue,
     audio: fileValue,
     hls: item.hls,
     title: item.title,
-    player_image:
-      item.headers?.brand?.logoImage?.template ??
-      item.headers?.brand?.logoImage ??
-      item.showImage ??
-      item.image?.template ??
-      item.image ??
-      item.listingImage?.template ??
-      getEpisodeFallBackImage(),
+    player_image: theImage,
+    image: theImage,
     duration: item.estimatedDuration || item.duration,
     details: item.body,
     first_published_at: item.publishAt,
