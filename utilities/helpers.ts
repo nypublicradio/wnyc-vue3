@@ -963,7 +963,6 @@ export const prepForPlayer = (item) => {
     hls: item.hls,
     title: item.title,
     player_image: theImage,
-    image: theImage,
     duration: item.estimatedDuration || item.duration,
     details: item.body,
     first_published_at: item.publishAt,

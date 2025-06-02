@@ -467,6 +467,15 @@ body {
   &.browser {
     .persistent-player {
       bottom: env(safe-area-inset-bottom);
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(-1 * env(safe-area-inset-bottom));
+        height: env(safe-area-inset-bottom);
+        background-color: var(--persistent-player-bg);
+      }
     }
   }
 }
