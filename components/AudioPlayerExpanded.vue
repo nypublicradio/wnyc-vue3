@@ -385,18 +385,44 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
+    <VImage
+      v-if="
+        !!currentEpisode.onTodaysShowImageTemplate
+          ? false
+          : currentEpisode.player_image !==
+            (currentEpisode.image.template ?? currentEpisode.image)
+      "
+      :src="
+        currentEpisode.image?.template ?? currentEpisode.image ?? FALLBACKIMAGEWAGTAIL
+      "
+      :alt="`${currentEpisode.title} featured image`"
+      :width="672"
+      :sizes="[2]"
+      class="card-feature-image"
+    >
+      <template #caption>
+        <VImageCaption
+          v-if="currentEpisode.image.caption"
+          :text="currentEpisode.image.caption"
+          class="caption"
+        />
+      </template>
+    </VImage>
     <HtmlConvert :htmlContent="currentEpisode.details" />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
       :alt="`${currentEpisode.title} featured image`"
-      :width="412"
-      :height="275"
+      :width="672"
       :sizes="[2]"
       class="show-feature-image"
     >
       <template #caption>
-        <VImageCaption :text="currentEpisode.onTodaysShowImageCaption" class="caption" />
+        <VImageCaption
+          v-if="currentEpisode.onTodaysShowImageCaption"
+          :text="currentEpisode.onTodaysShowImageCaption"
+          class="caption"
+        />
       </template>
       <template #belowImage>
         <div class="text-xs mt-2">
@@ -417,7 +443,11 @@ const moreFromClick = () => {
           :key="author.url"
           :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
-          :to="currentEpisode.cmsSource='publisher' ? author.url : author.url.replace('people', 'staff')"
+          :to="
+            (currentEpisode.cmsSource = 'publisher'
+              ? author.url
+              : author.url.replace('people', 'staff'))
+          "
           @on-click="emit('close-panel')"
         />
       </div>
