@@ -91,7 +91,7 @@ const allMenuData = [
             [
                 {
                     label: "Support Us",
-                    url: " https://www.nypublicradio.org/support/"
+                    url: "https://www.nypublicradio.org/support/"
                 },
                 {
                     label: "Become a Sponsor",
@@ -127,7 +127,7 @@ const allMenuData = [
                 },
                 {
                     label: "Careers",
-                    url: " https://nypublicradio.org/careers/"
+                    url: "https://nypublicradio.org/careers/"
                 },
                 {
                     label: "Press",
@@ -227,7 +227,7 @@ const allSocialData = [
     },
     {
         label: "Facebook",
-        url: "http://www.facebook.com/wnyc",
+        url: "https://www.facebook.com/wnyc",
         id: "0",
         icon: "pi pi-facebook",
     },
