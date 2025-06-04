@@ -3,7 +3,6 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
   useSettingSideBar,
-  useSettingsSideBarBrowser,
   useIsApp,
   useGlobalToast,
   useIsNetworkConnected
