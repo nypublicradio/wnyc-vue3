@@ -40,7 +40,6 @@ watch(
 <template>
   <div class="page flex flex-column h-screen" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
-    <SkipToContent />
     <header>
       <VSmartHeader
         v-if="isApp"
@@ -91,16 +90,6 @@ body {
   }
   header {
     z-index: 11;
-  }
-  .skip-to-content-link {
-    z-index: 1000;
-    position: absolute;
-    top: 0;
-    left: 0;
-    clip: rect(1px, 1px, 1px, 1px);
-    padding: 1rem;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
   }
   .content {
     z-index: 10;

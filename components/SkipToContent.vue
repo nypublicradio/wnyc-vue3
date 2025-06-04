@@ -36,19 +36,33 @@ function skipToContent() {
 <style lang="scss" scoped>
 .skip-to-content {
   z-index: 1000;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--p-mask-background);
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--p-mask-background);
+  }
 }
 
 .skip-link {
   z-index: 1001;
   position: absolute;
-  top: 30px;
-  left: 200px;
+  top: 7px;
+  left: 140px;
+  @include media("<md") {
+    top: 5px;
+    left: 100px;
+  }
   text-decoration: none;
 
   p {
