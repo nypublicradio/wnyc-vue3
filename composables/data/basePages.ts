@@ -15,7 +15,7 @@ export const WAGTAIL_PAGE_TYPES = {
  */
 export function normalizePage(page: Record<string, any>): Page {
   return {
-    id: page.id,
+    id: Number(page.id),
     title: page.title,
     uuid: page.uuid,
     type: WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
