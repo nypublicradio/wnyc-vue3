@@ -31,7 +31,8 @@ const handleLogoClick = () => {
     <div class="content">
       <div class="top">
         <section class="full-width pr-3 md:pr-6">
-          <div class="flex justify-content-between align-items-center">
+          <div class="flex justify-content-between align-items-center relative">
+            <SkipToContent />
             <VFlexibleLink
               to="/home"
               class="flex align-items-center"
