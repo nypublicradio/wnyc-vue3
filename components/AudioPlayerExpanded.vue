@@ -382,24 +382,6 @@ const moreFromClick = () => {
         </DotMenu>
       </div>
     </div>
-    <!-- todays show = {{ !!currentEpisode.onTodaysShowImageTemplate }}
-    <br />
-    different image =
-    {{
-      currentEpisode.player_image !==
-      (currentEpisode.image.template ?? currentEpisode.image)
-    }}
-    <br />
-    player_image = {{ currentEpisode.player_image }}
-    <br />
-    image = {{ currentEpisode.image.template ?? currentEpisode.image }}
-    <br />
-    {{
-      !!currentEpisode.onTodaysShowImageTemplate
-        ? false
-        : currentEpisode.player_image !==
-          (currentEpisode.image.template ?? currentEpisode.image)
-    }} -->
     <VImage
       v-if="
         !!currentEpisode.onTodaysShowImageTemplate
