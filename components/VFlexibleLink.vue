@@ -51,8 +51,9 @@ const emit = defineEmits(["flexible-link-click"])
 const radius = ref(props.radius)
 
 const isExternal = computed(() => {
+  const route = props.to?.trim()
   const reg = /^https?:\/\/|mailto:|tel:/i
-  return typeof props.to === "string" && reg.test(props.to)
+  return typeof route === "string" && reg.test(route)
 })
 const isAnchor = computed(() => {
   return props.to.charAt(0) === "#"
