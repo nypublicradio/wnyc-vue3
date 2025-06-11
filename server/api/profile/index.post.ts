@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
         throw createError({
             statusCode: 503,
             statusMessage: 'Service Unavailable',
-            message: 'Failed to connect to Salesforce'
+            message: error.message || 'Failed to connect to Salesforce'
         });
     }
 
