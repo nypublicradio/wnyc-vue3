@@ -1,6 +1,4 @@
 import * as jsforce from '@jsforce/jsforce-node';
-import * as fs from 'fs';
-import * as jwt from 'jsonwebtoken';
 
 export class SalesforceClient {
     private conn: jsforce.Connection;
@@ -18,35 +16,22 @@ export class SalesforceClient {
         if (this.isConnected) return;
 
         try {
-            // Read private key from file - should be securely stored
-            const privateKey = process.env.SF_PRIVATE_KEY ||
-                fs.readFileSync(process.env.SF_PRIVATE_KEY_PATH || '', 'utf8');
-
-            // Create JWT payload
-            const jwtPayload = {
-                iss: process.env.SF_CLIENT_ID, // Connected App Consumer Key
-                sub: process.env.SF_USERNAME, // The username to impersonate
-                aud: this.conn.loginUrl,
-                exp: Math.floor(Date.now() / 1000) + 300 // Expires in 5 minutes
-            };
-
-            // Sign the JWT with your private key
-            const token = jwt.sign(jwtPayload, privateKey, { algorithm: 'RS256' });
-
-            // Request access token using the JWT Bearer flow
+            // Use OAuth Client Credentials flow with Consumer ID and Secret
             const response = await fetch(`${this.conn.loginUrl}/services/oauth2/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({
-                    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                    assertion: token
+                    grant_type: 'client_credentials',
+                    client_id: process.env.SF_CLIENT_ID as string,
+                    client_secret: process.env.SF_CLIENT_SECRET as string
                 })
             });
 
             if (!response.ok) {
-                throw new Error(`Authentication failed: ${response.statusText}`);
+                const errorText = await response.text();
+                throw new Error(`Authentication failed: ${response.statusText} - ${errorText}`);
             }
 
             const authResponse = await response.json();
@@ -56,9 +41,9 @@ export class SalesforceClient {
             // Update connection with received token
             this.conn.accessToken = this.accessToken;
             this.conn.instanceUrl = this.instanceUrl;
-
+            
             this.isConnected = true;
-            console.log('Connected to Salesforce via Connected App');
+            console.log('Connected to Salesforce via Client Credentials');
         } catch (error) {
             console.error('Failed to connect to Salesforce:', error);
             throw error;
