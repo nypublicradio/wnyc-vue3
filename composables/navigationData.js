@@ -148,16 +148,16 @@ const allMenuData = [
         items: [
             [
                 {
-                    label: "Favorites",
-                    url: "/saved"
+                    label: "Followed Shows",
+                    url: "/saved?slug=FollowedShows"
                 },
                 {
-                    label: "Followed Shows",
-                    url: "/saved"
+                    label: "Favorites",
+                    url: "/saved?slug=Favorites"
                 },
                 {
                     label: "Listening History",
-                    url: "/saved"
+                    url: "/saved?slug=History"
                 },
             ],
         ],
