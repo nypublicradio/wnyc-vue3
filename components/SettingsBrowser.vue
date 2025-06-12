@@ -37,15 +37,19 @@ const { allNavigationData } = await useNavigationData()
 
   .menu {
     gap: 4rem;
+
     @include media("<1010px") {
       gap: 4rem 3rem;
     }
+
     @include media(">=1010px") {
       gap: 4rem 1rem;
     }
+
     @include media(">=1025px") {
       gap: 4rem;
     }
+
     flex-wrap: wrap;
 
     .menu-holder {
@@ -80,6 +84,10 @@ const { allNavigationData } = await useNavigationData()
 
   &.logged-in {
     .menu-holder {
+      &.saved {
+        display: block;
+      }
+
       &.account {
         .login,
         .signup {
