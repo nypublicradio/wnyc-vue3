@@ -124,7 +124,7 @@ export class NPR {
                             headers: {
                                 brand: {
                                     title: cmsSources.NPR,
-                                    logoImage: FALLBACKIMAGEEP,
+                                    logoImage: image,
                                 }
                             },
                             showTitle: `${showTitle} - ${howLongAgo(publishedDate)}`,
