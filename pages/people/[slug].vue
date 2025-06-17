@@ -1,5 +1,4 @@
 <script setup>
-
 import {
   trackClickEvent,
   getUserFallBackImage,
@@ -77,7 +76,7 @@ const routeBack = () => {
     </Html>
     <div>
       <Button
-        class="back-btn text-color -ml-4"
+        class="back-btn text-color -ml-3"
         icon="pi pi-chevron-left"
         rounded
         text

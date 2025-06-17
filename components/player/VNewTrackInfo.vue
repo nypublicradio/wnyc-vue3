@@ -141,9 +141,9 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 .track-info {
   display: flex;
   gap: 12px;
-  width: 100%;
+  //width: 100%;
   height: inherit;
-  flex: auto;
+  //flex: auto;
   align-self: center;
   .track-info-details {
     width: 0;
@@ -169,9 +169,10 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     }
     .track-info-title {
       width: 100%;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
+      @include truncate;
+      @include media(">lg") {
+        @include t2lines();
+      }
       .title,
       .title div {
         font-weight: var(--persistent-player-title-weight);
@@ -179,9 +180,10 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         color: var(--persistent-player-title-color);
         line-height: var(--persistent-player-title-height);
         font-family: var(--persistent-player-title-font-family);
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
+        @include truncate;
+        @include media(">lg") {
+          @include t2lines();
+        }
         box-sizing: border-box;
       }
     }

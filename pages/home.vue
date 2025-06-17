@@ -5,9 +5,10 @@ import {
   getEpisodeFallBackImage,
   goToNprPage,
 } from "~/utilities/helpers"
-import { useCurrentEpisode } from "~/composables/states"
+import { useCurrentEpisode, useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
+const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
@@ -29,7 +30,7 @@ definePageMeta({
 })
 useHead({
   bodyAttrs: {
-    class: "show-header",
+    //class: "show-header",
   },
 })
 
@@ -59,16 +60,23 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    <LiveFeature />
 
-    <section>
-      <FetchError v-if="error || error2 || error3" />
-      <h2 class="mt-4 mb-3">Latest News Updates</h2>
-      <LatestNewsUpdates
-        :localNewscast="latestNewsUpdatesData?.local_newscast"
-        :nationalNewscast="latestNewsUpdatesData?.national_newscast"
-      />
+    <section class="my-4">
+      <div class="home-top grid grid-nogutter gap-4">
+        <LiveFeature class="col-12 lg:col" />
+
+        <div class="latestNewsHolder col">
+          <FetchError v-if="error || error2 || error3" />
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
+          <LatestNewsUpdates
+            :localNewscast="latestNewsUpdatesData?.local_newscast"
+            :nationalNewscast="latestNewsUpdatesData?.national_newscast"
+          />
+        </div>
+      </div>
     </section>
+
+    <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
@@ -141,8 +149,21 @@ onMounted(() => {
       </section>
     </div>
     <SponsorBanner
+      v-if="isApp"
       class="mt-4"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '-5rem'}`"
     />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.home-top {
+  .latestNewsHolder {
+    width: 100%;
+    max-width: 100%;
+    @include media(">lg") {
+      max-width: 300px !important;
+    }
+  }
+}
+</style>

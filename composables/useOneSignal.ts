@@ -58,6 +58,7 @@ export default function useOneSignal() {
     if (url) {
       if (!url.includes("https://")) {
 
+
         // deep link
         const route = getPathAndQuery(url)
 

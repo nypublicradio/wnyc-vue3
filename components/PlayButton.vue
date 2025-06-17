@@ -24,6 +24,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  liveBadge: {
+    type: Boolean,
+    default: false,
+  },
   isDownloaded: {
     type: Boolean,
     default: false,
@@ -40,6 +44,18 @@ const props = defineProps({
   data: {
     default: {},
     type: Object,
+  },
+  severity: {
+    default: "secondary",
+    type: String,
+  },
+  buttonClass: {
+    default: "",
+    type: String,
+  },
+  labelClass: {
+    default: "",
+    type: String,
   },
 })
 
@@ -69,12 +85,12 @@ watch(
 <template>
   <div class="small-play" :class="[{ circle: props.label === '' }]">
     <Button
-      severity="secondary"
+      :severity="props.severity"
       @click.prevent="togglePlay"
       :aria-disabled="isStreamLoading"
       aria-label="play"
       tabindex="0"
-      :class="[{ active: isPlaying }]"
+      :class="[{ active: isPlaying }, props.buttonClass]"
       class="flex align-items-center cursor-pointer"
     >
       <slot name="icon">
@@ -102,9 +118,9 @@ watch(
       </slot>
       <slot>
         <div class="content flex white-space-nowrap align-items-center">
-          <span class="center">{{ props.label }}</span>
+          <span class="center" :class="props.labelClass">{{ props.label }}</span>
           <LiveBadge
-            v-if="props.live"
+            v-if="props.liveBadge"
             font-size="14px"
             bg-color="transparent"
             padding="1px 3px 1px 3px"

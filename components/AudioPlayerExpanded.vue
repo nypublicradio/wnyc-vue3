@@ -288,15 +288,6 @@ const moreFromClick = () => {
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive" class="flex gap-3">
-        <!-- <Button
-          text
-          severity="secondary"
-          rounded
-          aria-label="Create Free Account"
-          @click="handleAddToFavorites"
-        >
-          <template #icon> <FollowIcon /></template>
-        </Button> -->
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
       </div>
       <div v-else class="flex gap-3">
@@ -308,7 +299,9 @@ const moreFromClick = () => {
           @click="handleAddToFavorites"
           v-if="!currentEpisode.hideFavorite"
         >
-          <template #icon> <StarIcon :active="isFavorited" /></template>
+          <template #icon>
+            <StarIcon :active="isFavorited" />
+          </template>
         </Button>
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
         <Button
@@ -319,7 +312,9 @@ const moreFromClick = () => {
           @click="handleDownload"
           v-if="currentEpisode.hideFavorite && showDownload"
         >
-          <template #icon> <DownloadIcon /></template>
+          <template #icon>
+            <DownloadIcon />
+          </template>
         </Button>
         <DownloadProgress
           v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
@@ -338,7 +333,9 @@ const moreFromClick = () => {
           aria-label="share"
           @click="handleShare"
         >
-          <template #icon> <ShareIcon /></template>
+          <template #icon>
+            <ShareIcon />
+          </template>
         </Button>
 
         <DotMenu
@@ -483,11 +480,13 @@ const moreFromClick = () => {
 <style lang="scss">
 :root {
   $expandedFooterHeight: 100px;
+
   .persistent-player {
     .expanded-player {
       padding-bottom: calc(
         $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem
       );
+
       .expanded-footer {
         background: var(--persistent-player-bg);
 
@@ -504,18 +503,29 @@ const moreFromClick = () => {
       .tools {
       }
     }
+
     &.expanded {
       .expanded-footer {
-        bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
+        bottom: env(safe-area-inset-bottom);
       }
     }
+
     .template-blank {
       .expanded-footer {
         bottom: env(safe-area-inset-bottom) !important;
       }
     }
+
     .header-cast-btn {
       display: none;
+    }
+
+    &.app {
+      &.expanded {
+        .expanded-footer {
+          bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
+        }
+      }
     }
   }
 }

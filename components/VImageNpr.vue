@@ -152,6 +152,8 @@ const emit = defineEmits([
   "enlarge-image-load",
 ])
 
+const imageLoaded = ref(false)
+
 const theSrc = computed(() => {
   return props.src
     .replace("{width}", props.width)
@@ -275,6 +277,13 @@ const srcset = computed(() => {
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
+        <WnycLoader
+          v-if="!imageLoaded"
+          class="image-loader-anim"
+          size="1rem"
+          bg
+          spinner
+        />
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -302,7 +311,12 @@ const srcset = computed(() => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="loading"
           :srcset="srcset"
-          @load="emit('image-load', $event.target)"
+          @load="
+            () => {
+              emit('image-load')
+              imageLoaded = true
+            }
+          "
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>

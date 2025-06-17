@@ -30,13 +30,30 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * url or slug or anchor to go to
+   */
+  tabIndexNumber: {
+    default: 0,
+    type: Number,
+  },
+  /**
+   * radius on the link
+   */
+  radius: {
+    default: "2px",
+    type: String,
+  },
 })
 
 const emit = defineEmits(["flexible-link-click"])
 
+const radius = ref(props.radius)
+
 const isExternal = computed(() => {
+  const route = props.to?.trim()
   const reg = /^https?:\/\/|mailto:|tel:/i
-  return typeof props.to === "string" && reg.test(props.to)
+  return typeof route === "string" && reg.test(route)
 })
 const isAnchor = computed(() => {
   return props.to.charAt(0) === "#"
@@ -44,7 +61,12 @@ const isAnchor = computed(() => {
 </script>
 
 <template>
-  <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
+  <div
+    v-if="!to"
+    class="flexible-link null"
+    v-bind="{ ...$attrs }"
+    @click="emit('flexible-link-click', to)"
+  >
     <slot name="default"></slot>
   </div>
   <a
@@ -56,6 +78,7 @@ const isAnchor = computed(() => {
     class="flexible-link external"
     :class="{ ['raw']: raw }"
     @click="emit('flexible-link-click', to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </a>
@@ -67,6 +90,7 @@ const isAnchor = computed(() => {
     class="flexible-link anchor"
     :class="{ ['raw']: raw }"
     @click="emit('flexible-link-click', to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </a>
@@ -77,11 +101,15 @@ const isAnchor = computed(() => {
     :to="to"
     v-bind="{ ...$attrs }"
     @click="emit('flexible-link-click', to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </nuxt-link>
 </template>
 <style lang="scss" scoped>
+.flexible-link {
+  border-radius: v-bind(radius);
+}
 .flexible-link:not(.raw):not(.null) {
   color: var(--link-button-color);
   transition: all var(--p-transition-duration);
@@ -97,9 +125,10 @@ const isAnchor = computed(() => {
     }
   }
   &:focus {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-    box-shadow: var(--link-button-focus-shadow);
+    outline-color: var(--p-focus-ring-color);
+    outline-offset: var(--p-focus-ring-offset);
+    box-shadow: var(--p-focus-ring-shadow);
+    outline-style: var(--p-focus-ring-style);
   }
 }
 .flexible-link.null {

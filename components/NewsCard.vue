@@ -36,16 +36,27 @@ const emit = defineEmits(["on-click"])
         :bg-color="props.badgeBgColor"
       />
       <div class="news-title mt-2">
-        <h2 class="text-sm">{{ props.newsData?.cardTitle }}</h2>
-        <PipeData>
-          <template #left>{{ props.sourceLabel }}</template>
-          <template #right>
-            <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
-          </template>
-        </PipeData>
+        <h2 class="text-sm md:text-base">{{ props.newsData?.cardTitle }}</h2>
+        <div class="flex align-items-center justify-content-between lg:text-base">
+          <PipeData>
+            <template #left>{{ props.sourceLabel }}</template>
+            <template #right>
+              <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
+            </template>
+          </PipeData>
+          <PlayButton
+            class="hidden md:flex"
+            :label="getMinutes(props.newsData?.duration, 1)"
+            :data="props.newsData"
+          />
+          <BarsPlaying
+            class="hidden md:block absolute top-0 right-0 mt-3 mr-4"
+            :data="props.newsData"
+          />
+        </div>
       </div>
     </div>
-    <div class="flex align-items-center justify-content-between">
+    <div class="flex align-items-center justify-content-between md:hidden">
       <PlayButton
         :label="getMinutes(props.newsData?.duration, 1)"
         :data="props.newsData"
@@ -53,25 +64,32 @@ const emit = defineEmits(["on-click"])
       <BarsPlaying class="mr-2" :data="props.newsData" />
     </div>
   </div>
-  <div v-else class="news-card skeleton-holder flex">
+  <div v-else class="news-card skeleton-holder flex p-2 md:p-3">
     <Skeleton height="16px" width="91px" borderRadius="0px" />
     <div class="w-full">
       <Skeleton
         height="13px"
-        width="55%"
+        width="45%"
         borderRadius="16px"
         style="margin-bottom: 8px"
       />
-      <Skeleton height="13px" width="70%" borderRadius="16px" />
+      <div class="flex align-items-center justify-content-between">
+        <Skeleton height="13px" width="50%" borderRadius="16px" />
+        <Skeleton
+          class="hidden md:block"
+          height="28px"
+          width="86px"
+          borderRadius="15px"
+        />
+      </div>
     </div>
-    <Skeleton height="28px" width="84px" borderRadius="15px" />
+    <Skeleton class="md:hidden" height="28px" width="86px" borderRadius="15px" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .news-card {
   background-color: var(--p-surface-25);
-  padding: 10px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -79,6 +97,10 @@ const emit = defineEmits(["on-click"])
   height: 100%;
   justify-content: space-between;
   cursor: pointer;
+  padding: 1.25rem;
+  @include media("<md") {
+    padding: 0.6rem;
+  }
   .news-title {
     font-size: 0.813rem;
   }

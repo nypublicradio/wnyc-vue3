@@ -13,7 +13,20 @@ figure {
 // }
 
 * {
+  -webkit-focus-ring-color: var(--p-focus-ring-color);
+}
+
+a:focus-visible {
+  outline-color: var(--p-focus-ring-color);
+  outline-width: var(--p-focus-ring-width);
+  outline-offset: var(--p-focus-ring-offset);
+  outline-style: var(--p-focus-ring-style);
+}
+
+* {
   -webkit-tap-highlight-color: transparent;
+  scrollbar-color: unset transparent;
+  scrollbar-width: thin;
 }
 
 html {
@@ -38,26 +51,13 @@ body {
   background: var(--background);
   transform: none;
   height: 100% !important;
-  margin: 0;
+  width: 100vw;
   background-repeat: no-repeat;
   background-attachment: fixed;
   max-height: unset !important;
   position: relative !important;
   margin: auto;
 
-  &.show-header {
-    main {
-      padding-top: $headerHeight;
-    }
-  }
-  &.hide-bottom-menu {
-    .bottom-menu {
-      display: none;
-    }
-    main {
-      padding-bottom: 0px; // account for the sticky bottom menu
-    }
-  }
   &.background-gradient {
     background: $backgroundBlueGradient1;
     transform: none;
@@ -74,7 +74,7 @@ body {
   main {
     transition: padding-top var(--p-transition-duration) ease;
     padding-bottom: calc(
-      $bottomMenuHeight + $playerHeight + env(safe-area-inset-bottom) + 20px
+      $bottomMenuHeight + var(--persistent-player-height) + env(safe-area-inset-bottom) + 20px
     ); // account for the sticky bottom menu
   }
   &.no-bottom-padding {
@@ -173,6 +173,12 @@ section {
       width: 90px !important;
       height: 90px !important;
     }
+  }
+}
+
+.text-color-fill {
+  path {
+    fill: var(--p-text-color);
   }
 }
 
@@ -287,6 +293,10 @@ section {
   }
 }
 
+.p-slider {
+  cursor: pointer;
+}
+
 form {
   label {
     font-family: var(--font-family-header);
@@ -322,6 +332,11 @@ html:not(.style-mode-dark) {
     background: transparent;
     border-color: transparent;
   }
+  .p-button-link.p-button-secondary:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--p-button-secondary-text-color);
+  }
 }
 // makes the white buttons user the light ripple effect so you can see it.
 .p-button-secondary .p-ink,
@@ -330,4 +345,27 @@ html:not(.style-mode-dark) {
 }
 .p-ripple-dark .p-ink {
   background: $p-ripple-background-dark !important;
+}
+
+.p-button-link {
+  &:hover {
+    .p-button-label {
+      text-decoration-color: var(--p-button-link-hover-color);
+    }
+  }
+  .p-button-label {
+    text-decoration: underline; /* Add a default underline */
+    text-decoration-color: transparent; /* Make it transparent initially */
+    text-decoration-thickness: 1px; /* Match your desired height */
+    text-underline-offset: 3px; /* Adjust the distance from the text */
+    box-decoration-break: clone; /* Apply the underline to each line */
+    -webkit-box-decoration-break: clone; /* For Safari support */
+    transition: all calc(var(--p-transition-duration) * 1.5);
+    -webkit-transition: all calc(var(--p-transition-duration) * 1.5);
+  }
+}
+
+// stops the svg in buttons from showing the focus outline
+.p-button svg {
+  outline: none;
 }

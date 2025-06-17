@@ -38,7 +38,7 @@ const props = defineProps({
   /** * The desired height for the 1x sized image. * this will also be added as an attribute to the image tag
    */
   height: {
-    default: null,
+    default: 0,
     type: Number,
   },
   /** * Substring or regex within the url to be replaced with height values. */
@@ -133,7 +133,7 @@ const props = defineProps({
    * * this will also be added as an attribute to the image tag
    */
   width: {
-    default: null,
+    default: 0,
     type: Number,
   },
   /** * Substring or regex within the urlto be replaced with width values. */
@@ -142,7 +142,9 @@ const props = defineProps({
     type: [String, RegExp],
   },
 })
-const emit = defineEmits(["image-click", "keypress", "image-enlarge-click"])
+const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
+
+const imageLoaded = ref(false)
 
 // method to format the url to get the publisher image
 const formatPublisherImageUrl = (url) => {
@@ -297,20 +299,21 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      style="width: 100%"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
+        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
         <div v-if="isVertical" class="bg">
           <img
             :src="computedSrcBg()"
             :width="getDimensions().width"
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
-            :loading="loading"
+            :loading="props.loading"
           />
         </div>
         <template v-if="allowPreview">
@@ -326,12 +329,18 @@ onMounted(async () => {
             :style="[isVertical ? `width:${getDimensions().width}px;` : '']"
             :alt="props.isDecorative ? '' : props.alt"
             :preview="allowPreview"
-            :loading="loading"
+            :loading="props.loading"
             @show="enlarge"
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
+            @load="
+              () => {
+                emit('image-load')
+                imageLoaded = true
+              }
+            "
           >
-            <template v-if="allowPreview" #indicatoricon>
+            <template v-if="allowPreview" #previewicon>
               <ClientOnly>
                 <Button
                   icon="pi pi-clone"
@@ -370,8 +379,14 @@ onMounted(async () => {
           :height="getDimensions().height"
           :style="[isVertical ? `width:auto;` : '']"
           :alt="props.isDecorative ? '' : props.alt"
-          :loading="loading"
+          :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
+          @load="
+            () => {
+              emit('image-load')
+              imageLoaded = true
+            }
+          "
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>

@@ -40,6 +40,9 @@ export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () 
 // setting sidebar state
 export const useSettingSideBar = () => useState('useSettingSideBar', () => false)
 
+// setting sidebar state
+export const useSettingsSideBarBrowser = () => useState('useSettingsSideBarBrowser', () => false)
+
 // login sidebar state
 export const useLoginSideBar = () => useState('useLoginSideBar', () => false)
 
@@ -165,13 +168,6 @@ const skipBackTrigger = false
  * Global state to trigger the skip back.
  */
 export const useSkipBackTrigger = () => useState('useSkipBackTrigger', () => skipBackTrigger)
-
-
-const playerSeek = { bool: false, time: 20 }
-/**
- * Global state to trigger the skip back.
- */
-export const usePlayerSeek = () => useState('usePlayerSeek', (bool, time) => playerSeek)
 
 const currentStreamStation = 'wnyc-fm939'
 /**

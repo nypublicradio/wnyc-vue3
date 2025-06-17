@@ -34,7 +34,7 @@ const getLivestreams = async () => {
  * Reachable /api/streams
  */
 export default defineEventHandler(async (event) => {
-    let res = event?.node?.res;
+    const res = event?.node?.res;
     res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
     const streams = await getLivestreams();
     return streams

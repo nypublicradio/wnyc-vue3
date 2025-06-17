@@ -2,21 +2,6 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 
-const getSchedule = async (slug: string, schedDate: string) => {
-    const options = {
-        method: 'GET',
-        url: config.public.PUBLISHER_BASE_API + 'v3/schedule/',
-        params: {
-            scheduleStation: slug,
-            scheduleDate: schedDate
-        }
-    };
-    const res = await axios(options);
-    const resData = humps.camelizeKeys(res.data).data;
-    const filteredSchedule = removePastShows(resData);
-    return filteredSchedule;
-};
-
 // Write a function that removes scheduled shows that have already aired using the attribute "end"
 const removePastShows = (schedule: any) => {
     const now = new Date();
@@ -36,6 +21,22 @@ const removeFutureShows = (schedule: any) => {
         const diffHours = diff / (1000 * 3600);
         return diffHours < 24;
     });
+    return filteredSchedule;
+};
+
+//Get schedule for a specific date
+const getSchedule = async (slug: string, schedDate: string) => {
+    const options = {
+        method: 'GET',
+        url: `${config.public.PUBLISHER_BASE_API}v3/schedule/`,
+        params: {
+            scheduleStation: slug,
+            scheduleDate: schedDate
+        }
+    };
+    const res = await axios(options);
+    const resData = humps.camelizeKeys(res.data).data;
+    const filteredSchedule = removePastShows(resData);
     return filteredSchedule;
 };
 

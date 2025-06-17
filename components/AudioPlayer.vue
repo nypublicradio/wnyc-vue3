@@ -32,11 +32,11 @@ import {
   hasQueryParams,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
-
+import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 
 const devicePlatform = Capacitor.getPlatform()
-
+const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -63,21 +63,23 @@ const route = useRoute()
 let delay = 250
 const isError = ref(null)
 
-const getDescription = computed(() => {
-  if (isLiveStream.value) {
-    return currentEpisode?.value?.episodeTitle
-  } else {
-    return currentEpisode?.value?.showTitle
-  }
+// function that returns the image for the episode
+const getTitle = computed(() => {
+  return currentEpisode?.value?.episodeTitle ?? currentEpisode?.value?.title
 })
 
+// function that returns the media type for the episode
 const getMediaType = computed(() => {
   // if the hls value is set, then it is a live stream
   return currentEpisode?.value?.hls ? "live" : "on_demand"
 })
 
-const getTitle = computed(() => {
-  return currentEpisode?.value?.title
+// function that returns the description of the episode
+const getDescription = computed(() => {
+  // if the title and the description are the same, return null for description
+  return currentEpisode?.value?.showTitle !== getTitle.value
+    ? currentEpisode?.value?.showTitle
+    : null
 })
 
 /*function that updated the global useIsPlayerMinimized */
@@ -100,14 +102,13 @@ then we merge it all together and return it to the player as the source for the 
 */
 
 const getConfiguredAudioUrl = computed(() => {
-  const desktop = devicePlatform === "web"
-  // if it is not the desktop, then we use the hls value, else we use the file value
-  const url = !desktop
-    ? currentEpisode.value?.hls ||
-      currentEpisode.value?.file ||
-      currentEpisode.value?.audio ||
-      ""
-    : currentEpisode.value?.file || currentEpisode.value?.audio || ""
+  // we start with HLS, then file, then audio
+  // if none of those are set, then we return an empty string
+  const url =
+    currentEpisode.value?.hls ||
+    currentEpisode.value?.file ||
+    currentEpisode.value?.audio ||
+    ""
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
@@ -118,6 +119,25 @@ const getConfiguredAudioUrl = computed(() => {
     hasQuery ? "&" : "?"
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
+
+// setVolume
+const currentVolume = ref(1)
+const isMuted = ref(false)
+// function that handles the volume change
+const setVolume = (e) => {
+  RemoteStreamer.setVolume({ volume: e })
+  currentVolume.value = e
+}
+// function that handles the mute toggle
+const muteToggle = () => {
+  if (isMuted.value) {
+    RemoteStreamer.setVolume({ volume: currentVolume.value })
+    isMuted.value = false
+  } else {
+    RemoteStreamer.setVolume({ volume: 0 })
+    isMuted.value = true
+  }
+}
 
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
@@ -184,6 +204,11 @@ const togglePlayHere = async (e) => {
 
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
+  if (e) {
+    saveScrollPosition()
+  } else {
+    restoreScrollPosition()
+  }
   isPlayerExpanded.value = e
 }
 
@@ -343,6 +368,9 @@ onMounted(async () => {
       trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
     }
   })
+  // await RemoteStreamer.addListener("id3Metadata", (e) => {
+  //   console.log("id3Metadata", e)
+  // })
 })
 </script>
 
@@ -355,9 +383,9 @@ onMounted(async () => {
         class="style-mode-dark"
         :can-expand="true"
         :can-expand-with-swipe="true"
-        :can-unexpand-with-swipe="false"
+        :can-unexpand-with-swipe="true"
         :title="getTitle"
-        :station="currentEpisode?.name"
+        :station="currentEpisode?.station"
         :description="getDescription"
         :image="
           templatizePublisherImageUrl(currentEpisode?.player_image) ??
@@ -371,12 +399,17 @@ onMounted(async () => {
         @skip-back="handleSkipBack"
         @error="handleError"
         @scrub-timeline-end="handleSeekTo($event)"
+        @volume-change="setVolume($event)"
+        @volume-toggle-mute="muteToggle"
         can-click-anywhere
+        :showVolume="true"
         :isStreamLoading
         :isEpisodePlaying
         :isLiveStream
         :currentEpisodeDuration
         :currentEpisodeProgress
+        :volume="currentVolume"
+        :isMuted="isMuted"
       >
         <template #expanded-player-title>
           <PipeData class="text-xs">
@@ -391,7 +424,7 @@ onMounted(async () => {
               {{ getDate(currentEpisode) }}
             </template>
           </PipeData>
-          <div class="expanded-title">{{ currentEpisode.title }}</div>
+          <div class="expanded-title">{{ getTitle }}</div>
         </template>
         <template #skipBack>
           <Previous10 />
@@ -425,9 +458,29 @@ html.style-mode-dark .persistent-player {
     backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
   }
 }
-
+body {
+  &.app {
+    .persistent-player:not(.expanded) {
+      bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+    }
+  }
+  &.browser {
+    .persistent-player {
+      bottom: env(safe-area-inset-bottom);
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(-1 * env(safe-area-inset-bottom));
+        height: env(safe-area-inset-bottom);
+        background-color: var(--persistent-player-bg);
+      }
+    }
+  }
+}
 .persistent-player:not(.expanded) {
-  bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+  //bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
 
   // no live icon
   .track-info-livestream {
@@ -445,7 +498,7 @@ html.style-mode-dark .persistent-player {
   }
 
   .track-info {
-    margin-left: 6px;
+    //margin-left: 6px;
   }
   media-play-button {
     margin-right: 6px;
@@ -460,6 +513,11 @@ html.style-mode-dark .persistent-player {
 }
 
 .persistent-player {
+  .content {
+    max-width: $playerMaxWidth;
+    margin: auto;
+    width: 100vw;
+  }
   &.expanded {
     bottom: 0;
   }
