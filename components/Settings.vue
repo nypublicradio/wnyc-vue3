@@ -416,7 +416,7 @@ const showNotificationTypes = computed(() => {
       ></SBox>
       <SBox
         label="Get tech support"
-        link="https://newyorkpublicradio.my.site.com/wnyc/s/website-or-app-support"
+        link="https://newyorkpublicradio.my.site.com/wnyc/s/topic/0TO5f0000009Eq7GAE/website-app-help"
         :ripple="false"
         @linkClick="
           (link) => {
