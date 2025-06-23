@@ -126,6 +126,7 @@ onMounted(() => {
                 v-for="article in section.articles"
                 :key="article.id"
               >
+                <pre class="text-xs">{{ article.cmsSource }}</pre>
                 <EpisodeItem
                   v-if="hasAudio(article.audio)"
                   :data="article"

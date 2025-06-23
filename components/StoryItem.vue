@@ -101,17 +101,6 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    // {
-    //   label: `Download ${
-    //     bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
-    //   }`,
-    //   //icon: 'pi pi-google',
-    //   customIcon: DownloadIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleDownload(bucketItem)
-    //   },
-    // },
     ...(props.showShare
       ? [
           {
@@ -124,15 +113,6 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    // {
-    //   label: "Add to Queue",
-    //   active: true,
-    //   customIcon: QueueIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleAddToQueue(bucketItem)
-    //   },
-    // },
   ]
 }
 
