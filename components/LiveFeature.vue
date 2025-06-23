@@ -99,7 +99,7 @@ const togglePlayHere = async () => {
                   <Button
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm icon-wide hidden xl:flex"
+                    class="p-button-sm icon-wide xl:flex"
                   >
                     <template #icon>
                       <DevicesIcon />
