@@ -127,77 +127,103 @@ const handleDownload = async (bucketItem) => {
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
-  return [
-    ...(!props.isSegment
-      ? [
-          {
-            label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
-            customIcon: StarIcon,
-            active: isFavorited.value,
-            title: bucketItem.title,
-            command: () => {
-              handleAddToFavorites(bucketItem)
+  if (hasAudio(bucketItem.audio)) {
+    return [
+      ...(!props.isSegment
+        ? [
+            {
+              label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
+              customIcon: StarIcon,
+              active: isFavorited.value,
+              title: bucketItem.title,
+              command: () => {
+                handleAddToFavorites(bucketItem)
+              },
             },
-          },
-        ]
-      : []),
-    ...(hasAudio(bucketItem.audio) && !isDownloaded.value
-      ? [
-          {
-            label: `Download ${
-              bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
-            }`,
-            //icon: 'pi pi-google',
-            customIcon: DownloadIcon,
-            title: bucketItem.title,
-            command: () => {
-              handleDownload(bucketItem)
+          ]
+        : []),
+      ...(hasAudio(bucketItem.audio) && !isDownloaded.value
+        ? [
+            {
+              label: `Download ${
+                bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+              }`,
+              //icon: 'pi pi-google',
+              customIcon: DownloadIcon,
+              title: bucketItem.title,
+              command: () => {
+                handleDownload(bucketItem)
+              },
             },
-          },
-        ]
-      : []),
-    ...(isDownloaded.value
-      ? [
-          {
-            label: "Remove from Download",
-            customIcon: TrashIcon,
-            command: () => {
-              handleDelete(bucketItem)
+          ]
+        : []),
+      ...(isDownloaded.value
+        ? [
+            {
+              label: "Remove from Download",
+              customIcon: TrashIcon,
+              command: () => {
+                handleDelete(bucketItem)
+              },
             },
-          },
-        ]
-      : []),
-    ...(props.showShare && !props.isSegment
-      ? [
-          {
-            label: "Share",
-            customIcon: ShareIcon,
-            title: bucketItem.title,
-            command: () => {
-              shareAPI(bucketItem, "Episode Item")
+          ]
+        : []),
+      ...(props.showShare && !props.isSegment
+        ? [
+            {
+              label: "Share",
+              customIcon: ShareIcon,
+              title: bucketItem.title,
+              command: () => {
+                shareAPI(bucketItem, "Episode Item")
+              },
             },
-          },
-        ]
-      : []),
-    {
-      label: "Sleep Timer",
-      customIcon: SleepIcon,
-      active: sleepTimerRunning.value,
-      title: "Sleep Timer",
-      command: () => {
-        handleSleepTimer()
+          ]
+        : []),
+      {
+        label: "Sleep Timer",
+        customIcon: SleepIcon,
+        active: sleepTimerRunning.value,
+        title: "Sleep Timer",
+        command: () => {
+          handleSleepTimer()
+        },
       },
-    },
-    // {
-    //   label: "Add to Queue",
-    //   active: true,
-    //   customIcon: QueueIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleAddToQueue(bucketItem)
-    //   },
-    // },
-  ]
+      // {
+      //   label: "Add to Queue",
+      //   active: true,
+      //   customIcon: QueueIcon,
+      //   title: bucketItem.title,
+      //   command: () => {
+      //     handleAddToQueue(bucketItem)
+      //   },
+      // },
+    ]
+  } else {
+    return [
+      {
+        label: `${isFavorited.value ? "Unfavorite Story" : "Favorite Story"}`,
+        customIcon: StarIcon,
+        active: isFavorited.value,
+        title: bucketItem.title,
+        command: () => {
+          handleAddToFavorites(bucketItem)
+        },
+      },
+      ...(props.showShare
+        ? [
+            {
+              label: "Share",
+              customIcon: ShareIcon,
+              title: bucketItem.title,
+              command: () => {
+                shareAPI(bucketItem, "Story Item")
+              },
+            },
+          ]
+        : []),
+    ]
+  }
 }
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
