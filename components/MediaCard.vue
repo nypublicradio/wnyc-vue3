@@ -175,7 +175,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem.title,
               command: () => {
-                shareAPI(bucketItem, "Episode Item")
+                shareAPI(bucketItem, "Media Card")
               },
             },
           ]
@@ -189,15 +189,6 @@ const getDotMenuItems = (bucketItem) => {
           handleSleepTimer()
         },
       },
-      // {
-      //   label: "Add to Queue",
-      //   active: true,
-      //   customIcon: QueueIcon,
-      //   title: bucketItem.title,
-      //   command: () => {
-      //     handleAddToQueue(bucketItem)
-      //   },
-      // },
     ]
   } else {
     return [
@@ -217,7 +208,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem.title,
               command: () => {
-                shareAPI(bucketItem, "Story Item")
+                shareAPI(bucketItem, "Media Card")
               },
             },
           ]
