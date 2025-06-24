@@ -76,6 +76,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showBg: {
+    type: Boolean,
+    default: true,
+  },
+  imgCol: {
+    type: String,
+    default: "",
+  },
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
@@ -274,6 +282,7 @@ const handleHasAudio = computed(() => {
   <div
     class="media-card"
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+    :class="props.showBg ? 'show-bg' : ''"
   >
     <div
       v-if="!props.isSegment"
@@ -285,21 +294,45 @@ const handleHasAudio = computed(() => {
       aria-role="button"
       :aria-label="`${props.data.showTitle} show details`"
     ></div>
-    <div class="flex gap-3 w-full">
-      <!-- <pre class="text-xs overflow-hidden">{{ props.data }}</pre> -->
+    <div class="grid grid-nogutter">
+      <div class="col-fixed" :class="props.imgCol">
+        <VImage
+          v-if="props.showImage"
+          class="flex-none"
+          :alt="`${props.data.showTitle} show `"
+          :src="imgSrcUrl"
+          :width="116"
+          :height="116"
+          :ratio="[1, 1]"
+          :srcset="[2]"
+          tabindex="-1"
+        />
+      </div>
+      <div class="col">
+        <div class="py-1 px-3 box text-sm">
+          Content goes in here. Content goes in here.Content goes in here.Content goes in
+          here.Content goes in here.Content goes in here.Content goes in here.Content goes
+          in here.Content goes in here.Content goes in here.Content goes in here.Content
+          goes in here.Content goes in here.Content goes in here.
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-3 w-full" :class="props.direction">
       <VImage
         v-if="props.showImage"
         class="flex-none"
         :alt="`${props.data.showTitle} show `"
         :src="imgSrcUrl"
-        :height="116"
         :width="116"
+        :height="116"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="height: 116px; width: 116px"
         tabindex="-1"
       />
-      <div class="flex gap-2 flex-column justify-content-between w-full">
+      <div
+        class="flex gap-2 flex-column justify-content-between w-full"
+        :class="props.showBg ? 'show-bg' : ''"
+      >
         <div class="flex gap-1 flex-column w-full">
           <div class="flex gap-0 flex-column align-items-start">
             <p v-if="props.showTitle" class="text-xs line-height-1">
@@ -333,14 +366,6 @@ const handleHasAudio = computed(() => {
               />
             </div>
           </div>
-          <!-- FROM SUPABASE PROFILER DATA -->
-          <!-- Has to have started playing to show -->
-          <!-- <ProgressBar
-          :value="50"
-          style="height: 4px"
-          class="w-full"
-          :showValue="false"
-          ></ProgressBar> -->
         </div>
         <div
           class="button-holder flex justify-content-between align-items-center flex-wrap"
@@ -430,6 +455,10 @@ const handleHasAudio = computed(() => {
 
 <style lang="scss" scoped>
 .media-card {
+  overflow: hidden;
+  &.show-bg {
+    background-color: var(--p-surface-25);
+  }
   position: relative;
   cursor: pointer;
   .card-title-title {

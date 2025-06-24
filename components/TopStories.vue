@@ -20,7 +20,7 @@ const props = defineProps({
       :key="article.id"
       :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
     >
-      <pre class="text-xs">{{ article.cmsSource }}</pre>
+      <!-- <pre class="text-xs">{{ article.cmsSource }}</pre> -->
       <MediaCard :data="article" />
       <!-- <EpisodeItem
         v-if="hasAudio(article.audio)"
