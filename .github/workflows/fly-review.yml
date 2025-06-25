@@ -34,7 +34,15 @@ jobs:
           echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.PAT }}" >> .npmrc
 
+      - name: Set Review App URL
+        id: set-url
+        run: |
+          # Construct the predictable review app URL
+          REVIEW_APP_URL="https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev"
+          echo "url=$REVIEW_APP_URL" >> $GITHUB_OUTPUT
+
       - name: Deploy PR Review App
+        id: deploy
         uses: superfly/fly-pr-review-apps@1.5.0
         with:
           secrets: |
@@ -71,9 +79,9 @@ jobs:
             GTM_ID=${{ vars.GTM_ID }}
             SUPABASE_URL=${{ vars.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
-            SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${{ steps.deploy.outputs.url }}
+            SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${{ steps.set-url.outputs.url }}
             SUPABASE_AUTH_TOKEN_NAME=${{ vars.SUPABASE_AUTH_TOKEN_NAME }}
-            BFF_URL=${{ steps.deploy.outputs.url }}
+            BFF_URL=${{ steps.set-url.outputs.url }}
             OPENWEB_SPOT_ID=${{ vars.OPENWEB_SPOT_ID }}
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
             NPR_CDS_API=${{ vars.NPR_CDS_API }}
@@ -95,7 +103,7 @@ jobs:
           SLACK_TITLE: 'Review App Deployed'
           SLACK_MESSAGE: |
             **Pull Request:** <${{ github.event.pull_request.html_url }}|#${{ github.event.number }}: ${{ github.event.pull_request.title }}>
-            **Review App URL:** <${{ steps.deploy.outputs.url }}|${{ steps.deploy.outputs.url }}>
+            **Review App URL:** <${{ steps.set-url.outputs.url }}|${{ steps.set-url.outputs.url }}>
             **Branch:** ${{ github.head_ref }}
             **Author:** ${{ github.event.pull_request.user.login }}
 
