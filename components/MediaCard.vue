@@ -581,6 +581,17 @@ const handleHasAudio = computed(() => {
     }
   }
   &.is-vertical {
+    background-color: var(--p-surface-25);
+    .content {
+      padding: 1rem !important;
+    }
+    .image {
+      width: 100% !important;
+      height: auto !important;
+      .v-image {
+        left: 0;
+      }
+    }
     .holder {
       flex-direction: column;
     }
