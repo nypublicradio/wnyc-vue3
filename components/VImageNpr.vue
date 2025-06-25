@@ -273,7 +273,7 @@ const srcset = computed(() => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
@@ -386,10 +386,11 @@ const srcset = computed(() => {
 .v-image-npr {
   line-height: 0;
   position: relative;
-
+  height: inherit;
   .v-image-holder {
     position: relative;
     overflow: hidden;
+    height: inherit;
     .image {
       position: relative;
       width: 100%;

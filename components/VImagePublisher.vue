@@ -299,7 +299,7 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: 100%"
+      style="width: 100%; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -396,9 +396,11 @@ onMounted(async () => {
   </div>
 </template>
 
-<style lang="scss" scroped>
+<style lang="scss" scoped>
 .v-image-publisher {
+  height: inherit;
   .v-image-publisher-holder {
+    height: inherit;
     line-height: 0;
     position: relative;
     overflow: hidden;

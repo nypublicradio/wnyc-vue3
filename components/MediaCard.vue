@@ -76,13 +76,37 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  isFeature: {
+    type: Boolean,
+    default: false,
+  },
+  isHorizontal: {
+    type: Boolean,
+    default: false,
+  },
+  isVertical: {
+    type: Boolean,
+    default: false,
+  },
   showBg: {
     type: Boolean,
     default: true,
   },
   imgCol: {
     type: String,
-    default: "",
+    default: "md:h-auto md:w-12",
+  },
+  imgWidth: {
+    type: Number,
+    default: 437,
+  },
+  imgHeight: {
+    type: Number,
+    default: 282,
+  },
+  imgSrcset: {
+    type: Array,
+    default: [2],
   },
 })
 //const accountPromptSideBar = useAccountPromptSideBar()
@@ -282,7 +306,17 @@ const handleHasAudio = computed(() => {
   <div
     class="media-card"
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
-    :class="props.showBg ? 'show-bg' : ''"
+    :class="[
+      {
+        'show-bg': props.showBg,
+        'is-feature': props.isFeature,
+        'is-horizontal': props.isHorizontal,
+        'is-vertical': props.isVertical,
+      },
+      props.data?.type,
+      props.data?.cmsSource,
+      props.data?.mediaType,
+    ]"
   >
     <div
       v-if="!props.isSegment"
@@ -294,159 +328,137 @@ const handleHasAudio = computed(() => {
       aria-role="button"
       :aria-label="`${props.data.showTitle} show details`"
     ></div>
-    <div class="grid grid-nogutter">
-      <div class="col-fixed" :class="props.imgCol">
+    <div class="holder flex flex-nogutter">
+      <div class="image overflow-hidden p-0 col-fixed" :class="props.imgCol">
         <VImage
           v-if="props.showImage"
           class="flex-none"
           :alt="`${props.data.showTitle} show `"
           :src="imgSrcUrl"
-          :width="116"
-          :height="116"
-          :ratio="[1, 1]"
-          :srcset="[2]"
+          :width="props.imgWidth"
+          :height="props.imgHeight"
+          :ratio="[props.imgWidth, props.imgHeight]"
+          :srcset="props.imgSrcset"
           tabindex="-1"
         />
       </div>
-      <div class="col">
-        <div class="py-1 px-3 box text-sm">
-          Content goes in here. Content goes in here.Content goes in here.Content goes in
-          here.Content goes in here.Content goes in here.Content goes in here.Content goes
-          in here.Content goes in here.Content goes in here.Content goes in here.Content
-          goes in here.Content goes in here.Content goes in here.
-        </div>
-      </div>
-    </div>
-    <div class="flex gap-3 w-full" :class="props.direction">
-      <VImage
-        v-if="props.showImage"
-        class="flex-none"
-        :alt="`${props.data.showTitle} show `"
-        :src="imgSrcUrl"
-        :width="116"
-        :height="116"
-        :ratio="[1, 1]"
-        :srcset="[2]"
-        tabindex="-1"
-      />
-      <div
-        class="flex gap-2 flex-column justify-content-between w-full"
-        :class="props.showBg ? 'show-bg' : ''"
-      >
-        <div class="flex gap-1 flex-column w-full">
-          <div class="flex gap-0 flex-column align-items-start">
-            <p v-if="props.showTitle" class="text-xs line-height-1">
-              {{ props.data.org ?? props.data.showTitle }}
-            </p>
-            <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
-              {{ props.data?.title }}
-            </h2>
-          </div>
-          <div class="article-metadata">
-            <PipeData class="text-xs">
-              <template #left>
-                {{
-                  props.isSegment
-                    ? props.data?.category
-                    : props.data?.showTitle ||
-                      props.data?.headers?.brand?.title ||
-                      getOrg(props.data.cmsSource)
-                }}
-              </template>
-              <template #right>
-                {{ getDate(props.data) }}
-              </template>
-            </PipeData>
+      <div class="content col">
+        <div class="flex gap-2 flex-column justify-content-between w-full h-full">
+          <div class="flex gap-1 flex-column w-full">
+            <div class="flex gap-0 flex-column align-items-start">
+              <p v-if="props.showTitle" class="text-xs line-height-1">
+                {{ props.data.org ?? props.data.showTitle }}
+              </p>
+              <h2 class="truncate t2lines no-hyphens">
+                {{ props.data?.title }}
+              </h2>
+            </div>
+            <div class="article-metadata">
+              <PipeData class="text-xs">
+                <template #left>
+                  {{
+                    props.isSegment
+                      ? props.data?.category
+                      : props.data?.showTitle ||
+                        props.data?.headers?.brand?.title ||
+                        getOrg(props.data.cmsSource)
+                  }}
+                </template>
+                <template #right>
+                  {{ getDate(props.data) }}
+                </template>
+              </PipeData>
 
-            <div class="text-xs mt-1 opacity-70">
-              <VByline
-                v-if="props.data.byline?.length > 0 && props.isSegment"
-                :authors="props.data.byline"
-                prefix="by "
-              />
+              <div class="text-xs mt-1 opacity-70">
+                <VByline
+                  v-if="props.data.byline?.length > 0 && props.isSegment"
+                  :authors="props.data.byline"
+                  prefix="by "
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          class="button-holder flex justify-content-between align-items-center flex-wrap"
-        >
-          <PlayButton
-            v-if="handleHasAudio"
-            :data="props.data"
-            class="z-2"
-            :label="getMinutes(props.data.estimatedDuration, 1)"
-            @onClick="
-              isDownloaded && !isNetworkConnected
-                ? toggleDownloadedPlay(props.data)
-                : togglePlayEpisode(props.data)
-            "
+          <div
+            class="button-holder flex justify-content-between align-items-center flex-wrap"
           >
-          </PlayButton>
-          <ReadButton
-            v-else
-            class="z-2"
-            :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
-            :file="props.data?.name"
-            @on-click="handleClick"
-          />
+            <PlayButton
+              v-if="handleHasAudio"
+              :data="props.data"
+              class="z-2"
+              :label="getMinutes(props.data.estimatedDuration, 1)"
+              @onClick="
+                isDownloaded && !isNetworkConnected
+                  ? toggleDownloadedPlay(props.data)
+                  : togglePlayEpisode(props.data)
+              "
+            >
+            </PlayButton>
+            <ReadButton
+              v-else
+              class="z-2"
+              :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
+              :file="props.data?.name"
+              @on-click="handleClick"
+            />
 
-          <slot>
-            <div class="flex gap-1 align-items-center">
-              <DownloadProgress
-                class="mr-2"
-                v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
-                :isDownloaded="isDownloaded"
-                :progress="progress"
-                small
-              />
-              <BarsPlaying :data="props.data" />
-              <DotMenu
-                v-if="!props.saved"
-                :menuItems="getDotMenuItems(props.data)"
-                label=""
-                @changeEmit="onMenuChange"
-                class="z-1"
-              >
-                <template #header-bottom>
-                  <div>
-                    <div class="flex gap-3 align-items-center px-4">
-                      <VImage
-                        :src="imgSrcUrl"
-                        :alt="`${props.data.showTitle} show image`"
-                        class="show-image-in-menu flex-none"
-                        :height="116"
-                        :width="116"
-                        :ratio="[1, 1]"
-                        style="
-                          height: 60px;
-                          width: 60px;
-                          background-color: var(--background);
-                        "
-                      />
-                      <div class="info">
-                        <h2 class="card-title-title">{{ props.data?.title }}</h2>
-                        <p>{{ props.data.showTitle }}</p>
+            <slot>
+              <div class="flex gap-1 align-items-center">
+                <DownloadProgress
+                  class="mr-2"
+                  v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
+                  :isDownloaded="isDownloaded"
+                  :progress="progress"
+                  small
+                />
+                <BarsPlaying :data="props.data" />
+                <DotMenu
+                  v-if="!props.saved"
+                  :menuItems="getDotMenuItems(props.data)"
+                  label=""
+                  @changeEmit="onMenuChange"
+                  class="z-1"
+                >
+                  <template #header-bottom>
+                    <div>
+                      <div class="flex gap-3 align-items-center px-4">
+                        <VImage
+                          :src="imgSrcUrl"
+                          :alt="`${props.data.showTitle} show image`"
+                          class="show-image-in-menu flex-none"
+                          :height="116"
+                          :width="116"
+                          :ratio="[1, 1]"
+                          style="
+                            height: 60px;
+                            width: 60px;
+                            background-color: var(--background);
+                          "
+                        />
+                        <div class="info">
+                          <h2 class="card-title-title">{{ props.data?.title }}</h2>
+                          <p>{{ props.data.showTitle }}</p>
+                        </div>
                       </div>
+                      <hr class="mt-5 mb-2 dim" />
                     </div>
-                    <hr class="mt-5 mb-2 dim" />
-                  </div>
-                </template>
-              </DotMenu>
-              <Button
-                v-else
-                text
-                plain
-                rounded
-                class="flex-none z-1"
-                aria-label="star"
-                @click="handleAddToFavorites(props.data)"
-              >
-                <template #icon>
-                  <StarIcon class="h-2rem" :active="isFavorited" />
-                </template>
-              </Button>
-            </div>
-          </slot>
+                  </template>
+                </DotMenu>
+                <Button
+                  v-else
+                  text
+                  plain
+                  rounded
+                  class="flex-none z-1"
+                  aria-label="star"
+                  @click="handleAddToFavorites(props.data)"
+                >
+                  <template #icon>
+                    <StarIcon class="h-2rem" :active="isFavorited" />
+                  </template>
+                </Button>
+              </div>
+            </slot>
+          </div>
         </div>
       </div>
     </div>
@@ -456,16 +468,83 @@ const handleHasAudio = computed(() => {
 <style lang="scss" scoped>
 .media-card {
   overflow: hidden;
-  &.show-bg {
-    background-color: var(--p-surface-25);
-  }
   position: relative;
   cursor: pointer;
-  .card-title-title {
-    @include cardTitle();
+  height: 100%;
+  border-radius: 8px;
+  @include media("<md") {
+    border-radius: 0;
   }
+  .holder {
+    flex-direction: column;
+    @include media("<md") {
+      flex-direction: row;
+    }
+    .content {
+      height: auto;
+      h2 {
+        @include cardTitle();
+      }
+    }
+    .image {
+      @include media("<md") {
+        width: 116px;
+        height: 116px;
+        flex: 0 0 auto;
+      }
+      @include media("<xs") {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  }
+
+  &.show-bg {
+    background-color: var(--p-surface-25);
+    .content {
+      padding: 1rem !important;
+    }
+    @include media("<md") {
+      background-color: transparent;
+      .content {
+        padding: 0 0 0 1rem !important;
+      }
+    }
+  }
+
   .button-holder {
     margin-bottom: -6px;
+  }
+
+  &.is-feature {
+    .content h2 {
+      font-size: var(--font-size-7);
+      line-height: var(--font-size-9);
+    }
+  }
+  &.is-horizontal {
+    .holder {
+      flex-direction: row;
+    }
+    @include media("<md") {
+      background-color: var(--p-surface-25);
+      border-radius: 8px;
+      .holder {
+        flex-direction: column;
+        .image {
+          width: 100% !important;
+          height: auto !important;
+        }
+        .content {
+          padding: 1rem !important;
+        }
+      }
+    }
+  }
+  &.is-vertical {
+    .holder {
+      flex-direction: column;
+    }
   }
 }
 </style>
