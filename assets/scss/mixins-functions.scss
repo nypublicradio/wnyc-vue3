@@ -233,20 +233,20 @@ $spacing-base: 0.25; //  matches prime-flex
   @include truncate();
 }
 @mixin t2lines() {
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2 !important;
 }
 @mixin t3lines() {
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 3 !important;
 }
 @mixin t4lines() {
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 4 !important;
 }
 @mixin t5lines() {
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 5 !important;
 }
 @mixin t6lines() {
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 6 !important;
 }
 @mixin t7lines() {
-  -webkit-line-clamp: 7;
+  -webkit-line-clamp: 7 !important;
 }
