@@ -6,38 +6,25 @@ const props = defineProps({
     type: Array,
     default: null,
   },
-  responsive: {
-    type: Boolean,
-    default: true,
-  },
 })
 </script>
 
 <template>
-  <div v-if="articles" class="top-stories" :class="props.responsive ? 'grid' : ''">
+  <div v-if="articles" class="top-stories grid">
+    <div class="col-12 mb-3">
+      <MediaCard :data="articles[0]" is-horizontal is-feature imgCol="w-6" />
+    </div>
     <div
-      v-for="(article, index) in articles"
+      v-for="(article, index) in articles.slice(1)"
       :key="article.id"
-      :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
+      class="col-12 md:col-4 mb-3"
     >
-      <!-- <pre class="text-xs">{{ article.cmsSource }}</pre> -->
       <MediaCard :data="article" />
-      <!-- <EpisodeItem
-        v-if="hasAudio(article.audio)"
-        :data="article"
-        @on-click="goToEpisodePage(article)"
-      />
-      <StoryItem
-        v-else
-        :data="article"
-        @on-click="goToStoryPage(article, { src: article.cmsSource })"
-      /> -->
     </div>
   </div>
-  <div v-else :class="props.responsive ? 'grid' : ''">
+  <div v-else class="grid">
     <skeleton-top-story
-      class="skeleton-holder"
-      :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
+      class="skeleton-holder col-12 md:col-6 mb-3"
       v-for="(article, index) in 6"
       :key="`skeleton-${index}`"
     />
