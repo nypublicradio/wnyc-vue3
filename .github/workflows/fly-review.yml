@@ -32,7 +32,7 @@ jobs:
       - name: Create .npmrc for GitHub Packages
         run: |
           echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.PAT }}" >> .npmrc
 
       - name: Deploy PR Review App
         uses: superfly/fly-pr-review-apps@1.5.0
