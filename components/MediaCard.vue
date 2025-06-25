@@ -134,6 +134,8 @@ const isNpr = computed(() => {
 const isSimplecast = computed(() => {
   return props.data?.cmsSource === cmsSources.SIMPLECAST
 })
+const aspectRatio = props.imgWidth / props.imgHeight
+const ratioLeft = ref(`-${((aspectRatio - 1) / aspectRatio) * 50}%`)
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -491,6 +493,9 @@ const handleHasAudio = computed(() => {
         width: 116px;
         height: 116px;
         flex: 0 0 auto;
+        .v-image {
+          left: v-bind(ratioLeft);
+        }
       }
       @include media("<xs") {
         width: 80px;
@@ -520,9 +525,36 @@ const handleHasAudio = computed(() => {
     .content h2 {
       font-size: var(--font-size-7);
       line-height: var(--font-size-9);
+      @include t4lines();
     }
   }
   &.is-horizontal {
+    @include media(">md") {
+      .holder {
+        flex-direction: row;
+      }
+      background-color: var(--p-surface-25);
+      border-radius: 8px;
+      .holder {
+        .content {
+          padding: 1rem !important;
+        }
+      }
+    }
+    @include media("<md") {
+      .holder {
+        .image {
+          width: 116px !important;
+          height: 116px !important;
+          flex: 0 0 auto;
+          .v-image {
+            left: v-bind(ratioLeft);
+          }
+        }
+      }
+    }
+  }
+  &.is-horizontal.is-feature {
     .holder {
       flex-direction: row;
     }
@@ -548,3 +580,4 @@ const handleHasAudio = computed(() => {
   }
 }
 </style>
+>
