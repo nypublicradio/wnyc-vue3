@@ -134,8 +134,11 @@ const isNpr = computed(() => {
 const isSimplecast = computed(() => {
   return props.data?.cmsSource === cmsSources.SIMPLECAST
 })
-const aspectRatio = props.imgWidth / props.imgHeight
-const ratioLeft = ref(`-${((aspectRatio - 1) / aspectRatio) * 50}%`)
+
+const ratioLeft = computed(() => {
+  const aspectRatio = props.imgWidth / props.imgHeight
+  return `-${((aspectRatio - 1) / aspectRatio) * 50}%`
+})
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -331,7 +334,11 @@ const handleHasAudio = computed(() => {
       :aria-label="`${props.data.showTitle} show details`"
     ></div>
     <div class="holder flex flex-nogutter">
-      <div class="image overflow-hidden p-0 col-fixed" :class="props.imgCol">
+      <div
+        class="image overflow-hidden p-0 col-fixed"
+        :class="props.imgCol"
+        :style="{ '--ratio-left': ratioLeft }"
+      >
         <VImage
           v-if="props.showImage"
           class="flex-none"
@@ -494,7 +501,7 @@ const handleHasAudio = computed(() => {
         height: 116px;
         flex: 0 0 auto;
         .v-image {
-          left: v-bind(ratioLeft);
+          left: var(--ratio-left);
         }
       }
       @include media("<xs") {
@@ -548,7 +555,7 @@ const handleHasAudio = computed(() => {
           height: 116px !important;
           flex: 0 0 auto;
           .v-image {
-            left: v-bind(ratioLeft);
+            left: var(--ratio-left);
           }
         }
       }
