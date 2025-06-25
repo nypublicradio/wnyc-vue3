@@ -45,6 +45,8 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID }}
             SF_CLIENT_SECRET=${{ secrets.SF_CLIENT_SECRET }}
+            SUPABASE_URL=${{ env.SUPABASE_URL }}
+            SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
           build_args: |
             SENTRY_DSN=${{ env.SENTRY_DSN }}
             SENTRY_ENV=${{ env.SENTRY_ENV }}
