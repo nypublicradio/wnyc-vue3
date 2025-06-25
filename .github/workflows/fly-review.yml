@@ -1,0 +1,97 @@
+name: Deploy Review App
+on:
+  # Run this workflow on every PR event. Existing review apps will be updated when the PR is updated.
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  # Set these to your Fly.io organization and preferred region.
+  FLY_REGION: iad
+  FLY_ORG: personal
+
+jobs:
+  review_app:
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    # Only run one deployment at a time per PR.
+    concurrency:
+      group: pr-${{ github.event.number }}
+
+    # Deploying apps with this "review" environment allows the URL for the app to be displayed in the PR UI.
+    # Feel free to change the name of this environment.
+    environment:
+      name: pr-${{ github.event.number }}
+      # The script in the `deploy` sets the URL output for each review app.
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Create .npmrc for GitHub Packages
+        run: |
+          echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+
+      - name: Deploy PR Review App
+        uses: superfly/fly-pr-review-apps@1.5.0
+        with:
+          secrets: |
+            AVIARY_BASE_API=${{ env.AVIARY_BASE_API }}
+            HEADER_NAVIGATION_API=${{ env.HEADER_NAVIGATION_API }}
+            NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
+            PUBLISHER_BASE_API=${{ env.PUBLISHER_BASE_API }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID }}
+            SF_CLIENT_SECRET=${{ secrets.SF_CLIENT_SECRET }}
+          build_args: |
+            SENTRY_DSN=${{ env.SENTRY_DSN }}
+            SENTRY_ENV=${{ env.SENTRY_ENV }}
+            LIVESTREAM_URL=${{ env.LIVESTREAM_URL }}
+            NAVIGATION_API=${{ env.NAVIGATION_API }}
+            SYSTEM_MESSAGES_API=${{ env.SYSTEM_MESSAGES_API }}
+            STORIES_API=${{ env.STORIES_API }}
+            IMAGE_BASE_URL=${{ env.IMAGE_BASE_URL }}
+            FB_MEASUREMENT_ID=${{ env.FB_MEASUREMENT_ID }}
+            FB_API_KEY_WEB=${{ env.FB_API_KEY_WEB }}
+            FB_API_KEY_IOS=${{ env.FB_API_KEY_IOS }}
+            FB_API_KEY_ANDROID=${{ env.FB_API_KEY_ANDROID }}
+            FB_AUTH_DOMAIN=${{ env.FB_AUTH_DOMAIN }}
+            FB_PROJECT_ID=${{ env.FB_PROJECT_ID }}
+            FB_STORAGE_BUCKET=${{ env.FB_STORAGE_BUCKET }}
+            FB_MESSAGING_SENDER_ID=${{ env.FB_MESSAGING_SENDER_ID }}
+            FB_APP_ID_WEB=${{ env.FB_APP_ID_WEB }}
+            FB_APP_ID_IOS=${{ env.FB_APP_ID_IOS }}
+            FB_APP_ID_ANDROID=${{ env.FB_APP_ID_ANDROID }}
+            GTM_ID=${{ env.GTM_ID }}
+            SUPABASE_URL=${{ env.SUPABASE_URL }}
+            SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+            SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${{ steps.deploy.outputs.url }}
+            SUPABASE_AUTH_TOKEN_NAME=${{ env.SUPABASE_AUTH_TOKEN_NAME }}
+            BFF_URL=${{ steps.deploy.outputs.url }}
+            OPENWEB_SPOT_ID=${{ env.OPENWEB_SPOT_ID }}
+            NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
+            NPR_CDS_API=${{ env.NPR_CDS_API }}
+            WNYC_NOW_FEED_URL=${{ env.WNYC_NOW_FEED_URL }}
+            WNYC_SHOW_SHARE_BASE_URL=${{ env.WNYC_SHOW_SHARE_BASE_URL }}
+            ARTICLE_STREAMFIELD_DONATION_URL=${{ env.ARTICLE_STREAMFIELD_DONATION_URL }}
+            SETTINGS_MENU_DONATION_URL=${{ env.SETTINGS_MENU_DONATION_URL }}
+            USER_AGENT=${{ env.USER_AGENT }}
+            APP_VERSION=${{ env.APP_VERSION }}
+
+      - name: Send Slack notification
+        if: ${{ github.event.action != 'closed' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: '#pull-requests'
+          SLACK_COLOR: 'good'
+          SLACK_ICON_EMOJI: ':rocket:'
+          SLACK_TITLE: 'Review App Deployed'
+          SLACK_MESSAGE: |
+            **Pull Request:** <${{ github.event.pull_request.html_url }}|#${{ github.event.number }}: ${{ github.event.pull_request.title }}>
+            **Review App URL:** <${{ steps.deploy.outputs.url }}|${{ steps.deploy.outputs.url }}>
+            **Branch:** ${{ github.head_ref }}
+            **Author:** ${{ github.event.pull_request.user.login }}
+
