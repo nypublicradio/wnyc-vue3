@@ -90,7 +90,7 @@ const props = defineProps({
   },
   showBg: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   imgCol: {
     type: String,
@@ -425,7 +425,7 @@ const handleHasAudio = computed(() => {
                   :menuItems="getDotMenuItems(props.data)"
                   label=""
                   @changeEmit="onMenuChange"
-                  class="z-1"
+                  class="z-1 -mr-2"
                 >
                   <template #header-bottom>
                     <div>
@@ -476,21 +476,29 @@ const handleHasAudio = computed(() => {
 
 <style lang="scss" scoped>
 .media-card {
-  overflow: hidden;
   position: relative;
   cursor: pointer;
-  height: 100%;
-  border-radius: 8px;
-  @include media("<md") {
-    border-radius: 0;
-  }
+  height: auto;
   .holder {
+    overflow: hidden;
+    height: 100%;
+    border-radius: 8px;
+    @include media("<md") {
+      border-radius: 0;
+    }
     flex-direction: column;
     @include media("<md") {
       flex-direction: row;
     }
+    @include media(">md") {
+      background-color: var(--p-surface-25);
+      .content {
+        padding: 1rem !important;
+      }
+    }
     .content {
       height: auto;
+      padding: 0 0 0 1rem;
       h2 {
         @include cardTitle();
       }
@@ -512,9 +520,11 @@ const handleHasAudio = computed(() => {
   }
 
   &.show-bg {
-    background-color: var(--p-surface-25);
-    .content {
-      padding: 1rem !important;
+    .holder {
+      background-color: var(--p-surface-25);
+      .content {
+        padding: 1rem !important;
+      }
     }
     @include media("<md") {
       background-color: transparent;
@@ -539,9 +549,9 @@ const handleHasAudio = computed(() => {
     @include media(">md") {
       .holder {
         flex-direction: row;
+        background-color: var(--p-surface-25);
+        border-radius: 8px;
       }
-      background-color: var(--p-surface-25);
-      border-radius: 8px;
       .holder {
         .content {
           padding: 1rem !important;
@@ -566,9 +576,9 @@ const handleHasAudio = computed(() => {
       flex-direction: row;
     }
     @include media("<md") {
-      background-color: var(--p-surface-25);
-      border-radius: 8px;
       .holder {
+        background-color: var(--p-surface-25);
+        border-radius: 8px;
         flex-direction: column;
         .image {
           width: 100% !important;
@@ -584,7 +594,6 @@ const handleHasAudio = computed(() => {
     }
   }
   &.is-vertical {
-    background-color: var(--p-surface-25);
     .content {
       padding: 1rem !important;
     }
@@ -596,6 +605,7 @@ const handleHasAudio = computed(() => {
       }
     }
     .holder {
+      background-color: var(--p-surface-25);
       flex-direction: column;
     }
   }
