@@ -11,41 +11,43 @@ const props = defineProps({
 
 <template>
   <div v-if="articles" class="top-stories grid">
-    <div class="col-12 lg:col-8 mb-3">
-      <MediaCard :data="articles[0]" is-horizontal is-feature imgCol="w-8" />
-    </div>
+    <MediaCard
+      class="col-12 lg:col-8 mb-3"
+      :data="articles[0]"
+      is-horizontal
+      is-feature
+      imgCol="w-8"
+    />
+
     <div class="col mb-3 hidden lg:flex">AD HERE</div>
-    <div
+
+    <MediaCard
       v-for="(article, index) in articles.slice(1)"
       :key="article.id"
       class="col-12 md:col-4 mb-3"
-    >
-      <MediaCard :data="article" />
-    </div>
+      :data="article"
+    />
 
-    <div class="col-12 lg:col-6 mb-3">
+    <MediaCard
+      class="col-12 lg:col-6 mb-3"
+      :data="articles[0]"
+      is-vertical
+      is-feature
+      :img-width="672"
+      :img-height="444"
+    />
+
+    <div class="col-12 lg:col-6 grid">
       <MediaCard
-        :data="articles[0]"
-        is-vertical
-        is-feature
-        :img-width="672"
-        :img-height="444"
-      />
-    </div>
-    <div class="col-12 lg:col-6 grid grid-nogutter">
-      <div
         v-for="(article, index) in articles.slice(1)"
         :key="article.id"
         class="col-12 mb-3"
-      >
-        <MediaCard
-          :data="article"
-          is-horizontal
-          imgCol="w-6"
-          :img-width="320"
-          :img-height="150"
-        />
-      </div>
+        :data="article"
+        is-horizontal
+        imgCol="w-6"
+        :img-width="320"
+        :img-height="150"
+      />
     </div>
   </div>
   <div v-else class="grid">
