@@ -46,6 +46,7 @@ jobs:
         uses: superfly/fly-pr-review-apps@1.5.0
         with:
           secrets: |
+            ENV=review
             AVIARY_BASE_API=${{ env.AVIARY_BASE_API }}
             HEADER_NAVIGATION_API=${{ env.HEADER_NAVIGATION_API }}
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
