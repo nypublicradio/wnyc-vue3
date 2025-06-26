@@ -57,7 +57,6 @@ jobs:
             SUPABASE_URL=${{ env.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
           build_args: |
-            PAT=${{ secrets.PAT }}
             SENTRY_DSN=${{ vars.SENTRY_DSN }}
             SENTRY_ENV=${{ vars.SENTRY_ENV }}
             LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
