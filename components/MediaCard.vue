@@ -573,6 +573,9 @@ const handleHasAudio = computed(() => {
         .image {
           width: 100% !important;
           height: auto !important;
+          .v-image {
+            left: 0;
+          }
         }
         .content {
           padding: 1rem !important;
