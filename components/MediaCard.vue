@@ -22,6 +22,7 @@ import {
   goToEpisodePage,
   goToStoryPage,
   goToNprPage,
+  formatTime,
 } from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
@@ -77,6 +78,10 @@ const props = defineProps({
     default: true,
   },
   isFeature: {
+    type: Boolean,
+    default: false,
+  },
+  isEvent: {
     type: Boolean,
     default: false,
   },
@@ -139,6 +144,9 @@ const ratioLeft = computed(() => {
   const aspectRatio = props.imgWidth / props.imgHeight
   return `-${((aspectRatio - 1) / aspectRatio) * 50}%`
 })
+
+// this will change once we know how the event date will be passed
+const eventDate = props.data?.publicationDate
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -305,6 +313,7 @@ const handleHasAudio = computed(() => {
     (props.showPlayButton && props.isSegment && hasAudio(props.data.url))
   )
 })
+console.log("props.data", props.data)
 </script>
 
 <template>
@@ -334,6 +343,13 @@ const handleHasAudio = computed(() => {
       :aria-label="`${props.data.showTitle} show details`"
     ></div>
     <div class="holder flex flex-nogutter">
+      <div
+        v-if="props.isEvent"
+        class="event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
+      >
+        <p class="date day">{{ formatTime(eventDate, "d") }}</p>
+        <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
+      </div>
       <div
         class="image overflow-hidden p-0 col-fixed"
         :class="props.imgCol"
@@ -480,9 +496,30 @@ const handleHasAudio = computed(() => {
   cursor: pointer;
   height: auto;
   .holder {
+    position: relative;
     overflow: hidden;
     height: 100%;
     border-radius: 8px;
+    .event {
+      background-color: var(--p-surface-950);
+      padding: 12px;
+      .date {
+        width: 100%;
+        text-align: center;
+      }
+      .day {
+        font-size: var(--font-size-10);
+        line-height: var(--font-size-10);
+        font-weight: 700;
+        color: var(--p-surface-0);
+      }
+      .month {
+        font-size: var(--font-size-3);
+        line-height: var(--font-size-3);
+        font-weight: 700;
+        color: var(--p-surface-0);
+      }
+    }
     @include media("<md") {
       border-radius: 0;
     }

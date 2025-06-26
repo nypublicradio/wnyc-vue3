@@ -44,6 +44,7 @@ const props = defineProps({
         class="col-12 mb-3"
         :data="article"
         is-horizontal
+        is-event
         imgCol="w-6"
         :img-width="320"
         :img-height="150"
