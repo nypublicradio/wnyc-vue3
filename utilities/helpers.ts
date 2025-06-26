@@ -92,10 +92,10 @@ export const whenTime = (data) => {
 }
 
 // format ISO timestamp to return only the time
-export function formatTime(date: any) {
+export function formatTime(date: any, formatString = "h:mm a") {
   if (date) {
     const dateObject = new Date(date)
-    return format(dateObject, "h:mm a")
+    return format(dateObject, formatString)
   }
   return null
 }
