@@ -15,6 +15,11 @@ export class SalesforceClient {
     async connect(): Promise<void> {
         if (this.isConnected) return;
 
+        console.log('Attempting to connect to Salesforce...');
+        console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
+        console.log('SF_CLIENT_SECRET:', process.env.SF_CLIENT_SECRET ? 'Set' : 'Not set');
+        console.log('Login URL:', this.conn.loginUrl);
+
         try {
             // Use OAuth Client Credentials flow with Consumer ID and Secret
             const response = await fetch(`${this.conn.loginUrl}/services/oauth2/token`, {
@@ -29,12 +34,17 @@ export class SalesforceClient {
                 })
             });
 
+            console.log('Salesforce response status:', response.status);
+
             if (!response.ok) {
                 const errorText = await response.text();
+                console.error('Salesforce auth error:', errorText);
                 throw new Error(`Authentication failed: ${response.statusText} - ${errorText}`);
             }
 
             const authResponse = await response.json();
+            console.log('Salesforce auth successful');
+            
             this.accessToken = authResponse.access_token;
             this.instanceUrl = authResponse.instance_url;
 
