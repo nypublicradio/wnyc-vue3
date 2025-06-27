@@ -1,4 +1,4 @@
-import { SalesforceClient } from '../../utils/salesforce';
+import { SalesforceClient } from '../utils/salesforce';
 import { createError, defineEventHandler } from 'h3';
 
 const config = useRuntimeConfig();
@@ -6,6 +6,7 @@ const config = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
     // Validate input parameter
     const body = await readBody(event);
+    console.log('Received body:', body);
     const salesforceID = body?.salesforceID as string;
     if (!salesforceID || salesforceID.trim() === '') {
         throw createError({
