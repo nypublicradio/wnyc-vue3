@@ -1031,9 +1031,19 @@ export const goToStoryPage = (story, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
-  navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
-  })
+  if (Capacitor.getPlatform() === "web") {
+    // open in new tab if web
+    window.open(`https://www.npr.org/${story.link}`, "_blank")
+    // https://www.npr.org/2025/06/30/nx-s1-5451732/trump-harvard-civil-rights-jewish-students-investigation
+
+    //https://native-app-demo.wnyc.org/npr/nx-s1-5451732
+
+    console.log('story url = ', story)
+  } else {
+    navigateTo({
+      path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
+    })
+  }
   if (log) {
     saveRecentlyPlayed(story)
   }
