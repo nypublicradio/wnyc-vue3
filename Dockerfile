@@ -38,7 +38,8 @@ ARG USER_AGENT
 ARG APP_VERSION
 
 WORKDIR /code
-COPY ./.npmrc .
+
+COPY .npmrc .npmrc
 COPY ./package.json .
 COPY ./package-lock.json .
 RUN npm ci

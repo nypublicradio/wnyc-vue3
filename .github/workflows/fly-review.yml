@@ -1,0 +1,126 @@
+name: Deploy Review App
+on:
+  # Run this workflow on every PR event. Existing review apps will be updated when the PR is updated.
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  # Set these to your Fly.io organization and preferred region.
+  FLY_REGION: iad
+  FLY_ORG: personal
+
+jobs:
+  review_app:
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    # Only run one deployment at a time per PR.
+    concurrency:
+      group: pr-${{ github.event.number }}
+
+    # Deploying apps with this "review" environment allows the URL for the app to be displayed in the PR UI.
+    # Feel free to change the name of this environment.
+    environment:
+      name: pr-${{ github.event.number }}
+      # The script in the `deploy` sets the URL output for each review app.
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Create .npmrc for GitHub Packages
+        run: |
+          echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.PAT }}" >> .npmrc
+
+      - name: Set Review App URL
+        id: set-url
+        run: |
+          # Construct the predictable review app URL
+          REVIEW_APP_URL="https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev"
+          echo "url=$REVIEW_APP_URL" >> $GITHUB_OUTPUT
+
+      - name: Deploy PR Review App
+        id: deploy
+        uses: superfly/fly-pr-review-apps@1.5.0
+        with:
+          secrets: |
+            ENV=review
+            AVIARY_BASE_API=${{ env.AVIARY_BASE_API }}
+            HEADER_NAVIGATION_API=${{ env.HEADER_NAVIGATION_API }}
+            NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
+            PUBLISHER_BASE_API=${{ env.PUBLISHER_BASE_API }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID }}
+            SF_CLIENT_SECRET=${{ secrets.SF_CLIENT_SECRET }}
+            PAT=${{ secrets.PAT }}
+            SUPABASE_URL=${{ env.SUPABASE_URL }}
+            SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+          build_args: |
+            ENV=review
+            SENTRY_DSN=${{ vars.SENTRY_DSN }}
+            SENTRY_ENV=${{ vars.SENTRY_ENV }}
+            LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
+            NAVIGATION_API=${{ vars.NAVIGATION_API }}
+            SYSTEM_MESSAGES_API=${{ vars.SYSTEM_MESSAGES_API }}
+            STORIES_API=${{ vars.STORIES_API }}
+            IMAGE_BASE_URL=${{ vars.IMAGE_BASE_URL }}
+            FB_MEASUREMENT_ID=${{ vars.FB_MEASUREMENT_ID }}
+            FB_API_KEY_WEB=${{ vars.FB_API_KEY_WEB }}
+            FB_API_KEY_IOS=${{ vars.FB_API_KEY_IOS }}
+            FB_API_KEY_ANDROID=${{ vars.FB_API_KEY_ANDROID }}
+            FB_AUTH_DOMAIN=${{ vars.FB_AUTH_DOMAIN }}
+            FB_PROJECT_ID=${{ vars.FB_PROJECT_ID }}
+            FB_STORAGE_BUCKET=${{ vars.FB_STORAGE_BUCKET }}
+            FB_MESSAGING_SENDER_ID=${{ vars.FB_MESSAGING_SENDER_ID }}
+            FB_APP_ID_WEB=${{ vars.FB_APP_ID_WEB }}
+            FB_APP_ID_IOS=${{ vars.FB_APP_ID_IOS }}
+            FB_APP_ID_ANDROID=${{ vars.FB_APP_ID_ANDROID }}
+            GTM_ID=${{ vars.GTM_ID }}
+            SUPABASE_URL=${{ vars.SUPABASE_URL }}
+            SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+            SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${{ steps.set-url.outputs.url }}
+            SUPABASE_AUTH_TOKEN_NAME=${{ vars.SUPABASE_AUTH_TOKEN_NAME }}
+            BFF_URL=${{ steps.set-url.outputs.url }}
+            OPENWEB_SPOT_ID=${{ vars.OPENWEB_SPOT_ID }}
+            NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
+            NPR_CDS_API=${{ vars.NPR_CDS_API }}
+            WNYC_NOW_FEED_URL=${{ vars.WNYC_NOW_FEED_URL }}
+            WNYC_SHOW_SHARE_BASE_URL=${{ vars.WNYC_SHOW_SHARE_BASE_URL }}
+            ARTICLE_STREAMFIELD_DONATION_URL=${{ vars.ARTICLE_STREAMFIELD_DONATION_URL }}
+            SETTINGS_MENU_DONATION_URL=${{ vars.SETTINGS_MENU_DONATION_URL }}
+            USER_AGENT=${{ vars.USER_AGENT }}
+            APP_VERSION=${{ vars.APP_VERSION }}
+
+      - name: Delete GitHub Environment
+        if: github.event.action == 'closed'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.repos.deleteAnEnvironment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                environment_name: `pr-${{ github.event.number }}`
+              });
+              console.log('GitHub environment deleted successfully');
+            } catch (error) {
+              console.log('Environment not found or already deleted:', error.message);
+            }
+            
+      - name: Send Slack notification
+        if: ${{ github.event.action != 'closed' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: '#pull-requests'
+          SLACK_COLOR: 'good'
+          SLACK_ICON_EMOJI: ':rocket:'
+          SLACK_TITLE: 'Review App Deployed'
+          SLACK_MESSAGE: |
+            **Pull Request:** <${{ github.event.pull_request.html_url }}|#${{ github.event.number }}: ${{ github.event.pull_request.title }}>
+            **Review App URL:** <${{ steps.set-url.outputs.url }}|${{ steps.set-url.outputs.url }}>
+            **Branch:** ${{ github.head_ref }}
+            **Author:** ${{ github.event.pull_request.user.login }}
+
