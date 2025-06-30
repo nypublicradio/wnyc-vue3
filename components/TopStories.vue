@@ -51,11 +51,17 @@ const props = defineProps({
       />
     </div>
   </div>
-  <div v-else class="grid">
-    <skeleton-top-story
-      class="skeleton-holder col-12 md:col-6 mb-3"
-      v-for="(article, index) in 6"
+  <div class="col-12 lg:col-6 grid">
+    <skeleton-media-card
+      v-for="(article, index) in articles.slice(1)"
       :key="`skeleton-${index}`"
+      class="col-12 mb-3"
+      :data="article"
+      is-horizontal
+      is-event
+      imgCol="w-6"
+      :img-width="320"
+      :img-height="150"
     />
   </div>
 </template>
