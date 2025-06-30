@@ -39,7 +39,7 @@ const emit = defineEmits(["on-click", "on-delete-favorite"])
 const props = defineProps({
   data: {
     type: Object,
-    default: {},
+    default: null,
   },
   fallbackImage: {
     type: String,
@@ -122,9 +122,30 @@ const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 const isDownloaded = ref(false)
 // check if item is already favorited
 const isFavorited = ref(false)
+// this will change once we know how the event date will be passed
+const eventDate = ref(props.data?.publicationDate)
+
+const reactiveData = toRef(props, "data")
+
+const getImage = computed(() => {
+  if (props.isInDownloads) {
+    return getDownloadedImageUri(reactiveData.value)
+  } else {
+    return String(
+      reactiveData.value?.image?.template ??
+        reactiveData.value?.image?.id ??
+        reactiveData.value?.image ??
+        props.fallbackImage ??
+        getEpisodeFallBackImage()
+    )
+  }
+})
+
 watchEffect(async () => {
+  if (!props.data) return
   isDownloaded.value = isAlreadyDownloaded(props.data)
   isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
+  eventDate.value = props.data?.publicationDate
 })
 
 const isPublisher = computed(() => {
@@ -144,9 +165,6 @@ const ratioLeft = computed(() => {
   const aspectRatio = props.imgWidth / props.imgHeight
   return `-${((aspectRatio - 1) / aspectRatio) * 50}%`
 })
-
-// this will change once we know how the event date will be passed
-const eventDate = props.data?.publicationDate
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -172,7 +190,7 @@ const handleDownload = async (bucketItem) => {
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
-  if (hasAudio(bucketItem.audio)) {
+  if (hasAudio(bucketItem?.audio)) {
     return [
       ...(!props.isSegment
         ? [
@@ -180,22 +198,22 @@ const getDotMenuItems = (bucketItem) => {
               label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
               customIcon: StarIcon,
               active: isFavorited.value,
-              title: bucketItem.title,
+              title: bucketItem?.title,
               command: () => {
                 handleAddToFavorites(bucketItem)
               },
             },
           ]
         : []),
-      ...(hasAudio(bucketItem.audio) && !isDownloaded.value
+      ...(hasAudio(bucketItem?.audio) && !isDownloaded.value
         ? [
             {
               label: `Download ${
-                bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
+                bucketItem?.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
               }`,
               //icon: 'pi pi-google',
               customIcon: DownloadIcon,
-              title: bucketItem.title,
+              title: bucketItem?.title,
               command: () => {
                 handleDownload(bucketItem)
               },
@@ -218,7 +236,7 @@ const getDotMenuItems = (bucketItem) => {
             {
               label: "Share",
               customIcon: ShareIcon,
-              title: bucketItem.title,
+              title: bucketItem?.title,
               command: () => {
                 shareAPI(bucketItem, "Media Card")
               },
@@ -241,7 +259,7 @@ const getDotMenuItems = (bucketItem) => {
         label: `${isFavorited.value ? "Unfavorite Story" : "Favorite Story"}`,
         customIcon: StarIcon,
         active: isFavorited.value,
-        title: bucketItem.title,
+        title: bucketItem?.title,
         command: () => {
           handleAddToFavorites(bucketItem)
         },
@@ -251,7 +269,7 @@ const getDotMenuItems = (bucketItem) => {
             {
               label: "Share",
               customIcon: ShareIcon,
-              title: bucketItem.title,
+              title: bucketItem?.title,
               command: () => {
                 shareAPI(bucketItem, "Media Card")
               },
@@ -265,20 +283,6 @@ const getDotMenuItems = (bucketItem) => {
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
   e?.value?.command()
-}
-
-const imgSrcUrl = ref("")
-
-if (props.isInDownloads) {
-  imgSrcUrl.value = await getDownloadedImageUri(props.data)
-} else {
-  imgSrcUrl.value = String(
-    props.data?.image?.template ??
-      props.data?.image?.id ??
-      props.data?.image ??
-      props.fallbackImage ??
-      getEpisodeFallBackImage()
-  )
 }
 
 // handle the playing of the stored audio file and GA tracking
@@ -298,7 +302,7 @@ const handleClick = () => {
     goToNprPage(props.data)
   } else if (isWagtail.value) {
     goToStoryPage(props.data, { src: props.data.cmsSource })
-  } else if (isPublisher.value && hasAudio(props.data.audio)) {
+  } else if (isPublisher.value && hasAudio(props.data?.audio)) {
     goToEpisodePage(props.data, { src: props.data.cmsSource, type: props.data.type })
   } else {
     goToStoryPage(props.data, { src: props.data.cmsSource })
@@ -309,11 +313,10 @@ const handleClick = () => {
 // handle the play button render
 const handleHasAudio = computed(() => {
   return (
-    (props.showPlayButton && hasAudio(props.data.audio)) ||
+    (props.showPlayButton && hasAudio(props.data?.audio)) ||
     (props.showPlayButton && props.isSegment && hasAudio(props.data.url))
   )
 })
-console.log("props.data", props.data)
 </script>
 
 <template>
@@ -340,7 +343,7 @@ console.log("props.data", props.data)
       @keypress.enter.space="handleClick"
       tabindex="0"
       aria-role="button"
-      :aria-label="`${props.data.showTitle} show details`"
+      :aria-label="`${props.data?.showTitle} show details`"
     ></div>
     <div class="holder flex flex-nogutter">
       <div
@@ -358,8 +361,8 @@ console.log("props.data", props.data)
         <VImage
           v-if="props.showImage"
           class="flex-none"
-          :alt="`${props.data.showTitle} show `"
-          :src="imgSrcUrl"
+          :alt="`${props.data?.showTitle} show `"
+          :src="getImage"
           :width="props.imgWidth"
           :height="props.imgHeight"
           :ratio="[props.imgWidth, props.imgHeight]"
@@ -372,7 +375,7 @@ console.log("props.data", props.data)
           <div class="flex gap-1 flex-column w-full">
             <div class="flex gap-0 flex-column align-items-start">
               <p v-if="props.showTitle" class="text-xs line-height-1">
-                {{ props.data.org ?? props.data.showTitle }}
+                {{ props.data?.org ?? props.data?.showTitle }}
               </p>
               <h2 class="truncate t2lines no-hyphens">
                 {{ props.data?.title }}
@@ -386,7 +389,7 @@ console.log("props.data", props.data)
                       ? props.data?.category
                       : props.data?.showTitle ||
                         props.data?.headers?.brand?.title ||
-                        getOrg(props.data.cmsSource)
+                        getOrg(props.data?.cmsSource)
                   }}
                 </template>
                 <template #right>
@@ -396,8 +399,8 @@ console.log("props.data", props.data)
 
               <div class="text-xs mt-1 opacity-70">
                 <VByline
-                  v-if="props.data.byline?.length > 0 && props.isSegment"
-                  :authors="props.data.byline"
+                  v-if="props.data?.byline?.length > 0 && props.isSegment"
+                  :authors="props.data?.byline"
                   prefix="by "
                 />
               </div>
@@ -410,7 +413,7 @@ console.log("props.data", props.data)
               v-if="handleHasAudio"
               :data="props.data"
               class="z-2"
-              :label="getMinutes(props.data.estimatedDuration, 1)"
+              :label="getMinutes(props.data?.estimatedDuration, 1)"
               @onClick="
                 isDownloaded && !isNetworkConnected
                   ? toggleDownloadedPlay(props.data)
@@ -447,8 +450,8 @@ console.log("props.data", props.data)
                     <div>
                       <div class="flex gap-3 align-items-center px-4">
                         <VImage
-                          :src="imgSrcUrl"
-                          :alt="`${props.data.showTitle} show image`"
+                          :src="getImage"
+                          :alt="`${props.data?.showTitle} show image`"
                           class="show-image-in-menu flex-none"
                           :height="116"
                           :width="116"
@@ -461,7 +464,7 @@ console.log("props.data", props.data)
                         />
                         <div class="info">
                           <h2 class="card-title-title">{{ props.data?.title }}</h2>
-                          <p>{{ props.data.showTitle }}</p>
+                          <p>{{ props.data?.showTitle }}</p>
                         </div>
                       </div>
                       <hr class="mt-5 mb-2 dim" />

@@ -1,17 +1,5 @@
 <script setup>
 const props = defineProps({
-  data: {
-    type: Object,
-    default: {},
-  },
-  fallbackImage: {
-    type: String,
-    default: null,
-  },
-  imgSrc: {
-    type: String,
-    default: null,
-  },
   showTitle: {
     type: Boolean,
     default: false,
@@ -20,15 +8,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  showShare: {
-    type: Boolean,
-    default: true,
-  },
   saved: {
-    type: Boolean,
-    default: false,
-  },
-  isInDownloads: {
     type: Boolean,
     default: false,
   },
@@ -72,17 +52,15 @@ const props = defineProps({
     type: Number,
     default: 282,
   },
-  imgSrcset: {
-    type: Array,
-    default: [2],
-  },
 })
 </script>
 
 <template>
   <div
     class="media-card skeleton-holder"
-    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}; --img-width: ${
+      props.imgWidth
+    }; --img-height: ${props.imgHeight}`"
     :class="[
       {
         'show-bg': props.showBg,
@@ -104,16 +82,8 @@ const props = defineProps({
         <Skeleton
           v-if="props.showImage"
           class="flex-none skeleton-image"
-          :height="
-            props.isVertical || (props.isHorizontal && !props.isFeature)
-              ? 'auto'
-              : '116px'
-          "
-          :width="
-            props.isVertical || (props.isHorizontal && !props.isFeature)
-              ? '100%'
-              : '116px'
-          "
+          height="100%"
+          width="100%"
           borderRadius="0px"
         />
       </div>
@@ -188,12 +158,12 @@ const props = defineProps({
           >
             <Skeleton
               v-if="props.showPlayButton"
-              height="32px"
-              width="80px"
+              height="28px"
+              width="92px"
               borderRadius="16px"
               class="z-2"
             />
-            <Skeleton v-else height="32px" width="60px" borderRadius="16px" class="z-2" />
+            <Skeleton v-else height="28px" width="60px" borderRadius="16px" class="z-2" />
 
             <slot>
               <div class="flex gap-1 align-items-center">
@@ -232,6 +202,8 @@ const props = defineProps({
 
     .skeleton-image {
       aspect-ratio: var(--img-width, 437) / var(--img-height, 282);
+      width: 100%;
+      height: auto;
       min-height: 116px;
     }
 
@@ -273,10 +245,22 @@ const props = defineProps({
         width: 116px;
         height: 116px;
         flex: 0 0 auto;
+        .skeleton-image {
+          width: 116px;
+          height: 116px;
+          aspect-ratio: 1;
+          min-height: 116px;
+        }
       }
       @include media("<xs") {
         width: 80px;
         height: 80px;
+        .skeleton-image {
+          width: 80px;
+          height: 80px;
+          aspect-ratio: 1;
+          min-height: 80px;
+        }
       }
     }
   }
@@ -294,10 +278,6 @@ const props = defineProps({
         padding: 0 0 0 1rem !important;
       }
     }
-  }
-
-  .button-holder {
-    margin-bottom: -6px;
   }
 
   &.is-feature {
@@ -332,6 +312,12 @@ const props = defineProps({
           width: 116px !important;
           height: 116px !important;
           flex: 0 0 auto;
+          .skeleton-image {
+            width: 116px !important;
+            height: 116px !important;
+            aspect-ratio: 1 !important;
+            min-height: 116px !important;
+          }
         }
       }
     }
@@ -349,6 +335,12 @@ const props = defineProps({
         .image {
           width: 100% !important;
           height: auto !important;
+          .skeleton-image {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: var(--img-width, 437) / var(--img-height, 282) !important;
+            min-height: auto !important;
+          }
         }
         .content {
           padding: 1rem !important;
@@ -364,14 +356,16 @@ const props = defineProps({
     .image {
       width: 100% !important;
       height: auto !important;
+      .skeleton-image {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: var(--img-width, 437) / var(--img-height, 282) !important;
+        min-height: 200px !important;
+      }
     }
     .holder {
       background-color: var(--p-surface-25);
       flex-direction: column;
-    }
-    .skeleton-image {
-      height: 200px !important;
-      width: 100% !important;
     }
   }
 }
