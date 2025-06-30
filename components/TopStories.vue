@@ -20,8 +20,8 @@ const reactiveArticles = toRef(props, "articles")
       imgCol="w-8"
     />
     <skeleton-media-card
+      v-else
       class="col-12 lg:col-8 mb-3"
-      :data="reactiveArticles[0]"
       is-horizontal
       is-feature
       imgCol="w-8"
@@ -30,10 +30,17 @@ const reactiveArticles = toRef(props, "articles")
     <div class="col mb-3 hidden lg:flex">AD HERE</div>
 
     <MediaCard
+      v-if="reactiveArticles?.length"
       v-for="(article, index) in reactiveArticles?.slice(1)"
       :key="article.id"
       class="col-12 md:col-4 mb-3"
       :data="article"
+    />
+    <skeleton-media-card
+      v-else
+      v-for="(article, index) in reactiveArticles?.slice(1)"
+      :key="`skeleton-${index}`"
+      class="col-12 md:col-4 mb-3"
     />
 
     <MediaCard
@@ -45,9 +52,18 @@ const reactiveArticles = toRef(props, "articles")
       :img-width="672"
       :img-height="444"
     />
+    <skeleton-media-card
+      v-else
+      class="col-12 lg:col-6 mb-3"
+      is-vertical
+      is-feature
+      :img-width="672"
+      :img-height="444"
+    />
 
     <div class="col-12 lg:col-6 grid grid-nogutter">
       <MediaCard
+        v-if="reactiveArticles?.length"
         v-for="(article, index) in reactiveArticles?.slice(1)"
         :key="article.id"
         class="col-12 mb-3"
@@ -58,20 +74,19 @@ const reactiveArticles = toRef(props, "articles")
         :img-width="320"
         :img-height="150"
       />
+      <skeleton-media-card
+        v-else
+        :key="`skeleton-${index}`"
+        v-for="(article, index) in reactiveArticles?.slice(1)"
+        class="col-12 mb-3"
+        :data="article"
+        is-horizontal
+        is-event
+        imgCol="w-6"
+        :img-width="320"
+        :img-height="150"
+      />
     </div>
-  </div>
-  <div class="col-12 lg:col-6 grid grid-nogutter p-0">
-    <skeleton-media-card
-      v-for="(article, index) in articles.slice(1)"
-      :key="`skeleton-${index}`"
-      class="col-12 mb-5"
-      :data="article"
-      is-horizontal
-      is-event
-      imgCol="w-6"
-      :img-width="320"
-      :img-height="150"
-    />
   </div>
 </template>
 
