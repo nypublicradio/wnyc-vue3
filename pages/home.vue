@@ -121,28 +121,19 @@ onMounted(() => {
         >
           <div v-if="section.componentType === 'default'">
             <div class="grid">
-              <div
-                class="col-12 md:col-6 mb-3"
+              <MediaCard
+                class="col-12 lg:col-6 xl:col-4 mb-3"
                 v-for="article in section.articles"
                 :key="article.id"
-              >
-                <pre class="text-xs">{{ article.cmsSource }}</pre>
-                <EpisodeItem
-                  v-if="hasAudio(article.audio)"
-                  :data="article"
-                  @on-click="goToNprPage(article)"
-                  showPlayButton
-                  :fallback-image="getEpisodeFallBackImage()"
-                  :showShare="false"
-                />
-                <StoryItem
-                  v-else
-                  :data="article"
-                  :index="index"
-                  @on-click="goToNprPage(article)"
-                  :showShare="false"
-                />
-              </div>
+                :data="article"
+                :img-width="116"
+                :img-height="116"
+                is-horizontal
+                imgCol="w-116px"
+                :index="index"
+                :showBg="false"
+                :showBgMobile="false"
+              />
             </div>
           </div>
           <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
