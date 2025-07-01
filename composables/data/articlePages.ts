@@ -486,6 +486,21 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
 
   const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null;
 
+  const image = componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate;
+
+  const getFullHeightAndWidth = (image: string) => {
+    if (!image) return { w: 0, h: 0 };
+
+    const cropMatch = image.match(/crop\/(\d+)x(\d+)/);
+    if (cropMatch) {
+      const fullWidth = parseInt(cropMatch[1], 10);
+      const fullHeight = parseInt(cropMatch[2], 10);
+      return { w: fullWidth, h: fullHeight };
+    }
+
+    return { w: 0, h: 0 };
+  }
+
   return {
     id,
     uuid: article.id,
@@ -495,7 +510,9 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     updatedDate: article.editorialLastModifiedDateTime,
     tease: article.teaser,
     description: article.teaser,
-    image: componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate,
+    image,
+    imageFullWidth: getFullHeightAndWidth(image).w,
+    imageFullHeight: getFullHeightAndWidth(image).h,
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
     audio: audioURL ? audioURL : null,

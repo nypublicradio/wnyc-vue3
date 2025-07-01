@@ -33,6 +33,7 @@ import {
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
 import { cmsSources } from "~/composables/globals.ts"
+import { max } from "date-fns"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -95,6 +96,10 @@ const props = defineProps({
   },
   showBg: {
     type: Boolean,
+    default: true,
+  },
+  showBgMobile: {
+    type: Boolean,
     default: false,
   },
   imgCol: {
@@ -114,6 +119,7 @@ const props = defineProps({
     default: [2],
   },
 })
+console.log("props.data =", props.data)
 //const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
@@ -126,6 +132,21 @@ const isFavorited = ref(false)
 const eventDate = ref(props.data?.publicationDate)
 
 const reactiveData = toRef(props, "data")
+
+const nativeImageHeight = computed(() => {
+  return (
+    reactiveData.value.image.h ||
+    reactiveData.value.image.height ||
+    reactiveData.value.imageFullHeight
+  )
+})
+const nativeImageWidth = computed(() => {
+  return (
+    reactiveData.value.image.w ||
+    reactiveData.value.image.width ||
+    reactiveData.value.imageFullWidth
+  )
+})
 
 const getImage = computed(() => {
   if (props.isInDownloads) {
@@ -326,6 +347,7 @@ const handleHasAudio = computed(() => {
     :class="[
       {
         'show-bg': props.showBg,
+        'show-bg-mobile': props.showBgMobile,
         'is-feature': props.isFeature,
         'is-horizontal': props.isHorizontal,
         'is-vertical': props.isVertical,
@@ -365,8 +387,11 @@ const handleHasAudio = computed(() => {
           :src="getImage"
           :width="props.imgWidth"
           :height="props.imgHeight"
+          :maxHeight="nativeImageHeight"
+          :maxWidth="nativeImageWidth"
           :ratio="[props.imgWidth, props.imgHeight]"
           :srcset="props.imgSrcset"
+          allowVerticalEffect
           tabindex="-1"
         />
       </div>
@@ -531,9 +556,9 @@ const handleHasAudio = computed(() => {
       flex-direction: row;
     }
     @include media(">md") {
-      background-color: var(--p-surface-25);
+      //background-color: var(--p-surface-25);
       .content {
-        padding: 1rem !important;
+        //padding: 1rem !important;
       }
     }
     .content {
@@ -547,6 +572,7 @@ const handleHasAudio = computed(() => {
       @include media("<md") {
         width: 116px;
         height: 116px;
+        // aspect-ratio: 1 / 1;
         flex: 0 0 auto;
         .v-image {
           left: var(--ratio-left);
@@ -562,14 +588,29 @@ const handleHasAudio = computed(() => {
   &.show-bg {
     .holder {
       background-color: var(--p-surface-25);
+      border-radius: 8px;
       .content {
         padding: 1rem !important;
       }
     }
     @include media("<md") {
-      background-color: transparent;
-      .content {
-        padding: 0 0 0 1rem !important;
+      .holder {
+        background-color: transparent;
+        border-radius: 0;
+        .content {
+          padding: 0 0 0 1rem !important;
+        }
+      }
+    }
+  }
+  &.show-bg-mobile {
+    @include media("<md") {
+      .holder {
+        background-color: var(--p-surface-25);
+        border-radius: 8px;
+        .content {
+          padding: 1rem !important;
+        }
       }
     }
   }
@@ -589,12 +630,12 @@ const handleHasAudio = computed(() => {
     @include media(">md") {
       .holder {
         flex-direction: row;
-        background-color: var(--p-surface-25);
-        border-radius: 8px;
+        // background-color: var(--p-surface-25);
+        // border-radius: 8px;
       }
       .holder {
         .content {
-          padding: 1rem !important;
+          //padding: 1rem !important;
         }
       }
     }
@@ -603,6 +644,7 @@ const handleHasAudio = computed(() => {
         .image {
           width: 116px !important;
           height: 116px !important;
+          // aspect-ratio: 1 / 1;
           flex: 0 0 auto;
           .v-image {
             left: var(--ratio-left);
@@ -634,9 +676,6 @@ const handleHasAudio = computed(() => {
     }
   }
   &.is-vertical {
-    .content {
-      padding: 1rem !important;
-    }
     .image {
       width: 100% !important;
       height: auto !important;
@@ -645,8 +684,11 @@ const handleHasAudio = computed(() => {
       }
     }
     .holder {
-      background-color: var(--p-surface-25);
+      //background-color: var(--p-surface-25);
       flex-direction: column;
+      .content {
+        //padding: 1rem !important;
+      }
     }
   }
 }
