@@ -469,13 +469,33 @@ export async function openLinkInAppBrowser(url: string) {
 }
 
 
-// global funcrtion for copying to clipboard
+// global function for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
   const globalToast = useGlobalToast()
   try {
-    await Clipboard.write({
-      string: content,
-    })
+    if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
+      // Use Capacitor Clipboard for mobile apps
+      await Clipboard.write({
+        string: content,
+      })
+    } else {
+      // Use native browser Clipboard API for web
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(content)
+      } else {
+        // Fallback for older browsers or insecure contexts
+        const textArea = document.createElement('textarea')
+        textArea.value = content
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+    }
     globalToast.value = {
       severity: "info",
       summary: "Copied to clipboard",
@@ -497,35 +517,64 @@ export const removeHTMLTags = (str) => {
   const parsedHTML = parser.parseFromString(str, "text/html")
   return parsedHTML.body.textContent ?? ""
 }
+interface ShareContent {
+  title: string
+  details?: string
+  description?: string
+  url?: string
+  titleLink?: string
+}
+
 // share API
 export const shareAPI = async (
-  content: object,
+  content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
-  // DESKTOP sharing is not supported yet
-  const shareContent = {
-    title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details || content.description || content.title),
-    url: content.url || content.titleLink, // titleLink is for live streams
+  const shareData = {
+    title: removeHTMLTags(content.socialTitle || content.title),
+    text: removeHTMLTags(content.rawBody || content.description || content.title),
+    url: content.url || content.titleLink,
+  };
+
+  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title);
+  console.log("content = ", content);
+  // Native Mobile Sharing
+  if (Capacitor.isNativePlatform()) {
+    await Share.share({
+      title: shareData.title,
+      text: shareData.text,
+      url: shareData.url,
+      dialogTitle: "Share with buddies",
+    });
+    return; // Exit after native share
   }
 
-  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
-  if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
-    await Share.share({
-      // title: shareContent.title,
-      // text: shareContent.text,
-      url: content.url,
-      dialogTitle: "Share with buddies",
-    })
-  } else {
+  // Web Share API
+  if (navigator.share && shareData.url) {
     try {
-      await navigator.share(shareContent)
+      await navigator.share({
+        title: shareData.title,
+        text: shareData.text,
+        url: shareData.url,
+      });
     } catch (error) {
-      copyToClipBoard(shareContent.url)
-      //console.error('Error sharing', error)
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        // User cancelled the share. No action needed.
+      } else {
+        // Any other error, we fallback to clipboard
+        console.error("Web Share API error:", error);
+        copyToClipBoard(shareData.url);
+      }
+    }
+  } else {
+    // Fallback for browsers without Web Share API or if URL is missing
+    if (shareData.url) {
+      copyToClipBoard(shareData.url);
+    } else {
+      console.error("No URL provided to share or copy.");
     }
   }
-}
+};
 
 // handle the delete of the stored audio file and GA tracking
 export const handleDelete = (file) => {
@@ -1020,10 +1069,17 @@ export const goToEpisodePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
-  navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
-    query: params,
-  })
+  if (Capacitor.getPlatform() === "web") {
+    if (story.cmsSource === cmsSources.WAGTAIL) {
+      // open in new tab if web and wagtail source
+      window.open(story.url, "_blank")
+    }
+  } else {
+    navigateTo({
+      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+      query: params,
+    })
+  }
   if (log) {
     saveRecentlyPlayed(story)
   }
@@ -1032,13 +1088,8 @@ export const goToStoryPage = (story, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
   if (Capacitor.getPlatform() === "web") {
-    // open in new tab if web
-    window.open(`https://www.npr.org/${story.link}`, "_blank")
-    // https://www.npr.org/2025/06/30/nx-s1-5451732/trump-harvard-civil-rights-jewish-students-investigation
-
-    //https://native-app-demo.wnyc.org/npr/nx-s1-5451732
-
-    console.log('story url = ', story)
+    // open in new tab to NPR.org if web
+    window.open(story.link, "_blank")
   } else {
     navigateTo({
       path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
