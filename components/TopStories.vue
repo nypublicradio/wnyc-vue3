@@ -28,16 +28,17 @@ const reactiveArticles = toRef(props, "articles")
     />
 
     <div class="col mb-3 hidden lg:flex">AD HERE</div>
-    <MediaCard
-      v-if="reactiveArticles.length > 0"
-      v-for="(article, index) in reactiveArticles?.slice(1)"
-      :key="article.id"
-      class="col-12 md:col-4 mb-3"
-      :data="article"
-    />
+    <template v-if="reactiveArticles.length > 0">
+      <MediaCard
+        v-for="(article, index) in reactiveArticles?.slice(1)"
+        :key="`${article.id}-${index}`"
+        class="col-12 md:col-4 mb-3"
+        :data="article"
+      />
+    </template>
     <skeleton-media-card
       v-else
-      v-for="(article, index) in 6"
+      v-for="index in 6"
       :key="`skeleton-1-${index}`"
       class="col-12 md:col-4 mb-3"
     />
@@ -61,22 +62,23 @@ const reactiveArticles = toRef(props, "articles")
     />
 
     <div class="col-12 lg:col-6 grid grid-nogutter">
-      <MediaCard
-        v-if="reactiveArticles.length > 0"
-        v-for="(article, index) in reactiveArticles.slice(1)"
-        :key="article.id"
-        class="col-12 mb-3"
-        :data="article"
-        is-horizontal
-        is-event
-        imgCol="w-6"
-        :img-width="320"
-        :img-height="150"
-      />
+      <template v-if="reactiveArticles.length > 0">
+        <MediaCard
+          v-for="(article, index) in reactiveArticles.slice(1)"
+          :key="`${article.id}-${index}`"
+          class="col-12 mb-3"
+          :data="article"
+          is-horizontal
+          is-event
+          imgCol="w-6"
+          :img-width="320"
+          :img-height="150"
+        />
+      </template>
       <skeleton-media-card
         v-else
+        v-for="index in 5"
         :key="`skeleton-2-${index}`"
-        v-for="(article, index) in 5"
         class="col-12 mb-3"
         is-horizontal
         is-event

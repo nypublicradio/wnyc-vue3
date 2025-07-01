@@ -517,13 +517,6 @@ export const removeHTMLTags = (str) => {
   const parsedHTML = parser.parseFromString(str, "text/html")
   return parsedHTML.body.textContent ?? ""
 }
-interface ShareContent {
-  title: string
-  details?: string
-  description?: string
-  url?: string
-  titleLink?: string
-}
 
 // share API
 export const shareAPI = async (
@@ -537,7 +530,6 @@ export const shareAPI = async (
   };
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title);
-  console.log("content = ", content);
   // Native Mobile Sharing
   if (Capacitor.isNativePlatform()) {
     await Share.share({
