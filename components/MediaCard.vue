@@ -34,6 +34,7 @@ import {
 import useSleepTimer from "~/composables/useSleepTimer"
 import { cmsSources } from "~/composables/globals.ts"
 import { max } from "date-fns"
+import { useImageDimensions } from "~/composables/useImageDimensions"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -106,24 +107,31 @@ const props = defineProps({
     type: String,
     default: "md:h-auto md:w-12",
   },
-  imgWidth: {
-    type: Number,
-    default: 437,
+  ratio: {
+    type: Array,
+    default: () => [3, 2],
   },
-  imgHeight: {
+  debounceDelay: {
     type: Number,
-    default: 282,
+    default: 500,
   },
   imgSrcset: {
     type: Array,
     default: [2],
   },
 })
-console.log("props.data =", props.data)
-//const accountPromptSideBar = useAccountPromptSideBar()
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+
+// Use the image dimensions composable with a unique selector for this component instance
+const imageContainerRef = ref(null)
+const { width: imageWidth, height: imageHeight, ratio: imageRatio } = useImageDimensions({
+  ratio: props.ratio,
+  containerSelector: () => imageContainerRef.value,
+  debounceDelay: props.debounceDelay,
+})
+
 //handle if it this is downloaded
 const isDownloaded = ref(false)
 // check if item is already favorited
@@ -183,7 +191,7 @@ const isNpr = computed(() => {
 // })
 
 const ratioLeft = computed(() => {
-  const aspectRatio = props.imgWidth / props.imgHeight
+  const aspectRatio = props.ratio[0] / props.ratio[1]
   return `-${((aspectRatio - 1) / aspectRatio) * 50}%`
 })
 
@@ -376,6 +384,7 @@ const handleHasAudio = computed(() => {
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
       <div
+        ref="imageContainerRef"
         class="image overflow-hidden p-0 col-fixed"
         :class="props.imgCol"
         :style="{ '--ratio-left': ratioLeft }"
@@ -385,11 +394,11 @@ const handleHasAudio = computed(() => {
           class="flex-none"
           :alt="`${props.data?.showTitle} show `"
           :src="getImage"
-          :width="props.imgWidth"
-          :height="props.imgHeight"
+          :width="imageWidth"
+          :height="imageHeight"
           :maxHeight="nativeImageHeight"
           :maxWidth="nativeImageWidth"
-          :ratio="[props.imgWidth, props.imgHeight]"
+          :ratio="imageRatio"
           :srcset="props.imgSrcset"
           allowVerticalEffect
           tabindex="-1"
@@ -527,7 +536,7 @@ const handleHasAudio = computed(() => {
     position: relative;
     overflow: hidden;
     height: 100%;
-    border-radius: 8px;
+    //border-radius: 8px;
     .event {
       background-color: var(--p-surface-950);
       padding: 12px;
@@ -557,9 +566,6 @@ const handleHasAudio = computed(() => {
     }
     @include media(">md") {
       //background-color: var(--p-surface-25);
-      .content {
-        //padding: 1rem !important;
-      }
     }
     .content {
       height: auto;
@@ -572,11 +578,7 @@ const handleHasAudio = computed(() => {
       @include media("<md") {
         width: 116px;
         height: 116px;
-        // aspect-ratio: 1 / 1;
         flex: 0 0 auto;
-        .v-image {
-          left: var(--ratio-left);
-        }
       }
       @include media("<xs") {
         width: 80px;
@@ -630,13 +632,6 @@ const handleHasAudio = computed(() => {
     @include media(">md") {
       .holder {
         flex-direction: row;
-        // background-color: var(--p-surface-25);
-        // border-radius: 8px;
-      }
-      .holder {
-        .content {
-          //padding: 1rem !important;
-        }
       }
     }
     @include media("<md") {
@@ -646,9 +641,6 @@ const handleHasAudio = computed(() => {
           height: 116px !important;
           // aspect-ratio: 1 / 1;
           flex: 0 0 auto;
-          .v-image {
-            left: var(--ratio-left);
-          }
         }
       }
     }
@@ -660,7 +652,7 @@ const handleHasAudio = computed(() => {
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
-        border-radius: 8px;
+
         flex-direction: column;
         .image {
           width: 100% !important;
@@ -674,6 +666,9 @@ const handleHasAudio = computed(() => {
         }
       }
     }
+    &.show-bg {
+      border-radius: 8px;
+    }
   }
   &.is-vertical {
     .image {
@@ -686,9 +681,6 @@ const handleHasAudio = computed(() => {
     .holder {
       //background-color: var(--p-surface-25);
       flex-direction: column;
-      .content {
-        //padding: 1rem !important;
-      }
     }
   }
 }
