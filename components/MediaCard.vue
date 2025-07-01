@@ -157,9 +157,9 @@ const isWagtail = computed(() => {
 const isNpr = computed(() => {
   return props.data?.cmsSource === cmsSources.NPR
 })
-const isSimplecast = computed(() => {
-  return props.data?.cmsSource === cmsSources.SIMPLECAST
-})
+// const isSimplecast = computed(() => {
+//   return props.data?.cmsSource === cmsSources.SIMPLECAST
+// })
 
 const ratioLeft = computed(() => {
   const aspectRatio = props.imgWidth / props.imgHeight
