@@ -153,7 +153,8 @@ const emit = defineEmits([
 ])
 
 const imageLoaded = ref(false)
-
+const refThisImg = ref(null)
+const thisWidth = ref(null)
 const theSrc = computed(() => {
   return props.src
     .replace("{width}", props.width)
@@ -210,7 +211,6 @@ const handleProvider = computed(() => {
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
   const vRatio = Number(props.ratio[1])
-
   if (props.width) {
     return {
       height: props.height,
@@ -221,7 +221,6 @@ const getDimensions = () => {
   } else {
     //console.log('thisWidth.value =  ', thisWidth.value)
     let theWidth = thisWidth.value
-
     if (props.maxWidth && props.maxWidth < theWidth) {
       theWidth = props.maxWidth
     }
@@ -264,10 +263,20 @@ const srcset = computed(() => {
     return undefined
   }
 })
+
+onMounted(async () => {
+  await nextTick()
+  thisWidth.value =
+    refThisImg.value.offsetWidth !== 0
+      ? refThisImg.value.offsetWidth
+      : typeof window === "undefined"
+      ? props.defaultWidth
+      : window.innerWidth
+})
 </script>
 
 <template>
-  <div class="v-image v-image-npr">
+  <div ref="refThisImg" class="v-image v-image-npr">
     <VFlexibleLink
       raw
       :to="props.to"

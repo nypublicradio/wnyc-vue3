@@ -126,10 +126,9 @@ onMounted(() => {
                 v-for="article in section.articles"
                 :key="article.id"
                 :data="article"
-                :img-width="116"
-                :img-height="116"
                 is-horizontal
-                imgCol="w-116px"
+                imgCol="w-7rem"
+                :ratio="[1, 1]"
                 :index="index"
                 :showBg="false"
                 :showBgMobile="false"
