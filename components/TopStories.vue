@@ -18,6 +18,7 @@ const reactiveArticles = toRef(props, "articles")
       is-horizontal
       is-feature
       imgCol="w-8"
+      :size="{ xs: [369, 246], sm: [592, 395] }"
     />
     <skeleton-media-card
       v-else
@@ -25,6 +26,7 @@ const reactiveArticles = toRef(props, "articles")
       is-horizontal
       is-feature
       imgCol="w-8"
+      :size="{ xs: [369, 246], sm: [592, 395] }"
     />
 
     <div class="col mb-3 hidden lg:flex">AD HERE</div>
@@ -34,6 +36,7 @@ const reactiveArticles = toRef(props, "articles")
         :key="`${article.id}-${index}`"
         class="col-12 md:col-4 mb-3"
         :data="article"
+        :size="{ xs: [116, 116], md: [438, 292] }"
       />
     </template>
     <skeleton-media-card
@@ -41,6 +44,7 @@ const reactiveArticles = toRef(props, "articles")
       v-for="index in 6"
       :key="`skeleton-1-${index}`"
       class="col-12 md:col-4 mb-3"
+      :size="{ xs: [116, 116], md: [438, 292] }"
     />
 
     <MediaCard
@@ -49,16 +53,14 @@ const reactiveArticles = toRef(props, "articles")
       :data="reactiveArticles?.[0]"
       is-vertical
       is-feature
-      :img-width="672"
-      :img-height="444"
+      :size="{ xs: [369, 246], md: [664, 443] }"
     />
     <skeleton-media-card
       v-else
       class="col-12 lg:col-6 mb-3"
       is-vertical
       is-feature
-      :img-width="672"
-      :img-height="444"
+      :size="{ xs: [369, 246], md: [664, 443] }"
     />
 
     <div class="col-12 lg:col-6 grid grid-nogutter">
@@ -66,25 +68,23 @@ const reactiveArticles = toRef(props, "articles")
         <MediaCard
           v-for="(article, index) in reactiveArticles.slice(1)"
           :key="`${article.id}-${index}`"
-          class="col-12 mb-3"
+          class="col-12 mb-5"
           :data="article"
           is-horizontal
           is-event
           imgCol="w-6"
-          :img-width="320"
-          :img-height="150"
+          :size="{ xs: [116, 116], md: [300, 150] }"
         />
       </template>
       <skeleton-media-card
         v-else
         v-for="index in 5"
         :key="`skeleton-2-${index}`"
-        class="col-12 mb-3"
+        class="col-12 mb-5"
         is-horizontal
         is-event
         imgCol="w-6"
-        :img-width="320"
-        :img-height="150"
+        :size="{ xs: [116, 116], md: [300, 150] }"
       />
     </div>
   </div>
@@ -92,6 +92,4 @@ const reactiveArticles = toRef(props, "articles")
 
 <style lang="scss" scoped>
 $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
-.top-stories {
-}
 </style>

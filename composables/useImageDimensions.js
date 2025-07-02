@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, nextTick, computed } from "vue"
+import { ref, onMounted, onUnmounted } from "vue"
 import breakpoints from "~/assets/scss/breakpoints.module.scss"
 
 /**
@@ -7,7 +7,12 @@ import breakpoints from "~/assets/scss/breakpoints.module.scss"
  * @returns {string} - Current breakpoint name
  */
 function getCurrentBreakpoint(width) {
-    if (width < parseInt(breakpoints.xs)) return 'xs-'
+    // Handle case where width is not available or breakpoints not loaded
+    if (!width || typeof breakpoints === 'undefined') {
+        return 'md' // Default fallback
+    }
+
+    if (width < parseInt(breakpoints.xs)) return 'xs'  // Changed from 'xs-' to 'xs'
     if (width < parseInt(breakpoints.sm)) return 'xs'
     if (width < parseInt(breakpoints.md)) return 'sm'
     if (width < parseInt(breakpoints.lg)) return 'md'
@@ -18,159 +23,96 @@ function getCurrentBreakpoint(width) {
 }
 
 /**
- * Composable for dynamically calculating image dimensions based on container size and aspect ratio
+ * Get the size for the current breakpoint with smart defaults
+ * @param {Object|Array} sizeConfig - Size configuration object or legacy array
+ * @param {string} breakpoint - Current breakpoint name
+ * @returns {Array} - [width, height] size array for the current breakpoint
+ */
+function getSizeForBreakpoint(sizeConfig, breakpoint) {
+    // Handle legacy array format for backward compatibility (convert to ratio)
+    if (Array.isArray(sizeConfig)) {
+        // Convert ratio to a reasonable default size (300px width base)
+        const ratio = sizeConfig[0] / sizeConfig[1]
+        const width = 300
+        const height = Math.round(width / ratio)
+        return [width, height]
+    }
+
+    // Handle object format with smart cascading defaults
+    if (sizeConfig && typeof sizeConfig === 'object') {
+        const breakpointOrder = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl']
+        const currentIndex = breakpointOrder.indexOf(breakpoint)
+
+        // Look for the size at current breakpoint or cascade down to find the closest defined size
+        for (let i = currentIndex; i >= 0; i--) {
+            const bp = breakpointOrder[i]
+            if (sizeConfig[bp]) {
+                return sizeConfig[bp]
+            }
+        }
+
+        // If no size found, use default
+        return [300, 200] // Default 3:2 ratio at 300px width
+    }
+
+    // Fallback to default
+    return [300, 200]
+}
+
+/**
+ * Composable for responsive image dimensions based on breakpoint-specific sizes
  * @param {Object} options - Configuration options
- * @param {Array} options.ratio - Aspect ratio as [width, height] (e.g., [3, 2])
- * @param {string} options.containerSelector - CSS selector for the container element
- * @param {number} options.debounceDelay - Delay in milliseconds for debouncing resize events (default: 150)
- * @returns {Object} - Reactive width, height, and utility functions
+ * @param {Object|Array} options.size - Responsive size configuration:
+ *   - Object format: { xs: [116,116], md: [600,400] } - different sizes per breakpoint
+ *   - Array format (legacy): [3, 2] - converted to ratio-based default size
+ *   - Default: {} (uses [300,200] default size)
+ * @returns {Object} - Reactive width, height, and current breakpoint
  */
 export function useImageDimensions(options = {}) {
-    const { ratio = [3, 2], containerSelector = ".image", debounceDelay = 500 } = options
+    const { size = {} } = options
 
     const width = ref(0)
     const height = ref(0)
-    const containerElement = ref(null)
     const currentBreakpoint = ref('')
 
-    // Return the original ratio array for reactivity
-    const reactiveRatio = computed(() => ratio)
-
-    let resizeObserver = null
-    let debounceTimer = null
-
-    // Check if we've entered a different breakpoint
-    const hasBreakpointChanged = () => {
-        const windowWidth = window.innerWidth
-        const newBreakpoint = getCurrentBreakpoint(windowWidth)
-
-        if (currentBreakpoint.value !== newBreakpoint) {
-            currentBreakpoint.value = newBreakpoint
-            return true
-        }
-        return false
+    // Update dimensions based on current breakpoint
+    const updateDimensions = () => {
+        const [newWidth, newHeight] = getSizeForBreakpoint(size, currentBreakpoint.value)
+        width.value = newWidth
+        height.value = newHeight
     }
 
-    // Debounced version of calculateDimensions - only updates on breakpoint changes
-    const debouncedCalculateDimensions = () => {
-        if (debounceTimer) {
-            clearTimeout(debounceTimer)
-        }
-        debounceTimer = setTimeout(() => {
-            // Only recalculate if we've crossed a breakpoint boundary
-            if (hasBreakpointChanged()) {
-                calculateDimensions()
+    // Handle window resize with minimal debouncing
+    const handleResize = () => {
+        if (typeof window !== 'undefined') {
+            const newBreakpoint = getCurrentBreakpoint(window.innerWidth)
+            if (currentBreakpoint.value !== newBreakpoint) {
+                currentBreakpoint.value = newBreakpoint
+                updateDimensions()
             }
-            debounceTimer = null
-        }, debounceDelay)
-    }
-
-    const calculateDimensions = () => {
-        if (!containerElement.value) return
-
-        const containerRect = containerElement.value.getBoundingClientRect()
-        const containerWidth = containerRect.width
-        const containerHeight = containerRect.height
-
-        if (containerWidth === 0 || containerHeight === 0) return
-
-        const aspectRatio = ratio[0] / ratio[1]
-
-        // Calculate dimensions based on container size while maintaining aspect ratio
-        if (containerWidth / containerHeight > aspectRatio) {
-            // Container is wider than aspect ratio, fit to height
-            height.value = Math.round(containerHeight)
-            width.value = Math.round(containerHeight * aspectRatio)
-        } else {
-            // Container is taller than aspect ratio, fit to width
-            width.value = Math.round(containerWidth)
-            height.value = Math.round(containerWidth / aspectRatio)
-        }
-    }
-
-    const findContainer = () => {
-        // Handle different types of container selectors
-        if (typeof containerSelector === "function") {
-            return containerSelector()
-        } else if (typeof containerSelector === "string") {
-            if (typeof document !== "undefined") {
-                const containers = document.querySelectorAll(containerSelector)
-                if (containers.length === 1) {
-                    return containers[0]
-                } else if (containers.length > 1) {
-                    // If multiple containers, try to find the most recent one or use the first
-                    return containers[containers.length - 1]
-                }
-            }
-        } else if (containerSelector?.value) {
-            return containerSelector.value
-        }
-        return null
-    }
-
-    const initializeObserver = async () => {
-        await nextTick()
-
-        // Find the container element
-        containerElement.value = findContainer()
-
-        if (!containerElement.value) {
-            console.warn(`Container element not found with selector: ${containerSelector}`)
-            return
-        }
-
-        // Set initial breakpoint
-        currentBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
-
-        // Initial calculation
-        calculateDimensions()
-
-        // Set up ResizeObserver to watch for container size changes
-        if (typeof ResizeObserver !== "undefined") {
-            resizeObserver = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                    if (entry.target === containerElement.value) {
-                        debouncedCalculateDimensions()
-                    }
-                }
-            })
-
-            resizeObserver.observe(containerElement.value)
-        } else {
-            // Fallback for browsers without ResizeObserver
-            window.addEventListener("resize", debouncedCalculateDimensions)
-        }
-    }
-
-    const cleanup = () => {
-        // Clear any pending debounce timer
-        if (debounceTimer) {
-            clearTimeout(debounceTimer)
-            debounceTimer = null
-        }
-
-        if (resizeObserver) {
-            resizeObserver.disconnect()
-            resizeObserver = null
-        } else {
-            window.removeEventListener("resize", debouncedCalculateDimensions)
         }
     }
 
     onMounted(() => {
-        initializeObserver()
+        if (typeof window !== 'undefined') {
+            // Initialize current breakpoint and dimensions
+            currentBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
+            updateDimensions()
+
+            // Set up resize listener
+            window.addEventListener("resize", handleResize)
+        }
     })
 
     onUnmounted(() => {
-        cleanup()
+        if (typeof window !== 'undefined') {
+            window.removeEventListener("resize", handleResize)
+        }
     })
 
     return {
         width,
         height,
-        ratio: reactiveRatio,
         currentBreakpoint,
-        calculateDimensions,
-        cleanup,
     }
 }

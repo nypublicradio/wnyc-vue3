@@ -38,32 +38,51 @@ const props = defineProps({
   },
   showBg: {
     type: Boolean,
+    default: true,
+  },
+  showBgMobile: {
+    type: Boolean,
     default: false,
   },
   imgCol: {
     type: String,
     default: "md:h-auto md:w-12",
   },
-  imgWidth: {
-    type: Number,
-    default: 437,
+  // Responsive image size configuration
+  // Object format: { xs: [116,116], md: [600,400] } - different sizes per breakpoint
+  // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
+  // Default: {} uses [300,200] default size with smart cascading
+  size: {
+    type: [Array, Object],
+    default: () => ({ xs: [116, 116], md: [438, 292] }),
   },
-  imgHeight: {
+  debounceDelay: {
     type: Number,
-    default: 282,
+    default: 500,
   },
+  imgSrcset: {
+    type: Array,
+    default: [2],
+  },
+})
+
+// Use the same composable as the main MediaCard for consistency
+import { useImageDimensions } from "~/composables/useImageDimensions"
+
+const { width: imageWidth, height: imageHeight } = useImageDimensions({
+  size: props.size,
+  debounceDelay: props.debounceDelay,
 })
 </script>
 
 <template>
   <div
     class="media-card skeleton-holder"
-    :style="`cursor: ${props.isSegment ? 'default !important' : ''}; --img-width: ${
-      props.imgWidth
-    }; --img-height: ${props.imgHeight}`"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
     :class="[
       {
         'show-bg': props.showBg,
+        'show-bg-mobile': props.showBgMobile,
         'is-feature': props.isFeature,
         'is-horizontal': props.isHorizontal,
         'is-vertical': props.isVertical,
@@ -78,13 +97,16 @@ const props = defineProps({
         <Skeleton height="16px" width="24px" borderRadius="16px" class="mb-1" />
         <Skeleton height="12px" width="32px" borderRadius="16px" />
       </div>
-      <div class="image overflow-hidden p-0 col-fixed" :class="props.imgCol">
+      <div
+        class="image overflow-hidden p-0 col-fixed"
+        :class="props.imgCol"
+        :style="`aspect-ratio: ${imageWidth / imageHeight};`"
+      >
         <Skeleton
           v-if="props.showImage"
           class="flex-none skeleton-image"
-          height="100%"
-          width="100%"
           borderRadius="0px"
+          :style="`aspect-ratio: ${imageWidth / imageHeight};`"
         />
       </div>
       <div class="content col">
@@ -201,9 +223,8 @@ const props = defineProps({
     cursor: default !important;
 
     .skeleton-image {
-      aspect-ratio: var(--img-width, 437) / var(--img-height, 282);
-      width: 100%;
-      height: auto;
+      width: 100% !important;
+      height: auto !important;
       min-height: 116px;
     }
 
@@ -273,9 +294,22 @@ const props = defineProps({
       }
     }
     @include media("<md") {
-      background-color: transparent;
-      .content {
-        padding: 0 0 0 1rem !important;
+      .holder {
+        background-color: transparent;
+        .content {
+          padding: 0 0 0 1rem !important;
+        }
+      }
+    }
+  }
+
+  &.show-bg-mobile {
+    @include media("<md") {
+      .holder {
+        background-color: var(--p-surface-25);
+        .content {
+          padding: 1rem !important;
+        }
       }
     }
   }
@@ -338,8 +372,7 @@ const props = defineProps({
           .skeleton-image {
             width: 100% !important;
             height: auto !important;
-            aspect-ratio: var(--img-width, 437) / var(--img-height, 282) !important;
-            min-height: auto !important;
+            min-height: auto;
           }
         }
         .content {
@@ -350,22 +383,21 @@ const props = defineProps({
   }
 
   &.is-vertical {
-    .content {
-      padding: 1rem !important;
-    }
     .image {
-      width: 100% !important;
-      height: auto !important;
+      width: 100%;
+      height: auto;
       .skeleton-image {
-        width: 100% !important;
-        height: auto !important;
-        aspect-ratio: var(--img-width, 437) / var(--img-height, 282) !important;
-        min-height: 200px !important;
+        width: 100%;
+        height: auto;
+        min-height: 200px;
       }
     }
     .holder {
       background-color: var(--p-surface-25);
       flex-direction: column;
+      .content {
+        padding: 1rem !important;
+      }
     }
   }
 }
