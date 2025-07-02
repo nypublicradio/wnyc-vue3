@@ -49,7 +49,7 @@ const reactiveArticles = toRef(props, "articles")
 
     <MediaCard
       v-if="reactiveArticles.length > 0"
-      class="col-12 lg:col-6 mb-3"
+      class="col-12 lg:col-6 mb-5"
       :data="reactiveArticles?.[0]"
       is-vertical
       is-feature
@@ -57,7 +57,7 @@ const reactiveArticles = toRef(props, "articles")
     />
     <skeleton-media-card
       v-else
-      class="col-12 lg:col-6 mb-3"
+      class="col-12 lg:col-6 mb-5"
       is-vertical
       is-feature
       :size="{ xs: [369, 246], md: [664, 443] }"
