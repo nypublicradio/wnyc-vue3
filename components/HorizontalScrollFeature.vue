@@ -77,7 +77,7 @@ const { isMobile } = useDevice()
         }
       }
       &:not(.large-card):last-child {
-        padding-right: 3rem;
+        margin-right: 3rem;
       }
       &.large-card:last-child {
         margin-right: 3rem;

@@ -50,6 +50,14 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  hideDate: {
+    type: Boolean,
+    default: false,
+  },
+  showTease: {
+    type: Boolean,
+    default: false,
+  },
   showTitle: {
     type: Boolean,
     default: false,
@@ -390,16 +398,14 @@ const handleHasAudio = computed(() => {
       <div class="content col">
         <div class="flex gap-2 flex-column justify-content-between w-full h-full">
           <div class="flex gap-1 flex-column w-full">
-            <div class="flex gap-0 flex-column align-items-start">
+            <div class="flex gap-2 flex-column align-items-start">
               <p v-if="props.showTitle" class="text-xs line-height-1">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
-              <h2 class="truncate t2lines no-hyphens">
-                {{ props.data?.title }}
-              </h2>
+              <h2 class="truncate t2lines no-hyphens">HUH{{ props.data?.title }}</h2>
             </div>
             <div class="article-metadata">
-              <PipeData class="text-xs">
+              <PipeData class="text-xs" :hidePipe="props.hideDate">
                 <template #left>
                   {{
                     props.isSegment
@@ -409,7 +415,7 @@ const handleHasAudio = computed(() => {
                         getOrg(props.data?.cmsSource)
                   }}
                 </template>
-                <template #right>
+                <template #right v-if="!props.hideDate">
                   {{ getDate(props.data) }}
                 </template>
               </PipeData>
@@ -422,6 +428,11 @@ const handleHasAudio = computed(() => {
                 />
               </div>
             </div>
+            <HtmlConvert
+              v-if="props.data.tease && props.showTease"
+              :htmlContent="props.data.tease"
+              class="tease"
+            />
           </div>
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
@@ -551,6 +562,9 @@ const handleHasAudio = computed(() => {
       padding: 0 0 0 1rem;
       h2 {
         @include cardTitle();
+      }
+      .tease {
+        @include cardBody();
       }
     }
     .image {

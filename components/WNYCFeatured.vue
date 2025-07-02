@@ -131,8 +131,20 @@ const togglePlayHere = (item) => {
     <div class="wnyc-featured">
       <HorizontalScrollFeature :data="props.articles">
         <template #default>
-          <!-- <div class="item" v-for="(item, index) in props.articles" :key="item.label"> -->
-          <CardLarge
+          <MediaCard
+            v-for="(item, index) in props.articles"
+            :data="item"
+            :key="`home2-${item.label}`"
+            is-vertical
+            :size="[3, 2]"
+            :showBg="true"
+            :showBgMobile="true"
+            :hideDate="true"
+            :showTease="true"
+            class="item btn"
+          />
+
+          <!-- <CardLarge
             v-for="(item, index) in props.articles"
             :key="item.label"
             :item="item"
@@ -177,8 +189,7 @@ const togglePlayHere = (item) => {
                 </DotMenu>
               </div>
             </template>
-          </CardLarge>
-          <!-- </div> -->
+          </CardLarge> -->
         </template>
         <template #skeleton>
           <div class="flex w-full">
@@ -191,3 +202,10 @@ const togglePlayHere = (item) => {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.item {
+  min-width: 248px;
+  max-width: 248px;
+}
+</style>

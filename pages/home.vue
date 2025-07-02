@@ -96,7 +96,7 @@ onMounted(() => {
             <MediaCard
               v-for="ep in section.data"
               :data="ep"
-              :key="`home2-${ep.id}`"
+              :key="`home-${ep.id}`"
               showPlayButton
               :fallback-image="ep.headers.brand.logoImage.template"
               is-horizontal
