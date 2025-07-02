@@ -129,6 +129,8 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
+    imageFullWidth: article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
+    imageFullHeight: article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
     leadImageCaption: article.leadAsset?.[0]?.value?.caption || article.leadAsset?.[0]?.value?.image?.caption,
     imageLink: article.leadAsset?.[0]?.value?.imageLink,
     link: getWagtailArticleLink(article),
@@ -180,6 +182,8 @@ export async function normalizeWagtailListItem(article: Record<string, any | und
 
   return Object.assign({}, await normalizePage(article), {
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
+    imageFullWidth: article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
+    imageFullHeight: article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
     cmsSource: cmsSources.WAGTAIL,
     authors: article.relatedAuthors?.map(normalizeAuthor),
     contributingOrganizations: article.relatedContributingOrganizations,
@@ -236,6 +240,8 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
+    imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image.w : article.attributes.imageMain.w,
+    imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image.h : article.attributes.imageMain.h,
     leadImageCaption: article.attributes.imageCaption,
     imageLink: undefined,
     type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
@@ -314,6 +320,8 @@ export async function normalizePublisherListItem(article: Record<string, any | u
 
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
+    imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image.w : article.attributes.imageMain.w,
+    imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image.h : article.attributes.imageMain.h,
     type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
     cmsSource: cmsSources.PUBLISHER,
     meta: {
@@ -544,6 +552,8 @@ export function normalizeSearchResults(results: Record<string, any | undefined>)
     title: results.result.listingTitle || results.result.title,
     description: results.result.description,
     image: results.result.image ?? results.result.leadAsset?.[0]?.value?.image ?? results.result.leadAsset?.[0]?.value?.defaultImage,
+    imageFullWidth: results.result.image ?? results.result.leadAsset?.[0]?.value?.image?.w ?? results.result.leadAsset?.[0]?.value?.defaultImage?.w,
+    imageFullHeight: results.result.image ?? results.result.leadAsset?.[0]?.value?.image?.h ?? results.result.leadAsset?.[0]?.value?.defaultImage?.h,
     leadImageCaption: results.result.leadAsset?.[0]?.value?.caption ?? results.result.leadAsset?.[0]?.value?.image?.caption,
     imageLink: results.result.leadAsset?.[0]?.value?.imageLink,
     link: getArticleLink(results.result),

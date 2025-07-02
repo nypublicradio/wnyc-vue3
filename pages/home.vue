@@ -112,7 +112,7 @@ onMounted(() => {
         <h2 class="my-3">NPR Stories</h2>
         <div
           v-for="(section, index) in pagedata?.npr_stories"
-          :key="`NPR-conetnet-${index}`"
+          :key="`NPR-content-${index}`"
         >
           <div v-if="section.componentType === 'default'">
             <div class="grid">
@@ -123,7 +123,7 @@ onMounted(() => {
                 :data="article"
                 is-horizontal
                 imgCol="w-7rem"
-                :ratio="[1, 1]"
+                :size="[1, 1]"
                 :index="index"
                 :showBg="false"
                 :showBgMobile="false"
