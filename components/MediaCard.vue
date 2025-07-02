@@ -33,7 +33,6 @@ import {
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
 import { cmsSources } from "~/composables/globals.ts"
-import { max } from "date-fns"
 import { useImageDimensions } from "~/composables/useImageDimensions"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
@@ -107,9 +106,13 @@ const props = defineProps({
     type: String,
     default: "md:h-auto md:w-12",
   },
-  ratio: {
-    type: Array,
-    default: () => [3, 2],
+  // Responsive image size configuration
+  // Object format: { xs: [116,116], md: [600,400] } - different sizes per breakpoint
+  // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
+  // Default: {} uses [300,200] default size with smart cascading
+  size: {
+    type: [Array, Object],
+    default: () => ({ xs: [116, 116], md: [438, 292] }),
   },
   debounceDelay: {
     type: Number,
@@ -124,12 +127,20 @@ const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
-// Use the image dimensions composable with a unique selector for this component instance
-const imageContainerRef = ref(null)
-const { width: imageWidth, height: imageHeight, ratio: imageRatio } = useImageDimensions({
-  ratio: props.ratio,
-  containerSelector: () => imageContainerRef.value,
+// Use the simplified image dimensions composable
+const { width: imageWidth, height: imageHeight, currentBreakpoint } = useImageDimensions({
+  size: props.size,
   debounceDelay: props.debounceDelay,
+})
+
+// Computed ratio for VImage compatibility - derived from current dimensions
+const imageRatio = computed(() => {
+  return [imageWidth.value, imageHeight.value]
+})
+
+// Fixed ratio for the small menu image (116x116 = 1:1)
+const menuImageRatio = computed(() => {
+  return [1, 1] // 116x116 is a 1:1 aspect ratio
 })
 
 //handle if it this is downloaded
@@ -189,11 +200,6 @@ const isNpr = computed(() => {
 // const isSimplecast = computed(() => {
 //   return props.data?.cmsSource === cmsSources.SIMPLECAST
 // })
-
-const ratioLeft = computed(() => {
-  const aspectRatio = props.ratio[0] / props.ratio[1]
-  return `-${((aspectRatio - 1) / aspectRatio) * 50}%`
-})
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -383,12 +389,7 @@ const handleHasAudio = computed(() => {
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
-      <div
-        ref="imageContainerRef"
-        class="image overflow-hidden p-0 col-fixed"
-        :class="props.imgCol"
-        :style="{ '--ratio-left': ratioLeft }"
-      >
+      <div class="image overflow-hidden p-0 col-fixed" :class="props.imgCol">
         <VImage
           v-if="props.showImage"
           class="flex-none"
@@ -396,9 +397,9 @@ const handleHasAudio = computed(() => {
           :src="getImage"
           :width="imageWidth"
           :height="imageHeight"
+          :ratio="imageRatio"
           :maxHeight="nativeImageHeight"
           :maxWidth="nativeImageWidth"
-          :ratio="imageRatio"
           :srcset="props.imgSrcset"
           allowVerticalEffect
           tabindex="-1"
@@ -489,7 +490,7 @@ const handleHasAudio = computed(() => {
                           class="show-image-in-menu flex-none"
                           :height="116"
                           :width="116"
-                          :ratio="[1, 1]"
+                          :ratio="menuImageRatio"
                           style="
                             height: 60px;
                             width: 60px;
@@ -536,7 +537,6 @@ const handleHasAudio = computed(() => {
     position: relative;
     overflow: hidden;
     height: 100%;
-    //border-radius: 8px;
     .event {
       background-color: var(--p-surface-950);
       padding: 12px;
@@ -563,9 +563,6 @@ const handleHasAudio = computed(() => {
     flex-direction: column;
     @include media("<md") {
       flex-direction: row;
-    }
-    @include media(">md") {
-      //background-color: var(--p-surface-25);
     }
     .content {
       height: auto;
@@ -639,7 +636,6 @@ const handleHasAudio = computed(() => {
         .image {
           width: 116px !important;
           height: 116px !important;
-          // aspect-ratio: 1 / 1;
           flex: 0 0 auto;
         }
       }
@@ -652,7 +648,6 @@ const handleHasAudio = computed(() => {
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
-
         flex-direction: column;
         .image {
           width: 100% !important;
@@ -679,8 +674,11 @@ const handleHasAudio = computed(() => {
       }
     }
     .holder {
-      //background-color: var(--p-surface-25);
       flex-direction: column;
+      background-color: var(--p-surface-25);
+      .content {
+        padding: 1rem !important;
+      }
     }
   }
 }
