@@ -56,14 +56,6 @@ const props = defineProps({
     type: [Array, Object],
     default: () => ({ xs: [116, 116], md: [438, 292] }),
   },
-  debounceDelay: {
-    type: Number,
-    default: 500,
-  },
-  imgSrcset: {
-    type: Array,
-    default: [2],
-  },
 })
 
 // Use the same composable as the main MediaCard for consistency
@@ -71,7 +63,6 @@ import { useImageDimensions } from "~/composables/useImageDimensions"
 
 const { width: imageWidth, height: imageHeight } = useImageDimensions({
   size: props.size,
-  debounceDelay: props.debounceDelay,
 })
 </script>
 

@@ -114,10 +114,6 @@ const props = defineProps({
     type: [Array, Object],
     default: () => ({ xs: [116, 116], md: [438, 292] }),
   },
-  debounceDelay: {
-    type: Number,
-    default: 500,
-  },
   imgSrcset: {
     type: Array,
     default: [2],
@@ -128,19 +124,13 @@ const isNetworkConnected = useIsNetworkConnected()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 // Use the simplified image dimensions composable
-const { width: imageWidth, height: imageHeight, currentBreakpoint } = useImageDimensions({
+const { width: imageWidth, height: imageHeight } = useImageDimensions({
   size: props.size,
-  debounceDelay: props.debounceDelay,
 })
 
 // Computed ratio for VImage compatibility - derived from current dimensions
 const imageRatio = computed(() => {
   return [imageWidth.value, imageHeight.value]
-})
-
-// Fixed ratio for the small menu image (116x116 = 1:1)
-const menuImageRatio = computed(() => {
-  return [1, 1] // 116x116 is a 1:1 aspect ratio
 })
 
 //handle if it this is downloaded
@@ -331,7 +321,7 @@ const toggleDownloadedPlay = (file) => {
   )
 }
 
-// handle click event emit
+// handle click event & emit
 const handleClick = () => {
   if (isNpr.value) {
     goToNprPage(props.data)
@@ -490,7 +480,7 @@ const handleHasAudio = computed(() => {
                           class="show-image-in-menu flex-none"
                           :height="116"
                           :width="116"
-                          :ratio="menuImageRatio"
+                          :ratio="[1, 1]"
                           style="
                             height: 60px;
                             width: 60px;
