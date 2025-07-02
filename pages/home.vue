@@ -1,5 +1,4 @@
 <script setup>
-import { goToEpisodePage } from "~/utilities/helpers"
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
