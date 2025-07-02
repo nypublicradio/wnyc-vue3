@@ -93,14 +93,18 @@ onMounted(() => {
         </section>
         <section v-if="section.componentType === 'default'">
           <div class="grid">
-            <EpisodeItem
+            <MediaCard
               v-for="ep in section.data"
               :data="ep"
-              :key="`home-${ep.id}`"
-              @onClick="goToEpisodePage(ep)"
+              :key="`home2-${ep.id}`"
               showPlayButton
               :fallback-image="ep.headers.brand.logoImage.template"
-              class="col-12 md:col-6 mb-3"
+              is-horizontal
+              imgCol="w-7rem"
+              :size="[1, 1]"
+              :showBg="false"
+              :showBgMobile="false"
+              class="col-12 lg:col-6 xl:col-4 mb-3"
             />
           </div>
         </section>
