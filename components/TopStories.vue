@@ -29,7 +29,13 @@ const reactiveArticles = toRef(props, "articles")
       :size="{ xs: [369, 246], sm: [592, 395] }"
     />
 
-    <div class="col mb-3 hidden lg:flex">AD HERE</div>
+    <div class="col mb-3 hidden lg:flex align-items-center justify-content-center">
+      <story-htlAd
+        layout="rectangle"
+        slotClass="htlad-wnyc_homepage_rectangle"
+        fineprint="WNYC is funded by sponsors and member donations"
+      />
+    </div>
     <template v-if="reactiveArticles.length > 0">
       <MediaCard
         v-for="(article, index) in reactiveArticles?.slice(1)"

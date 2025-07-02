@@ -402,7 +402,7 @@ const handleHasAudio = computed(() => {
               <p v-if="props.showTitle" class="text-xs line-height-1">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
-              <h2 class="truncate t2lines no-hyphens">HUH{{ props.data?.title }}</h2>
+              <h2 class="truncate t2lines no-hyphens">{{ props.data?.title }}</h2>
             </div>
             <div class="article-metadata">
               <PipeData class="text-xs" :hidePipe="props.hideDate">

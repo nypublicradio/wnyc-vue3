@@ -10,6 +10,7 @@ const props = defineProps({
   },
 })
 const { isMobile } = useDevice()
+const reactiveData = toRef(props, "data")
 </script>
 
 <template>
@@ -18,7 +19,7 @@ const { isMobile } = useDevice()
       class="scroll flex gap-2 align-items-stretch"
       :class="[{ hideScrollBar: isMobile }]"
     >
-      <slot name="default" v-if="props.data" />
+      <slot name="default" v-if="reactiveData" />
       <slot v-else name="skeleton">
         <div class="flex w-full">
           <div v-for="i in 5" class="item" :key="`${i}-skeleton`">
