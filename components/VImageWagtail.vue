@@ -127,23 +127,30 @@ const props = defineProps({
     type: String,
   },
   /**
-   *  ammount of blur for the blured background image */
+   *  amount of blur for the background image */
   verticalBgBlur: {
     default: "3px",
     type: String,
   },
   /**
-   * tint the grey blured background image
+   * tint the grey background image
    * */
   verticalBgColor: {
     default: "#f1f1f1",
     type: String,
   },
   /**
-   *  the opacity of the tint of the grey blured background image
+   *  the opacity of the tint of the background image
    */
   verticalBgColorOpacity: {
     default: "0.6",
+    type: String,
+  },
+  /**
+   *  the grayscale of the background image
+   */
+  verticalBgGrayscale: {
+    default: "100",
     type: String,
   },
   /**
@@ -378,7 +385,7 @@ const handleProvider = computed(() => {
       }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
         object-fit: cover;
         height: inherit;
       }
