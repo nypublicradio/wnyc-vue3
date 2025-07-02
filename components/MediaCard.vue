@@ -143,18 +143,10 @@ const eventDate = ref(props.data?.publicationDate)
 const reactiveData = toRef(props, "data")
 
 const nativeImageHeight = computed(() => {
-  return (
-    reactiveData.value.image.h ||
-    reactiveData.value.image.height ||
-    reactiveData.value.imageFullHeight
-  )
+  return reactiveData.value.imageFullHeight
 })
 const nativeImageWidth = computed(() => {
-  return (
-    reactiveData.value.image.w ||
-    reactiveData.value.image.width ||
-    reactiveData.value.imageFullWidth
-  )
+  return reactiveData.value.imageFullWidth
 })
 
 const getImage = computed(() => {
