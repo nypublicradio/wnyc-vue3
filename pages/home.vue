@@ -1,10 +1,5 @@
 <script setup>
-import {
-  goToEpisodePage,
-  hasAudio,
-  getEpisodeFallBackImage,
-  goToNprPage,
-} from "~/utilities/helpers"
+import { goToEpisodePage } from "~/utilities/helpers"
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()

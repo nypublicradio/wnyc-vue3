@@ -488,6 +488,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
 
   const image = componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate;
 
+  // extract full image width and height from NPR image URL
   const getFullHeightAndWidth = (image: string) => {
     if (!image) return { w: 0, h: 0 };
 
