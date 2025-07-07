@@ -169,7 +169,7 @@ const theSrcFull = computed(() => {
     .replace("{format}", props.format)
 })
 
-const isVertical = ref(props.allowVerticalEffect && props.maxHeight > props.maxWidth)
+const isVertical = ref(props.allowVerticalEffect && props.maxHeight >= props.maxWidth)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)
 
