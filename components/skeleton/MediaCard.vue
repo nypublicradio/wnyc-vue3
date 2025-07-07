@@ -92,10 +92,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
       <div
         v-if="props.isEvent"
         class="event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
-      >
-        <Skeleton height="16px" width="24px" borderRadius="16px" class="mb-1" />
-        <Skeleton height="12px" width="32px" borderRadius="16px" />
-      </div>
+      ></div>
       <div
         class="image overflow-hidden p-0 col-fixed"
         :class="props.imgCol"
@@ -261,7 +258,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     height: 100%;
     border-radius: 8px;
     .event {
-      background-color: var(--p-surface-950);
+      background-color: var(--p-surface-200);
       padding: 12px;
       justify-content: center;
       align-items: center;

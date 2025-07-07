@@ -29,7 +29,9 @@ const reactiveArticles = toRef(props, "articles")
       :size="{ xs: [369, 246], sm: [592, 395] }"
     />
 
-    <div class="col mb-3 hidden lg:flex align-items-center justify-content-center">
+    <div
+      class="ad-holder col mb-3 hidden lg:flex align-items-center justify-content-center"
+    >
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -98,4 +100,9 @@ const reactiveArticles = toRef(props, "articles")
 
 <style lang="scss" scoped>
 $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
+.top-stories {
+  .ad-holder {
+    min-width: 300px;
+  }
+}
 </style>
