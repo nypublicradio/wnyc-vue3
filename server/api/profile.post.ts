@@ -34,6 +34,7 @@ export default defineEventHandler(async (event) => {
     try {
         const soql = `SELECT Id, cfg_Active_Sustainer__c, npo02__LastCloseDate__c FROM Contact WHERE Id = '${salesforceID}'`;
         result = await salesforce.queryRecord(soql);
+        console.log('Salesforce query result:', result);
     } catch (error) {
         throw createError({
             statusCode: 500,
