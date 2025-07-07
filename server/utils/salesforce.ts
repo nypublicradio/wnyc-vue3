@@ -15,22 +15,27 @@ export class SalesforceClient {
     async connect(): Promise<void> {
         if (this.isConnected) return;
 
-        console.log('Attempting to connect to Salesforce...');
+        console.log('=== SALESFORCE CONNECTION DEBUG ===');
         console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
         console.log('SF_CLIENT_SECRET:', process.env.SF_CLIENT_SECRET ? 'Set' : 'Not set');
+        console.log('SF_USERNAME:', process.env.SF_USERNAME ? 'Set' : 'Not set');
+        console.log('SF_PASSWORD:', process.env.SF_PASSWORD ? 'Set' : 'Not set');
+        console.log('SF_SECURITY_TOKEN:', process.env.SF_SECURITY_TOKEN ? 'Set' : 'Not set');
         console.log('Login URL:', this.conn.loginUrl);
 
         try {
-            // Use OAuth Client Credentials flow with Consumer ID and Secret
+            // Use OAuth Username-Password flow
             const response = await fetch(`${this.conn.loginUrl}/services/oauth2/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({
-                    grant_type: 'client_credentials',
+                    grant_type: 'password',
                     client_id: process.env.SF_CLIENT_ID as string,
-                    client_secret: process.env.SF_CLIENT_SECRET as string
+                    client_secret: process.env.SF_CLIENT_SECRET as string,
+                    username: process.env.SF_USERNAME as string,
+                    password: (process.env.SF_PASSWORD as string) + (process.env.SF_SECURITY_TOKEN || '')
                 })
             });
 
@@ -53,7 +58,7 @@ export class SalesforceClient {
             this.conn.instanceUrl = this.instanceUrl;
             
             this.isConnected = true;
-            console.log('Connected to Salesforce via Client Credentials');
+            console.log('Connected to Salesforce via Username-Password flow');
         } catch (error) {
             console.error('Failed to connect to Salesforce:', error);
             throw error;
