@@ -362,13 +362,24 @@ const getEpisodeImage = () => {
             class="mb-3 pr-0 beforeHack"
             :key="segment.id"
           >
-            <EpisodeItem
+            <MediaCard
+              :data="segment"
+              isSegment
+              showPlayButton
+              is-horizontal
+              :show-image="false"
+              imgCol="w-7rem"
+              :size="[1, 1]"
+              :showBg="false"
+              :showBgMobile="false"
+            />
+            <!-- <EpisodeItem
               :data="segment"
               showPlayButton
               isSegment
               :show-image="false"
               class=""
-            />
+            /> -->
           </li>
         </ol>
         <HtmlConvert :htmlContent="episodeData?.body" class="mt-5" />

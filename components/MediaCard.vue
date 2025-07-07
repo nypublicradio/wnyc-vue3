@@ -350,6 +350,7 @@ const handleHasAudio = computed(() => {
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
     :class="[
       {
+        'show-image': props.showImage,
         'show-bg': props.showBg,
         'show-bg-mobile': props.showBgMobile,
         'is-feature': props.isFeature,
@@ -379,9 +380,12 @@ const handleHasAudio = computed(() => {
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
-      <div class="image overflow-hidden p-0 col-fixed" :class="props.imgCol">
+      <div
+        class="image overflow-hidden p-0 col-fixed"
+        :class="props.imgCol"
+        v-if="props.showImage"
+      >
         <VImage
-          v-if="props.showImage"
           class="flex-none"
           :alt="`${props.data?.showTitle} show `"
           :src="getImage"
@@ -674,6 +678,13 @@ const handleHasAudio = computed(() => {
       background-color: var(--p-surface-25);
       .content {
         padding: 1rem !important;
+      }
+    }
+  }
+  &:not(.show-image) {
+    .holder {
+      .content {
+        padding: 0;
       }
     }
   }
