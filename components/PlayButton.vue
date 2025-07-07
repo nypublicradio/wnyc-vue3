@@ -63,6 +63,7 @@ const emit = defineEmits(["on-click"])
 
 // handles the click event
 const togglePlay = () => {
+  if (isStreamLoading.value) return
   emit("on-click")
 }
 
