@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     try {
         const salesforce = new SalesforceClient();
         const authUrl = salesforce.getAuthUrl();
-        
+
         return {
             authUrl,
             message: 'Visit the authUrl to authorize with Salesforce, then you\'ll be redirected to the callback to get your refresh token'
