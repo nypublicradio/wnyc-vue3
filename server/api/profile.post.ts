@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     // Execute query with error handling
     let result;
     try {
-        const soql = `SELECT Id, npsp__Sustainer__c, npo02__LastCloseDate__c, npo02__LastOppAmount__c FROM Contact WHERE Id = '${salesforceID}'`;
+        const soql = `SELECT Id, cfg_Active_Sustainer__c, npo02__LastCloseDate__c, npo02__LastOppAmount__c FROM Contact WHERE Id = '${salesforceID}'`;
         result = await salesforce.queryRecord(soql);
         console.log('Salesforce query result:', result);
     } catch (error) {
