@@ -25,6 +25,14 @@ export class SalesforceClient {
         }
 
         try {
+            // Decode the private key if it's base64 encoded
+            let privateKey = process.env.SF_PRIVATE_KEY;
+            if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+                // If it doesn't contain the PEM headers, assume it's base64 encoded
+                privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+                console.log('Decoded base64 private key');
+            }
+
             // Create JWT payload
             const jwtPayload = {
                 iss: process.env.SF_CLIENT_ID, // Connected App Consumer Key
@@ -40,7 +48,7 @@ export class SalesforceClient {
             });
 
             // Sign the JWT with your private key
-            const token = jwt.sign(jwtPayload, process.env.SF_PRIVATE_KEY, { algorithm: 'RS256' });
+            const token = jwt.sign(jwtPayload, privateKey, { algorithm: 'RS256' });
 
             // Request access token using the JWT Bearer flow
             const response = await fetch(`${this.conn.loginUrl}/services/oauth2/token`, {
