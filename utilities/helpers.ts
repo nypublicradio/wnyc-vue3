@@ -401,23 +401,19 @@ export async function setDarkMode(bool: boolean) {
   const isDarkMode = useIsDarkMode()
   isDarkMode.value = dmBool
 }
-
 // function to get the EPISODE fallback image for the episode depending on darkmode
-export const getEpisodeFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
+export const getEpisodeFallBackImage = (isDarkMode = true) => {
+  return isDarkMode ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
 }
 
 // function to get the EPISODE HEADER fallback image for the episode depending on darkmode
-export const getEpisodeHeadFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
+export const getEpisodeHeadFallBackImage = (isDarkMode = true) => {
+  return isDarkMode ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
 }
 
 // function to get the USER icon fall back image
-export const getUserFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKUSERDARK : FALLBACKUSER
+export const getUserFallBackImage = (isDarkMode = true) => {
+  return isDarkMode ? FALLBACKUSERDARK : FALLBACKUSER
 
 }
 

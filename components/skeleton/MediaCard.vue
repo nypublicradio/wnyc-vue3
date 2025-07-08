@@ -80,6 +80,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
     :class="[
       {
+        'show-image': props.showImage,
         'show-bg': props.showBg,
         'show-bg-mobile': props.showBgMobile,
         'is-feature': props.isFeature,
@@ -207,21 +208,9 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
             <Skeleton v-else height="28px" width="60px" borderRadius="16px" class="z-2" />
 
             <slot>
-              <div class="flex gap-1 align-items-center">
-                <Skeleton
-                  v-if="!props.saved"
-                  height="24px"
-                  width="24px"
-                  borderRadius="50%"
-                  class="z-1 opacity-70"
-                />
-                <Skeleton
-                  v-else
-                  height="32px"
-                  width="32px"
-                  borderRadius="50%"
-                  class="z-1"
-                />
+              <div class="flex align-items-center gap-4">
+                <Skeleton class="" height="16px" width="16px" borderRadius="16px" />
+                <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
               </div>
             </slot>
           </div>
@@ -256,7 +245,6 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     position: relative;
     overflow: hidden;
     height: 100%;
-    border-radius: 8px;
     .event {
       background-color: var(--p-surface-200);
       padding: 12px;
@@ -270,12 +258,12 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media("<md") {
       flex-direction: row;
     }
-    @include media(">md") {
-      background-color: var(--p-surface-25);
-      .content {
-        padding: 1rem !important;
-      }
-    }
+    // @include media(">md") {
+    //   background-color: var(--p-surface-25);
+    //   .content {
+    //     padding: 1rem !important;
+    //   }
+    // }
     .content {
       height: auto;
       padding: 0 0 0 1rem;
@@ -308,6 +296,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
   &.show-bg {
     .holder {
       background-color: var(--p-surface-25);
+      border-radius: 8px;
       .content {
         padding: 1rem !important;
       }
@@ -315,6 +304,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media("<md") {
       .holder {
         background-color: transparent;
+        border-radius: 0;
         .content {
           padding: 0 0 0 1rem !important;
         }
@@ -326,6 +316,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
+        border-radius: 8px;
         .content {
           padding: 1rem !important;
         }
@@ -350,13 +341,6 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media(">md") {
       .holder {
         flex-direction: row;
-        background-color: var(--p-surface-25);
-        border-radius: 8px;
-      }
-      .holder {
-        .content {
-          padding: 1rem !important;
-        }
       }
     }
     @include media("<md") {
@@ -399,6 +383,9 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
         }
       }
     }
+    &.show-bg {
+      border-radius: 8px;
+    }
   }
 
   &.is-vertical {
@@ -416,6 +403,13 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
       flex-direction: column;
       .content {
         padding: 1rem !important;
+      }
+    }
+  }
+  &:not(.show-image) {
+    .holder {
+      .content {
+        padding: 0;
       }
     }
   }

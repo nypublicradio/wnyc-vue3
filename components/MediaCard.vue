@@ -152,10 +152,10 @@ const reactiveData = toRef(props, "data")
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
-  return reactiveData.value.imageFullHeight
+  return reactiveData.value.imageFullHeight ?? 116
 })
 const nativeImageWidth = computed(() => {
-  return reactiveData.value.imageFullWidth
+  return reactiveData.value.imageFullWidth ?? 116
 })
 
 const getImage = computed(() => {
@@ -488,6 +488,9 @@ const handleHasAudio = computed(() => {
                           class="show-image-in-menu flex-none"
                           :height="116"
                           :width="116"
+                          :maxHeight="nativeImageHeight"
+                          :maxWidth="nativeImageWidth"
+                          allowVerticalEffect
                           :ratio="[1, 1]"
                           style="
                             height: 60px;
