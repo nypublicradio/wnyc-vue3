@@ -1,4 +1,4 @@
-import { SalesforceClient } from '../utils/salesforce';
+import salesforce from '../utils/salesforce';
 import { createError, defineEventHandler } from 'h3';
 
 const config = useRuntimeConfig();
@@ -15,9 +15,6 @@ export default defineEventHandler(async (event) => {
             message: 'Profile ID is required'
         });
     }
-
-    // Create Salesforce client
-    const salesforce = new SalesforceClient();
 
     try {
         await salesforce.connect();

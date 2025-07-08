@@ -22,3 +22,6 @@ CODEOWNERS
 README.md
 
 .vscode/
+
+*.key
+*.crt

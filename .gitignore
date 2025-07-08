@@ -14,3 +14,6 @@ dist
 www
 # Sentry Config File
 .env.sentry-build-plugin
+
+*.key
+*.crt

@@ -1,4 +1,5 @@
 import * as jsforce from '@jsforce/jsforce-node';
+import * as jwt from 'jsonwebtoken';
 
 export class SalesforceClient {
     private conn: jsforce.Connection;
@@ -6,64 +7,73 @@ export class SalesforceClient {
 
     constructor() {
         this.conn = new jsforce.Connection({
-            oauth2: {
-                loginUrl: process.env.SF_LOGIN_URL || 'https://login.salesforce.com',
-                clientId: process.env.SF_CLIENT_ID as string,
-                clientSecret: process.env.SF_CLIENT_SECRET as string,
-                redirectUri: process.env.SF_REDIRECT_URI || 'http://localhost:3000/api/salesforce/callback'
-            }
+            loginUrl: process.env.SF_LOGIN_URL || 'https://login.salesforce.com'
         });
-    }
-
-    // Get authorization URL for initial setup
-    getAuthUrl(): string {
-        return this.conn.oauth2.getAuthorizationUrl({
-            scope: 'api refresh_token'
-        });
-    }
-
-    // Exchange authorization code for tokens (one-time setup)
-    async authorizeWithCode(code: string): Promise<any> {
-        try {
-            const result = await this.conn.oauth2.requestToken(code);
-            this.isConnected = true;
-            console.log('Successfully authorized with Salesforce');
-            console.log('Refresh token:', this.conn.refreshToken);
-            return result;
-        } catch (error) {
-            console.error('Failed to authorize with Salesforce:', error);
-            throw error;
-        }
     }
 
     async connect(): Promise<void> {
         if (this.isConnected) return;
 
-        console.log('=== SALESFORCE CONNECTION DEBUG ===');
+        console.log('=== SALESFORCE JWT CONNECTION DEBUG ===');
         console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
-        console.log('SF_CLIENT_SECRET:', process.env.SF_CLIENT_SECRET ? 'Set' : 'Not set');
-        console.log('SF_REFRESH_TOKEN:', process.env.SF_REFRESH_TOKEN ? 'Set' : 'Not set');
-        console.log('Login URL:', this.conn.oauth2?.loginUrl);
+        console.log('SF_USERNAME:', process.env.SF_USERNAME ? 'Set' : 'Not set');
+        console.log('SF_PRIVATE_KEY:', process.env.SF_PRIVATE_KEY ? 'Set' : 'Not set');
+        console.log('Login URL:', this.conn.loginUrl);
 
-        // Try to use stored refresh token
-        const storedRefreshToken = process.env.SF_REFRESH_TOKEN;
-
-        if (!storedRefreshToken) {
-            const authUrl = this.getAuthUrl();
-            throw new Error(`No refresh token available. Please authorize first by visiting: ${authUrl}`);
+        if (!process.env.SF_CLIENT_ID || !process.env.SF_USERNAME || !process.env.SF_PRIVATE_KEY) {
+            throw new Error('Missing required environment variables: SF_CLIENT_ID, SF_USERNAME, SF_PRIVATE_KEY');
         }
 
         try {
-            // Use refresh token to get new access token
-            const tokenResponse = await this.conn.oauth2.refreshToken(storedRefreshToken);
+            // Create JWT payload
+            const jwtPayload = {
+                iss: process.env.SF_CLIENT_ID, // Connected App Consumer Key
+                sub: process.env.SF_USERNAME, // The username to impersonate
+                aud: this.conn.loginUrl,
+                exp: Math.floor(Date.now() / 1000) + 300 // Expires in 5 minutes
+            };
+
+            console.log('Creating JWT with payload:', {
+                iss: process.env.SF_CLIENT_ID.substring(0, 10) + '...',
+                sub: process.env.SF_USERNAME,
+                aud: this.conn.loginUrl
+            });
+
+            // Sign the JWT with your private key
+            const token = jwt.sign(jwtPayload, process.env.SF_PRIVATE_KEY, { algorithm: 'RS256' });
+
+            // Request access token using the JWT Bearer flow
+            const response = await fetch(`${this.conn.loginUrl}/services/oauth2/token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                    assertion: token
+                })
+            });
+
+            console.log('Salesforce response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Salesforce JWT auth error:', errorText);
+                throw new Error(`JWT Authentication failed: ${response.statusText} - ${errorText}`);
+            }
+
+            const authResponse = await response.json();
+            console.log('Salesforce JWT auth successful');
+
+            // Update connection with received token
+            this.conn.accessToken = authResponse.access_token;
+            this.conn.instanceUrl = authResponse.instance_url;
 
             this.isConnected = true;
-            console.log('Successfully connected to Salesforce using refresh token');
-
+            console.log('Connected to Salesforce via JWT Bearer flow');
         } catch (error) {
             console.error('Failed to connect to Salesforce:', error);
-            const authUrl = this.getAuthUrl();
-            throw new Error(`Refresh token failed. Please re-authorize by visiting: ${authUrl}`);
+            throw error;
         }
     }
 
