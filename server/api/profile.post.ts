@@ -54,5 +54,6 @@ export default defineEventHandler(async (event) => {
     return {
         activeSustainer: record.cfg_Active_Sustainer__c,
         lastCloseDate: record.npo02__LastCloseDate__c,
+        lastOppAmount: record.npo02__LastOppAmount__c,
     };
 });
