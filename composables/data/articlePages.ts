@@ -240,8 +240,8 @@ export async function normalizePublisherPage(article: Record<string, any | undef
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
-    imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image.w : article.attributes.imageMain.w,
-    imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image.h : article.attributes.imageMain.h,
+    imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.w : article.attributes.imageMain?.w,
+    imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.h : article.attributes.imageMain?.h,
     leadImageCaption: article.attributes.imageCaption,
     imageLink: undefined,
     type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
@@ -317,11 +317,12 @@ export async function normalizePublisherListItem(article: Record<string, any | u
       }
     });
   }
-
+  console.log('article.attributes.image', article.attributes.image)
+  console.log('article.attributes.imageMain', article.attributes.imageMain)
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
-    imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image.w : article.attributes.imageMain.w,
-    imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image.h : article.attributes.imageMain.h,
+    imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.w : article.attributes.imageMain?.w,
+    imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.h : article.attributes.imageMain?.h,
     type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
     cmsSource: cmsSources.PUBLISHER,
     meta: {
