@@ -1,5 +1,5 @@
 import * as jsforce from '@jsforce/jsforce-node';
-import * as jwt from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 
 export class SalesforceClient {
     private conn: jsforce.Connection;
@@ -45,10 +45,15 @@ export class SalesforceClient {
                 iss: process.env.SF_CLIENT_ID.substring(0, 10) + '...',
                 sub: process.env.SF_USERNAME,
                 aud: this.conn.loginUrl
-            });
+            });            // Debug JWT availability
+            console.log('JWT sign function loaded:', typeof sign);
 
             // Sign the JWT with your private key
-            const token = jwt.sign(jwtPayload, privateKey, { algorithm: 'RS256' });
+            if (typeof sign !== 'function') {
+                throw new Error('JWT sign function is not available. Check jsonwebtoken import.');
+            }
+
+            const token = sign(jwtPayload, privateKey, { algorithm: 'RS256' });
 
             // Request access token using the JWT Bearer flow
             const response = await fetch(`${this.conn.loginUrl}/services/oauth2/token`, {
