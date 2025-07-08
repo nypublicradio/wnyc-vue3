@@ -125,7 +125,7 @@ export function normalizePerson(person: Record<string, any>): Person {
 export async function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-
+  //console.log("normalizeWagtailPage", article)
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -317,8 +317,6 @@ export async function normalizePublisherListItem(article: Record<string, any | u
       }
     });
   }
-  console.log('article.attributes.image', article.attributes.image)
-  console.log('article.attributes.imageMain', article.attributes.imageMain)
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.w : article.attributes.imageMain?.w,

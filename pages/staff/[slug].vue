@@ -159,9 +159,15 @@ watch(loadMoreRefVisible, (val) => {
               :key="article?.uuid"
               class="col-12 md:col-6 xl:col-4 mb-3"
             >
-              <StoryItem
+              <MediaCard
                 :data="article"
                 :index="index"
+                showPlayButton
+                is-horizontal
+                imgCol="w-7rem"
+                :size="[1, 1]"
+                :showBg="false"
+                :showBgMobile="false"
                 @on-click="goToStoryPage(article, { src: article.cmsSource })"
               />
             </div>
@@ -171,14 +177,36 @@ watch(loadMoreRefVisible, (val) => {
         </div>
       </div>
       <div v-else>
-        <skeleton-staff-page />
+        <skeleton-staff-page class="mt-5" />
         <hr class="my-4" />
-        <div>
-          <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+        <div class="grid">
+          <!-- <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" /> -->
+          <skeleton-media-card
+            v-for="i in 9"
+            :key="`sk1-${i}`"
+            showPlayButton
+            is-horizontal
+            imgCol="w-7rem"
+            :size="[1, 1]"
+            :showBg="false"
+            :showBgMobile="false"
+            class="mb-5 col-12 md:col-6 xl:col-4"
+          />
         </div>
       </div>
-      <div v-if="pendingMore">
-        <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+      <div v-if="pendingMore" class="grid">
+        <!-- <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" /> -->
+        <skeleton-media-card
+          v-for="i in 9"
+          :key="`sk2-${i}`"
+          showPlayButton
+          is-horizontal
+          imgCol="w-7rem"
+          :size="[1, 1]"
+          :showBg="false"
+          :showBgMobile="false"
+          class="mb-5 col-12 md:col-6 xl:col-4"
+        />
       </div>
       <WnycLoader
         ref="loadMoreRef"
