@@ -1,5 +1,6 @@
 import * as jsforce from '@jsforce/jsforce-node';
-import { sign } from 'jsonwebtoken';
+import pkg from 'jsonwebtoken';
+const { sign } = pkg;
 
 export class SalesforceClient {
     private conn: jsforce.Connection;
