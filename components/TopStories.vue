@@ -44,7 +44,7 @@ const reactiveArticles = toRef(props, "articles")
         :key="`${article.id}-${index}`"
         class="col-12 md:col-4 mb-3"
         :data="article"
-        :size="{ xs: [116, 116], md: [438, 292] }"
+        :size="{ xs: [112, 112], md: [438, 292] }"
       />
     </template>
     <skeleton-media-card
@@ -52,7 +52,7 @@ const reactiveArticles = toRef(props, "articles")
       v-for="index in 6"
       :key="`skeleton-1-${index}`"
       class="col-12 md:col-4 mb-3"
-      :size="{ xs: [116, 116], md: [438, 292] }"
+      :size="{ xs: [112, 112], md: [438, 292] }"
     />
 
     <MediaCard
@@ -81,7 +81,7 @@ const reactiveArticles = toRef(props, "articles")
           is-horizontal
           is-event
           imgCol="w-6"
-          :size="{ xs: [116, 116], md: [300, 150] }"
+          :size="{ xs: [112, 112], md: [300, 150] }"
         />
       </template>
       <skeleton-media-card
@@ -92,7 +92,7 @@ const reactiveArticles = toRef(props, "articles")
         is-horizontal
         is-event
         imgCol="w-6"
-        :size="{ xs: [116, 116], md: [300, 150] }"
+        :size="{ xs: [112, 112], md: [300, 150] }"
       />
     </div>
   </div>

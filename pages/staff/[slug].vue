@@ -165,7 +165,6 @@ watch(loadMoreRefVisible, (val) => {
                 showPlayButton
                 is-horizontal
                 imgCol="w-7rem"
-                :size="[1, 1]"
                 :showBg="false"
                 :showBgMobile="false"
                 @on-click="goToStoryPage(article, { src: article.cmsSource })"

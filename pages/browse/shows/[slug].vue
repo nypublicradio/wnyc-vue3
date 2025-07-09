@@ -310,7 +310,6 @@ onMounted(() => {
                   showPlayButton
                   is-horizontal
                   imgCol="w-7rem"
-                  :size="[1, 1]"
                   :showBg="false"
                   :showBgMobile="false"
                   @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"

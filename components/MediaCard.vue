@@ -119,12 +119,12 @@ const props = defineProps({
     default: "md:h-auto md:w-12",
   },
   // Responsive image size configuration
-  // Object format: { xs: [116,116], md: [600,400] } - different sizes per breakpoint
+  // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
   // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
   // Default: {} uses [300,200] default size with smart cascading
   size: {
     type: [Array, Object],
-    default: () => ({ xs: [116, 116], md: [438, 292] }),
+    default: () => ({ xs: [112, 112], md: [438, 292] }),
   },
   imgSrcset: {
     type: Array,
@@ -156,10 +156,10 @@ const reactiveData = toRef(props, "data")
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
-  return reactiveData.value.imageFullHeight ?? 116
+  return reactiveData.value.imageFullHeight ?? 112
 })
 const nativeImageWidth = computed(() => {
-  return reactiveData.value.imageFullWidth ?? 116
+  return reactiveData.value.imageFullWidth ?? 112
 })
 
 const getImage = computed(() => {
@@ -491,8 +491,8 @@ const handleHasAudio = computed(() => {
                           :src="getImage"
                           :alt="`${props.data?.showTitle} show image`"
                           class="show-image-in-menu flex-none"
-                          :height="116"
-                          :width="116"
+                          :height="112"
+                          :width="112"
                           :maxHeight="nativeImageHeight"
                           :maxWidth="nativeImageWidth"
                           allowVerticalEffect
@@ -582,8 +582,8 @@ const handleHasAudio = computed(() => {
     }
     .image {
       @include media("<md") {
-        width: 116px;
-        height: 116px;
+        width: 112px;
+        height: 112px;
         flex: 0 0 auto;
       }
       @include media("<xs") {
@@ -643,8 +643,8 @@ const handleHasAudio = computed(() => {
     @include media("<md") {
       .holder {
         .image {
-          width: 116px !important;
-          height: 116px !important;
+          width: 112px !important;
+          height: 112px !important;
           flex: 0 0 auto;
         }
       }

@@ -57,12 +57,12 @@ const props = defineProps({
     default: "md:h-auto md:w-12",
   },
   // Responsive image size configuration
-  // Object format: { xs: [116,116], md: [600,400] } - different sizes per breakpoint
+  // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
   // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
   // Default: {} uses [300,200] default size with smart cascading
   size: {
     type: [Array, Object],
-    default: () => ({ xs: [116, 116], md: [438, 292] }),
+    default: () => ({ xs: [112, 112], md: [438, 292] }),
   },
 })
 
@@ -233,7 +233,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     .skeleton-image {
       width: 100% !important;
       height: auto !important;
-      min-height: 116px;
+      min-height: 112px;
     }
 
     .skeleton-title-container {
@@ -270,14 +270,14 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     }
     .image {
       @include media("<md") {
-        width: 116px;
-        height: 116px;
+        width: 112px;
+        height: 112px;
         flex: 0 0 auto;
         .skeleton-image {
-          width: 116px;
-          height: 116px;
+          width: 112px;
+          height: 112px;
           aspect-ratio: 1;
-          min-height: 116px;
+          min-height: 112px;
         }
       }
       @include media("<xs") {
@@ -346,14 +346,14 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media("<md") {
       .holder {
         .image {
-          width: 116px !important;
-          height: 116px !important;
+          width: 112px !important;
+          height: 112px !important;
           flex: 0 0 auto;
           .skeleton-image {
-            width: 116px !important;
-            height: 116px !important;
+            width: 112px !important;
+            height: 112px !important;
             aspect-ratio: 1 !important;
-            min-height: 116px !important;
+            min-height: 112px !important;
           }
         }
       }

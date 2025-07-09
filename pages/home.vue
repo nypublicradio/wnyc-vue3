@@ -100,7 +100,6 @@ onMounted(() => {
               :fallback-image="ep.headers.brand.logoImage.template"
               is-horizontal
               imgCol="w-7rem"
-              :size="[1, 1]"
               :showBg="false"
               :showBgMobile="false"
               class="col-12 lg:col-6 xl:col-4 mb-3"
@@ -126,7 +125,6 @@ onMounted(() => {
                 :data="article"
                 is-horizontal
                 imgCol="w-7rem"
-                :size="[1, 1]"
                 :index="index"
                 :showBg="false"
                 :showBgMobile="false"

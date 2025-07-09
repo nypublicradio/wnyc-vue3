@@ -246,8 +246,8 @@ const togglePlayHere = async () => {
       height: 172px;
     }
     @include media("<md") {
-      width: 116px;
-      height: 116px;
+      width: 112px;
+      height: 112px;
     }
     background-color: #ffffff99;
     .image,
@@ -259,8 +259,8 @@ const togglePlayHere = async () => {
         height: 172px;
       }
       @include media("<md") {
-        width: 116px;
-        height: 116px;
+        width: 112px;
+        height: 112px;
       }
       display: flex;
       align-items: center;

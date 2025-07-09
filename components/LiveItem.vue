@@ -8,7 +8,7 @@ const props = defineProps({
   },
   size: {
     type: Number,
-    default: 116,
+    default: 112,
   },
   saved: {
     type: Boolean,
