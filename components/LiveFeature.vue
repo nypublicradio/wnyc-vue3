@@ -3,10 +3,12 @@ import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsApp,
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
@@ -97,6 +99,7 @@ const togglePlayHere = async () => {
                     live
                   />
                   <Button
+                    v-if="!isApp"
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm icon-wide xl:flex"
