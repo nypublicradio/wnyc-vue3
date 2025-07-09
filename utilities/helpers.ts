@@ -885,6 +885,7 @@ interface SavedItem {
   cmsSource: string
   media_id: string
   slug: string
+  url: string
   reading_time: string
   estimatedDuration: number
   title: string
@@ -957,6 +958,7 @@ export const saveFavorite = async (
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
+    const url = media?.url ?? media?.link
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const estimatedDuration = media?.estimatedDuration
@@ -973,6 +975,7 @@ export const saveFavorite = async (
       cmsSource,
       media_id,
       slug,
+      url,
       reading_time,
       estimatedDuration,
       image,
@@ -1057,6 +1060,7 @@ export const goToEpisodePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
+  console.log("Going to story page for ", story)
   if (Capacitor.getPlatform() === "web") {
     if (story.cmsSource === cmsSources.WAGTAIL) {
       // open in new tab if web and wagtail source
