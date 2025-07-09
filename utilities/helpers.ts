@@ -1060,8 +1060,7 @@ export const goToEpisodePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
-  console.log("Going to story page for ", story)
-  if (Capacitor.getPlatform() === "web") {
+  if (Capacitor.getPlatform() === "web" && story.url) {
     if (story.cmsSource === cmsSources.WAGTAIL) {
       // open in new tab if web and wagtail source
       window.open(story.url, "_blank")
@@ -1079,7 +1078,7 @@ export const goToStoryPage = (story, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
-  if (Capacitor.getPlatform() === "web") {
+  if (Capacitor.getPlatform() === "web" && story.link) {
     // open in new tab to NPR.org if web
     window.open(story.link, "_blank")
   } else {
