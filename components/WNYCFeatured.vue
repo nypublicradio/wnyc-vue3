@@ -17,7 +17,7 @@ const props = defineProps({
             :data="item"
             :key="`horzScroll-${item.label}`"
             is-vertical
-            :size="[3, 2]"
+            :size="{ xs: [248, 166] }"
             :showBg="true"
             :showBgMobile="true"
             :hideDate="true"

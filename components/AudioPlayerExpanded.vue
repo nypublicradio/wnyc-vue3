@@ -363,8 +363,8 @@ const moreFromClick = () => {
                     getEpisodeFallBackImage()
                   "
                   :alt="`${currentEpisode.title} show image`"
-                  :width="116"
-                  :height="116"
+                  :width="112"
+                  :height="112"
                   class="show-image-in-menu flex-none"
                   :ratio="[1, 1]"
                   style="height: 60px; width: 60px"

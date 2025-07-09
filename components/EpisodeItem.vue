@@ -252,11 +252,11 @@ const handleHasAudio = computed(() => {
         class="flex-none"
         :alt="`${props.data.showTitle} show `"
         :src="imgSrcUrl"
-        :height="116"
-        :width="116"
+        :height="112"
+        :width="112"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="height: 116px; width: 116px"
+        style="height: 112px; width: 112px"
         tabindex="-1"
       />
       <div class="flex gap-2 flex-column justify-content-between w-full">
@@ -340,8 +340,8 @@ const handleHasAudio = computed(() => {
                         :src="imgSrcUrl"
                         :alt="`${props.data.showTitle} show image`"
                         class="show-image-in-menu flex-none"
-                        :height="116"
-                        :width="116"
+                        :height="112"
+                        :width="112"
                         :ratio="[1, 1]"
                         style="
                           height: 60px;

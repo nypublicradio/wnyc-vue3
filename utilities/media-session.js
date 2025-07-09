@@ -23,7 +23,7 @@ const generateMediaSessionArtworkArray = async (image) => {
     const arr = []
 
     //have to get the format for publisher images
-    const format = await fetchMimeType(imageSolver(image, { w: 116, h: 116, q: 80, format: 'jpeg' }))
+    const format = await fetchMimeType(imageSolver(image, { w: 112, h: 112, q: 80, format: 'jpeg' }))
     imageSizes.forEach(size => {
         arr.push({
             src: imageSolver(image, { w: size, h: size, q: 80 }),

@@ -90,12 +90,12 @@ const getDotMenuItems = (bucketItem) => {
     >
       <VImage
         :src="props.data.image?.template ?? props.data.image?.url ?? FALLBACKIMAGEWAGTAIL"
-        :height="116"
-        :width="116"
+        :height="112"
+        :width="112"
         :ratio="[1, 1]"
         :srcset="[2]"
         class="flex-none"
-        style="height: 116px; width: 116px; background-color: var(--p-surface-25)"
+        style="height: 112px; width: 112px; background-color: var(--p-surface-25)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />

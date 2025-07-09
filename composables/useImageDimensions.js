@@ -31,9 +31,9 @@ function getCurrentBreakpoint(width) {
 function getSizeForBreakpoint(sizeConfig, breakpoint) {
     // Handle legacy array format for backward compatibility (convert to ratio)
     if (Array.isArray(sizeConfig)) {
-        // Convert ratio to a reasonable default size (300px width base)
+        // Convert ratio to a reasonable default size (112px width base)
         const ratio = sizeConfig[0] / sizeConfig[1]
-        const width = 300
+        const width = 112
         const height = Math.round(width / ratio)
         return [width, height]
     }
@@ -52,18 +52,18 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
         }
 
         // If no size found, use default
-        return [300, 200] // Default 3:2 ratio at 300px width
+        return [112, 112] // Default 3:2 ratio at 300px width
     }
 
     // Fallback to default
-    return [300, 200]
+    return [112, 112]
 }
 
 /**
  * Composable for responsive image dimensions based on breakpoint-specific sizes
  * @param {Object} options - Configuration options
  * @param {Object|Array} options.size - Responsive size configuration:
- *   - Object format: { xs: [116,116], md: [600,400] } - different sizes per breakpoint
+ *   - Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
  *   - Array format (legacy): [3, 2] - converted to ratio-based default size
  *   - Default: {} (uses [300,200] default size)
  * @returns {Object} - Reactive width, height, and current breakpoint
