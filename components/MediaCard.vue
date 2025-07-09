@@ -82,6 +82,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isLive: {
+    type: Boolean,
+    default: false,
+  },
   showImage: {
     type: Boolean,
     default: true,
@@ -404,6 +408,7 @@ const handleHasAudio = computed(() => {
         <div class="flex gap-2 flex-column justify-content-between w-full h-full">
           <div class="flex gap-1 flex-column w-full">
             <div class="flex gap-2 flex-column align-items-start">
+              <LiveBadge v-if="props.isLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" class="text-xs line-height-1">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
