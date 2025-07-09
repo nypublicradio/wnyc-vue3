@@ -100,6 +100,7 @@ const togglePlayHere = async () => {
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm icon-wide xl:flex"
+                    @click="navigateTo('/mobile')"
                   >
                     <template #icon>
                       <DevicesIcon />
