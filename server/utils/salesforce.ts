@@ -1,10 +1,13 @@
-import * as jsforce from '@jsforce/jsforce-node';
+import jsforce from 'jsforce';
 import pkg from 'jsonwebtoken';
 const { sign } = pkg;
 
 export class SalesforceClient {
     private conn: jsforce.Connection;
+    private accessToken: string | null = null;
+    private instanceUrl: string | null = null;
     private isConnected: boolean = false;
+    private tokenExpirationTime: number = 0;
 
     constructor() {
         this.conn = new jsforce.Connection({
@@ -12,8 +15,30 @@ export class SalesforceClient {
         });
     }
 
+    private isTokenExpired(): boolean {
+        // Check if token expires in the next 30 seconds (buffer time)
+        return Date.now() >= (this.tokenExpirationTime - 30000);
+    }
+
+    private async ensureConnection(): Promise<void> {
+        if (!this.isConnected || this.isTokenExpired()) {
+            console.log('Token expired or not connected, reconnecting...');
+            this.isConnected = false;
+            await this.connect();
+        }
+    }
+
     async connect(): Promise<void> {
-        if (this.isConnected) return;
+        if (this.isConnected && !this.isTokenExpired()) {
+            console.log('Already connected with valid token');
+            return;
+        }
+
+        console.log('=== SALESFORCE CONNECTION ===');
+        console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
+        console.log('SF_USERNAME:', process.env.SF_USERNAME ? 'Set' : 'Not set');
+        console.log('SF_PRIVATE_KEY:', process.env.SF_PRIVATE_KEY ? 'Set' : 'Not set');
+        console.log('Login URL:', this.conn.loginUrl);
 
         if (!process.env.SF_CLIENT_ID || !process.env.SF_USERNAME || !process.env.SF_PRIVATE_KEY) {
             throw new Error('Missing required environment variables: SF_CLIENT_ID, SF_USERNAME, SF_PRIVATE_KEY');
@@ -28,19 +53,19 @@ export class SalesforceClient {
                 console.log('Decoded base64 private key');
             }
 
-            // Create JWT payload
+            // Create JWT payload with current timestamp
+            const now = Math.floor(Date.now() / 1000);
             const jwtPayload = {
                 iss: process.env.SF_CLIENT_ID, // Connected App Consumer Key
                 sub: process.env.SF_USERNAME, // The username to impersonate
                 aud: this.conn.loginUrl,
-                exp: Math.floor(Date.now() / 1000) + 300 // Expires in 5 minutes
+                exp: now + 300, // Expires in 5 minutes
+                iat: now // Issued at current time
             };
 
-            // Sign the JWT with your private key
-            if (typeof sign !== 'function') {
-                throw new Error('JWT sign function is not available. Check jsonwebtoken import.');
-            }
+            console.log('Creating JWT with expiration:', new Date((now + 300) * 1000).toISOString());
 
+            // Sign the JWT with your private key
             const token = sign(jwtPayload, privateKey, { algorithm: 'RS256' });
 
             // Request access token using the JWT Bearer flow
@@ -59,46 +84,61 @@ export class SalesforceClient {
 
             if (!response.ok) {
                 const errorText = await response.text();
+                console.error('Salesforce auth error:', errorText);
                 throw new Error(`JWT Authentication failed: ${response.statusText} - ${errorText}`);
             }
 
             const authResponse = await response.json();
+            console.log('Salesforce auth successful');
+
+            this.accessToken = authResponse.access_token;
+            this.instanceUrl = authResponse.instance_url;
+
+            // Set token expiration time (JWT tokens typically expire in 5 minutes)
+            this.tokenExpirationTime = Date.now() + (4 * 60 * 1000); // 4 minutes to be safe
 
             // Update connection with received token
-            this.conn.accessToken = authResponse.access_token;
-            this.conn.instanceUrl = authResponse.instance_url;
+            this.conn.accessToken = this.accessToken;
+            this.conn.instanceUrl = this.instanceUrl;
 
             this.isConnected = true;
             console.log('Connected to Salesforce via JWT Bearer flow');
+            console.log('Token expires at:', new Date(this.tokenExpirationTime).toISOString());
         } catch (error) {
             console.error('Failed to connect to Salesforce:', error);
+            this.isConnected = false;
             throw error;
         }
     }
 
-    async updateRecord(objectName: string, id: string, data: Record<string, any>): Promise<jsforce.SaveResult> {
-        if (!this.isConnected) await this.connect();
-
+    async queryRecord(soql: string) {
         try {
-            return await this.conn.sobject(objectName).update({ Id: id, ...data });
+            await this.ensureConnection();
+            console.log('Executing SOQL query:', soql);
+            const result = await this.conn.query(soql);
+            console.log('Query successful, records found:', result.records.length);
+            return result;
         } catch (error) {
-            console.error(`Failed to update ${objectName} record:`, error);
-            throw error;
-        }
-    }
+            console.error('Query failed:', error);
 
-    async queryRecord(soql: string): Promise<any> {
-        if (!this.isConnected) await this.connect();
+            // If it's an authentication error, try to reconnect once
+            if (error.message && (error.message.includes('INVALID_SESSION') || error.message.includes('expired'))) {
+                console.log('Session expired, attempting to reconnect...');
+                this.isConnected = false;
+                await this.ensureConnection();
 
-        try {
-            return await this.conn.query(soql);
-        } catch (error) {
-            console.error('Failed to execute SOQL query:', error);
+                // Retry the query once after reconnection
+                console.log('Retrying query after reconnection...');
+                const result = await this.conn.query(soql);
+                console.log('Retry successful, records found:', result.records.length);
+                return result;
+            }
+
             throw error;
         }
     }
 }
 
-// Export a singleton instance
+// Export singleton instance
 const salesforce = new SalesforceClient();
 export default salesforce;
