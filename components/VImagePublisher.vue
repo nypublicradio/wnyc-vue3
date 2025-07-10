@@ -306,7 +306,13 @@ onMounted(async () => {
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
-        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+        <WnycLoader
+          v-if="!imageLoaded"
+          class="image-loader-anim"
+          size="1rem"
+          bg
+          spinner
+        />
         <div v-if="isVertical" class="bg">
           <img
             :src="computedSrcBg()"
