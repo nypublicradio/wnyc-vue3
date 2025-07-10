@@ -19,7 +19,6 @@ const props = defineProps({
 const size = ref(props.size)
 
 // handle the click if this item is in the saved page and navigate to the live page
-console.log("live item", props.data)
 const handleClick = () => {
   if (props.saved) {
     navigateTo(`/live${props.data.slug ? `?slug=${props.data.slug}` : ""}`)

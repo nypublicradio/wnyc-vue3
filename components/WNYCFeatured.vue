@@ -15,7 +15,7 @@ const props = defineProps({
           <MediaCard
             v-for="(item, index) in props.articles"
             :data="item"
-            :key="`horzScroll-${item.label}`"
+            :key="`horzScroll-${index}-}${item.label}`"
             is-vertical
             :size="{ xs: [248, 166] }"
             :showBg="true"
