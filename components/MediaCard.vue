@@ -19,9 +19,6 @@ import {
   handleDelete,
   getReadingTime,
   getOrg,
-  goToEpisodePage,
-  goToStoryPage,
-  goToNprPage,
   formatTime,
   dynamicNavigation,
 } from "~/utilities/helpers"
