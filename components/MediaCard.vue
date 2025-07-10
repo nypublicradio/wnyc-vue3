@@ -23,6 +23,7 @@ import {
   goToStoryPage,
   goToNprPage,
   formatTime,
+  dynamicNavigation,
 } from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
@@ -32,8 +33,9 @@ import {
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
-import { cmsSources } from "~/composables/globals.ts"
+import { cmsSources, mediaTypes } from "~/composables/globals.ts"
 import { useImageDimensions } from "~/composables/useImageDimensions"
+import { is } from "date-fns/locale"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -82,7 +84,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isLive: {
+  showLive: {
     type: Boolean,
     default: false,
   },
@@ -131,6 +133,7 @@ const props = defineProps({
     default: [2],
   },
 })
+console.log("====MediaCard data", props.data)
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
@@ -149,6 +152,10 @@ const imageRatio = computed(() => {
 const isDownloaded = ref(false)
 // check if item is already favorited
 const isFavorited = ref(false)
+
+// check if this is a LIVE item
+const isLive = props.data?.type === mediaTypes.LIVE
+
 // this will change once we know how the event date will be passed
 const eventDate = ref(props.data?.publicationDate)
 
@@ -179,22 +186,9 @@ const getImage = computed(() => {
 watchEffect(async () => {
   if (!props.data) return
   isDownloaded.value = isAlreadyDownloaded(props.data)
-  isFavorited.value = await checkIsFavorited(props.data?.meta?.slug)
+  isFavorited.value = await checkIsFavorited(props.data?.meta?.slug || props.data?.slug)
   eventDate.value = props.data?.publicationDate
 })
-
-const isPublisher = computed(() => {
-  return props.data?.cmsSource === cmsSources.PUBLISHER
-})
-const isWagtail = computed(() => {
-  return props.data?.cmsSource === cmsSources.WAGTAIL
-})
-const isNpr = computed(() => {
-  return props.data?.cmsSource === cmsSources.NPR
-})
-// const isSimplecast = computed(() => {
-//   return props.data?.cmsSource === cmsSources.SIMPLECAST
-// })
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -328,15 +322,7 @@ const toggleDownloadedPlay = (file) => {
 
 // handle click event & emit
 const handleClick = () => {
-  if (isNpr.value) {
-    goToNprPage(props.data)
-  } else if (isWagtail.value) {
-    goToStoryPage(props.data, { src: props.data.cmsSource })
-  } else if (isPublisher.value && hasAudio(props.data?.audio)) {
-    goToEpisodePage(props.data, { src: props.data.cmsSource, type: props.data.type })
-  } else {
-    goToStoryPage(props.data, { src: props.data.cmsSource })
-  }
+  dynamicNavigation(props.data)
   emit("on-click")
 }
 
@@ -408,7 +394,7 @@ const handleHasAudio = computed(() => {
         <div class="flex gap-2 flex-column justify-content-between w-full h-full">
           <div class="flex gap-1 flex-column w-full">
             <div class="flex gap-2 flex-column align-items-start">
-              <LiveBadge v-if="props.isLive && !props.saved" class="align-self-start" />
+              <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" class="text-xs line-height-1">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
@@ -447,26 +433,28 @@ const handleHasAudio = computed(() => {
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
           >
-            <PlayButton
-              v-if="handleHasAudio"
-              :data="props.data"
-              class="z-2"
-              :label="getMinutes(props.data?.estimatedDuration, 1)"
-              @onClick="
-                isDownloaded && !isNetworkConnected
-                  ? toggleDownloadedPlay(props.data)
-                  : togglePlayEpisode(props.data)
-              "
-            >
-            </PlayButton>
-            <ReadButton
-              v-else
-              class="z-2"
-              :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
-              :file="props.data?.name"
-              @on-click="handleClick"
-            />
-
+            <template v-if="!isLive">
+              <PlayButton
+                v-if="handleHasAudio"
+                :data="props.data"
+                class="z-2"
+                :label="getMinutes(props.data?.estimatedDuration, 1)"
+                @onClick="
+                  isDownloaded && !isNetworkConnected
+                    ? toggleDownloadedPlay(props.data)
+                    : togglePlayEpisode(props.data)
+                "
+              >
+              </PlayButton>
+              <ReadButton
+                v-else
+                class="z-2"
+                :label="props.data?.reading_time ?? getReadingTime(props.data?.rawBody)"
+                :file="props.data?.name"
+                @on-click="handleClick"
+              />
+            </template>
+            <div v-else></div>
             <slot>
               <div class="flex gap-1 align-items-center">
                 <DownloadProgress

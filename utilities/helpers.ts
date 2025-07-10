@@ -1058,6 +1058,17 @@ export const goToEpisodePage = (ep, params, log = true) => {
   }
 }
 
+/* centralized function to route to a live page */
+export const goToLivePage = (ep, params, log = true) => {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.LIVE]}`,
+    query: params,
+  })
+  if (log) {
+    saveRecentlyPlayed(ep)
+  }
+}
+
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link
@@ -1176,6 +1187,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
     switch (item.type) {
+      case mediaTypes.LIVE:
+        goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
+        break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
         goToEpisodePage(item, { src: item.cmsSource, type: item.type }, isSaveHistory)

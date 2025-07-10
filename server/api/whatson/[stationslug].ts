@@ -63,6 +63,7 @@ const formatShowData = (apiResponse: any) => {
 		titleLink,
 		showSlug,
 		updated_date: null,
+		type: 'live',
 		publishAt: null,
 		first_published_at: null,
 		onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,
