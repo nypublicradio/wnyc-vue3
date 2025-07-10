@@ -18,7 +18,7 @@ primary_region = "iad"
   idle_timeout = 900
 
 [http_service.http_options]
-  idle_timeout = 1800
+  idle_timeout = 900
 
 [[http_service.checks]]
   interval = "30s"
