@@ -52,7 +52,7 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
         }
 
         // If no size found, use default
-        return [112, 112] // Default 3:2 ratio at 300px width
+        return [112, 112] // Default 1:1 ratio at 112px width
     }
 
     // Fallback to default
