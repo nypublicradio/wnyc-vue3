@@ -15,12 +15,6 @@ export class SalesforceClient {
     async connect(): Promise<void> {
         if (this.isConnected) return;
 
-        console.log('=== SALESFORCE JWT CONNECTION DEBUG ===');
-        console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
-        console.log('SF_USERNAME:', process.env.SF_USERNAME ? 'Set' : 'Not set');
-        console.log('SF_PRIVATE_KEY:', process.env.SF_PRIVATE_KEY ? 'Set' : 'Not set');
-        console.log('Login URL:', this.conn.loginUrl);
-
         if (!process.env.SF_CLIENT_ID || !process.env.SF_USERNAME || !process.env.SF_PRIVATE_KEY) {
             throw new Error('Missing required environment variables: SF_CLIENT_ID, SF_USERNAME, SF_PRIVATE_KEY');
         }
@@ -41,13 +35,6 @@ export class SalesforceClient {
                 aud: this.conn.loginUrl,
                 exp: Math.floor(Date.now() / 1000) + 300 // Expires in 5 minutes
             };
-
-            console.log('Creating JWT with payload:', {
-                iss: process.env.SF_CLIENT_ID.substring(0, 10) + '...',
-                sub: process.env.SF_USERNAME,
-                aud: this.conn.loginUrl
-            });            // Debug JWT availability
-            console.log('JWT sign function loaded:', typeof sign);
 
             // Sign the JWT with your private key
             if (typeof sign !== 'function') {
@@ -72,12 +59,10 @@ export class SalesforceClient {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Salesforce JWT auth error:', errorText);
                 throw new Error(`JWT Authentication failed: ${response.statusText} - ${errorText}`);
             }
 
             const authResponse = await response.json();
-            console.log('Salesforce JWT auth successful');
 
             // Update connection with received token
             this.conn.accessToken = authResponse.access_token;

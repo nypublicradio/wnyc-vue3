@@ -6,7 +6,6 @@ const config = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
     // Validate input parameter
     const body = await readBody(event);
-    console.log('Received body:', body);
     const salesforceID = body?.salesforceID as string;
     if (!salesforceID || salesforceID.trim() === '') {
         throw createError({
@@ -31,7 +30,6 @@ export default defineEventHandler(async (event) => {
     try {
         const soql = `SELECT Id, cfg_Active_Sustainer__c, npo02__LastCloseDate__c, npo02__LastOppAmount__c FROM Contact WHERE Id = '${salesforceID}'`;
         result = await salesforce.queryRecord(soql);
-        console.log('Salesforce query result:', result);
     } catch (error) {
         throw createError({
             statusCode: 500,
