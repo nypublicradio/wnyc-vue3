@@ -23,31 +23,40 @@ const scrollToActiveItem = () => {
 }
 
 const selectMenuItem = async (menuItem, index) => {
-  selectedMenuItem.value = menuItem
-  selectedSavedTab.value = index
-  await nextTick()
-  // update the route query with the selected slug
-  router.replace({ query: { ...router.currentRoute.value.query, slug: menuItem.value } })
-  // scroll to the active item
-  await nextTick()
-  scrollToActiveItem()
+  try {
+    selectedMenuItem.value = menuItem
+    selectedSavedTab.value = index
+    await nextTick()
+    // update the route query with the selected slug
+    await router.replace({ query: { ...router.currentRoute.value.query, slug: menuItem.value } })
+    // scroll to the active item
+    await nextTick()
+    scrollToActiveItem()
+  } catch (error) {
+    console.error('Error in selectMenuItem:', error)
+  }
 }
 
 const loadComponent = (componentName) => {
   return defineAsyncComponent({
     loader: () => import(`~/components/saved/${componentName}.vue`),
+    delay: 0,
+    timeout: 10000,
     onError: (err) => {
       console.error(`Failed to load component ${componentName}: ${err.message}`)
     },
   })
 }
 
-const handleStyleMode = computed(async () => {
-  await nextTick()
+// Create a computed to get the current component to avoid recreating it
+const currentComponent = computed(() => {
+  return loadComponent(selectedMenuItem.value.value)
+})
+
+const handleStyleMode = computed(() => {
   return isDarkMode.value ? "dark" : "light"
 })
-const handleBgColor = computed(async () => {
-  await nextTick()
+const handleBgColor = computed(() => {
   return isDarkMode.value ? "none" : "#ffffff"
 })
 
@@ -55,14 +64,20 @@ const handleBgColor = computed(async () => {
 watch(
   () => router.currentRoute.value.query,
   (newQuery) => {
-    // checking if the slug is in the query
-    if (newQuery.slug) {
-      routeSlug.value = newQuery.slug
-      savedMenuItems.value.forEach((item, index) => {
-        if (item.value === newQuery.slug) {
-          selectMenuItem(item, index)
-        }
-      })
+    try {
+      // checking if the slug is in the query
+      if (newQuery.slug) {
+        routeSlug.value = newQuery.slug
+        savedMenuItems.value.forEach((item, index) => {
+          if (item.value === newQuery.slug) {
+            // Use direct assignment instead of calling selectMenuItem to avoid recursion
+            selectedMenuItem.value = item
+            selectedSavedTab.value = index
+          }
+        })
+      }
+    } catch (error) {
+      console.error('Error in route watcher:', error)
     }
   },
   { immediate: true }
@@ -137,13 +152,13 @@ onMounted(() => {
         </div>
       </HorizontalScrollFeature>
 
-      <div v-for="item in savedMenuItems" :key="item.value">
-        <div v-if="item.value === selectedMenuItem.value">
-          <component :is="loadComponent(item.value)" />
-        </div>
+      <div class="current-component">
+        <component :is="currentComponent" />
       </div>
     </div>
-    <AccountPromptSideBar v-else :styleMode="handleStyleMode" :bgColor="handleBgColor" />
+    <div v-else>
+      <AccountPromptSideBar :styleMode="handleStyleMode" :bgColor="handleBgColor" />
+    </div>
   </div>
 </template>
 

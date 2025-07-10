@@ -100,7 +100,6 @@ const getItemsData = async () => {
       savedItems.value = await Promise.all(
         data.map(async (item) => {
           const component = await loadComponent(item)
-          savedItems.value = null
           return { ...item, data: item, component }
         })
       )
@@ -122,6 +121,13 @@ watch(
   },
   { immediate: true }
 )
+
+onBeforeUnmount(() => {
+  savedItems.value = null
+  pending.value = false
+  fetchError.value = null
+})
+
 watch(
   () => props.typeFilter,
   () => {
