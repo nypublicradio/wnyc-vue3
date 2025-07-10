@@ -41,13 +41,11 @@ const loadComponent = async (item) => {
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
       case mediaTypes.NPR_EPISODE:
-      //return "EpisodeItem"
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE_PAGE:
       case mediaTypes.ARTICLE:
       case mediaTypes.NPR_ARTICLE:
       case mediaTypes.SIMPLECAST:
-        return "MediaCard"
       case mediaTypes.LIVE:
         return "MediaCard"
       default:
@@ -143,12 +141,12 @@ watch(
       <h2 v-if="headerTitle" class="mb-4 mt-3">{{ headerTitle }}</h2>
       <div class="flex flex-column gap-5">
         <div v-for="(item, index) in savedItems" :key="index">
+          <!-- @onClick="dynamicNavigation(item, props.isSaveHistory)" -->
           <component
             :is="item.component"
             :data="item.data"
             :saved="true"
             @onDeleteFavorite="getItemsData"
-            @onClick="dynamicNavigation(item, props.isSaveHistory)"
             :class="item.type"
             :menu="true"
             is-horizontal
