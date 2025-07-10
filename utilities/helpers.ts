@@ -1060,10 +1060,11 @@ export const goToEpisodePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
-  if (Capacitor.getPlatform() === "web" && story.url) {
+  const theLink = story.url || story.link
+  if (Capacitor.getPlatform() === "web" && theLink) {
     if (story.cmsSource === cmsSources.WAGTAIL) {
       // open in new tab if web and wagtail source
-      window.open(story.url, "_blank")
+      window.open(theLink, "_blank")
     }
   } else {
     navigateTo({
@@ -1078,9 +1079,10 @@ export const goToStoryPage = (story, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
-  if (Capacitor.getPlatform() === "web" && story.link) {
+  const theLink = story.url || story.link
+  if (Capacitor.getPlatform() === "web" && theLink) {
     // open in new tab to NPR.org if web
-    window.open(story.link, "_blank")
+    window.open(theLink, "_blank")
   } else {
     navigateTo({
       path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,

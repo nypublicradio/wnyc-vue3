@@ -41,12 +41,12 @@ const loadComponent = async (item) => {
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
       case mediaTypes.NPR_EPISODE:
-        return "EpisodeItem"
+      //return "EpisodeItem"
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE_PAGE:
       case mediaTypes.ARTICLE:
       case mediaTypes.NPR_ARTICLE:
-        return item.audio ? "EpisodeItem" : "StoryItem"
+        return "MediaCard"
       case mediaTypes.LIVE:
         return "LiveItem"
       default:
@@ -151,7 +151,8 @@ watch(
             :class="item.type"
             :menu="true"
             is-horizontal
-            imgCol="w-7rem"
+            imgCol="w-7rem h-7rem"
+            :size="{ xs: [112, 112] }"
             :showBg="false"
             :showBgMobile="false"
           />

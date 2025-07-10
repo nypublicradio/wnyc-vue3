@@ -124,7 +124,7 @@ const props = defineProps({
   // Default: {} uses [300,200] default size with smart cascading
   size: {
     type: [Array, Object],
-    default: () => ({ xs: [112, 112], md: [438, 292] }),
+    default: () => ({ xs: [112, 112] }),
   },
   imgSrcset: {
     type: Array,
