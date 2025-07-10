@@ -133,7 +133,6 @@ const props = defineProps({
     default: [2],
   },
 })
-console.log("====MediaCard data", props.data)
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()

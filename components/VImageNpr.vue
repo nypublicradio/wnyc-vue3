@@ -299,9 +299,8 @@ onMounted(async () => {
             :provider="handleProvider"
             class="blurred-bg-image"
             :src="theSrc"
-            :width="props.width"
+            :width="computedWidth"
             :height="props.height"
-            quality="15"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
           />

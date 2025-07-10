@@ -54,7 +54,7 @@ const reactiveArticles = toRef(props, "articles")
       class="col-12 md:col-4 mb-3"
       :size="{ xs: [112, 112], md: [438, 292] }"
     />
-
+    <!-- 
     <MediaCard
       v-if="reactiveArticles.length > 0"
       class="col-12 lg:col-6 mb-5"
@@ -94,7 +94,7 @@ const reactiveArticles = toRef(props, "articles")
         imgCol="w-6"
         :size="{ xs: [112, 112], md: [300, 150] }"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 

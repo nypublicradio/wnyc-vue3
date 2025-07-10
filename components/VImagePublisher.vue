@@ -213,16 +213,6 @@ const computedSrc = () => {
         .replace(props.qualityToken, props.quality)
     : undefined
 }
-// a function that formats the url template for the blurred background image with low quality
-const computedSrcBg = () => {
-  const template = srcFormatted
-  return template
-    ? template
-        .replace(props.widthToken, getDimensions().width)
-        .replace(props.heightToken, getDimensions().height)
-        .replace(props.qualityToken, 15)
-    : undefined
-}
 
 const srcset = computed(() => {
   const template = srcFormatted
@@ -315,7 +305,7 @@ onMounted(async () => {
         />
         <div v-if="isVertical" class="bg">
           <img
-            :src="computedSrcBg()"
+            :src="computedSrc()"
             :width="getDimensions().width"
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
