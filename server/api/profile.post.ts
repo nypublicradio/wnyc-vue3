@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
         throw createError({
             statusCode: 500,
             statusMessage: 'Internal Server Error',
-            message: 'Failed to query Salesforce'
+            message: error.message || 'Failed to query Salesforce'
         });
     }
 
