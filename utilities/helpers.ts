@@ -1079,15 +1079,15 @@ export const goToStoryPage = (story, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
-  const theLink = story.url || story.link
-  if (Capacitor.getPlatform() === "web" && theLink) {
-    // open in new tab to NPR.org if web
-    window.open(theLink, "_blank")
-  } else {
-    navigateTo({
-      path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
-    })
-  }
+  // const theLink = story.url || story.link
+  // if (Capacitor.getPlatform() === "web" && theLink) {
+  //   // open in new tab to NPR.org if web
+  //   window.open(theLink, "_blank")
+  // } else {
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
+  })
+  //}
   if (log) {
     saveRecentlyPlayed(story)
   }
