@@ -75,6 +75,15 @@ onMounted(() => {
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
     <section>
+      <div
+        class="ad-holder col mb-3 flex lg:hidden align-items-center justify-content-center"
+      >
+        <story-htlAd
+          layout="rectangle"
+          slotClass="htlad-wnyc_homepage_rectangle"
+          fineprint="WNYC is funded by sponsors and member donations"
+        />
+      </div>
       <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">

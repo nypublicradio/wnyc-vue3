@@ -580,7 +580,7 @@ const handleHasAudio = computed(() => {
   &.show-bg {
     .holder {
       background-color: var(--p-surface-25);
-      border-radius: 8px;
+      border-radius: var(--media-card-border-radius);
       .content {
         padding: 1rem !important;
       }
@@ -599,7 +599,7 @@ const handleHasAudio = computed(() => {
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
-        border-radius: 8px;
+        border-radius: var(--media-card-border-radius);
         .content {
           padding: 1rem !important;
         }
@@ -612,6 +612,9 @@ const handleHasAudio = computed(() => {
   }
 
   &.is-feature {
+    .holder {
+      border-radius: var(--media-card-border-radius);
+    }
     .content h2 {
       font-size: var(--font-size-7);
       line-height: var(--font-size-9);
@@ -655,7 +658,7 @@ const handleHasAudio = computed(() => {
       }
     }
     &.show-bg {
-      border-radius: 8px;
+      border-radius: var(--media-card-border-radius);
     }
   }
   &.is-vertical {

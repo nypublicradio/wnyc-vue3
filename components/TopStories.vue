@@ -12,15 +12,6 @@ const reactiveArticles = toRef(props, "articles")
 <template>
   <div>
     <div class="top-stories grid">
-      <div
-        class="ad-holder col mb-3 flex lg:hidden align-items-center justify-content-center"
-      >
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
-      </div>
       <MediaCard
         v-if="reactiveArticles.length > 0"
         class="col-12 lg:col-8 mb-3"
@@ -92,8 +83,8 @@ const reactiveArticles = toRef(props, "articles")
             :data="article"
             is-horizontal
             is-event
-            imgCol="w-6"
-            :size="{ xs: [112, 112], md: [300, 150] }"
+            imgCol="md:w-7rem lg:w-6"
+            :size="{ xs: [112, 112], lg: [220, 152], xl: [332, 174] }"
           />
         </template>
         <skeleton-media-card
