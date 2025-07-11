@@ -84,7 +84,7 @@ const reactiveArticles = toRef(props, "articles")
             is-horizontal
             is-event
             imgCol="md:w-7rem lg:w-6"
-            :size="{ xs: [112, 112], lg: [220, 152], xl: [332, 174] }"
+            :size="{ xs: [112, 112], lg: [220, 152], xl: [332, 184] }"
           />
         </template>
         <skeleton-media-card
