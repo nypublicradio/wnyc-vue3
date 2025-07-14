@@ -59,6 +59,7 @@ jobs:
             PAT=${{ secrets.PAT }}
             SUPABASE_URL=${{ env.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
           build_args: |
             ENV=review
             SENTRY_DSN=${{ vars.SENTRY_DSN }}

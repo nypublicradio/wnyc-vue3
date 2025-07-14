@@ -129,11 +129,18 @@ function main() {
     console.log('\nFull header:');
     console.log(`echo "Authorization: Bearer ${token}" | pbcopy`);
 
-    console.log('\n🧪 Test with curl:');
+    console.log('🧪 Test with curl:');
     console.log(`curl -X POST http://localhost:3000/api/profile \\`);
     console.log(`  -H "Authorization: Bearer ${token}" \\`);
     console.log(`  -H "Content-Type: application/json" \\`);
     console.log(`  -d '{"salesforceID": "your-salesforce-contact-id"}'`);
+
+    console.log('\n⚠️  Important Notes:');
+    console.log('• This token only works with your LOCAL development server');
+    console.log('• For testing remote environments (staging/production), you need:');
+    console.log('  - A token from that environment, OR');
+    console.log('  - To use that environment\'s JWT_SECRET value');
+    console.log('• JWT tokens are environment-specific due to different secrets');
 }
 
 if (require.main === module) {

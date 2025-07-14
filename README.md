@@ -151,7 +151,7 @@ JWT_EXPIRES_IN=24h
 For testing JWT-protected endpoints with tools like Bruno, Postman, or curl:
 
 ```bash
-# Generate a test JWT token
+# Generate a test JWT token (for LOCAL development only)
 npm run generate-jwt
 
 # With custom user data
@@ -159,6 +159,8 @@ node scripts/generate-test-jwt.js --user-id="test123" --email="test@example.com"
 ```
 
 The script provides ready-to-use Authorization headers and curl examples.
+
+**Important**: Generated tokens only work with your local development server. For testing remote environments (staging/production), you need to obtain a token from that specific environment since JWT secrets differ between environments.
 
 ### Implementation Files
 - `pages/confirm.vue` - Enhanced to generate JWT after authentication
