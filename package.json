@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
     "build-theme": "node assets/build-theme.js",
-    "generate-jwt": "node scripts/generate-test-jwt.js"
+    "jwt": "node scripts/jwt-utils.js"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",

@@ -9,6 +9,11 @@ env:
   # Set these to your Fly.io organization and preferred region.
   FLY_REGION: iad
   FLY_ORG: personal
+  # Environment variables referenced in secrets
+  AVIARY_BASE_API: ${{ vars.AVIARY_BASE_API }}
+  HEADER_NAVIGATION_API: ${{ vars.HEADER_NAVIGATION_API }}
+  PUBLISHER_BASE_API: ${{ vars.PUBLISHER_BASE_API }}
+  SUPABASE_URL: ${{ vars.SUPABASE_URL }}
 
 jobs:
   review_app:
@@ -59,7 +64,7 @@ jobs:
             PAT=${{ secrets.PAT }}
             SUPABASE_URL=${{ env.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_SECRET="${{ secrets.JWT_SECRET }}"
           build_args: |
             ENV=review
             SENTRY_DSN=${{ vars.SENTRY_DSN }}

@@ -134,11 +134,20 @@ const { isAuthenticated, currentUser } = useAuth();
 ```
 
 ### Configuration
+
+**Generate a secure JWT secret:**
+```bash
+# Generate a URL-safe JWT secret (recommended for deployments)
+npm run jwt secret
+```
+
 Add to your `.env`:
 ```bash
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_SECRET=your-generated-jwt-secret-from-above
 JWT_EXPIRES_IN=24h
 ```
+
+**Important**: Use the same JWT_SECRET across all environments (local, staging, production) for token compatibility. The generated secret uses only URL-safe characters to avoid deployment issues with special characters.
 
 ### Security Features
 - JWT tokens expire after 24 hours (configurable)
@@ -150,19 +159,100 @@ JWT_EXPIRES_IN=24h
 
 For testing JWT-protected endpoints with tools like Bruno, Postman, or curl:
 
+#### Generate JWT Tokens for Testing
+
 ```bash
 # Generate a test JWT token (for LOCAL development only)
-npm run generate-jwt
+npm run jwt token
 
 # With custom user data
-node scripts/generate-test-jwt.js --user-id="test123" --email="test@example.com"
+npm run jwt token -- --user-id="test123" --email="test@example.com"
+
+# Token that expires in 48 hours
+npm run jwt token -- --expires=48
+
+# Show help for all options
+npm run jwt --help
 ```
 
-The script provides ready-to-use Authorization headers and curl examples.
+**Available Options:**
 
-**Important**: Generated tokens only work with your local development server. For testing remote environments (staging/production), you need to obtain a token from that specific environment since JWT secrets differ between environments.
+- `--user-id=<id>` - User ID for the token (default: test-user-123)
+- `--email=<email>` - Email for the token (default: `test@example.com`)
+- `--expires=<hours>` - Expiration in hours (default: 24)
+
+#### Using Generated Tokens
+
+The JWT utility provides comprehensive output for easy testing:
+
+1. **JWT Token** - Ready to use in Authorization headers
+2. **Bruno Header Format** - Copy-paste ready for Bruno REST client
+3. **Token Payload** - Shows what data is encoded in the token
+4. **Copy Commands** - macOS clipboard commands for quick copying
+5. **Curl Example** - Complete curl command for testing
+
+**Example with Bruno REST Client:**
+
+1. Run `npm run jwt token`
+2. Copy the "Bruno HTTP Header" line from output
+3. In Bruno, go to Headers tab
+4. Add a new header and paste the full line
+5. Bruno will parse it as: `Authorization: Bearer <token>`
+
+#### Protected Endpoints
+
+With the generated token, you can test any JWT-protected endpoint:
+
+- `/api/profile` - User profile with Salesforce integration
+- Any route protected with the `auth` middleware
+
+#### Token Details
+
+- **Valid for**: 24 hours from generation (configurable)
+- **Algorithm**: HS256
+- **Secret**: Uses `JWT_SECRET` from your `.env` file
+- **Claims**: userId, email, iat (issued at), exp (expires), iss (issuer)
+
+#### Troubleshooting Authentication Errors
+
+If you get authentication errors:
+
+1. **Different JWT secrets between environments**: The most common issue is that your local `.env` and production/staging environments use different `JWT_SECRET` values. JWT tokens are environment-specific.
+   
+   **Solution**: For testing production/staging endpoints, you need to either:
+   - Get a JWT token from the actual environment (login through the app)
+   - Or temporarily use the same `JWT_SECRET` in both environments
+
+2. **Token expired**: Ensure the token hasn't expired (24 hour default)
+3. **Wrong header format**: Verify the Authorization header format is exactly: `Authorization: Bearer <token>`
+4. **Environment mismatch**: Check that `JWT_SECRET` in your local `.env` matches what the target server is using
+
+#### Testing Against Remote Environments
+
+**Important**: Generated tokens only work with your local development server. For testing remote environments (staging/production), you have a few options:
+
+##### Option 1: Get Token from Remote Environment
+
+1. Open the remote app in your browser (e.g., `https://pr-356-nypublicradio-wnyc-vue3.fly.dev`)
+2. Log in normally through the UI
+3. Open browser dev tools → Network tab
+4. Make any authenticated request
+5. Copy the `Authorization: Bearer <token>` header from the request
+
+##### Option 2: Use Remote Environment's JWT_SECRET
+
+1. Get the `JWT_SECRET` value from your remote environment
+2. Temporarily update your local `.env` with that value
+3. Generate a token with `npm run jwt token`
+4. Test against the remote endpoint
+5. **Remember to restore your local JWT_SECRET afterward**
+
+##### Option 3: Test Authentication Flow End-to-End
+
+Instead of testing individual API endpoints, test the full authentication flow through the UI on the remote environment.
 
 ### Implementation Files
+
 - `pages/confirm.vue` - Enhanced to generate JWT after authentication
 - `composables/useAuth.ts` - JWT state management and authenticated fetch
 - `server/utils/jwt.ts` - JWT utilities for token generation/verification
