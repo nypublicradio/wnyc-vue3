@@ -30,9 +30,8 @@ import {
   /*   formatFileSize, */
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
-import { cmsSources, mediaTypes } from "~/composables/globals.ts"
+import { mediaTypes } from "~/composables/globals.ts"
 import { useImageDimensions } from "~/composables/useImageDimensions"
-import { is } from "date-fns/locale"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
