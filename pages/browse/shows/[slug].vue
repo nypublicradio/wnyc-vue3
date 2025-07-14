@@ -302,13 +302,17 @@ onMounted(() => {
             <div v-if="status === 'success'" class="flex flex-column gap-5 mt-2">
               <template v-for="ep in episodes" :key="ep.id">
                 <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-                <EpisodeItem
+                <MediaCard
                   v-if="
                     ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
                   "
                   :data="ep"
+                  showPlayButton
+                  is-horizontal
+                  imgCol="w-7rem"
+                  :showBg="false"
+                  :showBgMobile="false"
                   @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
-                  :fallback-image="getEpisodeFallBackImage()"
                 />
               </template>
             </div>
@@ -316,8 +320,8 @@ onMounted(() => {
           <!-- <TabPanel value="1"  v-if="hasSegments">
           <div v-if="status === 'success'" class="flex flex-column gap-5 mt-2">
             <template v-for="ep in episodes" :key="ep.id">
-              {{ ep?.esitmatedDuration }}
-              <EpisodeItem
+              {{ ep?.estimatedDuration }}
+              <MediaCard
                 v-if="ep?.type === 'segment' && ep.estimatedDuration !== 0"
                 :data="ep"
                 @onClick="goToEpisodePage(ep)"
@@ -331,7 +335,17 @@ onMounted(() => {
     </div>
     <div v-if="status === 'pending'">
       <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
-      <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+      <skeleton-media-card
+        v-for="i in 10"
+        :key="`sk1-${i}`"
+        showPlayButton
+        is-horizontal
+        imgCol="w-7rem"
+        :size="[1, 1]"
+        :showBg="false"
+        :showBgMobile="false"
+        class="mb-5"
+      />
     </div>
     <WnycLoader
       v-if="page < maxPages"

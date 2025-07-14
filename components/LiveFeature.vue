@@ -3,10 +3,12 @@ import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsApp,
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 
@@ -97,9 +99,11 @@ const togglePlayHere = async () => {
                     live
                   />
                   <Button
+                    v-if="!isApp"
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm icon-wide hidden xl:flex"
+                    class="p-button-sm icon-wide xl:flex"
+                    @click="navigateTo('/mobile')"
                   >
                     <template #icon>
                       <DevicesIcon />
@@ -242,8 +246,8 @@ const togglePlayHere = async () => {
       height: 172px;
     }
     @include media("<md") {
-      width: 116px;
-      height: 116px;
+      width: 112px;
+      height: 112px;
     }
     background-color: #ffffff99;
     .image,
@@ -255,8 +259,8 @@ const togglePlayHere = async () => {
         height: 172px;
       }
       @include media("<md") {
-        width: 116px;
-        height: 116px;
+        width: 112px;
+        height: 112px;
       }
       display: flex;
       align-items: center;

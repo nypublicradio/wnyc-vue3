@@ -112,21 +112,21 @@ const props = defineProps({
   /**
    *  ammount of blur for the blured background image */
   verticalBgBlur: {
-    default: "3px",
+    default: "15px",
     type: String,
   },
   /**
    * tint the grey blured background image
    * */
   verticalBgColor: {
-    default: "#f1f1f1",
+    default: "#ffffff",
     type: String,
   },
   /**
    *  the opacity of the tint of the grey blured background image
    */
   verticalBgColorOpacity: {
-    default: "0.6",
+    default: "0.08",
     type: String,
   },
   /** * The desired width for the 1x sized image.
@@ -148,7 +148,7 @@ const imageLoaded = ref(false)
 
 // method to format the url to get the publisher image
 const formatPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
+  return url.replace("%s/%s/%s/%s", "%width%/%height%/l/%quality%")
 }
 // method to format the url to get the raw image
 const formatRawPublisherImageUrl = (url) => {
@@ -213,16 +213,6 @@ const computedSrc = () => {
         .replace(props.qualityToken, props.quality)
     : undefined
 }
-// a function that formats the url template for the blurred background image with low quality
-const computedSrcBg = () => {
-  const template = srcFormatted
-  return template
-    ? template
-        .replace(props.widthToken, getDimensions().width)
-        .replace(props.heightToken, getDimensions().height)
-        .replace(props.qualityToken, 15)
-    : undefined
-}
 
 const srcset = computed(() => {
   const template = srcFormatted
@@ -267,7 +257,7 @@ const srcset = computed(() => {
 })
 
 onBeforeMount(() => {
-  isVertical.value = props.allowVerticalEffect && props.maxHeight > props.maxWidth
+  isVertical.value = props.allowVerticalEffect && props.maxHeight >= props.maxWidth
 })
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
@@ -299,17 +289,23 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: 100%"
+      style="width: 100%; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
-        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+        <WnycLoader
+          v-if="!imageLoaded"
+          class="image-loader-anim"
+          size="1rem"
+          bg
+          spinner
+        />
         <div v-if="isVertical" class="bg">
           <img
-            :src="computedSrcBg()"
+            :src="computedSrc()"
             :width="getDimensions().width"
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
@@ -396,9 +392,11 @@ onMounted(async () => {
   </div>
 </template>
 
-<style lang="scss" scroped>
+<style lang="scss" scoped>
 .v-image-publisher {
+  height: inherit;
   .v-image-publisher-holder {
+    height: inherit;
     line-height: 0;
     position: relative;
     overflow: hidden;
@@ -454,7 +452,7 @@ onMounted(async () => {
       }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
         object-fit: cover;
         height: inherit;
       }

@@ -101,17 +101,6 @@ const getDotMenuItems = (bucketItem) => {
         handleAddToFavorites(bucketItem)
       },
     },
-    // {
-    //   label: `Download ${
-    //     bucketItem.segments && Array.isArray(bucketItem.audio) ? "All" : ""
-    //   }`,
-    //   //icon: 'pi pi-google',
-    //   customIcon: DownloadIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleDownload(bucketItem)
-    //   },
-    // },
     ...(props.showShare
       ? [
           {
@@ -124,15 +113,6 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    // {
-    //   label: "Add to Queue",
-    //   active: true,
-    //   customIcon: QueueIcon,
-    //   title: bucketItem.title,
-    //   command: () => {
-    //     handleAddToQueue(bucketItem)
-    //   },
-    // },
   ]
 }
 
@@ -176,11 +156,11 @@ const handleClick = () => {
       <VImage
         class="flex-none"
         :src="imgSrcUrl"
-        :height="116"
-        :width="116"
+        :height="112"
+        :width="112"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="height: 116px; width: 116px"
+        style="height: 112px; width: 112px"
       />
       <div class="flex gap-1 flex-column justify-content-between w-full">
         <div class="flex gap-1 flex-column w-full">
@@ -234,8 +214,8 @@ const handleClick = () => {
                     <VImage
                       :src="imgSrcUrl"
                       :alt="`${props.data?.showTitle} show image`"
-                      :width="116"
-                      :height="116"
+                      :width="112"
+                      :height="112"
                       class="show-image-in-menu flex-none"
                       :ratio="[1, 1]"
                       style="

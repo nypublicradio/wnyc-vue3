@@ -92,10 +92,10 @@ export const whenTime = (data) => {
 }
 
 // format ISO timestamp to return only the time
-export function formatTime(date: any) {
+export function formatTime(date: any, formatString = "h:mm a") {
   if (date) {
     const dateObject = new Date(date)
-    return format(dateObject, "h:mm a")
+    return format(dateObject, formatString)
   }
   return null
 }
@@ -401,23 +401,19 @@ export async function setDarkMode(bool: boolean) {
   const isDarkMode = useIsDarkMode()
   isDarkMode.value = dmBool
 }
-
 // function to get the EPISODE fallback image for the episode depending on darkmode
-export const getEpisodeFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
+export const getEpisodeFallBackImage = (isDarkMode = true) => {
+  return isDarkMode ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
 }
 
 // function to get the EPISODE HEADER fallback image for the episode depending on darkmode
-export const getEpisodeHeadFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
+export const getEpisodeHeadFallBackImage = (isDarkMode = true) => {
+  return isDarkMode ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
 }
 
 // function to get the USER icon fall back image
-export const getUserFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKUSERDARK : FALLBACKUSER
+export const getUserFallBackImage = (isDarkMode = true) => {
+  return isDarkMode ? FALLBACKUSERDARK : FALLBACKUSER
 
 }
 
@@ -469,13 +465,33 @@ export async function openLinkInAppBrowser(url: string) {
 }
 
 
-// global funcrtion for copying to clipboard
+// global function for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
   const globalToast = useGlobalToast()
   try {
-    await Clipboard.write({
-      string: content,
-    })
+    if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
+      // Use Capacitor Clipboard for mobile apps
+      await Clipboard.write({
+        string: content,
+      })
+    } else {
+      // Use native browser Clipboard API for web
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(content)
+      } else {
+        // Fallback for older browsers or insecure contexts
+        const textArea = document.createElement('textarea')
+        textArea.value = content
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+    }
     globalToast.value = {
       severity: "info",
       summary: "Copied to clipboard",
@@ -497,35 +513,56 @@ export const removeHTMLTags = (str) => {
   const parsedHTML = parser.parseFromString(str, "text/html")
   return parsedHTML.body.textContent ?? ""
 }
+
 // share API
 export const shareAPI = async (
-  content: object,
+  content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
-  // DESKTOP sharing is not supported yet
-  const shareContent = {
-    title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details || content.description || content.title),
-    url: content.url || content.titleLink, // titleLink is for live streams
+  const shareData = {
+    title: removeHTMLTags(content.socialTitle || content.title),
+    text: removeHTMLTags(content.rawBody || content.description || content.title),
+    url: content.url || content.titleLink,
+  };
+
+  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title);
+  // Native Mobile Sharing
+  if (Capacitor.isNativePlatform()) {
+    await Share.share({
+      title: shareData.title,
+      text: shareData.text,
+      url: shareData.url,
+      dialogTitle: "Share with buddies",
+    });
+    return; // Exit after native share
   }
 
-  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
-  if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
-    await Share.share({
-      // title: shareContent.title,
-      // text: shareContent.text,
-      url: content.url,
-      dialogTitle: "Share with buddies",
-    })
-  } else {
+  // Web Share API
+  if (navigator.share && shareData.url) {
     try {
-      await navigator.share(shareContent)
+      await navigator.share({
+        title: shareData.title,
+        text: shareData.text,
+        url: shareData.url,
+      });
     } catch (error) {
-      copyToClipBoard(shareContent.url)
-      //console.error('Error sharing', error)
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        // User cancelled the share. No action needed.
+      } else {
+        // Any other error, we fallback to clipboard
+        console.error("Web Share API error:", error);
+        copyToClipBoard(shareData.url);
+      }
+    }
+  } else {
+    // Fallback for browsers without Web Share API or if URL is missing
+    if (shareData.url) {
+      copyToClipBoard(shareData.url);
+    } else {
+      console.error("No URL provided to share or copy.");
     }
   }
-}
+};
 
 // handle the delete of the stored audio file and GA tracking
 export const handleDelete = (file) => {
@@ -848,6 +885,7 @@ interface SavedItem {
   cmsSource: string
   media_id: string
   slug: string
+  url: string
   reading_time: string
   estimatedDuration: number
   title: string
@@ -920,6 +958,7 @@ export const saveFavorite = async (
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
+    const url = media?.url ?? media?.link
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const estimatedDuration = media?.estimatedDuration
@@ -936,6 +975,7 @@ export const saveFavorite = async (
       cmsSource,
       media_id,
       slug,
+      url,
       reading_time,
       estimatedDuration,
       image,
@@ -1018,12 +1058,31 @@ export const goToEpisodePage = (ep, params, log = true) => {
   }
 }
 
-/* centralized function to route to a story page */
-export const goToStoryPage = (story, params, log = true) => {
+/* centralized function to route to a live page */
+export const goToLivePage = (ep, params, log = true) => {
   navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+    path: `${mediaTypeRoutes[mediaTypes.LIVE]}`,
     query: params,
   })
+  if (log) {
+    saveRecentlyPlayed(ep)
+  }
+}
+
+/* centralized function to route to a story page */
+export const goToStoryPage = (story, params, log = true) => {
+  const theLink = story.url || story.link
+  if (Capacitor.getPlatform() === "web" && theLink) {
+    if (story.cmsSource === cmsSources.WAGTAIL) {
+      // open in new tab if web and wagtail source
+      window.open(theLink, "_blank")
+    }
+  } else {
+    navigateTo({
+      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+      query: params,
+    })
+  }
   if (log) {
     saveRecentlyPlayed(story)
   }
@@ -1031,9 +1090,15 @@ export const goToStoryPage = (story, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true) => {
+  // const theLink = story.url || story.link
+  // if (Capacitor.getPlatform() === "web" && theLink) {
+  //   // open in new tab to NPR.org if web
+  //   window.open(theLink, "_blank")
+  // } else {
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
   })
+  //}
   if (log) {
     saveRecentlyPlayed(story)
   }
@@ -1122,6 +1187,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
     switch (item.type) {
+      case mediaTypes.LIVE:
+        goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
+        break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
         goToEpisodePage(item, { src: item.cmsSource, type: item.type }, isSaveHistory)

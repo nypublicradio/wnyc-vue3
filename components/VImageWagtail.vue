@@ -127,23 +127,30 @@ const props = defineProps({
     type: String,
   },
   /**
-   *  ammount of blur for the blured background image */
+   *  amount of blur for the background image */
   verticalBgBlur: {
-    default: "3px",
+    default: "15px",
     type: String,
   },
   /**
-   * tint the grey blured background image
+   * tint the grey background image
    * */
   verticalBgColor: {
-    default: "#f1f1f1",
+    default: "#ffffff",
     type: String,
   },
   /**
-   *  the opacity of the tint of the grey blured background image
+   *  the opacity of the tint of the background image
    */
   verticalBgColorOpacity: {
-    default: "0.6",
+    default: "0.08",
+    type: String,
+  },
+  /**
+   *  the grayscale of the background image
+   */
+  verticalBgGrayscale: {
+    default: "100",
     type: String,
   },
   /**
@@ -162,7 +169,7 @@ const emit = defineEmits([
 ])
 
 const imageLoaded = ref(false)
-const isVertical = ref(props.allowVerticalEffect && props.maxHeight > props.maxWidth)
+const isVertical = ref(props.allowVerticalEffect && props.maxHeight >= props.maxWidth)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)
 
@@ -209,7 +216,7 @@ const handleProvider = computed(() => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
@@ -226,9 +233,9 @@ const handleProvider = computed(() => {
             :provider="handleProvider"
             class="blurred-bg-image"
             :src="String(props.src)"
-            :width="props.width"
+            :width="computedWidth"
             :height="props.height"
-            quality="15"
+            :quality="String(props.quality)"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
@@ -329,10 +336,12 @@ const handleProvider = computed(() => {
 .v-image {
   line-height: 0;
   position: relative;
+  height: inherit;
 
   .v-image-holder {
     position: relative;
     overflow: hidden;
+    height: inherit;
     .image {
       position: relative;
       width: 100%;
@@ -376,7 +385,7 @@ const handleProvider = computed(() => {
       }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
         object-fit: cover;
         height: inherit;
       }
