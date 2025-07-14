@@ -1,5 +1,4 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
 
 const props = defineProps({
@@ -141,7 +140,6 @@ watch(
       <h2 v-if="headerTitle" class="mb-4 mt-3">{{ headerTitle }}</h2>
       <div class="flex flex-column gap-5">
         <div v-for="(item, index) in savedItems" :key="index">
-          <!-- @onClick="dynamicNavigation(item, props.isSaveHistory)" -->
           <component
             :is="item.component"
             :data="item.data"
