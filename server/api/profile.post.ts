@@ -1,8 +1,6 @@
 import salesforce from '../utils/salesforce';
 import { createError, defineEventHandler } from 'h3';
 
-const config = useRuntimeConfig();
-
 export default defineEventHandler(async (event) => {
     // Validate input parameter
     const body = await readBody(event);

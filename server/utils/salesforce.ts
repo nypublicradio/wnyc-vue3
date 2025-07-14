@@ -22,7 +22,7 @@ export class SalesforceClient {
 
     private async ensureConnection(): Promise<void> {
         if (!this.isConnected || this.isTokenExpired()) {
-            console.log('Token expired or not connected, reconnecting...');
+            //console.log('Token expired or not connected, reconnecting...');
             this.isConnected = false;
             await this.connect();
         }
@@ -30,15 +30,15 @@ export class SalesforceClient {
 
     async connect(): Promise<void> {
         if (this.isConnected && !this.isTokenExpired()) {
-            console.log('Already connected with valid token');
+            //console.log('Already connected with valid token');
             return;
         }
 
-        console.log('=== SALESFORCE CONNECTION ===');
-        console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
-        console.log('SF_USERNAME:', process.env.SF_USERNAME ? 'Set' : 'Not set');
-        console.log('SF_PRIVATE_KEY:', process.env.SF_PRIVATE_KEY ? 'Set' : 'Not set');
-        console.log('Login URL:', this.conn.loginUrl);
+        //console.log('=== SALESFORCE CONNECTION ===');
+        //console.log('SF_CLIENT_ID:', process.env.SF_CLIENT_ID ? 'Set' : 'Not set');
+        //console.log('SF_USERNAME:', process.env.SF_USERNAME ? 'Set' : 'Not set');
+        //console.log('SF_PRIVATE_KEY:', process.env.SF_PRIVATE_KEY ? 'Set' : 'Not set');
+        //console.log('Login URL:', this.conn.loginUrl);
 
         if (!process.env.SF_CLIENT_ID || !process.env.SF_USERNAME || !process.env.SF_PRIVATE_KEY) {
             throw new Error('Missing required environment variables: SF_CLIENT_ID, SF_USERNAME, SF_PRIVATE_KEY');
@@ -50,7 +50,7 @@ export class SalesforceClient {
             if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
                 // If it doesn't contain the PEM headers, assume it's base64 encoded
                 privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
-                console.log('Decoded base64 private key');
+                //console.log('Decoded base64 private key');
             }
 
             // Create JWT payload with current timestamp
@@ -63,7 +63,7 @@ export class SalesforceClient {
                 iat: now // Issued at current time
             };
 
-            console.log('Creating JWT with expiration:', new Date((now + 300) * 1000).toISOString());
+            //console.log('Creating JWT with expiration:', new Date((now + 300) * 1000).toISOString());
 
             // Sign the JWT with your private key
             const token = sign(jwtPayload, privateKey, { algorithm: 'RS256' });
@@ -80,7 +80,7 @@ export class SalesforceClient {
                 })
             });
 
-            console.log('Salesforce response status:', response.status);
+            //console.log('Salesforce response status:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -89,7 +89,7 @@ export class SalesforceClient {
             }
 
             const authResponse = await response.json();
-            console.log('Salesforce auth successful');
+            //console.log('Salesforce auth successful');
 
             this.accessToken = authResponse.access_token;
             this.instanceUrl = authResponse.instance_url;
@@ -102,8 +102,8 @@ export class SalesforceClient {
             this.conn.instanceUrl = this.instanceUrl;
 
             this.isConnected = true;
-            console.log('Connected to Salesforce via JWT Bearer flow');
-            console.log('Token expires at:', new Date(this.tokenExpirationTime).toISOString());
+            //console.log('Connected to Salesforce via JWT Bearer flow');
+            //console.log('Token expires at:', new Date(this.tokenExpirationTime).toISOString());
         } catch (error) {
             console.error('Failed to connect to Salesforce:', error);
             this.isConnected = false;
@@ -114,23 +114,23 @@ export class SalesforceClient {
     async queryRecord(soql: string) {
         try {
             await this.ensureConnection();
-            console.log('Executing SOQL query:', soql);
+            //console.log('Executing SOQL query:', soql);
             const result = await this.conn.query(soql);
-            console.log('Query successful, records found:', result.records.length);
+            //console.log('Query successful, records found:', result.records.length);
             return result;
         } catch (error) {
             console.error('Query failed:', error);
 
             // If it's an authentication error, try to reconnect once
             if (error.message && (error.message.includes('INVALID_SESSION') || error.message.includes('expired'))) {
-                console.log('Session expired, attempting to reconnect...');
+                //console.log('Session expired, attempting to reconnect...');
                 this.isConnected = false;
                 await this.ensureConnection();
 
                 // Retry the query once after reconnection
-                console.log('Retrying query after reconnection...');
+                //console.log('Retrying query after reconnection...');
                 const result = await this.conn.query(soql);
-                console.log('Retry successful, records found:', result.records.length);
+                //console.log('Retry successful, records found:', result.records.length);
                 return result;
             }
 
