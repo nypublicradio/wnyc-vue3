@@ -146,6 +146,20 @@ JWT_EXPIRES_IN=24h
 - Server-side token validation
 - Automatic logout on token expiration
 
+### Testing JWT APIs
+
+For testing JWT-protected endpoints with tools like Bruno, Postman, or curl:
+
+```bash
+# Generate a test JWT token
+npm run generate-jwt
+
+# With custom user data
+node scripts/generate-test-jwt.js --user-id="test123" --email="test@example.com"
+```
+
+The script provides ready-to-use Authorization headers and curl examples.
+
 ### Implementation Files
 - `pages/confirm.vue` - Enhanced to generate JWT after authentication
 - `composables/useAuth.ts` - JWT state management and authenticated fetch
