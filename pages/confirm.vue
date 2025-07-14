@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { getAndSetUserProfile } from "~/utilities/helpers"
+import { useAuth } from "~/composables/useAuth"
+
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu background-gradient style-mode-dark",
@@ -11,13 +13,43 @@ definePageMeta({
 })
 
 const user = useSupabaseUser()
+const supabase = useSupabaseClient()
+const { setAuthState } = useAuth()
+
 watch(
   user,
   async () => {
     if (user.value) {
-      await nextTick()
-      await getAndSetUserProfile()
-      navigateTo("/home")
+      try {
+        // Get the current Supabase session
+        const { data: sessionData } = await supabase.auth.getSession()
+        
+        if (sessionData.session) {
+          // Convert Supabase session to JWT
+          const jwtResponse = await $fetch('/api/auth/session-to-jwt', {
+            method: 'POST',
+            body: {
+              access_token: sessionData.session.access_token,
+              refresh_token: sessionData.session.refresh_token,
+            }
+          })
+          
+          if (jwtResponse.success && jwtResponse.token) {
+            // Set the JWT token in our auth system
+            setAuthState(jwtResponse.token, jwtResponse.user)
+          }
+        }
+        
+        await nextTick()
+        await getAndSetUserProfile()
+        navigateTo("/home")
+      } catch (error) {
+        console.error('JWT generation failed:', error)
+        // Fall back to normal flow
+        await nextTick()
+        await getAndSetUserProfile()
+        navigateTo("/home")
+      }
     }
   },
   { immediate: true }

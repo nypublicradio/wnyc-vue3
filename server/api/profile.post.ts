@@ -1,7 +1,21 @@
 import salesforce from '../utils/salesforce';
 import { createError, defineEventHandler } from 'h3';
+import { requireAuth } from '../utils/jwt';
+import { rateLimit } from '../utils/rateLimiter';
+
+// Rate limiting: 10 requests per minute per IP
+const rateLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 10,
+});
 
 export default defineEventHandler(async (event) => {
+    // Apply rate limiting
+    rateLimiter(event);
+
+    // Verify JWT authentication
+    const authPayload = requireAuth(event);
+
     // Validate input parameter
     const body = await readBody(event);
     const salesforceID = body?.salesforceID as string;

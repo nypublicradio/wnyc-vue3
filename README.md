@@ -1,4 +1,3 @@
-
 # Requirements
 
 - Node v18.18.2
@@ -90,8 +89,148 @@ In xcode, select the AppLocal target to run the app on your development device. 
 ## Learned Instructions for Ionic/Capacitor module for Nuxt 3
 https://nypublicradio-digital.atlassian.net/l/cp/tV6d4Cwh
 
+## JWT Authentication
 
-## font size scale reference helper
+This application integrates JWT authentication seamlessly with the existing Supabase authentication system. JWT tokens are automatically generated after successful login (email/password or OAuth) without requiring any changes to the existing login flow.
+
+### Core Features
+- **Zero breaking changes** - All existing login methods work as-is
+- **Automatic JWT generation** - Tokens created automatically after Supabase authentication
+- **Server-side protection** - APIs secured with JWT middleware
+- **Rate limiting** - Protected endpoints include rate limiting (10 requests/minute per IP)
+- **Secure token storage** - JWT tokens managed client-side with automatic expiration
+
+### User Flow
+1. User clicks login (Google, Apple, or email/password)
+2. Supabase handles authentication (existing flow)
+3. User redirected to `/confirm` (existing behavior)
+4. JWT token generated automatically from Supabase session
+5. User continues to `/home` (existing behavior)
+
+### Developer Usage
+
+#### Making Authenticated API Calls
+```javascript
+const { authenticatedFetch } = useAuth();
+
+// This will automatically include JWT Bearer token
+const profile = await authenticatedFetch('/api/profile', {
+  method: 'POST',
+  body: { salesforceID: 'contact-id' }
+});
+```
+
+#### Protecting Routes
+```javascript
+// Add to any page that requires authentication
+definePageMeta({
+  middleware: 'auth'
+});
+```
+
+#### Checking Auth Status
+```javascript
+const { isAuthenticated, currentUser } = useAuth();
+```
+
+### Configuration
+Add to your `.env`:
+```bash
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=24h
+```
+
+### Security Features
+- JWT tokens expire after 24 hours (configurable)
+- Rate limiting on protected endpoints
+- Server-side token validation
+- Automatic logout on token expiration
+
+### Implementation Files
+- `pages/confirm.vue` - Enhanced to generate JWT after authentication
+- `composables/useAuth.ts` - JWT state management and authenticated fetch
+- `server/utils/jwt.ts` - JWT utilities for token generation/verification
+- `server/api/auth/session-to-jwt.post.ts` - Converts Supabase sessions to JWT
+- `server/api/auth/refresh.post.ts` - JWT token refresh endpoint
+- `server/api/auth/verify.get.ts` - JWT token verification endpoint
+- `server/api/profile.post.ts` - Example JWT-protected endpoint
+- `middleware/auth.ts` - Route protection middleware
+- `plugins/auth.client.ts` - Client-side token verification
+
+## Salesforce Integration
+
+This application uses JWT Bearer flow for secure server-to-server authentication with Salesforce. The integration allows the app to authenticate users against Salesforce and retrieve user profile data.
+
+### Setup Requirements
+
+1. **Generate Certificate and Private Key**
+
+   ```bash
+   # Generate private key
+   openssl genrsa -out salesforce-server.key 2048
+   
+   # Generate self-signed certificate (valid for 1 year)
+   openssl req -new -x509 -key salesforce-server.key -out salesforce-server.crt -days 365
+   ```
+
+2. **Create Salesforce Connected App**
+   - Login to Salesforce as admin → Setup → Apps → App Manager → New Connected App
+   - Basic Information:
+     - Connected App Name: `WNYC Vue3 App`
+     - Contact Email: `your-email@domain.com`
+   - API (Enable OAuth Settings):
+     - ✅ Enable OAuth Settings
+     - Callback URL: `https://your-domain.com/oauth/callback` (Must be present but is not used)
+     - OAuth Scopes: Add "Full access (full)"
+     - ✅ Use digital signatures
+     - Certificate: Upload `salesforce-server.crt`
+
+3. **Configure User Access**
+   - After saving: Manage → Edit Policies
+   - Permitted Users: "Admin approved users are pre-authorized"
+   - Manage Profiles → Add "System Administrator"
+
+### Environment Variables
+
+Add to your `.env`:
+
+```bash
+SF_CLIENT_ID=your_connected_app_consumer_key
+SF_USERNAME=your_salesforce_username@domain.com
+SF_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
+your_private_key_content_from_salesforce-server.key
+-----END PRIVATE KEY-----"
+SF_LOGIN_URL=https://login.salesforce.com  # Use https://test.salesforce.com for sandbox
+```
+
+### Testing the Integration
+
+Test the Salesforce integration by making an authenticated request to the profile endpoint:
+
+```bash
+# First get a JWT token by logging in through the app, then:
+curl -X POST http://localhost:3000/api/profile \
+  -H "Authorization: Bearer your-jwt-token" \
+  -H "Content-Type: application/json" \
+  -d '{"salesforceID": "your-salesforce-contact-id"}'
+```
+
+### Common Troubleshooting
+
+- **"user hasn't approved this consumer"** → Configure user access in Connected App settings
+- **"invalid_client_id"** → Verify Consumer Key in SF_CLIENT_ID
+- **"invalid_grant"** → Ensure private key matches uploaded certificate
+- **"invalid_audience"** → Check SF_LOGIN_URL (production vs sandbox)
+
+### Security Best Practices
+
+- Use dedicated integration user with minimal permissions
+- Store private key securely (never commit to version control)
+- Rotate certificates annually
+- Monitor Connected App usage in Salesforce Login History
+- Use sandbox for development and testing
+
+## Font Size Scale Reference Helper
 --font-size = 16px
 --font-ratio = 1.125
 --font-size-20 = 5.202rem/83.23px	
@@ -114,4 +253,4 @@ https://nypublicradio-digital.atlassian.net/l/cp/tV6d4Cwh
 --font-size-3 = 0.702rem/11.24px	
 --font-size-2 = 0.624rem/9.99px	
 --font-size-1 = 0.555rem/8.88px	
---font-size-0 = 0.493rem/7.89px	
+--font-size-0 = 0.493rem/7.89px
