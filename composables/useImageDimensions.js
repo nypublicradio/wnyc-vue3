@@ -1,26 +1,5 @@
-import { ref, onMounted, onUnmounted } from "vue"
-import breakpoints from "~/assets/scss/breakpoints.module.scss"
-
-/**
- * Get the current breakpoint based on window width
- * @param {number} width - Current window width
- * @returns {string} - Current breakpoint name
- */
-function getCurrentBreakpoint(width) {
-    // Handle case where width is not available or breakpoints not loaded
-    if (!width || typeof breakpoints === 'undefined') {
-        return 'md' // Default fallback
-    }
-
-    if (width < parseInt(breakpoints.xs)) return 'xs'  // Changed from 'xs-' to 'xs'
-    if (width < parseInt(breakpoints.sm)) return 'xs'
-    if (width < parseInt(breakpoints.md)) return 'sm'
-    if (width < parseInt(breakpoints.lg)) return 'md'
-    if (width < parseInt(breakpoints.xl)) return 'lg'
-    if (width < parseInt(breakpoints.xxl)) return 'xl'
-    if (width < parseInt(breakpoints.xxxl)) return 'xxl'
-    return 'xxxl'
-}
+import { ref, watch } from "vue"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 
 /**
  * Get the size for the current breakpoint with smart defaults
@@ -71,9 +50,11 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
 export function useImageDimensions(options = {}) {
     const { size = {} } = options
 
+    // Use the shared breakpoint composable
+    const { currentBreakpoint } = useBreakpoints()
+
     const width = ref(0)
     const height = ref(0)
-    const currentBreakpoint = ref('')
 
     // Update dimensions based on current breakpoint
     const updateDimensions = () => {
@@ -82,33 +63,8 @@ export function useImageDimensions(options = {}) {
         height.value = newHeight
     }
 
-    // Handle window resize with minimal debouncing
-    const handleResize = () => {
-        if (typeof window !== 'undefined') {
-            const newBreakpoint = getCurrentBreakpoint(window.innerWidth)
-            if (currentBreakpoint.value !== newBreakpoint) {
-                currentBreakpoint.value = newBreakpoint
-                updateDimensions()
-            }
-        }
-    }
-
-    onMounted(() => {
-        if (typeof window !== 'undefined') {
-            // Initialize current breakpoint and dimensions
-            currentBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
-            updateDimensions()
-
-            // Set up resize listener
-            window.addEventListener("resize", handleResize)
-        }
-    })
-
-    onUnmounted(() => {
-        if (typeof window !== 'undefined') {
-            window.removeEventListener("resize", handleResize)
-        }
-    })
+    // Watch for breakpoint changes and update dimensions
+    watch(currentBreakpoint, updateDimensions, { immediate: true })
 
     return {
         width,
