@@ -23,13 +23,12 @@ function getCurrentBreakpoint(width) {
 }
 
 // Global shared state and resize handler
-let globalBreakpoint = ref('')
+const globalBreakpoint = ref('')
 let listenerCount = 0
 let isInitialized = false
 
 const handleResize = () => {
     if (typeof window !== 'undefined') {
-        console.log("Resize detected, width:", window.innerWidth)  // Debug log to trace resize events
         const newBreakpoint = getCurrentBreakpoint(window.innerWidth)
         if (globalBreakpoint.value !== newBreakpoint) {
             globalBreakpoint.value = newBreakpoint
