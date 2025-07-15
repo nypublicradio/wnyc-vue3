@@ -218,12 +218,10 @@ onMounted(() => {
         v-if="showImage"
         :src="showImage"
         :alt="`${showTitle} show image`"
-        :width="144"
-        :height="144"
-        class="show-image max-w-9rem m-auto"
+        :size="{ xs: [112, 112], sm: [208, 208] }"
+        class="show-image max-w-7rem m-auto sm:max-w-13rem"
         :ratio="[1, 1]"
         :srcset="[2]"
-        style="min-height: 144px"
       />
       <Skeleton
         v-else
