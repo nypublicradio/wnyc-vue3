@@ -38,7 +38,7 @@ const handleClick = () => {
 <template>
   <div class="sleep-timer-button">
     <Button
-      :text="props.isText"
+      :class="{ 'p-button-text': props.isText }"
       :label="props.label"
       :severity="props.severity"
       rounded
