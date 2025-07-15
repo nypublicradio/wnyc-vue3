@@ -16,10 +16,6 @@ export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string 
     const secret = config.jwtSecret as string;
     const expiresIn = config.jwtExpiresIn as string;
 
-    // Debug the secret being used for signing
-    console.log('Server: Generating token with secret first 10 chars:', secret.substring(0, 10))
-    console.log('Server: Generating token with secret last 10 chars:', secret.substring(secret.length - 10))
-
     return jwt.sign(payload, secret, {
         expiresIn,
         issuer: 'wnyc-vue3-app' // Add issuer to token generation
@@ -33,10 +29,9 @@ export function verifyToken(token: string): JWTPayload {
     const config = useRuntimeConfig();
     const secret = config.jwtSecret as string;
 
-    // Debug the secret being used
-    console.log('Server: Secret first 10 chars:', secret.substring(0, 10))
-    console.log('Server: Secret last 10 chars:', secret.substring(secret.length - 10))
-    console.log('Server: Full secret:', secret)
+    // Temporary debug to verify secret
+    console.log('Server: Current secret:', secret)
+    console.log('Server: Secret length:', secret.length)
 
     try {
         const decoded = jwt.verify(token, secret,
