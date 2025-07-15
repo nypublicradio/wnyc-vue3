@@ -213,26 +213,82 @@ onMounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <section class="top style-mode-dark">
-      <VImage
-        v-if="showImage"
-        :src="showImage"
-        :alt="`${showTitle} show image`"
-        :size="{ xs: [112, 112], sm: [208, 208] }"
-        class="show-image max-w-7rem m-auto sm:max-w-13rem"
-        :ratio="[1, 1]"
-        :srcset="[2]"
-      />
-      <Skeleton
-        v-else
-        class="flex-none show-image max-w-9rem m-auto"
-        height="144px"
-        width="144px"
-        borderRadius="0px"
-      />
+    <section class="top style-mode-dark py-3 md:py-5">
+      <div class="flex justify-content-center gap-3 md:gap-5">
+        <VImage
+          v-if="showImage"
+          :src="showImage"
+          :alt="`${showTitle} show image`"
+          :size="{ xs: [112, 112], md: [208, 208] }"
+          class="flex-none show-image max-w-7rem sm:max-w-13rem"
+          :srcset="[2]"
+        />
+        <Skeleton
+          v-else
+          class="flex-none show-image max-w-9rem"
+          height="144px"
+          width="144px"
+          borderRadius="0px"
+        />
+        <div class="flex flex-column justify-content-start gap-2 mt-1 md:mt-2">
+          <h2 class="line-height-2 text-2xl md:text-6xl">{{ showTitle }}</h2>
+          <HtmlConvert :htmlContent="showTease" class="text-sm md:text-base" />
+
+          <div v-if="status === 'success'" class="flex align-items-center gap-2">
+            <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
+              <template #icon>
+                <FollowIcon :active="isFavorited" class="w-2rem mt-1"
+              /></template>
+            </Button>
+
+            <Button
+              class="play-btn flex-none"
+              severity="secondary"
+              rounded
+              aria-label="play toggle"
+              tabindex="0"
+              :disabled="!hasEpisodes"
+              @click="togglePlayMostRecentEpisode"
+            >
+              <template #icon>
+                <PauseIcon v-if="isEpisodePlaying" />
+                <PlayIcon v-else />
+              </template>
+            </Button>
+
+            <SleepTimerButton
+              v-if="isApp"
+              @emit-click="handleSleepTimer"
+              :isActive="sleepTimerRunning"
+            />
+            <Button
+              v-else
+              label=""
+              severity="secondary"
+              rounded
+              text
+              plain
+              class=""
+              @click="navigateTo('/mobile')"
+            >
+              <template #icon>
+                <DevicesIcon class="w-2rem mt-1" />
+              </template>
+            </Button>
+          </div>
+          <div
+            v-else
+            class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
+          >
+            <Skeleton height="37px" width="37px" borderRadius="20px" />
+            <Skeleton height="48px" width="48px" borderRadius="24px" />
+            <Skeleton height="37px" width="37px" borderRadius="20px" />
+          </div>
+        </div>
+      </div>
       <div
         v-if="status === 'success'"
-        class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
+        class="flex justify-content-center align-items-center gap-2"
       >
         <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
           <template #icon>
@@ -255,10 +311,6 @@ onMounted(() => {
           </template>
         </Button>
 
-        <!-- <Button text plain rounded aria-label="share" @click="handleShare">
-        <template #icon> <ShareIcon /></template>
-      </Button> -->
-
         <SleepTimerButton
           v-if="isApp"
           @emit-click="handleSleepTimer"
@@ -278,11 +330,6 @@ onMounted(() => {
             <DevicesIcon class="w-2rem mt-1" />
           </template>
         </Button>
-      </div>
-      <div v-else class="flex justify-content-center align-items-center gap-2 mt-2 mb-4">
-        <Skeleton height="37px" width="37px" borderRadius="20px" />
-        <Skeleton height="48px" width="48px" borderRadius="24px" />
-        <Skeleton height="37px" width="37px" borderRadius="20px" />
       </div>
     </section>
     <section>
