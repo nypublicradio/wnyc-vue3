@@ -28,10 +28,6 @@ export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string 
 export function verifyToken(token: string): JWTPayload {
     const secret = process.env.JWT_SECRET;
 
-    // Temporary debug to verify secret
-    console.log('Server: Current secret:', secret)
-    console.log('Server: Secret length:', secret.length)
-
     try {
         const decoded = jwt.verify(token, secret,
             {

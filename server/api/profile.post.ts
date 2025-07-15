@@ -12,10 +12,6 @@ const rateLimiter = rateLimit({
 export default defineEventHandler(async (event) => {
     // Apply rate limiting
     rateLimiter(event);
-    console.info('Server: Received Authorization header:', getHeader(event, 'authorization'))
-    console.info('Server: JWT_SECRET exists:', !!process.env.JWT_SECRET)
-    console.info('Server: JWT_SECRET:', process.env.JWT_SECRET)
-    console.info('Server: JWT_SECRET length:', process.env.JWT_SECRET?.length)
     // Verify JWT authentication
     const authPayload = requireAuth(event);
     // Validate input parameter
