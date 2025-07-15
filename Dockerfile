@@ -48,8 +48,7 @@ COPY . .
 RUN npm run build
 
 FROM node:18.18.2-slim AS app
-ARG BFF_URL
-ENV BFF_URL=${BFF_URL}
+
 
 WORKDIR /app
 

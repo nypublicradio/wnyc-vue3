@@ -52,7 +52,6 @@ jobs:
         with:
           secrets: |
             ENV=review
-            BFF_URL=${{ steps.url.outputs.url }}
             AVIARY_BASE_API=${{ env.AVIARY_BASE_API }}
             HEADER_NAVIGATION_API=${{ env.HEADER_NAVIGATION_API }}
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
