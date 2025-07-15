@@ -51,6 +51,9 @@ export function verifyToken(token: string): JWTPayload {
         }
 
         if (error.name === 'JsonWebTokenError') {
+            console.error('Server: JWT verification failed:', error.message)
+            console.error('Server: Error name:', error.name)
+            console.error('Server: Full error:', error)
             throw createError({
                 statusCode: 401,
                 statusMessage: 'Unauthorized',
