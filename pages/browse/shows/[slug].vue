@@ -213,7 +213,7 @@ onMounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <section class="top style-mode-dark py-3 md:py-5">
+    <section class="top style-mode-dark py-3 md:py-6">
       <div class="flex justify-content-center gap-3 md:gap-5">
         <VImage
           v-if="showImage"
@@ -230,17 +230,14 @@ onMounted(() => {
           width="144px"
           borderRadius="0px"
         />
-        <div class="flex flex-column justify-content-start gap-2 mt-1 md:mt-2">
-          <h2 class="line-height-2 text-2xl md:text-6xl">{{ showTitle }}</h2>
+        <div class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2">
+          <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
           <HtmlConvert :htmlContent="showTease" class="text-sm md:text-base" />
-
-          <div v-if="status === 'success'" class="flex align-items-center gap-2">
-            <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
-              <template #icon>
-                <FollowIcon :active="isFavorited" class="w-2rem mt-1"
-              /></template>
-            </Button>
-
+          <!-- desktop buttons -->
+          <div
+            v-if="status === 'success'"
+            class="hidden md:flex align-items-center gap-3"
+          >
             <Button
               class="play-btn flex-none"
               severity="secondary"
@@ -256,43 +253,54 @@ onMounted(() => {
               </template>
             </Button>
 
+            <Button
+              rounded
+              severity="secondary"
+              aria-label="follow"
+              label="Follow"
+              @click="handleAddToFavorites"
+            >
+              <template #icon>
+                <StarIcon :active="isFavorited" class="w-1rem"
+              /></template>
+            </Button>
+
             <SleepTimerButton
-              v-if="isApp"
+              v-if="!isApp"
               @emit-click="handleSleepTimer"
               :isActive="sleepTimerRunning"
+              :isText="false"
+              label="Sleep Timer"
+              iconClass="w-1rem"
             />
             <Button
               v-else
-              label=""
+              label="Listen in the app"
               severity="secondary"
               rounded
-              text
-              plain
               class=""
               @click="navigateTo('/mobile')"
             >
               <template #icon>
-                <DevicesIcon class="w-2rem mt-1" />
+                <DevicesIcon class="w-1rem" />
               </template>
             </Button>
           </div>
-          <div
-            v-else
-            class="flex justify-content-center align-items-center gap-2 mt-2 mb-4"
-          >
-            <Skeleton height="37px" width="37px" borderRadius="20px" />
+          <div v-else class="hidden md:flex align-items-center gap-3">
             <Skeleton height="48px" width="48px" borderRadius="24px" />
-            <Skeleton height="37px" width="37px" borderRadius="20px" />
+            <Skeleton height="41px" width="99px" borderRadius="24px" />
+            <Skeleton height="41px" width="178px" borderRadius="24px" />
           </div>
         </div>
       </div>
+      <!-- mobile buttons -->
       <div
         v-if="status === 'success'"
-        class="flex justify-content-center align-items-center gap-2"
+        class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
       >
         <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
           <template #icon>
-            <FollowIcon :active="isFavorited" class="w-2rem mt-1"
+            <StarIcon :active="isFavorited" class="w-2rem mt-1"
           /></template>
         </Button>
 
@@ -312,9 +320,10 @@ onMounted(() => {
         </Button>
 
         <SleepTimerButton
-          v-if="isApp"
+          v-if="!isApp"
           @emit-click="handleSleepTimer"
           :isActive="sleepTimerRunning"
+          :isText="true"
         />
         <Button
           v-else
@@ -330,6 +339,14 @@ onMounted(() => {
             <DevicesIcon class="w-2rem mt-1" />
           </template>
         </Button>
+      </div>
+      <div
+        v-else
+        class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
+      >
+        <Skeleton height="37px" width="37px" borderRadius="20px" />
+        <Skeleton height="48px" width="48px" borderRadius="24px" />
+        <Skeleton height="37px" width="37px" borderRadius="20px" />
       </div>
     </section>
     <section>
