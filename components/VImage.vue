@@ -4,12 +4,26 @@ import VImagePublisher from "./VImagePublisher.vue"
 import VImageWagtail from "./VImageWagtail.vue"
 import { cmsSources } from "~/composables/globals.ts"
 import { ref, watch } from "vue"
-
+import { useImageDimensions } from "~/composables/useImageDimensions"
 const props = defineProps({
   src: {
     default: null,
     type: String,
   },
+  size: {
+    type: [Array, Object],
+    default: null,
+  },
+})
+
+// Use the simplified image dimensions composable
+const { width: imageWidth, height: imageHeight } = useImageDimensions({
+  size: props.size,
+})
+
+// Computed ratio for VImage compatibility - derived from current dimensions
+const imageRatio = computed(() => {
+  return [imageWidth.value, imageHeight.value]
 })
 
 const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
@@ -44,6 +58,9 @@ watch(
     v-if="cmsSource === cmsSources.PUBLISHER"
     :key="`${props.src}Publisher`"
     v-bind="{ ...$props, ...$attrs }"
+    :width="props.width || imageWidth"
+    :height="props.height || imageHeight"
+    :ratio="props.ratio || imageRatio"
   >
     <template v-for="(value, name) in $slots" #[name]="data">
       <slot :name="name" v-bind="data"></slot>
@@ -53,6 +70,9 @@ watch(
     v-else-if="cmsSource === cmsSources.NPR"
     :key="`${props.src}Npr`"
     v-bind="{ ...$props, ...$attrs }"
+    :width="props.width || imageWidth"
+    :height="props.height || imageHeight"
+    :ratio="props.ratio || imageRatio"
   >
     <template v-for="(value, name) in $slots" #[name]="data">
       <slot :name="name" v-bind="data"></slot>
@@ -62,6 +82,9 @@ watch(
     v-else-if="cmsSource === cmsSources.WAGTAIL"
     :key="`${props.src}Wagtail`"
     v-bind="{ ...$props, ...$attrs }"
+    :width="props.width || imageWidth"
+    :height="props.height || imageHeight"
+    :ratio="props.ratio || imageRatio"
   >
     <template v-for="(value, name) in $slots" #[name]="data">
       <slot :name="name" v-bind="data"></slot>
