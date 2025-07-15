@@ -29,7 +29,12 @@ export function verifyToken(token: string): JWTPayload {
     const secret = config.jwtSecret as string;
 
     try {
-        const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
+        const decoded = jwt.verify(token, secret,
+            {
+                algorithms: ['HS256'], // Ensure the algorithm matches your signing method
+                issuer: 'wnyc-vue3-app' // Verify issuer matches
+            }
+        ) as jwt.JwtPayload;
         return {
             userId: decoded.userId as string,
             email: decoded.email as string,
