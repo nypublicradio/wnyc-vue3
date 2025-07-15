@@ -35,8 +35,8 @@ watch(
           })
           
           if (jwtResponse.success && jwtResponse.token) {
-            // Set the JWT token in our auth system
-            setAuthState(jwtResponse.token, jwtResponse.user)
+            // Set the JWT token in our auth system with refresh token
+            setAuthState(jwtResponse.token, jwtResponse.user, sessionData.session.refresh_token)
           }
         }
         

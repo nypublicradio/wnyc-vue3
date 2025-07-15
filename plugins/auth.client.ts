@@ -3,7 +3,7 @@ export default defineNuxtPlugin(async () => {
     if (process.server) return;
 
     const { useAuth } = await import('~/composables/useAuth');
-    const { verifyToken, isAuthenticated } = useAuth();
+    const { verifyToken, isAuthenticated, startTokenRefreshTimer } = useAuth();
 
     // Verify token on app initialization
     if (isAuthenticated.value) {
@@ -13,4 +13,7 @@ export default defineNuxtPlugin(async () => {
             console.warn('Token verification failed during app initialization:', error);
         }
     }
+
+    // Start automatic token refresh checking
+    startTokenRefreshTimer();
 });
