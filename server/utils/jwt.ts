@@ -26,8 +26,7 @@ export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string 
  * Verify and decode a JWT token
  */
 export function verifyToken(token: string): JWTPayload {
-    const config = useRuntimeConfig();
-    const secret = config.jwtSecret as string;
+    const secret = process.env.JWT_SECRET;
 
     // Temporary debug to verify secret
     console.log('Server: Current secret:', secret)
