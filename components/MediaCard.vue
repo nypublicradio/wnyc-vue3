@@ -31,7 +31,6 @@ import {
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
 import { mediaTypes } from "~/composables/globals.ts"
-import { useImageDimensions } from "~/composables/useImageDimensions"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -124,6 +123,10 @@ const props = defineProps({
     type: [Array, Object],
     default: () => ({ xs: [112, 112] }),
   },
+  ratio: {
+    type: Array,
+    default: [],
+  },
   imgSrcset: {
     type: Array,
     default: [2],
@@ -132,16 +135,6 @@ const props = defineProps({
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
-
-// Use the simplified image dimensions composable
-const { width: imageWidth, height: imageHeight } = useImageDimensions({
-  size: props.size,
-})
-
-// Computed ratio for VImage compatibility - derived from current dimensions
-const imageRatio = computed(() => {
-  return [imageWidth.value, imageHeight.value]
-})
 
 //handle if it this is downloaded
 const isDownloaded = ref(false)
@@ -375,9 +368,7 @@ const handleHasAudio = computed(() => {
           class="flex-none"
           :alt="`${props.data?.showTitle} show `"
           :src="getImage"
-          :width="imageWidth"
-          :height="imageHeight"
-          :ratio="imageRatio"
+          :size="props.size"
           :maxHeight="nativeImageHeight"
           :maxWidth="nativeImageWidth"
           :srcset="props.imgSrcset"
