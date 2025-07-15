@@ -13,6 +13,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  isText: {
+    type: Boolean,
+    default: true,
+  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -28,9 +32,9 @@ const emit = defineEmits(["changeEmit"])
       <slot name="myCustomButton" label="">
         <Button
           class="rounded"
+          :class="{ 'p-button-text': props.isText }"
           severity="secondary"
           icon="pi pi-ellipsis-v"
-          text
           rounded
           aria-label="options menu"
           :size="props.size"

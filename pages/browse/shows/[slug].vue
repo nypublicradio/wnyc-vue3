@@ -3,7 +3,10 @@ import { useIntersectionObserver } from "@vueuse/core"
 
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
-//import ShareIcon from "~/components/icons/ShareIcon.vue"
+
+import StarIcon from "~/components/icons/StarIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
+
 import {
   checkIsFavorited,
   togglePlayEpisode,
@@ -13,6 +16,7 @@ import {
   hasAudio,
   addToFavorites2,
   getEpisodeFallBackImage,
+  templatizePublisherImageUrl,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -154,6 +158,34 @@ const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
 
+// fire the command located in the menuItems data object above when the user clicks on the menu item
+const onMenuChange = (e) => {
+  e?.value?.command()
+}
+// set the items for the Dot menu
+const getDotMenuItems = () => {
+  return [
+    {
+      label: `${isFavorited.value ? "Unfollow" : "Follow"} ${showTitle.value}`,
+      customIcon: FollowIcon,
+      active: isFavorited.value,
+      title: showTitle.value,
+      command: () => {
+        handleFollow(show.value.show.showSlug)
+      },
+    },
+    {
+      label: "Sleep Timer",
+      customIcon: SleepIcon,
+      active: sleepTimerRunning.value,
+      title: showTitle.value,
+      command: () => {
+        handleSleepTimer()
+      },
+    },
+  ]
+}
+
 watch(show, () => {
   page.value = show?.value?.episodes?.meta?.pagination.page
   maxPages = show.value.episodes?.meta?.pagination.pages
@@ -183,6 +215,7 @@ onMounted(() => {
 <template>
   <div class="shows-page pb-7">
     <section>
+      <pre class="text-xs">{{ show.show }}</pre>
       <Html lang="en">
         <Head>
           <Title
@@ -232,7 +265,10 @@ onMounted(() => {
         />
         <div class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2">
           <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
-          <HtmlConvert :htmlContent="showTease" class="text-sm md:text-base" />
+          <HtmlConvert
+            :htmlContent="showTease"
+            class="hidden md:block text-sm md:text-base"
+          />
           <!-- desktop buttons -->
           <div
             v-if="status === 'success'"
@@ -266,7 +302,7 @@ onMounted(() => {
             </Button>
 
             <SleepTimerButton
-              v-if="!isApp"
+              v-if="isApp"
               @emit-click="handleSleepTimer"
               :isActive="sleepTimerRunning"
               :isText="false"
@@ -285,11 +321,41 @@ onMounted(() => {
                 <DevicesIcon class="w-1rem" />
               </template>
             </Button>
+            <DotMenu
+              :menuItems="getDotMenuItems()"
+              size="large"
+              class="-mr-2"
+              :isText="false"
+              @changeEmit="onMenuChange"
+            >
+              <template #header-bottom>
+                <div>
+                  <div class="flex gap-3 align-items-center px-4">
+                    <VImage
+                      :src="templatizePublisherImageUrl(showImage)"
+                      :alt="`${showTitle} show image`"
+                      :width="112"
+                      :height="112"
+                      class="show-image-in-menu flex-none"
+                      :ratio="[1, 1]"
+                      style="height: 60px; width: 60px"
+                    />
+
+                    <div class="info">
+                      <h2>{{ showTitle }}</h2>
+                      <HtmlConvert :htmlContent="showTease" class="text-sm" />
+                    </div>
+                  </div>
+                  <hr class="mt-5 mb-2 dim" />
+                </div>
+              </template>
+            </DotMenu>
           </div>
           <div v-else class="hidden md:flex align-items-center gap-3">
             <Skeleton height="48px" width="48px" borderRadius="24px" />
             <Skeleton height="41px" width="99px" borderRadius="24px" />
             <Skeleton height="41px" width="178px" borderRadius="24px" />
+            <Skeleton height="40px" width="40px" borderRadius="24px" />
           </div>
         </div>
       </div>
@@ -320,10 +386,11 @@ onMounted(() => {
         </Button>
 
         <SleepTimerButton
-          v-if="!isApp"
+          v-if="isApp"
           @emit-click="handleSleepTimer"
           :isActive="sleepTimerRunning"
           :isText="true"
+          class="mt-1"
         />
         <Button
           v-else
