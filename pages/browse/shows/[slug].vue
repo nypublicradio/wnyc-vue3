@@ -4,9 +4,6 @@ import { useIntersectionObserver } from "@vueuse/core"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 
-import StarIcon from "~/components/icons/StarIcon.vue"
-import SleepIcon from "~/components/icons/SleepIcon.vue"
-
 import {
   checkIsFavorited,
   togglePlayEpisode,
@@ -16,7 +13,6 @@ import {
   hasAudio,
   addToFavorites2,
   getEpisodeFallBackImage,
-  templatizePublisherImageUrl,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -41,6 +37,7 @@ let maxPages = null
 const showImage = ref(null)
 const showTitle = ref(null)
 const showTease = ref(null)
+const showScheduleSummary = ref(null)
 const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -158,41 +155,14 @@ const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
 
-// fire the command located in the menuItems data object above when the user clicks on the menu item
-const onMenuChange = (e) => {
-  e?.value?.command()
-}
-// set the items for the Dot menu
-const getDotMenuItems = () => {
-  return [
-    {
-      label: `${isFavorited.value ? "Unfollow" : "Follow"} ${showTitle.value}`,
-      customIcon: FollowIcon,
-      active: isFavorited.value,
-      title: showTitle.value,
-      command: () => {
-        handleFollow(show.value.show.showSlug)
-      },
-    },
-    {
-      label: "Sleep Timer",
-      customIcon: SleepIcon,
-      active: sleepTimerRunning.value,
-      title: showTitle.value,
-      command: () => {
-        handleSleepTimer()
-      },
-    },
-  ]
-}
-
 watch(show, () => {
   page.value = show?.value?.episodes?.meta?.pagination.page
   maxPages = show.value.episodes?.meta?.pagination.pages
   episodes.value = show.value.episodes?.data
   showImage.value = show.value.show?.image?.template ?? getEpisodeFallBackImage()
   showTitle.value = show.value.show?.title
-  showTease.value = show.value.show?.description
+  showTease.value = show.value.show?.tease
+  showScheduleSummary.value = show.value.show?.scheduleSummary
 })
 
 watch(loadMoreRefVisible, (val) => {
@@ -247,7 +217,7 @@ onMounted(() => {
       <FetchError v-if="error" />
     </section>
     <section class="top style-mode-dark py-3 md:py-6">
-      <div class="flex justify-content-center gap-3 md:gap-5">
+      <div class="flex justify-content-start gap-3 md:gap-5">
         <VImage
           v-if="showImage && status === 'success'"
           :src="showImage"
@@ -266,7 +236,11 @@ onMounted(() => {
           class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2"
         >
           <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
+          <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
+            {{ showScheduleSummary }}
+          </p>
           <HtmlConvert
+            no-blocks
             :htmlContent="showTease"
             class="hidden md:block text-sm md:text-base"
           />
@@ -295,7 +269,7 @@ onMounted(() => {
               @click="handleAddToFavorites"
             >
               <template #icon>
-                <StarIcon :active="isFavorited" class="w-1rem"
+                <FollowIcon :active="isFavorited" class="w-1rem"
               /></template>
             </Button>
 
@@ -319,39 +293,18 @@ onMounted(() => {
                 <DevicesIcon class="w-1rem" />
               </template>
             </Button>
-            <DotMenu
-              :menuItems="getDotMenuItems()"
-              size="large"
-              class="-mr-2"
-              :isText="false"
-              @changeEmit="onMenuChange"
-            >
-              <template #header-bottom>
-                <div>
-                  <div class="flex gap-3 align-items-center px-4">
-                    <VImage
-                      :src="templatizePublisherImageUrl(showImage)"
-                      :alt="`${showTitle} show image`"
-                      :width="112"
-                      :height="112"
-                      class="show-image-in-menu flex-none"
-                      :ratio="[1, 1]"
-                      style="height: 60px; width: 60px"
-                    />
-
-                    <div class="info">
-                      <h2>{{ showTitle }}</h2>
-                      <HtmlConvert :htmlContent="showTease" class="text-sm" />
-                    </div>
-                  </div>
-                  <hr class="mt-5 mb-2 dim" />
-                </div>
-              </template>
-            </DotMenu>
           </div>
         </div>
         <div v-else class="hidden md:flex flex-column gap-3 w-full">
-          <Skeleton class="my-2" height="48px" width="85%" borderRadius="24px" />
+          <div class="flex flex-column gap-0">
+            <Skeleton class="my-2" height="48px" width="75%" borderRadius="24px" />
+            <Skeleton
+              v-if="showScheduleSummary"
+              height="14px"
+              width="35%"
+              borderRadius="24px"
+            />
+          </div>
           <div class="flex flex-column gap-2">
             <Skeleton height="14px" width="100%" borderRadius="24px" />
             <Skeleton height="14px" width="100%" borderRadius="24px" />
@@ -361,7 +314,6 @@ onMounted(() => {
             <Skeleton height="48px" width="48px" borderRadius="24px" />
             <Skeleton height="41px" width="99px" borderRadius="24px" />
             <Skeleton height="41px" width="178px" borderRadius="24px" />
-            <Skeleton height="40px" width="40px" borderRadius="24px" />
           </div>
         </div>
       </div>
@@ -372,7 +324,7 @@ onMounted(() => {
       >
         <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
           <template #icon>
-            <StarIcon :active="isFavorited" class="w-2rem mt-1"
+            <FollowIcon :active="isFavorited" class="w-2rem mt-1"
           /></template>
         </Button>
 
@@ -422,79 +374,22 @@ onMounted(() => {
         <Skeleton height="37px" width="37px" borderRadius="20px" />
       </div>
     </section>
-    <section>
-      <!-- <div v-if="status === 'success'">
-        <h2 class="text-lg mt-2">{{ showTitle }}</h2>
-        <HtmlConvert :htmlContent="showTease" class="text-sm mt-2" />
-      </div>
-      <div v-else>
-        <Skeleton
-          height="16px"
-          width="45%"
-          borderRadius="16px"
-          style="margin-bottom: 9px"
-        />
-        <Skeleton
-          height="12px"
-          width="95%"
-          borderRadius="16px"
-          style="margin-bottom: 6px"
-        />
-        <Skeleton
-          height="12px"
-          width="90%"
-          borderRadius="16px"
-          style="margin-bottom: 6px"
-        />
-        <Skeleton
-          height="12px"
-          width="75%"
-          borderRadius="16px"
-          style="margin-bottom: 6px"
-        />
-      </div> -->
-      <!-- tabs for the future segment split -->
-      <div class="tabs mt-5">
-        <Tabs :lazy="true" value="0">
-          <TabList>
-            <Tab value="0">Episodes</Tab>
-            <!-- <Tab value="1">Segments</Tab> -->
-          </TabList>
-          <TabPanels>
-            <TabPanel value="0" v-if="hasEpisodes">
-              <div v-if="status === 'success'" class="flex flex-column gap-5 mt-2">
-                <template v-for="ep in episodes" :key="ep.id">
-                  <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-                  <MediaCard
-                    v-if="
-                      ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
-                    "
-                    :data="ep"
-                    showPlayButton
-                    is-horizontal
-                    imgCol="w-7rem"
-                    :showBg="false"
-                    :showBgMobile="false"
-                    @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
-                  />
-                </template>
-              </div>
-            </TabPanel>
-            <!-- <TabPanel value="1"  v-if="hasSegments">
-          <div v-if="status === 'success'" class="flex flex-column gap-5 mt-2">
-            <template v-for="ep in episodes" :key="ep.id">
-              {{ ep?.estimatedDuration }}
-              <MediaCard
-                v-if="ep?.type === 'segment' && ep.estimatedDuration !== 0"
-                :data="ep"
-                @onClick="goToEpisodePage(ep)"
-                :fallback-image="getEpisodeFallBackImage()"
-              />
-            </template>
-          </div>
-        </TabPanel> -->
-          </TabPanels>
-        </Tabs>
+    <section class="py-4">
+      <div v-if="status === 'success'" class="flex flex-column gap-5">
+        <h2>Most Recent</h2>
+        <template v-for="ep in episodes" :key="ep.id">
+          <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
+          <MediaCard
+            v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio"
+            :data="ep"
+            showPlayButton
+            is-horizontal
+            imgCol="w-7rem"
+            :showBg="false"
+            :showBgMobile="false"
+            @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
+          />
+        </template>
       </div>
       <div v-if="status === 'pending'">
         <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
@@ -511,7 +406,7 @@ onMounted(() => {
         />
       </div>
       <WnycLoader
-        v-if="page < maxPages"
+        v-if="page < maxPages && isApp"
         ref="loadMoreRef"
         spinner
         size="40px"
