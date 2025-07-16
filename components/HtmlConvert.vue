@@ -8,6 +8,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  noBlocks: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const theParcedHtml = ref(null)
@@ -56,5 +60,6 @@ watchEffect(() => {
     :value="theParcedHtml"
     :componentsMap="{ NuxtLink, VImage }"
     class="html-formatting"
+    :class="{ 'no-blocks': noBlocks }"
   />
 </template>
