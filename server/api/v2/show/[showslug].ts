@@ -126,6 +126,8 @@ const getShow = async (slug: string) => {
         const show = resData.find((s) => {
             return s.slug === slug
         });
+        console.log('=======show', show);
+        console.log('=======resData', resData);
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
