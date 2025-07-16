@@ -215,7 +215,7 @@ onMounted(() => {
 <template>
   <div class="shows-page pb-7">
     <section>
-      <pre class="text-xs">{{ show.show }}</pre>
+      <!-- <pre class="text-xs">{{ show.show }}</pre> -->
       <Html lang="en">
         <Head>
           <Title
@@ -249,31 +249,29 @@ onMounted(() => {
     <section class="top style-mode-dark py-3 md:py-6">
       <div class="flex justify-content-center gap-3 md:gap-5">
         <VImage
-          v-if="showImage"
+          v-if="showImage && status === 'success'"
           :src="showImage"
           :alt="`${showTitle} show image`"
           :size="{ xs: [112, 112], md: [208, 208] }"
-          class="flex-none show-image max-w-7rem sm:max-w-13rem"
+          class="flex-none show-image max-w-7rem md:max-w-13rem"
           :srcset="[2]"
         />
         <Skeleton
           v-else
-          class="flex-none show-image max-w-9rem"
-          height="144px"
-          width="144px"
+          class="flex-none show-image w-7rem md:w-13rem h-7rem md:h-13rem"
           borderRadius="0px"
         />
-        <div class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2">
+        <div
+          v-if="status === 'success'"
+          class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2"
+        >
           <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
           <HtmlConvert
             :htmlContent="showTease"
             class="hidden md:block text-sm md:text-base"
           />
           <!-- desktop buttons -->
-          <div
-            v-if="status === 'success'"
-            class="hidden md:flex align-items-center gap-3"
-          >
+          <div class="hidden md:flex align-items-center gap-3">
             <Button
               class="play-btn flex-none"
               severity="secondary"
@@ -351,7 +349,15 @@ onMounted(() => {
               </template>
             </DotMenu>
           </div>
-          <div v-else class="hidden md:flex align-items-center gap-3">
+        </div>
+        <div v-else class="hidden md:flex flex-column gap-3 w-full">
+          <Skeleton class="my-2" height="48px" width="85%" borderRadius="24px" />
+          <div class="flex flex-column gap-2">
+            <Skeleton height="14px" width="100%" borderRadius="24px" />
+            <Skeleton height="14px" width="100%" borderRadius="24px" />
+            <Skeleton height="14px" width="72%" borderRadius="24px" />
+          </div>
+          <div class="flex gap-3">
             <Skeleton height="48px" width="48px" borderRadius="24px" />
             <Skeleton height="41px" width="99px" borderRadius="24px" />
             <Skeleton height="41px" width="178px" borderRadius="24px" />
@@ -417,7 +423,7 @@ onMounted(() => {
       </div>
     </section>
     <section>
-      <div v-if="status === 'success'">
+      <!-- <div v-if="status === 'success'">
         <h2 class="text-lg mt-2">{{ showTitle }}</h2>
         <HtmlConvert :htmlContent="showTease" class="text-sm mt-2" />
       </div>
@@ -446,7 +452,7 @@ onMounted(() => {
           borderRadius="16px"
           style="margin-bottom: 6px"
         />
-      </div>
+      </div> -->
       <!-- tabs for the future segment split -->
       <div class="tabs mt-5">
         <Tabs :lazy="true" value="0">
