@@ -399,7 +399,10 @@ onMounted(() => {
         </template>
       </div>
       <div v-if="status === 'pending'">
-        <Skeleton height="18px" width="80px" borderRadius="4px" class="mb-5" />
+        <div class="flex justify-content-between align-items-center mb-5">
+          <Skeleton height="18px" width="80px" borderRadius="4px" />
+          <Skeleton height="18px" width="80px" borderRadius="4px" />
+        </div>
         <skeleton-media-card
           v-for="i in 10"
           :key="`sk1-${i}`"
@@ -409,6 +412,7 @@ onMounted(() => {
           :size="[1, 1]"
           :showBg="false"
           :showBgMobile="false"
+          showTease
           class="mb-5"
         />
       </div>
