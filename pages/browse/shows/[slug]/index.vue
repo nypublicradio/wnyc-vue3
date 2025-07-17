@@ -156,6 +156,10 @@ const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
 
+const handleViewAll = () => {
+  navigateTo(`${showSlug.value}/episodes`)
+}
+
 watch(show, () => {
   page.value = show?.value?.episodes?.meta?.pagination.page
   maxPages = show.value.episodes?.meta?.pagination.pages
@@ -396,7 +400,9 @@ onMounted(() => {
           <div v-if="status === 'success'" class="flex flex-column gap-5">
             <div class="flex justify-content-between align-items-center">
               <h2>Most Recent</h2>
-              <VFlexibleLink :to="`${showSlug}/all`">View All</VFlexibleLink>
+              <Button variant="link" class="underline" @click="handleViewAll"
+                >View All</Button
+              >
             </div>
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
@@ -446,7 +452,7 @@ onMounted(() => {
             label="View All"
             severity="secondary"
             class="block mx-auto mt-6 px-5"
-            @click="navigateTo(`${showSlug}/all`)"
+            @click="handleViewAll"
           />
           <!-- <BackToTopButton /> -->
         </div>
