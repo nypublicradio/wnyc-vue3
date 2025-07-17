@@ -4,6 +4,7 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
   useIsApp,
+  useIsEpisodePlaying,
 } from "~/composables/states"
 import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
@@ -11,9 +12,10 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+const isEpisodePlaying = useIsEpisodePlaying()
 
 const defaultButtonLabel = "Listen Live"
-const buttonLabel = ref(defaultButtonLabel)
+const listeningButtonLabel = "Listening Live"
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 const togglePlayHere = async () => {
@@ -90,19 +92,19 @@ const togglePlayHere = async () => {
               <div class="flex align-items-start justify-content-between">
                 <div class="flex flex-column gap-3">
                   <PlayButton
-                    :label="buttonLabel"
+                    :label="isEpisodePlaying ? listeningButtonLabel : defaultButtonLabel"
                     :data="currentEpisodeHolder"
                     @onClick="togglePlayHere"
                     severity="primary"
-                    buttonClass="icon-wide"
-                    labelClass="md:px-6"
+                    buttonClass="w-9rem md:w-13rem h-2rem justify-content-start"
+                    labelClass="md:-ml-3"
                     live
                   />
                   <Button
                     v-if="!isApp"
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm icon-wide xl:flex"
+                    class="p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
                     @click="navigateTo('/mobile')"
                   >
                     <template #icon>

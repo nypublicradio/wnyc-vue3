@@ -204,7 +204,7 @@ onMounted(() => {
           />
         </Head>
       </Html>
-      <div class="flex align-items-center">
+      <div v-if="isApp" class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"

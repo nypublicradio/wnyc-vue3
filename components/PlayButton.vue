@@ -118,7 +118,9 @@ watch(
         </Transition>
       </slot>
       <slot>
-        <div class="content flex white-space-nowrap align-items-center">
+        <div
+          class="content flex white-space-nowrap align-items-center justify-content-center w-full"
+        >
           <span class="center" :class="props.labelClass">{{ props.label }}</span>
           <LiveBadge
             v-if="props.liveBadge"

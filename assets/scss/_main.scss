@@ -375,3 +375,19 @@ html:not(.style-mode-dark) {
 .p-button svg {
   outline: none;
 }
+
+.p-button {
+  &.p-button-center-label {
+    .p-button-label {
+      width: 100%;
+    }
+  }
+  &.p-button-center-label-with-icon {
+    .p-button-label {
+      width: 100%;
+      @include media('>=md') {
+        margin-left: -0.5rem;
+      }
+    }
+  }
+}
