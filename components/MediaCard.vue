@@ -115,6 +115,22 @@ const props = defineProps({
     type: String,
     default: "md:h-auto md:w-12",
   },
+  titleClasses: {
+    type: String,
+    default: "text-base md:text-xl truncate t2lines",
+  },
+  showTitleClasses: {
+    type: String,
+    default: "text-xs md:text-base line-height-1",
+  },
+  pipeClasses: {
+    type: String,
+    default: "text-xs md:text-base",
+  },
+  bylineClasses: {
+    type: String,
+    default: "text-xs md:text-base",
+  },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
   // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
@@ -381,13 +397,15 @@ const handleHasAudio = computed(() => {
           <div class="flex gap-1 flex-column w-full">
             <div class="flex gap-2 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
-              <p v-if="props.showTitle" class="text-xs line-height-1">
+              <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
-              <h2 class="truncate t2lines no-hyphens">{{ props.data?.title }}</h2>
+              <h2 class="no-hyphens" :class="props.titleClasses">
+                {{ props.data?.title }}
+              </h2>
             </div>
             <div class="article-metadata">
-              <PipeData class="text-xs" :hidePipe="props.hideDate">
+              <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
                 <template #left>
                   {{
                     props.isSegment
@@ -402,7 +420,7 @@ const handleHasAudio = computed(() => {
                 </template>
               </PipeData>
 
-              <div class="text-xs mt-1 opacity-70">
+              <div class="mt-1 opacity-70" :class="props.bylineClasses">
                 <VByline
                   v-if="props.data?.byline?.length > 0 && props.isSegment"
                   :authors="props.data?.byline"

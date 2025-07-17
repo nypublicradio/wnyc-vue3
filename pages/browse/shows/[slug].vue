@@ -38,6 +38,7 @@ const showImage = ref(null)
 const showTitle = ref(null)
 const showTease = ref(null)
 const showScheduleSummary = ref(null)
+const showSlug = ref(null)
 const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -163,6 +164,7 @@ watch(show, () => {
   showTitle.value = show.value.show?.title
   showTease.value = show.value.show?.tease
   showScheduleSummary.value = show.value.show?.scheduleSummary
+  showSlug.value = show.value.show?.slug
 })
 
 watch(loadMoreRefVisible, (val) => {
@@ -297,7 +299,7 @@ onMounted(() => {
         </div>
         <div v-else class="hidden md:flex flex-column gap-3 w-full">
           <div class="flex flex-column gap-0">
-            <Skeleton class="my-2" height="48px" width="75%" borderRadius="24px" />
+            <Skeleton class="my-2" height="48px" width="65%" borderRadius="24px" />
             <Skeleton
               v-if="showScheduleSummary"
               height="14px"
@@ -376,7 +378,10 @@ onMounted(() => {
     </section>
     <section class="py-4">
       <div v-if="status === 'success'" class="flex flex-column gap-5">
-        <h2>Most Recent</h2>
+        <div class="flex justify-content-between align-items-center">
+          <h2>Most Recent</h2>
+          <VFlexibleLink :to="`${showSlug}/all`">View All</VFlexibleLink>
+        </div>
         <template v-for="ep in episodes" :key="ep.id">
           <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
           <MediaCard
@@ -384,7 +389,8 @@ onMounted(() => {
             :data="ep"
             showPlayButton
             is-horizontal
-            imgCol="w-7rem"
+            imgCol="w-7rem md:w-10rem"
+            :size="{ xs: [112, 112], md: [160, 160] }"
             :showBg="false"
             :showBgMobile="false"
             @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
@@ -398,7 +404,7 @@ onMounted(() => {
           :key="`sk1-${i}`"
           showPlayButton
           is-horizontal
-          imgCol="w-7rem"
+          imgCol="w-7rem md:w-10rem"
           :size="[1, 1]"
           :showBg="false"
           :showBgMobile="false"
@@ -411,6 +417,13 @@ onMounted(() => {
         spinner
         size="40px"
         class="mt-8 flex justify-content-center"
+      />
+      <Button
+        v-if="!isApp"
+        label="View All"
+        severity="secondary"
+        class="block mx-auto mt-6 px-5"
+        @click="navigateTo(`${showSlug}/all`)"
       />
       <!-- <BackToTopButton /> -->
     </section>
