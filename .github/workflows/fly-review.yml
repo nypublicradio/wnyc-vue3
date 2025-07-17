@@ -53,7 +53,9 @@ jobs:
             PUBLISHER_BASE_API=${{ env.PUBLISHER_BASE_API }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID }}
-            SF_CLIENT_SECRET=${{ secrets.SF_CLIENT_SECRET }}
+            SF_USERNAME=${{ secrets.SF_USERNAME }}
+            SF_PRIVATE_KEY=${{ secrets.SF_PRIVATE_KEY }}
+            SF_LOGIN_URL=${{ secrets.SF_LOGIN_URL }}
             PAT=${{ secrets.PAT }}
             SUPABASE_URL=${{ env.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
@@ -92,6 +94,10 @@ jobs:
             SETTINGS_MENU_DONATION_URL=${{ vars.SETTINGS_MENU_DONATION_URL }}
             USER_AGENT=${{ vars.USER_AGENT }}
             APP_VERSION=${{ vars.APP_VERSION }}
+            SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID }}
+            SF_USERNAME=${{ secrets.SF_USERNAME }}
+            SF_PRIVATE_KEY=${{ secrets.SF_PRIVATE_KEY }}
+            SF_LOGIN_URL=${{ secrets.SF_LOGIN_URL }}
 
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
@@ -114,7 +120,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: '#pull-requests'
+          SLACK_CHANNEL: '#audience-pr-review'
           SLACK_COLOR: 'good'
           SLACK_ICON_EMOJI: ':rocket:'
           SLACK_TITLE: 'Review App Deployed'
