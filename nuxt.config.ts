@@ -99,7 +99,7 @@ export default defineNuxtConfig({
 
   css: [
     "~/assets/scss/fonts/fonts.css",
-    "~/assets/scss/primeflex.min.css",
+    "~/assets/scss/primeflex-xxl.min.css",
     "primeicons/primeicons.css",
     "~/assets/scss/_main.scss",
   ],
