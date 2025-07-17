@@ -117,23 +117,23 @@ const props = defineProps({
   },
   titleClasses: {
     type: String,
-    default: "text-base md:text-xl truncate t2lines",
+    default: "truncate t2lines",
   },
   showTitleClasses: {
     type: String,
-    default: "text-xs md:text-base line-height-1",
+    default: "text-xs line-height-1",
   },
   pipeClasses: {
     type: String,
-    default: "text-xs md:text-base",
+    default: "text-xs",
   },
   bylineClasses: {
     type: String,
-    default: "text-xs md:text-base",
+    default: "text-xs",
   },
   teaseClasses: {
     type: String,
-    default: "hidden md:block text-xs md:text-base",
+    default: "hidden md:block text-xs",
   },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
@@ -635,12 +635,12 @@ const handleHasAudio = computed(() => {
     }
   }
   &.is-horizontal {
-    @include media(">md") {
+    @include media(">=md") {
       .holder {
         flex-direction: row;
       }
     }
-    @include media("<md") {
+    @include media("<=md") {
       .holder {
         .image {
           width: 112px !important;

@@ -204,7 +204,7 @@ onMounted(() => {
           />
         </Head>
       </Html>
-      <div v-if="isApp" class="flex align-items-center">
+      <div class="flex lg:hidden align-items-center">
         <Button
           class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"
@@ -217,6 +217,13 @@ onMounted(() => {
         />
       </div>
       <FetchError v-if="error" />
+    </section>
+    <section>
+      <div class="grid">
+        <div class="col-fixed hidden xl:block w-19rem">1</div>
+        <div class="col">2</div>
+        <div class="col-fixed hidden md:block w-19rem">3</div>
+      </div>
     </section>
     <section class="top style-mode-dark py-3 md:py-6">
       <div class="flex justify-content-start gap-3 md:gap-5">

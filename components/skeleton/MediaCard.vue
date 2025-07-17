@@ -258,7 +258,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media("<md") {
       flex-direction: row;
     }
-    // @include media(">md") {
+    // @include media(">=md") {
     //   background-color: var(--p-surface-25);
     //   .content {
     //     padding: 1rem !important;
@@ -338,7 +338,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
   }
 
   &.is-horizontal {
-    @include media(">md") {
+    @include media(">=md") {
       .holder {
         flex-direction: row;
       }
