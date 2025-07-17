@@ -385,8 +385,9 @@ html:not(.style-mode-dark) {
   &.p-button-center-label-with-icon {
     .p-button-label {
       width: 100%;
-      @include media('>=md') {
-        margin-left: -0.5rem;
+      margin-left: -0.5rem;
+      @include media('<md') {
+        margin-left: 0;
       }
     }
   }

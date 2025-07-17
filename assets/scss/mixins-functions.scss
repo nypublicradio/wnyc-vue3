@@ -12,7 +12,7 @@
   &.full-width {
     max-width: 100%;
   }
-  @include media('>md') {
+  @include media('>=md') {
     padding: 0.75rem 3rem;
   }
 }
