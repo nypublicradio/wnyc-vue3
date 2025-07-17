@@ -131,6 +131,10 @@ const props = defineProps({
     type: String,
     default: "text-xs md:text-base",
   },
+  teaseClasses: {
+    type: String,
+    default: "hidden md:block text-xs md:text-base",
+  },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
   // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
@@ -395,7 +399,7 @@ const handleHasAudio = computed(() => {
       <div class="content col">
         <div class="flex gap-2 flex-column justify-content-between w-full h-full">
           <div class="flex gap-1 flex-column w-full">
-            <div class="flex gap-2 flex-column align-items-start">
+            <div class="flex gap-1 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
@@ -403,6 +407,12 @@ const handleHasAudio = computed(() => {
               <h2 class="no-hyphens" :class="props.titleClasses">
                 {{ props.data?.title }}
               </h2>
+              <HtmlConvert
+                v-if="props.data.tease && props.showTease"
+                :htmlContent="props.data.tease"
+                class="tease"
+                :class="props.teaseClasses"
+              />
             </div>
             <div class="article-metadata">
               <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
@@ -428,11 +438,6 @@ const handleHasAudio = computed(() => {
                 />
               </div>
             </div>
-            <HtmlConvert
-              v-if="props.data.tease && props.showTease"
-              :htmlContent="props.data.tease"
-              class="tease"
-            />
           </div>
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"

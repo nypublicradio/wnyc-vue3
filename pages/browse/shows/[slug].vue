@@ -391,6 +391,7 @@ onMounted(() => {
             is-horizontal
             imgCol="w-7rem md:w-10rem"
             :size="{ xs: [112, 112], md: [160, 160] }"
+            showTease
             :showBg="false"
             :showBgMobile="false"
             @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
