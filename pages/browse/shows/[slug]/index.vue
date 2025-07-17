@@ -224,14 +224,14 @@ onMounted(() => {
     </section>
     <section>
       <div class="grid">
-        <div class="col-fixed hidden xxl:block w-19rem">1</div>
+        <div class="col-fixed hidden xxl:block w-20rem">1</div>
         <div class="col">2</div>
-        <div class="col-fixed hidden lg:block w-19rem">3</div>
+        <div class="col-fixed hidden lg:block w-20rem">3</div>
       </div>
     </section>
     <section class="top style-mode-dark py-3 md:py-6">
       <div class="grid">
-        <div class="col-fixed hidden xxl:block w-19rem"></div>
+        <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col">
           <div class="flex justify-content-start gap-3 md:gap-5">
             <VImage
@@ -390,12 +390,12 @@ onMounted(() => {
             <Skeleton height="37px" width="37px" borderRadius="20px" />
           </div>
         </div>
-        <div class="col-fixed hidden lg:block w-19rem"></div>
+        <div class="col-fixed hidden lg:block w-20rem"></div>
       </div>
     </section>
     <section class="py-4">
       <div class="grid">
-        <div class="col-fixed hidden xxl:block w-19rem"></div>
+        <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
             <div class="flex justify-content-between align-items-center">
@@ -456,7 +456,13 @@ onMounted(() => {
           />
           <!-- <BackToTopButton /> -->
         </div>
-        <div class="col-fixed hidden lg:block w-19rem"></div>
+        <div class="col-fixed hidden lg:block w-20rem">
+          <story-htlAd
+            layout="rectangle"
+            slotClass="htlad-wnyc_homepage_rectangle"
+            fineprint="WNYC is funded by sponsors and member donations"
+          />
+        </div>
       </div>
     </section>
   </div>
