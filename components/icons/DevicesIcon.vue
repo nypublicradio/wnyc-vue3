@@ -3,7 +3,7 @@
     role="img"
     aria-label="devices icon"
     class="devices-icon o-icon"
-    width="29"
+    width="16"
     height="16"
     viewBox="0 0 29 29"
     fill="none"
