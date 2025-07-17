@@ -227,7 +227,7 @@ onMounted(() => {
     </section>
     <section class="top style-mode-dark py-3 md:py-6">
       <div class="grid">
-        <div class="col-fixed hidden xxl:block w-19rem">1</div>
+        <div class="col-fixed hidden xxl:block w-19rem"></div>
         <div class="col">
           <div class="flex justify-content-start gap-3 md:gap-5">
             <VImage
@@ -386,64 +386,72 @@ onMounted(() => {
             <Skeleton height="37px" width="37px" borderRadius="20px" />
           </div>
         </div>
-        <div class="col-fixed hidden lg:block w-19rem">3</div>
+        <div class="col-fixed hidden lg:block w-19rem"></div>
       </div>
     </section>
     <section class="py-4">
-      <div v-if="status === 'success'" class="flex flex-column gap-5">
-        <div class="flex justify-content-between align-items-center">
-          <h2>Most Recent</h2>
-          <VFlexibleLink :to="`${showSlug}/all`">View All</VFlexibleLink>
-        </div>
-        <template v-for="ep in episodes" :key="ep.id">
-          <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-          <MediaCard
-            v-if="ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio"
-            :data="ep"
-            showPlayButton
-            is-horizontal
-            imgCol="w-7rem md:w-10rem"
-            :size="{ xs: [112, 112], md: [160, 160] }"
-            showTease
-            :showBg="false"
-            :showBgMobile="false"
-            @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
+      <div class="grid">
+        <div class="col-fixed hidden xxl:block w-19rem"></div>
+        <div class="col">
+          <div v-if="status === 'success'" class="flex flex-column gap-5">
+            <div class="flex justify-content-between align-items-center">
+              <h2>Most Recent</h2>
+              <VFlexibleLink :to="`${showSlug}/all`">View All</VFlexibleLink>
+            </div>
+            <template v-for="ep in episodes" :key="ep.id">
+              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
+              <MediaCard
+                v-if="
+                  ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
+                "
+                :data="ep"
+                showPlayButton
+                is-horizontal
+                imgCol="w-7rem md:w-10rem"
+                :size="{ xs: [112, 112], md: [160, 160] }"
+                showTease
+                :showBg="false"
+                :showBgMobile="false"
+                @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
+              />
+            </template>
+          </div>
+          <div v-if="status === 'pending'">
+            <div class="flex justify-content-between align-items-center mb-5">
+              <Skeleton height="18px" width="80px" borderRadius="4px" />
+              <Skeleton height="18px" width="80px" borderRadius="4px" />
+            </div>
+            <skeleton-media-card
+              v-for="i in 10"
+              :key="`sk1-${i}`"
+              showPlayButton
+              is-horizontal
+              imgCol="w-7rem md:w-10rem"
+              :size="[1, 1]"
+              :showBg="false"
+              :showBgMobile="false"
+              showTease
+              class="mb-5"
+            />
+          </div>
+          <WnycLoader
+            v-if="page < maxPages && isApp"
+            ref="loadMoreRef"
+            spinner
+            size="40px"
+            class="mt-8 flex justify-content-center"
           />
-        </template>
-      </div>
-      <div v-if="status === 'pending'">
-        <div class="flex justify-content-between align-items-center mb-5">
-          <Skeleton height="18px" width="80px" borderRadius="4px" />
-          <Skeleton height="18px" width="80px" borderRadius="4px" />
+          <Button
+            v-if="!isApp"
+            label="View All"
+            severity="secondary"
+            class="block mx-auto mt-6 px-5"
+            @click="navigateTo(`${showSlug}/all`)"
+          />
+          <!-- <BackToTopButton /> -->
         </div>
-        <skeleton-media-card
-          v-for="i in 10"
-          :key="`sk1-${i}`"
-          showPlayButton
-          is-horizontal
-          imgCol="w-7rem md:w-10rem"
-          :size="[1, 1]"
-          :showBg="false"
-          :showBgMobile="false"
-          showTease
-          class="mb-5"
-        />
+        <div class="col-fixed hidden lg:block w-19rem"></div>
       </div>
-      <WnycLoader
-        v-if="page < maxPages && isApp"
-        ref="loadMoreRef"
-        spinner
-        size="40px"
-        class="mt-8 flex justify-content-center"
-      />
-      <Button
-        v-if="!isApp"
-        label="View All"
-        severity="secondary"
-        class="block mx-auto mt-6 px-5"
-        @click="navigateTo(`${showSlug}/all`)"
-      />
-      <!-- <BackToTopButton /> -->
     </section>
   </div>
 </template>
