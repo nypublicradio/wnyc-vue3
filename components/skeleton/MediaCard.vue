@@ -142,6 +142,26 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
                 />
               </div>
             </div>
+            <div class="flex gap-2 my-1 flex-column" v-if="props.showTease">
+              <Skeleton
+                height="10px"
+                width="100%"
+                borderRadius="16px"
+                class="opacity-50"
+              />
+              <Skeleton
+                height="10px"
+                width="90%"
+                borderRadius="16px"
+                class="opacity-50"
+              />
+              <Skeleton
+                height="10px"
+                width="45%"
+                borderRadius="16px"
+                class="opacity-50"
+              />
+            </div>
             <div class="article-metadata">
               <div class="flex gap-2 align-items-center mb-1">
                 <Skeleton
@@ -170,26 +190,6 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
                 v-if="props.isSegment"
                 height="10px"
                 width="40%"
-                borderRadius="16px"
-                class="opacity-50"
-              />
-            </div>
-            <div class="flex gap-2 my-1 flex-column" v-if="props.showTease">
-              <Skeleton
-                height="10px"
-                width="100%"
-                borderRadius="16px"
-                class="opacity-50"
-              />
-              <Skeleton
-                height="10px"
-                width="90%"
-                borderRadius="16px"
-                class="opacity-50"
-              />
-              <Skeleton
-                height="10px"
-                width="45%"
                 borderRadius="16px"
                 class="opacity-50"
               />

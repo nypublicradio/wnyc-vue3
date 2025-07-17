@@ -101,7 +101,7 @@ const getShow = async (slug: string) => {
                 }
             };
             const { data } = await axios(options);
-            console.log('=======npr show data', data.resources[0]);
+            //console.log('=======npr show data', data.resources[0]);
             const image = npr.findImageUrl(data);
             return {
                 id: show.showId,
@@ -129,7 +129,7 @@ const getShow = async (slug: string) => {
         const show = resData.find((s) => {
             return s.slug === slug
         });
-        console.log('=======show', show);
+        //console.log('=======show', show);
         show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
