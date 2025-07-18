@@ -374,11 +374,19 @@ const getEpisodeImage = () => {
             />
           </li>
         </ol>
-        <HtmlConvert :htmlContent="episodeData?.body" class="mt-5" />
+        <HtmlConvert
+          v-if="episodeData?.body"
+          :htmlContent="episodeData?.body"
+          class="mt-5"
+          :key="`body-${episodeData?.id || route.params.slug}`"
+        />
       </section>
       <section v-if="episodeData?.transcript">
         <h3 class="mb-4">Transcript</h3>
-        <HtmlConvert :htmlContent="episodeData?.transcript" />
+        <HtmlConvert
+          :htmlContent="episodeData?.transcript"
+          :key="`transcript-${episodeData?.id || route.params.slug}`"
+        />
       </section>
     </div>
     <section v-else>

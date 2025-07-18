@@ -181,11 +181,12 @@ const getImage = computed(() => {
   if (props.isInDownloads) {
     return getDownloadedImageUri(reactiveData.value)
   } else {
+    console.log("reactiveData.value", reactiveData.value.image)
     return String(
-      reactiveData.value?.image?.template ??
-        reactiveData.value?.image?.id ??
-        reactiveData.value?.image ??
-        props.fallbackImage ??
+      reactiveData.value?.image?.template ||
+        reactiveData.value?.image?.id ||
+        reactiveData.value?.image ||
+        props.fallbackImage ||
         getEpisodeFallBackImage()
     )
   }
@@ -412,6 +413,7 @@ const handleHasAudio = computed(() => {
                 :htmlContent="props.data.tease"
                 class="tease"
                 :class="props.teaseClasses"
+                :key="`tease-${props.data.id || props.data.slug || 'default'}`"
               />
             </div>
             <div class="article-metadata">

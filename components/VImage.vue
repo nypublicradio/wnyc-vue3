@@ -29,6 +29,20 @@ const imageRatio = computed(() => {
 const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
 
 // determines the CMS source of an image
+const getCmsSourceAndImageTemplate = (srcImg) => {
+  // if srcImg is all just numbers, it's a wagtail image. using the domain for the others
+  if (srcImg.fileHash) {
+    return { cmsSource: cmsSources.WAGTAIL, imageTemplate: srcImg.id }
+  } else if (srcImg.template.includes("media.wnyc.org")) {
+    return { cmsSource: cmsSources.PUBLISHER, imageTemplate: srcImg.template }
+  } else if (NPRIMAGEDOMAINSOURCES.some((domain) => srcImg.includes(domain))) {
+    return { cmsSource: cmsSources.NPR, imageTemplate: srcImg }
+  } else {
+    return null
+  }
+}
+
+// determines the CMS source of an image
 const getCmsSource = (src) => {
   // if src is all just numbers, it's a wagtail image. using the domain for the others
   if (/^\d+$/.test(src)) {

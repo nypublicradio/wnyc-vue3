@@ -128,6 +128,7 @@ const routeBack = () => {
               v-if="pagedata.biography"
               :htmlContent="pagedata.biography"
               class="mt-4"
+              :key="`biography-${pagedata.id || route.params.slug}`"
             />
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>
