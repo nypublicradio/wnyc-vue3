@@ -359,14 +359,12 @@ const moreFromClick = () => {
               <div class="flex gap-3 align-items-center px-4">
                 <VImage
                   :src="
-                    templatizePublisherImageUrl(currentEpisode.image) ??
+                    currentEpisode.image?.template ||
+                    templatizePublisherImageUrl(currentEpisode.image) ||
                     getEpisodeFallBackImage()
                   "
                   :alt="`${currentEpisode.title} show image`"
-                  :width="112"
-                  :height="112"
                   class="show-image-in-menu flex-none"
-                  :ratio="[1, 1]"
                   style="height: 60px; width: 60px"
                 />
 
@@ -393,7 +391,14 @@ const moreFromClick = () => {
         currentEpisode.image?.template ?? currentEpisode.image ?? FALLBACKIMAGEWAGTAIL
       "
       :alt="`${currentEpisode.title} featured image`"
-      :width="672"
+      :size="{
+        xs: [327, 218],
+        sm: [528, 352],
+        md: [672, 448],
+        lg: [896, 597],
+        xl: [1104, 736],
+        xxl: [1344, 896],
+      }"
       :sizes="[2]"
       class="card-feature-image"
     >
@@ -405,7 +410,10 @@ const moreFromClick = () => {
         />
       </template>
     </VImage>
-    <HtmlConvert :htmlContent="currentEpisode.details" />
+    <HtmlConvert
+      :htmlContent="currentEpisode.details"
+      :key="`details-${currentEpisode.id || 'default'}`"
+    />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="currentEpisode.onTodaysShowImageTemplate"
@@ -428,6 +436,7 @@ const moreFromClick = () => {
         <HtmlConvert
           :htmlContent="currentEpisode.episodeBody"
           class="caption text-sm mt-2"
+          :key="`body-${currentEpisode.id || 'default'}`"
         />
       </template>
     </VImage>
@@ -451,7 +460,10 @@ const moreFromClick = () => {
     </div>
     <div v-if="currentEpisode.episodeTranscript">
       <h2>Transcript</h2>
-      <HtmlConvert :htmlContent="currentEpisode.episodeTranscript" />
+      <HtmlConvert
+        :htmlContent="currentEpisode.episodeTranscript"
+        :key="`transcript-${currentEpisode.id || 'default'}`"
+      />
     </div>
     <div
       ref="expandedFooterRef"
@@ -498,9 +510,6 @@ const moreFromClick = () => {
         width: 100%;
         transition: bottom var(--p-transition-duration);
         -webkit-transition: bottom var(--p-transition-duration);
-      }
-
-      .tools {
       }
     }
 

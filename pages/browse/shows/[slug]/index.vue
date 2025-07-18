@@ -34,11 +34,16 @@ const { data: show, status, error } = useFetch(
 const page = ref(null)
 const episodes = ref(null)
 let maxPages = null
-const showImage = ref(null)
-const showTitle = ref(null)
-const showTease = ref(null)
-const showScheduleSummary = ref(null)
-const showSlug = ref(null)
+
+// Computed properties derived from the show data
+const showImage = computed(
+  () => show.value?.show?.image?.template ?? getEpisodeFallBackImage()
+)
+const showTitle = computed(() => show.value?.show?.title)
+const showTease = computed(() => show.value?.show?.tease)
+const showDescription = computed(() => show.value?.show?.description)
+const showScheduleSummary = computed(() => show.value?.show?.scheduleSummary)
+const showSlug = computed(() => show.value?.show?.slug)
 const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -157,19 +162,23 @@ const hasEpisodes = computed(() => {
 })
 
 const handleViewAll = () => {
-  navigateTo(`${showSlug.value}/episodes`)
+  if (showSlug.value) {
+    navigateTo(`${showSlug.value}/episodes`)
+  }
 }
 
-watch(show, () => {
-  page.value = show?.value?.episodes?.meta?.pagination.page
-  maxPages = show.value.episodes?.meta?.pagination.pages
-  episodes.value = show.value.episodes?.data
-  showImage.value = show.value.show?.image?.template ?? getEpisodeFallBackImage()
-  showTitle.value = show.value.show?.title
-  showTease.value = show.value.show?.tease
-  showScheduleSummary.value = show.value.show?.scheduleSummary
-  showSlug.value = show.value.show?.slug
-})
+// Watch for show data changes to update episodes and pagination
+watch(
+  show,
+  (newShow) => {
+    if (newShow) {
+      page.value = newShow.episodes?.meta?.pagination.page
+      maxPages = newShow.episodes?.meta?.pagination.pages
+      episodes.value = newShow.episodes?.data
+    }
+  },
+  { immediate: true }
+)
 
 watch(loadMoreRefVisible, (val) => {
   if (val) {
@@ -256,8 +265,10 @@ onMounted(() => {
                 {{ showScheduleSummary }}
               </p>
               <HtmlConvert
+                v-if="showTease"
                 no-blocks
                 :htmlContent="showTease"
+                :key="`tease-${showSlug}`"
                 class="hidden md:block text-sm md:text-base"
               />
               <!-- desktop buttons -->
@@ -399,7 +410,7 @@ onMounted(() => {
         <div class="col">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
             <div class="flex justify-content-between align-items-center">
-              <h2>Most Recent</h2>
+              <h2 class="md:text-xl">Most Recent</h2>
               <Button variant="link" class="underline" @click="handleViewAll"
                 >View All</Button
               >
@@ -457,11 +468,30 @@ onMounted(() => {
           <!-- <BackToTopButton /> -->
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <story-htlAd
-            layout="rectangle"
-            slotClass="htlad-wnyc_homepage_rectangle"
-            fineprint="WNYC is funded by sponsors and member donations"
-          />
+          <div class="flex flex-column gap-3">
+            <div class="flex gap-4">
+              <VImage
+                v-if="showImage && status === 'success'"
+                :src="showImage"
+                :alt="`${showTitle} show image`"
+                :size="[80, 80]"
+                :srcset="[2]"
+                class="w-5rem"
+              ></VImage>
+              <h2>{{ showTitle }}</h2>
+            </div>
+            <HtmlConvert
+              v-if="showDescription"
+              :htmlContent="showDescription"
+              :key="`description-${showSlug}`"
+            />
+            <!-- <div v-html="showDescription" /> -->
+            <story-htlAd
+              layout="rectangle"
+              slotClass="htlad-wnyc_homepage_rectangle"
+              fineprint="WNYC is funded by sponsors and member donations"
+            />
+          </div>
         </div>
       </div>
     </section>

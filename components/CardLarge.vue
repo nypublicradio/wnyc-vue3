@@ -48,7 +48,12 @@ const onClick = (item) => {
           {{ props.item.title }}
         </div>
         <!-- <pre class="text-xs">{{ props.item }}</pre> -->
-        <HtmlConvert :htmlContent="props.item.tease" class="desc" />
+        <HtmlConvert
+          v-if="props.item.tease"
+          :htmlContent="props.item.tease"
+          class="desc"
+          :key="`tease-${props.item.id || props.item.slug || 'default'}`"
+        />
 
         <PipeData class="text-xs" :hidePipe="props.hideDate">
           <template #left>{{ props.item?.headers?.brand.title }}</template>

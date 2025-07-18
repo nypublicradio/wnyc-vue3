@@ -269,7 +269,31 @@ export const imageSolver = (url: string, options: { w?: number, h?: number, q?: 
   }
   return imgUrl
 }
+// central spot to get the images native width and height for layout purposes
+export const getImageDimensions = (url: string) => {
 
+  let dim = [0, 0]
+  if (typeof url === "string" && /^\d+$/.test(url)) {
+    //https://cms.prod.nypr.digital/images/352442/fill-592x395-c0|format-webp|webpquality-80
+    // Extract width and height from Wagtail URLs
+    const fillMatch = url.match(/fill-(\d+)x(\d+)/);
+    dim = fillMatch ? [parseInt(fillMatch[1]), parseInt(fillMatch[2])] : [0, 0];
+
+  } else if (typeof url === "string" && url.includes("media.wnyc.org")) {
+    //https://media.wnyc.org/i/165/40/l/80/2022/11/EN_ListenAFOn_AmazonMusic_button_Indigo_RGB.png
+    const pathParts = url.split("/i/")[1]?.split("/");
+    dim = pathParts && pathParts.length >= 2 ? [parseInt(pathParts[0]), parseInt(pathParts[1])] : [0, 0];
+  } else if (
+    typeof url === "string" &&
+    Array.isArray(NPRIMAGEDOMAINSOURCES) &&
+    NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))
+  ) {
+    //https://npr.brightspotcdn.com/dims3/default/strip/false/crop/908x681+58+0/resize/390/quality/80/format/jpg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Fb4%2Ff6%2Fe386e5e34eb3bde3acf3b9c1f4d7%2Fgettyimages-2225247729.jpg
+    const cropMatch = url.match(/\/crop\/(\d+)x(\d+)/);
+    dim = cropMatch ? [parseInt(cropMatch[1]), parseInt(cropMatch[2])] : [0, 0];
+  }
+  return dim as [number, number]
+}
 
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
