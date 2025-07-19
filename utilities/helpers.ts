@@ -306,7 +306,6 @@ const isNPRImageUrl = (url) => {
 }
 
 export const templatizeImageUrl = (url) => {
-  console.log("templatizeImageUrl url", url)
   // determine where the image src is from and return the templatized url
   if (isWagtailImageUrl(url)) {
     return templatizeWagtailImageUrl(url)

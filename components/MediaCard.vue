@@ -15,7 +15,6 @@ import {
   hasAudio,
   togglePlayEpisode,
   addToFavorites2,
-  getEpisodeFallBackImage,
   handleDelete,
   getReadingTime,
   getOrg,
@@ -181,8 +180,7 @@ const getImage = computed(() => {
   if (props.isInDownloads) {
     return getDownloadedImageUri(reactiveData.value)
   } else {
-    //console.log("reactiveData.value", reactiveData.value)
-    return reactiveData.value?.image || String(getEpisodeFallBackImage())
+    return reactiveData.value?.image
   }
 })
 
@@ -383,6 +381,7 @@ const handleHasAudio = computed(() => {
           class="flex-none"
           :alt="`${props.data?.showTitle} show `"
           :src="getImage"
+          :srcFallback="props.fallbackImage"
           :size="props.size"
           :maxHeight="nativeImageHeight"
           :maxWidth="nativeImageWidth"
@@ -482,6 +481,7 @@ const handleHasAudio = computed(() => {
                       <div class="flex gap-3 align-items-center px-4">
                         <VImage
                           :src="getImage"
+                          :srcFallback="props.fallbackImage"
                           :alt="`${props.data?.showTitle} show image`"
                           class="show-image-in-menu flex-none"
                           :height="112"

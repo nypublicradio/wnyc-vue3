@@ -1,4 +1,5 @@
 <script setup>
+import { templatizeImageUrl } from "~/utilities/helpers"
 const props = defineProps({
   model: {
     type: Object,
@@ -72,7 +73,9 @@ const onFocusOut = (e, index, length) => {
         >
           <template #icon>
             <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
-              <VImage
+              <!-- {{ itemMenu.image }} -->
+              {{ templatizeImageUrl(itemMenu.image) }}
+              <!-- <VImage
                 v-if="typeof itemMenu?.image === 'object'"
                 class="the-img flex-none"
                 :alt="itemMenu.image.altText"
@@ -91,7 +94,7 @@ const onFocusOut = (e, index, length) => {
                 class="the-img flex-none"
                 style="width: 60px; height: 60px"
                 tabindex="-1"
-              />
+              /> -->
             </div>
           </template>
         </NavButton>

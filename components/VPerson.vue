@@ -245,8 +245,6 @@ const getImageSrc = computed(() => {
     : profile.value.image
     ? profile.value.image
     : props.imageFallbackPath
-    ? props.imageFallbackPath
-    : getUserFallBackImage()
 })
 
 // cssvars
@@ -279,6 +277,7 @@ const cssContainerType = ref(props.justImage ? "unset" : "inline-size")
         <div class="author-image">
           <VImage
             :src="getImageSrc"
+            :srcFallback="getUserFallBackImage()"
             :width="props.imageSize"
             :height="props.imageSize"
             :sizes="props.sizes"
