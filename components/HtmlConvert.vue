@@ -2,7 +2,7 @@
 import { HTML2Vue } from "html2vue-renderer"
 import { NuxtLink } from "#components"
 import VImage from "~/components/VImage.vue"
-import { getImageDimensions, templatizePublisherImageUrl } from "~/utilities/helpers"
+import { getImageDimensions, templatizeImageUrl } from "~/utilities/helpers"
 
 const props = defineProps({
   htmlContent: {
@@ -63,6 +63,7 @@ const parseHtml = () => {
         const srcsetPropsId = `imageSrcset${imageCounter}`
         const widthPropsId = `imageWidth${imageCounter}`
         const heightPropsId = `imageHeight${imageCounter}`
+        const srcPropsId = `imageSrc${imageCounter}`
         imageCounter++
 
         // Store the image props in the props map
@@ -70,10 +71,10 @@ const parseHtml = () => {
         imagePropsMap.value[srcsetPropsId] = [1, 2]
         imagePropsMap.value[widthPropsId] = parentWidth.value
         imagePropsMap.value[heightPropsId] = imgHeight
+        const templatizedSrc = templatizeImageUrl(src)
+        imagePropsMap.value[srcPropsId] = { template: templatizedSrc }
 
-        return `<VImage src="${templatizePublisherImageUrl(
-          src
-        )}" alt="${alt}" :size="${sizePropsId}" :srcset="${srcsetPropsId}" :width="${widthPropsId}" :height="${heightPropsId}"/>`
+        return `<VImage :src="${srcPropsId}" alt="${alt}" :size="${sizePropsId}" :srcset="${srcsetPropsId}" :width="${widthPropsId}" :height="${heightPropsId}"/>`
       }
     })
 

@@ -181,14 +181,8 @@ const getImage = computed(() => {
   if (props.isInDownloads) {
     return getDownloadedImageUri(reactiveData.value)
   } else {
-    console.log("reactiveData.value", reactiveData.value.image)
-    return String(
-      reactiveData.value?.image?.template ||
-        reactiveData.value?.image?.id ||
-        reactiveData.value?.image ||
-        props.fallbackImage ||
-        getEpisodeFallBackImage()
-    )
+    //console.log("reactiveData.value", reactiveData.value)
+    return reactiveData.value?.image || String(getEpisodeFallBackImage())
   }
 })
 

@@ -188,10 +188,10 @@ const togglePlayHere = (epData, index = 0) => {
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
-  const epImage = episodeData.value?.image?.template
-  const showImage = episodeData.value?.headers.brand.logoImage.template
+  const epImage = episodeData.value?.image
+  const showImage = episodeData.value?.headers.brand.logoImage
   return epImage
-    ? epImage !== showImage
+    ? epImage.template !== showImage.template
       ? epImage
       : getEpisodeHeadFallBackImage()
     : getEpisodeHeadFallBackImage()
@@ -223,7 +223,7 @@ const getEpisodeImage = () => {
     </section>
     <FetchError v-if="error" />
     <div class="episode-page-image-holder relative mb-4">
-      <v-image
+      <VImage
         v-if="status == 'success'"
         :src="getEpisodeImage()"
         :width="390"
@@ -239,9 +239,9 @@ const getEpisodeImage = () => {
         height="auto"
         class="episode-page-image mb-2 opacity-60"
       />
-      <v-image
+      <VImage
         v-if="status == 'success'"
-        :src="episodeData?.headers.brand.logoImage.template"
+        :src="episodeData?.headers.brand.logoImage"
         :width="70"
         :height="70"
         :srcset="[2]"
@@ -335,7 +335,7 @@ const getEpisodeImage = () => {
                 <div>
                   <div class="flex gap-3 align-items-center px-4">
                     <VImage
-                      :src="episodeData?.image?.template || getEpisodeImage()"
+                      :src="episodeData?.image || getEpisodeImage()"
                       :alt="`${episodeData?.title} show image`"
                       :width="112"
                       :height="112"

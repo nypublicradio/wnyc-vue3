@@ -112,8 +112,7 @@ const routeBack = () => {
               >
                 <VImage
                   :src="
-                    show.featured?.headers.brand.logoImage.template ??
-                    getEpisodeFallBackImage()
+                    show.featured?.headers.brand.logoImage || getEpisodeFallBackImage()
                   "
                   :alt="`${show.title} show image`"
                   :width="20"

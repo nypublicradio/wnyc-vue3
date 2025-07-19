@@ -3,11 +3,19 @@ import VImageNpr from "./VImageNpr.vue"
 import VImagePublisher from "./VImagePublisher.vue"
 import VImageWagtail from "./VImageWagtail.vue"
 import { cmsSources } from "~/composables/globals.ts"
+import {
+  getCmsSourceAndImageTemplate,
+  getEpisodeFallBackImage,
+} from "~/utilities/helpers"
 import { ref, watch } from "vue"
 import { useImageDimensions } from "~/composables/useImageDimensions"
 const props = defineProps({
   src: {
     default: null,
+    type: [String, Object],
+  },
+  srcFallback: {
+    default: getEpisodeFallBackImage(),
     type: String,
   },
   size: {
@@ -26,52 +34,22 @@ const imageRatio = computed(() => {
   return [imageWidth.value, imageHeight.value]
 })
 
-const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
-
-// determines the CMS source of an image
-const getCmsSourceAndImageTemplate = (srcImg) => {
-  // if srcImg is all just numbers, it's a wagtail image. using the domain for the others
-  if (srcImg.fileHash) {
-    return { cmsSource: cmsSources.WAGTAIL, imageTemplate: srcImg.id }
-  } else if (srcImg.template.includes("media.wnyc.org")) {
-    return { cmsSource: cmsSources.PUBLISHER, imageTemplate: srcImg.template }
-  } else if (NPRIMAGEDOMAINSOURCES.some((domain) => srcImg.includes(domain))) {
-    return { cmsSource: cmsSources.NPR, imageTemplate: srcImg }
-  } else {
-    return null
-  }
-}
-
-// determines the CMS source of an image
-const getCmsSource = (src) => {
-  // if src is all just numbers, it's a wagtail image. using the domain for the others
-  if (/^\d+$/.test(src)) {
-    return cmsSources.WAGTAIL
-  } else if (src.includes("media.wnyc.org")) {
-    return cmsSources.PUBLISHER
-  } else if (NPRIMAGEDOMAINSOURCES.some((domain) => src.includes(domain))) {
-    return cmsSources.NPR
-  } else {
-    return cmsSources.WAGTAIL
-  }
-}
-
-const cmsSource = ref(getCmsSource(props.src))
-
+const imgSrc = ref(getCmsSourceAndImageTemplate(props.src, props.srcFallback))
 // Watch the 'src' prop for changes and update 'cmsSource' accordingly
 watch(
   () => props.src,
   (newSrc) => {
-    cmsSource.value = getCmsSource(newSrc)
+    imgSrc.value = getCmsSourceAndImageTemplate(newSrc, props.srcFallback)
   }
 )
 </script>
 
 <template>
   <VImagePublisher
-    v-if="cmsSource === cmsSources.PUBLISHER"
+    v-if="imgSrc.cmsSource === cmsSources.PUBLISHER"
     :key="`${props.src}Publisher`"
     v-bind="{ ...$props, ...$attrs }"
+    :src="imgSrc.imageTemplate"
     :width="props.width || imageWidth"
     :height="props.height || imageHeight"
     :ratio="props.ratio || imageRatio"
@@ -81,9 +59,10 @@ watch(
     </template>
   </VImagePublisher>
   <VImageNpr
-    v-else-if="cmsSource === cmsSources.NPR"
+    v-else-if="imgSrc.cmsSource === cmsSources.NPR"
     :key="`${props.src}Npr`"
     v-bind="{ ...$props, ...$attrs }"
+    :src="imgSrc.imageTemplate"
     :width="props.width || imageWidth"
     :height="props.height || imageHeight"
     :ratio="props.ratio || imageRatio"
@@ -93,9 +72,10 @@ watch(
     </template>
   </VImageNpr>
   <VImageWagtail
-    v-else-if="cmsSource === cmsSources.WAGTAIL"
+    v-else-if="imgSrc.cmsSource === cmsSources.WAGTAIL"
     :key="`${props.src}Wagtail`"
     v-bind="{ ...$props, ...$attrs }"
+    :src="imgSrc.imageTemplate"
     :width="props.width || imageWidth"
     :height="props.height || imageHeight"
     :ratio="props.ratio || imageRatio"

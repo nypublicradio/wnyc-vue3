@@ -76,7 +76,7 @@ const onFocusOut = (e, index, length) => {
                 v-if="typeof itemMenu?.image === 'object'"
                 class="the-img flex-none"
                 :alt="itemMenu.image.altText"
-                :src="itemMenu.image.template"
+                :src="itemMenu.image"
                 :height="60"
                 :width="60"
                 :ratio="[1, 1]"

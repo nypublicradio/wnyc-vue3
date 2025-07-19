@@ -175,45 +175,6 @@ const togglePlayHere = async () => {
 
 <style lang="scss">
 .live-feature {
-  // for the buttons on the life feature in the home page. The Live button component and base Button component need some UGLY help to match
-  .p-button {
-    &.icon-wide {
-      min-width: 140px;
-      min-height: 34.16px;
-      svg {
-        height: 20px;
-      }
-      .devices-icon {
-        margin-left: -16px;
-        @include media("<md") {
-          margin-left: 0;
-        }
-      }
-      .icon {
-        margin-left: 5px;
-        @include media("<md") {
-          margin-left: 0px;
-          padding-right: 8px;
-        }
-      }
-      .p-button-label {
-        width: 150px;
-        padding-right: 10px;
-        @include media("<md") {
-          width: auto;
-        }
-        text-align: center;
-      }
-      .content .center {
-        padding-left: 2.5rem !important;
-        padding-right: 3.5rem !important;
-        @include media("<md") {
-          padding-left: unset !important;
-          padding-right: unset !important;
-        }
-      }
-    }
-  }
   .content {
     .blurb {
       * {
