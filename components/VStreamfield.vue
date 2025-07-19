@@ -43,10 +43,8 @@ onMounted(() => {
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <section v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
-        <!--     :width="block.value.image.width"
-          :height="block.value.image.height" -->
         <VImage
-          :src="String(block.value.image.id)"
+          :src="block.value.image"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"

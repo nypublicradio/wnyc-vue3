@@ -125,24 +125,12 @@ const imgSrcUrl = ref("")
 if (props.isDownloaded) {
   imgSrcUrl.value = await getDownloadedImageUri(props.data)
 } else {
-  imgSrcUrl.value = String(
-    props.data?.image?.template ??
-      props.data?.image?.id ??
-      props.data?.image ??
-      props.fallbackImage ??
-      getEpisodeFallBackImage()
-  )
+  imgSrcUrl.value = props.data?.image
 }
 
 // handle click event emit
 const handleClick = () => {
   emit("on-click")
-  // navigateTo({
-  //   path: `/story/${props.data.id ?? props.data.media_id}`,
-  //   query: {
-  //     src: props.data.cmsSource,
-  //   },
-  // })
 }
 </script>
 
@@ -156,6 +144,7 @@ const handleClick = () => {
       <VImage
         class="flex-none"
         :src="imgSrcUrl"
+        :srcFallback="props.fallbackImage"
         :height="112"
         :width="112"
         :ratio="[1, 1]"
@@ -213,6 +202,7 @@ const handleClick = () => {
                   <div class="flex gap-3 align-items-center px-4">
                     <VImage
                       :src="imgSrcUrl"
+                      :srcFallback="props.fallbackImage"
                       :alt="`${props.data?.showTitle} show image`"
                       :width="112"
                       :height="112"
