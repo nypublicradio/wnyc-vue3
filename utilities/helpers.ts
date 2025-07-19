@@ -53,6 +53,7 @@ import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+import { is } from "date-fns/locale"
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -228,25 +229,6 @@ export const resizeWagtailImageUrl = (
   const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|${format}quality-${q}`
   return finalUrl
 }
-// returns a templated image url when provided just the image URL
-export const templatizePublisherImageUrl = (url: string): string => {
-  if (url?.includes("media.wnyc.org")) {
-    const pieces = url.split("/")
-    const finalUrlArr: string[] = []
-
-    pieces.forEach((piece: string, index: number) => {
-      if (index < 4 || index > 7) {
-        finalUrlArr.push(piece)
-      }
-      if (index === 4) {
-        finalUrlArr.push("%s/%s/%s/%s")
-      }
-    })
-    return finalUrlArr.join("/")
-  } else {
-    return url
-  }
-}
 
 // central spot to handle image formatting from diff sources
 export const imageSolver = (url: string, options: { w?: number, h?: number, q?: number, format?: string } = {}) => {
@@ -269,6 +251,96 @@ export const imageSolver = (url: string, options: { w?: number, h?: number, q?: 
   }
   return imgUrl
 }
+
+// returns a templated NPR image url when provided just the image URL
+export const templatizeNPRImageUrl = (url: string): string => {
+  return url.replace('{width}', '%s').replace('{height}', '%s').replace('{quality}', '%s').replace('{format}', '%s')
+
+}
+// returns a templated Wagtail image url when provided just the image URL
+export const templatizeWagtailImageUrl = (url: string): string => {
+  return url.replace(/fill-\d+x\d+-c0/, 'fill-%s x%s-c0').replace(/format-\w+/, 'format-%s').replace(/(jpegquality|webpquality)-\d+/, '$1-%s')
+
+}
+// returns a templated PUBLISHER image url when provided just the image URL
+export const templatizePublisherImageUrl = (url: string): string => {
+  if (url?.includes("media.wnyc.org")) {
+    const pieces = url.split("/")
+    const finalUrlArr: string[] = []
+
+    pieces.forEach((piece: string, index: number) => {
+      if (index < 4 || index > 7) {
+        finalUrlArr.push(piece)
+      }
+      if (index === 4) {
+        finalUrlArr.push("%s/%s/%s/%s")
+      }
+    })
+    return finalUrlArr.join("/")
+  } else {
+    return url
+  }
+}
+
+const isWagtailImage = (srcImg) => {
+  return (typeof srcImg === "object" && srcImg?.fileHash) || /^\d+$/.test(srcImg)
+}
+
+const isPublisherImage = (srcImg) => {
+  return (typeof srcImg === "object" && srcImg?.template?.includes("media.wnyc.org"))
+}
+
+const isNPRImage = (srcImg) => {
+  return NPRIMAGEDOMAINSOURCES.some((domain) => (typeof srcImg === "object" && srcImg?.template?.includes(domain)) || (typeof srcImg === "string" && srcImg?.includes(domain)))
+}
+const isWagtailImageUrl = (url) => {
+  return (typeof url === "string" && url.includes("nypr.digital/images"))
+}
+
+const isPublisherImageUrl = (url) => {
+  return (typeof url === "string" && url.includes("media.wnyc.org"))
+}
+
+const isNPRImageUrl = (url) => {
+  return NPRIMAGEDOMAINSOURCES.some((domain) => ((typeof url === "string" && url?.includes(domain))))
+}
+
+export const templatizeImageUrl = (url) => {
+  console.log("templatizeImageUrl url", url)
+  // determine where the image src is from and return the templatized url
+  if (isWagtailImageUrl(url)) {
+    return templatizeWagtailImageUrl(url)
+  } else if (isPublisherImageUrl(url)) {
+    return templatizePublisherImageUrl(url)
+  } else if (isNPRImageUrl(url)) {
+    return templatizeNPRImageUrl(url)
+  } else {
+    return url
+  }
+}
+
+const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
+// determines the CMS source of an image and returns the cmsSource and image template or id
+export const getCmsSourceAndImageTemplate = (srcImg, fallback) => {
+  const fallBackObject = { cmsSource: cmsSources.WAGTAIL, imageTemplate: fallback }
+  if (srcImg) {
+    // check if fileHash exists, or if we pass in a fallback, they are provided as just strings numbers from Wagtail
+    if (isWagtailImage(srcImg)) {
+      return { cmsSource: cmsSources.WAGTAIL, imageTemplate: srcImg?.id || String(srcImg) }
+    } else if (isPublisherImage(srcImg)) {
+      return { cmsSource: cmsSources.PUBLISHER, imageTemplate: srcImg.template }
+    } else if (isNPRImage(srcImg)) {
+      return { cmsSource: cmsSources.NPR, imageTemplate: srcImg?.template || srcImg }
+    } else {
+      // fallback
+      return fallBackObject
+    }
+  } else {
+    // fallback
+    return fallBackObject
+  }
+}
+
 // central spot to get the images native width and height for layout purposes
 export const getImageDimensions = (url: string) => {
 
@@ -1096,7 +1168,7 @@ export const goToLivePage = (ep, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link
-  if (Capacitor.getPlatform() === "web" && theLink) {
+  if (!Capacitor.getPlatform() === "web" && theLink) {
     if (story.cmsSource === cmsSources.WAGTAIL) {
       // open in new tab if web and wagtail source
       window.open(theLink, "_blank")

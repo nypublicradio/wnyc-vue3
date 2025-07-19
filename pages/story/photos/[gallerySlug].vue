@@ -127,7 +127,7 @@ onMounted(() => {
         <VImage
           v-for="(img, index) in gallery.slides"
           :key="img.image.id"
-          :src="String(img.image.id)"
+          :src="img.image"
           :ratio="[img.image.width, img.image.height]"
           sizes="xs:390px md:768px"
           density="x1 x2"

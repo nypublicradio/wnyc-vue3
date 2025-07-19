@@ -109,6 +109,7 @@ export function normalizePerson(person: Record<string, any>): Person {
     id: person.id,
     name: pa.name,
     photoID: pa.image?.template ?? null,
+    image: pa.image ?? null,
     jobTitle: pa.jobTitle,
     biography: pa.bio,
     website: pa.website,

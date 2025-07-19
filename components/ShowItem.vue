@@ -89,7 +89,8 @@ const getDotMenuItems = (bucketItem) => {
       :aria-label="`${props.data.title} show details`"
     >
       <VImage
-        :src="props.data.image?.template ?? props.data.image?.url ?? FALLBACKIMAGEWAGTAIL"
+        :src="props.data.image"
+        :srcFallback="FALLBACKIMAGEWAGTAIL"
         :height="112"
         :width="112"
         :ratio="[1, 1]"

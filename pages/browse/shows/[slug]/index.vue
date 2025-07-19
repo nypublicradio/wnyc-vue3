@@ -36,9 +36,7 @@ const episodes = ref(null)
 let maxPages = null
 
 // Computed properties derived from the show data
-const showImage = computed(
-  () => show.value?.show?.image?.template ?? getEpisodeFallBackImage()
-)
+const showImage = computed(() => show.value?.show?.image || getEpisodeFallBackImage())
 const showTitle = computed(() => show.value?.show?.title)
 const showTease = computed(() => show.value?.show?.tease)
 const showDescription = computed(() => show.value?.show?.description)
