@@ -6,7 +6,6 @@ const props = defineProps({
     default: null,
   },
 })
-console.log("NavSubMenu props", props.model)
 const emit = defineEmits(["emit-click"])
 
 // handle the focus out event

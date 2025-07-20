@@ -40,7 +40,6 @@ const formatShowData = (apiResponse: any) => {
 		title = apiResponse.data[0].attributes.name
 		details = apiResponse.data[0].attributes['short-description']
 	}
-	//console.log("apiResponse.data[0].attributes", apiResponse.data[0].attributes)
 	return {
 		cmsSource: cmsSources.PUBLISHER,
 		details,

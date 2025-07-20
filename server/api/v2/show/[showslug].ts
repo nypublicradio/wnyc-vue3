@@ -5,6 +5,7 @@ import { normalizeArticleListItem } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
+import { templatizeImageUrl } from '~/utilities/helpers'
 
 
 const config = useRuntimeConfig();
@@ -129,8 +130,8 @@ const getShow = async (slug: string) => {
         const show = resData.find((s) => {
             return s.slug === slug
         });
-        //console.log('=======show', show);
-        show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
+        const imgTemplate = show?.image?.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show?.image?.url);
+        show.image.template = imgTemplate;
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
         show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
