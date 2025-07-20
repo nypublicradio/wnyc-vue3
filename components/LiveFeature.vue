@@ -46,9 +46,7 @@ const togglePlayHere = async () => {
             <VImage
               v-if="currentEpisodeHolder?.image"
               :src="currentEpisodeHolder?.image"
-              :width="280"
-              :height="280"
-              :ratio="[1, 1]"
+              :size="{ xs: [172, 172], xl: [280, 280] }"
               alt="show poster image"
               class="image"
               :key="currentEpisodeHolder?.id"

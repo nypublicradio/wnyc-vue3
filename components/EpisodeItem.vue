@@ -1,4 +1,10 @@
 <script setup>
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import TrashIcon from "~/components/icons/TrashIcon.vue"

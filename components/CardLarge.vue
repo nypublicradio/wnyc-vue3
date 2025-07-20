@@ -1,4 +1,10 @@
 <script setup>
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
+// DEPRECATED: use MediaCard.vue instead
 import { goToEpisodePage, goToStoryPage, hasAudio, getDate } from "~/utilities/helpers"
 
 const props = defineProps({

@@ -387,10 +387,7 @@ onMounted(async () => {
         :title="getTitle"
         :station="currentEpisode?.station"
         :description="getDescription"
-        :image="
-          templatizePublisherImageUrl(currentEpisode?.player_image) ??
-          getEpisodeFallBackImage()
-        "
+        :image="currentEpisode?.player_image"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
