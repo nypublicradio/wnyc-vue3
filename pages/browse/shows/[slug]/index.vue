@@ -36,7 +36,7 @@ const episodes = ref(null)
 let maxPages = null
 
 // Computed properties derived from the show data
-const showImage = computed(() => show.value?.show?.image || getEpisodeFallBackImage())
+const showImage = computed(() => show.value?.show?.image)
 const showTitle = computed(() => show.value?.show?.title)
 const showTease = computed(() => show.value?.show?.tease)
 const showDescription = computed(() => show.value?.show?.description)
@@ -244,6 +244,7 @@ onMounted(() => {
             <VImage
               v-if="showImage && status === 'success'"
               :src="showImage"
+              :srcFallback="getEpisodeFallBackImage()"
               :alt="`${showTitle} show image`"
               :size="{ xs: [112, 112], md: [208, 208] }"
               class="flex-none show-image max-w-7rem md:max-w-13rem"
@@ -471,6 +472,7 @@ onMounted(() => {
               <VImage
                 v-if="showImage && status === 'success'"
                 :src="showImage"
+                :srcFallback="getEpisodeFallBackImage()"
                 :alt="`${showTitle} show image`"
                 :size="[80, 80]"
                 :srcset="[2]"

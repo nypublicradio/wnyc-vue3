@@ -40,7 +40,7 @@ const props = defineProps({
   },
   fallbackImage: {
     type: String,
-    default: null,
+    default: undefined,
   },
   imgSrc: {
     type: String,

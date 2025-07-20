@@ -39,7 +39,7 @@ const normalizeStationsMenuData = (menuData = []) => {
         label: item.station,
         url: `/live?slug=${item.slug}`,
         icon: '',
-        image: item.stationImage ? { template: item.stationImage } : item.image,
+        image: item.stationImage ? item.stationImage : item.image,
         id: String(item.id),
         type: item.cmsSource,
         hasSubmenu: false,
