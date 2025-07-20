@@ -1,6 +1,4 @@
 <script setup>
-import { templatizePublisherImageUrl } from "~/utilities/helpers"
-
 const props = defineProps({
   data: {
     type: Object,
@@ -17,25 +15,27 @@ const props = defineProps({
 })
 
 const size = ref(props.size)
-
+const reactiveData = toRef(props, "data")
 // handle the click if this item is in the saved page and navigate to the live page
 const handleClick = () => {
   if (props.saved) {
-    navigateTo(`/live${props.data.slug ? `?slug=${props.data.slug}` : ""}`)
+    navigateTo(
+      `/live${reactiveData.value.slug ? `?slug=${reactiveData.value.slug}` : ""}`
+    )
   }
 }
 </script>
 
 <template>
   <div
-    v-if="props.data"
+    v-if="reactiveData"
     class="live-item flex gap-3"
     @click="handleClick"
     :class="[{ 'cursor-pointer': props.saved }]"
   >
     <VImage
-      v-if="props.data?.image"
-      :src="props.data?.image?.template ?? templatizePublisherImageUrl(props.data?.image)"
+      v-if="reactiveData?.image"
+      :src="reactiveData?.image"
       :width="size"
       :height="size"
       :ratio="[1, 1]"
@@ -46,12 +46,12 @@ const handleClick = () => {
       <div class="content flex flex-column gap-1 justify-content-start w-full">
         <LiveBadge v-if="!props.saved" class="align-self-start" />
         <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
-          {{ props.data.title }}
+          {{ reactiveData.title }}
         </h2>
-        <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
+        <p v-if="props.saved" class="text-xs">{{ reactiveData.showTitle }}</p>
         <div
           class="blurb truncate t3lines html-formatting p1"
-          v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
+          v-html="reactiveData?.onTodaysShowHeadline ?? reactiveData?.details"
         />
       </div>
     </div>

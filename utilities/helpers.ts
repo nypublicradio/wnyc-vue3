@@ -264,22 +264,18 @@ export const templatizeWagtailImageUrl = (url: string): string => {
 }
 // returns a templated PUBLISHER image url when provided just the image URL
 export const templatizePublisherImageUrl = (url: string): string => {
-  if (url?.includes("media.wnyc.org")) {
-    const pieces = url.split("/")
-    const finalUrlArr: string[] = []
+  const pieces = url.split("/")
+  const finalUrlArr: string[] = []
 
-    pieces.forEach((piece: string, index: number) => {
-      if (index < 4 || index > 7) {
-        finalUrlArr.push(piece)
-      }
-      if (index === 4) {
-        finalUrlArr.push("%s/%s/%s/%s")
-      }
-    })
-    return finalUrlArr.join("/")
-  } else {
-    return url
-  }
+  pieces.forEach((piece: string, index: number) => {
+    if (index < 4 || index > 7) {
+      finalUrlArr.push(piece)
+    }
+    if (index === 4) {
+      finalUrlArr.push("%s/%s/%s/%s")
+    }
+  })
+  return finalUrlArr.join("/")
 }
 
 const isWagtailImage = (srcImg) => {

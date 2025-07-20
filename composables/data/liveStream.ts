@@ -10,6 +10,7 @@ export async function updateLiveStream(slug: string, save = true) {
     try {
         const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
         const currentEpisodeHolder = useCurrentEpisodeHolder()
+        console.log('fetchData = ', fetchData)
         currentEpisodeHolder.value = fetchData
         if (save) { saveRecentlyPlayed(currentEpisodeHolder.value, mediaTypes.LIVE) }
     } catch (error) {

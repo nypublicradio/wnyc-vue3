@@ -6,7 +6,7 @@ const props = defineProps({
     default: null,
   },
 })
-
+console.log("NavSubMenu props", props.model)
 const emit = defineEmits(["emit-click"])
 
 // handle the focus out event
@@ -73,10 +73,7 @@ const onFocusOut = (e, index, length) => {
         >
           <template #icon>
             <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
-              <!-- {{ itemMenu.image }} -->
-              {{ templatizeImageUrl(itemMenu.image) }}
-              <!-- <VImage
-                v-if="typeof itemMenu?.image === 'object'"
+              <VImage
                 class="the-img flex-none"
                 :alt="itemMenu.image.altText"
                 :src="itemMenu.image"
@@ -87,14 +84,6 @@ const onFocusOut = (e, index, length) => {
                 style="height: 60px; width: 60px"
                 isDecorative
               />
-              <img
-                v-else
-                :alt="itemMenu.label"
-                :src="itemMenu.image"
-                class="the-img flex-none"
-                style="width: 60px; height: 60px"
-                tabindex="-1"
-              /> -->
             </div>
           </template>
         </NavButton>

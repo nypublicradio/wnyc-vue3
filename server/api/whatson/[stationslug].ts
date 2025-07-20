@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
+import { formatTime, formatPublisherImageUrl, templatizeImageUrl } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
 //import { parse, types, stringify } from 'hls-parser';
 const config = useRuntimeConfig()
@@ -40,6 +40,7 @@ const formatShowData = (apiResponse: any) => {
 		title = apiResponse.data[0].attributes.name
 		details = apiResponse.data[0].attributes['short-description']
 	}
+	//console.log("apiResponse.data[0].attributes", apiResponse.data[0].attributes)
 	return {
 		cmsSource: cmsSources.PUBLISHER,
 		details,
@@ -52,10 +53,10 @@ const formatShowData = (apiResponse: any) => {
 		file: apiResponse.data[0].attributes['mobile-mp3'],
 		hls: apiResponse.data[0].attributes['hls'],
 		id,
-		image: imageData ? `https://media.wnyc.org/i/448/448/l/80/${imageData.attributes.name}` : apiResponse.data[0].attributes['image-logo'],
+		image: imageData ? { template: `https://media.wnyc.org/i/%s/%s/%s/%s/${imageData.attributes.name}` } : { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
 		slug: apiResponse.data[0].attributes.slug,
 		station: apiResponse.data[0].attributes.name,
-		stationImage: apiResponse.data[0].attributes['image-logo'],
+		stationImage: { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
 		timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
 		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
 		showTitle: title,
