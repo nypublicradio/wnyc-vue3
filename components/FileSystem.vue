@@ -36,7 +36,7 @@ const handleRoute = (file) => {
       <!-- <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
       <div>
         <div class="flex flex-column-reverse gap-4 mt-2">
-          <EpisodeItem
+          <MediaCard
             v-for="file in fileSystemLS"
             :data="file"
             :key="`EI-${file.id}`"
@@ -53,7 +53,7 @@ const handleRoute = (file) => {
                 @click="handleDelete(file)"
               />
             </div> -->
-          </EpisodeItem>
+          </MediaCard>
         </div>
       </div>
     </div>

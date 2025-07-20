@@ -1095,13 +1095,12 @@ export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
 
-  const theImage = item.headers?.brand?.logoImage?.template ??
+  const theImage = item.headers?.brand?.logoImage ??
     item.headers?.brand?.logoImage ??
     item.showImage ??
-    item.image?.template ??
     item.image ??
-    item.listingImage?.template ??
-    getEpisodeFallBackImage()
+    item.image ??
+    item.listingImage
 
   return {
     ...item,

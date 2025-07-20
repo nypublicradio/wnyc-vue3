@@ -358,11 +358,7 @@ const moreFromClick = () => {
             <div>
               <div class="flex gap-3 align-items-center px-4">
                 <VImage
-                  :src="
-                    currentEpisode.image?.template ||
-                    templatizePublisherImageUrl(currentEpisode.image) ||
-                    getEpisodeFallBackImage()
-                  "
+                  :src="currentEpisode.image"
                   :alt="`${currentEpisode.title} show image`"
                   class="show-image-in-menu flex-none"
                   style="height: 60px; width: 60px"
@@ -387,9 +383,7 @@ const moreFromClick = () => {
           : currentEpisode.player_image !==
             (currentEpisode.image.template ?? currentEpisode.image)
       "
-      :src="
-        currentEpisode.image?.template ?? currentEpisode.image ?? FALLBACKIMAGEWAGTAIL
-      "
+      :src="currentEpisode.image"
       :alt="`${currentEpisode.title} featured image`"
       :size="{
         xs: [327, 218],
@@ -440,7 +434,6 @@ const moreFromClick = () => {
         />
       </template>
     </VImage>
-
     <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
       <h2>Host{{ currentEpisode.onTodaysShowHosts.length > 1 ? "s" : "" }}</h2>
       <div class="flex gap-4 flex-wrap my-3">
@@ -465,6 +458,7 @@ const moreFromClick = () => {
         :key="`transcript-${currentEpisode.id || 'default'}`"
       />
     </div>
+    <pre>{{ currentEpisode }}</pre>
     <div
       ref="expandedFooterRef"
       v-if="currentEpisode.showSlug || currentEpisode.show"
