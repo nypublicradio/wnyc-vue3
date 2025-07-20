@@ -177,7 +177,7 @@ onUnmounted(() => {
         </div>
       </HorizontalScrollFeature>
       <section class="current-station-info">
-        <LiveItem :data="currentEpisodeHolder" :size="100" />
+        <LiveItem :data="currentEpisodeHolder" :size="112" />
       </section>
       <PlayAndSkipButtons
         :hideSkip="true"
