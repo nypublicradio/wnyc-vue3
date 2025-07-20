@@ -7,7 +7,7 @@ import {
   getCmsSourceAndImageTemplate,
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
-import { ref, watch } from "vue"
+import { computed } from "vue"
 import { useImageDimensions } from "~/composables/useImageDimensions"
 const props = defineProps({
   src: {
@@ -34,22 +34,22 @@ const imageRatio = computed(() => {
   return [imageWidth.value, imageHeight.value]
 })
 
-const imgSrc = ref(getCmsSourceAndImageTemplate(props.src, props.srcFallback))
-// Watch the 'src' prop for changes and update 'cmsSource' accordingly
-watch(
-  () => props.src,
-  (newSrc) => {
-    imgSrc.value = getCmsSourceAndImageTemplate(newSrc, props.srcFallback)
-  }
-)
+// Single computed property that handles all the reactive logic
+const imgData = computed(() => {
+  return getCmsSourceAndImageTemplate(props.src, props.srcFallback)
+})
+
+// Individual computed properties for easier access
+const cmsSource = computed(() => imgData.value.cmsSource)
+const imageTemplate = computed(() => imgData.value.imageTemplate)
 </script>
 
 <template>
   <VImagePublisher
-    v-if="imgSrc.cmsSource === cmsSources.PUBLISHER"
-    :key="`${props.src}Publisher`"
+    v-if="cmsSource === cmsSources.PUBLISHER"
+    :key="`publisher-${imageTemplate}`"
     v-bind="{ ...$props, ...$attrs }"
-    :src="imgSrc.imageTemplate"
+    :src="imageTemplate"
     :width="props.width || imageWidth"
     :height="props.height || imageHeight"
     :ratio="props.ratio || imageRatio"
@@ -59,10 +59,10 @@ watch(
     </template>
   </VImagePublisher>
   <VImageNpr
-    v-else-if="imgSrc.cmsSource === cmsSources.NPR"
-    :key="`${props.src}Npr`"
+    v-else-if="cmsSource === cmsSources.NPR"
+    :key="`npr-${imageTemplate}`"
     v-bind="{ ...$props, ...$attrs }"
-    :src="imgSrc.imageTemplate"
+    :src="imageTemplate"
     :width="props.width || imageWidth"
     :height="props.height || imageHeight"
     :ratio="props.ratio || imageRatio"
@@ -72,10 +72,10 @@ watch(
     </template>
   </VImageNpr>
   <VImageWagtail
-    v-else-if="imgSrc.cmsSource === cmsSources.WAGTAIL"
-    :key="`${props.src}Wagtail`"
+    v-else-if="cmsSource === cmsSources.WAGTAIL"
+    :key="`wagtail-${imageTemplate}`"
     v-bind="{ ...$props, ...$attrs }"
-    :src="imgSrc.imageTemplate"
+    :src="imageTemplate"
     :width="props.width || imageWidth"
     :height="props.height || imageHeight"
     :ratio="props.ratio || imageRatio"
