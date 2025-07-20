@@ -1162,9 +1162,9 @@ export const goToLivePage = (ep, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link
-  if (!Capacitor.getPlatform() === "web" && theLink) {
+  if (Capacitor.getPlatform() === "web" && theLink) {
     if (story.cmsSource === cmsSources.WAGTAIL) {
-      // open in new tab if web and wagtail source
+      // open in new tab if web and wagtail source (Gothamist)
       window.open(theLink, "_blank")
     }
   } else {

@@ -458,7 +458,6 @@ const moreFromClick = () => {
         :key="`transcript-${currentEpisode.id || 'default'}`"
       />
     </div>
-    <pre>{{ currentEpisode }}</pre>
     <div
       ref="expandedFooterRef"
       v-if="currentEpisode.showSlug || currentEpisode.show"

@@ -10,7 +10,7 @@ const props = defineProps({
   },
   isText: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   label: {
     type: String,

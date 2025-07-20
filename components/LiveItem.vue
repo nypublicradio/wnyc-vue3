@@ -34,13 +34,12 @@ const handleClick = () => {
     :class="[{ 'cursor-pointer': props.saved }]"
   >
     <VImage
-      v-if="reactiveData?.image"
       :src="reactiveData?.image"
       :width="size"
       :height="size"
       :ratio="[1, 1]"
-      alt="show poster image"
-      class="image"
+      :alt="`${reactiveData?.showTitle} show poster image`"
+      class="image flex-none w-7rem"
     />
     <div class="info flex flex-column gap-3 w-full justify-content-between">
       <div class="content flex flex-column gap-1 justify-content-start w-full">
@@ -59,11 +58,7 @@ const handleClick = () => {
 
   <div v-else class="skeleton-holder flex gap-3">
     <div>
-      <Skeleton
-        :width="`${props.size}px`"
-        :height="`${props.size}px`"
-        borderRadius="0px"
-      />
+      <Skeleton :width="`${size}px`" :height="`${size}px`" borderRadius="0px" />
     </div>
     <div class="flex flex-column justify-content-center w-full gap-1">
       <Skeleton height="16px" width="50px" borderRadius="2px" />
@@ -78,17 +73,17 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
-.live-item {
-  .v-image-publisher.image {
-    flex: none;
-    width: v-bind(size);
-  }
-}
+// .live-item {
+//   .v-image-publisher.image {
+//     flex: none;
+//     width: v-bind(size);
+//   }
+// }
 </style>
 <style lang="scss">
 .live-item {
   .v-image-publisher.image .image {
-    background-color: #ffffff;
+    background-color: #ffffff66;
   }
 }
 </style>
