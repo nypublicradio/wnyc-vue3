@@ -1,4 +1,4 @@
-import { logOutUser } from "~/utilities/helpers"
+import { logOutUser, getAppDownloadLink } from "~/utilities/helpers"
 
 const allMenuData = [
     {
@@ -123,7 +123,7 @@ const allMenuData = [
                 },
                 {
                     label: "Get the App",
-                    url: "/mobile"
+                    url: getAppDownloadLink()
                 },
                 {
                     label: "Careers",

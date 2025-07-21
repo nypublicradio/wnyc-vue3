@@ -7,12 +7,12 @@ import PlayIcon from "~/components/icons/PlayIcon.vue"
 import {
   checkIsFavorited,
   togglePlayEpisode,
-  //shareAPI,
   trackClickEvent,
   goToEpisodePage,
   hasAudio,
   addToFavorites2,
   getEpisodeFallBackImage,
+  getAppDownloadLink,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
@@ -313,7 +313,7 @@ onMounted(() => {
                   severity="secondary"
                   rounded
                   class=""
-                  @click="navigateTo('/mobile')"
+                  @click="navigateTo(getAppDownloadLink())"
                 >
                   <template #icon>
                     <DevicesIcon class="w-1rem" />
@@ -384,7 +384,7 @@ onMounted(() => {
               text
               plain
               class=""
-              @click="navigateTo('/mobile')"
+              @click="navigateTo(getAppDownloadLink())"
             >
               <template #icon>
                 <DevicesIcon class="w-2rem mt-1" />
@@ -485,7 +485,11 @@ onMounted(() => {
               :htmlContent="showDescription"
               :key="`description-${showSlug}`"
             />
-            <!-- <div v-html="showDescription" /> -->
+            <p>
+              Listen via the
+              <VFlexibleLink :to="getAppDownloadLink()">WNYC App</VFlexibleLink>, Apple,
+              Spotify, Pocket Casts, Youtube, NPR One, or wherever you get podcasts.
+            </p>
             <story-htlAd
               layout="rectangle"
               slotClass="htlad-wnyc_homepage_rectangle"

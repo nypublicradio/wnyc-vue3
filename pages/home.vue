@@ -157,6 +157,7 @@ onMounted(() => {
   .latestNewsHolder {
     width: 100%;
     max-width: 100%;
+
     @include media(">lg") {
       max-width: 300px !important;
     }

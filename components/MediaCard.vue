@@ -379,7 +379,7 @@ const handleHasAudio = computed(() => {
       >
         <VImage
           class="flex-none"
-          :alt="`${props.data?.showTitle} show `"
+          :alt="`${props.data.title} media image`"
           :src="getImage"
           :srcFallback="props.fallbackImage"
           :size="props.size"
@@ -532,23 +532,28 @@ const handleHasAudio = computed(() => {
   position: relative;
   cursor: pointer;
   height: auto;
+
   .holder {
     position: relative;
     overflow: hidden;
     height: 100%;
+
     .event {
       background-color: var(--p-surface-950);
       padding: 12px;
+
       .date {
         width: 100%;
         text-align: center;
       }
+
       .day {
         font-size: var(--font-size-10);
         line-height: var(--font-size-10);
         font-weight: 700;
         color: var(--p-surface-0);
       }
+
       .month {
         font-size: var(--font-size-3);
         line-height: var(--font-size-3);
@@ -556,29 +561,37 @@ const handleHasAudio = computed(() => {
         color: var(--p-surface-0);
       }
     }
+
     @include media("<md") {
       border-radius: 0;
     }
+
     flex-direction: column;
+
     @include media("<md") {
       flex-direction: row;
     }
+
     .content {
       height: auto;
       padding: 0 0 0 1rem;
+
       h2 {
         @include cardTitle();
       }
+
       .tease {
         @include cardBody();
       }
     }
+
     .image {
       @include media("<md") {
         width: 112px;
         height: 112px;
         flex: 0 0 auto;
       }
+
       @include media("<xs") {
         width: 80px;
         height: 80px;
@@ -590,25 +603,30 @@ const handleHasAudio = computed(() => {
     .holder {
       background-color: var(--p-surface-25);
       border-radius: var(--media-card-border-radius);
+
       .content {
         padding: 1rem !important;
       }
     }
+
     @include media("<md") {
       .holder {
         background-color: transparent;
         border-radius: 0;
+
         .content {
           padding: 0 0 0 1rem !important;
         }
       }
     }
   }
+
   &.show-bg-mobile {
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
         border-radius: var(--media-card-border-radius);
+
         .content {
           padding: 1rem !important;
         }
@@ -624,18 +642,21 @@ const handleHasAudio = computed(() => {
     .holder {
       border-radius: var(--media-card-border-radius);
     }
+
     .content h2 {
       font-size: var(--font-size-7);
       line-height: var(--font-size-9);
       @include t4lines();
     }
   }
+
   &.is-horizontal {
     @include media(">=md") {
       .holder {
         flex-direction: row;
       }
     }
+
     @include media("<=md") {
       .holder {
         .image {
@@ -646,46 +667,57 @@ const handleHasAudio = computed(() => {
       }
     }
   }
+
   &.is-horizontal.is-feature {
     .holder {
       flex-direction: row;
     }
+
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
         flex-direction: column;
+
         .image {
           width: 100% !important;
           height: auto !important;
+
           .v-image {
             left: 0;
           }
         }
+
         .content {
           padding: 1rem !important;
         }
       }
     }
+
     &.show-bg {
       border-radius: var(--media-card-border-radius);
     }
   }
+
   &.is-vertical {
     .image {
       width: 100% !important;
       height: auto !important;
+
       .v-image {
         left: 0;
       }
     }
+
     .holder {
       flex-direction: column;
       background-color: var(--p-surface-25);
+
       .content {
         padding: 1rem !important;
       }
     }
   }
+
   &:not(.show-image) {
     .holder {
       .content {
