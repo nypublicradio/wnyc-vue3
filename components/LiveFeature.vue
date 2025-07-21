@@ -6,7 +6,7 @@ import {
   useIsApp,
   useIsEpisodePlaying,
 } from "~/composables/states"
-import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
+import { getAppDownloadLink, togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
@@ -103,7 +103,7 @@ const togglePlayHere = async () => {
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
-                    @click="navigateTo('/mobile')"
+                    @click="navigateTo(getAppDownloadLink())"
                   >
                     <template #icon>
                       <DevicesIcon />

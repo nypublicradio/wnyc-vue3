@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, getAppDownloadLink } from "~/utilities/helpers"
 
 import {
   useSettingsSideBarBrowser,
@@ -49,7 +49,7 @@ const handleLogoClick = () => {
                 size="small"
                 label="Get the App"
                 trackingLocation="header utility nav"
-                route="/mobile"
+                :route="getAppDownloadLink()"
               >
                 <template #icon>
                   <DevicesIcon />

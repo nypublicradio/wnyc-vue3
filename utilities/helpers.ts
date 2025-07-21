@@ -259,7 +259,10 @@ export const templatizeNPRImageUrl = (url: string): string => {
 }
 // returns a templated Wagtail image url when provided just the image URL
 export const templatizeWagtailImageUrl = (url: string): string => {
-  return url.replace(/fill-\d+x\d+-c0/, 'fill-%s x%s-c0').replace(/format-\w+/, 'format-%s').replace(/(jpegquality|webpquality)-\d+/, '$1-%s')
+
+  // formatted :https://cms.prod.nypr.digital/images/352462/fill-592x395-c0|format-webp|webpquality-80
+
+  return url.replace(/fill-(\d+)x(\d+)-c0/, 'fill-%s/%s/c0').replace(/format-[a-zA-Z]+/, 'format-%s').replace(/(webp|jpeg|jpg|png)quality-(\d+)/, '%squality-%s')
 
 }
 // returns a templated PUBLISHER image url when provided just the image URL
@@ -549,6 +552,18 @@ export const toSystemSettings = () => {
     capacitorIosNotificationSettings.openNotificationSettings();
   }
 }
+
+//determine where to send the user to get the app based on their platform or if on browser
+export const getAppDownloadLink = () => {
+  if (Capacitor.getPlatform() === "android") {
+    return "https://play.google.com/store/apps/details?id=org.wnyc.android";
+  } else if (Capacitor.getPlatform() === "ios") {
+    return "https://apps.apple.com/us/app/wnyc/id470219771";
+  } else {
+    // For web browsers, redirect to the mobile route
+    return "/mobile";
+  }
+};
 
 // helper function to open a link in the browser IN the app
 export async function openLinkInAppBrowser(url: string) {
