@@ -24,6 +24,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  iconStyles: {
+    type: String,
+    default: "",
+  },
 })
 
 const emit = defineEmits(["emit-click"])
@@ -45,8 +49,14 @@ const handleClick = () => {
       @click="handleClick"
     >
       <template #icon>
-        <SleepIcon :active="props.isActive" :class="props.iconClass"
-      /></template>
+        <SleepIcon
+          :active="props.isActive"
+          :class="props.iconClass"
+          :style="props.iconStyles"
+          aria-label="Sleep Timer"
+        />
+        /></template
+      >
     </Button>
     <!--  <NewFeatureBadge class="badge" v-if="isNewFeature" /> -->
   </div>

@@ -105,7 +105,11 @@ const togglePlayHere = async () => {
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
-                    @click="navigateTo(appDownloadLink)"
+                    @click="
+                      navigateTo(appDownloadLink, {
+                        external: appDownloadLink.startsWith('http') ? true : false,
+                      })
+                    "
                   >
                     <template #icon>
                       <DevicesIcon />

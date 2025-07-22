@@ -282,7 +282,7 @@ onMounted(() => {
                   @click="handleAddToFavorites"
                 >
                   <template #icon>
-                    <FollowIcon :active="isFavorited" class="w-1rem"
+                    <FollowIcon :active="isFavorited" style="height: 20px; width: 20px"
                   /></template>
                 </Button>
 
@@ -292,7 +292,8 @@ onMounted(() => {
                   :isActive="sleepTimerRunning"
                   :isText="false"
                   label="Sleep Timer"
-                  iconClass="w-1rem"
+                  iconClass=""
+                  iconStyles="height: 20px; width: 20px;"
                 />
                 <Button
                   v-else
@@ -300,10 +301,14 @@ onMounted(() => {
                   severity="secondary"
                   rounded
                   class=""
-                  @click="navigateTo(appDownloadLink)"
+                  @click="
+                    navigateTo(appDownloadLink, {
+                      external: appDownloadLink.startsWith('http') ? true : false,
+                    })
+                  "
                 >
                   <template #icon>
-                    <DevicesIcon class="w-1rem" />
+                    <DevicesIcon style="height: 20px; width: 20px" />
                   </template>
                 </Button>
               </div>
@@ -371,10 +376,14 @@ onMounted(() => {
               text
               plain
               class=""
-              @click="navigateTo(appDownloadLink)"
+              @click="
+                navigateTo(appDownloadLink, {
+                  external: appDownloadLink.startsWith('http') ? true : false,
+                })
+              "
             >
               <template #icon>
-                <DevicesIcon class="w-2rem mt-1" />
+                <DevicesIcon class="h-2rem w-2rem mt-1" />
               </template>
             </Button>
           </div>
