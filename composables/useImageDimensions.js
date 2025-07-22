@@ -56,11 +56,52 @@ export function useImageDimensions(options = {}) {
     const width = ref(0)
     const height = ref(0)
 
+    // Track the maximum dimensions and current aspect ratio
+    const maxWidth = ref(0)
+    const maxHeight = ref(0)
+    const currentRatio = ref(0)
+
+    // Calculate aspect ratio with tolerance for comparison
+    const calculateRatio = (w, h) => w / h
+    const ratiosAreEqual = (ratio1, ratio2, tolerance = 0.1) => {
+        return Math.abs(ratio1 - ratio2) <= tolerance
+    }
+
     // Update dimensions based on current breakpoint
     const updateDimensions = () => {
         const [newWidth, newHeight] = getSizeForBreakpoint(size, currentBreakpoint.value)
-        width.value = newWidth
-        height.value = newHeight
+        const newRatio = calculateRatio(newWidth, newHeight)
+
+        // Check if we need to update based on:
+        // 1. Larger dimensions (prevents unnecessary refetching when scaling down)
+        // 2. Different aspect ratio (handles cases where crop/ratio changes significantly)
+        const isLargerSize = newWidth > maxWidth.value || newHeight > maxHeight.value
+        const isDifferentRatio = !ratiosAreEqual(newRatio, currentRatio.value)
+
+        const shouldUpdate = isLargerSize || isDifferentRatio
+
+        if (shouldUpdate) {
+            // For different ratios, use the new dimensions even if smaller
+            // For larger sizes, use the maximum dimensions
+            if (isDifferentRatio) {
+                width.value = newWidth
+                height.value = newHeight
+                // Update max dimensions if the new ones are larger
+                maxWidth.value = Math.max(newWidth, maxWidth.value)
+                maxHeight.value = Math.max(newHeight, maxHeight.value)
+            } else {
+                // Same ratio, just use larger dimensions
+                const finalWidth = Math.max(newWidth, maxWidth.value)
+                const finalHeight = Math.max(newHeight, maxHeight.value)
+
+                width.value = finalWidth
+                height.value = finalHeight
+                maxWidth.value = finalWidth
+                maxHeight.value = finalHeight
+            }
+
+            currentRatio.value = newRatio
+        }
     }
 
     // Watch for breakpoint changes and update dimensions
