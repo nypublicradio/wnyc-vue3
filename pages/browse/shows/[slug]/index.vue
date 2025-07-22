@@ -400,11 +400,23 @@ onMounted(() => {
       </div>
     </section>
     <div class="flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3">
-      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
-      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
-      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
-      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
-      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
+      <Button
+        v-if="status === 'success'"
+        v-for="i in 5"
+        :key="i"
+        label="Jump Link"
+        severity="secondary"
+        class="px-3 md:px-4 lg:px-6"
+      />
+      <Skeleton
+        v-else
+        v-for="i in 5"
+        :key="`jump-link-${i}`"
+        height="2rem"
+        width="8rem"
+        borderRadius="1.75rem"
+        class="w-7rem md:w-8rem lg:w-11rem"
+      />
     </div>
     <section class="py-4">
       <div class="grid">
