@@ -46,8 +46,13 @@ const isApp = useIsApp()
 const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
-fullDeviceInfo.value = getFullDeviceInfo()
-appDownloadLink.value = getAppDownloadLink()
+
+// Initialize device info and app download link asynchronously
+const initializeDeviceInfo = async () => {
+  fullDeviceInfo.value = await getFullDeviceInfo()
+  appDownloadLink.value = await getAppDownloadLink()
+}
+initializeDeviceInfo()
 
 useHead({
   htmlAttrs: {
