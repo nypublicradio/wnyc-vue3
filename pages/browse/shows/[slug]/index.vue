@@ -1,6 +1,5 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 
@@ -22,8 +21,6 @@ import {
 } from "~/composables/states"
 import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
-// TEMP until we have real show social data
-import { allSocialData } from "~/composables/navigationData.js"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -42,7 +39,6 @@ let maxPages = null
 const showImage = computed(() => show.value?.show?.image)
 const showTitle = computed(() => show.value?.show?.title)
 const showTease = computed(() => show.value?.show?.tease)
-const showDescription = computed(() => show.value?.show?.description)
 const showScheduleSummary = computed(() => show.value?.show?.scheduleSummary)
 const showSlug = computed(() => show.value?.show?.slug)
 const isApp = useIsApp()
@@ -154,10 +150,6 @@ const handleAddToFavorites = () => {
   }
 }
 
-// const handleShare = () => {
-//   //(show.value.show, "shows page")
-// }
-
 const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
@@ -201,7 +193,6 @@ onMounted(() => {
 <template>
   <div class="shows-page pb-7">
     <section>
-      <!-- <pre class="text-xs">{{ show.show }}</pre> -->
       <Html lang="en">
         <Head>
           <Title
@@ -231,13 +222,6 @@ onMounted(() => {
         />
       </div>
       <FetchError v-if="error" />
-    </section>
-    <section>
-      <div class="grid">
-        <div class="col-fixed hidden xxl:block w-20rem">1</div>
-        <div class="col">2</div>
-        <div class="col-fixed hidden lg:block w-20rem">3</div>
-      </div>
     </section>
     <section class="top style-mode-dark py-3 md:py-6">
       <div class="grid">
@@ -470,41 +454,7 @@ onMounted(() => {
           <!-- <BackToTopButton /> -->
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <div class="flex flex-column gap-3">
-            <div class="flex gap-4">
-              <VImage
-                v-if="showImage && status === 'success'"
-                :src="showImage"
-                :srcFallback="getEpisodeFallBackImage()"
-                :alt="`${showTitle} show image`"
-                :size="[80, 80]"
-                :srcset="[2]"
-                class="w-5rem"
-              ></VImage>
-              <h2>{{ showTitle }}</h2>
-            </div>
-            <HtmlConvert
-              v-if="showDescription"
-              :htmlContent="showDescription"
-              :key="`description-${showSlug}`"
-            />
-            <p>
-              Listen via the
-              <VFlexibleLink :to="appDownloadLink">WNYC App</VFlexibleLink>,
-              <VFlexibleLink to="https://google.com">Apple</VFlexibleLink>,
-              <VFlexibleLink to="https://google.com">Spotify</VFlexibleLink>,
-              <VFlexibleLink to="https://google.com">Pocket Casts</VFlexibleLink>,
-              <VFlexibleLink to="https://google.com">Youtube</VFlexibleLink>,
-              <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or wherever
-              you get podcasts.
-            </p>
-            <SocialButtons :data="allSocialData" />
-            <story-htlAd
-              layout="rectangle"
-              slotClass="htlad-wnyc_homepage_rectangle"
-              fineprint="WNYC is funded by sponsors and member donations"
-            />
-          </div>
+          <ShowSummary :data="show" />
         </div>
       </div>
     </section>

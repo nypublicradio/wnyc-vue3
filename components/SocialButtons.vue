@@ -21,6 +21,7 @@ const props = defineProps({
       :to="item.url"
       :key="item.id"
       radius="50px"
+      :title="item.label"
       @flexible-link-click="
         () => {
           trackClickEvent(
