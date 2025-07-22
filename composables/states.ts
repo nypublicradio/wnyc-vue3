@@ -1,3 +1,4 @@
+import { getFullDeviceInfo } from "~/utilities/helpers"
 import { masterNotificationChannelsArray } from "~/composables/useOneSignal"
 // Homepage data
 // // global state for the Bff useHomepageData data
@@ -216,6 +217,9 @@ export const useSensitiveContent = () => useState<boolean>('sensitiveContent', (
 
 // global toast
 export const useGlobalToast = () => useState<object>('globalToast', () => null)
+
+// device info
+export const useFullDeviceInfo = () => useState<object>('fullDeviceInfo', () => null)
 
 // saved page tab state
 export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)

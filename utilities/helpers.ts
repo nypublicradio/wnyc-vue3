@@ -571,13 +571,17 @@ export const getAppDownloadLink = () => {
   const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android";
   const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771";
 
-  if (Capacitor.getPlatform() === "android") {
+  const info = useFullDeviceInfo();
+  console.log('fullDeviceInfo', info.value);
+
+
+  if (info.value.platform === "android") {
     return androidStoreUrl;
-  } else if (Capacitor.getPlatform() === "ios") {
+  } else if (info.value.platform === "ios") {
     return iosStoreUrl;
-  } else if (getFullDeviceInfo().then(info => info?.operatingSystem === 'ios')) {
+  } else if (info.value.operatingSystem === 'ios') {
     return iosStoreUrl;
-  } else if (getFullDeviceInfo().then(info => info?.operatingSystem === 'android')) {
+  } else if (info.value.operatingSystem === 'android') {
     return androidStoreUrl;
   } else {
     // For web browsers, redirect to the mobile route
