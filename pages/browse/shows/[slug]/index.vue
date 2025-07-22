@@ -22,6 +22,8 @@ import {
 } from "~/composables/states"
 import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
+// TEMP until we have real show social data
+import { allSocialData } from "~/composables/navigationData.js"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -495,6 +497,7 @@ onMounted(() => {
               <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or wherever
               you get podcasts.
             </p>
+            <SocialButtons :data="allSocialData" />
             <story-htlAd
               layout="rectangle"
               slotClass="htlad-wnyc_homepage_rectangle"

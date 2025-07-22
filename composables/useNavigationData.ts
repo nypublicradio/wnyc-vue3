@@ -19,6 +19,27 @@ const stripWNYCUrl = (url) => {
     return url;
 };
 
+// Helper function to resolve URL functions in navigation items
+const resolveUrlFunctions = (items) => {
+    return items.map(item => {
+        const newItem = { ...item };
+
+        // Resolve URL if it's a function
+        if (typeof newItem.url === 'function') {
+            newItem.url = newItem.url();
+        }
+
+        // Recursively resolve URLs in sub-items
+        if (newItem.items && Array.isArray(newItem.items)) {
+            newItem.items = newItem.items.map(subItemArray =>
+                Array.isArray(subItemArray) ? resolveUrlFunctions(subItemArray) : subItemArray
+            );
+        }
+
+        return newItem;
+    });
+};
+
 //normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => {
 
@@ -85,7 +106,7 @@ export default async function useNavigationData() {
             fetchError = error;
 
             // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
-            let workingHeaderNav = allMenuData.map(item => ({ ...item }));
+            let workingHeaderNav = resolveUrlFunctions(allMenuData.map(item => ({ ...item })));
             // Normalize and merge Stations
             const stationsItems = normalizeStationsMenuData(bffData.stationsResponse);
             if (workingHeaderNav[0]?.items?.[0]) {
@@ -100,7 +121,7 @@ export default async function useNavigationData() {
 
             // Create the 'allNavigationData' state *before* header-specific modifications
             // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
-            const workingAllNav = workingHeaderNav.map(item => ({ ...item }));
+            const workingAllNav = resolveUrlFunctions(workingHeaderNav.map(item => ({ ...item })));
             // Normalize and merge Wagtail Primary Navigation
             const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation);
             workingHeaderNav.splice(2, 0, ...primaryNavItems);

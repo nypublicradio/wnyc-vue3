@@ -123,7 +123,7 @@ const allMenuData = [
                 },
                 {
                     label: "Get the App",
-                    url: getAppDownloadLink()
+                    url: () => getAppDownloadLink()
                 },
                 {
                     label: "Careers",
