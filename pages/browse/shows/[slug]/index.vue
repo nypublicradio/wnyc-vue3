@@ -399,6 +399,13 @@ onMounted(() => {
         <div class="col-fixed hidden lg:block w-20rem"></div>
       </div>
     </section>
+    <div class="flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3">
+      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
+      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
+      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
+      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
+      <Button label="Jump Link" severity="secondary" class="px-3 md:px-4 lg:px-6" />
+    </div>
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
