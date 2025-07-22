@@ -487,8 +487,13 @@ onMounted(() => {
             />
             <p>
               Listen via the
-              <VFlexibleLink :to="getAppDownloadLink()">WNYC App</VFlexibleLink>, Apple,
-              Spotify, Pocket Casts, Youtube, NPR One, or wherever you get podcasts.
+              <VFlexibleLink :to="getAppDownloadLink()">WNYC App</VFlexibleLink>,
+              <VFlexibleLink to="https://google.com">Apple</VFlexibleLink>,
+              <VFlexibleLink to="https://google.com">Spotify</VFlexibleLink>,
+              <VFlexibleLink to="https://google.com">Pocket Casts</VFlexibleLink>,
+              <VFlexibleLink to="https://google.com">Youtube</VFlexibleLink>,
+              <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or wherever
+              you get podcasts.
             </p>
             <story-htlAd
               layout="rectangle"
