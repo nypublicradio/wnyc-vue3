@@ -1,4 +1,5 @@
-import { logOutUser, getAppDownloadLink } from "~/utilities/helpers"
+import { logOutUser } from "~/utilities/helpers"
+import { useAppDownloadLink } from "~/composables/states"
 
 const allMenuData = [
     {
@@ -123,7 +124,7 @@ const allMenuData = [
                 },
                 {
                     label: "Get the App",
-                    url: () => getAppDownloadLink()
+                    url: () => useAppDownloadLink()
                 },
                 {
                     label: "Careers",

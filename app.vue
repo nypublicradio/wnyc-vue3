@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { getAndSetUserProfile, refreshData, getFullDeviceInfo } from "~/utilities/helpers"
+import {
+  getAndSetUserProfile,
+  refreshData,
+  getFullDeviceInfo,
+  getAppDownloadLink,
+} from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -10,6 +15,7 @@ import {
   useGlobalToast,
   useIsNetworkConnected,
   useFullDeviceInfo,
+  useAppDownloadLink,
 } from "~/composables/states"
 import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
@@ -35,11 +41,13 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
+const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
 const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } = useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 fullDeviceInfo.value = getFullDeviceInfo()
+appDownloadLink.value = getAppDownloadLink()
 
 useHead({
   htmlAttrs: {

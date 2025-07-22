@@ -558,7 +558,6 @@ export const toSystemSettings = () => {
 export async function getFullDeviceInfo(): Promise<DeviceInfo | null> {
   try {
     const info = await Device.getInfo();
-    console.log('Full Device Info:', info);
     return info;
   } catch (error) {
     console.error('Error getting full device info:', error);
@@ -572,8 +571,6 @@ export const getAppDownloadLink = () => {
   const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771";
 
   const info = useFullDeviceInfo();
-  console.log('fullDeviceInfo', info.value);
-
 
   if (info.value.platform === "android") {
     return androidStoreUrl;

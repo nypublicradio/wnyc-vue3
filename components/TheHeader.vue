@@ -1,11 +1,12 @@
 <script setup>
-import { trackClickEvent, getAppDownloadLink } from "~/utilities/helpers"
+import { trackClickEvent } from "~/utilities/helpers"
 
 import {
   useSettingsSideBarBrowser,
   useIsNetworkConnected,
   useCurrentUser,
   useCurrentUserProfile,
+  useAppDownloadLink,
 } from "~/composables/states.ts"
 
 const props = defineProps({
@@ -19,6 +20,7 @@ const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const isNetworkConnected = useIsNetworkConnected()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
+const appDownloadLink = useAppDownloadLink()
 
 // handle when the logo is clicked
 const handleLogoClick = () => {
@@ -49,7 +51,7 @@ const handleLogoClick = () => {
                 size="small"
                 label="Get the App"
                 trackingLocation="header utility nav"
-                :route="getAppDownloadLink()"
+                :route="appDownloadLink"
               >
                 <template #icon>
                   <DevicesIcon />

@@ -12,13 +12,13 @@ import {
   hasAudio,
   addToFavorites2,
   getEpisodeFallBackImage,
-  getAppDownloadLink,
 } from "~/utilities/helpers"
 import {
   useCurrentUser,
   useIsEpisodePlaying,
   useGlobalToast,
   useIsApp,
+  useAppDownloadLink,
 } from "~/composables/states"
 import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -28,6 +28,7 @@ import { allSocialData } from "~/composables/navigationData.js"
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const appDownloadLink = useAppDownloadLink()
 
 const { data: show, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
@@ -315,7 +316,7 @@ onMounted(() => {
                   severity="secondary"
                   rounded
                   class=""
-                  @click="navigateTo(getAppDownloadLink())"
+                  @click="navigateTo(appDownloadLink)"
                 >
                   <template #icon>
                     <DevicesIcon class="w-1rem" />
@@ -386,7 +387,7 @@ onMounted(() => {
               text
               plain
               class=""
-              @click="navigateTo(getAppDownloadLink())"
+              @click="navigateTo(appDownloadLink)"
             >
               <template #icon>
                 <DevicesIcon class="w-2rem mt-1" />
@@ -489,7 +490,7 @@ onMounted(() => {
             />
             <p>
               Listen via the
-              <VFlexibleLink :to="getAppDownloadLink()">WNYC App</VFlexibleLink>,
+              <VFlexibleLink :to="appDownloadLink">WNYC App</VFlexibleLink>,
               <VFlexibleLink to="https://google.com">Apple</VFlexibleLink>,
               <VFlexibleLink to="https://google.com">Spotify</VFlexibleLink>,
               <VFlexibleLink to="https://google.com">Pocket Casts</VFlexibleLink>,
