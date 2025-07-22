@@ -566,19 +566,19 @@ export async function getFullDeviceInfo(): Promise<DeviceInfo | null> {
 }
 
 //determine where to send the user to get the app based on their platform or if on browser
-export const getAppDownloadLink = () => {
+export const getAppDownloadLink = async () => {
   const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android";
   const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771";
 
-  const info = useFullDeviceInfo();
+  const info = await getFullDeviceInfo();
 
-  if (info.value.platform === "android") {
+  if (info?.platform === "android") {
     return androidStoreUrl;
-  } else if (info.value.platform === "ios") {
+  } else if (info?.platform === "ios") {
     return iosStoreUrl;
-  } else if (info.value.operatingSystem === 'ios') {
+  } else if (info?.operatingSystem === 'ios') {
     return iosStoreUrl;
-  } else if (info.value.operatingSystem === 'android') {
+  } else if (info?.operatingSystem === 'android') {
     return androidStoreUrl;
   } else {
     // For web browsers, redirect to the mobile route
