@@ -1,5 +1,6 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
+import { Device, type DeviceInfo } from '@capacitor/device';
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -553,12 +554,31 @@ export const toSystemSettings = () => {
   }
 }
 
+// get device information
+export async function getFullDeviceInfo(): Promise<DeviceInfo | null> {
+  try {
+    const info = await Device.getInfo();
+    console.log('Full Device Info:', info);
+    return info;
+  } catch (error) {
+    console.error('Error getting full device info:', error);
+    return null;
+  }
+}
+
 //determine where to send the user to get the app based on their platform or if on browser
 export const getAppDownloadLink = () => {
+  const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android";
+  const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771";
+
   if (Capacitor.getPlatform() === "android") {
-    return "https://play.google.com/store/apps/details?id=org.wnyc.android";
+    return androidStoreUrl;
   } else if (Capacitor.getPlatform() === "ios") {
-    return "https://apps.apple.com/us/app/wnyc/id470219771";
+    return iosStoreUrl;
+  } else if (getFullDeviceInfo().then(info => info?.operatingSystem === 'ios')) {
+    return iosStoreUrl;
+  } else if (getFullDeviceInfo().then(info => info?.operatingSystem === 'android')) {
+    return androidStoreUrl;
   } else {
     // For web browsers, redirect to the mobile route
     return "/mobile";
