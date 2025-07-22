@@ -3,13 +3,13 @@ import {
   useSettingsSideBarBrowser,
   useCurrentUser,
   useCurrentUserProfile,
+  useAppDownloadLink,
 } from "~/composables/states"
-
-import { getAppDownloadLink } from "~/utilities/helpers"
 
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
+const appDownloadLink = useAppDownloadLink()
 </script>
 
 <template>
@@ -30,7 +30,7 @@ const currentUserProfile = useCurrentUserProfile()
     size="small"
     label="Get the App"
     trackingLocation="header Hamburger Menu"
-    :route="getAppDownloadLink()"
+    :route="appDownloadLink"
     @emit-click="settingsSideBarBrowser = false"
   >
     <template #icon>

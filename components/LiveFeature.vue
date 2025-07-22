@@ -5,14 +5,16 @@ import {
   useCurrentEpisodeHolder,
   useIsApp,
   useIsEpisodePlaying,
+  useAppDownloadLink,
 } from "~/composables/states"
-import { getAppDownloadLink, togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
+const appDownloadLink = useAppDownloadLink()
 
 const defaultButtonLabel = "Listen Live"
 const listeningButtonLabel = "Listening Live"
@@ -103,7 +105,7 @@ const togglePlayHere = async () => {
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
-                    @click="navigateTo(getAppDownloadLink())"
+                    @click="navigateTo(appDownloadLink)"
                   >
                     <template #icon>
                       <DevicesIcon />
