@@ -145,8 +145,6 @@ const props = defineProps({
 })
 const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
 
-const imageLoaded = ref(false)
-
 const { formatPublisherImageUrl, formatRawPublisherImageUrl } = useVImage()
 
 // method to calculate the quality of the image based on the size and if set to flat quality
@@ -286,13 +284,6 @@ onMounted(async () => {
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
-        <WnycLoader
-          v-if="!imageLoaded"
-          class="image-loader-anim"
-          size="1rem"
-          bg
-          spinner
-        />
         <div v-if="isVertical" class="bg">
           <img
             :src="computedSrc()"
@@ -319,12 +310,7 @@ onMounted(async () => {
             @show="enlarge"
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
-            @load="
-              () => {
-                emit('image-load')
-                imageLoaded = true
-              }
-            "
+            @load="emit('image-load')"
           >
             <template v-if="allowPreview" #previewicon>
               <ClientOnly>
@@ -367,12 +353,7 @@ onMounted(async () => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
-          @load="
-            () => {
-              emit('image-load')
-              imageLoaded = true
-            }
-          "
+          @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>

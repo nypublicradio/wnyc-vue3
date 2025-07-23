@@ -1,22 +1,22 @@
 <script setup>
-import VImageNpr from "./VImageNpr.vue"
-import VImagePublisher from "./VImagePublisher.vue"
-import VImageWagtail from "./VImageWagtail.vue"
 import { cmsSources } from "~/composables/globals.ts"
 import { getEpisodeFallBackImage } from "~/utilities/helpers"
-import { computed } from "vue"
+import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
 
 const props = defineProps({
+  /** Image source - can be a string URL or object containing image data */
   src: {
     default: null,
     type: [String, Object],
   },
+  /** Fallback image URL to use if src fails to load */
   srcFallback: {
     default: getEpisodeFallBackImage(),
     type: String,
   },
+  /** Size configuration - can be array [width, height] or object with size properties */
   size: {
     type: [Array, Object],
     default: null,
@@ -42,46 +42,122 @@ const imgData = computed(() => {
 // Individual computed properties for easier access
 const cmsSource = computed(() => imgData.value.cmsSource)
 const imageTemplate = computed(() => imgData.value.imageTemplate)
+
+// Loading state for the image
+const imageLoaded = ref(false)
+
+// Handle image load event
+const handleImageLoad = () => {
+  imageLoaded.value = true
+}
+
+// Reset loading state when image source changes
+watch(
+  () => imageTemplate.value,
+  () => {
+    imageLoaded.value = false
+  }
+)
+
+// Computed style for loader dimensions to match image
+const loaderDimensions = computed(() => {
+  const width = props.width || imageWidth.value
+  const height = props.height || imageHeight.value
+  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width: ${width}px; height: ${height}px;`
+})
+
+// determines what component to load based on the item type
+const dynamicComponent = computed(() => {
+  if (!cmsSource.value) return null
+
+  const componentName = (() => {
+    switch (cmsSource.value) {
+      case cmsSources.PUBLISHER:
+        return "VImagePublisher"
+      case cmsSources.NPR:
+        return "VImageNpr"
+      case cmsSources.WAGTAIL:
+        return "VImageWagtail"
+      default:
+        return "VImageWagtail"
+    }
+  })()
+
+  return markRaw(
+    defineAsyncComponent({
+      loader: () => import(`./${componentName}.vue`),
+      onError: (err) => {
+        console.error(`Failed to load component ${componentName}: ${err.message}`)
+      },
+    })
+  )
+})
 </script>
 
 <template>
-  <VImagePublisher
-    v-if="cmsSource === cmsSources.PUBLISHER"
-    :key="`publisher-${imageTemplate}`"
-    v-bind="{ ...$props, ...$attrs }"
-    :src="imageTemplate"
-    :width="props.width || imageWidth"
-    :height="props.height || imageHeight"
-    :ratio="props.ratio || imageRatio"
-  >
-    <template v-for="(value, name) in $slots" #[name]="data">
-      <slot :name="name" v-bind="data"></slot>
-    </template>
-  </VImagePublisher>
-  <VImageNpr
-    v-else-if="cmsSource === cmsSources.NPR"
-    :key="`npr-${imageTemplate}`"
-    v-bind="{ ...$props, ...$attrs }"
-    :src="imageTemplate"
-    :width="props.width || imageWidth"
-    :height="props.height || imageHeight"
-    :ratio="props.ratio || imageRatio"
-  >
-    <template v-for="(value, name) in $slots" #[name]="data">
-      <slot :name="name" v-bind="data"></slot>
-    </template>
-  </VImageNpr>
-  <VImageWagtail
-    v-else-if="cmsSource === cmsSources.WAGTAIL"
-    :key="`wagtail-${imageTemplate}`"
-    v-bind="{ ...$props, ...$attrs }"
-    :src="imageTemplate"
-    :width="props.width || imageWidth"
-    :height="props.height || imageHeight"
-    :ratio="props.ratio || imageRatio"
-  >
-    <template v-for="(value, name) in $slots" #[name]="data">
-      <slot :name="name" v-bind="data"></slot>
-    </template>
-  </VImageWagtail>
+  <div class="v-image-wrapper">
+    <!-- Loader container that holds space -->
+    <div v-if="!imageLoaded" class="image-loader-container" :style="loaderDimensions">
+      <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+    </div>
+    <!-- Image component positioned absolutely when loading -->
+    <component
+      v-if="cmsSource && dynamicComponent"
+      :is="dynamicComponent"
+      :key="`${cmsSource}-${imageTemplate}`"
+      v-bind="{ ...$props, ...$attrs }"
+      :src="imageTemplate"
+      :width="props.width || imageWidth"
+      :height="props.height || imageHeight"
+      :ratio="props.ratio || imageRatio"
+      :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
+      @image-load="handleImageLoad"
+    >
+      <template v-for="(value, name) in $slots" #[name]="data">
+        <slot :name="name" v-bind="data"></slot>
+      </template>
+    </component>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.v-image-wrapper {
+  position: relative;
+  line-height: 0;
+  height: inherit;
+
+  .image-loader-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--p-surface-50);
+    /* Dimensions are set via inline styles to match image component */
+
+    .image-loader-anim {
+      z-index: 3;
+    }
+  }
+
+  // Image positioning and transitions
+  :deep(.v-image),
+  :deep(.v-image-wagtail),
+  :deep(.v-image-publisher),
+  :deep(.v-image-npr) {
+    transition: opacity 0.2s ease-in-out;
+
+    &.image-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &.image-loaded {
+      position: relative;
+      opacity: 1;
+    }
+  }
+}
+</style>
