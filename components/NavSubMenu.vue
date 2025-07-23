@@ -1,5 +1,4 @@
 <script setup>
-import { templatizeImageUrl } from "~/utilities/helpers"
 const props = defineProps({
   model: {
     type: Object,

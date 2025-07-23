@@ -3,12 +3,11 @@ import VImageNpr from "./VImageNpr.vue"
 import VImagePublisher from "./VImagePublisher.vue"
 import VImageWagtail from "./VImageWagtail.vue"
 import { cmsSources } from "~/composables/globals.ts"
-import {
-  getCmsSourceAndImageTemplate,
-  getEpisodeFallBackImage,
-} from "~/utilities/helpers"
+import { getEpisodeFallBackImage } from "~/utilities/helpers"
 import { computed } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
+import { useVImage } from "~/composables/useVImage"
+
 const props = defineProps({
   src: {
     default: null,
@@ -28,6 +27,7 @@ const props = defineProps({
 const { width: imageWidth, height: imageHeight } = useVImageDimensions({
   size: props.size,
 })
+const { getCmsSourceAndImageTemplate } = useVImage()
 
 // Computed ratio for VImage compatibility - derived from current dimensions
 const imageRatio = computed(() => {

@@ -27,10 +27,8 @@ import {
 import {
   trackAudioEvent,
   trackClickEvent,
-  templatizePublisherImageUrl,
   getDate,
   hasQueryParams,
-  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"

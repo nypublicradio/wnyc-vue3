@@ -11,10 +11,13 @@ import {
     useIsLiveStream
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core';
-import { prepForPlayer, getEpisodeFallBackImage, imageSolver } from "~/utilities/helpers"
+import { prepForPlayer, getEpisodeFallBackImage } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
 import { initMediaSession } from "~/utilities/media-session.js"
+import { useVImage } from "~/composables/useVImage"
+
+const { imageSolver } = useVImage()
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"

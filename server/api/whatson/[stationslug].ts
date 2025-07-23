@@ -1,9 +1,14 @@
 import axios from 'axios'
 import humps from 'humps'
-import { formatTime, formatPublisherImageUrl, templatizeImageUrl } from '~/utilities/helpers'
+import { formatTime } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
+import { useVImage } from "~/composables/useVImage"
+
+
 //import { parse, types, stringify } from 'hls-parser';
 const config = useRuntimeConfig()
+
+const { formatPublisherImageUrl, templatizeImageUrl } = useVImage()
 
 // format the show data from API response
 const formatShowData = (apiResponse: any) => {

@@ -2,7 +2,9 @@
 import { HTML2Vue } from "html2vue-renderer"
 import { NuxtLink } from "#components"
 import VImage from "~/components/VImage.vue"
-import { getImageDimensions, templatizeImageUrl } from "~/utilities/helpers"
+import { useVImage } from "~/composables/useVImage"
+
+const { getImageDimensions, templatizeImageUrl } = useVImage()
 
 const props = defineProps({
   htmlContent: {

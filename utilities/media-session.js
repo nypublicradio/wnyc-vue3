@@ -1,8 +1,11 @@
-import { getDate, imageSolver } from '~/utilities/helpers'
+import { getDate } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsApp, useIsLiveStream } from "~/composables/states"
 import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
 import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { useVImage } from "~/composables/useVImage"
+
+const { imageSolver } = useVImage()
 let currentEpisode = null
 
 const defaultMimeType = 'image/jpeg'
