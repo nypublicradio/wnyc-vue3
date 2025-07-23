@@ -4,7 +4,7 @@ import Button from "primevue/button"
 import Image from "primevue/image"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
-import useVImage from "~/composables/useVImage"
+import { useVImage } from "~/composables/useVImage"
 
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 

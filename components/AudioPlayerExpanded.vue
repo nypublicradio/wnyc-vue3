@@ -2,10 +2,8 @@
 import {
   trackClickEvent,
   shareAPI,
-  templatizePublisherImageUrl,
   checkIsFavorited,
   addToFavorites2,
-  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,

@@ -5,8 +5,9 @@ import { normalizeArticleListItem } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
-import { templatizeImageUrl } from '~/utilities/helpers'
+import { useVImage } from "~/composables/useVImage"
 
+const { templatizeImageUrl } = useVImage()
 
 const config = useRuntimeConfig();
 const supabase = supabaseClient();

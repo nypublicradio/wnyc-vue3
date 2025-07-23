@@ -1,5 +1,7 @@
-const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
-
+import {
+    cmsSources,
+    NPRIMAGEDOMAINSOURCES,
+} from "~/composables/globals"
 
 interface ImageAttributes {
     imageMain?: {
