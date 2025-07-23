@@ -67,9 +67,9 @@ const props = defineProps({
 })
 
 // Use the same composable as the main MediaCard for consistency
-import { useImageDimensions } from "~/composables/useImageDimensions"
+import { useVImageDimensions } from "~/composables/useVImageDimensions"
 
-const { width: imageWidth, height: imageHeight } = useImageDimensions({
+const { width: imageWidth, height: imageHeight } = useVImageDimensions({
   size: props.size,
 })
 </script>
