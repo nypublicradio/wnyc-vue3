@@ -47,7 +47,7 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
  *   - Default: {} (uses [300,200] default size)
  * @returns {Object} - Reactive width, height, and current breakpoint
  */
-export function useImageDimensions(options = {}) {
+export function useVImageDimensions(options = {}) {
     const { size = {} } = options
 
     // Use the shared breakpoint composable

@@ -8,7 +8,7 @@ import {
   getEpisodeFallBackImage,
 } from "~/utilities/helpers"
 import { computed } from "vue"
-import { useImageDimensions } from "~/composables/useImageDimensions"
+import { useVImageDimensions } from "~/composables/useVImageDimensions"
 const props = defineProps({
   src: {
     default: null,
@@ -25,7 +25,7 @@ const props = defineProps({
 })
 
 // Use the simplified image dimensions composable
-const { width: imageWidth, height: imageHeight } = useImageDimensions({
+const { width: imageWidth, height: imageHeight } = useVImageDimensions({
   size: props.size,
 })
 
