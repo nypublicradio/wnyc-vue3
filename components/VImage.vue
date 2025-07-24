@@ -171,6 +171,8 @@ const dynamicComponent = computed(() => {
     &.image-loaded {
       position: relative;
       opacity: 1;
+      top: 0;
+      left: 0;
     }
   }
 }
