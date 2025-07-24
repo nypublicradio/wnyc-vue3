@@ -19,7 +19,7 @@ const onFocusOut = (e, index, length) => {
     e.target.parentElement.parentElement.parentElement.parentElement.parentElement
   // tabbing forward
   if (itemLength === index && !isTabbingBackward) {
-    if (parentMenu) {
+    if (parentMenu && parentMenu.nextElementSibling) {
       parentMenu.nextElementSibling.focus()
       //parentMenu.focus()
       const enterEvent = new KeyboardEvent("keydown", {
@@ -35,7 +35,7 @@ const onFocusOut = (e, index, length) => {
 
   // tabbing backward
   if (index === 0 && isTabbingBackward) {
-    if (parentMenu) {
+    if (parentMenu && parentMenu.previousElementSibling) {
       parentMenu.previousElementSibling.focus()
       //parentMenu.focus()
       const enterEvent = new KeyboardEvent("keydown", {
