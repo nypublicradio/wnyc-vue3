@@ -121,7 +121,7 @@ const getShow = async (slug: string) => {
     } else {
         const option = {
             method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows/`, // used to be v1/list/shows-for-app/'
+            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`, // used to be v1/list/shows-for-app/'
 
         };
         const res = await axios(option);
