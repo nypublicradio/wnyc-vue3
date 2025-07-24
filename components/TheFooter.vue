@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getYear, trackClickEvent } from "~/utilities/helpers"
+import { getYear } from "~/utilities/helpers"
 import { useCurrentEpisode } from "~/composables/states"
 import { allSocialData } from "~/composables/navigationData.js"
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()

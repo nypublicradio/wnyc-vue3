@@ -156,29 +156,31 @@ export function useVImage() {
         return finalUrlArr.join("/")
     }
 
+    // checks if the image is from Wagtail
     const isWagtailImage = (srcImg) => {
         return (typeof srcImg === "object" && srcImg?.fileHash) || /^\d+$/.test(srcImg)
     }
-
+    // checks if the image is from Publisher
     const isPublisherImage = (srcImg) => {
         return (typeof srcImg === "object" && srcImg?.template?.includes("media.wnyc.org"))
     }
-
+    // checks if the image is from NPR
     const isNPRImage = (srcImg) => {
         return NPRIMAGEDOMAINSOURCES.some((domain) => (typeof srcImg === "object" && srcImg?.template?.includes(domain)) || (typeof srcImg === "string" && srcImg?.includes(domain)))
     }
+    // checks if the image URL is from Wagtail
     const isWagtailImageUrl = (url) => {
         return (typeof url === "string" && url.includes("nypr.digital/images"))
     }
-
+    // checks if the image URL is from Publisher
     const isPublisherImageUrl = (url) => {
         return (typeof url === "string" && url.includes("media.wnyc.org"))
     }
-
+    // checks if the image URL is from NPR
     const isNPRImageUrl = (url) => {
         return NPRIMAGEDOMAINSOURCES.some((domain) => ((typeof url === "string" && url?.includes(domain))))
     }
-
+    // returns a templatized image URL based on the source
     const templatizeImageUrl = (url) => {
         // determine where the image src is from and return the templatized url
         if (isWagtailImageUrl(url)) {
