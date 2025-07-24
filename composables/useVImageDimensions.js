@@ -63,6 +63,7 @@ export function useVImageDimensions(options = {}) {
 
     // Calculate aspect ratio with tolerance for comparison
     const calculateRatio = (w, h) => w / h
+    // Check if two ratios are approximately equal within a tolerance
     const ratiosAreEqual = (ratio1, ratio2, tolerance = 0.1) => {
         return Math.abs(ratio1 - ratio2) <= tolerance
     }

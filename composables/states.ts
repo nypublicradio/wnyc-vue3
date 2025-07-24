@@ -1,4 +1,3 @@
-import { getFullDeviceInfo } from "~/utilities/helpers"
 import { masterNotificationChannelsArray } from "~/composables/useOneSignal"
 // Homepage data
 // // global state for the Bff useHomepageData data

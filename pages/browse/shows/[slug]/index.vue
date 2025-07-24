@@ -154,6 +154,7 @@ const hasEpisodes = computed(() => {
   return episodes.value?.some((ep) => ep?.type !== "segment")
 })
 
+// navigate to the episodes page
 const handleViewAll = () => {
   if (showSlug.value) {
     navigateTo(`${showSlug.value}/episodes`)
@@ -234,7 +235,7 @@ onMounted(() => {
               :srcFallback="getEpisodeFallBackImage()"
               :alt="`${showTitle} show image`"
               :size="{ xs: [112, 112], md: [208, 208] }"
-              class="flex-none show-image max-w-7rem md:max-w-13rem"
+              class="flex-none show-image w-7rem md:w-13rem"
               :srcset="[2]"
             />
             <Skeleton
@@ -400,23 +401,25 @@ onMounted(() => {
       </div>
     </section>
     <div class="flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3">
-      <Button
-        v-if="status === 'success'"
-        v-for="i in 5"
-        :key="i"
-        label="Jump Link"
-        severity="secondary"
-        class="px-3 md:px-4 lg:px-6"
-      />
-      <Skeleton
-        v-else
-        v-for="i in 5"
-        :key="`jump-link-${i}`"
-        height="2rem"
-        width="8rem"
-        borderRadius="1.75rem"
-        class="w-7rem md:w-8rem lg:w-11rem"
-      />
+      <template v-if="status === 'success'">
+        <Button
+          v-for="i in 5"
+          :key="i"
+          label="Jump Link"
+          severity="secondary"
+          class="px-3 md:px-4 lg:px-6"
+        />
+      </template>
+      <template v-else>
+        <Skeleton
+          v-for="i in 5"
+          :key="`jump-link-${i}`"
+          height="2rem"
+          width="8rem"
+          borderRadius="1.75rem"
+          class="w-7rem md:w-8rem lg:w-11rem"
+        />
+      </template>
     </div>
     <section class="py-4">
       <div class="grid">

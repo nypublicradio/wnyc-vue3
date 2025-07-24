@@ -85,6 +85,8 @@ const svgWidth = 75
   display: flex;
   justify-content: center;
   &.bg {
+    width: 100%;
+    height: 100%;
     background: -moz-radial-gradient(
       center,
       ellipse cover,
@@ -170,6 +172,8 @@ const svgWidth = 75
 <style lang="scss">
 .style-mode-dark .wnyc-loader {
   &.bg {
+    width: 100%;
+    height: 100%;
     background: -moz-radial-gradient(
       center,
       ellipse cover,

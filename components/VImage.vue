@@ -23,6 +23,21 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+
+// Check if the current route/page is being served from cache
+const isFromCache = computed(() => {
+  // Check Nuxt's cache headers or meta
+  return (
+    route.meta?.cached ||
+    (import.meta.client && document.querySelector('meta[name="nuxt-cache"]'))
+  )
+})
+
+const shouldShowLoader = computed(() => {
+  return !imageLoaded.value && !isFromCache.value
+})
+
 // Use the simplified image dimensions composable
 const { width: imageWidth, height: imageHeight } = useVImageDimensions({
   size: props.size,
@@ -62,7 +77,7 @@ watch(
 // Computed style for loader dimensions to match image responsively
 const loaderDimensions = computed(() => {
   // Use aspect-ratio and width: 100% to make it responsive like the images
-  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width: 100%;`
+  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width:100%`
 })
 
 // determines what component to load based on the item type
@@ -97,7 +112,7 @@ const dynamicComponent = computed(() => {
 <template>
   <div class="v-image-wrapper">
     <!-- Loader container that holds space -->
-    <div v-if="!imageLoaded" class="image-loader-container" :style="loaderDimensions">
+    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
       <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
     </div>
     <!-- Image component positioned absolutely when loading -->
@@ -131,7 +146,7 @@ const dynamicComponent = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--p-surface-50);
+
     /* Dimensions are set via inline styles to match image component */
 
     .image-loader-anim {

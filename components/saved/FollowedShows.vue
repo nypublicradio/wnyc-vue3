@@ -68,7 +68,8 @@ const user = useCurrentUser()
     .flex {
       align-items: center;
     }
-    .v-image {
+    .v-image,
+    .v-image-wrapper {
       width: 40px !important;
       height: 40px !important;
     }
