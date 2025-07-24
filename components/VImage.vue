@@ -70,24 +70,25 @@ const loaderDimensions = computed(() => {
 const dynamicComponent = computed(() => {
   if (!cmsSource.value) return null
 
-  const componentName = (() => {
+  // Get the import function based on CMS source
+  const getComponentImport = () => {
     switch (cmsSource.value) {
       case cmsSources.PUBLISHER:
-        return "VImagePublisher"
+        return () => import("./VImagePublisher.vue")
       case cmsSources.NPR:
-        return "VImageNpr"
+        return () => import("./VImageNpr.vue")
       case cmsSources.WAGTAIL:
-        return "VImageWagtail"
+        return () => import("./VImageWagtail.vue")
       default:
-        return "VImageWagtail"
+        return () => import("./VImageWagtail.vue")
     }
-  })()
+  }
 
   return markRaw(
     defineAsyncComponent({
-      loader: () => import(`./${componentName}.vue`),
+      loader: getComponentImport(),
       onError: (err) => {
-        console.error(`Failed to load component ${componentName}: ${err.message}`)
+        console.error(`Failed to load component: ${err.message}`)
       },
     })
   )
