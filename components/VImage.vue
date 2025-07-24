@@ -59,11 +59,10 @@ watch(
   }
 )
 
-// Computed style for loader dimensions to match image
+// Computed style for loader dimensions to match image responsively
 const loaderDimensions = computed(() => {
-  const width = props.width || imageWidth.value
-  const height = props.height || imageHeight.value
-  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width: ${width}px; height: ${height}px;`
+  // Use aspect-ratio and width: 100% to make it responsive like the images
+  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width: 100%;`
 })
 
 // determines what component to load based on the item type
