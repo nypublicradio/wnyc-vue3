@@ -3,7 +3,7 @@ import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, ref } from "vue"
+import { computed, ref, nextTick, onMounted } from "vue"
 
 const props = defineProps({
   /**
@@ -171,6 +171,7 @@ const emit = defineEmits([
 const isVertical = ref(props.allowVerticalEffect && props.maxHeight >= props.maxWidth)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)
+const imageRef = ref(null)
 
 const computedWidth = computed(() => {
   return isVertical.value
@@ -203,6 +204,28 @@ const enlargeLoad = (target) => {
   loadedEnlargedImage.value = true
 }
 
+// Handle image load with better reliability for cached images
+const handleImageLoad = () => {
+  emit("image-load")
+}
+
+// Check if image is already loaded on mount (for cached images)
+onMounted(async () => {
+  await nextTick()
+
+  if (!imageRef.value) {
+    return
+  }
+
+  // The nuxt-img component renders directly as an <img> element
+  const img = imageRef.value.$el
+
+  if (img && img.tagName === "IMG" && img.complete && img.naturalHeight !== 0) {
+    // Image is already loaded (cached)
+    emit("image-load")
+  }
+})
+
 const handleProvider = computed(() => {
   return isNaN(props.src) ? null : props.provider
 })
@@ -234,6 +257,7 @@ const handleProvider = computed(() => {
           />
         </div>
         <nuxt-img
+          ref="imageRef"
           :format="props.format"
           :provider="handleProvider"
           class="image native-image"
@@ -252,7 +276,8 @@ const handleProvider = computed(() => {
           :quality="String(props.quality)"
           :loading="props.loading"
           :modifiers="props.modifiers"
-          @load="emit('image-load')"
+          @load="handleImageLoad"
+          @error="handleImageLoad"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
