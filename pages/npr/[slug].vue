@@ -127,7 +127,7 @@ const togglePlayHere = (story) => {
         :maxHeight="storyData.height"
         :size="{
           xs: [375, 250],
-          sm: [576, 50],
+          sm: [576, 384],
           md: [768, 512],
           lg: [992, 661],
           xl: [1200, 800],

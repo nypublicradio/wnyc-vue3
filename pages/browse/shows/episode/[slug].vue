@@ -226,10 +226,14 @@ const getEpisodeImage = () => {
       <VImage
         v-if="status == 'success'"
         :src="getEpisodeImage()"
-        :width="390"
-        :height="360"
-        :ratio="[3, 2]"
-        :srcset="[2]"
+        :size="{
+          xs: [375, 250],
+          sm: [576, 384],
+          md: [768, 512],
+          lg: [992, 661],
+          xl: [1200, 800],
+          xxl: [1340, 893],
+        }"
         :alt="episodeData?.image?.altText"
         class="episode-page-image mb-2"
       />
@@ -240,14 +244,11 @@ const getEpisodeImage = () => {
         class="episode-page-image mb-2 opacity-60"
       />
       <VImage
-        v-if="status == 'success'"
+        v-if="status === 'success'"
         :src="episodeData?.headers.brand.logoImage"
-        :width="70"
-        :height="70"
-        :srcset="[2]"
-        :ratio="[1, 1]"
+        :size="[70, 70]"
         :alt="episodeData?.show"
-        class="episode-page-show-image mb-2 cursor-pointer"
+        class="episode-page-show-image cursor-pointer"
         :aria-label="`More from ${theShowTitle} button`"
         :title="`More from ${theShowTitle}`"
         @click="moreFromClick"
@@ -257,16 +258,10 @@ const getEpisodeImage = () => {
         borderRadius="0px"
         height="70px"
         width="70px"
-        class="episode-page-show-image mb-2 absolute"
+        class="episode-page-show-image absolute"
       />
     </div>
-    <!-- slug: {{ theSlug }}
-    <br />
-    titles: {{ theShowTitle }}
-    <br />
-    episodeData:
-    <pre class="text-xs">{{ episodeData }}</pre> -->
-    <div v-if="status == 'success'">
+    <div v-if="status === 'success'">
       <section>
         <p class="episode-page-date my-1">
           {{ getDate(episodeData, "LLL d, yyyy") }}
@@ -419,9 +414,7 @@ const getEpisodeImage = () => {
 }
 .episode-page .episode-page-image {
   width: 100%;
-  height: auto;
   aspect-ratio: 3/2;
-  object-fit: cover;
 }
 
 .episode-page .episode-page-show-image {
