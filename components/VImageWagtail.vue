@@ -206,7 +206,7 @@ const enlargeLoad = (target) => {
 
 // Handle image load with better reliability for cached images
 const handleImageLoad = () => {
-  emit("image-load")
+  //emit("image-load")
 }
 
 // Check if image is already loaded on mount (for cached images)
@@ -222,7 +222,7 @@ onMounted(async () => {
 
   if (img && img.tagName === "IMG" && img.complete && img.naturalHeight !== 0) {
     // Image is already loaded (cached)
-    emit("image-load")
+    //emit("image-load")
   }
 })
 
