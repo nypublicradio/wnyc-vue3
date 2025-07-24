@@ -25,6 +25,8 @@ const props = defineProps({
 
 const route = useRoute()
 
+// Loading state for the image
+const imageLoaded = ref(false)
 // Check if the current route/page is being served from cache
 const isFromCache = computed(() => {
   // Check Nuxt's cache headers or meta
@@ -57,9 +59,6 @@ const imgData = computed(() => {
 // Individual computed properties for easier access
 const cmsSource = computed(() => imgData.value.cmsSource)
 const imageTemplate = computed(() => imgData.value.imageTemplate)
-
-// Loading state for the image
-const imageLoaded = ref(false)
 
 // Handle image load event
 const handleImageLoad = () => {
