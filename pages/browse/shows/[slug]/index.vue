@@ -148,7 +148,7 @@ onMounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <section class="top style-mode-dark py-3 md:py-6">
+    <section class="show-header-holder style-mode-dark py-3 md:py-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col">
@@ -251,17 +251,8 @@ onMounted(() => {
 
 <style lang="scss">
 .shows-page {
-  .top {
+  .show-header-holder {
     background-color: var(--p-surface-950);
-  }
-  .play-btn {
-    width: 50px !important;
-    height: 50px !important;
-    svg {
-      width: 1.25rem;
-      height: 1.25rem;
-      margin-left: 2px;
-    }
   }
 }
 </style>

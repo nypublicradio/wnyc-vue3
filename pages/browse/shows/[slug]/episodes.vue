@@ -139,6 +139,16 @@ onMounted(() => {
       <FetchError v-if="error" />
     </section>
 
+    <section class="show-header-holder style-mode-dark py-3 md:py-6">
+      <div class="grid">
+        <div class="col-fixed hidden xxl:block w-20rem"></div>
+        <div class="col">
+          <ShowHeader :show="show" />
+        </div>
+        <div class="col-fixed hidden lg:block w-20rem"></div>
+      </div>
+    </section>
+
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
@@ -196,3 +206,11 @@ onMounted(() => {
     </section>
   </div>
 </template>
+
+<style lang="scss">
+.show-episodes-page {
+  .show-header-holder {
+    background-color: var(--p-surface-950);
+  }
+}
+</style>
