@@ -3,20 +3,22 @@ import { getEpisodeFallBackImage } from "~/utilities/helpers"
 import { useAppDownloadLink } from "~/composables/states"
 
 const props = defineProps({
-  data: {
+  show: {
     type: Object,
     default: null,
   },
 })
 
+const { show } = toRefs(props)
+
 const appDownloadLink = useAppDownloadLink()
 
 // Use computed properties to maintain reactivity
-const showData = computed(() => props.data)
-const showImage = computed(() => showData.value?.show?.image)
-const showTitle = computed(() => showData.value?.show?.title)
-const showDescription = computed(() => showData.value?.show?.description)
-const showSlug = computed(() => showData.value?.show?.slug)
+
+const showImage = computed(() => show.value?.show?.image)
+const showTitle = computed(() => show.value?.show?.title)
+const showDescription = computed(() => show.value?.show?.description)
+const showSlug = computed(() => show.value?.show?.slug)
 
 // TEMP until we have real show social data
 const showSocialData = [
@@ -50,7 +52,7 @@ const showSocialData = [
 //const showScheduleSummary = ref(props.data?.show?.scheduleSummary)
 </script>
 <template>
-  <div v-if="showData" class="flex flex-column gap-3">
+  <div v-if="show" class="flex flex-column gap-3">
     <div class="flex gap-4">
       <VImage
         :src="showImage"

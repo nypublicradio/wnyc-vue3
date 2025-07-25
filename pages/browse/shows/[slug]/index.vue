@@ -242,7 +242,7 @@ onMounted(() => {
           <!-- <BackToTopButton /> -->
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :data="show" />
+          <ShowSummary :show="show" />
         </div>
       </div>
     </section>
