@@ -151,7 +151,7 @@ onMounted(() => {
     <section class="show-header-holder style-mode-dark py-3 md:py-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col">
+        <div class="col pr-2 lg:pr-4">
           <ShowHeader :show="show" />
         </div>
         <div class="col-fixed hidden lg:block w-20rem"></div>
@@ -181,7 +181,7 @@ onMounted(() => {
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col">
+        <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
             <div class="flex justify-content-between align-items-center">
               <h2 class="md:text-xl">Most Recent</h2>

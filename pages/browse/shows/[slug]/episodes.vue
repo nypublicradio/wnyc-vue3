@@ -142,7 +142,7 @@ onMounted(() => {
     <section class="show-header-holder style-mode-dark py-3 md:py-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col">
+        <div class="col pr-2 lg:pr-4">
           <ShowHeader :show="show" />
         </div>
         <div class="col-fixed hidden lg:block w-20rem"></div>
@@ -152,9 +152,9 @@ onMounted(() => {
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col">
+        <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
-            <h1>Not sure what is here</h1>
+            <h1>All Episodes of {{ show.show.title }}</h1>
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <MediaCard
