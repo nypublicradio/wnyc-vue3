@@ -269,5 +269,14 @@ const handleAddToFavorites = () => {
 
 <style lang="scss" scoped>
 .show-header {
+  .play-btn {
+    width: 50px !important;
+    height: 50px !important;
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-left: 2px;
+    }
+  }
 }
 </style>
