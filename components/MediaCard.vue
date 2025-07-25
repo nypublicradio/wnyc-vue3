@@ -372,11 +372,7 @@ const handleHasAudio = computed(() => {
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
-      <div
-        class="image overflow-hidden p-0 col-fixed"
-        :class="props.imgCol"
-        v-if="props.showImage"
-      >
+      <div class="image p-0 col-fixed" :class="props.imgCol" v-if="props.showImage">
         <VImage
           class="flex-none"
           :alt="`${props.data.title} media image`"
@@ -535,7 +531,7 @@ const handleHasAudio = computed(() => {
 
   .holder {
     position: relative;
-    overflow: hidden;
+    //overflow: hidden;
     height: 100%;
 
     .event {
