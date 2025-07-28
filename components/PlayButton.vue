@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: "Play",
   },
+  size: {
+    type: String,
+    default: "small",
+  },
   live: {
     type: Boolean,
     default: false,
@@ -93,6 +97,7 @@ watch(
       tabindex="0"
       :class="[{ active: isPlaying }, props.buttonClass]"
       class="flex align-items-center cursor-pointer"
+      :size="props.size"
     >
       <slot name="icon">
         <Transition name="fade" mode="out-in">
@@ -169,12 +174,12 @@ watch(
     }
   }
   .content {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: var(--font-weight-700);
-    line-height: normal;
+    //line-height: normal;
     align-items: center;
     * {
-      line-height: 1;
+      //line-height: 1;
     }
   }
   &.circle {

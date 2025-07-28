@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  severity: {
+    type: String,
+    default: "secondary",
+  },
   menuItems: {
     type: Object,
     default: null,
@@ -33,7 +37,7 @@ const emit = defineEmits(["changeEmit"])
         <Button
           class="rounded"
           :class="{ 'p-button-text': props.isText }"
-          severity="secondary"
+          :severity="props.severity"
           icon="pi pi-ellipsis-v"
           rounded
           aria-label="options menu"
