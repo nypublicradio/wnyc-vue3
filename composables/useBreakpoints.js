@@ -12,7 +12,7 @@ function getCurrentBreakpoint(width) {
         return 'md' // Default fallback
     }
 
-    if (width < parseInt(breakpoints.xs)) return 'xs'  // Changed from 'xs-' to 'xs'
+    if (width < parseInt(breakpoints.xs)) return 'xs'
     if (width < parseInt(breakpoints.sm)) return 'xs'
     if (width < parseInt(breakpoints.md)) return 'sm'
     if (width < parseInt(breakpoints.lg)) return 'md'

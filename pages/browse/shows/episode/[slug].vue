@@ -1,5 +1,6 @@
 <script setup>
 import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
@@ -27,6 +28,9 @@ const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const globalToast = useGlobalToast()
 const progress = ref({})
+
+// Use the shared breakpoint composable
+const { currentBreakpoint } = useBreakpoints()
 
 const { data: episode, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
@@ -92,6 +96,11 @@ const handleDownload = async (epD) => {
 //handle the share of the episode
 const handleShare = () => {
   shareAPI(episodeData.value, "episode slug")
+}
+
+//handle the transcript of the episode
+const handleTranscript = () => {
+  //??
 }
 
 // if user is logged in, check if item is already favorited
@@ -255,7 +264,7 @@ watch(
             {{ getDate(episodeData, "LLL d, yyyy") }}
           </p>
           <div
-            class="pt-3 pb-6 flex align-items-center justify-content-between flex-wrap gap-3"
+            class="pt-3 pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
           >
             <div class="flex align-items-center gap-2">
               <PlayButton
@@ -276,41 +285,57 @@ watch(
             </div>
             <div class="flex gap-3 align-items-center">
               <Button
-                class="w-2rem h-2rem"
-                text
+                class=""
+                :text="false"
+                label="Add to Favorites"
+                severity="secondary"
+                size="small"
                 plain
                 rounded
                 aria-label="star"
                 @click="handleAddToFavorites(episodeData)"
               >
-                <template #icon> <StarIcon :active="isFavorited" /></template>
+                <template #icon>
+                  <StarIcon :active="isFavorited" class="w-1rem h-1rem"
+                /></template>
               </Button>
               <Button
                 v-if="hasAudio(episodeData?.audio)"
-                class="w-2rem h-2rem"
-                text
+                class=""
+                :text="false"
+                label="Download"
+                severity="secondary"
+                size="small"
                 plain
                 rounded
                 aria-label="download"
                 @click="handleDownload(episodeData)"
               >
-                <template #icon> <DownloadIcon /></template>
+                <template #icon> <DownloadIcon class="w-1rem h-1rem" /></template>
               </Button>
+              <!-- <Button class="" text plain rounded aria-label="share" @click="handleShare">
+                <template #icon> <ShareIcon /></template>
+              </Button> -->
               <Button
-                class="w-2rem h-2rem"
-                text
+                class=""
+                :text="false"
+                label="Transcript"
+                severity="secondary"
+                size="small"
                 plain
                 rounded
-                aria-label="share"
-                @click="handleShare"
+                aria-label="transcript"
+                @click="handleTranscript"
               >
-                <template #icon> <ShareIcon /></template>
+                <template #icon> <TranscriptIcon class="w-1rem h-1rem" /></template>
               </Button>
               <DotMenu
                 :menuItems="getDotMenuItems(episodeData)"
                 label=""
                 @changeEmit="onMenuChange"
                 class="-mr-1"
+                :isText="false"
+                size="small"
               >
                 <template #header-bottom>
                   <div>
