@@ -68,10 +68,6 @@ const theSlug = computed(
     episodeData.value?.headers.brand.slug
 )
 
-const { data: show, status: showStatus, error: showError } = useFetch(
-  `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`
-)
-
 const theShowTitle = computed(
   () =>
     episodeData.value?.showTitle ||
@@ -201,6 +197,26 @@ const getEpisodeImage = () => {
       : getEpisodeHeadFallBackImage()
     : getEpisodeHeadFallBackImage()
 }
+
+const {
+  data: show,
+  status: showStatus,
+  error: showError,
+  execute: executeShowFetch,
+} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
+  immediate: false,
+  server: false,
+})
+
+watch(
+  status,
+  () => {
+    if (status.value === "success" && theSlug.value) {
+      executeShowFetch()
+    }
+  },
+  { immediate: false }
+)
 </script>
 
 <template>
@@ -230,7 +246,100 @@ const getEpisodeImage = () => {
     </section>
     <FetchError v-if="error" />
 
-    <div class="show-header-holder py-3 md:py-6">
+    <section class="py-3 md:py-6">
+      <div class="grid">
+        <div class="col-fixed hidden xxl:block w-20rem"></div>
+        <div class="col pr-2 lg:pr-4">
+          <h1 class="mb-3">{{ episodeData?.title }}</h1>
+          <p class="episode-page-date my-1">
+            {{ getDate(episodeData, "LLL d, yyyy") }}
+          </p>
+          <div
+            class="pt-3 pb-6 flex align-items-center justify-content-between flex-wrap gap-3"
+          >
+            <div class="flex align-items-center gap-2">
+              <PlayButton
+                v-if="!hasSegments && hasAudio(episodeData?.audio)"
+                :label="getMinutes(episodeData?.estimatedDuration, 1)"
+                :data="episodeData"
+                @onClick="togglePlayHere(episodeData)"
+              />
+
+              <DownloadProgress
+                v-if="
+                  (progress && Object.keys(progress).length > 0) ||
+                  isAlreadyDownloaded(episodeData)
+                "
+                :isDownloaded="isAlreadyDownloaded(episodeData)"
+                :progress="progress"
+              />
+            </div>
+            <div class="flex gap-3 align-items-center">
+              <Button
+                class="w-2rem h-2rem"
+                text
+                plain
+                rounded
+                aria-label="star"
+                @click="handleAddToFavorites(episodeData)"
+              >
+                <template #icon> <StarIcon :active="isFavorited" /></template>
+              </Button>
+              <Button
+                v-if="hasAudio(episodeData?.audio)"
+                class="w-2rem h-2rem"
+                text
+                plain
+                rounded
+                aria-label="download"
+                @click="handleDownload(episodeData)"
+              >
+                <template #icon> <DownloadIcon /></template>
+              </Button>
+              <Button
+                class="w-2rem h-2rem"
+                text
+                plain
+                rounded
+                aria-label="share"
+                @click="handleShare"
+              >
+                <template #icon> <ShareIcon /></template>
+              </Button>
+              <DotMenu
+                :menuItems="getDotMenuItems(episodeData)"
+                label=""
+                @changeEmit="onMenuChange"
+                class="-mr-1"
+              >
+                <template #header-bottom>
+                  <div>
+                    <div class="flex gap-3 align-items-center px-4">
+                      <VImage
+                        :src="episodeData?.image || getEpisodeImage()"
+                        :alt="`${episodeData?.title} show image`"
+                        :width="112"
+                        :height="112"
+                        class="show-image-in-menu flex-none"
+                        :ratio="[1, 1]"
+                        style="height: 60px; width: 60px"
+                      />
+
+                      <div class="info">
+                        <h2>{{ episodeData?.title }}</h2>
+                        <p>{{ episodeData?.showTitle }}</p>
+                      </div>
+                    </div>
+                    <hr class="mt-5 mb-2 dim" />
+                  </div>
+                </template>
+              </DotMenu>
+            </div>
+          </div>
+        </div>
+        <div class="col-fixed hidden lg:block w-20rem"></div>
+      </div>
+
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
@@ -239,12 +348,12 @@ const getEpisodeImage = () => {
               v-if="status == 'success'"
               :src="getEpisodeImage()"
               :size="{
-                xs: [375, 250],
-                sm: [576, 384],
-                md: [768, 512],
-                lg: [992, 661],
-                xl: [1200, 800],
-                xxl: [1340, 893],
+                xs: [327, 218],
+                sm: [528, 352],
+                md: [672, 448],
+                lg: [560, 373],
+                xl: [933, 621],
+                xxl: [688, 458],
               }"
               :alt="episodeData?.image?.altText"
               class="episode-page-image mb-2"
@@ -255,115 +364,9 @@ const getEpisodeImage = () => {
               height="auto"
               class="episode-page-image mb-2 opacity-60"
             />
-            <VImage
-              v-if="status === 'success'"
-              :src="episodeData?.headers.brand.logoImage"
-              :size="[70, 70]"
-              :alt="episodeData?.show"
-              class="episode-page-show-image cursor-pointer"
-              :aria-label="`More from ${theShowTitle} button`"
-              :title="`More from ${theShowTitle}`"
-              @click="moreFromClick"
-            />
-            <Skeleton
-              v-else
-              borderRadius="0px"
-              height="70px"
-              width="70px"
-              class="episode-page-show-image absolute"
-            />
           </div>
           <div v-if="status === 'success'">
             <div>
-              <p class="episode-page-date my-1">
-                {{ getDate(episodeData, "LLL d, yyyy") }}
-              </p>
-              <h1 class="mb-3 alt">{{ episodeData?.title }}</h1>
-              <div
-                class="flex align-items-center justify-content-between flex-wrap gap-3"
-              >
-                <div class="flex align-items-center gap-2">
-                  <PlayButton
-                    v-if="!hasSegments && hasAudio(episodeData?.audio)"
-                    :label="getMinutes(episodeData?.estimatedDuration, 1)"
-                    :data="episodeData"
-                    @onClick="togglePlayHere(episodeData)"
-                  />
-
-                  <DownloadProgress
-                    v-if="
-                      (progress && Object.keys(progress).length > 0) ||
-                      isAlreadyDownloaded(episodeData)
-                    "
-                    :isDownloaded="isAlreadyDownloaded(episodeData)"
-                    :progress="progress"
-                  />
-                  <!--             <div v-else class="font-bold text-red-500">
-              <i class="pi pi-exclamation-triangle mr-1"></i>No Audio
-            </div> -->
-                </div>
-                <div class="flex gap-3 align-items-center">
-                  <Button
-                    class="w-2rem h-2rem"
-                    text
-                    plain
-                    rounded
-                    aria-label="star"
-                    @click="handleAddToFavorites(episodeData)"
-                  >
-                    <template #icon> <StarIcon :active="isFavorited" /></template>
-                  </Button>
-                  <Button
-                    v-if="hasAudio(episodeData?.audio)"
-                    class="w-2rem h-2rem"
-                    text
-                    plain
-                    rounded
-                    aria-label="download"
-                    @click="handleDownload(episodeData)"
-                  >
-                    <template #icon> <DownloadIcon /></template>
-                  </Button>
-                  <Button
-                    class="w-2rem h-2rem"
-                    text
-                    plain
-                    rounded
-                    aria-label="share"
-                    @click="handleShare"
-                  >
-                    <template #icon> <ShareIcon /></template>
-                  </Button>
-                  <DotMenu
-                    :menuItems="getDotMenuItems(episodeData)"
-                    label=""
-                    @changeEmit="onMenuChange"
-                    class="-mr-1"
-                  >
-                    <template #header-bottom>
-                      <div>
-                        <div class="flex gap-3 align-items-center px-4">
-                          <VImage
-                            :src="episodeData?.image || getEpisodeImage()"
-                            :alt="`${episodeData?.title} show image`"
-                            :width="112"
-                            :height="112"
-                            class="show-image-in-menu flex-none"
-                            :ratio="[1, 1]"
-                            style="height: 60px; width: 60px"
-                          />
-
-                          <div class="info">
-                            <h2>{{ episodeData?.title }}</h2>
-                            <p>{{ episodeData?.showTitle }}</p>
-                          </div>
-                        </div>
-                        <hr class="mt-5 mb-2 dim" />
-                      </div>
-                    </template>
-                  </DotMenu>
-                </div>
-              </div>
               <!-- SEGMENTS -->
               <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 segment-list">
                 <li
@@ -425,7 +428,7 @@ const getEpisodeImage = () => {
           <ShowSummary :show="show" />
         </div>
       </div>
-    </div>
+    </section>
 
     <BackToTopButton />
   </div>
@@ -435,15 +438,6 @@ const getEpisodeImage = () => {
 .episode-page .episode-page-image {
   width: 100%;
   aspect-ratio: 3/2;
-}
-
-.episode-page .episode-page-show-image {
-  width: 72px;
-  height: 72px;
-  aspect-ratio: 1/1;
-  position: absolute;
-  bottom: -36px;
-  left: $padding;
 }
 
 .episode-page .episode-page-date {
