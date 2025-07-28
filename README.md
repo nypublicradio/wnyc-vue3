@@ -79,6 +79,49 @@ npx cap sync
 npx cap open ios/android
 ```
 
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for unit testing. Tests are located in the `tests/` directory.
+
+### Running Tests
+
+```bash
+# Run tests in watch mode (recommended for development)
+npm run test
+
+# Run all tests once
+npm run test:run
+
+# Run tests with coverage report
+npm run coverage
+
+# Run tests with UI interface
+npm run test:ui
+```
+
+### Writing Tests
+
+Tests are organized in the `tests/` directory with the following structure:
+- `tests/utilities/` - Unit tests for utility functions
+- `tests/components/` - Vue component tests (future)
+- `tests/composables/` - Vue composable tests (future)
+
+Example test:
+```typescript
+import { describe, it, expect } from 'vitest'
+
+describe('MyFunction', () => {
+  it('should return expected result', () => {
+    const result = myFunction('input')
+    expect(result).toBe('expected')
+  })
+})
+```
+
+For more detailed testing information, see [TESTING.md](./TESTING.md).
+
+## Mobile Development
+
 Running this project in xcode for the first time may present an error about not having permissions. From a terminal run the following command : (Path will need to match the path present in the error.)
 
 ```bash

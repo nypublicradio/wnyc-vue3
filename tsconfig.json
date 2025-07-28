@@ -6,13 +6,13 @@
     "jsx": "preserve",
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Node16",
     "strict": false,
     "allowJs": true,
     "resolveJsonModule": true,
     "types": [
       "node",
-      "vitest/globals",
+      "vitest/globals"
     ]
   }
 }
