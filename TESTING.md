@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the unit testing setup for the WNYC Vue3 project using Vitest as the testing framework.
+This document outlines the comprehensive unit testing setup for the WNYC Vue3 project, with a focus on server API endpoint testing and utility function validation.
 
 ## Testing Stack
 
@@ -10,6 +10,7 @@ This document outlines the unit testing setup for the WNYC Vue3 project using Vi
 - **Assertion Library**: Built-in expect assertions from Vitest
 - **Test Environment**: happy-dom for DOM simulation
 - **Vue Component Testing**: @vue/test-utils (when needed)
+- **HTTP Mocking**: Axios mocking for API endpoint testing
 
 ## Installation
 
@@ -62,12 +63,117 @@ Tests are organized in the `tests/` directory:
 
 ```
 tests/
-├── setup.ts                    # Test setup file
-├── hello.test.ts               # Example test
+├── setup.ts                              # Test setup file
+├── hello.test.ts                         # Example test
 ├── utilities/
-│   └── helpers.test.ts         # Utility function tests
-├── components/                 # Vue component tests (future)
-└── composables/               # Composable tests (future)
+│   └── helpers.test.ts                   # Utility function tests
+├── server/
+│   ├── api-business-logic.test.ts        # API endpoint business logic
+│   └── api-integration.test.ts           # API workflow integration tests
+├── components/                           # Vue component tests (future)
+└── composables/                          # Composable tests (future)
+```
+
+## API Endpoint Testing
+
+### Server API Business Logic (`tests/server/api-business-logic.test.ts`)
+
+Comprehensive tests for all WNYC API endpoint logic:
+
+#### Shows API Logic
+- Image template URL formatting and transformation
+- Featured shows matching with main shows by slug
+- CMS source attribution for data tracking
+
+#### Streams API Logic
+- Stream filtering by source tags (new-wnyc-app)
+- URL construction with query parameters
+- Empty data and edge case handling
+
+#### Story API Logic
+- CMS source validation (publisher/wagtail)
+- Dynamic endpoint URL construction
+- Route parameter validation and handling
+
+#### Homepage Curation Logic
+- Complex data structure transformation
+- Missing field graceful handling
+- Content normalization across different types
+
+#### Data Normalization Patterns
+- Automatic CMS source addition
+- Audio content presence detection
+- Alphabetical sorting implementations
+
+#### Error Handling Patterns
+- HTTP error status identification (404, 500)
+- Fallback data structure provision
+- Network error pattern recognition
+
+#### Performance & Caching
+- Cache duration configuration validation
+- Cache header formatting verification
+- URL construction optimization
+
+### API Integration Testing (`tests/server/api-integration.test.ts`)
+
+Complete workflow tests simulating real API interactions:
+
+#### Full API Workflows
+- **Shows Workflow**: Fetches all shows + featured shows, processes image templates, matches featured content
+- **Streams Workflow**: Multi-step stream enrichment with filtering, detail fetching, and current show data
+- **Story Workflow**: Handles both Publisher and Wagtail CMS story retrieval and normalization
+- **Homepage Workflow**: Assembles complete homepage with featured content, recent articles, and Gothamist stories
+
+#### Error Handling Simulations
+- API timeout scenarios with appropriate fallbacks
+- Network error retry logic validation
+- Malformed response data graceful handling
+
+#### Performance Optimization Testing
+- Concurrent API call simulation and timing
+- Cache header validation across endpoints
+- Response processing performance verification
+
+### API Testing Strategy
+
+The API tests use comprehensive HTTP mocking to ensure:
+
+1. **Deterministic Results**: All external API calls are mocked for consistent test outcomes
+2. **Complete Coverage**: Both success and failure scenarios are thoroughly tested
+3. **Real-world Simulation**: Tests mirror actual API endpoint behavior and data flow
+4. **Performance Awareness**: Validates caching strategies and concurrent request handling
+
+Example API test pattern:
+
+```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
+
+// Mock axios globally
+vi.mock('axios')
+const mockedAxios = vi.mocked(axios)
+
+describe('API Workflow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should process complete API workflow', async () => {
+    // Mock API responses
+    const mockResponse = { data: { results: [/* test data */] } }
+    mockedAxios.mockResolvedValue(mockResponse)
+
+    // Test the workflow
+    const result = await processApiWorkflow()
+    
+    // Verify results
+    expect(result).toMatchObject({
+      processed: true,
+      cmsSource: 'publisher'
+    })
+  })
+})
 ```
 
 ## Writing Tests
@@ -175,14 +281,58 @@ describe('useMyComposable', () => {
 - Prefer `toBe()` for primitive values and `toEqual()` for objects
 - Use custom matchers when appropriate
 
-## Running Tests
+## Current Test Coverage
 
-### Development Workflow
+The project now includes comprehensive test coverage with **49 passing tests** across 5 test files:
 
-1. **Watch Mode**: Run `npm run test` to continuously run tests while developing
-2. **Single Run**: Use `npm run test:run` for CI/CD or final verification
-3. **Coverage**: Run `npm run coverage` to generate test coverage reports
-4. **UI Mode**: Use `npm run test:ui` for an interactive testing experience
+- **API Endpoint Testing**: 29 tests covering all major WNYC API endpoints
+  - Business logic validation
+  - Integration workflow testing  
+  - Error handling patterns
+  - Performance optimization
+- **Utility Functions**: 11 tests for helper methods and data transformations
+- **Integration Patterns**: 9 tests for complete API workflows
+- **Basic Examples**: Example tests demonstrating testing patterns
+
+### Test Results Summary
+
+```
+✓ tests/server/api-business-logic.test.ts (20 tests)
+✓ tests/server/api-integration.test.ts (9 tests)  
+✓ tests/utilities/helpers.test.ts (11 tests)
+✓ tests/examples/basic-utilities.test.ts (6 tests)
+✓ tests/hello.test.ts (3 tests)
+
+Total: 49 tests passing across 5 files
+```
+
+### API Endpoints Covered
+
+All major WNYC API endpoints are comprehensively tested:
+
+- `/api/shows` - Show listings and featured content
+- `/api/streams` - Live stream data and filtering
+- `/api/story/[cmsSource]/[storyId]` - Individual story content
+- `/api/homepagecuration` - Homepage content assembly
+
+## Running Specific Test Suites
+
+```bash
+# Run only API endpoint tests
+npm run test -- tests/server/
+
+# Run only utility function tests
+npm run test -- tests/utilities/
+
+# Run specific test file
+npm run test -- tests/server/api-business-logic.test.ts
+
+# Run tests matching pattern
+npm run test -- --grep "Shows API"
+
+# Run with coverage report
+npm run coverage
+```
 
 ### Debugging Tests
 

@@ -81,44 +81,81 @@ npx cap open ios/android
 
 ## Testing
 
-This project uses [Vitest](https://vitest.dev/) for unit testing. Tests are located in the `tests/` directory.
+This project includes comprehensive unit testing with a focus on API endpoint logic and utility functions.
 
-### Running Tests
+### Quick Start
 
 ```bash
 # Run tests in watch mode (recommended for development)
 npm run test
 
-# Run all tests once
+# Run tests once
 npm run test:run
 
-# Run tests with coverage report
+# Run with coverage report
 npm run coverage
 
-# Run tests with UI interface
+# Run with UI interface
 npm run test:ui
 ```
+
+### Test Coverage
+
+The project includes **49 passing tests** across multiple categories:
+
+- **API Endpoint Testing** (29 tests): Comprehensive testing of all WNYC server API endpoints
+  - Shows API workflow and data processing
+  - Streams API filtering and enrichment
+  - Story API with Publisher/Wagtail CMS support
+  - Homepage curation data assembly
+  - Error handling and performance patterns
+
+- **Utility Functions** (11 tests): Core helper functions and data transformations
+- **Integration Patterns** (9 tests): Complete API workflow simulations
+
+### API Endpoints Tested
+
+All major server API endpoints have comprehensive test coverage:
+- `/api/shows` - Show listings and featured content processing
+- `/api/streams` - Live stream data with source tag filtering  
+- `/api/story/[cmsSource]/[storyId]` - Individual story content retrieval
+- `/api/homepagecuration` - Homepage content curation and assembly
+
+### Testing Strategy
+
+- **HTTP Mocking**: All external API calls are mocked using Vitest and axios mocking
+- **Business Logic Focus**: Tests validate data processing, transformation, and business rules
+- **Error Handling**: Comprehensive coverage of error scenarios and fallback patterns
+- **Performance Patterns**: Validation of caching strategies and concurrent request handling
 
 ### Writing Tests
 
 Tests are organized in the `tests/` directory with the following structure:
+- `tests/server/` - API endpoint business logic and integration tests
 - `tests/utilities/` - Unit tests for utility functions
 - `tests/components/` - Vue component tests (future)
 - `tests/composables/` - Vue composable tests (future)
 
 Example test:
 ```typescript
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import axios from 'axios'
 
-describe('MyFunction', () => {
-  it('should return expected result', () => {
-    const result = myFunction('input')
-    expect(result).toBe('expected')
+vi.mock('axios')
+const mockedAxios = vi.mocked(axios)
+
+describe('API Workflow', () => {
+  it('should process API data correctly', async () => {
+    const mockResponse = { data: { results: [{ id: 1, title: 'Test' }] } }
+    mockedAxios.mockResolvedValue(mockResponse)
+    
+    const result = await processApiData()
+    expect(result).toMatchObject({ processed: true })
   })
 })
 ```
 
-For more detailed testing information, see [TESTING.md](./TESTING.md).
+For detailed testing information, see [TESTING.md](./TESTING.md).
 
 ## Mobile Development
 
