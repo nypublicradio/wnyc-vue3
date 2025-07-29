@@ -140,11 +140,13 @@ export class SalesforceClient {
 
         // Basic SOQL injection prevention - check for dangerous patterns
         const dangerousPatterns = [
-            /;\s*(DROP|DELETE|INSERT|UPDATE|CREATE|ALTER)\s+/i,
-            /UNION\s+SELECT/i,
-            /--\s*$/,
-            /\/\*.*\*\//,
-            /'[^']*'[^']*'/  // Multiple quotes that might indicate injection
+            /;\s*(DROP|DELETE|INSERT|UPDATE|CREATE|ALTER)\s+/i, // SQL commands after semicolon
+            /UNION\s+SELECT/i, // UNION injection attempts
+            /--\s/, // SQL comments 
+            /\/\*.*\*\//, // Block comments
+            /'\s*;\s*(DROP|DELETE|INSERT|UPDATE|CREATE|ALTER)/i, // Quote followed by dangerous commands
+            /'\s*UNION\s+SELECT/i, // Quote followed by UNION
+            /'\s*OR\s+'1'\s*=\s*'1/i // Classic SQL injection pattern
         ];
 
         for (const pattern of dangerousPatterns) {
