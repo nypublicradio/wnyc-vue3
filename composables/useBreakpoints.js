@@ -22,6 +22,55 @@ function getCurrentBreakpoint(width) {
     return 'xxxl'
 }
 
+// Add breakpoint order mapping for comparisons
+const breakpointOrder = {
+    'xs': 0,
+    'sm': 1,
+    'md': 2,
+    'lg': 3,
+    'xl': 4,
+    'xxl': 5,
+    'xxxl': 6
+}
+
+/**
+ * Compare current breakpoint with a given condition
+ * @param {string} condition - Condition like '>md', '>=lg', '<xl', '<=sm', '=md'
+ * @returns {boolean} - Whether the condition is met
+ */
+function breakpoint(condition) {
+    if (!condition || !globalBreakpoint.value) return false
+    
+    // Parse the condition
+    const match = condition.match(/^(>=|<=|>|<|=)?(.+)$/)
+    if (!match) return false
+    
+    const [, operator = '=', targetBreakpoint] = match
+    
+    // Validate target breakpoint
+    if (!(targetBreakpoint in breakpointOrder)) {
+        console.warn(`Invalid breakpoint: ${targetBreakpoint}`)
+        return false
+    }
+    
+    const currentOrder = breakpointOrder[globalBreakpoint.value]
+    const targetOrder = breakpointOrder[targetBreakpoint]
+    
+    switch (operator) {
+        case '>':
+            return currentOrder > targetOrder
+        case '>=':
+            return currentOrder >= targetOrder
+        case '<':
+            return currentOrder < targetOrder
+        case '<=':
+            return currentOrder <= targetOrder
+        case '=':
+        default:
+            return currentOrder === targetOrder
+    }
+}
+
 // Global shared state and resize handler
 const globalBreakpoint = ref('')
 let listenerCount = 0
@@ -53,7 +102,7 @@ const cleanupBreakpoints = () => {
 
 /**
  * Composable for responsive breakpoint detection with shared resize listener
- * @returns {Object} - Reactive current breakpoint
+ * @returns {Object} - Reactive current breakpoint and breakpoint comparison function
  */
 export function useBreakpoints() {
     onMounted(() => {
@@ -68,5 +117,6 @@ export function useBreakpoints() {
 
     return {
         currentBreakpoint: globalBreakpoint,
+        breakpoint,
     }
 }
