@@ -79,6 +79,7 @@ const parseHtml = () => {
         return `<VImage :src="${srcPropsId}" alt="${alt}" :size="${sizePropsId}" :srcset="${srcsetPropsId}" :width="${widthPropsId}" :height="${heightPropsId}"/>`
       }
     })
+    .replace("<p>&nbsp;</p>", "")
 
   theParcedHtml.value = updatedHTML
 }
