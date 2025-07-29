@@ -1,32 +1,17 @@
 <script setup>
-import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states"
-import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
-import StarIcon from "~/components/icons/StarIcon.vue"
-import DownloadIcon from "~/components/icons/DownloadIcon.vue"
-import ShareIcon from "~/components/icons/ShareIcon.vue"
-import SleepIcon from "~/components/icons/SleepIcon.vue"
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+import { useGlobalToast } from "~/composables/states"
 import {
-  getMinutes,
   trackClickEvent,
-  getDate,
   togglePlayEpisode,
   checkIsFavorited,
-  shareAPI,
-  addToFavorites2,
   getEpisodeHeadFallBackImage,
-  hasAudio,
 } from "~/utilities/helpers"
-import useSleepTimer from "~/composables/useSleepTimer"
-const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-const currentEpisode = useCurrentEpisode()
-const user = useCurrentUser()
 const globalToast = useGlobalToast()
-const progress = ref({})
 
 definePageMeta({
   pageTransition: false,
@@ -73,128 +58,22 @@ const theSlug = computed(
     episodeData.value?.headers.brand.slug
 )
 
-const theShowTitle = computed(
-  () =>
-    episodeData.value?.showTitle ||
-    episodeData.value?.headers.brand.title ||
-    episodeData.value?.title
-)
-
-const hasSegments = computed(() => Array.isArray(episodeData.value?.audio))
-
-// navigate back to home and track it
-const backHome = () => {
-  trackClickEvent("episode", "episode page", "back show page")
-  router.go(-1)
-}
-
-// handle the download of the audio file or multiple files request and feed the progress
-const handleDownload = async (epD) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
-  progress.value = await fetchAndStoreMp3(epD)
-}
-
-//handle the share of the episode
-const handleShare = () => {
-  shareAPI(episodeData.value, "episode slug")
-}
-
-//handle the transcript of the episode
-const handleTranscript = () => {
-  //??
-}
-
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
-// add item to favorites
-const handleAddToFavorites = (bucketItem) => {
-  // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites2({
-    item: bucketItem,
-    isFavorited: isFavorited.value,
-  })
-  if (user.value) {
-    isFavorited.value = !isFavorited.value
-  }
-}
-
-// handles the click on the show image and dots menu
-const moreFromClick = () => {
+// handle returning / routing to the full episode page
+const handleReturnToEpisode = () => {
   trackClickEvent(
-    "Click Tracking - Show image",
-    `Episode slug page: ${theSlug.value}`,
-    theShowTitle.value
+    "Click Tracking - Return to Episode",
+    "Episode slug",
+    `/browse/shows/episode/${route.params.slug}`
   )
-  navigateTo(`/browse/shows/${theSlug.value}`)
-}
-
-// set the items for the Dot menu
-const getDotMenuItems = (bucketItem) => {
-  return [
-    {
-      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
-      customIcon: StarIcon,
-      active: isFavorited.value,
-      title: bucketItem?.title,
-      command: () => {
-        handleAddToFavorites(bucketItem)
-      },
-    },
-    ...(hasAudio(bucketItem?.audio)
-      ? [
-          {
-            label: `Download ${
-              bucketItem.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
-            }`,
-            //icon: 'pi pi-google',
-            customIcon: DownloadIcon,
-            title: bucketItem?.title,
-            command: () => {
-              handleDownload(bucketItem)
-            },
-          },
-        ]
-      : []),
-    {
-      label: "Share",
-      customIcon: ShareIcon,
-      title: bucketItem?.title,
-      command: () => {
-        handleShare()
-      },
-    },
-    {
-      label: "More episodes",
-      customIcon: MoreEpisodesIcon,
-      title: bucketItem?.title,
-      command: () => {
-        moreFromClick()
-      },
-    },
-    {
-      label: "Sleep Timer",
-      customIcon: SleepIcon,
-      active: sleepTimerRunning.value,
-      title: currentEpisode.value?.title ?? "No audio playing",
-      command: () => {
-        handleSleepTimer()
-      },
-    },
-  ]
-}
-
-// fire the command located in the menuItems data object above when the user clicks on the menu item
-const onMenuChange = (e) => {
-  e?.value?.command()
-}
-
-// handle the toggle play button and tracking
-const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, index)
+  navigateTo(
+    `/browse/shows/episode/${route.params.slug}?src=${route.query.src}&type=${route.query.type}`
+  )
 }
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
@@ -233,9 +112,9 @@ watch(
   <div class="episode-page">
     <Html lang="en">
       <Head>
-        <Title>{{ episodeData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
+        <Title>{{ episodeData?.title }} Transcript | WNYC</Title>
+        <Meta name="og:title" :content="`${episodeData?.title} Transcript | WNYC`" />
+        <Meta name="twitter:title" :content="`${episodeData?.title} Transcript | WNYC`" />
       </Head>
     </Html>
     <FetchError v-if="error" />
@@ -251,6 +130,7 @@ watch(
                   label="Episode Details"
                   icon="pi pi-chevron-left"
                   severity="info"
+                  @click="handleReturnToEpisode"
                 />
                 <div class="flex align-items-center gap-2">
                   <VImage
@@ -271,26 +151,8 @@ watch(
             </div>
           </div>
           <div v-else>
-            <Skeleton
-              height="12px"
-              width="75px"
-              borderRadius="16px"
-              class="mb-2 opacity-50"
-            />
-            <Skeleton height="1.25rem" width="95%" borderRadius="16px" class="mb-1" />
-            <Skeleton height="1.25rem" width="75%" borderRadius="16px" class="mb-1" />
-            <div class="flex justify-content-between mt-4 mb-5">
-              <div>
-                <Skeleton height="29px" width="92px" borderRadius="16px" />
-              </div>
-              <div class="flex gap-3">
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-              </div>
-            </div>
-            <skeleton-text :lines="6" class="mt-1" />
+            <SkeletonText class="mb-2" />
+            <SkeletonText />
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
@@ -302,37 +164,3 @@ watch(
     <BackToTopButton />
   </div>
 </template>
-
-<style lang="scss">
-.episode-page .episode-page-image {
-  width: 100%;
-  aspect-ratio: 3/2;
-}
-
-.episode-page .episode-page-date {
-  font-size: var(--font-size-4);
-  font-weight: var(--font-weight-400);
-  line-height: var(--font-size-6);
-  color: var(--p-text-color);
-  text-decoration: none;
-}
-.episode-page .segment-list .beforeHack {
-  &::before {
-    content: "";
-    display: block;
-    height: 0px;
-  }
-}
-
-.episode-page h1.alt {
-  font-family: var(--font-family-header);
-  font-size: var(--font-size-8);
-  font-weight: var(--font-weight-600);
-  line-height: var(--font-size-10);
-}
-
-.episode-page .star-icon {
-  height: 28px;
-  width: 28px;
-}
-</style>
