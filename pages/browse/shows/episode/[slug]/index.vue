@@ -100,7 +100,9 @@ const handleShare = () => {
 
 //handle the transcript of the episode
 const handleTranscript = () => {
-  //??
+  navigateTo(
+    `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
+  )
 }
 
 // if user is logged in, check if item is already favorited
@@ -264,13 +266,14 @@ watch(
             {{ getDate(episodeData, "LLL d, yyyy") }}
           </p>
           <div
-            class="pt-3 pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
+            class="pt-3 pb-2 lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
           >
             <div class="flex align-items-center gap-2">
               <PlayButton
                 v-if="!hasSegments && hasAudio(episodeData?.audio)"
                 :label="getMinutes(episodeData?.estimatedDuration, 1)"
                 :data="episodeData"
+                severity="primary"
                 @onClick="togglePlayHere(episodeData)"
               />
 
@@ -418,13 +421,13 @@ watch(
                 :key="`body-${episodeData?.id || route.params.slug}`"
               />
             </div>
-            <div v-if="episodeData?.transcript">
+            <!-- <div v-if="episodeData?.transcript">
               <h3 class="mb-4">Transcript</h3>
               <HtmlConvert
                 :htmlContent="episodeData?.transcript"
                 :key="`transcript-${episodeData?.id || route.params.slug}`"
               />
-            </div>
+            </div> -->
           </div>
           <div v-else>
             <Skeleton
@@ -471,7 +474,6 @@ watch(
   line-height: var(--font-size-6);
   color: var(--p-text-color);
   text-decoration: none;
-  opacity: 70%;
 }
 .episode-page .segment-list .beforeHack {
   &::before {
