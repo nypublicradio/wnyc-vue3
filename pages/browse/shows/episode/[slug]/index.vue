@@ -421,13 +421,6 @@ watch(
                 :key="`body-${episodeData?.id || route.params.slug}`"
               />
             </div>
-            <!-- <div v-if="episodeData?.transcript">
-              <h3 class="mb-4">Transcript</h3>
-              <HtmlConvert
-                :htmlContent="episodeData?.transcript"
-                :key="`transcript-${episodeData?.id || route.params.slug}`"
-              />
-            </div> -->
           </div>
           <div v-else>
             <Skeleton
@@ -488,10 +481,5 @@ watch(
   font-size: var(--font-size-8);
   font-weight: var(--font-weight-600);
   line-height: var(--font-size-10);
-}
-
-.episode-page .star-icon {
-  height: 28px;
-  width: 28px;
 }
 </style>
