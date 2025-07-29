@@ -30,7 +30,8 @@ const globalToast = useGlobalToast()
 const progress = ref({})
 
 // Use the shared breakpoint composable
-const { currentBreakpoint } = useBreakpoints()
+const { breakpoint } = useBreakpoints()
+const isMobileBtn = computed(() => breakpoint("<md"))
 
 const { data: episode, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
@@ -290,7 +291,7 @@ watch(
               <Button
                 class=""
                 :text="false"
-                label="Add to Favorites"
+                :label="isMobileBtn ? '' : 'Add to Favorites'"
                 severity="secondary"
                 size="small"
                 plain
