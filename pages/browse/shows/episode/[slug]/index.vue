@@ -224,15 +224,13 @@ const getEpisodeImage = () => {
     : getEpisodeHeadFallBackImage()
 }
 
-const {
-  data: show,
-  status: showStatus,
-  error: showError,
-  execute: executeShowFetch,
-} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
-  immediate: false,
-  server: false,
-})
+const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch(
+  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
+  {
+    immediate: false,
+    server: false,
+  }
+)
 
 watch(
   status,
