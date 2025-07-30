@@ -33,6 +33,11 @@ const breakpointOrder = {
     'xxxl': 6
 }
 
+// Global shared state and resize handler
+const globalBreakpoint = ref('')
+let listenerCount = 0
+let isInitialized = false
+
 /**
  * Compare current breakpoint with a given condition
  * @param {string} condition - Condition like '>md', '>=lg', '<xl', '<=sm', '=md'
@@ -40,22 +45,22 @@ const breakpointOrder = {
  */
 function breakpoint(condition) {
     if (!condition || !globalBreakpoint.value) return false
-    
+
     // Parse the condition
     const match = condition.match(/^(>=|<=|>|<|=)?(.+)$/)
     if (!match) return false
-    
+
     const [, operator = '=', targetBreakpoint] = match
-    
+
     // Validate target breakpoint
     if (!(targetBreakpoint in breakpointOrder)) {
         console.warn(`Invalid breakpoint: ${targetBreakpoint}`)
         return false
     }
-    
+
     const currentOrder = breakpointOrder[globalBreakpoint.value]
     const targetOrder = breakpointOrder[targetBreakpoint]
-    
+
     switch (operator) {
         case '>':
             return currentOrder > targetOrder
@@ -70,12 +75,7 @@ function breakpoint(condition) {
             return currentOrder === targetOrder
     }
 }
-
-// Global shared state and resize handler
-const globalBreakpoint = ref('')
-let listenerCount = 0
-let isInitialized = false
-
+// function called on window resize to update the global breakpoint
 const handleResize = () => {
     if (typeof window !== 'undefined') {
         const newBreakpoint = getCurrentBreakpoint(window.innerWidth)
@@ -84,7 +84,7 @@ const handleResize = () => {
         }
     }
 }
-
+// Initialize breakpoints on first mount and set up resize listener
 const initializeBreakpoints = () => {
     if (typeof window !== 'undefined' && !isInitialized) {
         globalBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
@@ -92,7 +92,7 @@ const initializeBreakpoints = () => {
         isInitialized = true
     }
 }
-
+// Cleanup function to remove resize listener on unmounted
 const cleanupBreakpoints = () => {
     if (typeof window !== 'undefined' && isInitialized && listenerCount === 0) {
         window.removeEventListener("resize", handleResize)

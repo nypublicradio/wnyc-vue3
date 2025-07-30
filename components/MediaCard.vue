@@ -132,7 +132,7 @@ const props = defineProps({
   },
   teaseClasses: {
     type: String,
-    default: "hidden md:block text-xs",
+    default: "hidden md:block",
   },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
@@ -388,7 +388,7 @@ const handleHasAudio = computed(() => {
       </div>
       <div class="content col">
         <div class="flex gap-2 flex-column justify-content-between w-full h-full">
-          <div class="flex gap-1 flex-column w-full">
+          <div class="flex gap-2 flex-column w-full">
             <div class="flex gap-1 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" :class="props.showTitleClasses">
@@ -397,6 +397,7 @@ const handleHasAudio = computed(() => {
               <h2 class="no-hyphens" :class="props.titleClasses">
                 {{ props.data?.title }}
               </h2>
+
               <HtmlConvert
                 v-if="props.data.tease && props.showTease"
                 :htmlContent="props.data.tease"
