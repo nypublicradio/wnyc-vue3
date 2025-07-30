@@ -119,30 +119,45 @@ watch(
     </Html>
     <FetchError v-if="error" />
 
-    <section class="py-3 md:py-6">
+    <section class="pinned mt-6">
+      <div class="grid">
+        <div class="col-fixed hidden xxl:block w-20rem"></div>
+        <div class="col pr-2 lg:pr-4">
+          <div v-if="status === 'success'">
+            <div class="flex align-items-center gap-2 flex-wrap">
+              <Button
+                label="Episode Details"
+                icon="pi pi-chevron-left"
+                severity="info"
+                @click="handleReturnToEpisode"
+              />
+              <div class="flex align-items-center gap-2">
+                <VImage
+                  :src="getEpisodeImage()"
+                  :alt="episodeData?.title"
+                  class="episode-page-image"
+                  :size="[37, 37]"
+                  style="width: 37px; height: 37px"
+                />
+                <h2>{{ episodeData?.title }}</h2>
+              </div>
+            </div>
+          </div>
+          <div v-else class="flex align-items-center gap-2">
+            <Skeleton height="36px" width="168px" borderRadius="18px" />
+            <Skeleton height="37px" width="37px" borderRadius="0px" />
+            <Skeleton height="18px" width="220px" borderRadius="18px" />
+          </div>
+        </div>
+        <div class="col-fixed hidden lg:block w-20rem"></div>
+      </div>
+    </section>
+    <section class="py-0">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
             <div v-if="episodeData?.transcript">
-              <div class="flex align-items-center gap-2 flex-wrap">
-                <Button
-                  label="Episode Details"
-                  icon="pi pi-chevron-left"
-                  severity="info"
-                  @click="handleReturnToEpisode"
-                />
-                <div class="flex align-items-center gap-2">
-                  <VImage
-                    :src="getEpisodeImage()"
-                    :alt="episodeData?.title"
-                    class="episode-page-image"
-                    :size="[37, 37]"
-                    style="width: 37px; height: 37px"
-                  />
-                  <h2>{{ episodeData?.title }}</h2>
-                </div>
-              </div>
               <h3 class="mt-4">Transcript</h3>
               <HtmlConvert
                 :htmlContent="episodeData?.transcript"
@@ -164,3 +179,14 @@ watch(
     <BackToTopButton />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.episode-page {
+  .pinned {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 10;
+    background-color: var(--header-background);
+  }
+}
+</style>
