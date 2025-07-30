@@ -148,16 +148,18 @@ onMounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <section class="show-header-holder style-mode-dark py-3 md:py-6">
-      <div class="grid">
+    <div class="show-header-holder style-mode-dark py-3 md:py-6">
+      <section class="grid m-auto">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <ShowHeader :show="show" />
         </div>
         <div class="col-fixed hidden lg:block w-20rem"></div>
-      </div>
-    </section>
-    <div class="flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3">
+      </section>
+    </div>
+    <div
+      class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
+    >
       <template v-if="status === 'success'">
         <Button
           v-for="i in 5"
@@ -185,7 +187,11 @@ onMounted(() => {
           <div v-if="status === 'success'" class="flex flex-column gap-5">
             <div class="flex justify-content-between align-items-center">
               <h2 class="md:text-xl">Most Recent</h2>
-              <Button variant="link" class="underline" @click="handleViewAll"
+              <Button
+                severity="secondary"
+                variant="link"
+                class="underline"
+                @click="handleViewAll"
                 >View All</Button
               >
             </div>

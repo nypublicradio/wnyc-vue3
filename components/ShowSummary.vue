@@ -50,10 +50,15 @@ const showSocialData = [
 
 //const showTease = ref(props.data?.show?.tease)
 //const showScheduleSummary = ref(props.data?.show?.scheduleSummary)
+const handleShowClick = () => {
+  if (showSlug.value) {
+    navigateTo(`/browse/shows/${showSlug.value}`)
+  }
+}
 </script>
 <template>
   <div v-if="show" class="flex flex-column gap-3">
-    <div class="flex gap-4">
+    <div @click="handleShowClick" class="flex gap-4 cursor-pointer">
       <VImage
         :src="showImage"
         :srcFallback="getEpisodeFallBackImage()"

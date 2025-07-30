@@ -107,15 +107,18 @@
 }
 
 @mixin cardTitle() {
-  font-size: var(--font-size-5);
+  font-size: var(--font-size-6);
   line-height: 1.25em;
   font-weight: var(--font-weight-700);
   @include truncate();
   @include t3lines();
+  @include media('<md') {
+    font-size: var(--font-size-5);
+  }
 }
 @mixin cardBody() {
-  font-size: var(--font-size-4);
-  line-height: 1.25em;
+  font-size: var(--font-size-5);
+  line-height: 1.5em;
   font-weight: var(--font-weight-400);
   @include truncate();
   @include t4lines();

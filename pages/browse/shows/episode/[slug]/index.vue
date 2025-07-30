@@ -162,7 +162,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(Boolean(bucketItem?.transcript)
+    ...(bucketItem?.transcript
       ? [
           {
             label: "Transcript",
@@ -255,8 +255,6 @@ watch(
       </Head>
     </Html>
     <section>
-      <!-- <pre>show:{{ show }}</pre>
-      <pre>episode:{{ episodeData }}</pre> -->
       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-3"
