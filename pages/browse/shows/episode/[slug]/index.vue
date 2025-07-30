@@ -271,17 +271,27 @@ watch(
       </div>
     </section>
     <FetchError v-if="error" />
+    <FetchError v-if="showError" />
 
     <section class="py-3 md:py-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <h1 class="mb-3">{{ episodeData?.title }}</h1>
-          <p class="episode-page-date my-1">
+          <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
+            {{ episodeData?.title }}
+          </h1>
+          <!-- <p class="episode-page-date my-1">
             {{ getDate(episodeData, "LLL d, yyyy") }}
-          </p>
+          </p> -->
+
+          <PipeData class="text-sm">
+            <template #left>{{ episodeData?.showTitle }}</template>
+            <template #right>
+              <span class="nobreak">{{ getDate(episodeData, "LLL d, yyyy") }}</span>
+            </template>
+          </PipeData>
           <div
-            class="pt-3 pb-2 lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
+            class="pt-4 pb-2 lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
           >
             <div class="flex align-items-center gap-2">
               <PlayButton
@@ -384,7 +394,7 @@ watch(
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div class="episode-page-image-holder relative mb-4">
+          <div v-if="getEpisodeImage()" class="episode-page-image-holder relative mb-4">
             <VImage
               v-if="status == 'success'"
               :src="getEpisodeImage()"
@@ -409,7 +419,7 @@ watch(
           <div v-if="status === 'success'">
             <div>
               <!-- SEGMENTS -->
-              <ol v-if="hasSegments" class="flex flex-column gap-3 mt-6 segment-list">
+              <ol v-if="hasSegments" class="flex flex-column gap-3 mt-5 segment-list">
                 <li
                   v-for="segment in episodeData?.audio"
                   class="mb-3 pr-0 beforeHack"
