@@ -23,21 +23,11 @@ const props = defineProps({
   },
 })
 
-const route = useRoute()
-
 // Loading state for the image
 const imageLoaded = ref(false)
-// Check if the current route/page is being served from cache
-const isFromCache = computed(() => {
-  // Check Nuxt's cache headers or meta
-  return (
-    route.meta?.cached ||
-    (import.meta.client && document.querySelector('meta[name="nuxt-cache"]'))
-  )
-})
 
 const shouldShowLoader = computed(() => {
-  return !imageLoaded.value && !isFromCache.value
+  return !imageLoaded.value
 })
 
 // Use the simplified image dimensions composable
@@ -110,27 +100,22 @@ const dynamicComponent = computed(() => {
 
 <template>
   <div class="v-image-wrapper">
-    <!-- Loader container that holds space -->
-    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
-      <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
-    </div>
+
     <!-- Image component positioned absolutely when loading -->
-    <component
-      v-if="cmsSource && dynamicComponent"
-      :is="dynamicComponent"
-      :key="`${cmsSource}-${imageTemplate}`"
-      v-bind="{ ...$props, ...$attrs }"
-      :src="imageTemplate"
-      :width="props.width || imageWidth"
-      :height="props.height || imageHeight"
-      :ratio="props.ratio || imageRatio"
-      :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
-      @image-load="handleImageLoad"
-    >
+    <component :is="dynamicComponent" :key="`${cmsSource}-${imageTemplate}`" v-bind="{ ...$props, ...$attrs }"
+      :src="imageTemplate" :width="props.width || imageWidth" :height="props.height || imageHeight"
+      :ratio="props.ratio || imageRatio" :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
+      @image-load="handleImageLoad">
       <template v-for="(value, name) in $slots" #[name]="data">
         <slot :name="name" v-bind="data"></slot>
       </template>
     </component>
+
+    <!-- Loader container that holds space -->
+    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
+      <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+    </div>
+
   </div>
 </template>
 
@@ -154,12 +139,7 @@ const dynamicComponent = computed(() => {
   }
 
   // Image positioning and transitions
-  :deep(.v-image),
-  :deep(.v-image-wagtail),
-  :deep(.v-image-publisher),
-  :deep(.v-image-npr) {
-    transition: opacity 0.2s ease-in-out;
-
+  .v-image {
     &.image-loading {
       position: absolute;
       top: 0;
