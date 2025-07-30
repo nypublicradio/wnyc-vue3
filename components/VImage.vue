@@ -5,6 +5,9 @@ import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
 
+// Cache components to avoid recreation
+const componentCache = new Map()
+
 const props = defineProps({
   /** Image source - can be a string URL or object containing image data */
   src: {
@@ -73,9 +76,16 @@ const loaderDimensions = computed(() => {
 const dynamicComponent = computed(() => {
   if (!cmsSource.value) return null
 
+  const source = cmsSource.value
+
+  // Check if we already have this component cached
+  if (componentCache.has(source)) {
+    return componentCache.get(source)
+  }
+
   // Get the import function based on CMS source
   const getComponentImport = () => {
-    switch (cmsSource.value) {
+    switch (source) {
       case cmsSources.PUBLISHER:
         return () => import("./VImagePublisher.vue")
       case cmsSources.NPR:
@@ -87,7 +97,7 @@ const dynamicComponent = computed(() => {
     }
   }
 
-  return markRaw(
+  const component = markRaw(
     defineAsyncComponent({
       loader: getComponentImport(),
       onError: (err) => {
@@ -95,17 +105,27 @@ const dynamicComponent = computed(() => {
       },
     })
   )
+
+  // Store in cache for next time
+  componentCache.set(source, component)
+  return component
 })
 </script>
 
 <template>
   <div class="v-image-wrapper">
-
     <!-- Image component positioned absolutely when loading -->
-    <component :is="dynamicComponent" :key="`${cmsSource}-${imageTemplate}`" v-bind="{ ...$props, ...$attrs }"
-      :src="imageTemplate" :width="props.width || imageWidth" :height="props.height || imageHeight"
-      :ratio="props.ratio || imageRatio" :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
-      @image-load="handleImageLoad">
+    <component
+      :is="dynamicComponent"
+      :key="`${cmsSource}-${imageTemplate}`"
+      v-bind="{ ...$props, ...$attrs }"
+      :src="imageTemplate"
+      :width="props.width || imageWidth"
+      :height="props.height || imageHeight"
+      :ratio="props.ratio || imageRatio"
+      :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
+      @image-load="handleImageLoad"
+    >
       <template v-for="(value, name) in $slots" #[name]="data">
         <slot :name="name" v-bind="data"></slot>
       </template>
@@ -115,7 +135,6 @@ const dynamicComponent = computed(() => {
     <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
       <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
     </div>
-
   </div>
 </template>
 
