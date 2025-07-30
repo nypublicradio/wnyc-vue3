@@ -4,6 +4,7 @@ import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import TranscriptIcon from "~/components/icons/TranscriptIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
@@ -161,6 +162,19 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
+    ...(Boolean(bucketItem?.transcript)
+      ? [
+          {
+            label: "Transcript",
+            //icon: 'pi pi-google',
+            customIcon: TranscriptIcon,
+            title: bucketItem?.title,
+            command: () => {
+              handleTranscript()
+            },
+          },
+        ]
+      : []),
     {
       label: "Share",
       customIcon: ShareIcon,
@@ -289,11 +303,10 @@ watch(
             </div>
             <div class="flex gap-3 align-items-center">
               <Button
-                class=""
                 :text="false"
                 :label="isMobileBtn ? '' : 'Add to Favorites'"
+                :size="isMobileBtn ? '' : 'small'"
                 severity="secondary"
-                size="small"
                 plain
                 rounded
                 aria-label="star"
@@ -305,11 +318,10 @@ watch(
               </Button>
               <Button
                 v-if="hasAudio(episodeData?.audio)"
-                class=""
                 :text="false"
-                label="Download"
+                :label="isMobileBtn ? '' : 'Download'"
+                :size="isMobileBtn ? '' : 'small'"
                 severity="secondary"
-                size="small"
                 plain
                 rounded
                 aria-label="download"
@@ -321,11 +333,11 @@ watch(
                 <template #icon> <ShareIcon /></template>
               </Button> -->
               <Button
-                class=""
+                v-if="episodeData?.transcript"
                 :text="false"
-                label="Transcript"
+                :label="isMobileBtn ? '' : 'Transcript'"
+                :size="isMobileBtn ? '' : 'small'"
                 severity="secondary"
-                size="small"
                 plain
                 rounded
                 aria-label="transcript"
