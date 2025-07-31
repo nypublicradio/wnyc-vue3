@@ -386,6 +386,19 @@ html:not(.style-mode-dark) {
     transition: all calc(var(--p-transition-duration) * 1.5);
     -webkit-transition: all calc(var(--p-transition-duration) * 1.5);
   }
+  &.p-button-secondary.link {
+    &:hover {
+      .p-button-label {
+        text-decoration-color: var(--link-button-hover-color);
+        color: var(--link-button-hover-color);
+      }
+    }
+
+    .p-button-label {
+      text-decoration-color: var(--link-button-color);
+      color: var(--link-button-color);
+    }
+  }
 }
 
 // stops the svg in buttons from showing the focus outline

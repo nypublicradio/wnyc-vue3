@@ -190,10 +190,10 @@ onMounted(() => {
               <Button
                 severity="secondary"
                 variant="link"
-                class="underline"
+                class="link"
                 @click="handleViewAll"
-                >View All</Button
-              >
+                label="View All"
+              ></Button>
             </div>
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->

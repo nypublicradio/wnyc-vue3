@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  size: {
+    type: [Array, Object],
+    default: [112, 112],
+  },
 })
 
 const user = useCurrentUser()
@@ -91,12 +95,9 @@ const getDotMenuItems = (bucketItem) => {
       <VImage
         :src="props.data.image"
         :srcFallback="FALLBACKIMAGEWAGTAIL"
-        :height="112"
-        :width="112"
-        :ratio="[1, 1]"
-        :srcset="[2]"
+        :size="props.size"
         class="flex-none"
-        style="height: 112px; width: 112px; background-color: var(--p-surface-25)"
+        :style="`height: ${props.size[0]}px; width: ${props.size[1]}px; background-color: var(--p-surface-25)`"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
