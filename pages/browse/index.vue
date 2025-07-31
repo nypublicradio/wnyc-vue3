@@ -4,7 +4,7 @@ import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
-const { data: shows, pending, error } = useLazyFetch(
+const { data: shows, status, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/v2/shows`
 )
 
@@ -92,6 +92,7 @@ watch(
       </Head>
     </Html>
     <section class="search z-2">
+      <h1 class="mb-3 md:mb-4">Browse All Shows</h1>
       <IconField>
         <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
         <InputIcon v-else class="pi pi-search text-color" />
@@ -113,7 +114,7 @@ watch(
         </InputIcon>
       </IconField>
     </section>
-    <div class="content-holder">
+    <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
         <div class="topics">
           <section>
@@ -140,7 +141,10 @@ watch(
           </HorizontalScrollFeature>
         </div>
         <FetchError v-if="error" />
+
         <section class="tabs mt-2">
+          <h2>Shows</h2>
+          <!-- <pre>{{ shows?.featuredShows }}</pre> -->
           <Tabs
             value="0"
             :lazy="true"
@@ -154,7 +158,7 @@ watch(
             <TabPanels>
               <TabPanel value="0">
                 <div class="shows flex flex-column gap-5">
-                  <template v-if="!pending">
+                  <template v-if="status === 'success'">
                     <ShowItem
                       v-for="show in shows?.featuredShows"
                       :data="show"
@@ -171,7 +175,7 @@ watch(
               </TabPanel>
               <TabPanel value="1">
                 <div class="shows flex flex-column gap-5">
-                  <template v-if="!pending">
+                  <template v-if="status === 'success'">
                     <ShowItem
                       v-for="show in shows?.all"
                       :data="show"
