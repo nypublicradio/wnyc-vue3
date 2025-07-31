@@ -44,6 +44,9 @@ const handleActiveTab = (e) => {
   activeTab.value = e
 }
 
+const handleAllTopics = () => {}
+const toggleAllShows = () => {}
+
 watch(searchFieldValue, () => {
   // sets the scroll to the top of the page when search field is updated. a delay is needed to allow the search to complete
   setTimeout(() => {
@@ -117,8 +120,15 @@ watch(
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
         <div class="topics">
-          <section>
+          <section class="topics-header flex justify-content-between align-items-center">
             <h2>Browse By Topic</h2>
+            <Button
+              severity="secondary"
+              variant="link"
+              class="link"
+              @click="handleAllTopics"
+              label="All Topics"
+            ></Button>
           </section>
           <HorizontalScrollFeature class="topics-holder" :data="shows">
             <div class="flex w-full">
@@ -143,9 +153,60 @@ watch(
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <h2>Shows</h2>
+          <div class="flex justify-content-between align-items-center">
+            <h2>Shows</h2>
+            <div>
+              <Button
+                severity="secondary"
+                variant="link"
+                class="link"
+                @click="toggleAllShows"
+                label="All Shows"
+              ></Button>
+              <Button
+                severity="secondary"
+                variant="link"
+                class="link"
+                @click="toggleAllShows"
+                label="Featured Shows"
+              ></Button>
+            </div>
+          </div>
+
+          <div class="shows flex flex-column gap-5">
+            <template v-if="status === 'success'">
+              <ShowItem
+                v-for="show in shows?.featuredShows"
+                :data="show"
+                :key="show.title"
+                @onClick="goToShowPage(show)"
+              />
+            </template>
+            <skeleton-show-item
+              v-else
+              v-for="(show, index) in 27"
+              :key="`sk1-${index}`"
+            />
+          </div>
+
+          <div class="shows flex flex-column gap-5">
+            <template v-if="status === 'success'">
+              <ShowItem
+                v-for="show in shows?.all"
+                :data="show"
+                :key="show.title"
+                @onClick="goToShowPage(show)"
+              />
+            </template>
+            <skeleton-show-item
+              v-else
+              v-for="(show, index) in 27"
+              :key="`sk2-${index}`"
+            />
+          </div>
+
           <!-- <pre>{{ shows?.featuredShows }}</pre> -->
-          <Tabs
+          <!-- <Tabs
             value="0"
             :lazy="true"
             :activeIndex="Number(activeTab)"
@@ -191,7 +252,7 @@ watch(
                 </div>
               </TabPanel>
             </TabPanels>
-          </Tabs>
+          </Tabs> -->
         </section>
       </div>
       <div v-else>
