@@ -132,7 +132,7 @@ watch(
             <Button
               severity="secondary"
               variant="link"
-              class="link"
+              class="link -mr-2"
               @click="handleAllTopics"
               label="All Topics"
             ></Button>
@@ -211,11 +211,17 @@ watch(
           <div class="results-list mb-2">
             <h2>Search Results</h2>
           </div>
-          <div class="shows flex flex-column gap-5">
+          <div class="shows grid">
             <ShowItem
               v-for="show in search.results"
               :data="show.item"
               :key="show.item.title"
+              class="col-12 md:col-4 md:mb-5"
+              rootClass="md:align-items-start"
+              contentClass="md:flex-column gap-3 md:gap-2"
+              imageClass="w-7rem md:w-13rem"
+              :size="{ xs: [112, 112], md: [208, 208] }"
+              :hideButtons="!isMobile"
               @onClick="goToShowPage(show.item)"
             />
           </div>
