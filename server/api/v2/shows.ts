@@ -42,7 +42,10 @@ const nprShows = async () => {
                 cmsSource: cmsSources.NPR,
                 type: cmsSources.NPR,
                 url: data.resources[0]?.webPages[0]?.href,
-                featured: show.featured
+                featured: show.featured,
+                producingOrganizations: [{
+                    name: 'NPR',
+                }],
             }
         }));
         fetchedShows.forEach((show) => {
@@ -67,6 +70,7 @@ const allShows = async () => {
     };
     const res = await axios(option);
     res.data.results.forEach((show) => {
+        //console.log('show', show);
         show.cmsSource = cmsSources.PUBLISHER;
         show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGELOCAL
         delete show.description;

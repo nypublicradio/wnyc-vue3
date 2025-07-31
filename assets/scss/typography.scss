@@ -5,8 +5,8 @@ $type-header1: (
     'default': (
         'values': (
             'font-family': var(--font-family-header),
-            'font-size': var(--font-size-10),
-            'line-height': var(--font-size-12),
+            'font-size': var(--font-size-15),
+            'line-height': 1.25em,
             'font-weight': var(--font-weight-700),
             'color': var(--p-text-color)
         )
@@ -14,7 +14,7 @@ $type-header1: (
     $medium: (
         'values': (
             'font-size': var(--font-size-10),
-            'line-height': var(--font-size-12)
+            'line-height': 1.25em
         )
     )
 );
@@ -22,8 +22,8 @@ $type-header2: (
     'default': (
         'values': (
             'font-family': var(--font-family-header),
-            'font-size': var(--font-size-6),
-            'line-height': var(--font-size-8),
+            'font-size': var(--font-size-9),
+            'line-height': 1.25em,
             'font-weight': var(--font-weight-700),
             'color': var(--p-text-color)
         )
@@ -31,7 +31,7 @@ $type-header2: (
     $medium: (
         'values': (
             'font-size': var(--font-size-6),
-            'line-height': var(--font-size-8)
+            'line-height': 1.25em
         )
     )
 );
