@@ -137,7 +137,7 @@ watch(
               label="All Topics"
             ></Button>
           </section>
-          <HorizontalScrollFeature class="topics-holder" :data="shows">
+          <HorizontalScrollFeature v-if="isMobile" class="topics-holder" :data="shows">
             <div class="flex w-full">
               <div
                 v-for="topic in showTopics"
@@ -146,7 +146,7 @@ watch(
               >
                 <div class="relative topic-btn-holder">
                   <Button
-                    class="topic-btn text-sm white-space-nowrap font-meta btn"
+                    class="topic-btn text-sm white-space-nowrap btn"
                     :label="topic.label"
                     :aria-label="`${topic.label} topic button`"
                     @click="selectTopic(topic)"
@@ -156,6 +156,25 @@ watch(
               </div>
             </div>
           </HorizontalScrollFeature>
+          <section v-else>
+            <div class="grid">
+              <div
+                v-for="topic in showTopics.slice(0, -1)"
+                class="station-holder desktop item col-4"
+                :key="topic.label"
+              >
+                <div class="relative topic-btn-holder">
+                  <Button
+                    class="topic-btn text-sm md:text-base"
+                    :label="topic.label"
+                    :aria-label="`${topic.label} topic button`"
+                    @click="selectTopic(topic)"
+                    :style="`background-image: url(${topic.image});`"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         <FetchError v-if="error" />
 
@@ -267,12 +286,28 @@ watch(
   }
   .content-holder {
     .topics {
+      .station-holder {
+        &:last-child:not(.desktop) {
+          padding-right: 5rem !important;
+        }
+        &.desktop {
+          .topic-btn {
+            width: 100%;
+            height: 130px;
+            border-radius: 16px;
+            background-size: cover;
+            background-position: center;
+          }
+        }
+      }
       .topic-btn-holder {
         .topic-btn {
+          font-family: var(--font-family-header);
           border: 1px solid transparent !important;
           &:hover,
           &:focus,
           &:active {
+            opacity: 0.8;
             border: 1px solid transparent !important;
           }
         }
