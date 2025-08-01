@@ -278,11 +278,8 @@ watch(
           <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
             {{ episodeData?.title }}
           </h1>
-          <!-- <p class="episode-page-date my-1">
-            {{ getDate(episodeData, "LLL d, yyyy") }}
-          </p> -->
 
-          <PipeData class="text-sm">
+          <PipeData class="text-sm" :hide-pipe="!episodeData?.showTitle">
             <template #left>{{ episodeData?.showTitle }}</template>
             <template #right>
               <span class="nobreak">{{ getDate(episodeData, "LLL d, yyyy") }}</span>
@@ -391,9 +388,9 @@ watch(
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div v-if="theEpImage" class="episode-page-image-holder relative mb-4">
+          <div class="episode-page-image-holder relative mb-4">
             <VImage
-              v-if="status == 'success'"
+              v-if="status === 'success'"
               :src="theEpImage"
               :size="{
                 xs: [327, 218],
@@ -412,8 +409,7 @@ watch(
             <Skeleton
               v-else
               borderRadius="0px"
-              height="auto"
-              class="episode-page-image mb-2 opacity-60"
+              class="episode-page-image mb-2 opacity-60 w-full h-auto"
             />
           </div>
           <div v-if="status === 'success'">
@@ -479,18 +475,6 @@ watch(
 </template>
 
 <style lang="scss">
-.episode-page .episode-page-image {
-  width: 100%;
-  aspect-ratio: 3/2;
-}
-
-.episode-page .episode-page-date {
-  font-size: var(--font-size-4);
-  font-weight: var(--font-weight-400);
-  line-height: var(--font-size-6);
-  color: var(--p-text-color);
-  text-decoration: none;
-}
 .episode-page .segment-list .beforeHack {
   &::before {
     content: "";
@@ -498,11 +482,12 @@ watch(
     height: 0px;
   }
 }
-
-.episode-page h1.alt {
-  font-family: var(--font-family-header);
-  font-size: var(--font-size-8);
-  font-weight: var(--font-weight-600);
-  line-height: var(--font-size-10);
+.episode-page .episode-page-image {
+  aspect-ratio: 3/2;
+}
+.episode-page .html-convert {
+  p {
+    line-height: 1.8em;
+  }
 }
 </style>

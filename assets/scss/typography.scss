@@ -135,8 +135,8 @@ $type-paragraph1: (
     'default': (
         'values': (
             'font-family': var(--font-family),
-            'font-size': 0.8725rem,
-            'line-height': var(--font-size-7),
+            'font-size': 1rem,
+            'line-height': 1.4em,
             'font-weight': var(--font-weight),
             'color': var(--p-text-color)
         )
@@ -144,7 +144,7 @@ $type-paragraph1: (
     $medium: (
         'values': (
             'font-size': 0.8725rem,
-            'line-height': var(--font-size-7)
+            'line-height': 1.25em
         )
     )
 );

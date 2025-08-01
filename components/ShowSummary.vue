@@ -74,7 +74,7 @@ const handleShowClick = () => {
       :htmlContent="showDescription"
       :key="`description-${showSlug}`"
     />
-    <p>
+    <p class="text-sm">
       Listen via the
       <VFlexibleLink :to="appDownloadLink">WNYC App</VFlexibleLink>,
       <VFlexibleLink to="https://google.com">Apple</VFlexibleLink>,
