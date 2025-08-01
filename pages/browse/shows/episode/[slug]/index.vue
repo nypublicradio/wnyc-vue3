@@ -279,7 +279,7 @@ watch(
             {{ episodeData?.title }}
           </h1>
 
-          <PipeData class="text-sm" :hide-pipe="!episodeData?.showTitle">
+          <PipeData class="text-sm" :hide-pipe="!!!episodeData?.showTitle">
             <template #left>{{ episodeData?.showTitle }}</template>
             <template #right>
               <span class="nobreak">{{ getDate(episodeData, "LLL d, yyyy") }}</span>
