@@ -48,14 +48,17 @@ const validateProfileRequest = (body: any): string => {
 };
 
 /**
- * Retrieves contact data from Salesforce
+ * Retrieves contact data from Salesforce using SObject methods
  */
-const getContactData = async (escapedSalesforceID: string): Promise<any> => {
+const getContactData = async (salesforceID: string): Promise<any> => {
     try {
-        const contactQuery = `SELECT Id, FirstName, LastName, npo02__LastCloseDate__c, npo02__LastOppAmount__c FROM Contact WHERE Id = '${escapedSalesforceID}'`;
-        const contactResult = await salesforce.queryRecord(contactQuery);
+        const contact = await salesforce.findOne(
+            'Contact',
+            { Id: salesforceID },
+            ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
+        );
 
-        if (!contactResult?.records?.length) {
+        if (!contact) {
             throw createError({
                 statusCode: 404,
                 statusMessage: 'Not Found',
@@ -63,7 +66,7 @@ const getContactData = async (escapedSalesforceID: string): Promise<any> => {
             });
         }
 
-        return contactResult.records[0];
+        return contact;
     } catch (error) {
         if (error.statusCode) throw error; // Re-throw if it's already a formatted error
         throw createError({
@@ -75,14 +78,29 @@ const getContactData = async (escapedSalesforceID: string): Promise<any> => {
 };
 
 /**
- * Retrieves active recurring donations from Salesforce
+ * Retrieves active recurring donations from Salesforce using SObject methods
  */
-const getActiveRecurringDonations = async (escapedSalesforceID: string): Promise<any[]> => {
+const getActiveRecurringDonations = async (salesforceID: string): Promise<any[]> => {
     try {
-        const recurringDonationsQuery = `SELECT Id, Master_Donation_ID__c, nypr_GAU_Property_Name_Current__c, npe03__Amount__c, npe03__Next_Payment_Date__c, npe03__Date_Established__c, cfg_Digital_Membership_Program_Name__c FROM npe03__Recurring_Donation__c WHERE npe03__Contact__c = '${escapedSalesforceID}' AND npsp__Status__c = 'Active' AND cfg_Digital_Membership_Program_Name__c != 'The Lab'`;
-        const recurringDonationsResult = await salesforce.queryRecord(recurringDonationsQuery);
+        const recurringDonations = await salesforce.find(
+            'npe03__Recurring_Donation__c',
+            {
+                'npe03__Contact__c': salesforceID,
+                'npsp__Status__c': 'Active',
+                'cfg_Digital_Membership_Program_Name__c': { $ne: 'The Lab' }
+            },
+            [
+                'Id',
+                'Master_Donation_ID__c',
+                'nypr_GAU_Property_Name_Current__c',
+                'npe03__Amount__c',
+                'npe03__Next_Payment_Date__c',
+                'npe03__Date_Established__c',
+                'cfg_Digital_Membership_Program_Name__c'
+            ]
+        );
 
-        return recurringDonationsResult?.records || [];
+        return recurringDonations || [];
     } catch (error) {
         throw createError({
             statusCode: 500,
@@ -177,13 +195,11 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
         });
     }
 
-    // Safely escape the salesforceID since it's already validated
-    const escapedSalesforceID = salesforceID.replace(/'/g, "\\'");
-
     // Get contact data and recurring donations in parallel for better performance
+    // No need to escape salesforceID since SObject methods handle sanitization automatically
     const [contact, activeRecurringDonations] = await Promise.all([
-        getContactData(escapedSalesforceID),
-        getActiveRecurringDonations(escapedSalesforceID)
+        getContactData(salesforceID),
+        getActiveRecurringDonations(salesforceID)
     ]);
 
     // Return comprehensive profile response

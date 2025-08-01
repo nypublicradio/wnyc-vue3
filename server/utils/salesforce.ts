@@ -179,6 +179,66 @@ export class SalesforceClient {
             throw error;
         }
     }
+
+    /**
+     * Finds a single record using SObject methods with automatic sanitization
+     */
+    async findOne(objectType: string, conditions: any, fields?: string[] | string): Promise<any> {
+        try {
+            await this.ensureConnection();
+
+            const sobject = this.conn.sobject(objectType);
+            const result = await sobject.findOne(conditions, fields);
+
+            return result;
+        } catch (error: any) {
+            // Handle session expiration and retry
+            if (
+                (error?.errorCode === 'INVALID_SESSION_ID') ||
+                (error?.name === 'INVALID_SESSION_ID') ||
+                (error?.message?.includes('INVALID_SESSION_ID'))
+            ) {
+                this.isConnected = false;
+                await this.ensureConnection();
+
+                const sobject = this.conn.sobject(objectType);
+                const result = await sobject.findOne(conditions, fields);
+                return result;
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Finds multiple records using SObject methods with automatic sanitization
+     */
+    async find(objectType: string, conditions: any, fields?: string[] | string): Promise<any[]> {
+        try {
+            await this.ensureConnection();
+
+            const sobject = this.conn.sobject(objectType);
+            const results = await sobject.find(conditions, fields);
+
+            return results;
+        } catch (error: any) {
+            // Handle session expiration and retry
+            if (
+                (error?.errorCode === 'INVALID_SESSION_ID') ||
+                (error?.name === 'INVALID_SESSION_ID') ||
+                (error?.message?.includes('INVALID_SESSION_ID'))
+            ) {
+                this.isConnected = false;
+                await this.ensureConnection();
+
+                const sobject = this.conn.sobject(objectType);
+                const results = await sobject.find(conditions, fields);
+                return results;
+            }
+
+            throw error;
+        }
+    }
 }
 
 // Export singleton instance
