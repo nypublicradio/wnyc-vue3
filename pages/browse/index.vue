@@ -10,7 +10,6 @@ const { data: shows, status, error } = useLazyFetch(
 )
 
 const router = useRouter()
-const route = useRoute()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
 const allOrFeatured = ref(true)
