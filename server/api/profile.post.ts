@@ -67,11 +67,19 @@ const getContactData = async (salesforceID: string): Promise<any> => {
         }
 
         return contact;
-    } catch (error) {
+    } catch (error: any) {
         if (error.statusCode) throw error; // Re-throw if it's already a formatted error
+
+        // Enhanced error handling with categorization
+        const statusCode = error.name === 'SalesforceError' && error.type === 'authentication' ? 401 :
+            error.name === 'SalesforceError' && error.type === 'network' ? 503 :
+                error.name === 'SalesforceError' && error.type === 'validation' ? 400 : 500;
+
         throw createError({
-            statusCode: 500,
-            statusMessage: 'Internal Server Error',
+            statusCode,
+            statusMessage: statusCode === 401 ? 'Unauthorized' :
+                statusCode === 503 ? 'Service Unavailable' :
+                    statusCode === 400 ? 'Bad Request' : 'Internal Server Error',
             message: error.message || 'Failed to query Salesforce Contact'
         });
     }
@@ -101,10 +109,17 @@ const getActiveRecurringDonations = async (salesforceID: string): Promise<any[]>
         );
 
         return recurringDonations || [];
-    } catch (error) {
+    } catch (error: any) {
+        // Enhanced error handling with categorization
+        const statusCode = error.name === 'SalesforceError' && error.type === 'authentication' ? 401 :
+            error.name === 'SalesforceError' && error.type === 'network' ? 503 :
+                error.name === 'SalesforceError' && error.type === 'validation' ? 400 : 500;
+
         throw createError({
-            statusCode: 500,
-            statusMessage: 'Internal Server Error',
+            statusCode,
+            statusMessage: statusCode === 401 ? 'Unauthorized' :
+                statusCode === 503 ? 'Service Unavailable' :
+                    statusCode === 400 ? 'Bad Request' : 'Internal Server Error',
             message: error.message || 'Failed to query recurring donations'
         });
     }
@@ -187,10 +202,15 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
     // Connect to Salesforce
     try {
         await salesforce.connect();
-    } catch (error) {
+    } catch (error: any) {
+        // Enhanced error handling with categorization for connection errors
+        const statusCode = error.name === 'SalesforceError' && error.type === 'authentication' ? 401 :
+            error.name === 'SalesforceError' && error.type === 'network' ? 503 :
+                error.name === 'SalesforceError' && error.type === 'circuit_breaker' ? 503 : 503;
+
         throw createError({
-            statusCode: 503,
-            statusMessage: 'Service Unavailable',
+            statusCode,
+            statusMessage: statusCode === 401 ? 'Unauthorized' : 'Service Unavailable',
             message: error.message || 'Failed to connect to Salesforce'
         });
     }

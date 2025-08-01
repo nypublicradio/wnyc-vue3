@@ -1,6 +1,164 @@
 import jsforce from 'jsforce';
 import jwt from 'jsonwebtoken';
 
+// Conditional Sentry import for server-side error tracking
+let Sentry: any = null;
+try {
+    // Try to import Sentry for Node.js (server-side)
+    Sentry = require('@sentry/node');
+} catch (e) {
+    // Fallback to console logging if Sentry is not available
+    console.warn('Sentry not available for server-side error tracking');
+}
+
+// Error types for better categorization
+enum SalesforceErrorType {
+    AUTHENTICATION = 'authentication',
+    AUTHORIZATION = 'authorization',
+    NETWORK = 'network',
+    VALIDATION = 'validation',
+    DATA_FORMAT = 'data_format',
+    RATE_LIMIT = 'rate_limit',
+    SOQL_INJECTION = 'soql_injection',
+    CIRCUIT_BREAKER = 'circuit_breaker',
+    CONNECTION_POOL = 'connection_pool',
+    UNKNOWN = 'unknown'
+}
+
+// Enhanced error class for better error handling
+class SalesforceError extends Error {
+    public type: SalesforceErrorType;
+    public originalError?: Error;
+    public context?: Record<string, any>;
+    public statusCode?: number;
+
+    constructor(
+        message: string,
+        type: SalesforceErrorType = SalesforceErrorType.UNKNOWN,
+        originalError?: Error,
+        context?: Record<string, any>,
+        statusCode?: number
+    ) {
+        super(message);
+        this.name = 'SalesforceError';
+        this.type = type;
+        this.originalError = originalError;
+        this.context = context;
+        this.statusCode = statusCode;
+
+        // Maintain proper stack trace
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, SalesforceError);
+        }
+    }
+}
+
+// Error handler utility
+class SalesforceErrorHandler {
+    static captureError(error: Error | SalesforceError, context?: Record<string, any>): void {
+        if (Sentry && Sentry.captureException) {
+            Sentry.withScope((scope: any) => {
+                if (context) {
+                    Object.keys(context).forEach(key => {
+                        scope.setTag(key, context[key]);
+                    });
+                }
+
+                if (error instanceof SalesforceError) {
+                    scope.setTag('salesforce_error_type', error.type);
+                    scope.setContext('salesforce_context', {
+                        ...error.context,
+                        statusCode: error.statusCode,
+                        originalError: error.originalError?.message
+                    });
+                }
+
+                scope.setTag('error_source', 'salesforce_client');
+                Sentry.captureException(error);
+            });
+        } else {
+            // Fallback to enhanced console logging
+            console.error('Salesforce Error:', {
+                message: error.message,
+                type: error instanceof SalesforceError ? error.type : 'UNKNOWN',
+                context,
+                stack: error.stack
+            });
+        }
+    }
+
+    static categorizeError(error: any): SalesforceErrorType {
+        if (!error) return SalesforceErrorType.UNKNOWN;
+
+        const message = error.message?.toLowerCase() || '';
+        const errorCode = error.errorCode || error.code || '';
+
+        // Authentication errors
+        if (
+            errorCode === 'INVALID_LOGIN' ||
+            errorCode === 'INVALID_SESSION_ID' ||
+            message.includes('authentication') ||
+            message.includes('invalid session') ||
+            message.includes('jwt authentication failed')
+        ) {
+            return SalesforceErrorType.AUTHENTICATION;
+        }
+
+        // Authorization errors
+        if (
+            errorCode === 'INSUFFICIENT_ACCESS' ||
+            message.includes('insufficient access') ||
+            message.includes('authorization')
+        ) {
+            return SalesforceErrorType.AUTHORIZATION;
+        }
+
+        // Network errors
+        if (
+            error.name === 'FetchError' ||
+            error.code === 'ENOTFOUND' ||
+            error.code === 'ECONNREFUSED' ||
+            error.code === 'TIMEOUT' ||
+            message.includes('network') ||
+            message.includes('timeout') ||
+            message.includes('connection')
+        ) {
+            return SalesforceErrorType.NETWORK;
+        }
+
+        // Rate limiting
+        if (
+            errorCode === 'REQUEST_LIMIT_EXCEEDED' ||
+            message.includes('rate limit') ||
+            message.includes('too many requests')
+        ) {
+            return SalesforceErrorType.RATE_LIMIT;
+        }
+
+        // SOQL injection attempts
+        if (message.includes('potentially dangerous patterns')) {
+            return SalesforceErrorType.SOQL_INJECTION;
+        }
+
+        // Circuit breaker
+        if (message.includes('circuit breaker')) {
+            return SalesforceErrorType.CIRCUIT_BREAKER;
+        }
+
+        // Validation errors
+        if (
+            errorCode === 'MALFORMED_QUERY' ||
+            errorCode === 'INVALID_FIELD' ||
+            message.includes('invalid') ||
+            message.includes('malformed')
+        ) {
+            return SalesforceErrorType.VALIDATION;
+        }
+
+        return SalesforceErrorType.UNKNOWN;
+    }
+}
+
 // Connection pool configuration
 interface PoolConfig {
     maxConnections: number;
@@ -110,11 +268,34 @@ export class SalesforceClient {
      */
     private async generateAccessToken(): Promise<TokenCache> {
         if (this.isCircuitBreakerOpen()) {
-            throw new Error('Salesforce connection circuit breaker is open. Too many recent failures.');
+            const error = new SalesforceError(
+                'Salesforce connection circuit breaker is open. Too many recent failures.',
+                SalesforceErrorType.CIRCUIT_BREAKER,
+                undefined,
+                {
+                    failures: this.circuitBreakerFailures,
+                    lastFailure: new Date(this.circuitBreakerLastFailure).toISOString()
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
         }
 
         if (!process.env.SF_CLIENT_ID || !process.env.SF_USERNAME || !process.env.SF_PRIVATE_KEY) {
-            throw new Error('Missing required environment variables: SF_CLIENT_ID, SF_USERNAME, SF_PRIVATE_KEY');
+            const error = new SalesforceError(
+                'Missing required environment variables: SF_CLIENT_ID, SF_USERNAME, SF_PRIVATE_KEY',
+                SalesforceErrorType.VALIDATION,
+                undefined,
+                {
+                    missingVars: {
+                        SF_CLIENT_ID: !process.env.SF_CLIENT_ID,
+                        SF_USERNAME: !process.env.SF_USERNAME,
+                        SF_PRIVATE_KEY: !process.env.SF_PRIVATE_KEY
+                    }
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
         }
 
         try {
@@ -124,19 +305,40 @@ export class SalesforceClient {
                 try {
                     privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
                 } catch (e) {
-                    throw new Error('Failed to decode Salesforce private key. Please check that the environment variable SF_PRIVATE_KEY is a valid base64 string.');
+                    const error = new SalesforceError(
+                        'Failed to decode Salesforce private key. Please check that the environment variable SF_PRIVATE_KEY is a valid base64 string.',
+                        SalesforceErrorType.VALIDATION,
+                        e as Error,
+                        { keyFormat: 'base64_decode_failed' }
+                    );
+                    SalesforceErrorHandler.captureError(error);
+                    throw error;
                 }
             }
 
             // Validate private key format after decoding
             if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
-                throw new Error('Invalid private key format. Must be a valid PEM-formatted private key.');
+                const error = new SalesforceError(
+                    'Invalid private key format. Must be a valid PEM-formatted private key.',
+                    SalesforceErrorType.VALIDATION,
+                    undefined,
+                    { keyFormat: 'invalid_pem_format' }
+                );
+                SalesforceErrorHandler.captureError(error);
+                throw error;
             }
 
             // Validate private key length (basic check for RSA-2048 minimum)
             const keyContent = privateKey.replace(/-----BEGIN PRIVATE KEY-----|\-----END PRIVATE KEY-----|\n|\r/g, '');
             if (keyContent.length < 1000) {
-                throw new Error('Private key appears to be too short. Minimum RSA-2048 required.');
+                const error = new SalesforceError(
+                    'Private key appears to be too short. Minimum RSA-2048 required.',
+                    SalesforceErrorType.VALIDATION,
+                    undefined,
+                    { keyLength: keyContent.length, minimumRequired: 1000 }
+                );
+                SalesforceErrorHandler.captureError(error);
+                throw error;
             }
 
             // Create JWT payload with current timestamp
@@ -171,8 +373,29 @@ export class SalesforceClient {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Salesforce auth error:', errorText);
+
+                const errorType = response.status === 401 || response.status === 403
+                    ? SalesforceErrorType.AUTHENTICATION
+                    : response.status >= 500
+                        ? SalesforceErrorType.NETWORK
+                        : SalesforceErrorType.UNKNOWN;
+
+                const error = new SalesforceError(
+                    `JWT Authentication failed: ${response.statusText} - ${errorText}`,
+                    errorType,
+                    undefined,
+                    {
+                        statusCode: response.status,
+                        statusText: response.statusText,
+                        responseText: errorText,
+                        loginUrl
+                    },
+                    response.status
+                );
+
                 this.recordFailure();
-                throw new Error(`JWT Authentication failed: ${response.statusText} - ${errorText}`);
+                SalesforceErrorHandler.captureError(error);
+                throw error;
             }
 
             const authResponse = await response.json();
@@ -190,9 +413,29 @@ export class SalesforceClient {
 
             return tokenCache;
         } catch (error) {
-            console.error('Failed to generate Salesforce access token:', error.message);
-            this.recordFailure();
-            throw error;
+            const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
+            const errorType = isNetworkError
+                ? SalesforceErrorType.NETWORK
+                : SalesforceErrorHandler.categorizeError(error);
+
+            if (!(error instanceof SalesforceError)) {
+                const enhancedError = new SalesforceError(
+                    `Failed to generate Salesforce access token: ${error.message}`,
+                    errorType,
+                    error as Error,
+                    {
+                        connectionTimeout: this.poolConfig.connectionTimeout,
+                        circuitBreakerFailures: this.circuitBreakerFailures
+                    }
+                );
+
+                this.recordFailure();
+                SalesforceErrorHandler.captureError(enhancedError);
+                throw enhancedError;
+            } else {
+                this.recordFailure();
+                throw error;
+            }
         }
     }
 
@@ -311,7 +554,17 @@ export class SalesforceClient {
     async queryRecord(soql: string) {
         // Sanitize SOQL input to prevent injection
         if (!soql || typeof soql !== 'string') {
-            throw new Error('Invalid SOQL query: must be a non-empty string');
+            const error = new SalesforceError(
+                'Invalid SOQL query: must be a non-empty string',
+                SalesforceErrorType.VALIDATION,
+                undefined,
+                {
+                    providedValue: soql,
+                    valueType: typeof soql
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
         }
 
         // Basic SOQL injection prevention - check for dangerous patterns
@@ -327,7 +580,18 @@ export class SalesforceClient {
 
         for (const pattern of dangerousPatterns) {
             if (pattern.test(soql)) {
-                throw new Error('Invalid SOQL query: contains potentially dangerous patterns');
+                const error = new SalesforceError(
+                    'Invalid SOQL query: contains potentially dangerous patterns',
+                    SalesforceErrorType.VALIDATION,
+                    undefined,
+                    {
+                        soql,
+                        matchedPattern: pattern.toString(),
+                        securityRisk: 'SQL_INJECTION_ATTEMPT'
+                    }
+                );
+                SalesforceErrorHandler.captureError(error);
+                throw error;
             }
         }
 
@@ -337,6 +601,18 @@ export class SalesforceClient {
             await this.connect(); // Ensure pool is initialized
             pooledConnection = await this.getConnection();
             const result = await pooledConnection.conn.query(soql);
+
+            if (!result) {
+                const error = new SalesforceError(
+                    'Query returned null or undefined result',
+                    SalesforceErrorType.DATA_FORMAT,
+                    undefined,
+                    { soql }
+                );
+                SalesforceErrorHandler.captureError(error);
+                throw error;
+            }
+
             return result;
         } catch (error: any) {
             // If it's an authentication error, try to reconnect once
@@ -345,16 +621,62 @@ export class SalesforceClient {
                 (error?.name === 'INVALID_SESSION_ID') ||
                 (error?.message?.includes('INVALID_SESSION_ID'))
             ) {
-                // Refresh the token and retry
-                await this.generateAccessToken();
-                if (pooledConnection) {
-                    await this.refreshConnection(pooledConnection);
-                    const result = await pooledConnection.conn.query(soql);
-                    return result;
+                try {
+                    // Refresh the token and retry
+                    await this.generateAccessToken();
+                    if (pooledConnection) {
+                        await this.refreshConnection(pooledConnection);
+                        const result = await pooledConnection.conn.query(soql);
+
+                        if (!result) {
+                            const error = new SalesforceError(
+                                'Query returned null or undefined result after token refresh',
+                                SalesforceErrorType.DATA_FORMAT,
+                                undefined,
+                                { soql, retryAttempt: true }
+                            );
+                            SalesforceErrorHandler.captureError(error);
+                            throw error;
+                        }
+
+                        return result;
+                    }
+                } catch (retryError) {
+                    const enhancedError = new SalesforceError(
+                        `Failed to retry query after authentication error: ${retryError.message}`,
+                        SalesforceErrorType.AUTHENTICATION,
+                        retryError as Error,
+                        {
+                            originalError: error?.message,
+                            soql,
+                            retryAttempt: true
+                        }
+                    );
+                    SalesforceErrorHandler.captureError(enhancedError);
+                    throw enhancedError;
                 }
             }
 
-            throw error;
+            // Don't re-wrap SalesforceError instances
+            if (error instanceof SalesforceError) {
+                throw error;
+            }
+
+            const errorType = SalesforceErrorHandler.categorizeError(error);
+            const enhancedError = new SalesforceError(
+                `SOQL query execution failed: ${error.message}`,
+                errorType,
+                error as Error,
+                {
+                    soql,
+                    soqlLength: soql.length,
+                    errorCode: error?.errorCode,
+                    errorName: error?.name
+                }
+            );
+
+            SalesforceErrorHandler.captureError(enhancedError);
+            throw enhancedError;
         }
     }
 
@@ -362,6 +684,36 @@ export class SalesforceClient {
      * Finds a single record using SObject methods with automatic sanitization
      */
     async findOne(objectType: string, conditions: any, fields?: string[] | string): Promise<any> {
+        // Validate inputs
+        if (!objectType || typeof objectType !== 'string') {
+            const error = new SalesforceError(
+                'Invalid object type: must be a non-empty string',
+                SalesforceErrorType.VALIDATION,
+                undefined,
+                {
+                    providedObjectType: objectType,
+                    objectTypeType: typeof objectType
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
+        }
+
+        if (!conditions || typeof conditions !== 'object') {
+            const error = new SalesforceError(
+                'Invalid conditions: must be a non-empty object',
+                SalesforceErrorType.VALIDATION,
+                undefined,
+                {
+                    providedConditions: conditions,
+                    conditionsType: typeof conditions,
+                    objectType
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
+        }
+
         let pooledConnection: PooledConnection | null = null;
 
         try {
@@ -379,17 +731,54 @@ export class SalesforceClient {
                 (error?.name === 'INVALID_SESSION_ID') ||
                 (error?.message?.includes('INVALID_SESSION_ID'))
             ) {
-                // Refresh the token and retry
-                await this.generateAccessToken();
-                if (pooledConnection) {
-                    await this.refreshConnection(pooledConnection);
-                    const sobject = pooledConnection.conn.sobject(objectType);
-                    const result = await sobject.findOne(conditions, fields);
-                    return result;
+                try {
+                    // Refresh the token and retry
+                    await this.generateAccessToken();
+                    if (pooledConnection) {
+                        await this.refreshConnection(pooledConnection);
+                        const sobject = pooledConnection.conn.sobject(objectType);
+                        const result = await sobject.findOne(conditions, fields);
+                        return result;
+                    }
+                } catch (retryError) {
+                    const enhancedError = new SalesforceError(
+                        `Failed to retry findOne after authentication error: ${retryError.message}`,
+                        SalesforceErrorType.AUTHENTICATION,
+                        retryError as Error,
+                        {
+                            originalError: error?.message,
+                            objectType,
+                            conditions,
+                            fields,
+                            retryAttempt: true
+                        }
+                    );
+                    SalesforceErrorHandler.captureError(enhancedError);
+                    throw enhancedError;
                 }
             }
 
-            throw error;
+            // Don't re-wrap SalesforceError instances
+            if (error instanceof SalesforceError) {
+                throw error;
+            }
+
+            const errorType = SalesforceErrorHandler.categorizeError(error);
+            const enhancedError = new SalesforceError(
+                `SObject findOne operation failed: ${error.message}`,
+                errorType,
+                error as Error,
+                {
+                    objectType,
+                    conditions,
+                    fields,
+                    errorCode: error?.errorCode,
+                    errorName: error?.name
+                }
+            );
+
+            SalesforceErrorHandler.captureError(enhancedError);
+            throw enhancedError;
         }
     }
 
@@ -397,6 +786,36 @@ export class SalesforceClient {
      * Finds multiple records using SObject methods with automatic sanitization
      */
     async find(objectType: string, conditions: any, fields?: string[] | string): Promise<any[]> {
+        // Validate inputs
+        if (!objectType || typeof objectType !== 'string') {
+            const error = new SalesforceError(
+                'Invalid object type: must be a non-empty string',
+                SalesforceErrorType.VALIDATION,
+                undefined,
+                {
+                    providedObjectType: objectType,
+                    objectTypeType: typeof objectType
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
+        }
+
+        if (!conditions || typeof conditions !== 'object') {
+            const error = new SalesforceError(
+                'Invalid conditions: must be a non-empty object',
+                SalesforceErrorType.VALIDATION,
+                undefined,
+                {
+                    providedConditions: conditions,
+                    conditionsType: typeof conditions,
+                    objectType
+                }
+            );
+            SalesforceErrorHandler.captureError(error);
+            throw error;
+        }
+
         let pooledConnection: PooledConnection | null = null;
 
         try {
@@ -406,6 +825,24 @@ export class SalesforceClient {
             const sobject = pooledConnection.conn.sobject(objectType);
             const results = await sobject.find(conditions, fields);
 
+            // Ensure results is an array
+            if (!Array.isArray(results)) {
+                const error = new SalesforceError(
+                    'SObject find returned non-array result',
+                    SalesforceErrorType.DATA_FORMAT,
+                    undefined,
+                    {
+                        objectType,
+                        conditions,
+                        fields,
+                        resultType: typeof results,
+                        resultValue: results
+                    }
+                );
+                SalesforceErrorHandler.captureError(error);
+                throw error;
+            }
+
             return results;
         } catch (error: any) {
             // Handle session expiration and retry
@@ -414,17 +851,74 @@ export class SalesforceClient {
                 (error?.name === 'INVALID_SESSION_ID') ||
                 (error?.message?.includes('INVALID_SESSION_ID'))
             ) {
-                // Refresh the token and retry
-                await this.generateAccessToken();
-                if (pooledConnection) {
-                    await this.refreshConnection(pooledConnection);
-                    const sobject = pooledConnection.conn.sobject(objectType);
-                    const results = await sobject.find(conditions, fields);
-                    return results;
+                try {
+                    // Refresh the token and retry
+                    await this.generateAccessToken();
+                    if (pooledConnection) {
+                        await this.refreshConnection(pooledConnection);
+                        const sobject = pooledConnection.conn.sobject(objectType);
+                        const results = await sobject.find(conditions, fields);
+
+                        // Validate retry result format
+                        if (!Array.isArray(results)) {
+                            const error = new SalesforceError(
+                                'SObject find returned non-array result after retry',
+                                SalesforceErrorType.DATA_FORMAT,
+                                undefined,
+                                {
+                                    objectType,
+                                    conditions,
+                                    fields,
+                                    resultType: typeof results,
+                                    resultValue: results,
+                                    retryAttempt: true
+                                }
+                            );
+                            SalesforceErrorHandler.captureError(error);
+                            throw error;
+                        }
+
+                        return results;
+                    }
+                } catch (retryError) {
+                    const enhancedError = new SalesforceError(
+                        `Failed to retry find after authentication error: ${retryError.message}`,
+                        SalesforceErrorType.AUTHENTICATION,
+                        retryError as Error,
+                        {
+                            originalError: error?.message,
+                            objectType,
+                            conditions,
+                            fields,
+                            retryAttempt: true
+                        }
+                    );
+                    SalesforceErrorHandler.captureError(enhancedError);
+                    throw enhancedError;
                 }
             }
 
-            throw error;
+            // Don't re-wrap SalesforceError instances
+            if (error instanceof SalesforceError) {
+                throw error;
+            }
+
+            const errorType = SalesforceErrorHandler.categorizeError(error);
+            const enhancedError = new SalesforceError(
+                `SObject find operation failed: ${error.message}`,
+                errorType,
+                error as Error,
+                {
+                    objectType,
+                    conditions,
+                    fields,
+                    errorCode: error?.errorCode,
+                    errorName: error?.name
+                }
+            );
+
+            SalesforceErrorHandler.captureError(enhancedError);
+            throw enhancedError;
         }
     }
 

@@ -346,6 +346,101 @@ curl -X POST http://localhost:3000/api/profile \
 - Monitor Connected App usage in Salesforce Login History
 - Use sandbox for development and testing
 
+## Salesforce Error Handling
+
+The Salesforce integration includes comprehensive error handling with Sentry integration for production monitoring.
+
+### Features
+
+1. **Structured Error Classification** - Categorizes errors into specific types for better debugging
+2. **Sentry Integration** - Automatically sends errors to Sentry for production monitoring (when available)
+3. **Comprehensive Context** - Includes relevant metadata for debugging
+4. **Graceful Fallbacks** - Falls back to console logging when Sentry is not available
+5. **Circuit Breaker Protection** - Prevents cascading failures with automatic recovery
+
+### Error Types
+
+```typescript
+enum SalesforceErrorType {
+    AUTHENTICATION = 'authentication',     // JWT/Session issues
+    AUTHORIZATION = 'authorization',       // Permission/access issues  
+    NETWORK = 'network',                  // Connection/timeout issues
+    VALIDATION = 'validation',            // Input validation failures
+    DATA_FORMAT = 'data_format',          // Unexpected response format
+    RATE_LIMIT = 'rate_limit',           // API rate limiting
+    SOQL_INJECTION = 'soql_injection',    // Security violations
+    CIRCUIT_BREAKER = 'circuit_breaker',  // Circuit breaker active
+    CONNECTION_POOL = 'connection_pool',  // Pool management issues
+    UNKNOWN = 'unknown'                   // Uncategorized errors
+}
+```
+
+### Enhanced Methods
+
+All Salesforce utility methods include robust error handling:
+
+- **`generateAccessToken()`** - JWT authentication with validation
+- **`queryRecord(soql)`** - Raw SOQL with injection protection
+- **`findOne(objectType, conditions, fields)`** - SObject single record lookup
+- **`find(objectType, conditions, fields)`** - SObject multiple record lookup
+
+### Usage Example
+
+```typescript
+try {
+    const records = await salesforce.find('Contact', { Id: contactId }, ['Id']);
+    return records;
+} catch (error) {
+    // SalesforceError is automatically created and sent to Sentry
+    // Just re-throw for API layer to handle HTTP status mapping
+    throw error;
+}
+```
+
+### API Error Mapping
+
+The profile API automatically maps error types to appropriate HTTP status codes:
+
+- `authentication` → 401 Unauthorized
+- `network/circuit_breaker` → 503 Service Unavailable  
+- `validation` → 400 Bad Request
+- `unknown` → 500 Internal Server Error
+
+### Connection Pool Monitoring
+
+Check connection pool health:
+
+```typescript
+const stats = salesforce.getPoolStats();
+console.log({
+    totalConnections: stats.totalConnections,
+    activeConnections: stats.activeConnections,
+    tokenCached: stats.tokenCached,
+    circuitBreakerFailures: stats.circuitBreakerFailures
+});
+```
+
+### Circuit Breaker
+
+- Automatically opens after 5 consecutive failures
+- Remains open for 60 seconds before allowing retry attempts
+- Prevents cascading failures across the system
+
+### Sentry Integration
+
+- Uses existing `@sentry/vue` package with conditional imports
+- Falls back to console logging when Sentry is not available
+- Includes rich context: operation details, Salesforce objects, system metadata
+- Tags errors by type for better monitoring and alerting
+
+### Best Practices
+
+1. **Use SObject Methods**: Prefer `findOne()` and `find()` over raw SOQL for automatic sanitization
+2. **Handle SalesforceError**: Check for `instanceof SalesforceError` before re-wrapping
+3. **Provide Context**: Include relevant parameters in error context
+4. **Monitor Pool Health**: Use `getPoolStats()` for health checks
+5. **Respect Circuit Breaker**: Don't bypass circuit breaker logic
+
 ## Font Size Scale Reference Helper
 
 --font-size = 16px
