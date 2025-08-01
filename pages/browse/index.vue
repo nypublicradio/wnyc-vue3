@@ -216,10 +216,15 @@ watch(
                 @onClick="goToShowPage(show)"
               />
             </template>
+
             <skeleton-show-item
               v-else
               v-for="(show, index) in 27"
               :key="`sk1-${index}`"
+              class="col-12 md:col-4 md:mb-5"
+              contentClass="md:flex-column gap-3 md:gap-2"
+              imageClass="w-7rem md:w-13rem h-7rem md:h-13rem"
+              :hideButtons="!isMobile"
             />
           </div>
         </section>
