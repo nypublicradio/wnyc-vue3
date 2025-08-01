@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 <template>
   <div class="social-buttons flex gap-3 align-items-center">
-    <p v-if="props.label">{{ props.label }}</p>
+    <p v-if="props.label" class="text-sm">{{ props.label }}</p>
     <VFlexibleLink
       v-for="item in props.data"
       raw

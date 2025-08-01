@@ -18,15 +18,19 @@
 }
 
 @mixin html-formatting() {
+  font-size: var(--font-size-6);
+  line-height: 1.4em;
+  color: var(--p-text-color);
+  font-weight: var(--font-weight);
   h1 {
     font-size: var(--font-size-12);
-    line-height: var(--font-size-12);
+    line-height: 1.25em;
     font-weight: var(--font-weight-700);
     letter-spacing: -1px;
     color: var(--p-text-color) !important;
     @include media('<md') {
       font-size: var(--font-size-9);
-      line-height: var(--font-size-9);
+      line-height: 1.25em;
     }
   }
   a {
@@ -45,7 +49,6 @@
   dl {
     margin-block-start: 1em;
     margin-block-end: 1em;
-    line-height: normal !important;
   }
   div {
     color: var(--p-text-color) !important;
@@ -118,7 +121,7 @@
 }
 @mixin cardBody() {
   font-size: var(--font-size-5);
-  line-height: 1.5em;
+  line-height: 1.4em;
   font-weight: var(--font-weight-400);
   @include truncate();
   @include t4lines();
@@ -239,20 +242,20 @@ $spacing-base: 0.25; //  matches prime-flex
   @include truncate();
 }
 @mixin t2lines() {
-  -webkit-line-clamp: 2 !important;
+  -webkit-line-clamp: 2;
 }
 @mixin t3lines() {
-  -webkit-line-clamp: 3 !important;
+  -webkit-line-clamp: 3;
 }
 @mixin t4lines() {
-  -webkit-line-clamp: 4 !important;
+  -webkit-line-clamp: 4;
 }
 @mixin t5lines() {
-  -webkit-line-clamp: 5 !important;
+  -webkit-line-clamp: 5;
 }
 @mixin t6lines() {
-  -webkit-line-clamp: 6 !important;
+  -webkit-line-clamp: 6;
 }
 @mixin t7lines() {
-  -webkit-line-clamp: 7 !important;
+  -webkit-line-clamp: 7;
 }

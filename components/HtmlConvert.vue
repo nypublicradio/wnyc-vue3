@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  htmlClasses: {
+    type: String,
+    default: "",
+  },
   noBlocks: {
     type: Boolean,
     default: false,
@@ -37,8 +41,9 @@ const isGif = (imageUrl) => {
 }
 
 const parseHtml = () => {
-  // make it HTML bny wrapping it in a div
-  const asHtml = `<div class="html-convert">${props.htmlContent}</div>`
+  // make it HTML by wrapping it in a div
+  const htmlClasses = props.htmlClasses ? ` ${props.htmlClasses}` : ""
+  const asHtml = `<div class="html-convert${htmlClasses}">${props.htmlContent}</div>`
 
   // Reset the image props map
   imagePropsMap.value = {}
@@ -138,14 +143,17 @@ onUnmounted(() => {
       :componentsMap="{ NuxtLink, VImage }"
       :docProps="imagePropsMap"
       class="html-formatting"
-      :class="{ 'no-blocks': noBlocks }"
+      :class="[{ 'no-blocks': noBlocks }, props.htmlClasses]"
     />
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .html-convert-container {
   width: 100%;
   max-width: 100%;
 }
+</style>
+<style lang="scss">
+// Add global styles for html-convert if needed
 </style>

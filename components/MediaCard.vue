@@ -403,6 +403,7 @@ const handleHasAudio = computed(() => {
                 :htmlContent="props.data.tease"
                 class="tease"
                 :class="props.teaseClasses"
+                htmlClasses="text-sm"
                 :key="`tease-${props.data.id || props.data.slug || 'default'}`"
               />
             </div>
