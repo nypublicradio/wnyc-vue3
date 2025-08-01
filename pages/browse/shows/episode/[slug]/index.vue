@@ -224,6 +224,8 @@ const getEpisodeImage = () => {
     : getEpisodeHeadFallBackImage()
 }
 
+const theEpImage = computed(() => getEpisodeImage())
+
 const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch(
   () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
   {
@@ -363,7 +365,7 @@ watch(
                   <div>
                     <div class="flex gap-3 align-items-center px-4">
                       <VImage
-                        :src="episodeData?.image || getEpisodeImage()"
+                        :src="episodeData?.image || theEpImage"
                         :alt="`${episodeData?.title} show image`"
                         :width="112"
                         :height="112"
@@ -386,14 +388,13 @@ watch(
         </div>
         <div class="col-fixed hidden lg:block w-20rem"></div>
       </div>
-
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div v-if="getEpisodeImage()" class="episode-page-image-holder relative mb-4">
+          <div v-if="theEpImage" class="episode-page-image-holder relative mb-4">
             <VImage
               v-if="status == 'success'"
-              :src="getEpisodeImage()"
+              :src="theEpImage"
               :size="{
                 xs: [327, 218],
                 sm: [528, 352],
@@ -402,6 +403,9 @@ watch(
                 xl: [933, 621],
                 xxl: [688, 458],
               }"
+              :maxHeight="episodeData?.imageFullHeight"
+              :maxWidth="episodeData?.imageFullWidth"
+              allowVerticalEffect
               :alt="episodeData?.image?.altText"
               class="episode-page-image mb-2"
             />
