@@ -13,7 +13,6 @@ const router = useRouter()
 const route = useRoute()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
-const activeTab = ref(route.query.tab ?? "0")
 const allOrFeatured = ref(true)
 
 const { breakpoint } = useBreakpoints()
@@ -43,13 +42,12 @@ const selectTopic = (topic) => {
   })
 }
 
-// handle the active tab for the featured and all shows to set url query
-const handleActiveTab = (e) => {
-  router.push({ query: { tab: e } })
-  activeTab.value = e
+// handle the click on the "All Topics" button
+const handleAllTopics = () => {
+  // not sure what we are doing here yet.
 }
 
-const handleAllTopics = () => {}
+// handle the toggle of all or featured shows
 const toggleAllShows = () => {
   allOrFeatured.value = !allOrFeatured.value
 }
