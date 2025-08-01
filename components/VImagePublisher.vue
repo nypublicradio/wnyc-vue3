@@ -4,6 +4,7 @@ import Button from "primevue/button"
 import Image from "primevue/image"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
+import { useVImage } from "~/composables/useVImage"
 
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 
@@ -144,16 +145,8 @@ const props = defineProps({
 })
 const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
 
-const imageLoaded = ref(false)
+const { formatPublisherImageUrl, formatRawPublisherImageUrl } = useVImage()
 
-// method to format the url to get the publisher image
-const formatPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/l/%quality%")
-}
-// method to format the url to get the raw image
-const formatRawPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "raw")
-}
 // method to calculate the quality of the image based on the size and if set to flat quality
 const calcQuality = (quality, size) => {
   if (props.flatQuality) {
@@ -170,6 +163,7 @@ const srcRaw = formatRawPublisherImageUrl(props.src)
 
 const isVertical = ref(false)
 const loadingEnlargedImage = ref(false)
+
 // a function that returns the dimensions of the image
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
@@ -195,12 +189,6 @@ const getDimensions = () => {
     }
   }
 }
-
-// const computedWidth = () => {
-//   return isVertical.value
-//     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
-//     : props.width
-// }
 
 // a function that formats the url template
 const computedSrc = () => {
@@ -296,13 +284,6 @@ onMounted(async () => {
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
-        <WnycLoader
-          v-if="!imageLoaded"
-          class="image-loader-anim"
-          size="1rem"
-          bg
-          spinner
-        />
         <div v-if="isVertical" class="bg">
           <img
             :src="computedSrc()"
@@ -329,12 +310,7 @@ onMounted(async () => {
             @show="enlarge"
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
-            @load="
-              () => {
-                emit('image-load')
-                imageLoaded = true
-              }
-            "
+            @load="emit('image-load')"
           >
             <template v-if="allowPreview" #previewicon>
               <ClientOnly>
@@ -377,12 +353,7 @@ onMounted(async () => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
-          @load="
-            () => {
-              emit('image-load')
-              imageLoaded = true
-            }
-          "
+          @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>

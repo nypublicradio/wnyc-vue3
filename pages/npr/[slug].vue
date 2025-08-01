@@ -125,7 +125,14 @@ const togglePlayHere = (story) => {
         :src="storyData.image"
         :maxWidth="storyData.width"
         :maxHeight="storyData.height"
-        :width="768"
+        :size="{
+          xs: [375, 250],
+          sm: [576, 384],
+          md: [768, 512],
+          lg: [992, 661],
+          xl: [1200, 800],
+          xxl: [1340, 893],
+        }"
         :alt="storyData.alt"
         class="npr-story-page-image"
       >

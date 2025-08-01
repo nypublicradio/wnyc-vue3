@@ -5,7 +5,6 @@ const props = defineProps({
     default: null,
   },
 })
-
 const emit = defineEmits(["emit-click"])
 
 // handle the focus out event
@@ -20,7 +19,7 @@ const onFocusOut = (e, index, length) => {
     e.target.parentElement.parentElement.parentElement.parentElement.parentElement
   // tabbing forward
   if (itemLength === index && !isTabbingBackward) {
-    if (parentMenu) {
+    if (parentMenu?.nextElementSibling) {
       parentMenu.nextElementSibling.focus()
       //parentMenu.focus()
       const enterEvent = new KeyboardEvent("keydown", {
@@ -36,7 +35,7 @@ const onFocusOut = (e, index, length) => {
 
   // tabbing backward
   if (index === 0 && isTabbingBackward) {
-    if (parentMenu) {
+    if (parentMenu?.previousElementSibling) {
       parentMenu.previousElementSibling.focus()
       //parentMenu.focus()
       const enterEvent = new KeyboardEvent("keydown", {
@@ -73,24 +72,15 @@ const onFocusOut = (e, index, length) => {
           <template #icon>
             <div v-if="itemMenu?.image" class="image-holder mr-2 flex-none">
               <VImage
-                v-if="typeof itemMenu?.image === 'object'"
                 class="the-img flex-none"
                 :alt="itemMenu.image.altText"
-                :src="itemMenu.image.template"
+                :src="itemMenu.image"
                 :height="60"
                 :width="60"
                 :ratio="[1, 1]"
                 :srcset="[2]"
                 style="height: 60px; width: 60px"
                 isDecorative
-              />
-              <img
-                v-else
-                :alt="itemMenu.label"
-                :src="itemMenu.image"
-                class="the-img flex-none"
-                style="width: 60px; height: 60px"
-                tabindex="-1"
               />
             </div>
           </template>

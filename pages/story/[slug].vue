@@ -106,14 +106,11 @@ watch(
       ).then(({ data }) => normalizeGalleryPage(data.value))
     }
 
-    topImage.value =
-      storyData.value?.cmsSource === cmsSources.WAGTAIL
-        ? String(storyData.value?.image?.id)
-        : storyData.value?.image?.template ?? gallery.value?.slides?.[0]?.image ?? null
+    topImage.value = storyData.value?.image || gallery.value?.slides?.[0]?.image || null
 
     topCaption.value =
       storyData.value?.leadImageCaption ??
-      topImage?.caption ??
+      topImage.value?.caption ??
       gallery.value?.slides?.[0]?.image.caption ??
       null
 

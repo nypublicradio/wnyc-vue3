@@ -15,7 +15,6 @@ import {
   hasAudio,
   togglePlayEpisode,
   addToFavorites2,
-  getEpisodeFallBackImage,
   handleDelete,
   getReadingTime,
   getOrg,
@@ -41,7 +40,7 @@ const props = defineProps({
   },
   fallbackImage: {
     type: String,
-    default: null,
+    default: undefined,
   },
   imgSrc: {
     type: String,
@@ -115,6 +114,26 @@ const props = defineProps({
     type: String,
     default: "md:h-auto md:w-12",
   },
+  titleClasses: {
+    type: String,
+    default: "truncate t2lines",
+  },
+  showTitleClasses: {
+    type: String,
+    default: "text-xs line-height-1",
+  },
+  pipeClasses: {
+    type: String,
+    default: "text-xs",
+  },
+  bylineClasses: {
+    type: String,
+    default: "text-xs",
+  },
+  teaseClasses: {
+    type: String,
+    default: "hidden md:block",
+  },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
   // Array format: [3, 2] - converted to ratio-based default size for backward compatibility
@@ -161,13 +180,7 @@ const getImage = computed(() => {
   if (props.isInDownloads) {
     return getDownloadedImageUri(reactiveData.value)
   } else {
-    return String(
-      reactiveData.value?.image?.template ??
-        reactiveData.value?.image?.id ??
-        reactiveData.value?.image ??
-        props.fallbackImage ??
-        getEpisodeFallBackImage()
-    )
+    return reactiveData.value?.image
   }
 })
 
@@ -359,15 +372,12 @@ const handleHasAudio = computed(() => {
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
-      <div
-        class="image overflow-hidden p-0 col-fixed"
-        :class="props.imgCol"
-        v-if="props.showImage"
-      >
+      <div class="image p-0 col-fixed" :class="props.imgCol" v-if="props.showImage">
         <VImage
           class="flex-none"
-          :alt="`${props.data?.showTitle} show `"
+          :alt="`${props.data.title} media image`"
           :src="getImage"
+          :srcFallback="props.fallbackImage"
           :size="props.size"
           :maxHeight="nativeImageHeight"
           :maxWidth="nativeImageWidth"
@@ -378,16 +388,27 @@ const handleHasAudio = computed(() => {
       </div>
       <div class="content col">
         <div class="flex gap-2 flex-column justify-content-between w-full h-full">
-          <div class="flex gap-1 flex-column w-full">
-            <div class="flex gap-2 flex-column align-items-start">
+          <div class="flex gap-2 flex-column w-full">
+            <div class="flex gap-1 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
-              <p v-if="props.showTitle" class="text-xs line-height-1">
+              <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
-              <h2 class="truncate t2lines no-hyphens">{{ props.data?.title }}</h2>
+              <h2 class="no-hyphens" :class="props.titleClasses">
+                {{ props.data?.title }}
+              </h2>
+
+              <HtmlConvert
+                v-if="props.data.tease && props.showTease"
+                :htmlContent="props.data.tease"
+                class="tease"
+                :class="props.teaseClasses"
+                htmlClasses="text-sm"
+                :key="`tease-${props.data.id || props.data.slug || 'default'}`"
+              />
             </div>
             <div class="article-metadata">
-              <PipeData class="text-xs" :hidePipe="props.hideDate">
+              <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
                 <template #left>
                   {{
                     props.isSegment
@@ -402,7 +423,7 @@ const handleHasAudio = computed(() => {
                 </template>
               </PipeData>
 
-              <div class="text-xs mt-1 opacity-70">
+              <div class="mt-1 opacity-70" :class="props.bylineClasses">
                 <VByline
                   v-if="props.data?.byline?.length > 0 && props.isSegment"
                   :authors="props.data?.byline"
@@ -410,11 +431,6 @@ const handleHasAudio = computed(() => {
                 />
               </div>
             </div>
-            <HtmlConvert
-              v-if="props.data.tease && props.showTease"
-              :htmlContent="props.data.tease"
-              class="tease"
-            />
           </div>
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
@@ -463,6 +479,7 @@ const handleHasAudio = computed(() => {
                       <div class="flex gap-3 align-items-center px-4">
                         <VImage
                           :src="getImage"
+                          :srcFallback="props.fallbackImage"
                           :alt="`${props.data?.showTitle} show image`"
                           class="show-image-in-menu flex-none"
                           :height="112"
@@ -513,23 +530,28 @@ const handleHasAudio = computed(() => {
   position: relative;
   cursor: pointer;
   height: auto;
+
   .holder {
     position: relative;
-    overflow: hidden;
+    //overflow: hidden;
     height: 100%;
+
     .event {
       background-color: var(--p-surface-950);
       padding: 12px;
+
       .date {
         width: 100%;
         text-align: center;
       }
+
       .day {
         font-size: var(--font-size-10);
         line-height: var(--font-size-10);
         font-weight: 700;
         color: var(--p-surface-0);
       }
+
       .month {
         font-size: var(--font-size-3);
         line-height: var(--font-size-3);
@@ -537,29 +559,37 @@ const handleHasAudio = computed(() => {
         color: var(--p-surface-0);
       }
     }
+
     @include media("<md") {
       border-radius: 0;
     }
+
     flex-direction: column;
+
     @include media("<md") {
       flex-direction: row;
     }
+
     .content {
       height: auto;
       padding: 0 0 0 1rem;
+
       h2 {
         @include cardTitle();
       }
+
       .tease {
         @include cardBody();
       }
     }
+
     .image {
       @include media("<md") {
         width: 112px;
         height: 112px;
         flex: 0 0 auto;
       }
+
       @include media("<xs") {
         width: 80px;
         height: 80px;
@@ -571,25 +601,30 @@ const handleHasAudio = computed(() => {
     .holder {
       background-color: var(--p-surface-25);
       border-radius: var(--media-card-border-radius);
+
       .content {
         padding: 1rem !important;
       }
     }
+
     @include media("<md") {
       .holder {
         background-color: transparent;
         border-radius: 0;
+
         .content {
           padding: 0 0 0 1rem !important;
         }
       }
     }
   }
+
   &.show-bg-mobile {
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
         border-radius: var(--media-card-border-radius);
+
         .content {
           padding: 1rem !important;
         }
@@ -605,19 +640,22 @@ const handleHasAudio = computed(() => {
     .holder {
       border-radius: var(--media-card-border-radius);
     }
+
     .content h2 {
       font-size: var(--font-size-7);
       line-height: var(--font-size-9);
       @include t4lines();
     }
   }
+
   &.is-horizontal {
-    @include media(">md") {
+    @include media(">=md") {
       .holder {
         flex-direction: row;
       }
     }
-    @include media("<md") {
+
+    @include media("<=md") {
       .holder {
         .image {
           width: 112px !important;
@@ -627,46 +665,57 @@ const handleHasAudio = computed(() => {
       }
     }
   }
+
   &.is-horizontal.is-feature {
     .holder {
       flex-direction: row;
     }
+
     @include media("<md") {
       .holder {
         background-color: var(--p-surface-25);
         flex-direction: column;
+
         .image {
           width: 100% !important;
           height: auto !important;
+
           .v-image {
             left: 0;
           }
         }
+
         .content {
           padding: 1rem !important;
         }
       }
     }
+
     &.show-bg {
       border-radius: var(--media-card-border-radius);
     }
   }
+
   &.is-vertical {
     .image {
       width: 100% !important;
       height: auto !important;
+
       .v-image {
         left: 0;
       }
     }
+
     .holder {
       flex-direction: column;
       background-color: var(--p-surface-25);
+
       .content {
         padding: 1rem !important;
       }
     }
   }
+
   &:not(.show-image) {
     .holder {
       .content {

@@ -10,17 +10,20 @@ primary_region = "iad"
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
+
+[http_service.http_options]
+  idle_timeout = 900
 
 [[http_service.checks]]
   interval = "30s"
-  grace_period = "5s"
+  grace_period = "10s"
   method = "GET"
   path = "/"
   protocol = "http"
-  timeout = "10s"
+  timeout = "15s"
   tls_skip_verify = false
 
 [http_service.concurrency]

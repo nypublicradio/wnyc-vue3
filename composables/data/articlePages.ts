@@ -109,6 +109,7 @@ export function normalizePerson(person: Record<string, any>): Person {
     id: person.id,
     name: pa.name,
     photoID: pa.image?.template ?? null,
+    image: pa.image ?? null,
     jobTitle: pa.jobTitle,
     biography: pa.bio,
     website: pa.website,
@@ -488,7 +489,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
   }
   // Get Byline 
   const bylineUrl = article.collections.filter((collection) => {
-    return collection.rels.includes('byline');
+    return collection?.rels?.includes('byline');
   })[0]?.href ?? null;
 
   const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null;

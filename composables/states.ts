@@ -217,6 +217,12 @@ export const useSensitiveContent = () => useState<boolean>('sensitiveContent', (
 // global toast
 export const useGlobalToast = () => useState<object>('globalToast', () => null)
 
+// device info
+export const useFullDeviceInfo = () => useState<object>('fullDeviceInfo', () => null)
+
+// app download link
+export const useAppDownloadLink = () => useState<string>('appDownloadLink', () => null)
+
 // saved page tab state
 export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)
 

@@ -47,15 +47,17 @@ jobs:
         with:
           secrets: |
             ENV=review
-            AVIARY_BASE_API=${{ env.AVIARY_BASE_API }}
-            HEADER_NAVIGATION_API=${{ env.HEADER_NAVIGATION_API }}
+            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
+            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
-            PUBLISHER_BASE_API=${{ env.PUBLISHER_BASE_API }}
+            PUBLISHER_BASE_API=${{ vars.PUBLISHER_BASE_API }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID }}
-            SF_CLIENT_SECRET=${{ secrets.SF_CLIENT_SECRET }}
+            SF_USERNAME=${{ secrets.SF_USERNAME }}
+            SF_PRIVATE_KEY=${{ secrets.SF_PRIVATE_KEY }}
+            SF_LOGIN_URL=${{ secrets.SF_LOGIN_URL }}
             PAT=${{ secrets.PAT }}
-            SUPABASE_URL=${{ env.SUPABASE_URL }}
+            SUPABASE_URL=${{ vars.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
           build_args: |
             ENV=review
@@ -84,7 +86,6 @@ jobs:
             SUPABASE_AUTH_TOKEN_NAME=${{ vars.SUPABASE_AUTH_TOKEN_NAME }}
             BFF_URL=${{ steps.set-url.outputs.url }}
             OPENWEB_SPOT_ID=${{ vars.OPENWEB_SPOT_ID }}
-            NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
             NPR_CDS_API=${{ vars.NPR_CDS_API }}
             WNYC_NOW_FEED_URL=${{ vars.WNYC_NOW_FEED_URL }}
             WNYC_SHOW_SHARE_BASE_URL=${{ vars.WNYC_SHOW_SHARE_BASE_URL }}
@@ -114,7 +115,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: '#pull-requests'
+          SLACK_CHANNEL: '#audience-pr-review'
           SLACK_COLOR: 'good'
           SLACK_ICON_EMOJI: ':rocket:'
           SLACK_TITLE: 'Review App Deployed'

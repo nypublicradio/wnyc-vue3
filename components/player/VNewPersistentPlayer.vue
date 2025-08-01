@@ -132,7 +132,7 @@ const props = defineProps({
    */
   image: {
     default: null,
-    type: String,
+    type: [Object, String],
   },
   /**
    * left image representing the audio
@@ -582,7 +582,6 @@ defineExpose({
                   :sizes="`xs:${props.imageSize * 2}px`"
                   :alt="props.title"
                   :ratio="[1, 1]"
-                  :size="[1, 2]"
                   role="presentation"
                 />
               </VFlexibleLink>

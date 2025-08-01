@@ -1,6 +1,4 @@
 <script setup>
-import { templatizePublisherImageUrl } from "~/utilities/helpers"
-
 const props = defineProps({
   data: {
     type: Object,
@@ -17,41 +15,42 @@ const props = defineProps({
 })
 
 const size = ref(props.size)
-
+const reactiveData = toRef(props, "data")
 // handle the click if this item is in the saved page and navigate to the live page
 const handleClick = () => {
   if (props.saved) {
-    navigateTo(`/live${props.data.slug ? `?slug=${props.data.slug}` : ""}`)
+    navigateTo(
+      `/live${reactiveData.value.slug ? `?slug=${reactiveData.value.slug}` : ""}`
+    )
   }
 }
 </script>
 
 <template>
   <div
-    v-if="props.data"
+    v-if="reactiveData"
     class="live-item flex gap-3"
     @click="handleClick"
     :class="[{ 'cursor-pointer': props.saved }]"
   >
     <VImage
-      v-if="props.data?.image"
-      :src="props.data?.image?.template ?? templatizePublisherImageUrl(props.data?.image)"
+      :src="reactiveData?.image"
       :width="size"
       :height="size"
       :ratio="[1, 1]"
-      alt="show poster image"
-      class="image"
+      :alt="`${reactiveData?.showTitle} show poster image`"
+      class="image flex-none w-7rem"
     />
     <div class="info flex flex-column gap-3 w-full justify-content-between">
       <div class="content flex flex-column gap-1 justify-content-start w-full">
         <LiveBadge v-if="!props.saved" class="align-self-start" />
         <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
-          {{ props.data.title }}
+          {{ reactiveData.title }}
         </h2>
-        <p v-if="props.saved" class="text-xs">{{ props.data.showTitle }}</p>
+        <p v-if="props.saved" class="text-xs">{{ reactiveData.showTitle }}</p>
         <div
           class="blurb truncate t3lines html-formatting p1"
-          v-html="props.data?.onTodaysShowHeadline ?? props.data?.details"
+          v-html="reactiveData?.onTodaysShowHeadline ?? reactiveData?.details"
         />
       </div>
     </div>
@@ -59,11 +58,7 @@ const handleClick = () => {
 
   <div v-else class="skeleton-holder flex gap-3">
     <div>
-      <Skeleton
-        :width="`${props.size}px`"
-        :height="`${props.size}px`"
-        borderRadius="0px"
-      />
+      <Skeleton :width="`${size}px`" :height="`${size}px`" borderRadius="0px" />
     </div>
     <div class="flex flex-column justify-content-center w-full gap-1">
       <Skeleton height="16px" width="50px" borderRadius="2px" />
@@ -78,17 +73,17 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
-.live-item {
-  .v-image-publisher.image {
-    flex: none;
-    width: v-bind(size);
-  }
-}
+// .live-item {
+//   .v-image-publisher.image {
+//     flex: none;
+//     width: v-bind(size);
+//   }
+// }
 </style>
 <style lang="scss">
 .live-item {
   .v-image-publisher.image .image {
-    background-color: #ffffff;
+    background-color: #ffffff66;
   }
 }
 </style>

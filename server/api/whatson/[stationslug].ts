@@ -1,9 +1,14 @@
 import axios from 'axios'
 import humps from 'humps'
-import { formatTime, formatPublisherImageUrl } from '~/utilities/helpers'
+import { formatTime } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
+import { useVImage } from "~/composables/useVImage"
+
+
 //import { parse, types, stringify } from 'hls-parser';
 const config = useRuntimeConfig()
+
+const { formatPublisherImageUrl, templatizeImageUrl } = useVImage()
 
 // format the show data from API response
 const formatShowData = (apiResponse: any) => {
@@ -52,10 +57,10 @@ const formatShowData = (apiResponse: any) => {
 		file: apiResponse.data[0].attributes['mobile-mp3'],
 		hls: apiResponse.data[0].attributes['hls'],
 		id,
-		image: imageData ? `https://media.wnyc.org/i/448/448/l/80/${imageData.attributes.name}` : apiResponse.data[0].attributes['image-logo'],
+		image: imageData ? { template: `https://media.wnyc.org/i/%s/%s/%s/%s/${imageData.attributes.name}` } : { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
 		slug: apiResponse.data[0].attributes.slug,
 		station: apiResponse.data[0].attributes.name,
-		stationImage: apiResponse.data[0].attributes['image-logo'],
+		stationImage: { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
 		timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
 		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
 		showTitle: title,

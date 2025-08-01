@@ -1,8 +1,11 @@
-import { getDate, imageSolver } from '~/utilities/helpers'
+import { getDate } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsApp, useIsLiveStream } from "~/composables/states"
 import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
 import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { useVImage } from "~/composables/useVImage"
+
+const { imageSolver } = useVImage()
 let currentEpisode = null
 
 const defaultMimeType = 'image/jpeg'
@@ -45,7 +48,7 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     // the "player_image" is generated from the prepForPlayer helper function
-    const artworkImageArray = currentEpisode?.directoryImage?.uri & !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image ?? currentEpisode.image)
+    const artworkImageArray = currentEpisode?.directoryImage?.uri & !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.image?.template || FALLBACKIMAGE)
 
     if (isApp.value) {
 

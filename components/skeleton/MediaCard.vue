@@ -67,9 +67,9 @@ const props = defineProps({
 })
 
 // Use the same composable as the main MediaCard for consistency
-import { useImageDimensions } from "~/composables/useImageDimensions"
+import { useVImageDimensions } from "~/composables/useVImageDimensions"
 
-const { width: imageWidth, height: imageHeight } = useImageDimensions({
+const { width: imageWidth, height: imageHeight } = useVImageDimensions({
   size: props.size,
 })
 </script>
@@ -142,6 +142,26 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
                 />
               </div>
             </div>
+            <div class="flex gap-2 my-1 flex-column" v-if="props.showTease">
+              <Skeleton
+                height="10px"
+                width="100%"
+                borderRadius="16px"
+                class="opacity-50"
+              />
+              <Skeleton
+                height="10px"
+                width="90%"
+                borderRadius="16px"
+                class="opacity-50"
+              />
+              <Skeleton
+                height="10px"
+                width="45%"
+                borderRadius="16px"
+                class="opacity-50"
+              />
+            </div>
             <div class="article-metadata">
               <div class="flex gap-2 align-items-center mb-1">
                 <Skeleton
@@ -170,26 +190,6 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
                 v-if="props.isSegment"
                 height="10px"
                 width="40%"
-                borderRadius="16px"
-                class="opacity-50"
-              />
-            </div>
-            <div class="flex gap-2 my-1 flex-column" v-if="props.showTease">
-              <Skeleton
-                height="10px"
-                width="100%"
-                borderRadius="16px"
-                class="opacity-50"
-              />
-              <Skeleton
-                height="10px"
-                width="90%"
-                borderRadius="16px"
-                class="opacity-50"
-              />
-              <Skeleton
-                height="10px"
-                width="45%"
                 borderRadius="16px"
                 class="opacity-50"
               />
@@ -258,7 +258,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
     @include media("<md") {
       flex-direction: row;
     }
-    // @include media(">md") {
+    // @include media(">=md") {
     //   background-color: var(--p-surface-25);
     //   .content {
     //     padding: 1rem !important;
@@ -338,7 +338,7 @@ const { width: imageWidth, height: imageHeight } = useImageDimensions({
   }
 
   &.is-horizontal {
-    @include media(">md") {
+    @include media(">=md") {
       .holder {
         flex-direction: row;
       }

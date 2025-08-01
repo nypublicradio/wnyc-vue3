@@ -1,5 +1,6 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
+import { Device, type DeviceInfo } from '@capacitor/device';
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -33,8 +34,7 @@ import {
   FALLBACKIMAGEEPDARK,
   FALLBACKIMAGEEPHEADDARK,
   FALLBACKUSER,
-  FALLBACKUSERDARK,
-  NPRIMAGEDOMAINSOURCES,
+  FALLBACKUSERDARK
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
@@ -100,22 +100,6 @@ export function formatTime(date: any, formatString = "h:mm a") {
   return null
 }
 
-/*
-formats the url of a publisher image so it works with our design system image components
-*/
-export const formatPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
-}
-
-/*
-finds the image first then formats the url of a publisher image so it works with our design system image components
-*/
-export const formatPublisherImage = (attributes) => {
-  const img = attributes.imageMain ?? attributes.image
-  const url = img.template
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
-}
-
 // Function to strip HTML tags and return text content
 function stripHtmlTags(str) {
   const parser = new DOMParser()
@@ -129,15 +113,6 @@ export const getReadingTime = (htmlContent) => {
   const wordsPerMinute = 200 // Average reading speed
   const estimatedWordCount = textContent.split(/\s+/).length
   return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`
-}
-
-interface ImageAttributes {
-  imageMain?: {
-    template: string
-  }
-  image?: {
-    template: string
-  }
 }
 
 // returns the rounded up minutes duration of the episode
@@ -159,117 +134,6 @@ export const getMinutes = (ms, mult = 1000) => {
   }
   return duration
 }
-
-// returns a resized image url when provided the entire image object
-export const resizePublisherImage = (
-  attributes: ImageAttributes,
-  w: number,
-  h: number,
-  q = 80
-): string => {
-  const img = attributes.imageMain ?? attributes.image
-  const url = img.template
-
-  const pieces = url.split("/")
-  const finalUrlArr: string[] = []
-
-  pieces.forEach((piece: string, index: number) => {
-    if (index < 4 || index > 7) {
-      finalUrlArr.push(piece)
-    }
-    if (index === 4) {
-      finalUrlArr.push(`${w}/${h}/c/${q}`)
-    }
-  })
-  return finalUrlArr.join("/")
-}
-
-// returns a resized image url when provided just the image URL
-export const resizePublisherImageUrl = (
-  url: string,
-  w: number,
-  h: number,
-  q = 80
-): string => {
-  const pieces = url.split("/")
-  const finalUrlArr: string[] = []
-
-  pieces.forEach((piece: string, index: number) => {
-    if (index < 4 || index > 7) {
-      finalUrlArr.push(piece)
-    }
-    if (index === 4) {
-      finalUrlArr.push(`${w}/${h}/c/${q}`)
-    }
-  })
-  return finalUrlArr.join("/")
-}
-
-// returns a resized image url when provided just the image URL
-export const resizeNprImageUrl = (
-  url: string,
-  w: number,
-  q = 80,
-  format = "jpeg"
-): string => {
-  const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
-  return finalUrl
-}
-
-// returns a resized image url when provided just the image URL
-export const resizeWagtailImageUrl = (
-  id: string,
-  w: number,
-  h: number,
-  q = 80,
-  format = "jpeg"
-): string => {
-  const config = useRuntimeConfig()
-  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|${format}quality-${q}`
-  return finalUrl
-}
-// returns a templated image url when provided just the image URL
-export const templatizePublisherImageUrl = (url: string): string => {
-  if (url?.includes("media.wnyc.org")) {
-    const pieces = url.split("/")
-    const finalUrlArr: string[] = []
-
-    pieces.forEach((piece: string, index: number) => {
-      if (index < 4 || index > 7) {
-        finalUrlArr.push(piece)
-      }
-      if (index === 4) {
-        finalUrlArr.push("%s/%s/%s/%s")
-      }
-    })
-    return finalUrlArr.join("/")
-  } else {
-    return url
-  }
-}
-
-// central spot to handle image formatting from diff sources
-export const imageSolver = (url: string, options: { w?: number, h?: number, q?: number, format?: string } = {}) => {
-  // Default values for width, height, quality, and format
-  const { w = 288, h = 288, q = 80, format = "jpeg" } = options
-
-  let imgUrl = ""
-  if (typeof url === "string" && /^\d+$/.test(url)) {
-    imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
-  } else if (typeof url === "string" && url.includes("media.wnyc.org")) {
-    imgUrl = resizePublisherImageUrl(url, w, h, q)
-  } else if (
-    typeof url === "string" &&
-    Array.isArray(NPRIMAGEDOMAINSOURCES) &&
-    NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))
-  ) {
-    imgUrl = resizeNprImageUrl(url, w, q, format)
-  } else {
-    imgUrl = url
-  }
-  return imgUrl
-}
-
 
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
@@ -458,6 +322,38 @@ export const toSystemSettings = () => {
     capacitorIosNotificationSettings.openNotificationSettings();
   }
 }
+
+// get device information
+export async function getFullDeviceInfo(): Promise<DeviceInfo | null> {
+  try {
+    const info = await Device.getInfo();
+    return info;
+  } catch (error) {
+    console.error('Error getting full device info:', error);
+    return null;
+  }
+}
+
+//determine where to send the user to get the app based on their platform or if on browser
+export const getAppDownloadLink = async () => {
+  const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android";
+  const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771";
+
+  const info = await getFullDeviceInfo();
+
+  if (info?.platform === "android") {
+    return androidStoreUrl;
+  } else if (info?.platform === "ios") {
+    return iosStoreUrl;
+  } else if (info?.operatingSystem === 'ios') {
+    return iosStoreUrl;
+  } else if (info?.operatingSystem === 'android') {
+    return androidStoreUrl;
+  } else {
+    // For web browsers, redirect to the mobile route
+    return "/mobile";
+  }
+};
 
 // helper function to open a link in the browser IN the app
 export async function openLinkInAppBrowser(url: string) {
@@ -1004,13 +900,12 @@ export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
 
-  const theImage = item.headers?.brand?.logoImage?.template ??
+  const theImage = item.headers?.brand?.logoImage ??
     item.headers?.brand?.logoImage ??
     item.showImage ??
-    item.image?.template ??
     item.image ??
-    item.listingImage?.template ??
-    getEpisodeFallBackImage()
+    item.image ??
+    item.listingImage
 
   return {
     ...item,
@@ -1074,7 +969,7 @@ export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link
   if (Capacitor.getPlatform() === "web" && theLink) {
     if (story.cmsSource === cmsSources.WAGTAIL) {
-      // open in new tab if web and wagtail source
+      // open in new tab if web and wagtail source (Gothamist)
       window.open(theLink, "_blank")
     }
   } else {

@@ -10,6 +10,7 @@ export default interface Person {
   name?: string
   socialMediaProfile?: ISocial[]
   photoID?: any
+  image?: any
   jobTitle?: string
   biography?: string
   website?: string
