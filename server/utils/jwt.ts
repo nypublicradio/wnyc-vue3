@@ -16,6 +16,10 @@ export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string 
     const secret = config.jwtSecret as string;
     const expiresIn = config.jwtExpiresIn as string;
 
+    if (!secret) {
+        throw new Error('JWT_SECRET environment variable is required but not set');
+    }
+
     return jwt.sign(payload, secret, {
         expiresIn,
         issuer: 'wnyc-vue3-app' // Add issuer to token generation
@@ -28,6 +32,15 @@ export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string 
 export function verifyToken(token: string): JWTPayload {
     const config = useRuntimeConfig();
     const secret = config.jwtSecret as string;
+
+    if (!secret) {
+        console.error('JWT_SECRET environment variable is not set!');
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Internal Server Error',
+            message: 'JWT configuration error',
+        });
+    }
 
     try {
         const decoded = jwt.verify(token, secret,
