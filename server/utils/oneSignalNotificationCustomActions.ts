@@ -19,7 +19,7 @@ export async function doActionId(actionId: string) {
             await askTrackingPermissions()
             break
         case "sample":
-            alert("Sample action triggered")
+            console.error("Sample action triggered")
             break
         default:
             // do something

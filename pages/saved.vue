@@ -1,6 +1,9 @@
 <script setup>
 import { useSelectedSavedTab, useIsDarkMode } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
+const route = useRoute()
+const router = useRouter()
+const routeSlug = ref(route.query.slug)
 
 const user = useCurrentUser()
 const savedMenuItems = ref(getSavedMenuItems())
@@ -23,6 +26,10 @@ const selectMenuItem = async (menuItem, index) => {
   selectedMenuItem.value = menuItem
   selectedSavedTab.value = index
   await nextTick()
+  // update the route query with the selected slug
+  router.replace({ query: { ...router.currentRoute.value.query, slug: menuItem.value } })
+  // scroll to the active item
+  await nextTick()
   scrollToActiveItem()
 }
 
@@ -43,6 +50,23 @@ const handleBgColor = computed(async () => {
   await nextTick()
   return isDarkMode.value ? "none" : "#ffffff"
 })
+
+// watcher for triggering a play of the live stream from a route variable
+watch(
+  () => router.currentRoute.value.query,
+  (newQuery) => {
+    // checking if the slug is in the query
+    if (newQuery.slug) {
+      routeSlug.value = newQuery.slug
+      savedMenuItems.value.forEach((item, index) => {
+        if (item.value === newQuery.slug) {
+          selectMenuItem(item, index)
+        }
+      })
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   // send GA page view
@@ -130,6 +154,7 @@ onMounted(() => {
       .item-btn {
         min-width: 130px;
       }
+
       &.selected .item-btn {
         background-color: var(--p-red-500);
         color: #ffffff;

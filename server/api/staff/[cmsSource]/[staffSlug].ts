@@ -15,7 +15,7 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
             fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body',
             order: '-publication_date',
             limit: 10,
-            offset: offset,
+            offset,
         },
     };
     const res = await axios(options);
@@ -36,7 +36,9 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
     }
 };
 
+// TODO: implement publisher api to get staff data
 const getPublisherStaffData = async (staffSlug: string) => {
+    console.error('Publisher API not implemented yet to get data for:', staffSlug);
     //todo: call publisher api to get staff data with article list
 };
 

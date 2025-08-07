@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import soundAnimGif from "../assets/images/audioAnim.gif"
 import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
 
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onMounted, ref, watch } from "vue"
+import { useIsApp } from "~/composables/states"
 
 const props = defineProps({
   /**
@@ -138,7 +138,7 @@ const props = defineProps({
    * left image representing the audio
    */
   imageSize: {
-    default: 60,
+    default: 116,
     type: Number,
   },
   /**
@@ -209,10 +209,10 @@ const props = defineProps({
   /**
    * show the skip buttons
    */
-  // showSkip: {
-  //   default: true,
-  //   type: Boolean,
-  // },
+  showSkip: {
+    default: true,
+    type: Boolean,
+  },
   /**
    * show the skip buttons
    */
@@ -296,13 +296,13 @@ const emit = defineEmits([
   "swipe-up",
   "swipe-down",
 ])
-
+const isApp = useIsApp()
 const isStreamLoading = computed(() => props.isStreamLoading)
 const isEpisodePlaying = computed(() => props.isEpisodePlaying)
 const isLiveStream = computed(() => props.isLiveStream)
 const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
 const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
-
+//const volume = ref(props.volume)
 //swipe setup
 const playerRef = ref(null)
 
@@ -386,7 +386,8 @@ function handleSwipe() {
     }
   }
   if (props.canExpand && props.canUnexpandWithSwipe) {
-    if (isDraggingDown) {
+    // only swipe closes when the scroll position is at the top
+    if (isDraggingDown && expandedContentHolder.value.scrollTop === 0) {
       if (velocity > swipeThreshold) {
         //console.log('UNEXPAND')
         playerRef.value.addEventListener("touchmove", preventScrollOnTouch, {
@@ -434,6 +435,16 @@ onMounted(() => {
 const togglePlay = () => {
   // Play or pause the sound.
   emit("toggle-play", !isEpisodePlaying.value)
+}
+
+// handle the volume toggle mute event
+const volumeToggleMute = (e) => {
+  emit("volume-toggle-mute", e)
+}
+
+// handle the volume change event
+const volumeChange = (e) => {
+  emit("volume-change", e / 100)
 }
 
 // exposed method to handle the minimize toggle
@@ -488,11 +499,6 @@ const handleCast = () => {
   }
 }
 
-// exposed method to handle the mute toggle
-const toggleMute = () => {
-  //$mediaPlayerRef.value.muted = !$mediaPlayerRef.value.muted
-}
-
 // handles the click anywhere prop. So if the user clicks anywhere on the player, except the buttons, the player will expand or minimize
 const handleClickAnywhere = (e) => {
   //console.log("anywhere click")
@@ -512,14 +518,14 @@ onMounted(async () => {
   window.addEventListener("keydown", (event) => {
     switch (event.code) {
       case "ArrowUp":
-        // if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume < 1) {
-        //   $mediaPlayerRef.value.volume += 0.1
-        // }
+        if (props.volume < 1) {
+          emit("volume-change", props.volume + 0.1)
+        }
         break
       case "ArrowDown":
-        // if ($mediaPlayerRef.value && $mediaPlayerRef.value.volume > 0) {
-        //   $mediaPlayerRef.value.volume -= 0.1
-        // }
+        if (props.volume > 0) {
+          emit("volume-change", props.volume - 0.1)
+        }
         break
       default:
         /* code */
@@ -535,7 +541,6 @@ defineExpose({
   skipBack,
   toggleExpanded,
   toggleMinimize,
-  toggleMute,
   togglePlay,
 })
 </script>
@@ -544,31 +549,16 @@ defineExpose({
   <div
     ref="playerRef"
     class="persistent-player"
-    :class="[{ minimized: isMinimized }, { expanded: isExpanded }]"
+    :class="[
+      { minimized: isMinimized },
+      { expanded: isExpanded },
+      { app: isApp },
+      { browser: !isApp },
+    ]"
   >
-    <!-- <i
-      v-if="
-        (props.canExpandWithSwipe && !isExpanded) ||
-        (props.canUnexpandWithSwipe && isExpanded)
-      "
-      class="pi pi-minus drag-closer-line absolute"
-    /> -->
-    <div v-if="props.canMinimize" class="maximize-btn-holder">
-      <Button
-        title="maximize Player"
-        class="maximize-btn p-button-icon-only"
-        :class="{ show: isMinimized }"
-        aria-label="maximize player"
-        @click="toggleMinimize(!isMinimized)"
-      >
-        <img v-if="isEpisodePlaying" :src="soundAnimGif" alt="sounds wave animation" />
-        <slot v-else name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
-      </Button>
-    </div>
-
     <Transition name="expand">
       <div v-show="!isExpanded">
-        <div class="flex h-full align-items-center">
+        <div class="content flex h-full align-items-center">
           <div
             v-if="props.image"
             class="track-info-image flex-none"
@@ -590,15 +580,20 @@ defineExpose({
                   :width="props.imageSize"
                   :height="props.imageSize"
                   :sizes="`xs:${props.imageSize * 2}px`"
-                  :alt-text="props.title"
+                  :alt="props.title"
                   :ratio="[1, 1]"
+                  :size="[1, 2]"
                   role="presentation"
                 />
               </VFlexibleLink>
             </div>
           </div>
 
-          <div class="flex h-full w-full align-items-center gap-2 px-2 relative">
+          <div
+            class="flex justify-content-between w-full h-full pl-3 pr-3 lg:pr-2 gap-3 relative"
+          >
+            <!-- {{ props.title }}
+            {{ props.description }} -->
             <VNewTrackInfo
               v-bind="{ ...$props, ...$attrs }"
               :livestream="isLiveStream"
@@ -606,87 +601,103 @@ defineExpose({
               @description-click="emit('description-click')"
               @title-click="emit('title-click')"
               @click="handleClickAnywhere"
+              class="flex-grow-1"
             />
-            <!-- <Transition name="skipBtnL">
-              <Button
-                v-if="props.showSkip && !isLiveStream"
-                class="media-button flex-none p-button-icon-only"
-                severity="secondary"
-                @click="skipBack"
-              >
-                <slot name="skipBack"><i class="pi pi-undo"></i></slot>
-              </Button>
-            </Transition> -->
-            <Button
-              ref="playButtonRef"
-              :disabled="isStreamLoading"
-              class="media-button play-button p-button-icon-only"
-              :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
-              @click="togglePlay"
-              severity="secondary"
+            <div
+              class="middle-btns flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
             >
-              <slot v-if="isStreamLoading" name="loading">
-                <i class="pi pi-spin pi-spinner"></i>
-              </slot>
-              <slot v-else-if="!isEpisodePlaying" name="play"
-                ><i class="pi pi-play"></i
-              ></slot>
-              <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
-            </Button>
-            <!-- <Transition name="skipBtnR">
+              <div class="btns flex align-items-center justify-content-center">
+                <Transition name="skipBtnL">
+                  <Button
+                    v-if="props.showSkip"
+                    class="media-button flex-none p-button-icon-only skip-btn flex-grow-1"
+                    severity="secondary"
+                    @click="skipBack"
+                    :disabled="isLiveStream"
+                  >
+                    <slot name="skipBack"><i class="pi pi-undo"></i></slot>
+                  </Button>
+                </Transition>
+                <Button
+                  ref="playButtonRef"
+                  :disabled="isStreamLoading"
+                  class="media-button play-button p-button-icon-only z-1"
+                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+                  @click="togglePlay"
+                  severity="secondary"
+                >
+                  <slot v-if="isStreamLoading" name="loading">
+                    <i class="pi pi-spin pi-spinner"></i>
+                  </slot>
+                  <slot v-else-if="!isEpisodePlaying" name="play"
+                    ><i class="pi pi-play"></i
+                  ></slot>
+                  <slot v-else name="pause"><i class="pi pi-pause"></i></slot>
+                </Button>
+                <Transition name="skipBtnR">
+                  <Button
+                    v-if="props.showSkip"
+                    class="media-button flex-none p-button-icon-only p-button-secondary skip-btn"
+                    severity="secondary"
+                    :disabled="isLiveStream"
+                    @click="skipAhead"
+                  >
+                    <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
+                  </Button>
+                </Transition>
+              </div>
+              <div class="hidden lg:block w-full">
+                <player-v-timeline
+                  :currentEpisodeProgress
+                  :currentEpisodeDuration
+                  :isLiveStream
+                  minimized
+                  slim
+                  class="w-full"
+                  @scrub-timeline-end="emit('scrub-timeline-end', $event)"
+                />
+              </div>
+            </div>
+            <div
+              class="right-btns flex align-items-center justify-content-end gap-2 flex-grow-1"
+            >
+              <player-v-volume-control
+                v-if="props.showVolume"
+                class="hidden lg:flex"
+                :volume="props.volume * 100"
+                :is-muted="props.isMuted"
+                @volume-toggle-mute="volumeToggleMute"
+                @volume-change="volumeChange"
+              />
               <Button
-                v-if="props.showSkip && !isLiveStream"
-                class="media-button flex-none p-button-icon-only p-button-secondary"
+                v-if="props.canExpand"
+                class="flex-none p-button-icon-only p-button-secondary"
                 severity="secondary"
-                @click="skipAhead"
+                variant="text"
+                title="Expand player button"
+                @click="toggleExpanded(true)"
               >
-                <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
+                <slot name="expand"><i class="pi pi-expand"></i></slot>
               </Button>
-            </Transition> -->
-            <player-v-timeline
-              v-if="!isLiveStream"
-              :currentEpisodeProgress
-              :currentEpisodeDuration
-              :isLiveStream
-              minimized
-            />
+            </div>
           </div>
         </div>
       </div>
     </Transition>
 
-    <Button
-      v-if="props.canMinimize && !props.canClickAnywhere"
-      title="Minimize Player"
-      class="minimize-btn p-button-icon-only p-button-text p-button-secondary"
-      aria-label="minimize player"
-      @click="toggleMinimize(!isMinimized)"
-    >
-      <slot name="chevronDown">
-        <i class="pi pi-chevron-down"></i>
-      </slot>
-    </Button>
-
-    <Button
-      v-if="props.canExpand && !isExpanded && !props.canClickAnywhere"
-      title="Expand Player"
-      class="expand-btn p-button-icon-only p-button-text p-button-secondary"
-      :class="{ show: isExpanded }"
-      aria-label="expand player"
-      @click="toggleExpanded(!isExpanded)"
-    >
-      <slot name="chevronUp"><i class="pi pi-chevron-up"></i></slot>
-    </Button>
-
     <Transition name="expand-delay">
       <div v-show="isExpanded" class="expanded-view">
-        <div ref="expandedContentHolder" class="expanded-content-holder">
+        <div ref="expandedContentHolder" class="content expanded-content-holder">
           <div class="header">
             <slot name="expanded-header">
-              <div class="flex justify-content-between">
+              <div class="flex justify-content-between flex-row-reverse">
                 <Button
-                  class="unexpand-btn p-button-icon-only p-button-text p-button-secondary"
+                  class="unexpand-btn p-button-icon-only p-button-secondary"
                   aria-label="close expanded player button"
+                  variant="text"
+                  severity="secondary"
+                  rounded
+                  title="Minimize player button"
                   @click="toggleExpanded(!isExpanded)"
                 >
                   <slot name="unexpanded-button-icon">
@@ -724,7 +735,6 @@ defineExpose({
                 role="presentation"
                 style="background-color: #ffffff"
               />
-
               <div v-if="isLiveStream" class="flex flex-column gap-2">
                 <div class="live flex gap-2 align-items-center">
                   <div class="media-live-indicator">
@@ -742,7 +752,6 @@ defineExpose({
 
             <div class="expandedViewPlayer mt-5">
               <player-v-timeline
-                v-if="!isLiveStream"
                 :currentEpisodeProgress
                 :currentEpisodeDuration
                 :isLiveStream
@@ -751,7 +760,10 @@ defineExpose({
                 @scrub-timeline-click="emit('scrub-timeline-click', $event)"
               />
 
-              <div class="mt-2 flex justify-content-center align-items-center gap-2">
+              <div
+                class="flex justify-content-center align-items-center gap-2"
+                :class="isLiveStream ? 'mt-5' : 'mt-2'"
+              >
                 <Transition name="skipBtnL">
                   <Button
                     v-if="!isLiveStream"
@@ -816,6 +828,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   -webkit-transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
   display: flex;
   flex-direction: column;
+
   &.minimized {
     bottom: calc(
       calc(var(--persistent-player-height) * -1) - var(--persistent-player-height-buffer)
@@ -827,71 +840,20 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     height: 100%;
   }
 
-  .maximize-btn-holder {
-    position: absolute;
-    display: block;
-    right: 0;
-    left: 0;
-    margin: auto;
-    top: calc(-20px - var(--persistent-player-height-buffer));
-    width: 40px;
-    height: 40px;
-    overflow: hidden;
-
-    .maximize-btn.p-button {
-      position: absolute;
-      display: block;
-      right: 0px;
-      top: 44px;
-      padding: 0.4rem 0.2rem !important;
-      width: 40px;
-      height: 40px;
-      border-radius: 4px 4px 0 0;
-      background-color: var(--persistent-player-maximize-btn-bg);
-      pointer-events: none;
-      transition: top 0.1s;
-      -webkit-transition: top 0.1s;
-      color: var(--persistent-player-maximize-btn-color);
-      border: none;
-      &.show {
-        transition: top 0.5s;
-        -webkit-transition: top 0.5s;
-        top: 1px;
-        pointer-events: all;
-      }
-
-      &:hover {
-        background-color: var(--persistent-player-maximize-btn-bg-hover);
-      }
-
-      .pi {
-        font-size: 0.7rem;
-      }
-
-      img {
-        width: 100%;
-        height: auto;
-      }
+  .right-btns {
+    @include media("<md") {
+      display: none !important;
     }
   }
-
-  .minimize-btn,
-  .expand-btn {
-    position: absolute;
-    right: 0;
-    left: 0;
-    margin: auto;
-    top: 3px;
-    padding: 0.4rem 0.2rem !important;
-    background-color: var(--persistent-player-minimize-btn-bg);
-    color: var(--persistent-player-minimize-btn-color);
-    z-index: 100;
-
-    .pi {
-      font-size: 0.7rem;
+  .middle-btns {
+    max-width: 440px;
+    .btns {
+      gap: 0.8rem;
+    }
+    @include media("<lg") {
+      flex-grow: 0 !important;
     }
   }
-
   .expanded-view {
     padding-top: env(safe-area-inset-top);
     position: relative;
@@ -911,13 +873,16 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       overflow-x: hidden;
       height: inherit;
     }
+
     #expandedControls {
       min-height: 85px;
     }
+
     .cast-btn {
       padding: 0.5rem;
     }
   }
+
   video {
     display: none;
   }
@@ -929,7 +894,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 }
 
 .expand-delay-leave-active {
-  transition: opacity calc(var(--p-transition-duration) * 2) ease-in;
+  transition: opacity calc(var(--p-transition-duration) * 1) ease-in;
 }
 
 .expand-delay-enter-from,
@@ -940,7 +905,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 //expand
 .expand-enter-active {
   transition: opacity calc(var(--p-transition-duration) * 2) ease-out;
-  transition-delay: calc(var(--p-transition-duration) * 2.25);
+  transition-delay: calc(var(--p-transition-duration) * 1.5);
 }
 
 .expand-leave-active {
@@ -972,6 +937,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   opacity: 0;
   transform: scale(1) translateX(0);
 }
+
 //skipBtnL
 .skipBtnL-enter-active {
   transition: opacity calc(var(--p-transition-duration) * 2) ease-out,
@@ -1012,7 +978,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   }
 
   .track-info-image {
-    background-color: #ffffff;
+    //background-color: #ffffff;
     display: block;
 
     // prettier-ignore
@@ -1060,7 +1026,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     height: var(--persistent-player-button-height);
     color: var(--persistent-player-button-color);
     border-radius: var(--persistent-player-button-radius);
-    margin-right: 2.5px;
+    //margin-right: 2.5px;
     background: var(--persistent-player-button-bg-color);
     cursor: pointer;
 
@@ -1068,14 +1034,17 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       color: var(--persistent-player-button-color);
       fill: var(--persistent-player-button-color);
     }
+
     &.media-button-expanded-play {
       width: calc(var(--persistent-player-button-width) * 1.3);
       height: calc(var(--persistent-player-button-height) * 1.3);
     }
+
     .o-icon {
       width: 20px;
       height: 20px;
     }
+
     &.play-button {
       .play-icon {
         width: 17px;
@@ -1083,13 +1052,28 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         margin-top: 1px;
         margin-left: 3px;
       }
+
       .pause-icon {
         width: 11px;
         height: 13px;
       }
     }
+
+    &.skip-btn {
+      width: 24px;
+      height: 24px;
+      .o-icon {
+        width: 14px;
+        height: 14px;
+      }
+      @include media("<lg") {
+        display: none;
+      }
+    }
+
     &:disabled {
-      opacity: 1;
+      pointer-events: none;
+      opacity: 0.3;
     }
   }
 

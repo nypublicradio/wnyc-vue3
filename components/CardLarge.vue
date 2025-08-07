@@ -1,5 +1,5 @@
 <script setup>
-import { getDate } from "~/utilities/helpers"
+import { goToEpisodePage, goToStoryPage, hasAudio, getDate } from "~/utilities/helpers"
 
 const props = defineProps({
   item: {
@@ -11,15 +11,28 @@ const props = defineProps({
     default: false,
   },
 })
+const emit = defineEmits(["on-click"])
+
+// handle the click event and navigate to the appropriate page
+const onClick = (item) => {
+  emit("on-click")
+  //TODO: the audio condition should be changed to something more reliable
+  if (hasAudio(item.audio)) {
+    goToEpisodePage(props.item)
+  } else {
+    goToStoryPage(props.item, { src: props.item.cmsSource })
+  }
+}
 </script>
 
 <template>
   <div v-if="props.item" class="card-large p-ripple" v-ripple>
     <VFlexibleLink
-      class="card-click w-full h-full absolute top-0 left-0 z-1"
+      class="card-click w-full h-full absolute top-0 left-0 z-1 cursor-pointer"
       raw
-      :to="`story/${props.item.id}?src=${props.item.cmsSource}`"
+      @click.prevent="onClick(props.item)"
     >
+      <!--    :to="`story/${props.item.id}?src=${props.item.cmsSource}`" -->
     </VFlexibleLink>
     <div class="top" v-if="props.item?.image">
       <VImage

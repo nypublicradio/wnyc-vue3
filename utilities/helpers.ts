@@ -249,16 +249,20 @@ export const templatizePublisherImageUrl = (url: string): string => {
 }
 
 // central spot to handle image formatting from diff sources
-export const imageSolver = (url, options = {}) => {
+export const imageSolver = (url: string, options: { w?: number, h?: number, q?: number, format?: string } = {}) => {
   // Default values for width, height, quality, and format
-  const { w = 288, h = 288, q = 80, format = "jpeg" }: { w?: number, h?: number, q?: number, format?: string } = options
+  const { w = 288, h = 288, q = 80, format = "jpeg" } = options
 
   let imgUrl = ""
-  if (/^\d+$/.test(url)) {
+  if (typeof url === "string" && /^\d+$/.test(url)) {
     imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
-  } else if (url.includes("media.wnyc.org")) {
+  } else if (typeof url === "string" && url.includes("media.wnyc.org")) {
     imgUrl = resizePublisherImageUrl(url, w, h, q)
-  } else if (NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))) {
+  } else if (
+    typeof url === "string" &&
+    Array.isArray(NPRIMAGEDOMAINSOURCES) &&
+    NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))
+  ) {
     imgUrl = resizeNprImageUrl(url, w, q, format)
   } else {
     imgUrl = url
@@ -388,12 +392,14 @@ export async function setStatusDarkMode(bool: boolean) {
  * helper function to toggle darkmode
  */
 export async function setDarkMode(bool: boolean) {
-  bool
+  // TEMP, no dark ode for browser yet
+  const dmBool = useIsApp().value ? bool : false
+  dmBool
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
-  await setStatusDarkMode(bool)
+  await setStatusDarkMode(dmBool)
   const isDarkMode = useIsDarkMode()
-  isDarkMode.value = bool
+  isDarkMode.value = dmBool
 }
 
 // function to get the EPISODE fallback image for the episode depending on darkmode
@@ -427,6 +433,8 @@ export const getTextSizePixel = (label) => {
 
 // detect system theme preference
 export const detectSystemDarkMode = () => {
+  // TEMP, no dark mode for browser yet
+  if (!useIsApp().value) return false
   return Boolean(
     window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
   )
@@ -984,7 +992,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
 
-  if (currentEpisode.value?.audio !== media.audio) {
+  if (currentEpisode.value?.id !== media.id) {
     currentEpisode.value = prepForPlayer(media)
     saveRecentlyPlayed(media, type)
   }
@@ -1057,15 +1065,10 @@ export const hasAudio = (audio) => {
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
-  let rawbody = ""
-  rawbody += bodyArr.map((item) => {
-    if (item.type === "paragraph") {
-      return item.value
-    } else {
-      return ""
-    }
-  })
-  return rawbody
+  return bodyArr
+    .filter((item) => item.type === "paragraph")
+    .map((item) => item.value.replace(/<\/?[^>]+(>|$)/g, "")) // Strip HTML tags
+    .join(" ");
 }
 
 // Define the interface for the function parameters

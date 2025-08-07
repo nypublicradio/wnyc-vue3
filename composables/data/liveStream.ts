@@ -24,6 +24,7 @@ export async function updateLiveStream(slug: string, save = true) {
     }
 }
 
+// Function to update all live streams
 export async function updateAllLiveStreams(init = true) {
     const allCurrentStations = useAllCurrentStations()
     const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -246,7 +247,7 @@ export default function useLiveStream() {
     }
 
     // Function to get the station by slug and play it when all stations are loaded
-    const getStationBySlugAndPlayIt = async (querySlug) => {
+    const getStationBySlugAndPlayIt = async (querySlug, autoplay = false) => {
         // If stations aren't loaded, wait for them to load then continue
         if (!allCurrentStations.value) {
             await new Promise((resolve) => {
@@ -269,7 +270,7 @@ export default function useLiveStream() {
         if (targetStation) {
             setTimeout(() => {
                 switchStation(targetStation)
-                togglePlayHere()
+                if (autoplay) togglePlayHere()
             }, 100)
         }
     }

@@ -43,9 +43,11 @@
     --font-weight-900: 900;
 
     --header-height: #{$headerHeight};
+    --header-height-app: #{$headerHeightApp};
+    --header-bottom-height: #{$headerBottomHeight};
     --bottom-menu-height: #{$bottomMenuHeight};
     --bottom-menu-icon-color: #ffffff;
-    --player-height: #{$playerHeight};
+    --player-height: var(--persistent-player-height);
 
     --teal-lake: #298c9a;
     --electric-violet: #9747ff;
@@ -67,10 +69,6 @@
     --link-button-hover-color: var(--p-link-400);
     --link-button-text-hover-decoration: underline;
     --link-button-focus-shadow: 0 0 0.2rem 0.2rem var(--p-link-600);
-    --focus-outline: 0 none;
-    --focus-outline-offset: 0;
-    --focus-shadow: 0 0 0.2rem 0.2rem var(--p-link-500);
-    --focus-ring: var(--focus-shadow);
 
     --s-box-background-color: var(--background);
     --header-background: #ffffffe6;
@@ -78,6 +76,9 @@
     --bw-toggle: var(--p-surface-950);
     --success: var(--p-green-500);
     --error: var(--p-red-500);
+
+    --header-menu-background: var(--p-surface-0);
+    --header-submenu-background: var(--p-surface-25);
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -90,9 +91,8 @@
     --stroke-toggle-color: var(--p-surface-25);
     --wnyc-logo-color: #ffffff;
     --link-button-color: var(--p-surface-0);
-    --link-button-hover-color: var(--p-surface-300);
+    --link-button-hover-color: var(--p-primary-color);
     --link-button-focus-shadow: 0 0 0.2rem 0.2rem var(--p-surface-500);
-    --focus-shadow: 0 0 0.2rem 0.2rem var(--p-surface-0);
 
     --s-box-background-color: var(--p-slate-500);
     --header-background: #1b223ce6;
@@ -100,6 +100,9 @@
     --bw-toggle: var(--p-surface-0);
     --success: var(--p-green-400);
     --error: var(--p-red-400);
+
+    --header-menu-background: var(--p-darkblue-500);
+    --header-submenu-background: #00000033;
 }
 
 // darkmode in global darkmode

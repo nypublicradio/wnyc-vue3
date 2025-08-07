@@ -47,7 +47,6 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
     // the "player_image" is generated from the prepForPlayer helper function
     const artworkImageArray = currentEpisode?.directoryImage?.uri & !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image ?? currentEpisode.image)
 
-
     if (isApp.value) {
 
         let artworkImageUrl = FALLBACKIMAGE // Set your fallback image URL here
