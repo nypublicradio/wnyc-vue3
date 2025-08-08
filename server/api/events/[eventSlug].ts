@@ -29,8 +29,8 @@ export default defineEventHandler(async (event) => {
         
         // Set cache headers - longer cache for past events
         const res = event?.node?.res;
-        if (eventData && eventData.eventDate) {
-            const eventDate = new Date(eventData.eventDate);
+        if (eventData && eventData.startDatetime) {
+            const eventDate = new Date(eventData.startDatetime);
             const now = new Date();
             const cacheTime = eventDate < now ? 3600 : 1800; // 1 hour for past events, 30 min for future
             res.setHeader('Cache-Control', `maxage=${cacheTime}, stale-while-revalidate`);

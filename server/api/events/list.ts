@@ -10,8 +10,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             url: `${config.public.AVIARY_BASE_API}pages/`,
             params: {
                 type: 'events.EventPage',
-                fields: 'id,title,event_date,end_date,venue,description,image,url,tags,listing_title,listing_summary',
-                order: 'event_date',
+                fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary',
                 limit: query.limit || 20,
                 offset: query.offset || 0,
             }
@@ -19,17 +18,16 @@ const getWagtailEvents = async (query: Record<string, any>) => {
 
         // Add date filtering if requested
         if (query.upcoming === 'true') {
-            const now = new Date().toISOString();
+            const now = new Date().toISOString().split('T')[0]; // Get date part only
             options.params['event_date__gte'] = now;
         } else if (query.past === 'true') {
-            const now = new Date().toISOString();
+            const now = new Date().toISOString().split('T')[0]; // Get date part only
             options.params['event_date__lt'] = now;
-            options.params.order = '-event_date'; // Reverse order for past events
         }
 
         // Add venue filter if provided
         if (query.venue) {
-            options.params['venue'] = query.venue;
+            options.params['venue_name'] = query.venue;
         }
 
         const res = await axios(options);
