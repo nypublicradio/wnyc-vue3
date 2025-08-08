@@ -12,9 +12,9 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
         params: {
             author_slug: staffSlug,
             type: 'news.ArticlePage',
-            fields: 'id,title,lead_asset,related_authors,publication_date,ancestry,body',
+            fields: 'url,id,title,lead_asset,related_authors,publication_date,ancestry,body',
             order: '-publication_date',
-            limit: 10,
+            limit: 9,
             offset,
         },
     };
@@ -23,7 +23,6 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
     const author = resData[0].relatedAuthors?.filter((author) => {
         return author.slug === staffSlug;
     }).map(author => normalizeAuthor(author));
-
     const articles = await Promise.all(resData.map((article: any) => {
         article.cmsSource = cmsSources.WAGTAIL;
         article.sortDate = article.publicationDate;

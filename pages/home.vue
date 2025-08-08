@@ -1,10 +1,4 @@
 <script setup>
-import {
-  goToEpisodePage,
-  hasAudio,
-  getEpisodeFallBackImage,
-  goToNprPage,
-} from "~/utilities/helpers"
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
@@ -81,6 +75,15 @@ onMounted(() => {
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
     <section>
+      <div
+        class="ad-holder col mb-3 flex lg:hidden align-items-center justify-content-center"
+      >
+        <story-htlAd
+          layout="rectangle"
+          slotClass="htlad-wnyc_homepage_rectangle"
+          fineprint="WNYC is funded by sponsors and member donations"
+        />
+      </div>
       <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
@@ -98,14 +101,17 @@ onMounted(() => {
         </section>
         <section v-if="section.componentType === 'default'">
           <div class="grid">
-            <EpisodeItem
+            <MediaCard
               v-for="ep in section.data"
               :data="ep"
               :key="`home-${ep.id}`"
-              @onClick="goToEpisodePage(ep)"
               showPlayButton
               :fallback-image="ep.headers.brand.logoImage.template"
-              class="col-12 md:col-6 mb-3"
+              is-horizontal
+              imgCol="w-7rem"
+              :showBg="false"
+              :showBgMobile="false"
+              class="col-12 lg:col-6 xl:col-4 mb-3"
             />
           </div>
         </section>
@@ -117,31 +123,21 @@ onMounted(() => {
         <h2 class="my-3">NPR Stories</h2>
         <div
           v-for="(section, index) in pagedata?.npr_stories"
-          :key="`NPR-conetnet-${index}`"
+          :key="`NPR-content-${index}`"
         >
           <div v-if="section.componentType === 'default'">
             <div class="grid">
-              <div
-                class="col-12 md:col-6 mb-3"
+              <MediaCard
+                class="col-12 lg:col-6 xl:col-4 mb-3"
                 v-for="article in section.articles"
                 :key="article.id"
-              >
-                <EpisodeItem
-                  v-if="hasAudio(article.audio)"
-                  :data="article"
-                  @on-click="goToNprPage(article)"
-                  showPlayButton
-                  :fallback-image="getEpisodeFallBackImage()"
-                  :showShare="false"
-                />
-                <StoryItem
-                  v-else
-                  :data="article"
-                  :index="index"
-                  @on-click="goToNprPage(article)"
-                  :showShare="false"
-                />
-              </div>
+                :data="article"
+                is-horizontal
+                imgCol="w-7rem"
+                :index="index"
+                :showBg="false"
+                :showBgMobile="false"
+              />
             </div>
           </div>
           <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
@@ -161,6 +157,7 @@ onMounted(() => {
   .latestNewsHolder {
     width: 100%;
     max-width: 100%;
+
     @include media(">lg") {
       max-width: 300px !important;
     }

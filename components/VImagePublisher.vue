@@ -4,6 +4,7 @@ import Button from "primevue/button"
 import Image from "primevue/image"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
+import { useVImage } from "~/composables/useVImage"
 
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 
@@ -112,21 +113,21 @@ const props = defineProps({
   /**
    *  ammount of blur for the blured background image */
   verticalBgBlur: {
-    default: "3px",
+    default: "15px",
     type: String,
   },
   /**
    * tint the grey blured background image
    * */
   verticalBgColor: {
-    default: "#f1f1f1",
+    default: "#ffffff",
     type: String,
   },
   /**
    *  the opacity of the tint of the grey blured background image
    */
   verticalBgColorOpacity: {
-    default: "0.6",
+    default: "0.08",
     type: String,
   },
   /** * The desired width for the 1x sized image.
@@ -144,16 +145,8 @@ const props = defineProps({
 })
 const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
 
-const imageLoaded = ref(false)
+const { formatPublisherImageUrl, formatRawPublisherImageUrl } = useVImage()
 
-// method to format the url to get the publisher image
-const formatPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
-}
-// method to format the url to get the raw image
-const formatRawPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "raw")
-}
 // method to calculate the quality of the image based on the size and if set to flat quality
 const calcQuality = (quality, size) => {
   if (props.flatQuality) {
@@ -170,6 +163,7 @@ const srcRaw = formatRawPublisherImageUrl(props.src)
 
 const isVertical = ref(false)
 const loadingEnlargedImage = ref(false)
+
 // a function that returns the dimensions of the image
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
@@ -196,12 +190,6 @@ const getDimensions = () => {
   }
 }
 
-// const computedWidth = () => {
-//   return isVertical.value
-//     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
-//     : props.width
-// }
-
 // a function that formats the url template
 const computedSrc = () => {
   const template = srcFormatted
@@ -211,16 +199,6 @@ const computedSrc = () => {
         .replace(props.widthToken, getDimensions().width)
         .replace(props.heightToken, getDimensions().height)
         .replace(props.qualityToken, props.quality)
-    : undefined
-}
-// a function that formats the url template for the blurred background image with low quality
-const computedSrcBg = () => {
-  const template = srcFormatted
-  return template
-    ? template
-        .replace(props.widthToken, getDimensions().width)
-        .replace(props.heightToken, getDimensions().height)
-        .replace(props.qualityToken, 15)
     : undefined
 }
 
@@ -267,7 +245,7 @@ const srcset = computed(() => {
 })
 
 onBeforeMount(() => {
-  isVertical.value = props.allowVerticalEffect && props.maxHeight > props.maxWidth
+  isVertical.value = props.allowVerticalEffect && props.maxHeight >= props.maxWidth
 })
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
@@ -299,17 +277,16 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: 100%"
+      style="width: 100%; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
         class="v-image-publisher-holder"
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
-        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
         <div v-if="isVertical" class="bg">
           <img
-            :src="computedSrcBg()"
+            :src="computedSrc()"
             :width="getDimensions().width"
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
@@ -333,12 +310,7 @@ onMounted(async () => {
             @show="enlarge"
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
-            @load="
-              () => {
-                emit('image-load')
-                imageLoaded = true
-              }
-            "
+            @load="emit('image-load')"
           >
             <template v-if="allowPreview" #previewicon>
               <ClientOnly>
@@ -381,12 +353,7 @@ onMounted(async () => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
-          @load="
-            () => {
-              emit('image-load')
-              imageLoaded = true
-            }
-          "
+          @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -396,9 +363,11 @@ onMounted(async () => {
   </div>
 </template>
 
-<style lang="scss" scroped>
+<style lang="scss" scoped>
 .v-image-publisher {
+  height: inherit;
   .v-image-publisher-holder {
+    height: inherit;
     line-height: 0;
     position: relative;
     overflow: hidden;
@@ -454,7 +423,7 @@ onMounted(async () => {
       }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
         object-fit: cover;
         height: inherit;
       }

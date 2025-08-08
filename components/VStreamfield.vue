@@ -33,16 +33,18 @@ onMounted(() => {
         props.article.cmsSource === cmsSources.NPR
       "
     >
-      <HtmlConvert :htmlContent="props.article.body" />
+      <HtmlConvert
+        v-if="props.article.body"
+        :htmlContent="props.article.body"
+        :key="`article-body-${props.article.id || 'default'}`"
+      />
     </section>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <section v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
-        <!--     :width="block.value.image.width"
-          :height="block.value.image.height" -->
         <VImage
-          :src="String(block.value.image.id)"
+          :src="block.value.image"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
@@ -73,39 +75,47 @@ onMounted(() => {
         <!-- paragraph -->
         <HtmlConvert
           :htmlContent="block.value"
-          v-if="block.type === 'paragraph'"
+          v-if="block.type === 'paragraph' && block.value"
           class="streamfield-paragraph"
+          :key="`paragraph-${index}`"
         />
         <!-- image -->
 
         <!-- block-quote -->
         <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
           <blockquote>
-            <HtmlConvert :htmlContent="block.value.blockQuote" />
+            <HtmlConvert
+              v-if="block.value.blockQuote"
+              :htmlContent="block.value.blockQuote"
+              :key="`blockquote-${index}`"
+            />
           </blockquote>
         </div>
 
         <!-- code -->
         <HtmlConvert
-          v-else-if="block.type === 'code'"
+          v-else-if="block.type === 'code' && block.value.code"
           class="streamfield-code"
           :htmlContent="block.value.code"
+          :key="`code-${index}`"
         />
 
         <!-- embed -->
         <HtmlConvert
-          v-else-if="block.type === 'embed'"
+          v-else-if="block.type === 'embed' && block.value.embed"
           class="streamfield-embed"
           :htmlContent="block.value.embed"
+          :key="`embed-${index}`"
         />
 
         <!-- heading -->
 
         <HtmlConvert
-          v-else-if="block.type === 'heading'"
+          v-else-if="block.type === 'heading' && block.value"
           class="streamfield-heading"
           :htmlContent="block.value"
           :aria-label="block.value"
+          :key="`heading-${index}`"
         />
 
         <!-- pull-quote -->

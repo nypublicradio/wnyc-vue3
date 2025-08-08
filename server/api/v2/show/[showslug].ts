@@ -5,7 +5,9 @@ import { normalizeArticleListItem } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient';
 import { NPR } from '~/server/utils/npr';
+import { useVImage } from "~/composables/useVImage"
 
+const { templatizeImageUrl } = useVImage()
 
 const config = useRuntimeConfig();
 const supabase = supabaseClient();
@@ -101,6 +103,7 @@ const getShow = async (slug: string) => {
                 }
             };
             const { data } = await axios(options);
+            //console.log('=======npr show data', data.resources[0]);
             const image = npr.findImageUrl(data);
             return {
                 id: show.showId,
@@ -118,15 +121,18 @@ const getShow = async (slug: string) => {
     } else {
         const option = {
             method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
+            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`, // used to be v1/list/shows-for-app/'
+
         };
         const res = await axios(option);
         const resData = humps.camelizeKeys(res.data).results;
+        //console.log('=======resData', resData);
         // Find the show from the list of shows
         const show = resData.find((s) => {
             return s.slug === slug
         });
-        show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
+        const imgTemplate = show?.image?.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show?.image?.url);
+        show.image.template = imgTemplate;
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
         show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`

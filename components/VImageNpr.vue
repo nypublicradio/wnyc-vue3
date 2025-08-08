@@ -120,21 +120,21 @@ const props = defineProps({
   /**
    *  ammount of blur for the blured background image */
   verticalBgBlur: {
-    default: "3px",
+    default: "15px",
     type: String,
   },
   /**
    * tint the grey blured background image
    * */
   verticalBgColor: {
-    default: "#f1f1f1",
+    default: "#ffffff",
     type: String,
   },
   /**
    *  the opacity of the tint of the grey blured background image
    */
   verticalBgColorOpacity: {
-    default: "0.6",
+    default: "0.08",
     type: String,
   },
   /**
@@ -152,8 +152,8 @@ const emit = defineEmits([
   "enlarge-image-load",
 ])
 
-const imageLoaded = ref(false)
-
+const refThisImg = ref(null)
+const thisWidth = ref(null)
 const theSrc = computed(() => {
   return props.src
     .replace("{width}", props.width)
@@ -168,7 +168,7 @@ const theSrcFull = computed(() => {
     .replace("{format}", props.format)
 })
 
-const isVertical = ref(props.allowVerticalEffect && props.maxHeight > props.maxWidth)
+const isVertical = ref(props.allowVerticalEffect && props.maxHeight >= props.maxWidth)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)
 
@@ -210,7 +210,6 @@ const handleProvider = computed(() => {
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
   const vRatio = Number(props.ratio[1])
-
   if (props.width) {
     return {
       height: props.height,
@@ -221,7 +220,6 @@ const getDimensions = () => {
   } else {
     //console.log('thisWidth.value =  ', thisWidth.value)
     let theWidth = thisWidth.value
-
     if (props.maxWidth && props.maxWidth < theWidth) {
       theWidth = props.maxWidth
     }
@@ -264,35 +262,37 @@ const srcset = computed(() => {
     return undefined
   }
 })
+
+onMounted(async () => {
+  await nextTick()
+  thisWidth.value =
+    refThisImg.value.offsetWidth !== 0
+      ? refThisImg.value.offsetWidth
+      : typeof window === "undefined"
+      ? props.defaultWidth
+      : window.innerWidth
+})
 </script>
 
 <template>
-  <div class="v-image v-image-npr">
+  <div ref="refThisImg" class="v-image v-image-npr">
     <VFlexibleLink
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
-        <WnycLoader
-          v-if="!imageLoaded"
-          class="image-loader-anim"
-          size="1rem"
-          bg
-          spinner
-        />
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
             :provider="handleProvider"
             class="blurred-bg-image"
             :src="theSrc"
-            :width="props.width"
+            :width="computedWidth"
             :height="props.height"
-            quality="15"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
           />
@@ -311,12 +311,7 @@ const srcset = computed(() => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="loading"
           :srcset="srcset"
-          @load="
-            () => {
-              emit('image-load')
-              imageLoaded = true
-            }
-          "
+          @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -386,10 +381,11 @@ const srcset = computed(() => {
 .v-image-npr {
   line-height: 0;
   position: relative;
-
+  height: inherit;
   .v-image-holder {
     position: relative;
     overflow: hidden;
+    height: inherit;
     .image {
       position: relative;
       width: 100%;
@@ -433,7 +429,7 @@ const srcset = computed(() => {
       }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
         object-fit: cover;
         height: inherit;
       }

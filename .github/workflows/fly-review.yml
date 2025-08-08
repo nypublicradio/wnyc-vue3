@@ -26,6 +26,7 @@ jobs:
       # The script in the `deploy` sets the URL output for each review app.
       url: ${{ steps.deploy.outputs.url }}
     steps:
+
       - name: Debug PR Info
         run: |
           echo "PR Number: ${{ github.event.number }}"
@@ -69,6 +70,7 @@ jobs:
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_EXPIRES_IN=30m
+
           build_args: |
             ENV=review
             SENTRY_DSN=${{ vars.SENTRY_DSN }}
@@ -103,6 +105,7 @@ jobs:
             SETTINGS_MENU_DONATION_URL=${{ vars.SETTINGS_MENU_DONATION_URL }}
             USER_AGENT=${{ vars.USER_AGENT }}
             APP_VERSION=${{ vars.APP_VERSION }}
+
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
         uses: actions/github-script@v7

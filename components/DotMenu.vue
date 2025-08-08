@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  severity: {
+    type: String,
+    default: "secondary",
+  },
   menuItems: {
     type: Object,
     default: null,
@@ -12,6 +16,10 @@ const props = defineProps({
   size: {
     type: String,
     default: "",
+  },
+  isText: {
+    type: Boolean,
+    default: true,
   },
 })
 const dataRef = ref(props.label)
@@ -28,9 +36,9 @@ const emit = defineEmits(["changeEmit"])
       <slot name="myCustomButton" label="">
         <Button
           class="rounded"
-          severity="secondary"
+          :class="{ 'p-button-text': props.isText }"
+          :severity="props.severity"
           icon="pi pi-ellipsis-v"
-          text
           rounded
           aria-label="options menu"
           :size="props.size"

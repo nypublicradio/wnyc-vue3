@@ -1106,6 +1106,10 @@ const MyPreset = definePreset(Aura, {
           fontWeight: "600",
         },
         gap: "0.5rem",
+        iconOnlyWidth: "2.0625rem",
+        sm: {
+          iconOnlyWidth: "2.0625rem",
+        },
       },
       colorScheme: {
         light: {

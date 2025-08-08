@@ -24,17 +24,32 @@ const { data, pending, error } = useFetch(
 </script>
 <template>
   <div v-if="!pending">
-    <EpisodeItem
+    <MediaCard
       v-for="episode in data.episodes.data"
-      :data="episode"
       :key="episode.id"
+      :data="episode"
       class="my-5"
+      showPlayButton
+      is-horizontal
+      imgCol="w-7rem"
+      :showBg="false"
+      :showBgMobile="false"
       @on-click="dynamicNavigation(episode)"
     />
     <hr />
   </div>
   <div v-else>
-    <skeleton-episode-item v-for="i in props.episodesPerShow" :key="i" class="my-5" />
+    <skeleton-media-card
+      v-for="i in props.episodesPerShow"
+      :key="`sk-${i}`"
+      showPlayButton
+      is-horizontal
+      imgCol="w-7rem"
+      :size="[1, 1]"
+      :showBg="false"
+      :showBgMobile="false"
+      class="my-5"
+    />
   </div>
   <FetchError v-if="error" />
 </template>

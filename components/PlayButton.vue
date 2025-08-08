@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: "Play",
   },
+  size: {
+    type: String,
+    default: "small",
+  },
   live: {
     type: Boolean,
     default: false,
@@ -63,6 +67,7 @@ const emit = defineEmits(["on-click"])
 
 // handles the click event
 const togglePlay = () => {
+  if (isStreamLoading.value) return
   emit("on-click")
 }
 
@@ -92,6 +97,7 @@ watch(
       tabindex="0"
       :class="[{ active: isPlaying }, props.buttonClass]"
       class="flex align-items-center cursor-pointer"
+      :size="props.size"
     >
       <slot name="icon">
         <Transition name="fade" mode="out-in">
@@ -117,7 +123,9 @@ watch(
         </Transition>
       </slot>
       <slot>
-        <div class="content flex white-space-nowrap align-items-center">
+        <div
+          class="content flex white-space-nowrap align-items-center justify-content-center w-full"
+        >
           <span class="center" :class="props.labelClass">{{ props.label }}</span>
           <LiveBadge
             v-if="props.liveBadge"
@@ -166,12 +174,12 @@ watch(
     }
   }
   .content {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: var(--font-weight-700);
-    line-height: normal;
+    //line-height: normal;
     align-items: center;
     * {
-      line-height: 1;
+      //line-height: 1;
     }
   }
   &.circle {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getYear, trackClickEvent } from "~/utilities/helpers"
+import { getYear } from "~/utilities/helpers"
 import { useCurrentEpisode } from "~/composables/states"
 import { allSocialData } from "~/composables/navigationData.js"
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
@@ -52,33 +52,7 @@ const submitForm = (event) => {
         </div>
         <div class="hidden xl:block col-1"></div>
         <div class="col">
-          <div class="social flex gap-3 align-items-center">
-            <p>Connect with us!</p>
-            <VFlexibleLink
-              v-for="item in allSocialData"
-              raw
-              :to="item.url"
-              :key="item.id"
-              radius="50px"
-              @flexible-link-click="
-                () => {
-                  trackClickEvent(
-                    `Click Tracking - ${item.label} social Button`,
-                    'footer',
-                    `${item.label} social Button`
-                  )
-                }
-              "
-            >
-              <Button
-                :icon="item.icon"
-                severity="secondary"
-                size="large"
-                rounded
-                tabindex="-1"
-              />
-            </VFlexibleLink>
-          </div>
+          <SocialButtons :data="allSocialData" />
           <div class="menu pt-6 flex flex-wrap md:flex-nowrap gap-4">
             <ExpandedMenuItem
               v-for="item in footerNavigationData"
@@ -129,13 +103,6 @@ const submitForm = (event) => {
   .content {
     max-width: $contentWidth;
     margin: auto;
-    .social {
-      .p-button {
-        width: 30px;
-        height: 30px;
-      }
-    }
-
     .menu {
       .menu-holder {
         min-width: 170px;

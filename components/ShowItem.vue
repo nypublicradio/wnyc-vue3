@@ -15,9 +15,29 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hideButtons: {
+    type: Boolean,
+    default: false,
+  },
+  rootClass: {
+    type: String,
+    default: "",
+  },
+  contentClass: {
+    type: String,
+    default: "gap-3",
+  },
+  imageClass: {
+    type: String,
+    default: "",
+  },
   menu: {
     type: Boolean,
     default: false,
+  },
+  size: {
+    type: [Array, Object],
+    default: [112, 112],
   },
 })
 
@@ -77,11 +97,13 @@ const getDotMenuItems = (bucketItem) => {
 <template>
   <div
     class="browse-item flex justify-content-between align-items-center p-ripple cursor-pointer"
+    :class="props.rootClass"
     v-ripple
     v-if="props.data"
   >
     <div
-      class="card-click flex gap-3 w-full"
+      class="card-click flex w-full"
+      :class="props.contentClass"
       @click="emit('on-click')"
       @keypress.enter.space="emit('on-click')"
       tabindex="0"
@@ -89,13 +111,12 @@ const getDotMenuItems = (bucketItem) => {
       :aria-label="`${props.data.title} show details`"
     >
       <VImage
-        :src="props.data.image?.template ?? props.data.image?.url ?? FALLBACKIMAGEWAGTAIL"
-        :height="116"
-        :width="116"
-        :ratio="[1, 1]"
-        :srcset="[2]"
-        class="flex-none"
-        style="height: 116px; width: 116px; background-color: var(--p-surface-25)"
+        :src="props.data.image"
+        :srcFallback="FALLBACKIMAGEWAGTAIL"
+        :size="props.size"
+        :class="props.imageClass"
+        :style="`height: ${props.size[0]}px;
+      width: ${props.size[1]}px; background-color: var(--p-surface-25)`"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
@@ -107,25 +128,31 @@ const getDotMenuItems = (bucketItem) => {
         </p>
       </div>
     </div>
-    <DotMenu
-      v-if="props.menu"
-      :menuItems="getDotMenuItems(props.data)"
-      label=""
-      @changeEmit="onMenuChange"
-      class="z-1"
-    />
-    <Button
-      v-else
-      text
-      plain
-      rounded
-      class="flex-none z-1 flex-row-reverse"
-      aria-label="follow"
-    >
-      <template #icon>
-        <FollowIcon class="h-2rem" :active="isFavorited" @click="handleAddToFavorites" />
-      </template>
-    </Button>
+    <template v-if="!props.hideButtons">
+      <DotMenu
+        v-if="props.menu"
+        :menuItems="getDotMenuItems(props.data)"
+        label=""
+        @changeEmit="onMenuChange"
+        class="z-1"
+      />
+      <Button
+        v-else
+        text
+        plain
+        rounded
+        class="flex-none z-1 flex-row-reverse"
+        aria-label="follow"
+      >
+        <template #icon>
+          <FollowIcon
+            class="h-2rem"
+            :active="isFavorited"
+            @click="handleAddToFavorites"
+          />
+        </template>
+      </Button>
+    </template>
   </div>
   <div v-else>
     <skeleton-show-item />

@@ -4,6 +4,7 @@ import VImage from "./VImage.vue"
 import VShareTools from "./VShareTools.vue"
 import VShareToolsItem from "./VShareToolsItem.vue"
 import { computed, ref } from "vue"
+import { getUserFallBackImage } from "~/utilities/helpers"
 
 const props = defineProps({
   /**
@@ -241,11 +242,9 @@ const accountNameFromUrl = (url) => {
 const getImageSrc = computed(() => {
   return props.sponsored
     ? profile.value.logo
-    : profile.value.photoID
-    ? String(profile.value.photoID)
+    : profile.value.image
+    ? profile.value.image
     : props.imageFallbackPath
-    ? props.imageFallbackPath
-    : "default-user.jpg"
 })
 
 // cssvars
@@ -278,6 +277,7 @@ const cssContainerType = ref(props.justImage ? "unset" : "inline-size")
         <div class="author-image">
           <VImage
             :src="getImageSrc"
+            :srcFallback="getUserFallBackImage()"
             :width="props.imageSize"
             :height="props.imageSize"
             :sizes="props.sizes"

@@ -8,6 +8,26 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isText: {
+    type: Boolean,
+    default: true,
+  },
+  label: {
+    type: String,
+    default: "",
+  },
+  severity: {
+    type: String,
+    default: "secondary",
+  },
+  iconClass: {
+    type: String,
+    default: "",
+  },
+  iconStyles: {
+    type: String,
+    default: "",
+  },
 })
 
 const emit = defineEmits(["emit-click"])
@@ -21,8 +41,22 @@ const handleClick = () => {
 
 <template>
   <div class="sleep-timer-button">
-    <Button text severity="secondary" rounded @click="handleClick">
-      <template #icon> <SleepIcon :active="props.isActive" /></template>
+    <Button
+      :class="{ 'p-button-text': props.isText }"
+      :label="props.label"
+      :severity="props.severity"
+      rounded
+      @click="handleClick"
+    >
+      <template #icon>
+        <SleepIcon
+          :active="props.isActive"
+          :class="props.iconClass"
+          :style="props.iconStyles"
+          aria-label="Sleep Timer"
+        />
+        /></template
+      >
     </Button>
     <!--  <NewFeatureBadge class="badge" v-if="isNewFeature" /> -->
   </div>

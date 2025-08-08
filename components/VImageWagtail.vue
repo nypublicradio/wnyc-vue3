@@ -3,7 +3,7 @@ import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, ref } from "vue"
+import { computed, ref, nextTick, onMounted } from "vue"
 
 const props = defineProps({
   /**
@@ -127,23 +127,30 @@ const props = defineProps({
     type: String,
   },
   /**
-   *  ammount of blur for the blured background image */
+   *  amount of blur for the background image */
   verticalBgBlur: {
-    default: "3px",
+    default: "15px",
     type: String,
   },
   /**
-   * tint the grey blured background image
+   * tint the grey background image
    * */
   verticalBgColor: {
-    default: "#f1f1f1",
+    default: "#ffffff",
     type: String,
   },
   /**
-   *  the opacity of the tint of the grey blured background image
+   *  the opacity of the tint of the background image
    */
   verticalBgColorOpacity: {
-    default: "0.6",
+    default: "0.08",
+    type: String,
+  },
+  /**
+   *  the grayscale of the background image
+   */
+  verticalBgGrayscale: {
+    default: "100",
     type: String,
   },
   /**
@@ -161,10 +168,10 @@ const emit = defineEmits([
   "enlarge-image-load",
 ])
 
-const imageLoaded = ref(false)
-const isVertical = ref(props.allowVerticalEffect && props.maxHeight > props.maxWidth)
+const isVertical = ref(props.allowVerticalEffect && props.maxHeight >= props.maxWidth)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)
+const imageRef = ref(null)
 
 const computedWidth = computed(() => {
   return isVertical.value
@@ -197,6 +204,28 @@ const enlargeLoad = (target) => {
   loadedEnlargedImage.value = true
 }
 
+// Handle image load with better reliability for cached images
+const handleImageLoad = () => {
+  emit("image-load")
+}
+
+// Check if image is already loaded on mount (for cached images)
+onMounted(async () => {
+  await nextTick()
+
+  if (!imageRef.value) {
+    return
+  }
+
+  // The nuxt-img component renders directly as an <img> element
+  const img = imageRef.value.$el
+
+  if (img && img.tagName === "IMG" && img.complete && img.naturalHeight !== 0) {
+    // Image is already loaded (cached)
+    emit("image-load")
+  }
+})
+
 const handleProvider = computed(() => {
   return isNaN(props.src) ? null : props.provider
 })
@@ -209,32 +238,26 @@ const handleProvider = computed(() => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
-        <WnycLoader
-          v-if="!imageLoaded"
-          class="image-loader-anim"
-          size="1rem"
-          bg
-          spinner
-        />
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
             :provider="handleProvider"
             class="blurred-bg-image"
             :src="String(props.src)"
-            :width="props.width"
+            :width="computedWidth"
             :height="props.height"
-            quality="15"
+            :quality="String(props.quality)"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
           />
         </div>
         <nuxt-img
+          ref="imageRef"
           :format="props.format"
           :provider="handleProvider"
           class="image native-image"
@@ -253,12 +276,8 @@ const handleProvider = computed(() => {
           :quality="String(props.quality)"
           :loading="props.loading"
           :modifiers="props.modifiers"
-          @load="
-            () => {
-              emit('image-load')
-              imageLoaded = true
-            }
-          "
+          @load="handleImageLoad"
+          @error="handleImageLoad"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -329,10 +348,12 @@ const handleProvider = computed(() => {
 .v-image {
   line-height: 0;
   position: relative;
+  height: inherit;
 
   .v-image-holder {
     position: relative;
     overflow: hidden;
+    height: inherit;
     .image {
       position: relative;
       width: 100%;
@@ -376,7 +397,7 @@ const handleProvider = computed(() => {
       }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
         object-fit: cover;
         height: inherit;
       }

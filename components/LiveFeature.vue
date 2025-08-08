@@ -3,15 +3,21 @@ import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsApp,
+  useIsEpisodePlaying,
+  useAppDownloadLink,
 } from "~/composables/states"
-import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode } from "~/utilities/helpers"
 import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+const isEpisodePlaying = useIsEpisodePlaying()
+const appDownloadLink = useAppDownloadLink()
 
 const defaultButtonLabel = "Listen Live"
-const buttonLabel = ref(defaultButtonLabel)
+const listeningButtonLabel = "Listening Live"
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 const togglePlayHere = async () => {
@@ -41,10 +47,8 @@ const togglePlayHere = async () => {
           <transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
-              :width="280"
-              :height="280"
-              :ratio="[1, 1]"
+              :src="currentEpisodeHolder?.image"
+              :size="{ xs: [172, 172], xl: [280, 280] }"
               alt="show poster image"
               class="image"
               :key="currentEpisodeHolder?.id"
@@ -88,18 +92,24 @@ const togglePlayHere = async () => {
               <div class="flex align-items-start justify-content-between">
                 <div class="flex flex-column gap-3">
                   <PlayButton
-                    :label="buttonLabel"
+                    :label="isEpisodePlaying ? listeningButtonLabel : defaultButtonLabel"
                     :data="currentEpisodeHolder"
                     @onClick="togglePlayHere"
                     severity="primary"
-                    buttonClass="icon-wide"
-                    labelClass="md:px-6"
+                    buttonClass="w-9rem md:w-13rem h-2rem justify-content-start"
+                    labelClass="md:-ml-3"
                     live
                   />
                   <Button
+                    v-if="!isApp"
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm icon-wide hidden xl:flex"
+                    class="p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
+                    @click="
+                      navigateTo(appDownloadLink, {
+                        external: appDownloadLink.startsWith('http') ? true : false,
+                      })
+                    "
                   >
                     <template #icon>
                       <DevicesIcon />
@@ -169,45 +179,6 @@ const togglePlayHere = async () => {
 
 <style lang="scss">
 .live-feature {
-  // for the buttons on the life feature in the home page. The Live button component and base Button component need some UGLY help to match
-  .p-button {
-    &.icon-wide {
-      min-width: 140px;
-      min-height: 34.16px;
-      svg {
-        height: 20px;
-      }
-      .devices-icon {
-        margin-left: -16px;
-        @include media("<md") {
-          margin-left: 0;
-        }
-      }
-      .icon {
-        margin-left: 5px;
-        @include media("<md") {
-          margin-left: 0px;
-          padding-right: 8px;
-        }
-      }
-      .p-button-label {
-        width: 150px;
-        padding-right: 10px;
-        @include media("<md") {
-          width: auto;
-        }
-        text-align: center;
-      }
-      .content .center {
-        padding-left: 2.5rem !important;
-        padding-right: 3.5rem !important;
-        @include media("<md") {
-          padding-left: unset !important;
-          padding-right: unset !important;
-        }
-      }
-    }
-  }
   .content {
     .blurb {
       * {
@@ -242,8 +213,8 @@ const togglePlayHere = async () => {
       height: 172px;
     }
     @include media("<md") {
-      width: 116px;
-      height: 116px;
+      width: 112px;
+      height: 112px;
     }
     background-color: #ffffff99;
     .image,
@@ -255,8 +226,8 @@ const togglePlayHere = async () => {
         height: 172px;
       }
       @include media("<md") {
-        width: 116px;
-        height: 116px;
+        width: 112px;
+        height: 112px;
       }
       display: flex;
       align-items: center;

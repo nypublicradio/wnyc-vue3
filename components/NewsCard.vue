@@ -64,17 +64,17 @@ const emit = defineEmits(["on-click"])
       <BarsPlaying class="mr-2" :data="props.newsData" />
     </div>
   </div>
-  <div v-else class="news-card skeleton-holder flex p-2 md:p-3">
-    <Skeleton height="16px" width="91px" borderRadius="0px" />
+  <div v-else class="news-card skeleton-holder flex p-2 md:p-3 lg:p-3">
+    <Skeleton height="19px" width="91px" borderRadius="0px" />
     <div class="w-full">
       <Skeleton
-        height="13px"
+        height="14px"
         width="45%"
         borderRadius="16px"
-        style="margin-bottom: 8px"
+        style="margin-bottom: 11px"
       />
       <div class="flex align-items-center justify-content-between">
-        <Skeleton height="13px" width="50%" borderRadius="16px" />
+        <Skeleton height="14px" width="50%" borderRadius="16px" />
         <Skeleton
           class="hidden md:block"
           height="28px"

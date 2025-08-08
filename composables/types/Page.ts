@@ -31,6 +31,8 @@ export interface ArticlePage extends Page {
   description: string
   tease: string
   image?: Image
+  imageFullWidth?: number
+  imageFullHeight?: number
   link: string
   leadImageCaption?: string
   imageLink?: string
