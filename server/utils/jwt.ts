@@ -12,9 +12,9 @@ export interface JWTPayload {
  * Generate a JWT token for a user
  */
 export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string {
-    const config = useRuntimeConfig();
-    const secret = config.jwtSecret as string;
-    const expiresIn = config.jwtExpiresIn as string;
+    const secret = process.env.JWT_SECRET;
+    // More secure default: 30 minutes instead of 24 hours
+    const expiresIn = process.env.JWT_EXPIRES_IN || '30m';
 
     if (!secret) {
         throw new Error('JWT_SECRET environment variable is required but not set');
@@ -30,8 +30,7 @@ export function generateToken(payload: Omit<JWTPayload, 'exp' | 'iat'>): string 
  * Verify and decode a JWT token
  */
 export function verifyToken(token: string): JWTPayload {
-    const config = useRuntimeConfig();
-    const secret = config.jwtSecret as string;
+    const secret = process.env.JWT_SECRET;
 
     if (!secret) {
         console.error('JWT_SECRET environment variable is not set!');

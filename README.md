@@ -153,17 +153,83 @@ Add to your `.env`:
 
 ```bash
 JWT_SECRET=your-generated-jwt-secret-from-above
-JWT_EXPIRES_IN=24h
+JWT_EXPIRES_IN=30m  # 30 minutes (recommended for security)
 ```
 
 **Important**: Use the same JWT_SECRET across all environments (local, staging, production) for token compatibility. The generated secret uses only URL-safe characters to avoid deployment issues with special characters.
 
+### Token Expiration & Automatic Refresh
+
+#### Why 30-minute tokens are secure AND user-friendly:
+
+**Security Benefits:**
+- ✅ Short-lived tokens limit exposure if compromised
+- ✅ Reduces risk from XSS attacks
+- ✅ Forces regular re-authentication checks
+- ✅ Follows industry best practices (Auth0, Google OAuth, OWASP)
+
+**User Experience:**
+- ✅ **Users NEVER need to re-authenticate manually**
+- ✅ Automatic refresh happens transparently
+- ✅ Seamless donation/settings access
+- ✅ Perfect for infrequent access patterns
+
+#### How Automatic Refresh Works:
+
+```typescript
+// Timeline for user accessing donation settings:
+User logs in → Gets 30m JWT + 30-day Supabase refresh token
+↓
+25 minutes later → Auto-refresh triggers (5 min buffer)
+↓
+New 30m JWT issued silently → User never knows it happened
+↓
+User accesses donations → Seamless experience
+```
+
+#### Multiple Layers of Token Protection:
+
+1. **Proactive Refresh (Every 2 minutes)**
+   ```typescript
+   // Checks if token expires in < 5 minutes
+   // Auto-refreshes before user notices
+   setInterval(checkTokenExpiry, 2 * 60 * 1000);
+   ```
+
+2. **Reactive Refresh (On API Failure)**
+   ```typescript
+   // If API call gets 401 (token expired):
+   // 1. Auto-refresh token
+   // 2. Retry original request
+   // 3. Return data seamlessly
+   ```
+
+3. **Token Lifespans:**
+   - **JWT (Access Token):** 30 minutes
+   - **Supabase Refresh Token:** ~30 days
+   - **User Re-login Required:** Only after 30+ days of inactivity
+
+#### Environment-Specific Configuration:
+
+```bash
+# Production (recommended - secure)
+JWT_EXPIRES_IN=30m
+
+# Development (optional - convenience)
+JWT_EXPIRES_IN=2h
+
+# Never use in production (security risk)
+JWT_EXPIRES_IN=24h
+```
+
 ### Security Features
 
-- JWT tokens expire after 24 hours (configurable)
-- Rate limiting on protected endpoints
-- Server-side token validation
-- Automatic logout on token expiration
+- JWT tokens expire after 30 minutes (configurable via `JWT_EXPIRES_IN`)
+- Automatic token refresh using Supabase refresh tokens (30-day lifespan)  
+- Transparent refresh - users never experience interruptions
+- Rate limiting on protected endpoints (10 requests/minute per IP)
+- Server-side token validation with HS256 algorithm
+- Automatic logout only after refresh token expires (30+ days)
 
 ### Testing JWT APIs
 
@@ -218,10 +284,11 @@ With the generated token, you can test any JWT-protected endpoint:
 
 #### Token Details
 
-- **Valid for**: 24 hours from generation (configurable)
-- **Algorithm**: HS256
+- **Valid for**: 30 minutes from generation (configurable via `JWT_EXPIRES_IN`)
+- **Algorithm**: HS256  
 - **Secret**: Uses `JWT_SECRET` from your `.env` file
 - **Claims**: userId, email, iat (issued at), exp (expires), iss (issuer)
+- **Auto-refresh**: Transparent refresh via Supabase refresh token (30-day lifespan)
 
 #### Troubleshooting Authentication Errors
 
