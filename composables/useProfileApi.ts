@@ -1,0 +1,75 @@
+interface RecurringDonation {
+    springboardId: string
+    brand: string
+    amount: number
+    nextChargeDate: string
+    membershipStartDate: string
+}
+
+interface ProfileResponse {
+    name: string | null
+    lastDonationDate: string | null
+    lastDonationAmount: number | null
+    isActiveSustainer: boolean
+    activeRecurringDonations: RecurringDonation[]
+}
+
+export const useProfileApi = () => {
+    const profileData = ref<ProfileResponse | null>(null)
+    const isLoading = ref(false)
+    const error = ref<string | null>(null)
+
+    const fetchProfile = async (salesforceId: string) => {
+        if (!salesforceId) {
+            error.value = 'No Salesforce ID provided'
+            return null
+        }
+
+        isLoading.value = true
+        error.value = null
+
+        try {
+            const response = await $fetch('/api/profile', {
+                method: 'POST',
+                body: {
+                    salesforceId
+                }
+            }) as ProfileResponse
+
+            profileData.value = response
+            return response
+        } catch (err: any) {
+            error.value = err.message || 'Failed to fetch profile data'
+            console.error('Profile API error:', err)
+            return null
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const formatCurrency = (amount: number | null): string => {
+        if (amount === null) return 'N/A'
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(amount)
+    }
+
+    const formatDate = (dateString: string | null): string => {
+        if (!dateString) return 'N/A'
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })
+    }
+
+    return {
+        profileData: readonly(profileData),
+        isLoading: readonly(isLoading),
+        error: readonly(error),
+        fetchProfile,
+        formatCurrency,
+        formatDate
+    }
+}
