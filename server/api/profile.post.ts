@@ -48,37 +48,17 @@ const validateProfileRequest = (body: any): string => {
 };
 
 /**
- * Retrieves contact or account data from Salesforce using SObject methods
- * First tries Contact, then falls back to Account if not found
+ * Retrieves contact data from Salesforce using SObject methods
  */
 const getContactData = async (salesforceID: string): Promise<any> => {
     try {
-        // First try to find as a Contact
-        let record = await salesforce.findOne(
+        const contact = await salesforce.findOne(
             'Contact',
             { Id: salesforceID },
             ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
         );
 
-        // If not found as Contact, try as Account
-        if (!record) {
-            record = await salesforce.findOne(
-                'Account',
-                { Id: salesforceID },
-                ['Id', 'Name', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
-            );
-
-            // If found as Account, normalize the structure to match Contact format
-            if (record) {
-                record.FirstName = null;
-                record.LastName = record.Name; // Use Account Name as LastName
-                record.isAccount = true; // Flag to indicate this is an Account record
-            }
-        } else {
-            record.isAccount = false; // Flag to indicate this is a Contact record
-        }
-
-        if (!record) {
+        if (!contact) {
             throw createError({
                 statusCode: 404,
                 statusMessage: 'Not Found',
@@ -86,7 +66,7 @@ const getContactData = async (salesforceID: string): Promise<any> => {
             });
         }
 
-        return record;
+        return contact;
     } catch (error: any) {
         if (error.statusCode) throw error; // Re-throw if it's already a formatted error
 
@@ -100,59 +80,33 @@ const getContactData = async (salesforceID: string): Promise<any> => {
             statusMessage: statusCode === 401 ? 'Unauthorized' :
                 statusCode === 503 ? 'Service Unavailable' :
                     statusCode === 400 ? 'Bad Request' : 'Internal Server Error',
-            message: error.message || 'Failed to query Salesforce Contact or Account'
+            message: error.message || 'Failed to query Salesforce Contact'
         });
     }
 };
 
 /**
  * Retrieves active recurring donations from Salesforce using SObject methods
- * Handles both Contact and Account lookups
  */
-const getActiveRecurringDonations = async (salesforceID: string, isAccount: boolean = false): Promise<any[]> => {
+const getActiveRecurringDonations = async (salesforceID: string): Promise<any[]> => {
     try {
-        let recurringDonations;
-
-        if (isAccount) {
-            // For Accounts, look for donations where the Account matches
-            // This might need to be adjusted based on your Salesforce schema
-            recurringDonations = await salesforce.find(
-                'npe03__Recurring_Donation__c',
-                {
-                    'npe03__Organization__c': salesforceID, // Account relationship field
-                    'npsp__Status__c': 'Active',
-                    'cfg_Digital_Membership_Program_Name__c': { $ne: 'The Lab' }
-                },
-                [
-                    'Id',
-                    'Master_Donation_ID__c',
-                    'nypr_GAU_Property_Name_Current__c',
-                    'npe03__Amount__c',
-                    'npe03__Next_Payment_Date__c',
-                    'npe03__Date_Established__c',
-                    'cfg_Digital_Membership_Program_Name__c'
-                ]
-            );
-        } else {
-            // For Contacts, use the original Contact relationship
-            recurringDonations = await salesforce.find(
-                'npe03__Recurring_Donation__c',
-                {
-                    'npe03__Contact__c': salesforceID,
-                    'npsp__Status__c': 'Active',
-                    'cfg_Digital_Membership_Program_Name__c': { $ne: 'The Lab' }
-                },
-                [
-                    'Id',
-                    'Master_Donation_ID__c',
-                    'nypr_GAU_Property_Name_Current__c',
-                    'npe03__Amount__c',
-                    'npe03__Next_Payment_Date__c',
-                    'npe03__Date_Established__c',
-                    'cfg_Digital_Membership_Program_Name__c'
-                ]
-            );
-        }
+        const recurringDonations = await salesforce.find(
+            'npe03__Recurring_Donation__c',
+            {
+                'npe03__Contact__c': salesforceID,
+                'npsp__Status__c': 'Active',
+                'cfg_Digital_Membership_Program_Name__c': { $ne: 'The Lab' }
+            },
+            [
+                'Id',
+                'Master_Donation_ID__c',
+                'nypr_GAU_Property_Name_Current__c',
+                'npe03__Amount__c',
+                'npe03__Next_Payment_Date__c',
+                'npe03__Date_Established__c',
+                'cfg_Digital_Membership_Program_Name__c'
+            ]
+        );
 
         return recurringDonations || [];
     } catch (error: any) {
@@ -263,8 +217,10 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
 
     // Get contact data and recurring donations in parallel for better performance
     // No need to escape salesforceID since SObject methods handle sanitization automatically
-    const contact = await getContactData(salesforceID);
-    const activeRecurringDonations = await getActiveRecurringDonations(salesforceID, contact.isAccount);
+    const [contact, activeRecurringDonations] = await Promise.all([
+        getContactData(salesforceID),
+        getActiveRecurringDonations(salesforceID)
+    ]);
 
     // Return comprehensive profile response
     return buildProfileResponse(contact, activeRecurringDonations);
