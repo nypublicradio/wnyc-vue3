@@ -118,19 +118,19 @@ watch(
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
 
-    <section class="pinned mt-6">
+    <section class="pinned mt-0 lg:mt-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
-            <div class="flex align-items-center gap-2 flex-wrap">
+            <div class="flex flex-column align-items-start gap-2">
               <Button
                 label="Episode Details"
                 icon="pi pi-chevron-left"
                 severity="info"
                 @click="handleReturnToEpisode"
               />
-              <div class="flex align-items-center gap-2">
+              <div class="flex align-items-center gap-2 mt-2 md:mt-4">
                 <VImage
                   :src="getEpisodeImage()"
                   :alt="episodeData?.title"
