@@ -293,7 +293,9 @@ onUnmounted(() => {
           </div>
           <div ref="aboutRef" class="flex flex-column gap-5 mt-8">
             <h2 class="md:text-xl">About</h2>
-            <HtmlConvert :htmlContent="show.description" />
+            <!-- <pre>{{ show.show.description }}</pre>
+            <HtmlConvert :htmlContent="show.show.description" /> -->
+            <p>{{ show.show.description }}</p>
           </div>
           <div ref="supportRef" class="flex flex-column gap-5 mt-8">
             <h2 class="md:text-xl">Support Our Show</h2>
