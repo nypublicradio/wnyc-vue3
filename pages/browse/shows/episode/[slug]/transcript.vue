@@ -78,6 +78,7 @@ const handleReturnToEpisode = () => {
   )
 }
 
+// handle transcript link click
 const handleTranscriptLinkClick = () => {
   trackClickEvent("Click Tracking - Transcript Link", "Episode slug", route.fullPath)
   copyToClipBoard(`${window.location.href}`, "Transcript link copied to clipboard")
@@ -110,7 +111,8 @@ const handleScroll = () => {
   }
 }
 
-let scrollTimeout
+let scrollTimeout = null
+// debounce so the scroll event doesn't fire too often
 const debouncedScroll = () => {
   clearTimeout(scrollTimeout)
   scrollTimeout = setTimeout(handleScroll, 20)
