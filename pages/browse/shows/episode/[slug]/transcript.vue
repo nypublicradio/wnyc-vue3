@@ -1,17 +1,19 @@
 <script setup>
-import { useGlobalToast } from "~/composables/states"
+import { useToast } from "primevue/usetoast"
 import {
   trackClickEvent,
   togglePlayEpisode,
   checkIsFavorited,
   getEpisodeHeadFallBackImage,
+  copyToClipBoard,
 } from "~/utilities/helpers"
 
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-const globalToast = useGlobalToast()
+const toast = useToast()
+const isMinimized = ref(false)
 
 definePageMeta({
   pageTransition: false,
@@ -40,13 +42,13 @@ const { data: episode, status, error } = useFetch(
       }
     },
     onResponseError() {
-      globalToast.value = {
+      toast.add({
         severity: "error",
         summary:
           "We are having a problem loading this episode's transcript. Please try again later.",
         life: 6000,
         closable: true,
-      }
+      })
     },
   }
 )
@@ -67,13 +69,19 @@ watchEffect(async () => {
 // handle returning / routing to the full episode page
 const handleReturnToEpisode = () => {
   trackClickEvent(
-    "Click Tracking - Return to Episode",
-    "Episode slug",
+    "Click Tracking - Return to Episode from transcript",
+    "Episode transcript",
     `/browse/shows/episode/${route.params.slug}`
   )
   navigateTo(
     `/browse/shows/episode/${route.params.slug}?src=${route.query.src}&type=${route.query.type}`
   )
+}
+
+// handle transcript link click
+const handleTranscriptLinkClick = () => {
+  trackClickEvent("Click Tracking - Transcript Link", "Episode slug", route.fullPath)
+  copyToClipBoard(`${window.location.href}`, "Transcript link copied to clipboard")
 }
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
@@ -94,6 +102,30 @@ const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch
     server: false,
   }
 )
+
+// episode image resize on scroll
+const handleScroll = () => {
+  const scrolled = window.scrollY > 0
+  if (isMinimized.value !== scrolled) {
+    isMinimized.value = scrolled
+  }
+}
+
+let scrollTimeout = null
+// debounce so the scroll event doesn't fire too often
+const debouncedScroll = () => {
+  clearTimeout(scrollTimeout)
+  scrollTimeout = setTimeout(handleScroll, 20)
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", debouncedScroll, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", debouncedScroll)
+  clearTimeout(scrollTimeout)
+})
 
 watch(
   status,
@@ -118,27 +150,27 @@ watch(
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
 
-    <section class="pinned mt-6">
+    <section class="pinned mt-0 lg:mt-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
-            <div class="flex align-items-center gap-2 flex-wrap">
+            <div class="flex flex-column align-items-start">
               <Button
                 label="Episode Details"
                 icon="pi pi-chevron-left"
                 severity="info"
                 @click="handleReturnToEpisode"
               />
-              <div class="flex align-items-center gap-2">
+              <div class="flex align-items-start gap-2 mt-4">
                 <VImage
                   :src="getEpisodeImage()"
                   :alt="episodeData?.title"
                   class="episode-page-image"
-                  :size="[37, 37]"
-                  style="width: 37px; height: 37px"
+                  :class="{ minimize: isMinimized }"
+                  :size="[112, 112]"
                 />
-                <h2>{{ episodeData?.title }}</h2>
+                <h2 class="mt-2">{{ episodeData?.title }}</h2>
               </div>
             </div>
           </div>
@@ -157,7 +189,15 @@ watch(
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
             <div v-if="episodeData?.transcript">
-              <h3 class="mt-4">Transcript</h3>
+              <div class="flex align-items-center gap-1">
+                <h2>Transcript</h2>
+                <Button
+                  icon="pi pi-link"
+                  severity="secondary"
+                  link
+                  @click="handleTranscriptLinkClick"
+                />
+              </div>
               <HtmlConvert
                 :htmlContent="episodeData?.transcript"
                 :key="`transcript-${episodeData?.id || route.params.slug}`"
@@ -186,6 +226,17 @@ watch(
     top: var(--header-height);
     z-index: 10;
     background-color: var(--header-background);
+    .episode-page-image {
+      transition: width var(--p-transition-duration), height var(--p-transition-duration);
+      -webkit-transition: width var(--p-transition-duration),
+        height var(--p-transition-duration);
+      width: 112px;
+      height: 112px;
+      &.minimize {
+        width: 46px;
+        height: 46px;
+      }
+    }
   }
 }
 </style>
