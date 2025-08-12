@@ -362,7 +362,7 @@ export async function openLinkInAppBrowser(url: string) {
 
 
 // global function for copying to clipboard
-export const copyToClipBoard = async (content: string) => {
+export const copyToClipBoard = async (content: string, message = "Copied to clipboard") => {
   const globalToast = useGlobalToast()
   try {
     if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
@@ -390,7 +390,7 @@ export const copyToClipBoard = async (content: string) => {
     }
     globalToast.value = {
       severity: "info",
-      summary: "Copied to clipboard",
+      summary: message,
       life: 3000,
     }
   } catch (err) {
