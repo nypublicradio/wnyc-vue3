@@ -24,6 +24,21 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
+const mostRecentRef = ref(null)
+const featuredRef = ref(null)
+const seriesRef = ref(null)
+const newsletterRef = ref(null)
+const aboutRef = ref(null)
+const supportRef = ref(null)
+const sectionAnchorData = ref([
+  { ref: mostRecentRef, label: "Most Recent" },
+  { ref: featuredRef, label: "Featured" },
+  { ref: seriesRef, label: "Series" },
+  { ref: newsletterRef, label: "Newsletter" },
+  { ref: aboutRef, label: "About" },
+  { ref: supportRef, label: "Support Our Show" },
+])
+
 const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
   // so it does not trigger on initial load and before we have data
   if (!isInitialObserver.value && episodes.value) {
@@ -33,10 +48,6 @@ const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => 
   }
 })
 
-// clean up the useIntersectionObserver
-onUnmounted(() => {
-  stop()
-})
 // load more episodes and track it
 const loadMore = async () => {
   page.value += 1
@@ -85,6 +96,21 @@ const handleViewAll = () => {
   }
 }
 
+// scrolls to the selected section from the jump link buttons
+const scrollToSection = (sectionRef, behavior = "smooth", offset = 90) => {
+  const element = sectionRef instanceof HTMLElement ? sectionRef : sectionRef?.$el
+
+  if (element) {
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const offsetPosition = elementPosition - offset
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior,
+    })
+  }
+}
+
 // Watch for show data changes to update episodes and pagination
 watch(
   show,
@@ -112,6 +138,11 @@ onMounted(() => {
     page_type: "browse_shows_page",
     content_group: "app_tab",
   })
+})
+
+// clean up the useIntersectionObserver
+onUnmounted(() => {
+  stop()
 })
 </script>
 
@@ -157,16 +188,18 @@ onMounted(() => {
         <div class="col-fixed hidden lg:block w-20rem"></div>
       </section>
     </div>
+    <!-- JUMP LINKS -->
     <div
       class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
     >
       <template v-if="status === 'success'">
         <Button
-          v-for="i in 5"
-          :key="i"
-          label="Jump Link"
+          v-for="i in sectionAnchorData"
+          :key="i.ref"
+          :label="i.label"
           severity="secondary"
           class="px-3 md:px-4 lg:px-6"
+          @click="scrollToSection(i.ref)"
         />
       </template>
       <template v-else>
@@ -185,7 +218,10 @@ onMounted(() => {
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
-            <div class="flex justify-content-between align-items-center">
+            <div
+              ref="mostRecentRef"
+              class="flex justify-content-between align-items-center"
+            >
               <h2 class="md:text-xl">Most Recent</h2>
               <Button
                 severity="secondary"
@@ -245,13 +281,30 @@ onMounted(() => {
             class="block mx-auto mt-6 px-5"
             @click="handleViewAll"
           />
-          <!-- <BackToTopButton /> -->
+
+          <div ref="featuredRef" class="flex flex-column gap-5 mt-8">
+            <h2 class="md:text-xl">Featured</h2>
+          </div>
+          <div ref="seriesRef" class="flex flex-column gap-5 mt-8">
+            <h2 class="md:text-xl">Series</h2>
+          </div>
+          <div ref="newsletterRef" class="flex flex-column gap-5 mt-8">
+            <h2 class="md:text-xl">Newsletter</h2>
+          </div>
+          <div ref="aboutRef" class="flex flex-column gap-5 mt-8">
+            <h2 class="md:text-xl">About</h2>
+            <HtmlConvert :htmlContent="show.description" />
+          </div>
+          <div ref="supportRef" class="flex flex-column gap-5 mt-8">
+            <h2 class="md:text-xl">Support Our Show</h2>
+          </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
           <ShowSummary :show="show" />
         </div>
       </div>
     </section>
+    <BackToTopButton />
   </div>
 </template>
 
