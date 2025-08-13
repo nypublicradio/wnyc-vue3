@@ -56,15 +56,55 @@ onMounted(async () => {
     console.log('🐛 Dashboard Debug - Has Salesforce ID:', !!currentUserProfile.value?.salesforce_id)
     console.log('🐛 Dashboard Debug - Salesforce ID Value:', currentUserProfile.value?.salesforce_id)
     
-    // Fetch profile data from /api/profile if user has a Salesforce ID
-    if (currentUserProfile.value?.salesforce_id) {
-      console.log('🐛 Dashboard Debug - Fetching profile with Salesforce ID:', currentUserProfile.value.salesforce_id)
-      await fetchProfile(currentUserProfile.value.salesforce_id)
-    } else if (currentUser.value?.email) {
-      console.log('🐛 Dashboard Debug - No Salesforce ID, trying email lookup:', currentUser.value.email)
-      await fetchProfile(currentUser.value.email)
+    // Check if we have an auth token, if not try to initialize it
+    const authComposable = useAuth()
+    console.log('🐛 Dashboard Debug - Is Authenticated:', authComposable.isAuthenticated.value)
+    console.log('🐛 Dashboard Debug - Has Auth Token:', !!authComposable.authToken.value)
+    
+    if (!authComposable.isAuthenticated.value) {
+      console.log('🐛 Dashboard Debug - No JWT token found, trying to initialize from Supabase session...')
+      try {
+        const supabase = useSupabaseClient()
+        const { data: sessionData } = await supabase.auth.getSession()
+        
+        if (sessionData.session) {
+          console.log('🐛 Dashboard Debug - Found Supabase session, converting to JWT...')
+          
+          // Convert Supabase session to JWT
+          const jwtResponse = await $fetch('/api/auth/session-to-jwt', {
+            method: 'POST',
+            body: {
+              access_token: sessionData.session.access_token,
+              refresh_token: sessionData.session.refresh_token,
+            }
+          })
+          
+          if (jwtResponse.success && jwtResponse.token) {
+            console.log('🐛 Dashboard Debug - JWT token generated successfully')
+            authComposable.setAuthState(jwtResponse.token, jwtResponse.user, sessionData.session.refresh_token)
+          }
+        } else {
+          console.log('🐛 Dashboard Debug - No Supabase session found')
+        }
+      } catch (error) {
+        console.error('🐛 Dashboard Debug - Failed to initialize JWT from session:', error)
+      }
+    }
+    
+    // Now try to fetch profile data if we have auth
+    if (authComposable.isAuthenticated.value) {
+      // Fetch profile data from /api/profile if user has a Salesforce ID
+      if (currentUserProfile.value?.salesforce_id) {
+        console.log('🐛 Dashboard Debug - Fetching profile with Salesforce ID:', currentUserProfile.value.salesforce_id)
+        await fetchProfile(currentUserProfile.value.salesforce_id)
+      } else if (currentUser.value?.email) {
+        console.log('🐛 Dashboard Debug - No Salesforce ID, trying email lookup:', currentUser.value.email)
+        await fetchProfile(currentUser.value.email)
+      } else {
+        console.log('🐛 Dashboard Debug - No Salesforce ID or email found. Member profile data will not be available.')
+      }
     } else {
-      console.log('🐛 Dashboard Debug - No Salesforce ID or email found. Member profile data will not be available.')
+      console.log('🐛 Dashboard Debug - Still no authentication available, skipping profile fetch')
     }
   }
 })
