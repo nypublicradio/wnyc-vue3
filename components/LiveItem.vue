@@ -1,5 +1,6 @@
 <script setup>
 import useLiveStream from "~/composables/data/liveStream"
+import { formatTime } from "~/utilities/helpers"
 const { togglePlayHere } = useLiveStream()
 const props = defineProps({
   data: {
@@ -22,37 +23,64 @@ const reactiveData = toRef(props, "data")
 const handleClick = () => {
   navigateTo(`/live${reactiveData.value.slug ? `?slug=${reactiveData.value.slug}` : ""}`)
 }
+
+const startEndTime = computed(() => {
+  if (!reactiveData.value) return ""
+  const startTime = formatTime(
+    reactiveData.value.showSchedule.isoStartTime,
+    "h:mm a"
+  ).replace(":00", "")
+  const endTime = formatTime(
+    reactiveData.value.showSchedule.isoEndTime,
+    "h:mm a"
+  ).replace(":00", "")
+  return `${startTime}-${endTime}`
+})
 </script>
 
 <template>
-  <div v-if="reactiveData" class="live-item flex gap-3 md:gap-4">
-    <VImage
-      :src="reactiveData?.image"
-      :ratio="[1, 1]"
-      :alt="`${reactiveData?.showTitle} show poster image`"
-      :size="{ xs: [112, 112], md: [240, 240] }"
-      class="image flex-none w-7rem md:w-15rem"
-      :srcset="[2]"
-    />
-    <div class="info flex flex-column gap-3 w-full justify-content-between">
-      <div class="content flex flex-column justify-content-start w-full">
-        <LiveBadge class="align-self-start" />
-        <h1 class="truncate t2lines no-hyphens">
-          {{ reactiveData?.title || reactiveData?.showTitle }}
-        </h1>
-        <HtmlConvert
-          class="blurb truncate t3lines my-3"
-          noBlocks
-          :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
-          htmlClasses="line-height-4"
-        />
-        <PlayAndSkipButtons
-          :hideSkip="true"
-          :liveOnly="true"
-          @beforeTogglePlay="togglePlayHere"
-        />
+  <div v-if="reactiveData" class="live-item">
+    <div class="flex gap-3 md:gap-4">
+      <VImage
+        :src="reactiveData?.image"
+        :ratio="[1, 1]"
+        :alt="`${reactiveData?.showTitle} show poster image`"
+        :size="{ xs: [112, 112], md: [240, 240] }"
+        class="image flex-none w-7rem md:w-15rem"
+        :srcset="[2]"
+      />
+      <div class="info flex flex-column gap-3 w-full justify-content-between">
+        <div class="content flex flex-column justify-content-start w-full">
+          <div class="flex gap-2 align-items-center">
+            <LiveBadge class="text-xxs md:text-base md:line-height-2" />
+            <p>{{ startEndTime }}</p>
+          </div>
+          <h1 class="truncate t2lines no-hyphens">
+            {{ reactiveData?.title || reactiveData?.showTitle }}
+          </h1>
+          <HtmlConvert
+            class="blurb truncate t3lines my-3"
+            noBlocks
+            :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
+            htmlClasses="line-height-4"
+          />
+          <template class="hidden md:flex">
+            <PlayAndSkipButtons
+              :hideSkip="true"
+              :liveOnly="true"
+              @beforeTogglePlay="togglePlayHere"
+            />
+          </template>
+        </div>
       </div>
     </div>
+    <template class="block md:hidden">
+      <PlayAndSkipButtons
+        :hideSkip="true"
+        :liveOnly="true"
+        @beforeTogglePlay="togglePlayHere"
+      />
+    </template>
   </div>
 
   <div v-else class="skeleton-holder flex gap-3">

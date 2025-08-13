@@ -18,7 +18,6 @@ const {
   fetchSchedule,
   clearAllTimeout,
   getTheTime,
-  togglePlayHere,
   liveScheduleData,
 } = useLiveStream()
 
@@ -179,13 +178,9 @@ onUnmounted(() => {
       <section class="current-station-info">
         <LiveItem :data="currentEpisodeHolder" />
       </section>
-      <!-- <PlayAndSkipButtons
-        :hideSkip="true"
-        :liveOnly="true"
-        @beforeTogglePlay="togglePlayHere"
-      /> -->
     </div>
-
+    <pre>{{ currentEpisodeHolder }}</pre>
+    <!-- <pre>{{ liveScheduleData }}</pre> -->
     <section class="schedule">
       <h2>Schedule</h2>
       <div v-if="liveScheduleData">
