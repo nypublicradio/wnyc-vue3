@@ -41,7 +41,7 @@ if (!props.client && !props.config) {
 console.log('🐛 Runtime Config Debug:')
 console.log('Full runtime config:', innerConfig.value)
 console.log('innerConfig.value.public:', innerConfig.value.public)
-console.log('supabaseAuthSignInRedirectTo:', innerConfig.value.supabaseAuthSignInRedirectTo)
+console.log('innerConfig.value.public.supabaseAuthSignInRedirectTo:', innerConfig.value.public?.supabaseAuthSignInRedirectTo)
 console.log('Process env check:', process.env.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO)
 
 const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
@@ -51,7 +51,9 @@ const login = async () => {
   emit("submit-click")
   
   // Use the runtime config value if no redirectUrl prop is provided
-  const configRedirectTo = innerConfig.value.supabaseAuthSignInRedirectTo || innerConfig.value.public?.supabaseAuthSignInRedirectTo
+  const configRedirectTo = innerConfig.value.public?.supabaseAuthSignInRedirectTo
+  console.log('🐛 Debug configRedirectTo:', configRedirectTo)
+  
   const redirectTo = props.redirectUrl !== "http://localhost:3000" 
     ? props.redirectUrl 
     : configRedirectTo || props.redirectUrl
