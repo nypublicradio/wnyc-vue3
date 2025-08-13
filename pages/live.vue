@@ -177,14 +177,14 @@ onUnmounted(() => {
       </HorizontalScrollFeature>
 
       <section class="current-station-info grid m-auto">
-        <div class="col-fixed hidden xxl:block w-15rem"></div>
+        <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
         <div class="col pr-2 lg:pr-4">
           <LiveItem :data="currentEpisodeHolder" />
         </div>
-        <div class="col-fixed hidden lg:block w-15rem"></div>
+        <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
       </section>
     </div>
-    <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
+    <pre>{{ allCurrentStations }}</pre>
     <!-- <pre>{{ liveScheduleData }}</pre> -->
     <section class="schedule">
       <h2>Schedule</h2>
