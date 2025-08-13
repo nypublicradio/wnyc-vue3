@@ -75,7 +75,7 @@ const validateProfileRequest = (body: any): { salesforceID?: string; email?: str
 const getContactData = async (lookupParams: { salesforceID?: string; email?: string }): Promise<any> => {
     try {
         let contact;
-        
+
         if (lookupParams.salesforceID) {
             // Lookup by Salesforce ID
             contact = await salesforce.findOne(
@@ -231,7 +231,7 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
 
     // Validate input parameter
     const body = await readBody(event);
-    const lookupParams = validateProfileRequest(body);
+    const salesforceID = validateProfileRequest(body);
 
     // Connect to Salesforce
     try {
@@ -249,9 +249,12 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
         });
     }
 
-    // Get contact data first, then get recurring donations using the contact
-    const contact = await getContactData(lookupParams);
-    const activeRecurringDonations = await getActiveRecurringDonations(contact);
+    // Get contact data and recurring donations in parallel for better performance
+    // No need to escape salesforceID since SObject methods handle sanitization automatically
+    const [contact, activeRecurringDonations] = await Promise.all([
+        getContactData(salesforceID),
+        getActiveRecurringDonations(salesforceID)
+    ]);
 
     // Return comprehensive profile response
     return buildProfileResponse(contact, activeRecurringDonations);

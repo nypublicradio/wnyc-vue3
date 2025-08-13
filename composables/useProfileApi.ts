@@ -14,46 +14,45 @@ interface ProfileResponse {
     activeRecurringDonations: RecurringDonation[]
 }
 
+import { ref, readonly } from 'vue';
+
 export const useProfileApi = () => {
-    const config = useRuntimeConfig()
-    const profileData = ref<ProfileResponse | null>(null)
-    const isLoading = ref(false)
-    const error = ref<string | null>(null)
+    const config = useRuntimeConfig();
+    const { authenticatedFetch } = useAuth();
+    const profile = ref(null);
+    const loading = ref(false);
+    const error = ref(null);
 
-    const fetchProfile = async (salesforceId?: string, email?: string) => {
-        // Allow lookup by either Salesforce ID or email
-        if (!salesforceId && !email) {
-            error.value = 'Either Salesforce ID or email is required'
-            return null
-        }
-
-        isLoading.value = true
-        error.value = null
+    const fetchProfile = async (salesforceIdOrEmail: string) => {
+        loading.value = true;
+        error.value = null;
+        profile.value = null;
 
         try {
-            const body: any = {}
-            if (salesforceId) {
-                body.salesforceId = salesforceId
-            }
-            if (email) {
-                body.email = email
-            }
+            // Try with Salesforce ID first, then email
+            const isEmail = salesforceIdOrEmail.includes('@');
+            const requestBody = isEmail
+                ? { email: salesforceIdOrEmail }
+                : { salesforceID: salesforceIdOrEmail };
 
-            const response = await $fetch(`${config.public.BFF_URL}/api/profile`, {
+            console.log('🔍 Profile API - Making authenticated request with:', requestBody);
+
+            const data = await authenticatedFetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
-                body
-            }) as ProfileResponse
+                body: requestBody,
+            });
 
-            profileData.value = response
-            return response
+            profile.value = data;
+            console.log('✅ Profile API - Successfully fetched profile:', data);
+            return data;
         } catch (err: any) {
-            error.value = err.message || 'Failed to fetch profile data'
-            console.error('Profile API error:', err)
-            return null
+            error.value = err;
+            console.error('❌ Profile API error:', err);
+            throw err;
         } finally {
-            isLoading.value = false
+            loading.value = false;
         }
-    }
+    };
 
     const formatCurrency = (amount: number | null): string => {
         if (amount === null) return 'N/A'
@@ -73,8 +72,8 @@ export const useProfileApi = () => {
     }
 
     return {
-        profileData: readonly(profileData),
-        isLoading: readonly(isLoading),
+        profile: readonly(profile),
+        loading: readonly(loading),
         error: readonly(error),
         fetchProfile,
         formatCurrency,

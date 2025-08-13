@@ -50,7 +50,7 @@ const isDisabled = computed(() => {
 })
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
-const { profileData, isLoading, error, fetchProfile, formatCurrency, formatDate } = useProfileApi()
+const { profile: profileData, loading: isLoading, error, fetchProfile, formatCurrency, formatDate } = useProfileApi()
 
 // main function to update the toast component
 const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {

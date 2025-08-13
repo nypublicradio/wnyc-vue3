@@ -12,7 +12,7 @@ const currentUserProfile = useCurrentUserProfile()
 const editProfileSideBar = useEditProfileSideBar()
 
 // Profile API composable for member profile data
-const { profileData, isLoading, error, fetchProfile, formatCurrency, formatDate } = useProfileApi()
+const { profile: profileData, loading: isLoading, error, fetchProfile, formatCurrency, formatDate } = useProfileApi()
 
 // Handler for the logout button
 const onLogout = () => {
@@ -62,7 +62,7 @@ onMounted(async () => {
       await fetchProfile(currentUserProfile.value.salesforce_id)
     } else if (currentUser.value?.email) {
       console.log('🐛 Dashboard Debug - No Salesforce ID, trying email lookup:', currentUser.value.email)
-      await fetchProfile(undefined, currentUser.value.email)
+      await fetchProfile(currentUser.value.email)
     } else {
       console.log('🐛 Dashboard Debug - No Salesforce ID or email found. Member profile data will not be available.')
     }
