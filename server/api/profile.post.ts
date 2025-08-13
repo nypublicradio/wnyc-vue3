@@ -25,7 +25,7 @@ interface ProfileResponse {
  * Supports lookup by either Salesforce ID or email
  */
 const validateProfileRequest = (body: any): { salesforceID?: string; email?: string } => {
-    const salesforceID = body?.salesforceId as string;
+    const salesforceID = body?.salesforceID as string;
     const email = body?.email as string;
 
     // At least one identifier is required
