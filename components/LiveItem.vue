@@ -26,14 +26,12 @@ const handleClick = () => {
 
 const startEndTime = computed(() => {
   if (!reactiveData.value) return ""
-  const startTime = formatTime(
-    reactiveData.value.showSchedule.isoStartTime,
-    "h:mm a"
-  ).replace(":00", "")
-  const endTime = formatTime(
-    reactiveData.value.showSchedule.isoEndTime,
-    "h:mm a"
-  ).replace(":00", "")
+  const startTime = formatTime(reactiveData.value.showSchedule.isoStartTime, "h:mma")
+    .replace(":00", "")
+    .toLowerCase()
+  const endTime = formatTime(reactiveData.value.showSchedule.isoEndTime, "h:mma")
+    .replace(":00", "")
+    .toLowerCase()
   return `${startTime}-${endTime}`
 })
 </script>
@@ -45,8 +43,8 @@ const startEndTime = computed(() => {
         :src="reactiveData?.image"
         :ratio="[1, 1]"
         :alt="`${reactiveData?.showTitle} show poster image`"
-        :size="{ xs: [112, 112], md: [240, 240] }"
-        class="image flex-none w-7rem md:w-15rem"
+        :size="{ xs: [112, 112], md: [320, 320] }"
+        class="image flex-none w-7rem md:w-20rem"
         :srcset="[2]"
       />
       <div class="info flex flex-column gap-3 w-full justify-content-between">
@@ -83,11 +81,11 @@ const startEndTime = computed(() => {
     </template>
   </div>
 
-  <div v-else class="skeleton-holder flex gap-3">
+  <div class="skeleton-holder flex gap-4">
     <div>
-      <Skeleton :width="`${size}px`" :height="`${size}px`" borderRadius="0px" />
+      <Skeleton class="w-7rem h-7rem md:w-20rem md:h-20rem" borderRadius="0px" />
     </div>
-    <div class="flex flex-column justify-content-center w-full gap-1">
+    <div class="flex flex-column justify-content-start w-full gap-1">
       <Skeleton height="16px" width="50px" borderRadius="2px" />
       <Skeleton height="16px" width="150px" borderRadius="16px" />
       <div class="w-full flex flex-column gap-2 mt-1">
