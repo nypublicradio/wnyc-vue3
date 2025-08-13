@@ -2,13 +2,34 @@ import axios from 'axios'
 import humps from 'humps'
 
 const config = useRuntimeConfig();
+const BASE =
+  process.env.DEMO_AVIARY_BASE_API ||
+  process.env.AVIARY_BASE_API ||
+  (config as any).aviaryBaseApi ||
+  (config as any).public?.AVIARY_BASE_API
+
+// Diagnostic logging for demo environment debugging
+if (process.env.ENV === 'demo' || process.env.environment === 'demo') {
+  console.log('[Events Detail API] Demo environment detected');
+  console.log('[Events Detail API] ENV:', process.env.ENV);
+  console.log('[Events Detail API] environment:', process.env.environment);
+  console.log('[Events Detail API] DEMO_AVIARY_BASE_API:', process.env.DEMO_AVIARY_BASE_API);
+  console.log('[Events Detail API] AVIARY_BASE_API:', process.env.AVIARY_BASE_API);
+  console.log('[Events Detail API] Resolved BASE:', BASE);
+}
 
 const getWagtailEventData = async (eventSlug: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${config.public.AVIARY_BASE_API}pages/${eventSlug}/`,
+            url: `${BASE}pages/${eventSlug}/`,
         };
+        
+        // Log the actual API call being made
+        if (process.env.ENV === 'demo' || process.env.environment === 'demo') {
+            console.log('[Events Detail API] Making request to:', option.url);
+        }
+        
         const res = await axios(option);
         return humps.camelizeKeys(res.data);
     } catch (e) {

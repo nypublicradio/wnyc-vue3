@@ -172,6 +172,12 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Server-only runtime values (read at runtime by Nitro)
+    aviaryBaseApi:
+      ((process.env.ENV === 'demo' || process.env.environment === 'demo')
+        ? (process.env.DEMO_AVIARY_BASE_API || process.env.AVIARY_BASE_API)
+        : process.env.AVIARY_BASE_API) ||
+      "https://cms.prod.nypr.digital/api/v2/",
     public: {
       SENTRY_DSN: process.env["SENTRY_DSN"],
       SENTRY_ENV: process.env.SENTRY_ENV ?? "development",
