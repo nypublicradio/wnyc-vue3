@@ -15,6 +15,7 @@ interface ProfileResponse {
 }
 
 export const useProfileApi = () => {
+    const config = useRuntimeConfig()
     const profileData = ref<ProfileResponse | null>(null)
     const isLoading = ref(false)
     const error = ref<string | null>(null)
@@ -29,7 +30,7 @@ export const useProfileApi = () => {
         error.value = null
 
         try {
-            const response = await $fetch('/api/profile', {
+            const response = await $fetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
                 body: {
                     salesforceId
