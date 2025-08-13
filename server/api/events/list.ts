@@ -8,16 +8,6 @@ const BASE =
   (config as any).aviaryBaseApi ||
   (config as any).public?.AVIARY_BASE_API
 
-// Diagnostic logging for demo environment debugging
-if (process.env.ENV === 'demo' || process.env.environment === 'demo') {
-  console.log('[Events List API] Demo environment detected');
-  console.log('[Events List API] ENV:', process.env.ENV);
-  console.log('[Events List API] environment:', process.env.environment);
-  console.log('[Events List API] DEMO_AVIARY_BASE_API:', process.env.DEMO_AVIARY_BASE_API);
-  console.log('[Events List API] AVIARY_BASE_API:', process.env.AVIARY_BASE_API);
-  console.log('[Events List API] Resolved BASE:', BASE);
-}
-
 const getWagtailEvents = async (query: Record<string, any>) => {
     try {
         const options = {
@@ -45,10 +35,6 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             options.params['venue_name'] = query.venue;
         }
 
-        // Log the actual API call being made
-        if (process.env.ENV === 'demo' || process.env.environment === 'demo') {
-            console.log('[Events List API] Making request to:', options.url);
-        }
         
         const res = await axios(options);
         const data = humps.camelizeKeys(res.data);
@@ -63,7 +49,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             }
         };
     } catch (e) {
-        console.error('Error fetching events:', e);
+        // Silently handle errors
         return {
             events: [],
             meta: {
