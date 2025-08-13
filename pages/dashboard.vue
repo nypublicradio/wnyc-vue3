@@ -52,9 +52,16 @@ onMounted(async () => {
   if (currentUser.value) {
     await getAndSetUserProfile()
     
+    console.log('🐛 Dashboard Debug - User Profile:', currentUserProfile.value)
+    console.log('🐛 Dashboard Debug - Has Salesforce ID:', !!currentUserProfile.value?.salesforce_id)
+    console.log('🐛 Dashboard Debug - Salesforce ID Value:', currentUserProfile.value?.salesforce_id)
+    
     // Fetch profile data from /api/profile if user has a Salesforce ID
     if (currentUserProfile.value?.salesforce_id) {
+      console.log('🐛 Dashboard Debug - Fetching profile with Salesforce ID:', currentUserProfile.value.salesforce_id)
       await fetchProfile(currentUserProfile.value.salesforce_id)
+    } else {
+      console.log('🐛 Dashboard Debug - No Salesforce ID found in user profile. Member profile data will not be available.')
     }
   }
 })
