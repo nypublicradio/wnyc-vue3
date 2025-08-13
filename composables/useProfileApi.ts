@@ -20,9 +20,10 @@ export const useProfileApi = () => {
     const isLoading = ref(false)
     const error = ref<string | null>(null)
 
-    const fetchProfile = async (salesforceId: string) => {
-        if (!salesforceId) {
-            error.value = 'No Salesforce ID provided'
+    const fetchProfile = async (salesforceId?: string, email?: string) => {
+        // Allow lookup by either Salesforce ID or email
+        if (!salesforceId && !email) {
+            error.value = 'Either Salesforce ID or email is required'
             return null
         }
 
@@ -30,11 +31,17 @@ export const useProfileApi = () => {
         error.value = null
 
         try {
+            const body: any = {}
+            if (salesforceId) {
+                body.salesforceId = salesforceId
+            }
+            if (email) {
+                body.email = email
+            }
+
             const response = await $fetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
-                body: {
-                    salesforceId
-                }
+                body
             }) as ProfileResponse
 
             profileData.value = response

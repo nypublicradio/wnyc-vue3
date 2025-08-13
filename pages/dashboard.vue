@@ -60,8 +60,11 @@ onMounted(async () => {
     if (currentUserProfile.value?.salesforce_id) {
       console.log('🐛 Dashboard Debug - Fetching profile with Salesforce ID:', currentUserProfile.value.salesforce_id)
       await fetchProfile(currentUserProfile.value.salesforce_id)
+    } else if (currentUser.value?.email) {
+      console.log('🐛 Dashboard Debug - No Salesforce ID, trying email lookup:', currentUser.value.email)
+      await fetchProfile(undefined, currentUser.value.email)
     } else {
-      console.log('🐛 Dashboard Debug - No Salesforce ID found in user profile. Member profile data will not be available.')
+      console.log('🐛 Dashboard Debug - No Salesforce ID or email found. Member profile data will not be available.')
     }
   }
 })

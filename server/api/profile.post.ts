@@ -22,41 +22,75 @@ interface ProfileResponse {
 
 /**
  * Validates the input parameters for the profile request
+ * Supports lookup by either Salesforce ID or email
  */
-const validateProfileRequest = (body: any): string => {
-    const salesforceID = body?.salesforceID as string;
+const validateProfileRequest = (body: any): { salesforceID?: string; email?: string } => {
+    const salesforceID = body?.salesforceId as string;
+    const email = body?.email as string;
 
-    if (!salesforceID || salesforceID.trim() === '') {
+    // At least one identifier is required
+    if ((!salesforceID || salesforceID.trim() === '') && (!email || email.trim() === '')) {
         throw createError({
             statusCode: 400,
             statusMessage: 'Bad Request',
-            message: 'Profile ID is required'
+            message: 'Either Salesforce ID or email is required'
         });
     }
 
-    // Validate Salesforce ID format (15 or 18 character alphanumeric)
-    const salesforceIdPattern = /^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/;
-    if (!salesforceIdPattern.test(salesforceID)) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: 'Bad Request',
-            message: 'Invalid Salesforce ID format'
-        });
+    const result: { salesforceID?: string; email?: string } = {};
+
+    // Validate Salesforce ID format if provided
+    if (salesforceID && salesforceID.trim() !== '') {
+        const salesforceIdPattern = /^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/;
+        if (!salesforceIdPattern.test(salesforceID)) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: 'Bad Request',
+                message: 'Invalid Salesforce ID format'
+            });
+        }
+        result.salesforceID = salesforceID;
     }
 
-    return salesforceID;
+    // Validate email format if provided
+    if (email && email.trim() !== '') {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: 'Bad Request',
+                message: 'Invalid email format'
+            });
+        }
+        result.email = email;
+    }
+
+    return result;
 };
 
 /**
  * Retrieves contact data from Salesforce using SObject methods
+ * Supports lookup by either Salesforce ID or email
  */
-const getContactData = async (salesforceID: string): Promise<any> => {
+const getContactData = async (lookupParams: { salesforceID?: string; email?: string }): Promise<any> => {
     try {
-        const contact = await salesforce.findOne(
-            'Contact',
-            { Id: salesforceID },
-            ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
-        );
+        let contact;
+        
+        if (lookupParams.salesforceID) {
+            // Lookup by Salesforce ID
+            contact = await salesforce.findOne(
+                'Contact',
+                { Id: lookupParams.salesforceID },
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
+            );
+        } else if (lookupParams.email) {
+            // Lookup by email
+            contact = await salesforce.findOne(
+                'Contact',
+                { Email: lookupParams.email },
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
+            );
+        }
 
         if (!contact) {
             throw createError({
@@ -88,12 +122,12 @@ const getContactData = async (salesforceID: string): Promise<any> => {
 /**
  * Retrieves active recurring donations from Salesforce using SObject methods
  */
-const getActiveRecurringDonations = async (salesforceID: string): Promise<any[]> => {
+const getActiveRecurringDonations = async (contact: any): Promise<any[]> => {
     try {
         const recurringDonations = await salesforce.find(
             'npe03__Recurring_Donation__c',
             {
-                'npe03__Contact__c': salesforceID,
+                'npe03__Contact__c': contact.Id, // Use the contact ID from the retrieved contact
                 'npsp__Status__c': 'Active',
                 'cfg_Digital_Membership_Program_Name__c': { $ne: 'The Lab' }
             },
@@ -197,7 +231,7 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
 
     // Validate input parameter
     const body = await readBody(event);
-    const salesforceID = validateProfileRequest(body);
+    const lookupParams = validateProfileRequest(body);
 
     // Connect to Salesforce
     try {
@@ -215,12 +249,9 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
         });
     }
 
-    // Get contact data and recurring donations in parallel for better performance
-    // No need to escape salesforceID since SObject methods handle sanitization automatically
-    const [contact, activeRecurringDonations] = await Promise.all([
-        getContactData(salesforceID),
-        getActiveRecurringDonations(salesforceID)
-    ]);
+    // Get contact data first, then get recurring donations using the contact
+    const contact = await getContactData(lookupParams);
+    const activeRecurringDonations = await getActiveRecurringDonations(contact);
 
     // Return comprehensive profile response
     return buildProfileResponse(contact, activeRecurringDonations);

@@ -130,6 +130,9 @@ onMounted(async () => {
     // Fetch profile data from /api/profile if user has a Salesforce ID
     if (currentUserProfile.value?.salesforce_id) {
       await fetchProfile(currentUserProfile.value.salesforce_id)
+    } else if (currentUser.value?.email) {
+      // Try email lookup if no Salesforce ID is available
+      await fetchProfile(undefined, currentUser.value.email)
     }
   }
 })
