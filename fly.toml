@@ -3,6 +3,11 @@
 app = "wnyc-vue3"
 primary_region = "iad"
 
+[build]
+  [build.args]
+    SUPABASE_AUTH_SIGN_IN_REDIRECT_TO = "https://${FLY_APP_NAME}.fly.dev/"
+    SUPABASE_AUTH_TOKEN_NAME = ${SUPABASE_AUTH_TOKEN_NAME}
+
 [env]
   PORT = "8080"
   TZ = "America/New_York"
