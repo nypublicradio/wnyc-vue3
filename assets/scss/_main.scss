@@ -153,6 +153,21 @@ section {
       margin-block-end: 0;
     }
   }
+  &.line-height-1 * {
+    line-height: 1;
+  }
+  &.line-height-2 * {
+    line-height: 1.25;
+  }
+  &.line-height-3 * {
+    line-height: 1.5;
+  }
+  &.line-height-4 * {
+    line-height: 1.75;
+  }
+  &.line-height-5 * {
+    line-height: 2;
+  }
 }
 
 .p-error {

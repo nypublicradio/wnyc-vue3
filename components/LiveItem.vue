@@ -1,4 +1,6 @@
 <script setup>
+import useLiveStream from "~/composables/data/liveStream"
+const { togglePlayHere } = useLiveStream()
 const props = defineProps({
   data: {
     type: Object,
@@ -18,39 +20,36 @@ const size = ref(props.size)
 const reactiveData = toRef(props, "data")
 // handle the click if this item is in the saved page and navigate to the live page
 const handleClick = () => {
-  if (props.saved) {
-    navigateTo(
-      `/live${reactiveData.value.slug ? `?slug=${reactiveData.value.slug}` : ""}`
-    )
-  }
+  navigateTo(`/live${reactiveData.value.slug ? `?slug=${reactiveData.value.slug}` : ""}`)
 }
 </script>
 
 <template>
-  <div
-    v-if="reactiveData"
-    class="live-item flex gap-3"
-    @click="handleClick"
-    :class="[{ 'cursor-pointer': props.saved }]"
-  >
+  <div v-if="reactiveData" class="live-item flex gap-3 md:gap-4">
     <VImage
       :src="reactiveData?.image"
-      :width="size"
-      :height="size"
       :ratio="[1, 1]"
       :alt="`${reactiveData?.showTitle} show poster image`"
-      class="image flex-none w-7rem"
+      :size="{ xs: [112, 112], md: [240, 240] }"
+      class="image flex-none w-7rem md:w-15rem"
+      :srcset="[2]"
     />
     <div class="info flex flex-column gap-3 w-full justify-content-between">
-      <div class="content flex flex-column gap-1 justify-content-start w-full">
-        <LiveBadge v-if="!props.saved" class="align-self-start" />
-        <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
-          {{ reactiveData.title }}
-        </h2>
-        <p v-if="props.saved" class="text-xs">{{ reactiveData.showTitle }}</p>
-        <div
-          class="blurb truncate t3lines html-formatting p1"
-          v-html="reactiveData?.onTodaysShowHeadline ?? reactiveData?.details"
+      <div class="content flex flex-column justify-content-start w-full">
+        <LiveBadge class="align-self-start" />
+        <h1 class="truncate t2lines no-hyphens">
+          {{ reactiveData?.title || reactiveData?.showTitle }}
+        </h1>
+        <HtmlConvert
+          class="blurb truncate t3lines my-3"
+          noBlocks
+          :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
+          htmlClasses="line-height-4"
+        />
+        <PlayAndSkipButtons
+          :hideSkip="true"
+          :liveOnly="true"
+          @beforeTogglePlay="togglePlayHere"
         />
       </div>
     </div>

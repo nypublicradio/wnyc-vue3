@@ -42,8 +42,7 @@ const isGif = (imageUrl) => {
 
 const parseHtml = () => {
   // make it HTML by wrapping it in a div
-  const htmlClasses = props.htmlClasses ? ` ${props.htmlClasses}` : ""
-  const asHtml = `<div class="html-convert${htmlClasses}">${props.htmlContent}</div>`
+  const asHtml = `<div class="html-convert">${props.htmlContent}</div>`
 
   // Reset the image props map
   imagePropsMap.value = {}

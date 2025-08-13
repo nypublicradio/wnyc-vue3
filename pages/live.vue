@@ -177,14 +177,15 @@ onUnmounted(() => {
         </div>
       </HorizontalScrollFeature>
       <section class="current-station-info">
-        <LiveItem :data="currentEpisodeHolder" :size="112" />
+        <LiveItem :data="currentEpisodeHolder" />
       </section>
-      <PlayAndSkipButtons
+      <!-- <PlayAndSkipButtons
         :hideSkip="true"
         :liveOnly="true"
         @beforeTogglePlay="togglePlayHere"
-      />
+      /> -->
     </div>
+
     <section class="schedule">
       <h2>Schedule</h2>
       <div v-if="liveScheduleData">
