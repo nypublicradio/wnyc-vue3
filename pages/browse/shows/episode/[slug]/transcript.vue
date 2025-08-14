@@ -162,7 +162,10 @@ watch(
                 severity="info"
                 @click="handleReturnToEpisode"
               />
-              <div class="flex align-items-start gap-2 mt-4">
+              <div
+                class="flex align-items-start gap-2 mt-4"
+                :class="{ 'align-items-center': isMinimized }"
+              >
                 <VImage
                   :src="getEpisodeImage()"
                   :alt="episodeData?.title"
@@ -170,7 +173,9 @@ watch(
                   :class="{ minimize: isMinimized }"
                   :size="[112, 112]"
                 />
-                <h2 class="mt-2">{{ episodeData?.title }}</h2>
+                <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
+                  {{ episodeData?.title }}
+                </h1>
               </div>
             </div>
           </div>
