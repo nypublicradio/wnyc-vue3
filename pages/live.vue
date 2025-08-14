@@ -131,66 +131,81 @@ onUnmounted(() => {
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
-        <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
-          <div
-            v-for="(station, index) in allCurrentStations"
-            class="station-holder item"
-            :class="{
-              activestation:
-                currentEpisodeHolder?.station === station.station ||
-                currentEpisode?.station === station.station,
-            }"
-            :key="`${station.station}-${index}`"
-          >
-            <div class="relative">
-              <Button
-                class="station-btn text-sm btn max-w-15rem md:px-4"
-                :severity="
+        <template #default>
+          <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
+            <div
+              v-for="(station, index) in allCurrentStations"
+              class="station-holder"
+              :class="{
+                activestation:
                   currentEpisodeHolder?.station === station.station ||
-                  currentEpisode?.station === station.station
-                    ? 'primary'
-                    : 'contrast'
-                "
-                :label="station.station"
-                :aria-label="`${station.station} button`"
-                :aria-disabled="isStreamLoading"
-                @click="switchStation(station)"
-              >
-                <template #default>
-                  <div class="flex gap-1 align-items-center overflow-hidden w-full">
-                    <div
-                      v-if="currentEpisode?.station === station.station"
-                      class="flex-shrink-0"
-                    >
-                      <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
-                      <WnycLoader
-                        v-else
-                        class="pr-2"
-                        :svgYscale="1.25"
-                        :svgXscale="0.5"
-                        :bars="3"
-                        :paused="!isEpisodePlaying"
-                        size="16px"
-                      />
-                    </div>
-                    <div
-                      class="flex flex-column align-items-start overflow-hidden flex-1 min-w-0"
-                    >
-                      <span class="station-name font-bold white-space-nowrap text-left">{{
-                        station.station
-                      }}</span>
-                      <span
-                        class="show-title truncate text-left"
-                        style="width: 100%; min-width: 0"
-                        >{{ station.showTitle || station.episodeTitle }}</span
+                  currentEpisode?.station === station.station,
+              }"
+              :key="`${station.station}-${index}`"
+            >
+              <div class="relative">
+                <Button
+                  class="station-btn text-sm ml-4 max-w-15rem md:px-4"
+                  :severity="
+                    currentEpisodeHolder?.station === station.station ||
+                    currentEpisode?.station === station.station
+                      ? 'primary'
+                      : 'contrast'
+                  "
+                  :label="station.station"
+                  :aria-label="`${station.station} button`"
+                  :aria-disabled="isStreamLoading"
+                  @click="switchStation(station)"
+                >
+                  <template #default>
+                    <div class="flex gap-1 align-items-center overflow-hidden w-full">
+                      <div
+                        v-if="currentEpisode?.station === station.station"
+                        class="flex-shrink-0"
                       >
+                        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
+                        <WnycLoader
+                          v-else
+                          class="pr-2"
+                          :svgYscale="1.25"
+                          :svgXscale="0.5"
+                          :bars="3"
+                          :paused="!isEpisodePlaying"
+                          size="16px"
+                        />
+                      </div>
+                      <div
+                        class="flex flex-column align-items-start overflow-hidden flex-1 min-w-0"
+                      >
+                        <span
+                          class="station-name font-bold white-space-nowrap text-left"
+                          >{{ station.station }}</span
+                        >
+                        <span
+                          class="show-title truncate text-left"
+                          style="width: 100%; min-width: 0"
+                          >{{ station.showTitle || station.episodeTitle }}</span
+                        >
+                      </div>
                     </div>
-                  </div>
-                </template>
-              </Button>
+                  </template>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
+        <template #skeleton>
+          <div class="flex w-full justify-content-center">
+            <div v-for="i in 4" class="item" :key="`${i}-skeleton`">
+              <Skeleton
+                class="flex-none ml-4"
+                height="52.16px"
+                width="180px"
+                borderRadius="30px"
+              />
+            </div>
+          </div>
+        </template>
       </HorizontalScrollFeature>
 
       <section class="current-station-info grid grid-nogutter m-auto">
