@@ -25,11 +25,11 @@ const handleClick = () => {
 }
 
 const startEndTime = computed(() => {
-  if (!reactiveData.value) return ""
-  const startTime = formatTime(reactiveData.value.showSchedule.isoStartTime, "h:mma")
+  if (!reactiveData.value || !reactiveData.value.showSchedule) return ""
+  const startTime = formatTime(reactiveData.value?.showSchedule?.isoStartTime, "h:mma")
     .replace(":00", "")
     .toLowerCase()
-  const endTime = formatTime(reactiveData.value.showSchedule.isoEndTime, "h:mma")
+  const endTime = formatTime(reactiveData.value?.showSchedule?.isoEndTime, "h:mma")
     .replace(":00", "")
     .toLowerCase()
   return `${startTime}-${endTime}`
