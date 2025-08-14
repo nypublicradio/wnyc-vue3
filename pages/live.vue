@@ -201,7 +201,7 @@ onUnmounted(() => {
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
       </section>
     </div>
-    <!-- <pre class="text-xs overflow-hidden">{{ allCurrentStations }}</pre> -->
+    <pre class="text-xs overflow-hidden">{{ allCurrentStations }}</pre>
     <!-- <pre>{{ liveScheduleData }}</pre> -->
     <section class="schedule">
       <h2>Schedule</h2>

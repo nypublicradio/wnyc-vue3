@@ -231,6 +231,8 @@ watch(
     top: var(--header-height);
     z-index: 10;
     background-color: var(--header-background);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     .episode-page-image {
       transition: width var(--p-transition-duration), height var(--p-transition-duration);
       -webkit-transition: width var(--p-transition-duration),
