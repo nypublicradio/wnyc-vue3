@@ -2,21 +2,23 @@ import axios from 'axios'
 import humps from 'humps'
 
 const config = useRuntimeConfig();
+const BASE =
+  process.env.DEMO_AVIARY_BASE_API ||
+  process.env.AVIARY_BASE_API ||
+  (config as any).aviaryBaseApi ||
+  (config as any).public?.AVIARY_BASE_API
 
 const getWagtailEventData = async (eventSlug: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${config.public.AVIARY_BASE_API}pages/${eventSlug}/`,
+            url: `${BASE}pages/${eventSlug}/`,
         };
+        
         const res = await axios(option);
         return humps.camelizeKeys(res.data);
     } catch (e) {
-        if (e.response && e.response.status === 404) {
-            console.error('Event not found:', eventSlug)
-        } else {
-            console.error('Error fetching event:', e);
-        }
+        // Silently handle errors
     }
     return null
 };

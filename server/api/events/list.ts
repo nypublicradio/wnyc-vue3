@@ -2,12 +2,17 @@ import axios from 'axios'
 import humps from 'humps'
 
 const config = useRuntimeConfig();
+const BASE =
+  process.env.DEMO_AVIARY_BASE_API ||
+  process.env.AVIARY_BASE_API ||
+  (config as any).aviaryBaseApi ||
+  (config as any).public?.AVIARY_BASE_API
 
 const getWagtailEvents = async (query: Record<string, any>) => {
     try {
         const options = {
             method: 'GET',
-            url: `${config.public.AVIARY_BASE_API}pages/`,
+            url: `${BASE}pages/`,
             params: {
                 type: 'events.EventPage',
                 fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary',
@@ -30,6 +35,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             options.params['venue_name'] = query.venue;
         }
 
+        
         const res = await axios(options);
         const data = humps.camelizeKeys(res.data);
         
@@ -43,7 +49,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             }
         };
     } catch (e) {
-        console.error('Error fetching events:', e);
+        // Silently handle errors
         return {
             events: [],
             meta: {
