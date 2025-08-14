@@ -46,6 +46,20 @@ const handleScheduleLocalNotification = async (entry) => {
   await scheduleLocalNotification(entry)
 }
 
+// handle the PDF download button
+const handleScheduleDownload = async (entry) => {
+  trackClickEvent(
+    "Click Tracking - Schedule Download Button",
+    "Live Page",
+    "download schedule PDF"
+  )
+  // need to pull this from the CMS
+  window.open(
+    "https://media.wnyc.org/media/resources/2025/Mar/31/wnyc-schedule.pdf",
+    "_blank"
+  )
+}
+
 // updates the stream to the current station when the page loads ONCE with this watcher
 watch(
   currentEpisodeHolder,
@@ -232,7 +246,7 @@ onUnmounted(() => {
             severity="secondary"
             variant="link"
             class="link -ml-2"
-            @click="handleAllTopics"
+            @click="handleScheduleDownload"
             label="Weekly Schedule (pdf)"
           ></Button>
         </div>
