@@ -131,7 +131,7 @@ onUnmounted(() => {
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
-        <div class="live-stations flex pb-2 w-full">
+        <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
           <div
             v-for="(station, index) in allCurrentStations"
             class="station-holder item"
@@ -144,30 +144,47 @@ onUnmounted(() => {
           >
             <div class="relative">
               <Button
-                class="station-btn text-sm white-space-nowrap btn"
+                class="station-btn text-sm btn max-w-15rem md:px-4"
                 :severity="
                   currentEpisodeHolder?.station === station.station ||
                   currentEpisode?.station === station.station
                     ? 'primary'
-                    : 'secondary'
+                    : 'contrast'
                 "
                 :label="station.station"
                 :aria-label="`${station.station} button`"
                 :aria-disabled="isStreamLoading"
                 @click="switchStation(station)"
               >
-                <template #icon>
-                  <div v-if="currentEpisode?.station === station.station">
-                    <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
-                    <WnycLoader
-                      v-else
-                      class="pr-2"
-                      :svgYscale="1.25"
-                      :svgXscale="0.5"
-                      :bars="3"
-                      :paused="!isEpisodePlaying"
-                      size="16px"
-                    />
+                <template #default>
+                  <div class="flex gap-1 align-items-center overflow-hidden w-full">
+                    <div
+                      v-if="currentEpisode?.station === station.station"
+                      class="flex-shrink-0"
+                    >
+                      <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
+                      <WnycLoader
+                        v-else
+                        class="pr-2"
+                        :svgYscale="1.25"
+                        :svgXscale="0.5"
+                        :bars="3"
+                        :paused="!isEpisodePlaying"
+                        size="16px"
+                      />
+                    </div>
+                    <div
+                      class="flex flex-column align-items-start overflow-hidden flex-1 min-w-0"
+                    >
+                      <span class="station-name font-bold white-space-nowrap text-left">{{
+                        station.station
+                      }}</span>
+                      <span
+                        class="show-title truncate text-left"
+                        style="width: 100%; min-width: 0"
+                        >{{ station.showTitle || station.episodeTitle }}</span
+                      >
+                    </div>
                   </div>
                 </template>
               </Button>
@@ -176,7 +193,7 @@ onUnmounted(() => {
         </div>
       </HorizontalScrollFeature>
 
-      <section class="current-station-info grid m-auto">
+      <section class="current-station-info grid grid-nogutter m-auto">
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
         <div class="col pr-2 lg:pr-4">
           <LiveItem :data="currentEpisodeHolder" />
@@ -184,7 +201,7 @@ onUnmounted(() => {
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
       </section>
     </div>
-    <pre>{{ allCurrentStations }}</pre>
+    <!-- <pre class="text-xs overflow-hidden">{{ allCurrentStations }}</pre> -->
     <!-- <pre>{{ liveScheduleData }}</pre> -->
     <section class="schedule">
       <h2>Schedule</h2>
@@ -278,6 +295,15 @@ html {
       }
     }
   }
+  .live-stations-holder {
+    .station-btn {
+      .show-title {
+        @include media("<md") {
+          display: none;
+        }
+      }
+    }
+  }
 }
 </style>
 <style lang="scss" scoped>
@@ -314,10 +340,6 @@ html {
         &:active {
           // nothing looks best
         }
-        // margin-left: 1rem;
-        // &:first-child {
-        //   margin-left: 1.25rem;
-        // }
       }
     }
   }

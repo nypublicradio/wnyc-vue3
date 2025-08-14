@@ -1144,6 +1144,21 @@ const MyPreset = definePreset(Aura, {
                 shadow: "none",
               },
             },
+            contrast: {
+              background: "#3F3F41",
+              hoverBackground: "#282829",
+              activeBackground: "{surface.200}",
+              borderColor: "#282829",
+              hoverBorderColor: "#282829",
+              activeBorderColor: "{surface.300}",
+              color: "{surface-0}",
+              hoverColor: "{surface-0}",
+              activeColor: "{surface-0}",
+              focusRing: {
+                color: "{focusRing.color}",
+                shadow: "none",
+              },
+            },
           },
           link: {
             color: '{text.color}',
@@ -1183,6 +1198,21 @@ const MyPreset = definePreset(Aura, {
               color: "{surface-950}",
               hoverColor: "{surface-950}",
               activeColor: "{surface-950}",
+              focusRing: {
+                color: "{focusRing.color}",
+                shadow: "none",
+              },
+            },
+            contrast: {
+              background: "#3F3F41",
+              hoverBackground: "#282829",
+              activeBackground: "{surface.200}",
+              borderColor: "#282829",
+              hoverBorderColor: "#282829",
+              activeBorderColor: "{surface.300}",
+              color: "{surface-0}",
+              hoverColor: "{surface-0}",
+              activeColor: "{surface-0}",
               focusRing: {
                 color: "{focusRing.color}",
                 shadow: "none",
