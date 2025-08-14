@@ -222,10 +222,14 @@ onUnmounted(() => {
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
       </section>
     </div>
-    <pre class="text-xs overflow-hidden">{{ allCurrentStations }}</pre>
+    <!-- <pre class="text-xs overflow-hidden">{{ allCurrentStations }}</pre> -->
     <!-- <pre>{{ liveScheduleData }}</pre> -->
+    <section class="current-station-info grid grid-nogutter m-auto">
+      <div class="col pr-2 lg:pr-4">TAB CONTENT</div>
+      <div class="col-fixed hidden xl:block xl:w-20rem">AD</div>
+    </section>
     <section class="schedule">
-      <h2>Schedule</h2>
+      <h2 class="text-5xl">Schedule</h2>
       <div v-if="liveScheduleData">
         <div
           v-for="(entry, index) in liveScheduleData"
