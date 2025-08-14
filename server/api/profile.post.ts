@@ -249,12 +249,10 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
         });
     }
 
-    // Get contact data and recurring donations in parallel for better performance
+    // Get contact data first, then use it to fetch recurring donations
     // No need to escape salesforceID since SObject methods handle sanitization automatically
-    const [contact, activeRecurringDonations] = await Promise.all([
-        getContactData(salesforceID),
-        getActiveRecurringDonations(salesforceID)
-    ]);
+    const contact = await getContactData(salesforceID);
+    const activeRecurringDonations = await getActiveRecurringDonations(contact);
 
     // Return comprehensive profile response
     return buildProfileResponse(contact, activeRecurringDonations);
