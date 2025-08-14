@@ -108,6 +108,7 @@ const startEndTime = computed(() => {
     </div>
   </div>
   <Skeleton
+    v-if="!reactiveData"
     class="block md:hidden m-auto mt-4"
     height="55px"
     width="55px"
