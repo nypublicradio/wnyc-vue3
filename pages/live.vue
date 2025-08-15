@@ -297,7 +297,7 @@ onUnmounted(() => {
               </div>
               <div class="flex flex-column gap-4">
                 <div
-                  v-for="(entry, entryIndex) in data"
+                  v-for="(entry, entryIndex) in data.slice(0, 9)"
                   class="schedule-entry flex justify-content-between align-items-center gap-3"
                   :class="[{ selected: entryIndex === 0 }]"
                 >
