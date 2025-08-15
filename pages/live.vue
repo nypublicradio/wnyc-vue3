@@ -19,6 +19,7 @@ const {
   clearAllTimeout,
   getTheTime,
   liveScheduleData,
+  allLiveScheduleData,
 } = useLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
@@ -236,8 +237,9 @@ onUnmounted(() => {
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
       </section>
     </div>
-    <!-- <pre class="text-xs overflow-hidden">{{ allCurrentStations }}</pre> -->
+    <!-- <pre class="overflow-hidden">{{ allCurrentStations }}</pre> -->
     <!-- <pre>{{ liveScheduleData }}</pre> -->
+    <!-- <pre>{{ allLiveScheduleData }}</pre> -->
     <section class="schedule grid m-auto">
       <div class="col pr-2 lg:pr-4">
         <div class="flex flex-wrap justify-content-between align-items-end mb-4">
@@ -250,40 +252,66 @@ onUnmounted(() => {
             label="Weekly Schedule (pdf)"
           ></Button>
         </div>
-        <div v-if="liveScheduleData">
-          <div
-            v-for="(entry, index) in liveScheduleData"
-            :key="`${entry.id}-${index}`"
-            class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
-            :class="[{ selected: index === 0 }]"
-          >
-            <div class="flex align-items-stretch">
-              <div class="left my-1" />
-              <div>
-                <p class="time">
-                  {{ getTheTime(entry.attributes.start, entry.attributes.end, index) }}
-                </p>
-                <h2 class="title">
-                  {{ getEntryTitle(entry) }}
-                </h2>
-              </div>
-            </div>
-            <Button
-              v-if="isApp && index > 0"
-              severity="secondary"
-              text
-              plain
-              rounded
-              class="flex-none"
-              aria-label="set notification"
-              @click="handleScheduleLocalNotification(entry)"
+        <Tabs value="0" v-if="allLiveScheduleData.length > 0 && allCurrentStations">
+          <TabList>
+            <Tab
+              v-for="(entry, index) in allCurrentStations"
+              :key="entry.id"
+              :value="index.toString()"
+              >{{ entry.station }}</Tab
             >
-              <template #icon>
-                <NotificationIcon :entry="entry" />
-              </template>
-            </Button>
-          </div>
-        </div>
+          </TabList>
+          <hr class="w-full mt-5" />
+
+          <TabPanels>
+            <TabPanel
+              v-for="(data, index) in allLiveScheduleData"
+              :key="`${data.id}-${index}`"
+              :value="index.toString()"
+              :class="[{ selected: index === 0 }]"
+            >
+              <div class="flex flex-column gap-4">
+                <div
+                  v-for="(entry, entryIndex) in data"
+                  class="schedule-entry flex justify-content-between align-items-center gap-3"
+                  :class="[{ selected: entryIndex === 0 }]"
+                >
+                  <div class="flex align-items-stretch">
+                    <div class="left my-1" />
+                    <div>
+                      <p class="time">
+                        {{
+                          getTheTime(
+                            entry.attributes.start,
+                            entry.attributes.end,
+                            entryIndex
+                          )
+                        }}
+                      </p>
+                      <h2 class="title">
+                        {{ getEntryTitle(entry) }}
+                      </h2>
+                    </div>
+                  </div>
+                  <Button
+                    v-if="isApp && entryIndex > 0"
+                    severity="secondary"
+                    text
+                    plain
+                    rounded
+                    class="flex-none"
+                    aria-label="set notification"
+                    @click="handleScheduleLocalNotification(entry)"
+                  >
+                    <template #icon>
+                      <NotificationIcon :entry="entry" />
+                    </template>
+                  </Button>
+                </div>
+              </div>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
         <div v-else class="skeleton mt-5">
           <div
             v-for="i in 10"
