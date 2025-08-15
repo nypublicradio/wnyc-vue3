@@ -24,6 +24,38 @@ export async function updateLiveStream(slug: string, save = true) {
     }
 }
 
+// Fetch the schedule simple return
+const fetchScheduleSimple = async (station) => {
+    const config = useRuntimeConfig()
+    const currentStreamStation = useCurrentStreamStation()
+    const globalToast = useGlobalToast()
+    try {
+        const schedule = await $fetch(
+            `${config.public.BFF_URL}/api/schedule/${station}`,
+            {
+                method: "POST",
+            }
+        )
+
+        // add the slug to the schedule data to pass to the local notification system
+        schedule.forEach((entry) => {
+            entry.slug = currentStreamStation.value
+        })
+
+        return schedule
+
+    } catch (error) {
+        globalToast.value = {
+            severity: "error",
+            summary:
+                "Sorry. We are having trouble. Please try again later.",
+            life: null,
+            closable: true,
+        }
+        console.error("error = ", error)
+    }
+}
+
 // Function to update all live streams
 export async function updateAllLiveStreams(init = true) {
     const allCurrentStations = useAllCurrentStations()
@@ -36,6 +68,10 @@ export async function updateAllLiveStreams(init = true) {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams to the filtered array
         allCurrentStations.value = fetchingAll.filter(Boolean)
+
+        allLiveScheduleData.value = await Promise.all(allCurrentStations.value.map((station) => {
+            return fetchScheduleSimple(station.slug)
+        }))
 
         let thisStation = null
 
@@ -72,6 +108,7 @@ export async function updateAllLiveStreams(init = true) {
 
 
 const liveScheduleData = ref(null)
+const allLiveScheduleData = ref([])
 let timeout = null
 
 // base liveStream composable
@@ -274,5 +311,5 @@ export default function useLiveStream() {
             }, 100)
         }
     }
-    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData }
+    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData }
 }
