@@ -179,10 +179,27 @@ watch(
               </div>
             </div>
           </div>
-          <div v-else class="flex align-items-center gap-2">
+          <div v-else class="flex flex-column align-items-start gap-4">
             <Skeleton height="36px" width="168px" borderRadius="18px" />
-            <Skeleton height="37px" width="37px" borderRadius="0px" />
-            <Skeleton height="18px" width="220px" borderRadius="18px" />
+            <div
+              class="flex gap-2 align-items-start w-full"
+              :class="{ 'align-items-center': isMinimized }"
+            >
+              <Skeleton
+                class="episode-page-image flex-none"
+                :class="{ minimize: isMinimized }"
+                :height="isMinimized ? '46px' : '112px'"
+                :width="isMinimized ? '46px' : '112px'"
+                borderRadius="0px"
+              />
+              <div
+                class="flex flex-column gap-1 w-full"
+                :class="isMinimized ? 'mt-0' : 'mt-3'"
+              >
+                <Skeleton height="13px" class="w-9" borderRadius="9px" />
+                <Skeleton height="13px" class="md:hidden w-8" borderRadius="9px" />
+              </div>
+            </div>
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem"></div>
