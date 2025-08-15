@@ -270,6 +270,31 @@ onUnmounted(() => {
               :value="index.toString()"
               :class="[{ selected: index === 0 }]"
             >
+              <div
+                class="date-tools flex justify-content-between align-items-center mb-4"
+              >
+                <Button
+                  severity="secondary"
+                  variant="text"
+                  class="link -ml-3"
+                  @click="handleScheduleDownload"
+                  :label="`Wednesday`"
+                  icon="pi pi-chevron-left"
+                ></Button>
+                <div class="today flex flex-column gap-0 align-items-center text-center">
+                  <span class="day font-bold text-lg">Thursday</span>
+                  <span class="date text-sm">January 30, 2025</span>
+                </div>
+                <Button
+                  severity="secondary"
+                  variant="text"
+                  iconPos="right"
+                  class="link -mr-3"
+                  @click="handleScheduleDownload"
+                  :label="`Friday`"
+                  icon="pi pi-chevron-right"
+                ></Button>
+              </div>
               <div class="flex flex-column gap-4">
                 <div
                   v-for="(entry, entryIndex) in data"
@@ -390,7 +415,7 @@ html {
 <style lang="scss" scoped>
 .live-page {
   .top {
-    padding: 1.5rem 0;
+    padding: 2.5rem 0;
     background-color: var(--p-surface-950);
     .station-holder {
       position: relative;
