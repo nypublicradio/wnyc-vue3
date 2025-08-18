@@ -24,38 +24,6 @@ export async function updateLiveStream(slug: string, save = true) {
     }
 }
 
-// Fetch the schedule simple return
-const fetchScheduleSimple = async (station) => {
-    const config = useRuntimeConfig()
-    const currentStreamStation = useCurrentStreamStation()
-    const globalToast = useGlobalToast()
-    try {
-        const schedule = await $fetch(
-            `${config.public.BFF_URL}/api/schedule/${station}`,
-            {
-                method: "POST",
-            }
-        )
-
-        // add the slug to the schedule data to pass to the local notification system
-        schedule.forEach((entry) => {
-            entry.slug = currentStreamStation.value
-        })
-
-        return schedule
-
-    } catch (error) {
-        globalToast.value = {
-            severity: "error",
-            summary:
-                "Sorry. We are having trouble. Please try again later.",
-            life: null,
-            closable: true,
-        }
-        console.error("error = ", error)
-    }
-}
-
 // Function to update all live streams
 export async function updateAllLiveStreams(init = true) {
     const allCurrentStations = useAllCurrentStations()
@@ -68,10 +36,6 @@ export async function updateAllLiveStreams(init = true) {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams to the filtered array
         allCurrentStations.value = fetchingAll.filter(Boolean)
-
-        allLiveScheduleData.value = await Promise.all(allCurrentStations.value.map((station) => {
-            return fetchScheduleSimple(station.slug)
-        }))
 
         let thisStation = null
 
@@ -123,6 +87,8 @@ export default function useLiveStream() {
     const isEpisodePlaying = useIsEpisodePlaying()
     const isStreamLoading = useIsStreamLoading()
     const globalToast = useGlobalToast()
+
+    const currentScheduleDate = ref(new Date())
     // toggle play here
     // not sure why I am using this, probably should use the helper function
     const togglePlayHere = () => {
@@ -242,6 +208,42 @@ export default function useLiveStream() {
         }
     }
 
+    // Fetch the schedule simple return
+    const fetchScheduleSimple = async (station, date = new Date()) => {
+        const config = useRuntimeConfig()
+        const currentStreamStation = useCurrentStreamStation()
+        const globalToast = useGlobalToast()
+
+        try {
+            const schedule = await $fetch(
+                `${config.public.BFF_URL}/api/schedule/${station}`,
+                {
+                    method: "POST",
+                    body: {
+                        localDate: date
+                    }
+                }
+            )
+
+            // add the slug to the schedule data to pass to the local notification system
+            schedule.forEach((entry) => {
+                entry.slug = currentStreamStation.value
+            })
+
+            return schedule
+
+        } catch (error) {
+            globalToast.value = {
+                severity: "error",
+                summary:
+                    "Sorry. We are having trouble. Please try again later.",
+                life: null,
+                closable: true,
+            }
+            console.error("error = ", error)
+        }
+    }
+
     // targets the active station and scrolls to it
     const scrollToActiveStation = (behavior = "smooth") => {
         const activeStation = document.getElementsByClassName("activestation")
@@ -311,5 +313,5 @@ export default function useLiveStream() {
             }, 100)
         }
     }
-    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData }
+    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate }
 }
