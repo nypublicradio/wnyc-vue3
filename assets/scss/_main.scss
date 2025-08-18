@@ -264,6 +264,15 @@ section {
 
 /* Customizations to the theme for components that CAN"T be done with the tokens should be defined here */
 .p-tabs {
+  &.p-tabs-scrollable .p-tablist {
+    overflow: visible;
+  }
+  .p-tablist-prev-button {
+    margin-left: -1rem;
+  }
+  .p-tablist-next-button {
+    margin-right: -1rem;
+  }
   .p-tablist-tab-list {
     gap: 2.5rem;
     .p-tab {

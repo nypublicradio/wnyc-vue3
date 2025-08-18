@@ -208,7 +208,7 @@ onUnmounted(() => {
     <!-- <pre>{{ liveScheduleData }}</pre> -->
     <!-- <pre>{{ allLiveScheduleData }}</pre> -->
     <section class="schedule grid m-auto">
-      <div class="col pr-2 lg:pr-4">
+      <div class="col w-full pr-2 lg:pr-4">
         <Schedule />
       </div>
       <div class="col-fixed hidden xl:block xl:w-20rem justify-content-center">

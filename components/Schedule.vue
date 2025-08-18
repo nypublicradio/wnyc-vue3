@@ -46,7 +46,6 @@ watch(
 )
 
 watch(currentScheduleDate, async () => {
-  console.log("set!")
   allLiveScheduleData.value = []
   allLiveScheduleData.value = await Promise.all(
     allCurrentStations.value.map((station) => {
@@ -82,7 +81,7 @@ const handleScheduleDownload = async (entry) => {
         label="Weekly Schedule (pdf)"
       ></Button>
     </div>
-    <Tabs value="0" v-if="allCurrentStations">
+    <Tabs value="0" scrollable v-if="allCurrentStations">
       <TabList>
         <Tab
           v-for="(entry, index) in allCurrentStations"
