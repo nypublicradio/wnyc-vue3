@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+//import { trackClickEvent } from "~/utilities/helpers"
 import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useCurrentEpisode,
@@ -9,7 +9,6 @@ import {
   useIsStreamLoading,
 } from "~/composables/states"
 
-import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 const {
   getStationBySlugAndPlayIt,
   switchStation,
@@ -28,19 +27,6 @@ const isStreamLoading = useIsStreamLoading()
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
-
-// schedule a local notification and track it
-const handleScheduleLocalNotification = async (entry) => {
-  trackClickEvent(
-    "Click Tracking - Schedule Notify Button",
-    "Live Page",
-    `Notify me about ${entry.station} - ${getEntryTitle(entry)} at ${
-      entry.attributes.start
-    }`
-  )
-  entry.station = currentEpisodeHolder.value.station
-  await scheduleLocalNotification(entry)
-}
 
 // updates the stream to the current station when the page loads ONCE with this watcher
 watch(

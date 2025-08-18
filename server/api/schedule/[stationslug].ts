@@ -1,7 +1,6 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { getDate } from "~/utilities/helpers"
 
 // Write a function that removes scheduled shows that have already aired using the attribute "end"
 const removePastShows = (schedule: any) => {

@@ -1,18 +1,34 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, formatDate } from "~/utilities/helpers"
 import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
 import { useAllCurrentStations, useIsApp } from "~/composables/states"
 
-import { getEntryTitle } from "~/utilities/local-notifications"
+import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
+
 const {
   getTheTime,
   allLiveScheduleData,
   fetchScheduleSimple,
   currentScheduleDate,
+  nextDayScheduleDate,
+  previousDayScheduleDate,
 } = useLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
 const isApp = useIsApp()
+
+// schedule a local notification and track it
+const handleScheduleLocalNotification = async (entry) => {
+  trackClickEvent(
+    "Click Tracking - Schedule Notify Button",
+    "Live Page",
+    `Notify me about ${entry.station} - ${getEntryTitle(entry)} at ${
+      entry.attributes.start
+    }`
+  )
+  entry.station = currentEpisodeHolder.value.station
+  await scheduleLocalNotification(entry)
+}
 
 watch(
   allCurrentStations,
@@ -85,12 +101,16 @@ const handleScheduleDownload = async (entry) => {
               variant="text"
               class="link -ml-3"
               @click="handleScheduleDownload"
-              :label="`Wednesday`"
+              :label="formatDate(previousDayScheduleDate, 'EEEE')"
               icon="pi pi-chevron-left"
             ></Button>
             <div class="today flex flex-column gap-0 align-items-center text-center">
-              <span class="day font-bold text-lg">Thursday</span>
-              <span class="date text-sm">January 30, 2025</span>
+              <span class="day font-bold text-lg">{{
+                formatDate(currentScheduleDate, "EEEE")
+              }}</span>
+              <span class="date text-sm">{{
+                formatDate(currentScheduleDate, "LLLL d, yyyy")
+              }}</span>
             </div>
             <Button
               severity="secondary"
@@ -98,7 +118,7 @@ const handleScheduleDownload = async (entry) => {
               iconPos="right"
               class="link -mr-3"
               @click="handleScheduleDownload"
-              :label="`Friday`"
+              :label="formatDate(nextDayScheduleDate, 'EEEE')"
               icon="pi pi-chevron-right"
             ></Button>
           </div>
