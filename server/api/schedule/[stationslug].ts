@@ -25,7 +25,7 @@ const removeFutureShows = (schedule: any) => {
 };
 
 //Get schedule for a specific date
-const getSchedule = async (slug: string, schedDate: string) => {
+const getSchedule = async (slug: string, schedDate: string, isToday = true) => {
     const options = {
         method: 'GET',
         url: `${config.public.PUBLISHER_BASE_API}v3/schedule/`,
@@ -37,7 +37,7 @@ const getSchedule = async (slug: string, schedDate: string) => {
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).data;
     const filteredSchedule = removePastShows(resData);
-    return filteredSchedule;
+    return isToday ? filteredSchedule : resData;
 };
 
 export default defineEventHandler(async (event) => {
@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
     const slug = event?.context?.params?.stationslug as string;
     const body = await readBody(event);
     const localDate = body?.localDate;
+    const isToday = body?.isToday;
 
     console.log('slug = ', slug)
     console.log('localDate from body = ', localDate)
@@ -63,14 +64,14 @@ export default defineEventHandler(async (event) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0]);
-        const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0]);
-        const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
+        const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0], isToday);
+        //const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0], isToday);
+        //const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
 
         //Combine today and tomorrow's schedule and return
-        const concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
+        //const concatSchedule = scheduleToday.concat(filteredScheduleTomorrow);
 
-        return concatSchedule;
+        return scheduleToday;
     }
     return null;
 });

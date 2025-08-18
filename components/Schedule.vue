@@ -12,6 +12,9 @@ const {
   currentScheduleDate,
   nextDayScheduleDate,
   previousDayScheduleDate,
+  setToNextDay,
+  setToPreviousDay,
+  isToday,
 } = useLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
@@ -43,6 +46,8 @@ watch(
 )
 
 watch(currentScheduleDate, async () => {
+  console.log("set!")
+  allLiveScheduleData.value = []
   allLiveScheduleData.value = await Promise.all(
     allCurrentStations.value.map((station) => {
       return fetchScheduleSimple(station.slug, currentScheduleDate.value)
@@ -77,7 +82,7 @@ const handleScheduleDownload = async (entry) => {
         label="Weekly Schedule (pdf)"
       ></Button>
     </div>
-    <Tabs value="0" v-if="allLiveScheduleData.length > 0 && allCurrentStations">
+    <Tabs value="0" v-if="allCurrentStations">
       <TabList>
         <Tab
           v-for="(entry, index) in allCurrentStations"
@@ -87,6 +92,33 @@ const handleScheduleDownload = async (entry) => {
         >
       </TabList>
       <hr class="w-full mt-5" />
+      <div class="date-tools flex justify-content-between align-items-center my-4">
+        <Button
+          severity="secondary"
+          variant="text"
+          class="link -ml-3"
+          @click="setToPreviousDay()"
+          :label="formatDate(previousDayScheduleDate, 'EEEE')"
+          icon="pi pi-chevron-left"
+        ></Button>
+        <div class="today flex flex-column gap-0 align-items-center text-center">
+          <span class="day font-bold text-lg">{{
+            formatDate(currentScheduleDate, "EEEE")
+          }}</span>
+          <span class="date text-sm">{{
+            formatDate(currentScheduleDate, "LLLL d, yyyy")
+          }}</span>
+        </div>
+        <Button
+          severity="secondary"
+          variant="text"
+          iconPos="right"
+          class="link -mr-3"
+          @click="setToNextDay()"
+          :label="formatDate(nextDayScheduleDate, 'EEEE')"
+          icon="pi pi-chevron-right"
+        ></Button>
+      </div>
 
       <TabPanels>
         <TabPanel
@@ -95,38 +127,11 @@ const handleScheduleDownload = async (entry) => {
           :value="index.toString()"
           :class="[{ selected: index === 0 }]"
         >
-          <div class="date-tools flex justify-content-between align-items-center mb-4">
-            <Button
-              severity="secondary"
-              variant="text"
-              class="link -ml-3"
-              @click="handleScheduleDownload"
-              :label="formatDate(previousDayScheduleDate, 'EEEE')"
-              icon="pi pi-chevron-left"
-            ></Button>
-            <div class="today flex flex-column gap-0 align-items-center text-center">
-              <span class="day font-bold text-lg">{{
-                formatDate(currentScheduleDate, "EEEE")
-              }}</span>
-              <span class="date text-sm">{{
-                formatDate(currentScheduleDate, "LLLL d, yyyy")
-              }}</span>
-            </div>
-            <Button
-              severity="secondary"
-              variant="text"
-              iconPos="right"
-              class="link -mr-3"
-              @click="handleScheduleDownload"
-              :label="formatDate(nextDayScheduleDate, 'EEEE')"
-              icon="pi pi-chevron-right"
-            ></Button>
-          </div>
           <div class="flex flex-column gap-4">
             <div
               v-for="(entry, entryIndex) in data"
               class="schedule-entry flex justify-content-between align-items-center gap-3"
-              :class="[{ selected: entryIndex === 0 }]"
+              :class="[{ selected: entryIndex === 0 && isToday }]"
             >
               <div class="flex align-items-stretch">
                 <div class="left my-1" />
@@ -161,6 +166,32 @@ const handleScheduleDownload = async (entry) => {
       </TabPanels>
     </Tabs>
     <div v-else class="skeleton mt-5">
+      <div
+        v-for="i in 10"
+        :key="`schedule-skeleton-${i}`"
+        class="flex align-items-center justify-content-between pr-2 mb-5"
+      >
+        <div class="flex gap-3">
+          <Skeleton
+            height="30px"
+            width="4px"
+            borderRadius="2px"
+            :class="[{ 'opacity-0': i > 0 }]"
+          />
+          <div class="flex flex-column gap-1">
+            <Skeleton class="opacity-50" height="12px" width="64px" borderRadius="4px" />
+            <Skeleton height="14px" width="174px" borderRadius="4px" />
+          </div>
+        </div>
+        <Skeleton
+          :class="[{ 'opacity-0': i < 1 }]"
+          height="26px"
+          width="26px"
+          borderRadius="15px"
+        />
+      </div>
+    </div>
+    <div v-if="!allLiveScheduleData.length > 0" class="skeleton mt-5">
       <div
         v-for="i in 10"
         :key="`schedule-skeleton-${i}`"
