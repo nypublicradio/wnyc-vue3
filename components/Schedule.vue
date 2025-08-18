@@ -1,0 +1,209 @@
+<script setup>
+import { trackClickEvent } from "~/utilities/helpers"
+import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
+import { useAllCurrentStations, useIsApp } from "~/composables/states"
+
+import { getEntryTitle } from "~/utilities/local-notifications"
+const {
+  getTheTime,
+  allLiveScheduleData,
+  fetchScheduleSimple,
+  currentScheduleDate,
+} = useLiveStream()
+
+const allCurrentStations = useAllCurrentStations()
+const isApp = useIsApp()
+
+watch(
+  allCurrentStations,
+  async () => {
+    allLiveScheduleData.value = await Promise.all(
+      allCurrentStations.value.map((station) => {
+        return fetchScheduleSimple(station.slug)
+      })
+    )
+  },
+  { once: true }
+)
+
+watch(currentScheduleDate, async () => {
+  allLiveScheduleData.value = await Promise.all(
+    allCurrentStations.value.map((station) => {
+      return fetchScheduleSimple(station.slug, currentScheduleDate.value)
+    })
+  )
+})
+
+// handle the PDF download button
+const handleScheduleDownload = async (entry) => {
+  trackClickEvent(
+    "Click Tracking - Schedule Download Button",
+    "Live Page",
+    "download schedule PDF"
+  )
+  // need to pull this from the CMS
+  window.open(
+    "https://media.wnyc.org/media/resources/2025/Mar/31/wnyc-schedule.pdf",
+    "_blank"
+  )
+}
+</script>
+
+<template>
+  <div class="schedule">
+    <div class="flex flex-wrap justify-content-between align-items-end mb-4">
+      <h2 class="text-5xl">Schedule</h2>
+      <Button
+        severity="secondary"
+        variant="link"
+        class="link -ml-2"
+        @click="handleScheduleDownload"
+        label="Weekly Schedule (pdf)"
+      ></Button>
+    </div>
+    <Tabs value="0" v-if="allLiveScheduleData.length > 0 && allCurrentStations">
+      <TabList>
+        <Tab
+          v-for="(entry, index) in allCurrentStations"
+          :key="entry.id"
+          :value="index.toString()"
+          >{{ entry.station }}</Tab
+        >
+      </TabList>
+      <hr class="w-full mt-5" />
+
+      <TabPanels>
+        <TabPanel
+          v-for="(data, index) in allLiveScheduleData"
+          :key="`${data.id}-${index}`"
+          :value="index.toString()"
+          :class="[{ selected: index === 0 }]"
+        >
+          <div class="date-tools flex justify-content-between align-items-center mb-4">
+            <Button
+              severity="secondary"
+              variant="text"
+              class="link -ml-3"
+              @click="handleScheduleDownload"
+              :label="`Wednesday`"
+              icon="pi pi-chevron-left"
+            ></Button>
+            <div class="today flex flex-column gap-0 align-items-center text-center">
+              <span class="day font-bold text-lg">Thursday</span>
+              <span class="date text-sm">January 30, 2025</span>
+            </div>
+            <Button
+              severity="secondary"
+              variant="text"
+              iconPos="right"
+              class="link -mr-3"
+              @click="handleScheduleDownload"
+              :label="`Friday`"
+              icon="pi pi-chevron-right"
+            ></Button>
+          </div>
+          <div class="flex flex-column gap-4">
+            <div
+              v-for="(entry, entryIndex) in data"
+              class="schedule-entry flex justify-content-between align-items-center gap-3"
+              :class="[{ selected: entryIndex === 0 }]"
+            >
+              <div class="flex align-items-stretch">
+                <div class="left my-1" />
+                <div>
+                  <p class="time">
+                    {{
+                      getTheTime(entry.attributes.start, entry.attributes.end, entryIndex)
+                    }}
+                  </p>
+                  <h2 class="title">
+                    {{ getEntryTitle(entry) }}
+                  </h2>
+                </div>
+              </div>
+              <Button
+                v-if="isApp && entryIndex > 0"
+                severity="secondary"
+                text
+                plain
+                rounded
+                class="flex-none"
+                aria-label="set notification"
+                @click="handleScheduleLocalNotification(entry)"
+              >
+                <template #icon>
+                  <NotificationIcon :entry="entry" />
+                </template>
+              </Button>
+            </div>
+          </div>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+    <div v-else class="skeleton mt-5">
+      <div
+        v-for="i in 10"
+        :key="`schedule-skeleton-${i}`"
+        class="flex align-items-center justify-content-between pr-2 mb-5"
+      >
+        <div class="flex gap-3">
+          <Skeleton
+            height="30px"
+            width="4px"
+            borderRadius="2px"
+            :class="[{ 'opacity-0': i > 0 }]"
+          />
+          <div class="flex flex-column gap-1">
+            <Skeleton class="opacity-50" height="12px" width="64px" borderRadius="4px" />
+            <Skeleton height="14px" width="174px" borderRadius="4px" />
+          </div>
+        </div>
+        <Skeleton
+          :class="[{ 'opacity-0': i < 1 }]"
+          height="26px"
+          width="26px"
+          borderRadius="15px"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss">
+html {
+  &.style-mode-dark {
+    .schedule {
+      .schedule-entry {
+        &.selected {
+          background-color: #ffffff1a;
+          padding: 0.75rem 0.5rem 0.75rem 0;
+          border-radius: 8px;
+          .left {
+            border: none;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
+<style lang="scss" scoped>
+.schedule {
+  .schedule-entry {
+    .left {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      margin-right: 1rem;
+    }
+    &.selected {
+      .left {
+        border-color: var(--p-primary-500);
+      }
+    }
+    .follow-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+</style>

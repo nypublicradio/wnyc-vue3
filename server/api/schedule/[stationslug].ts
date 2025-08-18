@@ -1,6 +1,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { getDate } from "~/utilities/helpers"
 
 // Write a function that removes scheduled shows that have already aired using the attribute "end"
 const removePastShows = (schedule: any) => {
@@ -43,10 +44,21 @@ const getSchedule = async (slug: string, schedDate: string) => {
 export default defineEventHandler(async (event) => {
     //const query = getQuery(event);
     const slug = event?.context?.params?.stationslug as string;
+    const body = await readBody(event);
+    const localDate = body?.localDate;
+
+    console.log('slug = ', slug)
+    console.log('localDate from body = ', localDate)
+
     if (slug) {
         //Get schedule for today and tomorrow
-        //const date = new Date(query.localDate);
-        const date = new Date();
+        let date;
+        if (localDate) {
+            date = new Date(localDate);
+        } else {
+            date = new Date();
+        }
+
         const offset = date.getTimezoneOffset() * 60 * 1000;
         const today = new Date(date.getTime() - offset);
         const tomorrow = new Date(today);
