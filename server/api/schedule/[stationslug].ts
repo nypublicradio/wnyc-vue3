@@ -47,9 +47,6 @@ export default defineEventHandler(async (event) => {
     const localDate = body?.localDate;
     const isToday = body?.isToday;
 
-    console.log('slug = ', slug)
-    console.log('localDate from body = ', localDate)
-
     if (slug) {
         //Get schedule for today and tomorrow
         let date;
