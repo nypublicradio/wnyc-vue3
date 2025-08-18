@@ -210,12 +210,12 @@ export function getDate(data = null, formatString = "EEE, MMM do") {
  */
 export function formatDate(date = null, formatString = "EEE, MMM do") {
   if (date) {
-    const currentYear = new Date().getFullYear()
+    //const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
-    const inputYear = inputDate.getFullYear()
-    if (inputYear !== currentYear) {
-      formatString = `${formatString}, yyyy` // Update formatString to include the year
-    }
+    //const inputYear = inputDate.getFullYear()
+    // if (inputYear !== currentYear) {
+    //   formatString = `${formatString}, yyyy` // Update formatString to include the year
+    // }
     return format(inputDate, formatString)
   } else {
     return format(new Date(), formatString)
@@ -363,7 +363,7 @@ export async function openLinkInAppBrowser(url: string) {
 
 
 // global function for copying to clipboard
-export const copyToClipBoard = async (content: string, message = "Copied to clipboard") => {
+export const copyToClipBoard = async (content: string) => {
   const globalToast = useGlobalToast()
   try {
     if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
@@ -391,7 +391,7 @@ export const copyToClipBoard = async (content: string, message = "Copied to clip
     }
     globalToast.value = {
       severity: "info",
-      summary: message,
+      summary: "Copied to clipboard",
       life: 3000,
     }
   } catch (err) {

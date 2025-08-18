@@ -89,6 +89,25 @@ export default function useLiveStream() {
     const globalToast = useGlobalToast()
 
     const currentScheduleDate = ref(new Date())
+
+    const getNextDay = () => {
+        const nextDay = new Date(currentScheduleDate.value)
+        nextDay.setDate(nextDay.getDate() + 1)
+        //currentScheduleDate.value = nextDay
+        return nextDay
+    }
+
+    const getPreviousDay = () => {
+        const previousDay = new Date(currentScheduleDate.value)
+        previousDay.setDate(previousDay.getDate() - 1)
+        //currentScheduleDate.value = previousDay
+        return previousDay
+    }
+
+    const nextDayScheduleDate = ref(getNextDay())
+    const previousDayScheduleDate = ref(getPreviousDay())
+
+
     // toggle play here
     // not sure why I am using this, probably should use the helper function
     const togglePlayHere = () => {
@@ -313,5 +332,5 @@ export default function useLiveStream() {
             }, 100)
         }
     }
-    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate }
+    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate, nextDayScheduleDate, previousDayScheduleDate }
 }
