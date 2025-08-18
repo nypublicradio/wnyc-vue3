@@ -89,23 +89,26 @@ export default function useLiveStream() {
     const globalToast = useGlobalToast()
 
     const currentScheduleDate = ref(new Date())
+    const isToday = ref(true)
+
+    watch(currentScheduleDate, (newDate) => {
+        isToday.value = newDate.toDateString() === new Date().toDateString()
+    })
 
     const getNextDay = () => {
         const nextDay = new Date(currentScheduleDate.value)
         nextDay.setDate(nextDay.getDate() + 1)
-        //currentScheduleDate.value = nextDay
         return nextDay
     }
 
     const getPreviousDay = () => {
         const previousDay = new Date(currentScheduleDate.value)
         previousDay.setDate(previousDay.getDate() - 1)
-        //currentScheduleDate.value = previousDay
         return previousDay
     }
 
-    const nextDayScheduleDate = ref(getNextDay())
-    const previousDayScheduleDate = ref(getPreviousDay())
+    const nextDayScheduleDate = computed(() => getNextDay())
+    const previousDayScheduleDate = computed(() => getPreviousDay())
 
 
     // toggle play here
@@ -135,7 +138,7 @@ export default function useLiveStream() {
             minute: "numeric",
             hour12: true,
         })
-        return index === 0 ? `Now Until ${endTime}` : startTime
+        return index === 0 && isToday.value ? `Now Until ${endTime}` : startTime
     }
 
     // Function to calculate the time difference between now and the target time
@@ -239,7 +242,8 @@ export default function useLiveStream() {
                 {
                     method: "POST",
                     body: {
-                        localDate: date
+                        localDate: date,
+                        isToday: isToday.value
                     }
                 }
             )
@@ -261,6 +265,18 @@ export default function useLiveStream() {
             }
             console.error("error = ", error)
         }
+    }
+
+    const setToNextDay = () => {
+        const nextDay = new Date(currentScheduleDate.value)
+        nextDay.setDate(nextDay.getDate() + 1)
+        currentScheduleDate.value = nextDay
+    }
+
+    const setToPreviousDay = () => {
+        const previousDay = new Date(currentScheduleDate.value)
+        previousDay.setDate(previousDay.getDate() - 1)
+        currentScheduleDate.value = previousDay
     }
 
     // targets the active station and scrolls to it
@@ -332,5 +348,8 @@ export default function useLiveStream() {
             }, 100)
         }
     }
-    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate, nextDayScheduleDate, previousDayScheduleDate }
+    return {
+        getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate, nextDayScheduleDate, previousDayScheduleDate, setToNextDay,
+        setToPreviousDay, isToday
+    }
 }
