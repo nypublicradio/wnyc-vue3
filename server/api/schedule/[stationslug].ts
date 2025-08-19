@@ -13,16 +13,16 @@ const removePastShows = (schedule: any) => {
 };
 
 //Write a function that removes schedules > 36 hours from now
-const removeFutureShows = (schedule: any) => {
-    const now = new Date();
-    const filteredSchedule = schedule.filter((show: any) => {
-        const start = new Date(show.attributes.start);
-        const diff = start.getTime() - now.getTime();
-        const diffHours = diff / (1000 * 3600);
-        return diffHours < 24;
-    });
-    return filteredSchedule;
-};
+// const removeFutureShows = (schedule: any) => {
+//     const now = new Date();
+//     const filteredSchedule = schedule.filter((show: any) => {
+//         const start = new Date(show.attributes.start);
+//         const diff = start.getTime() - now.getTime();
+//         const diffHours = diff / (1000 * 3600);
+//         return diffHours < 24;
+//     });
+//     return filteredSchedule;
+// };
 
 //Get schedule for a specific date
 const getSchedule = async (slug: string, schedDate: string, isToday = true, signal?: AbortSignal) => {
@@ -33,7 +33,7 @@ const getSchedule = async (slug: string, schedDate: string, isToday = true, sign
             scheduleStation: slug,
             scheduleDate: schedDate
         },
-        signal: signal  // Pass the abort signal to axios
+        signal  // Pass the abort signal to axios
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).data;

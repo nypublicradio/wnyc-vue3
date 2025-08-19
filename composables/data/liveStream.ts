@@ -96,12 +96,14 @@ export default function useLiveStream() {
         isToday.value = newDate.toDateString() === new Date().toDateString()
     })
 
+    // return the next day from the current schedule date
     const getNextDay = () => {
         const nextDay = new Date(currentScheduleDate.value)
         nextDay.setDate(nextDay.getDate() + 1)
         return nextDay
     }
 
+    // return the previous day from the current schedule date
     const getPreviousDay = () => {
         const previousDay = new Date(currentScheduleDate.value)
         previousDay.setDate(previousDay.getDate() - 1)
@@ -293,15 +295,18 @@ export default function useLiveStream() {
                 closable: true,
             }
             console.error("error = ", error)
+            return null
         }
     }
 
+    // Set the schedule to the next day
     const setToNextDay = () => {
         const nextDay = new Date(currentScheduleDate.value)
         nextDay.setDate(nextDay.getDate() + 1)
         currentScheduleDate.value = nextDay
     }
 
+    // Set the schedule to the previous day
     const setToPreviousDay = () => {
         const previousDay = new Date(currentScheduleDate.value)
         previousDay.setDate(previousDay.getDate() - 1)
