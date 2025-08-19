@@ -36,6 +36,7 @@ const getSchedule = async (slug: string, schedDate: string, isToday = true, sign
         signal  // Pass the abort signal to axios
     };
     const res = await axios(options);
+    //console.log('getSchedule res', res.data.data);
     const resData = humps.camelizeKeys(res.data).data;
     const filteredSchedule = removePastShows(resData);
     return isToday ? filteredSchedule : resData;

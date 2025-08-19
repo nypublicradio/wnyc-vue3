@@ -207,16 +207,18 @@ onUnmounted(() => {
     <!-- <pre class="overflow-hidden">{{ allCurrentStations }}</pre> -->
     <!-- <pre>{{ liveScheduleData }}</pre> -->
     <!-- <pre>{{ allLiveScheduleData }}</pre> -->
-    <section class="schedule grid m-auto">
-      <div class="col w-full pr-2 lg:pr-4">
-        <Schedule />
-      </div>
-      <div class="col-fixed hidden xl:block xl:w-20rem justify-content-center">
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_livepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
+    <section class="schedule">
+      <div class="grid m-auto">
+        <div class="col w-full pr-2 lg:pr-4">
+          <Schedule />
+        </div>
+        <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
+          <story-htlAd
+            layout="rectangle"
+            slotClass="htlad-wnyc_livepage_rectangle"
+            fineprint="WNYC is funded by sponsors and member donations"
+          />
+        </div>
       </div>
     </section>
   </div>

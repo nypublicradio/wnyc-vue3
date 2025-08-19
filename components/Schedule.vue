@@ -51,7 +51,7 @@ watch(
   { once: true }
 )
 
-watch(currentScheduleDate, async () => {
+const getAllScheduleData = async () => {
   allLiveScheduleData.value = []
 
   // Create new abort controller (automatically aborts any existing fetches)
@@ -69,6 +69,20 @@ watch(currentScheduleDate, async () => {
 
   // Filter out null results (aborted requests)
   allLiveScheduleData.value = results.filter((result) => result !== null)
+}
+
+watch(currentScheduleDate, async () => {
+  getAllScheduleData()
+})
+
+onMounted(() => {
+  // Wait for allCurrentStations to be populated before fetching schedule data
+  const stopWatcher = watchEffect(() => {
+    if (allCurrentStations.value && allCurrentStations.value.length > 0) {
+      getAllScheduleData()
+      stopWatcher() // Stop watching once data is available
+    }
+  })
 })
 
 // handle the PDF download button
@@ -83,6 +97,19 @@ const handleScheduleDownload = () => {
     "https://media.wnyc.org/media/resources/2025/Mar/31/wnyc-schedule.pdf",
     "_blank"
   )
+}
+
+// handles the click on the bottom fixed footer
+const moreFromClick = (entry) => {
+  const title = entry.attributes.parentTitle
+  const slug = entry.slug
+  console.log("moreFromClick", title, slug)
+  trackClickEvent(
+    `Click Tracking - Schedule current show More from ${title}`,
+    "Schedule",
+    title
+  )
+  navigateTo(`/browse/shows/${slug}`)
 }
 </script>
 
@@ -144,14 +171,14 @@ const handleScheduleDownload = () => {
           :class="[{ selected: index === 0 }]"
         >
           <div class="flex flex-column gap-4">
+            <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
             <div
               v-for="(entry, entryIndex) in data"
               :key="entry.id"
-              class="schedule-entry flex justify-content-between align-items-center gap-3"
-              :class="[{ selected: entryIndex === 0 && isToday }]"
+              class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
+              :class="entryIndex === 0 && isToday ? 'selected -ml-3 -mr-3 xl:mr-0' : ''"
             >
-              <div class="flex align-items-stretch">
-                <div class="left my-1" />
+              <div class="active-content flex flex-column justify-content-between">
                 <div>
                   <p class="time">
                     {{
@@ -161,7 +188,35 @@ const handleScheduleDownload = () => {
                   <h2 class="title">
                     {{ getEntryTitle(entry) }}
                   </h2>
+                  <HtmlConvert
+                    v-if="currentEpisodeHolder.details && entryIndex === 0 && isToday"
+                    :htmlContent="currentEpisodeHolder.details"
+                    class="truncate t2lines mt-1"
+                    no-blocks
+                  />
                 </div>
+                <div v-if="entryIndex === 0 && isToday">
+                  <Button
+                    severity="secondary"
+                    variant="link"
+                    class="more-from link text-left text-xs md:text-base"
+                    @click="moreFromClick(entry)"
+                    :label="`More from ${getEntryTitle(entry)}`"
+                  />
+                </div>
+              </div>
+              <div v-if="entryIndex === 0 && isToday" class="hidden md:block">
+                <VImage
+                  :src="{
+                    template:
+                      currentEpisodeHolder.onTodaysShowTemplate ||
+                      currentEpisodeHolder.image.template,
+                  }"
+                  alt="on today's show image"
+                  :size="{ md: [320, 213] }"
+                  class="flex-none w-20rem"
+                  :srcset="[2]"
+                />
               </div>
               <Button
                 v-if="isApp && entryIndex > 0"
@@ -233,27 +288,34 @@ const handleScheduleDownload = () => {
 
 <style lang="scss">
 html {
-  &.style-mode-dark {
-    .schedule {
-      .schedule-entry {
-        &.selected {
-          background-color: #ffffff1a;
-          padding: 0.75rem 0.5rem 0.75rem 0;
-          border-radius: 8px;
-          .left {
-            border: none;
+  // &.style-mode-dark {
+  //   .schedule {
+  //     .schedule-entry {
+  //       &.selected {
+  //         background-color: #ffffff1a;
+  //         padding: 0.75rem 0.5rem 0.75rem 0;
+  //         border-radius: 8px;
+  //         .left {
+  //           border: none;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  .schedule {
+    .schedule-entry {
+      .date-tools {
+        .day-change-btn {
+          .p-button-label {
+            @include media("<sm") {
+              display: none;
+            }
           }
         }
       }
-    }
-  }
-  .schedule {
-    .date-tools {
-      .day-change-btn {
-        .p-button-label {
-          @include media("<sm") {
-            display: none;
-          }
+      &.selected {
+        *:not(.p-button .p-button-label) {
+          color: var(--p-surface-950) !important;
         }
       }
     }
@@ -263,14 +325,27 @@ html {
 <style lang="scss" scoped>
 .schedule {
   .schedule-entry {
-    .left {
-      border: 2px solid transparent;
-      border-radius: 8px;
-      margin-right: 1rem;
+    // .left {
+    //   border: 2px solid transparent;
+    //   border-radius: 8px;
+    //   margin-right: 1rem;
+    // }
+    .active-content {
+      min-height: 0; // Allow flex shrinking
+    }
+    .more-from {
+      margin-left: -0.8rem;
+      display: none;
     }
     &.selected {
-      .left {
-        border-color: var(--p-primary-500);
+      background-color: var(--p-surface-50);
+      border-radius: 10px;
+      overflow: hidden;
+      .more-from {
+        display: block;
+      }
+      .active-content {
+        padding: 1rem 1rem 0.5rem 1rem;
       }
     }
     .follow-icon {
