@@ -17,12 +17,7 @@ const props = defineProps({
   },
 })
 
-const size = ref(props.size)
 const reactiveData = toRef(props, "data")
-// handle the click if this item is in the saved page and navigate to the live page
-const handleClick = () => {
-  navigateTo(`/live${reactiveData.value.slug ? `?slug=${reactiveData.value.slug}` : ""}`)
-}
 
 const startEndTime = computed(() => {
   if (!reactiveData.value || !reactiveData.value.showSchedule) return ""
@@ -62,23 +57,23 @@ const startEndTime = computed(() => {
             :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
             htmlClasses="line-height-4"
           />
-          <template class="hidden md:flex">
+          <div class="hidden md:flex">
             <PlayAndSkipButtons
               :hideSkip="true"
               :liveOnly="true"
               @beforeTogglePlay="togglePlayHere"
             />
-          </template>
+          </div>
         </div>
       </div>
     </div>
-    <template class="block md:hidden">
+    <div class="block md:hidden">
       <PlayAndSkipButtons
         :hideSkip="true"
         :liveOnly="true"
         @beforeTogglePlay="togglePlayHere"
       />
-    </template>
+    </div>
   </div>
 
   <div v-else class="skeleton-holder flex gap-4">
@@ -116,14 +111,6 @@ const startEndTime = computed(() => {
   />
 </template>
 
-<style lang="scss" scoped>
-// .live-item {
-//   .v-image-publisher.image {
-//     flex: none;
-//     width: v-bind(size);
-//   }
-// }
-</style>
 <style lang="scss">
 .live-item {
   .v-image-publisher.image .image {

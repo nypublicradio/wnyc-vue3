@@ -1,6 +1,6 @@
 <script setup>
 import { trackClickEvent, formatDate } from "~/utilities/helpers"
-import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
+import useLiveStream from "~/composables/data/liveStream"
 import {
   useAllCurrentStations,
   useIsApp,
@@ -19,7 +19,6 @@ const {
   setToNextDay,
   setToPreviousDay,
   isToday,
-  abortScheduleFetches,
   createScheduleAbortController,
 } = useLiveStream()
 
@@ -73,7 +72,7 @@ watch(currentScheduleDate, async () => {
 })
 
 // handle the PDF download button
-const handleScheduleDownload = async (entry) => {
+const handleScheduleDownload = () => {
   trackClickEvent(
     "Click Tracking - Schedule Download Button",
     "Live Page",
@@ -147,6 +146,7 @@ const handleScheduleDownload = async (entry) => {
           <div class="flex flex-column gap-4">
             <div
               v-for="(entry, entryIndex) in data"
+              :key="entry.id"
               class="schedule-entry flex justify-content-between align-items-center gap-3"
               :class="[{ selected: entryIndex === 0 && isToday }]"
             >
