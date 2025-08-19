@@ -1,7 +1,11 @@
 <script setup>
 import { trackClickEvent, formatDate } from "~/utilities/helpers"
 import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
-import { useAllCurrentStations, useIsApp, useCurrentEpisodeHolder } from "~/composables/states"
+import {
+  useAllCurrentStations,
+  useIsApp,
+  useCurrentEpisodeHolder,
+} from "~/composables/states"
 
 import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 
@@ -50,18 +54,22 @@ watch(
 
 watch(currentScheduleDate, async () => {
   allLiveScheduleData.value = []
-  
+
   // Create new abort controller (automatically aborts any existing fetches)
   const abortController = createScheduleAbortController()
-  
+
   const results = await Promise.all(
     allCurrentStations.value.map((station) => {
-      return fetchScheduleSimple(station.slug, currentScheduleDate.value, abortController.signal)
+      return fetchScheduleSimple(
+        station.slug,
+        currentScheduleDate.value,
+        abortController.signal
+      )
     })
   )
-  
+
   // Filter out null results (aborted requests)
-  allLiveScheduleData.value = results.filter(result => result !== null)
+  allLiveScheduleData.value = results.filter((result) => result !== null)
 })
 
 // handle the PDF download button
@@ -105,7 +113,7 @@ const handleScheduleDownload = async (entry) => {
         <Button
           severity="secondary"
           variant="text"
-          class="link -ml-3"
+          class="day-change-btn link -ml-3"
           @click="setToPreviousDay()"
           :label="formatDate(previousDayScheduleDate, 'EEEE')"
           icon="pi pi-chevron-left"
@@ -122,7 +130,7 @@ const handleScheduleDownload = async (entry) => {
           severity="secondary"
           variant="text"
           iconPos="right"
-          class="link -mr-3"
+          class="day-change-btn link -mr-3"
           @click="setToNextDay()"
           :label="formatDate(nextDayScheduleDate, 'EEEE')"
           icon="pi pi-chevron-right"
@@ -175,32 +183,26 @@ const handleScheduleDownload = async (entry) => {
       </TabPanels>
     </Tabs>
     <div v-else class="skeleton mt-5">
-      <div
-        v-for="i in 10"
-        :key="`schedule-skeleton-${i}`"
-        class="flex align-items-center justify-content-between pr-2 mb-5"
-      >
-        <div class="flex gap-3">
-          <Skeleton
-            height="30px"
-            width="4px"
-            borderRadius="2px"
-            :class="[{ 'opacity-0': i > 0 }]"
-          />
-          <div class="flex flex-column gap-1">
-            <Skeleton class="opacity-50" height="12px" width="64px" borderRadius="4px" />
-            <Skeleton height="14px" width="174px" borderRadius="4px" />
-          </div>
-        </div>
+      <div class="flex gap-6 mb-5">
         <Skeleton
-          :class="[{ 'opacity-0': i < 1 }]"
-          height="26px"
-          width="26px"
-          borderRadius="15px"
+          v-for="i in 4"
+          :key="`tabs-skeleton-${i}`"
+          height="20px"
+          width="150px"
+          borderRadius="4px"
         />
       </div>
+      <hr />
+      <div class="flex justify-content-between mt-5">
+        <Skeleton height="20px" width="110px" borderRadius="4px" />
+        <div class="flex flex-column gap-2">
+          <Skeleton height="16px" width="110px" borderRadius="4px" />
+          <Skeleton height="10px" width="110px" borderRadius="4px" />
+        </div>
+        <Skeleton height="20px" width="110px" borderRadius="4px" />
+      </div>
     </div>
-    <div v-if="!allLiveScheduleData.length > 0" class="skeleton mt-5">
+    <div v-if="!allLiveScheduleData.length > 0" class="skeleton -mt-2">
       <div
         v-for="i in 10"
         :key="`schedule-skeleton-${i}`"
@@ -240,6 +242,17 @@ html {
           border-radius: 8px;
           .left {
             border: none;
+          }
+        }
+      }
+    }
+  }
+  .schedule {
+    .date-tools {
+      .day-change-btn {
+        .p-button-label {
+          @include media("<sm") {
+            display: none;
           }
         }
       }
