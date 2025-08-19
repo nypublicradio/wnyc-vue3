@@ -55,8 +55,7 @@ const handleClick = () => {
           :style="props.iconStyles"
           aria-label="Sleep Timer"
         />
-        /></template
-      >
+      </template>
     </Button>
     <!--  <NewFeatureBadge class="badge" v-if="isNewFeature" /> -->
   </div>

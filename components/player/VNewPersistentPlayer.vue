@@ -726,9 +726,8 @@ defineExpose({
               <VImage
                 :src="props.image"
                 :alt="`${props.title} show image`"
-                :width="props.imageSizeExpanded"
-                :height="props.imageSizeExpanded"
-                :sizes="`xs:${props.imageSize * 2}px`"
+                :size="{ xs: [props.imageSizeExpanded, props.imageSizeExpanded] }"
+                :sizes="`xs:${props.imageSizeExpanded * 2}px`"
                 class="show-image m-auto"
                 :ratio="[1, 1]"
                 role="presentation"
@@ -739,7 +738,7 @@ defineExpose({
                   <div class="media-live-indicator">
                     <span class="media-live-indicator-text">Live</span>
                   </div>
-                  <div class="text-sm">{{ props.station }}</div>
+                  <div class="text-sm md:text-base">{{ props.station }}</div>
                 </div>
                 <slot name="expanded-player-title">{{ props.title }}</slot>
               </div>
@@ -1103,11 +1102,14 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     border-radius: 2px;
     color: #f5f5f5;
     font-family: sans-serif;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: var(--font-weight-900);
     letter-spacing: 1.5px;
     padding: 0px 4px;
     transition: color 0.3s ease;
+    @include media("<md") {
+      font-size: 9px;
+    }
   }
 }
 </style>

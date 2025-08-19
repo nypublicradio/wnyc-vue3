@@ -358,6 +358,7 @@ const moreFromClick = () => {
                 <VImage
                   :src="currentEpisode.image"
                   :alt="`${currentEpisode.title} show image`"
+                  :size="{ xs: [60, 60] }"
                   class="show-image-in-menu flex-none"
                   style="height: 60px; width: 60px"
                 />
@@ -379,9 +380,9 @@ const moreFromClick = () => {
         !!currentEpisode.onTodaysShowImageTemplate
           ? false
           : currentEpisode.player_image !==
-            (currentEpisode.image.template ?? currentEpisode.image)
+            (currentEpisode.image.template || currentEpisode.image)
       "
-      :src="currentEpisode.image"
+      :src="currentEpisode.image.template || currentEpisode.image"
       :alt="`${currentEpisode.title} featured image`"
       :size="{
         xs: [327, 218],
@@ -391,7 +392,6 @@ const moreFromClick = () => {
         xl: [1104, 736],
         xxl: [1344, 896],
       }"
-      :sizes="[2]"
       class="card-feature-image"
     >
       <template #caption>
@@ -408,10 +408,16 @@ const moreFromClick = () => {
     />
     <VImage
       v-if="currentEpisode.onTodaysShowImageTemplate"
-      :src="currentEpisode.onTodaysShowImageTemplate"
+      :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
-      :width="672"
-      :sizes="[2]"
+      :size="{
+        xs: [327, 218],
+        sm: [528, 352],
+        md: [672, 448],
+        lg: [896, 597],
+        xl: [1104, 736],
+        xxl: [1344, 896],
+      }"
       class="show-feature-image"
     >
       <template #caption>
@@ -422,12 +428,12 @@ const moreFromClick = () => {
         />
       </template>
       <template #belowImage>
-        <div class="text-xs mt-2">
+        <div class="text-xs mt-3">
           {{ currentEpisode.onTodaysShowImageCredits }}
         </div>
         <HtmlConvert
           :htmlContent="currentEpisode.episodeBody"
-          class="caption text-sm mt-2"
+          class="caption text-sm mt-6"
           :key="`body-${currentEpisode.id || 'default'}`"
         />
       </template>
