@@ -1,7 +1,7 @@
 <script setup>
 import { trackClickEvent, formatDate } from "~/utilities/helpers"
 import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
-import { useAllCurrentStations, useIsApp } from "~/composables/states"
+import { useAllCurrentStations, useIsApp, useCurrentEpisodeHolder } from "~/composables/states"
 
 import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 
@@ -15,10 +15,13 @@ const {
   setToNextDay,
   setToPreviousDay,
   isToday,
+  abortScheduleFetches,
+  createScheduleAbortController,
 } = useLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
 const isApp = useIsApp()
+const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 // schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
@@ -38,7 +41,7 @@ watch(
   async () => {
     allLiveScheduleData.value = await Promise.all(
       allCurrentStations.value.map((station) => {
-        return fetchScheduleSimple(station.slug)
+        return fetchScheduleSimple(station.slug, new Date())
       })
     )
   },
@@ -47,11 +50,18 @@ watch(
 
 watch(currentScheduleDate, async () => {
   allLiveScheduleData.value = []
-  allLiveScheduleData.value = await Promise.all(
+  
+  // Create new abort controller (automatically aborts any existing fetches)
+  const abortController = createScheduleAbortController()
+  
+  const results = await Promise.all(
     allCurrentStations.value.map((station) => {
-      return fetchScheduleSimple(station.slug, currentScheduleDate.value)
+      return fetchScheduleSimple(station.slug, currentScheduleDate.value, abortController.signal)
     })
   )
+  
+  // Filter out null results (aborted requests)
+  allLiveScheduleData.value = results.filter(result => result !== null)
 })
 
 // handle the PDF download button
