@@ -74,6 +74,7 @@ export async function updateAllLiveStreams(init = true) {
 const liveScheduleData = ref(null)
 const allLiveScheduleData = ref([])
 let timeout = null
+let scheduleAbortController = null
 
 // base liveStream composable
 export default function useLiveStream() {
@@ -188,6 +189,21 @@ export default function useLiveStream() {
         }
     }
 
+    // Function to abort all schedule fetches
+    const abortScheduleFetches = () => {
+        if (scheduleAbortController) {
+            scheduleAbortController.abort()
+            scheduleAbortController = null
+        }
+    }
+
+    // Function to create new abort controller for schedule fetches
+    const createScheduleAbortController = () => {
+        abortScheduleFetches()
+        scheduleAbortController = new AbortController()
+        return scheduleAbortController
+    }
+
     // Fetch the schedule
     const fetchSchedule = async () => {
         clearAllTimeout()
@@ -231,21 +247,28 @@ export default function useLiveStream() {
     }
 
     // Fetch the schedule simple return
-    const fetchScheduleSimple = async (station, date = new Date()) => {
+    const fetchScheduleSimple = async (station, date = new Date(), signal = null) => {
         const config = useRuntimeConfig()
         const currentStreamStation = useCurrentStreamStation()
         const globalToast = useGlobalToast()
 
         try {
+            const fetchOptions: any = {
+                method: "POST",
+                body: {
+                    localDate: date,
+                    isToday: isToday.value
+                }
+            }
+
+            // Add signal if provided
+            if (signal) {
+                fetchOptions.signal = signal
+            }
+
             const schedule = await $fetch(
                 `${config.public.BFF_URL}/api/schedule/${station}`,
-                {
-                    method: "POST",
-                    body: {
-                        localDate: date,
-                        isToday: isToday.value
-                    }
-                }
+                fetchOptions
             )
 
             // add the slug to the schedule data to pass to the local notification system
@@ -256,6 +279,12 @@ export default function useLiveStream() {
             return schedule
 
         } catch (error) {
+            // Don't show error toast for aborted requests
+            if (error.name === 'AbortError') {
+                console.log('Schedule fetch was aborted')
+                return null
+            }
+
             globalToast.value = {
                 severity: "error",
                 summary:
@@ -280,7 +309,7 @@ export default function useLiveStream() {
     }
 
     // targets the active station and scrolls to it
-    const scrollToActiveStation = (behavior = "smooth") => {
+    const scrollToActiveStation = (behavior: ScrollBehavior = "smooth") => {
         const activeStation = document.getElementsByClassName("activestation")
         if (activeStation[0]) {
             activeStation[0].scrollIntoView({
@@ -324,7 +353,7 @@ export default function useLiveStream() {
     const getStationBySlugAndPlayIt = async (querySlug, autoplay = false) => {
         // If stations aren't loaded, wait for them to load then continue
         if (!allCurrentStations.value) {
-            await new Promise((resolve) => {
+            await new Promise<void>((resolve) => {
                 // because the watch is in a Promise, it will not be destroyed when the component is unmounted, so we need to unwatch it
                 const unwatch = watch(
                     allCurrentStations,
@@ -350,6 +379,6 @@ export default function useLiveStream() {
     }
     return {
         getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate, nextDayScheduleDate, previousDayScheduleDate, setToNextDay,
-        setToPreviousDay, isToday
+        setToPreviousDay, isToday, abortScheduleFetches, createScheduleAbortController
     }
 }

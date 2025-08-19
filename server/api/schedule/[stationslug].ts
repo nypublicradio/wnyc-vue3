@@ -25,14 +25,15 @@ const removeFutureShows = (schedule: any) => {
 };
 
 //Get schedule for a specific date
-const getSchedule = async (slug: string, schedDate: string, isToday = true) => {
+const getSchedule = async (slug: string, schedDate: string, isToday = true, signal?: AbortSignal) => {
     const options = {
         method: 'GET',
         url: `${config.public.PUBLISHER_BASE_API}v3/schedule/`,
         params: {
             scheduleStation: slug,
             scheduleDate: schedDate
-        }
+        },
+        signal: signal  // Pass the abort signal to axios
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).data;
@@ -46,6 +47,14 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const localDate = body?.localDate;
     const isToday = body?.isToday;
+
+    // Create an abort controller that aborts if the request is closed
+    const abortController = new AbortController();
+
+    // Listen for request close to abort the axios request
+    event.node.req.on('close', () => {
+        abortController.abort();
+    });
 
     if (slug) {
         //Get schedule for today and tomorrow
@@ -61,8 +70,8 @@ export default defineEventHandler(async (event) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0], isToday);
-        //const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0], isToday);
+        const scheduleToday = await getSchedule(slug, today.toISOString().split('T')[0], isToday, abortController.signal);
+        //const scheduleTomorrow = await getSchedule(slug, tomorrow.toISOString().split('T')[0], isToday, abortController.signal);
         //const filteredScheduleTomorrow = removeFutureShows(scheduleTomorrow);
 
         //Combine today and tomorrow's schedule and return
