@@ -207,6 +207,8 @@ onUnmounted(() => {
     <!-- <pre class="overflow-hidden">{{ allCurrentStations }}</pre> -->
     <!-- <pre>{{ liveScheduleData }}</pre> -->
     <!-- <pre>{{ allLiveScheduleData }}</pre> -->
+    <!-- <pre>{{ currentEpisode }}</pre> -->
+    <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
     <section class="schedule">
       <div class="grid m-auto">
         <div class="col w-full pr-2 lg:pr-4">
@@ -233,15 +235,6 @@ html {
       }
     }
   }
-  .live-stations-holder {
-    .station-btn {
-      .show-title {
-        @include media("<md") {
-          display: none;
-        }
-      }
-    }
-  }
 }
 </style>
 <style lang="scss" scoped>
@@ -252,8 +245,8 @@ html {
     .station-holder {
       position: relative;
       &:after {
-        transition: bottom 0.5s;
-        -webkit-transition: bottom 0.5s;
+        transition: bottom 0.5s, border-top 0.5s;
+        -webkit-transition: bottom 0.5s, border-top 0.5s;
         content: "";
         position: absolute;
         bottom: 2px;
@@ -271,12 +264,17 @@ html {
         &:after {
           bottom: -8px;
         }
+        &:hover {
+          &:after {
+            border-top: 10px solid var(--p-primary-600);
+          }
+        }
       }
       .station-btn {
-        &:hover,
-        &:focus,
-        &:active {
-          // nothing looks best
+        .show-title {
+          @include media("<md") {
+            display: none;
+          }
         }
       }
     }

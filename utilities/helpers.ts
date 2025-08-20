@@ -905,7 +905,6 @@ export const prepForPlayer = (item) => {
     item.headers?.brand?.logoImage ??
     item.showImage ??
     item.image ??
-    item.image ??
     item.listingImage
 
   return {

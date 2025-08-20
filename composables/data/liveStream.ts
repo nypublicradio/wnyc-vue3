@@ -114,13 +114,11 @@ export default function useLiveStream() {
     const previousDayScheduleDate = computed(() => getPreviousDay())
 
 
-    // toggle play here
-    // not sure why I am using this, probably should use the helper function
+    // toggle play live stream here
     const togglePlayHere = () => {
         if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
             //update slug
             currentStreamStation.value = currentEpisodeHolder.value.slug
-            //currentEpisode.value = currentEpisodeHolder.value
             togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
         } else {
             togglePlayTrigger.value = !togglePlayTrigger.value
@@ -331,9 +329,10 @@ export default function useLiveStream() {
             if (isEpisodePlaying.value && isPLayingCheck) {
                 if (station?.slug !== currentStreamStation.value) {
                     await updateLiveStream(station.slug)
-                    togglePlayTrigger.value = !togglePlayTrigger.value
-                    currentEpisode.value = station
-                    currentStreamStation.value = station.slug
+                    //togglePlayTrigger.value = !togglePlayTrigger.value
+                    togglePlayHere()
+                    //currentEpisode.value = station
+                    //currentStreamStation.value = station.slug
                     isLiveStream.value = true
                 }
             } else {
@@ -345,6 +344,7 @@ export default function useLiveStream() {
                 currentStreamStation.value = station.slug
                 currentEpisodeHolder.value = station
             }
+
 
             trackClickEvent(
                 "Click Tracking - Station Button",

@@ -560,7 +560,6 @@ defineExpose({
       <div v-show="!isExpanded">
         <div class="content flex h-full align-items-center">
           <div
-            v-if="props.image"
             class="track-info-image flex-none"
             :class="[{ hideImageOnMobile: props.hideImageOnMobile }]"
           >
@@ -575,6 +574,7 @@ defineExpose({
                 :title="props.titleLink ?? null"
                 @flexible-link-click="emit('image-click')"
               >
+                <!-- {{ props.image }} -->
                 <VImage
                   :src="props.image"
                   :width="props.imageSize"
