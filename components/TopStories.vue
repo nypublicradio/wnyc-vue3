@@ -19,7 +19,7 @@ const reactiveArticles = toRef(props, "articles")
         is-horizontal
         is-feature
         imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 395] }"
+        :size="{ xs: [369, 246], sm: [592, 280], lg: [592, 480] }"
       />
       <skeleton-media-card
         v-else
