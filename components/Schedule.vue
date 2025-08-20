@@ -191,7 +191,7 @@ const moreFromClick = (entry) => {
                   <HtmlConvert
                     v-if="currentEpisodeHolder.details && entryIndex === 0 && isToday"
                     :htmlContent="currentEpisodeHolder.details"
-                    class="truncate t2lines mt-1"
+                    class="desc truncate t2lines mt-1"
                     no-blocks
                   />
                 </div>
@@ -248,7 +248,7 @@ const moreFromClick = (entry) => {
         />
       </div>
       <hr />
-      <div class="flex justify-content-between mt-5">
+      <div class="flex justify-content-between my-6">
         <Skeleton height="20px" width="110px" borderRadius="4px" />
         <div class="flex flex-column gap-2">
           <Skeleton height="16px" width="110px" borderRadius="4px" />
@@ -257,20 +257,21 @@ const moreFromClick = (entry) => {
         <Skeleton height="20px" width="110px" borderRadius="4px" />
       </div>
     </div>
-    <div v-if="!allLiveScheduleData.length > 0" class="skeleton -mt-2">
+    <div v-if="!allLiveScheduleData.length > 0" class="skeleton flex flex-column gap-4">
+      <Skeleton
+        v-if="isToday"
+        height="213px"
+        width="100%"
+        borderRadius="10px"
+        class="-ml-3 -mr-3 xl:mr-0 hidden md:block"
+      />
       <div
-        v-for="i in 10"
+        v-for="i in 9"
         :key="`schedule-skeleton-${i}`"
-        class="flex align-items-center justify-content-between pr-2 mb-5"
+        class="flex align-items-center justify-content-between pr-2"
       >
         <div class="flex gap-3">
-          <Skeleton
-            height="30px"
-            width="4px"
-            borderRadius="2px"
-            :class="[{ 'opacity-0': i > 0 }]"
-          />
-          <div class="flex flex-column gap-1">
+          <div class="flex flex-column gap-2">
             <Skeleton class="opacity-50" height="12px" width="64px" borderRadius="4px" />
             <Skeleton height="14px" width="174px" borderRadius="4px" />
           </div>
@@ -325,11 +326,23 @@ html {
 <style lang="scss" scoped>
 .schedule {
   .schedule-entry {
+    position: relative;
     // .left {
     //   border: 2px solid transparent;
     //   border-radius: 8px;
     //   margin-right: 1rem;
     // }
+    &:before {
+      content: "";
+      border: 2px solid transparent;
+      border-color: var(--p-primary-500);
+      border-radius: 8px;
+      margin-right: 1rem;
+      position: absolute;
+      height: 100%;
+      display: none;
+    }
+
     .active-content {
       min-height: 0; // Allow flex shrinking
     }
@@ -338,14 +351,31 @@ html {
       display: none;
     }
     &.selected {
-      background-color: var(--p-surface-50);
-      border-radius: 10px;
-      overflow: hidden;
+      &:before {
+        display: block;
+      }
       .more-from {
         display: block;
       }
       .active-content {
-        padding: 1rem 1rem 0.5rem 1rem;
+        padding: 0rem 1rem 0rem 1rem;
+      }
+      @include media(">=md") {
+        background-color: var(--p-surface-50);
+        border-radius: 10px;
+        overflow: hidden;
+        .active-content {
+          padding: 1rem 1rem 0.5rem 1rem;
+        }
+        &:before {
+          display: none;
+        }
+      }
+      @include media("<md") {
+        .more-from,
+        .desc {
+          display: none;
+        }
       }
     }
     .follow-icon {
