@@ -51,6 +51,7 @@ watch(
   { once: true }
 )
 
+// Fetch all schedule data for all stations
 const getAllScheduleData = async () => {
   allLiveScheduleData.value = []
 
@@ -71,7 +72,7 @@ const getAllScheduleData = async () => {
   allLiveScheduleData.value = results.filter((result) => result !== null)
 }
 
-watch(currentScheduleDate, async () => {
+watch(currentScheduleDate, () => {
   getAllScheduleData()
 })
 
@@ -103,7 +104,6 @@ const handleScheduleDownload = () => {
 const moreFromClick = (entry) => {
   const title = entry.attributes.parentTitle
   const slug = entry.slug
-  console.log("moreFromClick", title, slug)
   trackClickEvent(
     `Click Tracking - Schedule current show More from ${title}`,
     "Schedule",
