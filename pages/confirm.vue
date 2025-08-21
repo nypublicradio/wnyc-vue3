@@ -34,7 +34,7 @@ watch(
   display: flex;
   position: absolute;
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  width: 100vw;
+  width: 100%;
   left: 0;
   right: 0;
 

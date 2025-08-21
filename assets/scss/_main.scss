@@ -2,6 +2,18 @@
 @import './transitions';
 @import './cssvars';
 @import './v-cssvars/_cssvars';
+
+/* Utility for full-width elements that respect scrollbar */
+.full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Alternative to 100vw that accounts for scrollbar */
+.full-viewport {
+  width: calc(100vw - (100vw - 100%));
+}
+
 figure {
   margin: 0;
 }
@@ -35,6 +47,8 @@ html {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   overscroll-behavior: none;
   height: 100%;
+  /* Define the actual available width accounting for scrollbar */
+  --full-width: 100%;
 }
 
 body {
@@ -51,7 +65,7 @@ body {
   background: var(--background);
   transform: none;
   height: 100% !important;
-  width: 100vw;
+  width: 100%;
   background-repeat: no-repeat;
   background-attachment: fixed;
   max-height: unset !important;
@@ -138,7 +152,7 @@ hr {
   right: 0;
   z-index: 9999;
   background: var(--header-background);
-  width: 100vw;
+  width: 100%;
 }
 
 section {
