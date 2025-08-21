@@ -511,7 +511,7 @@ body {
   .content {
     max-width: $playerMaxWidth;
     margin: auto;
-    width: 100vw;
+    width: 100%;
   }
   &.expanded {
     bottom: 0;
