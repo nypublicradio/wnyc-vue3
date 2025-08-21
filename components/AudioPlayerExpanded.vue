@@ -379,10 +379,9 @@ const moreFromClick = () => {
       v-if="
         !!currentEpisode.onTodaysShowImageTemplate
           ? false
-          : currentEpisode.player_image !==
-            (currentEpisode.image.template || currentEpisode.image)
+          : currentEpisode.player_image !== currentEpisode.image
       "
-      :src="currentEpisode.image.template || currentEpisode.image"
+      :src="currentEpisode.image || currentEpisode.image.template"
       :alt="`${currentEpisode.title} featured image`"
       :size="{
         xs: [327, 218],
