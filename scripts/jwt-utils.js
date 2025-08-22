@@ -36,7 +36,7 @@ function base64UrlEncode(str) {
         .toString('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/\=/g, '');
+        .replaceAll('=', '');
 }
 
 /**
@@ -60,7 +60,7 @@ function createJWT(payload, secret) {
         .digest('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/\=/g, '');
+        .replaceAll('=', '');
 
     return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
@@ -76,7 +76,7 @@ function generateUrlSafeSecret(length = 48) {
     return bytes.toString('base64')
         .replace(/\+/g, '-')  // Replace + with -
         .replace(/\//g, '_')  // Replace / with _
-        .replace(/\=/g, '');   // Remove padding =
+        .replaceAll('=', '');   // Remove padding =
 }
 
 /**

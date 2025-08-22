@@ -1,8 +1,13 @@
 import axios from 'axios'
-import humps from 'humps'
+import { camelizeKeys } from 'humps'
 
 const config = useRuntimeConfig();
 
+/**
+ * Fetches a list of events from the Wagtail CMS API with optional filtering.
+ * @param query - Query parameters object containing filters like limit, offset, upcoming, past, venue
+ * @returns Promise that resolves to an object containing events array and metadata
+ */
 const getWagtailEvents = async (query: Record<string, any>) => {
     try {
         const options = {
@@ -19,20 +24,20 @@ const getWagtailEvents = async (query: Record<string, any>) => {
         // Add date filtering if requested
         if (query.upcoming === 'true') {
             const now = new Date().toISOString().split('T')[0]; // Get date part only
-            options.params['event_date__gte'] = now;
+            (options.params as any).event_date__gte = now;
         } else if (query.past === 'true') {
             const now = new Date().toISOString().split('T')[0]; // Get date part only
-            options.params['event_date__lt'] = now;
+            (options.params as any).event_date__lt = now;
         }
 
         // Add venue filter if provided
         if (query.venue) {
-            options.params['venue_name'] = query.venue;
+            (options.params as any).venue_name = query.venue;
         }
 
         const res = await axios(options);
-        const data = humps.camelizeKeys(res.data);
-        
+        const data = camelizeKeys(res.data);
+
         // Transform the response to include both data and meta
         return {
             events: data.items || [],
@@ -58,10 +63,10 @@ const getWagtailEvents = async (query: Record<string, any>) => {
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const res = event?.node?.res;
-    
+
     // Set cache header - short cache for dynamic list
     res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate');
-    
+
     const eventsData = await getWagtailEvents(query);
     return eventsData;
 });
