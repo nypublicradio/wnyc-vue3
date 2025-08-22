@@ -36,10 +36,10 @@ function base64UrlEncode(str) {
         .toString('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/[=]/g, '');
+        .replace(/\=/g, '');
 }
 
-/***
+/**
  * Creates a JSON Web Token (JWT) using a payload and a secret.
  * @param {Object} payload - The payload data to include in the JWT.
  * @param {string} secret - The secret key used to sign the JWT.
@@ -60,7 +60,7 @@ function createJWT(payload, secret) {
         .digest('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/[=]/g, '');
+        .replace(/\=/g, '');
 
     return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
@@ -76,7 +76,7 @@ function generateUrlSafeSecret(length = 48) {
     return bytes.toString('base64')
         .replace(/\+/g, '-')  // Replace + with -
         .replace(/\//g, '_')  // Replace / with _
-        .replace(/[=]/g, '');   // Remove padding =
+        .replace(/\=/g, '');   // Remove padding =
 }
 
 /**
@@ -103,7 +103,7 @@ function loadEnvFile() {
     return envVars;
 }
 
-/***
+/**
  * Parses command-line arguments into an options object.
  * @returns {Object.<string, string|boolean>} Parsed options including command and flags.
  */
