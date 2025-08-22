@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// skipcq: JS-0002
 /**
  * JWT Utilities for WNYC Vue3 App
  * 
@@ -25,14 +26,25 @@ const fs = require('fs');
 const path = require('path');
 
 // JWT implementation without external dependencies
+/**
+ * Encodes a string to Base64 URL-safe format.
+ * @param {string} str - The string to encode.
+ * @returns {string} The Base64 URL-safe encoded string.
+ */
 function base64UrlEncode(str) {
     return Buffer.from(str)
         .toString('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/=/g, '');
+        .replace(/[=]/g, '');
 }
 
+/***
+ * Creates a JSON Web Token (JWT) using a payload and a secret.
+ * @param {Object} payload - The payload data to include in the JWT.
+ * @param {string} secret - The secret key used to sign the JWT.
+ * @returns {string} The signed JWT string.
+ */
 function createJWT(payload, secret) {
     const header = {
         alg: 'HS256',
@@ -48,20 +60,29 @@ function createJWT(payload, secret) {
         .digest('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/=/g, '');
+        .replace(/[=]/g, '');
 
     return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
+/**
+ * Generates a URL-safe secret for JWT signing.
+ * @param {number} [length=48] - The length of the secret in bytes.
+ * @returns {string} A URL-safe base64 encoded secret string.
+ */
 function generateUrlSafeSecret(length = 48) {
     // Use URL-safe base64 encoding (no +, /, or = characters)
     const bytes = crypto.randomBytes(length);
     return bytes.toString('base64')
         .replace(/\+/g, '-')  // Replace + with -
         .replace(/\//g, '_')  // Replace / with _
-        .replace(/=/g, '');   // Remove padding =
+        .replace(/[=]/g, '');   // Remove padding =
 }
 
+/**
+ * Loads and parses environment variables from the .env file.
+ * @returns {Object} An object containing the parsed environment variables.
+ */
 function loadEnvFile() {
     const envPath = path.join(process.cwd(), '.env');
     if (!fs.existsSync(envPath)) {
@@ -82,6 +103,10 @@ function loadEnvFile() {
     return envVars;
 }
 
+/***
+ * Parses command-line arguments into an options object.
+ * @returns {Object.<string, string|boolean>} Parsed options including command and flags.
+ */
 function parseArgs() {
     const args = process.argv.slice(2);
     const options = { command: 'help' };
@@ -100,6 +125,10 @@ function parseArgs() {
     return options;
 }
 
+/**
+ * Displays help information and usage instructions for the JWT Utilities CLI.
+ * @returns {void}
+ */
 function showHelp() {
     console.log('🔑 JWT Utilities for WNYC Vue3 App\n');
 
@@ -129,6 +158,14 @@ function showHelp() {
     console.log('  node scripts/jwt-utils.js secret');
 }
 
+/**
+ * Generates a JWT token for testing purposes.
+ * @param {Object} options - Configuration options for token generation.
+ * @param {string} [options.user-id] - User ID for the token.
+ * @param {string} [options.email] - Email for the token.
+ * @param {string} [options.expires] - Expiration time in hours.
+ * @returns {void}
+ */
 function generateToken(options) {
     console.log('🔑 JWT Token Generator for Testing\n');
 
@@ -149,7 +186,7 @@ function generateToken(options) {
 
     const payload = {
         userId: options['user-id'] || 'test-user-123',
-        email: options['email'] || 'test@example.com',
+        email: options.email || 'test@example.com',
         iat: now,
         exp: now + expiresIn,
         iss: 'wnyc-vue3-app'
@@ -194,6 +231,12 @@ function generateToken(options) {
     console.log('• JWT tokens are environment-specific due to different secrets');
 }
 
+/**
+ * Generates a JWT secret for deployment.
+ * @param {Object} options - Configuration options for secret generation.
+ * @param {string} [options.length] - Length of the secret in bytes.
+ * @returns {void}
+ */
 function generateSecret(options) {
     console.log('🔐 JWT Secret Generator (URL-Safe)\n');
 
@@ -228,6 +271,10 @@ function generateSecret(options) {
     console.log('• For other platforms: Set JWT_SECRET environment variable');
 }
 
+/**
+ * Main function that handles command execution based on command-line arguments.
+ * @returns {void}
+ */
 function main() {
     const options = parseArgs();
 

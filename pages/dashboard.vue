@@ -12,7 +12,7 @@ const currentUserProfile = useCurrentUserProfile()
 const editProfileSideBar = useEditProfileSideBar()
 
 // Profile API composable for member profile data
-const { profile: profileData, loading: isLoading, error, fetchProfile, formatCurrency, formatDate } = useProfileApi()
+const { profile: profileData, loading: isLoading, fetchProfile, formatCurrency, formatDate } = useProfileApi()
 
 // Handler for the logout button
 const onLogout = () => {
@@ -41,7 +41,7 @@ const accountHeader = computed(() => {
 })
 
 // Fire edit profile sidebar if the user clicks on a field
-const editField = (field) => {
+const editField = () => {
   if (!isDisabled.value) {
     editProfileSideBar.value = true
   }
@@ -52,24 +52,16 @@ onMounted(async () => {
   if (currentUser.value) {
     await getAndSetUserProfile()
     
-    console.log('🐛 Dashboard Debug - User Profile:', currentUserProfile.value)
-    console.log('🐛 Dashboard Debug - Has Salesforce ID:', !!currentUserProfile.value?.salesforce_id)
-    console.log('🐛 Dashboard Debug - Salesforce ID Value:', currentUserProfile.value?.salesforce_id)
-    
     // Check if we have an auth token, if not try to initialize it
     const authComposable = useAuth()
-    console.log('🐛 Dashboard Debug - Is Authenticated:', authComposable.isAuthenticated.value)
-    console.log('🐛 Dashboard Debug - Has Auth Token:', !!authComposable.authToken.value)
     
     if (!authComposable.isAuthenticated.value) {
-      console.log('🐛 Dashboard Debug - No JWT token found, trying to initialize from Supabase session...')
+      // No JWT token found
       try {
         const supabase = useSupabaseClient()
         const { data: sessionData } = await supabase.auth.getSession()
         
         if (sessionData.session) {
-          console.log('🐛 Dashboard Debug - Found Supabase session, converting to JWT...')
-          
           // Convert Supabase session to JWT
           const jwtResponse = await $fetch('/api/auth/session-to-jwt', {
             method: 'POST',
@@ -78,13 +70,10 @@ onMounted(async () => {
               refresh_token: sessionData.session.refresh_token,
             }
           })
-          
+
           if (jwtResponse.success && jwtResponse.token) {
-            console.log('🐛 Dashboard Debug - JWT token generated successfully')
             authComposable.setAuthState(jwtResponse.token, jwtResponse.user, sessionData.session.refresh_token)
           }
-        } else {
-          console.log('🐛 Dashboard Debug - No Supabase session found')
         }
       } catch (error) {
         console.error('🐛 Dashboard Debug - Failed to initialize JWT from session:', error)
@@ -95,16 +84,14 @@ onMounted(async () => {
     if (authComposable.isAuthenticated.value) {
       // Fetch profile data from /api/profile if user has a Salesforce ID
       if (currentUserProfile.value?.salesforce_id) {
-        console.log('🐛 Dashboard Debug - Fetching profile with Salesforce ID:', currentUserProfile.value.salesforce_id)
         await fetchProfile(currentUserProfile.value.salesforce_id)
       } else if (currentUser.value?.email) {
-        console.log('🐛 Dashboard Debug - No Salesforce ID, trying email lookup:', currentUser.value.email)
         await fetchProfile(currentUser.value.email)
       } else {
-        console.log('🐛 Dashboard Debug - No Salesforce ID or email found. Member profile data will not be available.')
+        // No Salesforce ID or email found
       }
     } else {
-      console.log('🐛 Dashboard Debug - Still no authentication available, skipping profile fetch')
+      // No authentication available. Do something like redirect to login.
     }
   }
 })
@@ -131,7 +118,7 @@ onMounted(async () => {
         <SBox
           v-if="currentUserProfile?.name"
           label="Name"
-          @click="editField('name')"
+          @click="editField()"
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
@@ -140,7 +127,7 @@ onMounted(async () => {
         
         <SBox
           label="Email"
-          @click="editField('email')"
+          @click="editField()"
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
@@ -150,7 +137,7 @@ onMounted(async () => {
         <SBox
           label="Password"
           v-if="isEmail"
-          @click="editField('password')"
+          @click="editField()"
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
@@ -220,8 +207,8 @@ onMounted(async () => {
       <Button label="Logout" @click="onLogout" severity="secondary" />
     </div>
 
-    <!-- Edit Profile Sidebar -->
-    <Drawer v-model:visible="editProfileSideBar" position="right" class="edit-profile-sidebar">
+  <!-- Edit Profile Sidebar -->
+    <Drawer v-model="editProfileSideBar" position="right" class="edit-profile-sidebar">
       <EditProfile />
     </Drawer>
   </section>
