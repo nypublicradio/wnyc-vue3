@@ -83,7 +83,7 @@ const initializeStationList = (val) => {
 const updateProfile = async () => {
   // update supabase and local storage
   if (currentUser.value && currentUserProfile.value) {
-    const { error } = await client
+    await client
       .from("profiles")
       .upsert({
         id: currentUser.value.id,

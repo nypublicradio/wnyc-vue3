@@ -9,6 +9,12 @@ interface RateLimitOptions {
     maxRequests: number; // Maximum requests per window
 }
 
+/**
+ * Extracts the client IP address from the request event.
+ * Checks multiple headers in order of preference: x-forwarded-for, x-real-ip, socket remoteAddress.
+ * @param event - The HTTP request event object
+ * @returns The client IP address as a string, or 'unknown' if not found
+ */
 function getClientIP(event: any): string {
     const xForwardedFor = getHeader(event, 'x-forwarded-for');
     const xRealIp = getHeader(event, 'x-real-ip');
@@ -24,6 +30,13 @@ function getClientIP(event: any): string {
     return event.node?.req?.socket?.remoteAddress || 'unknown';
 }
 
+/**
+ * Creates a rate limiting middleware function.
+ * Tracks request counts per client IP within a specified time window.
+ * @param options - Configuration object containing windowMs and maxRequests
+ * @returns A middleware function that enforces rate limiting
+ * @throws {Error} HTTP 429 error when rate limit is exceeded
+ */
 export function rateLimit(options: RateLimitOptions) {
     const { windowMs, maxRequests } = options;
 
@@ -76,7 +89,11 @@ export const rateLimiterCleanupInterval = setInterval(() => {
     }
 }, 60000); // Clean up every minute
 
-// Optionally, provide a function to clear the interval for testing or shutdown
+/**
+ * Clears the rate limiter cleanup interval.
+ * Useful for testing or application shutdown to prevent memory leaks.
+ * @returns void
+ */
 export function clearRateLimiterCleanup() {
     clearInterval(rateLimiterCleanupInterval);
 }
