@@ -94,7 +94,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="live-page">
+  <div class="page live-page">
     <Html lang="en">
       <Head>
         <Title

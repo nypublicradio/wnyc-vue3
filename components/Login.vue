@@ -10,20 +10,11 @@ import {
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
-import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   isRoute: {
     type: Boolean,
     default: false,
-  },
-  returnRoute: {
-    type: String,
-    default: "/confirm",
-  },
-  showHeader: {
-    type: Boolean,
-    default: true,
   },
 })
 
@@ -34,32 +25,18 @@ const forgotPasswordSideBar = useForgotPasswordSideBar()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
-const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 // handle the login and signup sidebars when the user clicks on the sign up link
 const onSignupClick = () => {
   if (!props.isRoute) {
     loginSideBar.value = false
     signUpSideBar.value = true
-  } else {
-    navigateTo({
-      path: "/signup",
-    })
   }
-  trackClickEvent(
-    "Click Tracking - Sign up",
-    "Sign Up Sidebar - user section",
-    "sign up link"
-  )
 }
 
 // actions to be taken with the login link is clicked
 const onLogin = (provider) => {
-  trackClickEvent(
-    "Click Tracking - log in",
-    "Log In Sidebar - user section",
-    provider
-  )
+  trackClickEvent("Click Tracking - log in", "Log In Sidebar - user section", provider)
 }
 
 // close all sidebars
@@ -77,29 +54,28 @@ const openForgotPassword = () => {
   loginSideBar.value = false
   forgotPasswordSideBar.value = true
 }
-// handle the close login if on a route or not
-const closeLogin = () => {
-  props.isRoute ? navigateTo("/home") : (loginSideBar.value = false)
-}
 </script>
 
 <template>
   <div class="login">
-    <div v-if="props.showHeader">
-      <slot name="header">
-        <SHeader class="pb-4" label="Log in" @close-sidebar="closeLogin" />
-        <p>
-          Don't have an account yet?
-          <VFlexibleLink
-            aria-label="sign up"
-            @flexible-link-click="onSignupClick"
-          >
-            Sign up
-          </VFlexibleLink>
-        </p>
-      </slot>
-    </div>
-    <div class="pt-0">
+    <section>
+      <SHeader
+        label="Log in"
+        @close-sidebar="props.isRoute ? navigateTo('/home') : (loginSideBar = false)"
+      />
+    </section>
+    <section>
+      <p>
+        Don't have an account yet?
+        <VFlexibleLink
+          :to="props.isRoute ? '/signup' : '#'"
+          aria-label="sign up"
+          @click="onSignupClick"
+        >
+          Sign up
+        </VFlexibleLink>
+      </p>
+
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -107,8 +83,6 @@ const closeLogin = () => {
         label="Log in with Google"
         severity="secondary"
         class="center my-3"
-        @submit-click="setAuthReturnRoute(props.returnRoute)"
-        @submit-error="clearAuthReturnRoute()"
         @submit-success="onLogin('google')"
       />
       <VLoginWithProvider
@@ -118,18 +92,17 @@ const closeLogin = () => {
         label="Log in with Apple"
         severity="secondary"
         class="center"
-        @submit-click="setAuthReturnRoute(props.returnRoute)"
-        @submit-error="clearAuthReturnRoute()"
         @submit-success="onLogin('apple')"
       />
-      <Divider class="my-4 mask" align="center">
+      <!--  pt:content:style="background:var(--p-surface-25)" -->
+      <Divider class="my-4" align="center">
         <b>or</b>
       </Divider>
       <VLoginWithEmail
         label="Log in"
         :client="client"
         :config="config"
-        :returnRoute="props.returnRoute"
+        slug="/confirm"
         @submit-success="closeAll"
       >
         <template #belowSubmit>
@@ -147,6 +120,6 @@ const closeLogin = () => {
           </div>
         </template>
       </VLoginWithEmail>
-    </div>
+    </section>
   </div>
 </template>
