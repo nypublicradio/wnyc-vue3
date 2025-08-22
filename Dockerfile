@@ -1,4 +1,4 @@
-FROM node:18.18.2 AS build
+FROM node:18.19.0 AS build
 
 ARG SENTRY_DSN
 ARG SENTRY_ARG

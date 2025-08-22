@@ -177,7 +177,7 @@ const formatRecurringDonations = (donations: any[]): RecurringDonation[] => {
  */
 const combineName = (contact: any): string | null => {
     const combinedName = [contact.FirstName, contact.LastName]
-        .filter(name => name && name.trim()) // Remove null/empty values
+        .filter(name => name?.trim()) // Remove null/empty values
         .join(' ')
         .trim();
 
@@ -227,7 +227,7 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
     rateLimiter(event);
 
     // Verify JWT authentication
-    const authPayload = requireAuth(event);
+    requireAuth(event);
 
     // Validate input parameter
     const body = await readBody(event);

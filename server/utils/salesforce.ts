@@ -1,16 +1,6 @@
 import jsforce from 'jsforce';
 import jwt from 'jsonwebtoken';
 
-// Conditional Sentry import for server-side error tracking
-let Sentry: any = null;
-try {
-    // Try to import Sentry for Node.js (server-side)
-    Sentry = require('@sentry/node');
-} catch (e) {
-    // Fallback to console logging if Sentry is not available
-    console.warn('Sentry not available for server-side error tracking');
-}
-
 // Error types for better categorization
 enum SalesforceErrorType {
     AUTHENTICATION = 'authentication',
@@ -53,110 +43,120 @@ class SalesforceError extends Error {
     }
 }
 
-// Error handler utility
-class SalesforceErrorHandler {
-    static captureError(error: Error | SalesforceError, context?: Record<string, any>): void {
-        if (Sentry && Sentry.captureException) {
-            Sentry.withScope((scope: any) => {
-                if (context) {
-                    Object.keys(context).forEach(key => {
-                        scope.setTag(key, context[key]);
-                    });
-                }
+// Error handler utility functions
 
-                if (error instanceof SalesforceError) {
-                    scope.setTag('salesforce_error_type', error.type);
-                    scope.setContext('salesforce_context', {
-                        ...error.context,
-                        statusCode: error.statusCode,
-                        originalError: error.originalError?.message
-                    });
-                }
+/**
+ * Captures and logs errors using console logging
+ * @param error - The error to capture (Error or SalesforceError instance)
+ * @param context - Optional context object with additional error information
+ */
+export function captureError(error: Error | SalesforceError, context?: Record<string, any>): void {
+    // Enhanced console logging
+    console.error('Salesforce Error:', {
+        message: error.message,
+        type: error instanceof SalesforceError ? error.type : 'UNKNOWN',
+        context,
+        stack: error.stack,
+        ...(error instanceof SalesforceError && {
+            salesforceErrorType: error.type,
+            statusCode: error.statusCode,
+            originalError: error.originalError?.message
+        })
+    });
+}
 
-                scope.setTag('error_source', 'salesforce_client');
-                Sentry.captureException(error);
-            });
-        } else {
-            // Fallback to enhanced console logging
-            console.error('Salesforce Error:', {
-                message: error.message,
-                type: error instanceof SalesforceError ? error.type : 'UNKNOWN',
-                context,
-                stack: error.stack
-            });
+/**
+ * Categorizes Salesforce errors based on error codes and messages for better error handling.
+ * 
+ * This function analyzes the error object to determine the most appropriate error type,
+ * which helps in implementing proper retry logic and user-friendly error messages.
+ * 
+ * @param error - The error object to categorize (can be any type)
+ * @returns The categorized error type from SalesforceErrorType enum
+ * 
+ * @example
+ * ```typescript
+ * const errorType = categorizeError(someError);
+ * if (errorType === SalesforceErrorType.AUTHENTICATION) {
+ *   // Handle authentication errors
+ * }
+ * ```
+ */
+export function categorizeError(error: any): SalesforceErrorType {
+    if (!error) return SalesforceErrorType.UNKNOWN;
+
+    const message = error.message?.toLowerCase() || '';
+    const errorCode = error.errorCode || error.code || '';
+    const errorName = error.name || '';
+
+    // Define error code mappings
+    const errorCodeMappings: Record<string, SalesforceErrorType> = {
+        'INVALID_LOGIN': SalesforceErrorType.AUTHENTICATION,
+        'INVALID_SESSION_ID': SalesforceErrorType.AUTHENTICATION,
+        'INSUFFICIENT_ACCESS': SalesforceErrorType.AUTHORIZATION,
+        'REQUEST_LIMIT_EXCEEDED': SalesforceErrorType.RATE_LIMIT,
+        'MALFORMED_QUERY': SalesforceErrorType.VALIDATION,
+        'INVALID_FIELD': SalesforceErrorType.VALIDATION,
+        'ENOTFOUND': SalesforceErrorType.NETWORK,
+        'ECONNREFUSED': SalesforceErrorType.NETWORK,
+        'TIMEOUT': SalesforceErrorType.NETWORK,
+    };
+
+    // Define error name mappings
+    const errorNameMappings: Record<string, SalesforceErrorType> = {
+        'FetchError': SalesforceErrorType.NETWORK,
+    };
+
+    // Define message keyword mappings
+    const messageKeywords: Array<{ keywords: string[], type: SalesforceErrorType }> = [
+        {
+            keywords: ['authentication', 'invalid session', 'jwt authentication failed'],
+            type: SalesforceErrorType.AUTHENTICATION
+        },
+        {
+            keywords: ['insufficient access', 'authorization'],
+            type: SalesforceErrorType.AUTHORIZATION
+        },
+        {
+            keywords: ['network', 'timeout', 'connection'],
+            type: SalesforceErrorType.NETWORK
+        },
+        {
+            keywords: ['rate limit', 'too many requests'],
+            type: SalesforceErrorType.RATE_LIMIT
+        },
+        {
+            keywords: ['potentially dangerous patterns'],
+            type: SalesforceErrorType.SOQL_INJECTION
+        },
+        {
+            keywords: ['circuit breaker'],
+            type: SalesforceErrorType.CIRCUIT_BREAKER
+        },
+        {
+            keywords: ['invalid', 'malformed'],
+            type: SalesforceErrorType.VALIDATION
+        }
+    ];
+
+    // Check error code mappings first
+    if (errorCode && errorCodeMappings[errorCode]) {
+        return errorCodeMappings[errorCode];
+    }
+
+    // Check error name mappings
+    if (errorName && errorNameMappings[errorName]) {
+        return errorNameMappings[errorName];
+    }
+
+    // Check message keywords
+    for (const { keywords, type } of messageKeywords) {
+        if (keywords.some(keyword => message.includes(keyword))) {
+            return type;
         }
     }
 
-    static categorizeError(error: any): SalesforceErrorType {
-        if (!error) return SalesforceErrorType.UNKNOWN;
-
-        const message = error.message?.toLowerCase() || '';
-        const errorCode = error.errorCode || error.code || '';
-
-        // Authentication errors
-        if (
-            errorCode === 'INVALID_LOGIN' ||
-            errorCode === 'INVALID_SESSION_ID' ||
-            message.includes('authentication') ||
-            message.includes('invalid session') ||
-            message.includes('jwt authentication failed')
-        ) {
-            return SalesforceErrorType.AUTHENTICATION;
-        }
-
-        // Authorization errors
-        if (
-            errorCode === 'INSUFFICIENT_ACCESS' ||
-            message.includes('insufficient access') ||
-            message.includes('authorization')
-        ) {
-            return SalesforceErrorType.AUTHORIZATION;
-        }
-
-        // Network errors
-        if (
-            error.name === 'FetchError' ||
-            error.code === 'ENOTFOUND' ||
-            error.code === 'ECONNREFUSED' ||
-            error.code === 'TIMEOUT' ||
-            message.includes('network') ||
-            message.includes('timeout') ||
-            message.includes('connection')
-        ) {
-            return SalesforceErrorType.NETWORK;
-        }
-
-        // Rate limiting
-        if (
-            errorCode === 'REQUEST_LIMIT_EXCEEDED' ||
-            message.includes('rate limit') ||
-            message.includes('too many requests')
-        ) {
-            return SalesforceErrorType.RATE_LIMIT;
-        }
-
-        // SOQL injection attempts
-        if (message.includes('potentially dangerous patterns')) {
-            return SalesforceErrorType.SOQL_INJECTION;
-        }
-
-        // Circuit breaker
-        if (message.includes('circuit breaker')) {
-            return SalesforceErrorType.CIRCUIT_BREAKER;
-        }
-
-        // Validation errors
-        if (
-            errorCode === 'MALFORMED_QUERY' ||
-            errorCode === 'INVALID_FIELD' ||
-            message.includes('invalid') ||
-            message.includes('malformed')
-        ) {
-            return SalesforceErrorType.VALIDATION;
-        }
-
-        return SalesforceErrorType.UNKNOWN;
-    }
+    return SalesforceErrorType.UNKNOWN;
 }
 
 // Connection pool configuration
@@ -184,13 +184,31 @@ interface PooledConnection {
     useCount: number;
 }
 
+/**
+ * A robust Salesforce client with connection pooling, automatic token management, and circuit breaker pattern.
+ * 
+ * Features:
+ * - Connection pooling for better performance and resource management
+ * - Automatic JWT token generation and refresh
+ * - Circuit breaker pattern to handle failures gracefully
+ * - SOQL injection prevention
+ * - Comprehensive error handling and monitoring
+ * - Session retry logic for authentication errors
+ * 
+ * @example
+ * ```typescript
+ * const client = new SalesforceClient();
+ * await client.connect();
+ * const results = await client.queryRecord('SELECT Id, Name FROM Account LIMIT 10');
+ * ```
+ */
 export class SalesforceClient {
     private connectionPool: PooledConnection[] = [];
     private tokenCache: TokenCache | null = null;
-    private poolConfig: PoolConfig;
-    private isInitialized: boolean = false;
-    private circuitBreakerFailures: number = 0;
-    private circuitBreakerLastFailure: number = 0;
+    private readonly poolConfig: PoolConfig;
+    private isInitialized = false;
+    private circuitBreakerFailures = 0;
+    private circuitBreakerLastFailure = 0;
     private readonly circuitBreakerThreshold = 5;
     private readonly circuitBreakerCooldown = 60000; // 1 minute
 
@@ -253,11 +271,7 @@ export class SalesforceClient {
             const isIdle = (now - pooledConn.lastUsed) > this.poolConfig.maxIdleTime;
             const shouldKeep = pooledConn.isActive && !isIdle;
 
-            if (!shouldKeep && this.connectionPool.length > this.poolConfig.minConnections) {
-                // console.log(`Cleaning up idle connection ${pooledConn.id}`);
-                return false;
-            }
-            return true;
+            return shouldKeep || this.connectionPool.length <= this.poolConfig.minConnections;
         });
 
         this.connectionPool = activeConnections;
@@ -277,7 +291,7 @@ export class SalesforceClient {
                     lastFailure: new Date(this.circuitBreakerLastFailure).toISOString()
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -294,7 +308,7 @@ export class SalesforceClient {
                     }
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -311,7 +325,7 @@ export class SalesforceClient {
                         e as Error,
                         { keyFormat: 'base64_decode_failed' }
                     );
-                    SalesforceErrorHandler.captureError(error);
+                    captureError(error);
                     throw error;
                 }
             }
@@ -324,12 +338,12 @@ export class SalesforceClient {
                     undefined,
                     { keyFormat: 'invalid_pem_format' }
                 );
-                SalesforceErrorHandler.captureError(error);
+                captureError(error);
                 throw error;
             }
 
             // Validate private key length (basic check for RSA-2048 minimum)
-            const keyContent = privateKey.replace(/-----BEGIN PRIVATE KEY-----|\-----END PRIVATE KEY-----|\n|\r/g, '');
+            const keyContent = privateKey.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n|\r/g, '');
             if (keyContent.length < 1000) {
                 const error = new SalesforceError(
                     'Private key appears to be too short. Minimum RSA-2048 required.',
@@ -337,7 +351,7 @@ export class SalesforceClient {
                     undefined,
                     { keyLength: keyContent.length, minimumRequired: 1000 }
                 );
-                SalesforceErrorHandler.captureError(error);
+                captureError(error);
                 throw error;
             }
 
@@ -394,7 +408,7 @@ export class SalesforceClient {
                 );
 
                 this.recordFailure();
-                SalesforceErrorHandler.captureError(error);
+                captureError(error);
                 throw error;
             }
 
@@ -416,7 +430,7 @@ export class SalesforceClient {
             const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
             const errorType = isNetworkError
                 ? SalesforceErrorType.NETWORK
-                : SalesforceErrorHandler.categorizeError(error);
+                : categorizeError(error);
 
             if (!(error instanceof SalesforceError)) {
                 const enhancedError = new SalesforceError(
@@ -430,7 +444,7 @@ export class SalesforceClient {
                 );
 
                 this.recordFailure();
-                SalesforceErrorHandler.captureError(enhancedError);
+                captureError(enhancedError);
                 throw enhancedError;
             } else {
                 this.recordFailure();
@@ -456,7 +470,7 @@ export class SalesforceClient {
 
         if (!availableConnection && this.connectionPool.length < this.poolConfig.maxConnections) {
             // Create new connection
-            availableConnection = await this.createNewConnection();
+            availableConnection = this.createNewConnection();
         } else if (!availableConnection) {
             // Reuse the least recently used connection
             availableConnection = this.connectionPool.reduce((oldest, current) =>
@@ -464,7 +478,7 @@ export class SalesforceClient {
             );
 
             // Update the connection with fresh token
-            await this.refreshConnection(availableConnection);
+            this.refreshConnection(availableConnection);
         }
 
         // Update usage tracking
@@ -477,7 +491,7 @@ export class SalesforceClient {
     /**
      * Create a new pooled connection
      */
-    private async createNewConnection(): Promise<PooledConnection> {
+    private createNewConnection(): PooledConnection {
         if (!this.tokenCache) {
             throw new Error('No valid token cache available');
         }
@@ -488,14 +502,15 @@ export class SalesforceClient {
             loginUrl: process.env.SF_LOGIN_URL || 'https://login.salesforce.com',
             instanceUrl: this.tokenCache.instanceUrl,
             accessToken: this.tokenCache.accessToken,
-            refreshFn: async (conn: any, callback: (err: Error | null, accessToken?: string) => void) => {
-                try {
-                    const newToken = await this.generateAccessToken();
-                    conn.instanceUrl = newToken.instanceUrl;
-                    callback(null, newToken.accessToken);
-                } catch (error) {
-                    callback(error instanceof Error ? error : new Error(String(error)));
-                }
+            refreshFn: (conn: any, callback: (err: Error | null, accessToken?: string) => void) => {
+                this.generateAccessToken()
+                    .then(newToken => {
+                        conn.instanceUrl = newToken.instanceUrl;
+                        callback(null, newToken.accessToken);
+                    })
+                    .catch(error => {
+                        callback(error instanceof Error ? error : new Error(String(error)));
+                    });
             }
         });
 
@@ -514,7 +529,7 @@ export class SalesforceClient {
     /**
      * Refresh an existing connection with new token
      */
-    private async refreshConnection(pooledConnection: PooledConnection): Promise<void> {
+    private refreshConnection(pooledConnection: PooledConnection): void {
         if (!this.tokenCache) {
             throw new Error('No valid token cache available');
         }
@@ -543,8 +558,7 @@ export class SalesforceClient {
             // Refresh token and update all connections
             await this.generateAccessToken();
 
-            const refreshPromises = this.connectionPool.map(conn => this.refreshConnection(conn));
-            await Promise.all(refreshPromises);
+            this.connectionPool.forEach(conn => this.refreshConnection(conn));
         }
     }
 
@@ -563,7 +577,7 @@ export class SalesforceClient {
                     valueType: typeof soql
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -590,7 +604,7 @@ export class SalesforceClient {
                         securityRisk: 'SQL_INJECTION_ATTEMPT'
                     }
                 );
-                SalesforceErrorHandler.captureError(error);
+                captureError(error);
                 throw error;
             }
         }
@@ -609,7 +623,7 @@ export class SalesforceClient {
                     undefined,
                     { soql }
                 );
-                SalesforceErrorHandler.captureError(error);
+                captureError(error);
                 throw error;
             }
 
@@ -625,7 +639,7 @@ export class SalesforceClient {
                     // Refresh the token and retry
                     await this.generateAccessToken();
                     if (pooledConnection) {
-                        await this.refreshConnection(pooledConnection);
+                        this.refreshConnection(pooledConnection);
                         const result = await pooledConnection.conn.query(soql);
 
                         if (!result) {
@@ -635,7 +649,7 @@ export class SalesforceClient {
                                 undefined,
                                 { soql, retryAttempt: true }
                             );
-                            SalesforceErrorHandler.captureError(error);
+                            captureError(error);
                             throw error;
                         }
 
@@ -652,7 +666,7 @@ export class SalesforceClient {
                             retryAttempt: true
                         }
                     );
-                    SalesforceErrorHandler.captureError(enhancedError);
+                    captureError(enhancedError);
                     throw enhancedError;
                 }
             }
@@ -662,7 +676,7 @@ export class SalesforceClient {
                 throw error;
             }
 
-            const errorType = SalesforceErrorHandler.categorizeError(error);
+            const errorType = categorizeError(error);
             const enhancedError = new SalesforceError(
                 `SOQL query execution failed: ${error.message}`,
                 errorType,
@@ -675,7 +689,7 @@ export class SalesforceClient {
                 }
             );
 
-            SalesforceErrorHandler.captureError(enhancedError);
+            captureError(enhancedError);
             throw enhancedError;
         }
     }
@@ -695,7 +709,7 @@ export class SalesforceClient {
                     objectTypeType: typeof objectType
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -710,7 +724,7 @@ export class SalesforceClient {
                     objectType
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -735,7 +749,7 @@ export class SalesforceClient {
                     // Refresh the token and retry
                     await this.generateAccessToken();
                     if (pooledConnection) {
-                        await this.refreshConnection(pooledConnection);
+                        this.refreshConnection(pooledConnection);
                         const sobject = pooledConnection.conn.sobject(objectType);
                         const result = await sobject.findOne(conditions, fields);
                         return result;
@@ -753,7 +767,7 @@ export class SalesforceClient {
                             retryAttempt: true
                         }
                     );
-                    SalesforceErrorHandler.captureError(enhancedError);
+                    captureError(enhancedError);
                     throw enhancedError;
                 }
             }
@@ -763,7 +777,7 @@ export class SalesforceClient {
                 throw error;
             }
 
-            const errorType = SalesforceErrorHandler.categorizeError(error);
+            const errorType = categorizeError(error);
             const enhancedError = new SalesforceError(
                 `SObject findOne operation failed: ${error.message}`,
                 errorType,
@@ -777,7 +791,7 @@ export class SalesforceClient {
                 }
             );
 
-            SalesforceErrorHandler.captureError(enhancedError);
+            captureError(enhancedError);
             throw enhancedError;
         }
     }
@@ -797,7 +811,7 @@ export class SalesforceClient {
                     objectTypeType: typeof objectType
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -812,7 +826,7 @@ export class SalesforceClient {
                     objectType
                 }
             );
-            SalesforceErrorHandler.captureError(error);
+            captureError(error);
             throw error;
         }
 
@@ -839,7 +853,7 @@ export class SalesforceClient {
                         resultValue: results
                     }
                 );
-                SalesforceErrorHandler.captureError(error);
+                captureError(error);
                 throw error;
             }
 
@@ -855,7 +869,7 @@ export class SalesforceClient {
                     // Refresh the token and retry
                     await this.generateAccessToken();
                     if (pooledConnection) {
-                        await this.refreshConnection(pooledConnection);
+                        this.refreshConnection(pooledConnection);
                         const sobject = pooledConnection.conn.sobject(objectType);
                         const results = await sobject.find(conditions, fields);
 
@@ -874,7 +888,7 @@ export class SalesforceClient {
                                     retryAttempt: true
                                 }
                             );
-                            SalesforceErrorHandler.captureError(error);
+                            captureError(error);
                             throw error;
                         }
 
@@ -893,7 +907,7 @@ export class SalesforceClient {
                             retryAttempt: true
                         }
                     );
-                    SalesforceErrorHandler.captureError(enhancedError);
+                    captureError(enhancedError);
                     throw enhancedError;
                 }
             }
@@ -903,7 +917,7 @@ export class SalesforceClient {
                 throw error;
             }
 
-            const errorType = SalesforceErrorHandler.categorizeError(error);
+            const errorType = categorizeError(error);
             const enhancedError = new SalesforceError(
                 `SObject find operation failed: ${error.message}`,
                 errorType,
@@ -917,7 +931,7 @@ export class SalesforceClient {
                 }
             );
 
-            SalesforceErrorHandler.captureError(enhancedError);
+            captureError(enhancedError);
             throw enhancedError;
         }
     }
@@ -929,7 +943,7 @@ export class SalesforceClient {
         return {
             totalConnections: this.connectionPool.length,
             activeConnections: this.connectionPool.filter(conn => conn.isActive).length,
-            tokenCached: !!this.tokenCache,
+            tokenCached: Boolean(this.tokenCache),
             tokenValid: this.isTokenValid(),
             circuitBreakerFailures: this.circuitBreakerFailures,
             circuitBreakerOpen: this.isCircuitBreakerOpen(),
