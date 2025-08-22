@@ -1,21 +1,9 @@
-interface RecurringDonation {
-    springboardId: string
-    brand: string
-    amount: number
-    nextChargeDate: string
-    membershipStartDate: string
-}
-
-interface ProfileResponse {
-    name: string | null
-    lastDonationDate: string | null
-    lastDonationAmount: number | null
-    isActiveSustainer: boolean
-    activeRecurringDonations: RecurringDonation[]
-}
-
 import { ref, readonly } from 'vue';
 
+/**
+ * Hook providing profile API methods and state.
+ * @returns {object} Contains profile, loading, error state and helper functions.
+ */
 export const useProfileApi = () => {
     const config = useRuntimeConfig();
     const { authenticatedFetch } = useAuth();
@@ -23,6 +11,11 @@ export const useProfileApi = () => {
     const loading = ref(false);
     const error = ref(null);
 
+    /**
+     * Fetches the user profile by Salesforce ID or email.
+     * @param {string} salesforceIdOrEmail - Salesforce ID or email to fetch the profile.
+     * @returns {Promise<any>} Resolves to profile data.
+     */
     const fetchProfile = async (salesforceIdOrEmail: string) => {
         loading.value = true;
         error.value = null;
@@ -35,25 +28,26 @@ export const useProfileApi = () => {
                 ? { email: salesforceIdOrEmail }
                 : { salesforceID: salesforceIdOrEmail };
 
-            console.log('🔍 Profile API - Making authenticated request with:', requestBody);
-
             const data = await authenticatedFetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
                 body: requestBody,
             });
 
             profile.value = data;
-            console.log('✅ Profile API - Successfully fetched profile:', data);
             return data;
         } catch (err: any) {
             error.value = err;
-            console.error('❌ Profile API error:', err);
             throw err;
         } finally {
             loading.value = false;
         }
     };
 
+    /**
+     * Formats a number as USD currency string.
+     * @param {number|null} amount - Amount to format.
+     * @returns {string} Formatted currency string or 'N/A' if null.
+     */
     const formatCurrency = (amount: number | null): string => {
         if (amount === null) return 'N/A'
         return new Intl.NumberFormat('en-US', {
@@ -62,6 +56,11 @@ export const useProfileApi = () => {
         }).format(amount)
     }
 
+    /**
+     * Formats a date string into a human-readable date.
+     * @param {string|null} dateString - Date string to format.
+     * @returns {string} Formatted date string or 'N/A' if null or empty.
+     */
     const formatDate = (dateString: string | null): string => {
         if (!dateString) return 'N/A'
         return new Date(dateString).toLocaleDateString('en-US', {

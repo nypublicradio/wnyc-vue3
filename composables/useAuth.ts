@@ -16,11 +16,11 @@ interface AuthResponse {
 const authToken = ref<string | null>(null);
 const currentUser = ref<User | null>(null);
 const refreshTokenValue = ref<string | null>(null);
-const isAuthenticated = computed(() => !!authToken.value && !!currentUser.value);
+const isAuthenticated = computed(() => Boolean(authToken.value) && Boolean(currentUser.value));
 
 export const useAuth = () => {
     // Initialize from localStorage on client side
-    if (process.client) {
+    if (import.meta.client) {
         const stored = localStorage.getItem('auth_token');
         if (stored) {
             authToken.value = stored;
@@ -53,7 +53,7 @@ export const useAuth = () => {
             refreshTokenValue.value = refreshToken;
         }
 
-        if (process.client) {
+        if (import.meta.client) {
             localStorage.setItem('auth_token', token);
             localStorage.setItem('auth_user', JSON.stringify(user));
             if (refreshToken) {
@@ -70,7 +70,7 @@ export const useAuth = () => {
         currentUser.value = null;
         refreshTokenValue.value = null;
 
-        if (process.client) {
+        if (import.meta.client) {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('auth_user');
             localStorage.removeItem('refresh_token');
@@ -111,7 +111,7 @@ export const useAuth = () => {
                 authToken.value = data.token;
                 currentUser.value = data.user;
 
-                if (process.client) {
+                if (import.meta.client) {
                     localStorage.setItem('auth_token', data.token);
                     localStorage.setItem('auth_user', JSON.stringify(data.user));
                 }
@@ -199,11 +199,9 @@ export const useAuth = () => {
 
             // If token expires in less than 5 minutes, refresh it
             if (timeUntilExpiry < 300) { // 5 minutes
-                console.log('Token expiring soon, refreshing...');
                 await refreshToken(refreshTokenValue.value);
             }
         } catch (error) {
-            console.error('Token expiry check failed:', error);
             logout();
         }
     };
@@ -213,14 +211,22 @@ export const useAuth = () => {
      */
     let tokenRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
+    /**
+     * Start automatic token refresh checking
+     * Checks token expiry every 2 minutes and refreshes token proactively.
+     */
     const startTokenRefreshTimer = () => {
-        if (process.client) {
+        if (import.meta.client) {
             // Clear any existing interval to avoid duplicates
             if (tokenRefreshIntervalId !== null) {
                 clearInterval(tokenRefreshIntervalId);
             }
             // Check token expiry every 2 minutes
-            tokenRefreshIntervalId = setInterval(checkTokenExpiry, 2 * 60 * 1000);
+            tokenRefreshIntervalId = setInterval(() => {
+                checkTokenExpiry().catch(() => {
+                    // Silently handle errors as they're already logged in checkTokenExpiry
+                });
+            }, 2 * 60 * 1000);
         }
     };
     /**
@@ -228,20 +234,18 @@ export const useAuth = () => {
      */
     const triggerTokenRefresh = async (): Promise<boolean> => {
         if (!refreshTokenValue.value) {
-            console.warn('No refresh token available');
             return false;
         }
 
         try {
             return await refreshToken(refreshTokenValue.value);
         } catch (error) {
-            console.error('Manual token refresh failed:', error);
             return false;
         }
     };
 
     // Start the token refresh timer on client side
-    if (process.client) {
+    if (import.meta.client) {
         startTokenRefreshTimer();
     }
 

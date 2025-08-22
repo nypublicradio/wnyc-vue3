@@ -218,9 +218,9 @@ function generateToken(options) {
     console.log(`echo "Authorization: Bearer ${token}" | pbcopy`);
 
     console.log('\n🧪 Test with curl:');
-    console.log('curl -X POST http://localhost:3000/api/profile ');
+    console.log(`curl -X POST http://localhost:3000/api/profile \\`);
     console.log(`  -H "Authorization: Bearer ${token}" \\`);
-    console.log('  -H "Content-Type: application/json" \\');
+    console.log(`  -H "Content-Type: application/json" \\`);
     console.log(`  -d '{"salesforceID": "your-salesforce-contact-id"}'`);
 
     console.log('\n⚠️  Important Notes:');
@@ -267,7 +267,7 @@ function generateSecret(options) {
     console.log(`echo "${secret}" | pbcopy`);
 
     console.log('\n🚀 Deployment:');
-    console.log(`• For Fly.io: fly secrets set JWT_SECRET="${secret}"`);
+    console.log('• For Fly.io: fly secrets set JWT_SECRET="' + secret + '"');
     console.log('• For other platforms: Set JWT_SECRET environment variable');
 }
 
