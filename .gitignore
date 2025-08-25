@@ -14,3 +14,7 @@ dist
 www
 # Sentry Config File
 .env.sentry-build-plugin
+# Self Signed Certificates
+*.key
+*.pem
+*.crt
