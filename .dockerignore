@@ -22,3 +22,7 @@ CODEOWNERS
 README.md
 
 .vscode/
+# Self Signed Certificates
+*.key
+*.pem
+*.crt

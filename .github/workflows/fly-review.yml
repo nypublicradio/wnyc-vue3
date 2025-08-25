@@ -59,6 +59,8 @@ jobs:
             PAT=${{ secrets.PAT }}
             SUPABASE_URL=${{ vars.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}
           build_args: |
             ENV=review
             SENTRY_DSN=${{ vars.SENTRY_DSN }}
