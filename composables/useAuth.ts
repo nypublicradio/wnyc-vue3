@@ -1,5 +1,5 @@
-import { ref, computed, readonly, nextTick } from 'vue';
-import { Preferences } from "@capacitor/preferences"
+import { ref, computed, readonly } from 'vue';
+
 interface User {
     id: string;
     email: string;
@@ -19,45 +19,33 @@ const refreshTokenValue = ref<string | null>(null);
 const isAuthenticated = computed(() => Boolean(authToken.value) && Boolean(currentUser.value));
 
 export const useAuth = () => {
-    // Token refresh interval ID
-    let tokenRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
+    // Initialize from localStorage on client side
+    if (import.meta.client) {
+        const stored = localStorage.getItem('auth_token');
+        if (stored) {
+            authToken.value = stored;
+        }
 
-    // Initialize from Preferences on client side
-    const initializeAuth = async () => {
-        if (import.meta.client) {
-            const stored = await Preferences.get({ key: 'auth_token' });
-            if (stored.value) {
-                authToken.value = stored.value;
-            }
-
-            const storedUser = await Preferences.get({ key: 'auth_user' });
-            if (storedUser.value) {
-                try {
-                    currentUser.value = JSON.parse(storedUser.value);
-                } catch (error) {
-                    console.error('Failed to parse stored user data:', error);
-                    await Preferences.remove({ key: 'auth_user' });
-                }
-            }
-
-            const storedRefreshToken = await Preferences.get({ key: 'refresh_token' });
-            if (storedRefreshToken.value) {
-                refreshTokenValue.value = storedRefreshToken.value;
+        const storedUser = localStorage.getItem('auth_user');
+        if (storedUser) {
+            try {
+                currentUser.value = JSON.parse(storedUser);
+            } catch (error) {
+                console.error('Failed to parse stored user data:', error);
+                localStorage.removeItem('auth_user');
             }
         }
-    };
 
-    // Initialize auth state
-    if (import.meta.client) {
-        initializeAuth().catch((error) => {
-            console.error('Failed to initialize auth:', error);
-        });
+        const storedRefreshToken = localStorage.getItem('refresh_token');
+        if (storedRefreshToken) {
+            refreshTokenValue.value = storedRefreshToken;
+        }
     }
 
     /**
-     * Set authentication state and fetch membership info
+     * Set authentication state (used by confirm page)
      */
-    const setAuthState = async (token: string, user: User, refreshToken?: string) => {
+    const setAuthState = (token: string, user: User, refreshToken?: string) => {
         authToken.value = token;
         currentUser.value = user;
 
@@ -66,40 +54,26 @@ export const useAuth = () => {
         }
 
         if (import.meta.client) {
-            await Preferences.set({ key: 'auth_token', value: token });
-            await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) });
+            localStorage.setItem('auth_token', token);
+            localStorage.setItem('auth_user', JSON.stringify(user));
             if (refreshToken) {
-                await Preferences.set({ key: 'refresh_token', value: refreshToken });
+                localStorage.setItem('refresh_token', refreshToken);
             }
-
-            // Fetch membership info after authentication is established
-            // This runs in the background and won't block the auth flow
-            nextTick(async () => {
-                try {
-                    const { useProfileApi } = await import('~/composables/useProfileApi');
-                    const { getMembershipInfo } = useProfileApi();
-                    await getMembershipInfo();
-                } catch (error) {
-                    console.warn('Failed to fetch membership info after login:', error);
-                }
-            }).catch((error) => {
-                console.warn('Failed to schedule membership info fetch:', error);
-            });
         }
     };
 
     /**
      * Logout and clear authentication state
      */
-    const logout = async () => {
+    const logout = () => {
         authToken.value = null;
         currentUser.value = null;
         refreshTokenValue.value = null;
 
         if (import.meta.client) {
-            await Preferences.remove({ key: 'auth_token' });
-            await Preferences.remove({ key: 'auth_user' });
-            await Preferences.remove({ key: 'refresh_token' });
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+            localStorage.removeItem('refresh_token');
         }
     };
 
@@ -118,7 +92,7 @@ export const useAuth = () => {
             return true;
         } catch (error) {
             console.error('Token verification failed:', error);
-            await logout();
+            logout();
             return false;
         }
     };
@@ -138,21 +112,16 @@ export const useAuth = () => {
                 currentUser.value = data.user;
 
                 if (import.meta.client) {
-                    await Preferences.set({ key: 'auth_token', value: data.token });
-                    await Preferences.set({ key: 'auth_user', value: JSON.stringify(data.user) });
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('auth_user', JSON.stringify(data.user));
                 }
 
                 return true;
             }
 
             return false;
-        } catch (error: any) {
-            // Only log error once, not repeatedly
-            if (error?.statusCode === 401) {
-                console.warn('Token refresh failed - session expired. Please log in again.');
-            } else {
-                console.error('Token refresh failed:', error);
-            }
+        } catch (error) {
+            console.error('Token refresh failed:', error);
             return false;
         }
     };
@@ -195,12 +164,12 @@ export const useAuth = () => {
                 } else {
                     // Refresh failed, logout user
                     console.log('Token refresh failed, logging out user');
-                    await logout();
+                    logout();
                     throw new Error('Authentication required');
                 }
             } else if (error.statusCode === 401) {
                 // No refresh token available, logout immediately
-                await logout();
+                logout();
                 throw new Error('Authentication required');
             }
             throw error;
@@ -222,31 +191,25 @@ export const useAuth = () => {
                 payload = JSON.parse(atob(base64Url));
             } catch (decodeError) {
                 console.error('Failed to decode JWT payload:', decodeError);
-                await logout();
+                logout();
                 return;
             }
             const currentTime = Math.floor(Date.now() / 1000);
             const timeUntilExpiry = payload.exp - currentTime;
 
             // If token expires in less than 5 minutes, refresh it
-            if (timeUntilExpiry < 300 && refreshTokenValue.value) { // 5 minutes
-                const refreshSuccessful = await refreshToken(refreshTokenValue.value);
-                // If refresh fails, stop the interval to prevent repeated errors
-                if (!refreshSuccessful && tokenRefreshIntervalId) {
-                    clearInterval(tokenRefreshIntervalId);
-                    tokenRefreshIntervalId = null;
-                    console.warn('Token refresh failed - stopping auto-refresh. Please log in again.');
-                }
+            if (timeUntilExpiry < 300) { // 5 minutes
+                await refreshToken(refreshTokenValue.value);
             }
         } catch (error) {
-            // Stop the interval on error
-            if (tokenRefreshIntervalId) {
-                clearInterval(tokenRefreshIntervalId);
-                tokenRefreshIntervalId = null;
-            }
-            await logout();
+            logout();
         }
     };
+
+    /**
+     * Start automatic token refresh checking
+     */
+    let tokenRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
     /**
      * Start automatic token refresh checking
@@ -281,40 +244,6 @@ export const useAuth = () => {
         }
     };
 
-    /**
-     * Initialize authentication from Supabase session
-     * Generates JWT from Supabase session and sets auth state
-     */
-    const initializeFromSupabaseSession = async (): Promise<boolean> => {
-        const supabase = useSupabaseClient();
-        const { data: sessionData } = await supabase.auth.getSession();
-        
-        if (!sessionData?.session) return false;
-        
-        try {
-            const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
-                method: "POST",
-                body: {
-                    access_token: sessionData.session.access_token,
-                    refresh_token: sessionData.session.refresh_token,
-                },
-            });
-            
-            if (jwtResponse.success && jwtResponse.token) {
-                await setAuthState(
-                    jwtResponse.token,
-                    jwtResponse.user,
-                    sessionData.session.refresh_token
-                );
-                return true;
-            }
-        } catch (error) {
-            console.error("Failed to generate JWT:", error);
-        }
-        
-        return false;
-    };
-
     // Start the token refresh timer on client side
     if (import.meta.client) {
         startTokenRefreshTimer();
@@ -328,7 +257,6 @@ export const useAuth = () => {
         isAuthenticated,
 
         // Methods
-        initializeAuth,
         setAuthState,
         logout,
         verifyToken,
@@ -337,6 +265,5 @@ export const useAuth = () => {
         checkTokenExpiry,
         startTokenRefreshTimer,
         triggerTokenRefresh,
-        initializeFromSupabaseSession,
     };
 };

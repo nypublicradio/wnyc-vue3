@@ -1,37 +1,40 @@
 import axios from 'axios'
-import humps from 'humps'
+import { camelizeKeys } from 'humps'
 
 const config = useRuntimeConfig();
-const BASE =
-  process.env.DEMO_AVIARY_BASE_API ||
-  process.env.AVIARY_BASE_API ||
-  (config as any).aviaryBaseApi ||
-  (config as any).public?.AVIARY_BASE_API
 
+/**
+ * Fetches event data from the Wagtail CMS API.
+ * @param eventSlug - The slug identifier for the event
+ * @returns Promise that resolves to the camelized event data or null if not found
+ */
 const getWagtailEventData = async (eventSlug: string) => {
     try {
         const option = {
             method: 'GET',
-            url: `${BASE}pages/${eventSlug}/`,
+            url: `${config.public.AVIARY_BASE_API}pages/${eventSlug}/`,
         };
-        
         const res = await axios(option);
-        return humps.camelizeKeys(res.data);
+        return camelizeKeys(res.data);
     } catch (e) {
-        // Silently handle errors
+        if (e.response && e.response.status === 404) {
+            console.error('Event not found:', eventSlug)
+        } else {
+            console.error('Error fetching event:', e);
+        }
     }
     return null
 };
 
 export default defineEventHandler(async (event) => {
     const eventSlug: string | undefined = event?.context?.params?.eventSlug;
-    
+
     if (eventSlug) {
         const eventData = await getWagtailEventData(eventSlug);
-        
+
         // Set cache headers - longer cache for past events
         const res = event?.node?.res;
-        if (eventData && eventData.startDatetime) {
+        if (eventData?.startDatetime) {
             const eventDate = new Date(eventData.startDatetime);
             const now = new Date();
             const cacheTime = eventDate < now ? 3600 : 1800; // 1 hour for past events, 30 min for future
@@ -39,9 +42,9 @@ export default defineEventHandler(async (event) => {
         } else {
             res.setHeader('Cache-Control', 'maxage=1800, stale-while-revalidate');
         }
-        
+
         return eventData;
     }
-    
+
     return null
 });

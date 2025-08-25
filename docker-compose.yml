@@ -1,17 +1,11 @@
 services:
   wnyc-vue3:
-    image: wnyc-vue3-dev
-    container_name: wnyc-vue3-dev
+    image: wnyc-vue3
+    container_name: wnyc-vue3
     build:
       context: .
-      dockerfile: Dockerfile.dev
     env_file:
       - .env
-    volumes:
-      - ./:/app
-      - /app/node_modules
-      - /app/.nuxt
-      - /app/.output
     environment:
       - NODE_ENV=development
       - SENTRY_DSN=$SENTRY_DSN
@@ -29,7 +23,6 @@ services:
       - BFF_URL=$BFF_URL
       - SUPABASE_URL=$SUPABASE_URL
       - SUPABASE_KEY=$SUPABASE_KEY
-      - SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
       - SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=$SUPABASE_AUTH_SIGN_IN_REDIRECT_TO
       - SUPABASE_AUTH_TOKEN_NAME=$SUPABASE_AUTH_TOKEN_NAME
       - FB_MEASUREMENT_ID=$FB_MEASUREMENT_ID
@@ -58,15 +51,7 @@ services:
       - SF_CLIENT_ID=$SF_CLIENT_ID
       - SF_PRIVATE_KEY=$SF_PRIVATE_KEY
       - JWT_SECRET=$JWT_SECRET
-      - SPRINGBOARD_URL=$SPRINGBOARD_URL
-      - SPRINGBOARD_KEY=$SPRINGBOARD_KEY
-      - NEWSLETTER_API=$NEWSLETTER_API
-      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-      - AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
-      - AWS_REGION=$AWS_REGION
-      - S3_SCHEDULE_BUCKET=$S3_SCHEDULE_BUCKET
-      - USE_MOCK_SCHEDULE=$USE_MOCK_SCHEDULE
     ports:
-      - 3000:3000
-    restart: "unless-stopped"
+      - 8880:8080
+    command: ['./scripts/entrypoint.sh']
+    restart: 'always'

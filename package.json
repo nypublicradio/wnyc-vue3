@@ -10,7 +10,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
-    "build-theme": "node assets/build-theme.js"
+    "build-theme": "node assets/build-theme.js",
+    "jwt": "node scripts/jwt-utils.js"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
@@ -51,11 +52,14 @@
     "@nypublicradio/capacitor-remote-streamer": "^0.5.1",
     "@primevue/themes": "^4.2.5",
     "@sentry/integrations": "^7.114.0",
+    "@sentry/node": "^10.0.0",
     "@sentry/tracing": "^7.114.0",
     "@sentry/vue": "^7.118.0",
     "@supabase/supabase-js": "^2.45.1",
     "@tokenizer/http": "^0.6.2",
     "@types/humps": "^2.0.4",
+    "@types/jsforce": "^1.11.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
     "@vueuse/core": "12.5.0",
@@ -71,6 +75,8 @@
     "humps": "^2.0.1",
     "ionicons": "^6.1.1",
     "jsdom": "^21.1.2",
+    "jsforce": "^3.9.5",
+    "jsonwebtoken": "^9.0.2",
     "memoize": "^10.0.0",
     "music-metadata": "^7.14.0",
     "onesignal-cordova-plugin": "^5.2.11",
