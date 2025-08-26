@@ -9,17 +9,19 @@ const props = defineProps({
 
 <template>
   <div
-    class="login-signup-side-content image flex flex-column justify-content-around align-items-end p-0 style-mode-dark"
+    class="login-signup-side-content image style-mode-dark p-0"
     :style="`background-image:url('/${props.bgImage}')`"
   >
-    <div></div>
-    <div class="info">
-      <h2>Listen anywhere with your free account!</h2>
-      <ul class="pl-4 flex flex-column gap-1">
-        <li>Access your favorites anywhere</li>
-        <li>Find more of what you love in the WNYC App</li>
-        <li>Pick up listening where you left off on podcasts</li>
-      </ul>
+    <div class="flex flex-column justify-content-around align-items-end">
+      <div></div>
+      <div class="info">
+        <h2>Listen anywhere with your free account!</h2>
+        <ul class="pl-4 flex flex-column gap-1">
+          <li>Access your favorites anywhere</li>
+          <li>Find more of what you love in the WNYC App</li>
+          <li>Pick up listening where you left off on podcasts</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>

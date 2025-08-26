@@ -7,30 +7,22 @@ import {
   useSignupSideBar,
   useLoginSideBar,
   useSettingSideBar,
+  useIsApp,
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
-import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   isRoute: {
     type: Boolean,
     default: false,
   },
-  returnRoute: {
-    type: String,
-    default: "/confirm",
-  },
-  showHeader: {
-    type: Boolean,
-    default: true,
-  },
 })
 
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
-const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
+const isApp = useIsApp()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -40,10 +32,6 @@ const onLoginClick = () => {
   if (!props.isRoute) {
     loginSideBar.value = true
     signUpSideBar.value = false
-  } else {
-    navigateTo({
-      path: "/login",
-    })
   }
   trackClickEvent(
     "Click Tracking - log in",
@@ -54,11 +42,7 @@ const onLoginClick = () => {
 
 // actions to be taken with the signup link is clicked
 const onSignup = (provider) => {
-  trackClickEvent(
-    "Click Tracking - sign up",
-    "Sign Up Sidebar - user section",
-    provider
-  )
+  trackClickEvent("Click Tracking - sign up", "Sign Up Sidebar - user section", provider)
 }
 
 // close all sidebars
@@ -74,27 +58,24 @@ const closeAll = () => {
 
 <template>
   <div class="signup">
-    <div v-if="props.showHeader">
-      <slot name="header">
-        <SHeader
-          class="pb-4"
-          label="Sign up"
-          @close-sidebar="
-            props.isRoute ? navigateTo('/home') : (signUpSideBar = false)
-          "
-        />
-        <p>
-          Already have an account?
-          <VFlexibleLink
-            aria-label="log in"
-            @flexible-link-click="onLoginClick"
-          >
-            Log in
-          </VFlexibleLink>
-        </p>
-      </slot>
-    </div>
-    <div class="pt-0">
+    <section>
+      <SHeader
+        label="Sign up"
+        :showButton="isApp"
+        @close-sidebar="props.isRoute ? navigateTo('/home') : (signUpSideBar = false)"
+      />
+    </section>
+    <section>
+      <p>
+        Already have an account?
+        <VFlexibleLink
+          :to="props.isRoute ? '/login' : '#'"
+          aria-label="log in"
+          @click="onLoginClick"
+        >
+          Log in
+        </VFlexibleLink>
+      </p>
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -102,8 +83,6 @@ const closeAll = () => {
         label="Sign up with Google"
         severity="secondary"
         class="center my-3"
-        @submit-click="setAuthReturnRoute(props.returnRoute)"
-        @submit-error="clearAuthReturnRoute()"
         @login-success="onSignup('google')"
       />
       <VLoginWithProvider
@@ -113,25 +92,27 @@ const closeAll = () => {
         severity="secondary"
         class="center"
         label="Sign up with Apple"
-        @submit-click="setAuthReturnRoute(props.returnRoute)"
-        @submit-error="clearAuthReturnRoute()"
         @login-success="onSignup('apple')"
       />
-      <Divider class="my-4 mask" align="center">
+      <Divider
+        class="my-4"
+        align="center"
+        pt:content:style="background:var(--p-surface-25)"
+      >
         <b>or</b>
       </Divider>
       <VSignupWithEmail
         :client="client"
         :config="config"
         label="Sign up"
-        :returnRoute="props.returnRoute"
+        slug="/confirm"
         @login-success="closeAll"
         redirectUrl="https://demo.native-app.wnyc.org"
       >
         <template #aboveSubmit>
           <p class="mb-3">
-            By proceeding to create your account, you are agreeing to New York
-            Public Radio's
+            By proceeding to create your account, you are agreeing to New York Public
+            Radio's
             <VFlexibleLink to="/terms">Terms of Service</VFlexibleLink> and
             <VFlexibleLink to="/privacy">Privacy Policy</VFlexibleLink>
           </p>
@@ -143,7 +124,7 @@ const closeAll = () => {
           />
         </template> -->
       </VSignupWithEmail>
-    </div>
+    </section>
   </div>
 </template>
 

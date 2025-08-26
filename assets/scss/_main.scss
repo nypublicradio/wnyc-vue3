@@ -122,6 +122,41 @@ a {
   }
 }
 
+/* grid padding classes */
+.grid-lggutter {
+  margin-right: -1rem;
+  margin-left: -1rem;
+  margin-top: -1rem;
+  & > * {
+    padding: 1rem;
+  }
+}
+.grid-xlgutter {
+  margin-right: -1.5rem;
+  margin-left: -1.5rem;
+  margin-top: -1.5rem;
+  & > * {
+    padding: 1.5rem;
+  }
+}
+.grid-xxlgutter {
+  margin-right: -2rem;
+  margin-left: -2rem;
+  margin-top: -2rem;
+  & > * {
+    padding: 2rem;
+  }
+}
+/* grid padding classes */
+.grid-1rem {
+  margin-right: -1rem;
+  margin-left: -1rem;
+  margin-top: -1rem;
+  & > * {
+    padding: 1rem;
+  }
+}
+
 .font-meta {
   font-family: var(--font-family-header);
 }
