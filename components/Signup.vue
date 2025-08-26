@@ -7,6 +7,7 @@ import {
   useSignupSideBar,
   useLoginSideBar,
   useSettingSideBar,
+  useIsApp,
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
@@ -21,6 +22,7 @@ const props = defineProps({
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
+const isApp = useIsApp()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -59,6 +61,7 @@ const closeAll = () => {
     <section>
       <SHeader
         label="Sign up"
+        :showButton="isApp"
         @close-sidebar="props.isRoute ? navigateTo('/home') : (signUpSideBar = false)"
       />
     </section>

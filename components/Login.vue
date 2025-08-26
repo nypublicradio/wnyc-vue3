@@ -7,6 +7,7 @@ import {
   useLoginSideBar,
   useSettingSideBar,
   useForgotPasswordSideBar,
+  useIsApp,
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
@@ -22,6 +23,7 @@ const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
+const isApp = useIsApp()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -51,8 +53,12 @@ const closeAll = () => {
 
 // open the forgot password sidebar
 const openForgotPassword = () => {
-  loginSideBar.value = false
-  forgotPasswordSideBar.value = true
+  if (isApp.value) {
+    loginSideBar.value = false
+    forgotPasswordSideBar.value = true
+  } else {
+    navigateTo("/forgot-password")
+  }
 }
 </script>
 
@@ -61,6 +67,7 @@ const openForgotPassword = () => {
     <section>
       <SHeader
         label="Log in"
+        :showButton="isApp"
         @close-sidebar="props.isRoute ? navigateTo('/home') : (loginSideBar = false)"
       />
     </section>
@@ -106,17 +113,14 @@ const openForgotPassword = () => {
         @submit-success="closeAll"
       >
         <template #belowSubmit>
-          <div class="mt-4 relative">
-            <p class="text-center">
-              <VFlexibleLink
-                to="#"
-                class="link m-auto block"
-                aria-label="forgot password"
-                @click="openForgotPassword"
-              >
-                Forgot password?
-              </VFlexibleLink>
-            </p>
+          <div class="mt-4 relative w-full">
+            <Button
+              severity="secondary"
+              variant="link"
+              class="link m-auto block"
+              @click="openForgotPassword"
+              label="Forgot password?"
+            ></Button>
           </div>
         </template>
       </VLoginWithEmail>

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { camelizeKeys } from 'humps'
+import humps from 'humps'
 
 const config = useRuntimeConfig();
 
@@ -15,7 +15,7 @@ const getWagtailEventData = async (eventSlug: string) => {
             url: `${config.public.AVIARY_BASE_API}pages/${eventSlug}/`,
         };
         const res = await axios(option);
-        return camelizeKeys(res.data);
+        return humps.camelizeKeys(res.data);
     } catch (e) {
         if (e.response && e.response.status === 404) {
             console.error('Event not found:', eventSlug)
