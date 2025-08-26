@@ -373,6 +373,18 @@ This application uses JWT Bearer flow for secure server-to-server authentication
    - Permitted Users: "Admin approved users are pre-authorized"
    - Manage Profiles → Add "System Administrator"
 
+4. **Initial Setup & Manual Connection**
+   - When setting up the app in Salesforce for the first time, it requires a manual connection to authorize the app
+   - Run the test script to get the authorization URL:
+
+     ```bash
+     npm run test-sf-auth
+     ```
+
+   - The script will provide a URL that you need to visit to approve the app
+   - Complete the authorization flow in your browser
+   - Once authorized, subsequent API calls will work automatically
+
 ### Environment Variables
 
 Add to your `.env`:
@@ -384,7 +396,10 @@ SF_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
 your_private_key_content_from_salesforce-server.key
 -----END PRIVATE KEY-----"
 SF_LOGIN_URL=https://login.salesforce.com  # Use https://test.salesforce.com for sandbox
+SF_SECRET=your_connected_app_consumer_secret  # Temporarily required for initial setup only
 ```
+
+**Note**: The `SF_SECRET` is only needed during the initial manual authorization process. Once the app is authorized in Salesforce, this environment variable can be removed as the JWT Bearer flow will handle authentication using the private key.
 
 ### Testing the Integration
 
