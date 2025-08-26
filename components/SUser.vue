@@ -21,6 +21,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  size: {
+    type: String,
+    default: "large",
+  },
+  textSize: {
+    type: String,
+    default: "",
+  },
 })
 
 const emit = defineEmits(["update:data", "onDisabled"])
@@ -101,7 +109,7 @@ const avatarUrl = computed(() => {
   <div class="s-user flex gap-3">
     <Avatar
       :image="avatarUrl"
-      size="large"
+      :size="props.size"
       :style="`
         cursor: ${props.disabled ? 'default' : 'pointer'};
       `"
@@ -146,7 +154,7 @@ const avatarUrl = computed(() => {
       />
     </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
-      <h2>Hi, {{ currentUserProfile?.name }}</h2>
+      <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name }}</h2>
       <VFlexibleLink to="/home" class="p1" @click="onLogOut">Log out</VFlexibleLink>
     </div>
     <div v-else class="info flex flex-column gap-3 mt-2">
@@ -164,13 +172,10 @@ const avatarUrl = computed(() => {
 <style lang="scss" scoped>
 .s-user {
   .p-avatar {
-    width: 40px;
-    height: 40px;
     position: relative;
     flex: none;
     background-color: #ffffff;
     color: var(--p-surface-950);
-    border-radius: 50%;
     .pi-plus {
       font-size: 0.5rem;
       position: absolute;

@@ -75,7 +75,12 @@ onMounted(async () => {
       <!-- User Profile Section -->
       <div v-if="currentUser" class="user-profile mb-6">
         <div class="">
-          <SUser :disabled="isDisabled" :isEmail="isEmail" />
+          <SUser
+            :disabled="isDisabled"
+            :isEmail="isEmail"
+            size="xlarge"
+            text-size="text-lg md:text-4xl lg:text-5xl"
+          />
         </div>
       </div>
 
