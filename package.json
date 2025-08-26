@@ -11,7 +11,9 @@
     "postinstall": "nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
     "build-theme": "node assets/build-theme.js",
-    "jwt": "node scripts/jwt-utils.js"
+    "jwt": "node scripts/jwt-utils.js",
+    "test-sf-auth": "node scripts/test-sf-auth.js",
+    "test-sf-auth-sandbox": "node scripts/test-sf-auth.js --sandbox"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
