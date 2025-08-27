@@ -158,11 +158,11 @@ a {
 }
 
 .font-meta {
-  font-family: var(--font-family-header);
+  font-family: var(--font-family-header) !important;
 }
 
 .font-tisa {
-  font-family: var(--font-family-tisa);
+  font-family: var(--font-family-tisa) !important;
 }
 
 label {
