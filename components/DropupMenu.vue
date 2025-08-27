@@ -1,5 +1,6 @@
 <script setup>
 import { useSwipe } from "@vueuse/core"
+import VImage from "./VImage.vue"
 const props = defineProps({
   options: {
     type: Array,
@@ -259,12 +260,12 @@ defineExpose({
               <br />
               Vmodel = {{ vModel }} -->
               <div :key="item.label" class="flex align-items-center station-options">
-                <img
-                  v-if="item.image"
-                  :alt="item.label"
+                <VImage
                   :src="item.image"
-                  class="mr-3"
+                  alt="item.label"
+                  class="mr-3 flex-none"
                   style="width: 40px; height: 40px"
+                  :srcset="[2]"
                 />
                 <i v-if="item.icon" class="mr-3" :class="item.icon"></i>
                 <component

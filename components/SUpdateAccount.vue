@@ -240,10 +240,10 @@ const beforeYouLeave = () => {
 </script>
 
 <template>
-  <div>
+  <div class="edit-profile-form">
     <div>
       <SHeader label="Account" @close-sidebar="beforeYouLeave" />
-      <form v-if="formData" class="mt-6" novalidate @submit.prevent="submitForm">
+      <form v-if="formData" class="form mt-6" novalidate @submit.prevent="submitForm">
         <div class="grid mb-2">
           <div class="flex flex-column gap-2 col-12">
             <label for="first_name">Name</label>
@@ -380,3 +380,13 @@ const beforeYouLeave = () => {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.edit-profile-form {
+  width: 100%;
+  .form {
+    margin: auto;
+    max-width: $thinContentWidth;
+  }
+}
+</style>

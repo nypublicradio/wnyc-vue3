@@ -7,6 +7,7 @@ import {
   setDarkMode,
   toggleAskNotificationPermissions,
   getAndSetUserProfile,
+  initializeStationList,
   //toSystemSettings,
 } from "~/utilities/helpers"
 import {
@@ -50,7 +51,14 @@ const isDisabled = computed(() => {
 })
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
-const { profile: profileData, loading: isLoading, error, fetchProfile, formatCurrency, formatDate } = useProfileApi()
+const {
+  profile: profileData,
+  loading: isLoading,
+  error,
+  fetchProfile,
+  formatCurrency,
+  formatDate,
+} = useProfileApi()
 
 // main function to update the toast component
 const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
@@ -61,6 +69,7 @@ const showMessage = (mySeverity = "success", myMessage = "Settings updated.") =>
   }
 }
 
+<<<<<<< HEAD
 // formats the station list for the dropdown
 const initializeStationList = (val) => {
   const tempMenuData = []
@@ -80,6 +89,8 @@ const initializeStationList = (val) => {
 
   stationsMenuData.value = tempMenuData
 }
+=======
+>>>>>>> 37dc4beb (added default dropup to the account page)
 // handles updating the profile settings in supabase and local storage
 const updateProfile = async () => {
   // update supabase and local storage
@@ -122,12 +133,12 @@ const updateProfile = async () => {
 const tempEmail = shallowRef(currentUser.value?.email)
 
 onMounted(async () => {
-  await initializeStationList(allCurrentStations.value)
-  
+  stationsMenuData.value = await initializeStationList(allCurrentStations.value)
+
   // Fetch user profile if user is authenticated
   if (currentUser.value) {
     await getAndSetUserProfile()
-    
+
     // Fetch profile data from /api/profile if user has a Salesforce ID
     if (currentUserProfile.value?.salesforce_id) {
       await fetchProfile(currentUserProfile.value.salesforce_id)
@@ -276,24 +287,24 @@ const showNotificationTypes = computed(() => {
         <p :class="[{ disabled: isDisabled }]">*********</p>
       </SBox>
     </section>
-    
+
     <!-- Member Profile Section -->
     <section v-if="currentUser && profileData" class="member-profile p-0">
       <div class="flex s-title-holder">
         <i class="mr-2 pi pi-user"></i>
         <div class="s-title">Member Profile</div>
       </div>
-      
+
       <SBox label="Member Name" :ripple="false">
-        <p>{{ profileData.name || 'N/A' }}</p>
+        <p>{{ profileData.name || "N/A" }}</p>
       </SBox>
-      
+
       <SBox label="Active Sustainer" :ripple="false">
         <p :class="profileData.isActiveSustainer ? 'text-green-600' : 'text-gray-500'">
-          {{ profileData.isActiveSustainer ? 'Yes' : 'No' }}
+          {{ profileData.isActiveSustainer ? "Yes" : "No" }}
         </p>
       </SBox>
-      
+
       <SBox v-if="profileData.lastDonationDate" label="Last Donation" :ripple="false">
         <div class="text-right">
           <p>{{ formatDate(profileData.lastDonationDate) }}</p>
@@ -302,24 +313,33 @@ const showNotificationTypes = computed(() => {
           </p>
         </div>
       </SBox>
-      
-      <div v-if="profileData.activeRecurringDonations && profileData.activeRecurringDonations.length > 0">
-        <SBox 
-          v-for="(donation, index) in profileData.activeRecurringDonations" 
+
+      <div
+        v-if="
+          profileData.activeRecurringDonations &&
+          profileData.activeRecurringDonations.length > 0
+        "
+      >
+        <SBox
+          v-for="(donation, index) in profileData.activeRecurringDonations"
           :key="donation.springboardId"
-          :label="`Active Donation ${index + 1}`" 
+          :label="`Active Donation ${index + 1}`"
           :ripple="false"
         >
           <div class="text-right">
             <p class="font-medium">{{ donation.brand }}</p>
             <p>{{ formatCurrency(donation.amount) }}</p>
-            <p class="text-sm opacity-75">Next charge: {{ formatDate(donation.nextChargeDate) }}</p>
-            <p class="text-xs opacity-60">Member since: {{ formatDate(donation.membershipStartDate) }}</p>
+            <p class="text-sm opacity-75">
+              Next charge: {{ formatDate(donation.nextChargeDate) }}
+            </p>
+            <p class="text-xs opacity-60">
+              Member since: {{ formatDate(donation.membershipStartDate) }}
+            </p>
           </div>
         </SBox>
       </div>
     </section>
-    
+
     <!-- Loading state for member profile -->
     <section v-else-if="currentUser && isLoading" class="member-profile p-0">
       <div class="flex s-title-holder">
@@ -332,7 +352,7 @@ const showNotificationTypes = computed(() => {
         </div>
       </SBox>
     </section>
-    
+
     <!-- Error state for member profile -->
     <section v-else-if="currentUser && error" class="member-profile p-0">
       <div class="flex s-title-holder">
@@ -343,7 +363,7 @@ const showNotificationTypes = computed(() => {
         <p class="text-red-500 text-right">{{ error }}</p>
       </SBox>
     </section>
-    
+
     <section class="listening-preferences p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
@@ -579,43 +599,43 @@ const showNotificationTypes = computed(() => {
     .text-green-600 {
       color: #059669;
     }
-    
+
     .text-gray-500 {
       color: #6b7280;
     }
-    
+
     .text-red-500 {
       color: #dc2626;
     }
-    
+
     .text-right {
       text-align: right;
     }
-    
+
     .text-sm {
       font-size: 0.875rem;
     }
-    
+
     .text-xs {
       font-size: 0.75rem;
     }
-    
+
     .opacity-75 {
       opacity: 0.75;
     }
-    
+
     .opacity-60 {
       opacity: 0.6;
     }
-    
+
     .font-medium {
       font-weight: 500;
     }
-    
+
     .flex {
       display: flex;
     }
-    
+
     .justify-end {
       justify-content: flex-end;
     }

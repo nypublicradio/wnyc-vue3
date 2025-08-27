@@ -4,10 +4,7 @@
 </script>
 
 <template>
-  <div class="login">
-    <!--     <section>
-      <SHeader label="Account" @close-sidebar="editProfileSideBar = false" />
-    </section> -->
+  <div class="edit-profile">
     <section>
       <SUpdateAccount />
     </section>

@@ -3,12 +3,19 @@ import {
   useCurrentUser,
   useCurrentUserProfile,
   useEditProfileSideBar,
+  useAllCurrentStations,
+  useIsLiveStream,
 } from "~/composables/states"
+import { trackClickEvent, initializeStationList } from "~/utilities/helpers"
 import { useProfileApi } from "~/composables/useProfileApi"
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const editProfileSideBar = useEditProfileSideBar()
+const allCurrentStations = useAllCurrentStations()
+const isLiveStream = useIsLiveStream()
+
+const defaultStreamRef = ref(null)
 
 // Profile API composable for member profile data
 const {
@@ -44,6 +51,23 @@ const editField = () => {
   if (!isDisabled.value) {
     editProfileSideBar.value = true
   }
+}
+
+// handles tracking the station change event
+const onUpdateStation = (data) => {
+  if (!isLiveStream.value) {
+    updateLiveStream(data.slug)
+  }
+  trackClickEvent(
+    "Click Tracking - Default stream",
+    "Account Dashboard - Listening Preferences",
+    data.station
+  )
+}
+
+// handles the dropdown menu click event
+const clickThisMenu = (ref) => {
+  ref.toggleDrawer()
 }
 
 onMounted(async () => {
@@ -152,13 +176,13 @@ onMounted(async () => {
       <h2 class="mb-4">Member Center</h2>
 
       <div class="member-profile mb-6 grid grid-lggutter">
-        <div v-if="currentUser && profileData" class="col-12 md:col-6">
+        <div v-if="currentUser && profileData && !isLoading" class="col-12 md:col-6">
           <div class="card">
             <div class="flex flex-wrap align-items-start gap-3">
               <img
                 src="/cert.svg"
                 alt="Membership certificate icon"
-                class="rounded-full max-w-4rem h-auto"
+                class="max-w-4rem h-auto"
               />
               <div>
                 <p class="font-bold">WNYC Member</p>
@@ -262,12 +286,27 @@ onMounted(async () => {
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="clickThisMenu(defaultStreamRef)"
                 label="Update"
                 size="small"
               ></Button>
             </div>
           </div>
+          <DropupMenu
+            v-if="currentUserProfile && allCurrentStations"
+            ref="defaultStreamRef"
+            id="default-stream"
+            v-model="currentUserProfile.default_live_stream"
+            :options="initializeStationList(allCurrentStations)"
+            optionLabel="station"
+            placeholder="Select a station"
+            label="Default stream"
+            width="auto"
+            @change="onUpdateStation"
+            checkMark
+            blockClick
+            class="hidden"
+          />
         </div>
       </div>
 
@@ -284,7 +323,7 @@ onMounted(async () => {
   padding-bottom: 200px;
   background-color: var(--p-surface-25);
   section {
-    max-width: 750px;
+    max-width: $thinContentWidth;
     .card {
       background: var(--p-surface-0);
       border-radius: 10px;
