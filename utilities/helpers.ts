@@ -1292,3 +1292,22 @@ export function getPathAndQuery(urlString) {
     return null;
   }
 }
+
+// formats the station list for the dropdown
+export const initializeStationList = (stations) => {
+  const tempMenuData = []
+
+  stations.forEach((station) => {
+    tempMenuData.push({
+      id: station.station,
+      label: station.station,
+      name: station.title,
+      station: station.station,
+      code: station.title,
+      slug: station.slug,
+      image: station.stationImage || station.image,
+      times: `${station.timeStart} - ${station.timeEnd}`,
+    })
+  })
+  return tempMenuData
+}
