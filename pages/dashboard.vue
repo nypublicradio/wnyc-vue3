@@ -22,7 +22,7 @@ const {
   profile: profileData,
   loading: isLoading,
   getMembershipInfo,
-  formatCurrency,
+  //formatCurrency,
   formatDate,
 } = useProfileApi()
 
