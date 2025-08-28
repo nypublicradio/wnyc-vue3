@@ -111,6 +111,12 @@ const moreFromClick = (entry) => {
   )
   navigateTo(`/browse/shows/${slug}`)
 }
+
+// determine if the entry is the current episode and if the first entry should be featured (New Sounds (q2) and the holiday channel are excluded)
+const handleCurrentEpisode = (entry, index) => {
+  const badSlugs = ["q2", "wqxr-holiday-channel-on-wnyc"]
+  return isToday.value && index === 0 && !badSlugs.includes(entry.slug)
+}
 </script>
 
 <template>
@@ -176,7 +182,11 @@ const moreFromClick = (entry) => {
               v-for="(entry, entryIndex) in data"
               :key="entry.id"
               class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
-              :class="entryIndex === 0 && isToday ? 'selected -ml-3 -mr-3 xl:mr-0' : ''"
+              :class="
+                handleCurrentEpisode(entry, entryIndex)
+                  ? 'selected -ml-3 -mr-3 xl:mr-0'
+                  : ''
+              "
             >
               <div class="active-content flex flex-column justify-content-between">
                 <div>
@@ -185,27 +195,31 @@ const moreFromClick = (entry) => {
                       getTheTime(entry.attributes.start, entry.attributes.end, entryIndex)
                     }}
                   </p>
-                  <h2 class="title">
+                  <h2 class="title truncate t2lines">
                     {{ getEntryTitle(entry) }}
                   </h2>
                   <HtmlConvert
-                    v-if="currentEpisodeHolder.details && entryIndex === 0 && isToday"
+                    v-if="
+                      currentEpisodeHolder.details &&
+                      handleCurrentEpisode(entry, entryIndex)
+                    "
                     :htmlContent="currentEpisodeHolder.details"
-                    class="desc truncate t2lines mt-1"
+                    class="desc truncate t3lines mt-1"
                     no-blocks
                   />
                 </div>
-                <div v-if="entryIndex === 0 && isToday">
+                <div v-if="handleCurrentEpisode(entry, entryIndex)">
+                  <!-- <pre>{{ entry }}</pre> -->
                   <Button
                     severity="secondary"
                     variant="link"
                     class="more-from link text-left text-xs md:text-base"
                     @click="moreFromClick(entry)"
-                    :label="`More from ${getEntryTitle(entry)}`"
+                    :label="`More from ${entry.attributes.parentTitle}`"
                   />
                 </div>
               </div>
-              <div v-if="entryIndex === 0 && isToday" class="hidden md:block">
+              <div v-if="handleCurrentEpisode(entry, entryIndex)" class="hidden md:block">
                 <VImage
                   :src="{
                     template:
@@ -257,7 +271,7 @@ const moreFromClick = (entry) => {
         <Skeleton height="20px" width="110px" borderRadius="4px" />
       </div>
     </div>
-    <div v-if="!allLiveScheduleData.length > 0" class="skeleton flex flex-column gap-4">
+    <div v-if="!allLiveScheduleData.length > 0" class="skeleton flex flex-column gap-5">
       <Skeleton
         v-if="isToday"
         height="213px"
@@ -271,9 +285,9 @@ const moreFromClick = (entry) => {
         class="flex align-items-center justify-content-between pr-2"
       >
         <div class="flex gap-3">
-          <div class="flex flex-column gap-2">
+          <div class="flex flex-column gap-3">
             <Skeleton class="opacity-50" height="12px" width="64px" borderRadius="4px" />
-            <Skeleton height="14px" width="174px" borderRadius="4px" />
+            <Skeleton height="16px" width="174px" borderRadius="4px" />
           </div>
         </div>
         <Skeleton
@@ -304,6 +318,7 @@ html {
   //   }
   // }
   .schedule {
+    margin-bottom: 100px;
     .schedule-entry {
       .date-tools {
         .day-change-btn {

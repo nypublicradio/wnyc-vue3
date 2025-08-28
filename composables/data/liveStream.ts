@@ -36,7 +36,6 @@ export async function updateAllLiveStreams(init = true) {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams to the filtered array
         allCurrentStations.value = fetchingAll.filter(Boolean)
-
         let thisStation = null
 
         if (init) {
@@ -53,6 +52,7 @@ export async function updateAllLiveStreams(init = true) {
             thisStation = allCurrentStations.value.find(
                 (option) => {
                     return option.slug === currentStreamStation.value
+
                 }
             )
         }
@@ -273,7 +273,7 @@ export default function useLiveStream() {
 
             // add the slug to the schedule data to pass to the local notification system
             schedule.forEach((entry) => {
-                entry.slug = currentStreamStation.value
+                entry.slug = station
             })
 
             return schedule

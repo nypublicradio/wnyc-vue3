@@ -177,7 +177,9 @@ onUnmounted(() => {
           </div>
         </template>
         <template #skeleton>
-          <div class="flex w-full justify-content-start md:justify-content-center">
+          <div
+            class="flex w-full justify-content-start md:justify-content-center pb-2 lg:-ml-4"
+          >
             <div v-for="i in 4" class="item" :key="`${i}-skeleton`">
               <Skeleton
                 class="hidden md:flex flex-none ml-4"
