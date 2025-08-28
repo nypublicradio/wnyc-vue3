@@ -148,7 +148,6 @@ onUnmounted(() => {
 
 <template>
   <div class="shows-page pb-7">
-    WHY IS THIS NOT SHOWING UP?
     <section>
       <Html lang="en">
         <Head>
