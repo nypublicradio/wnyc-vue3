@@ -12,8 +12,7 @@ const props = defineProps({
     class="login-signup-side-content image style-mode-dark p-0"
     :style="`background-image:url('/${props.bgImage}')`"
   >
-    <div class="flex flex-column justify-content-around align-items-end">
-      <div></div>
+    <div class="flex flex-column w-full align-items-center xl:align-items-end mt-8">
       <div class="info">
         <h2>Listen anywhere with your free account!</h2>
         <ul class="pl-4 flex flex-column gap-1">

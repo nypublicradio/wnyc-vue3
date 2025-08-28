@@ -103,7 +103,7 @@ const submitForm = async () => {
       </Message>
     </template>
     <form v-if="formData && !sbSuccessMsg" novalidate @submit.prevent="submitForm">
-      <div class="mb-2">
+      <div class="mb-4">
         <InputText
           v-model="formData.email"
           type="text"

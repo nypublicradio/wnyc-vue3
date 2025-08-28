@@ -22,7 +22,7 @@ import useSleepTimer from "~/composables/useSleepTimer"
 const props = defineProps({
   show: {
     type: Object,
-    default: () => ({}),
+    default: null,
   },
 })
 
