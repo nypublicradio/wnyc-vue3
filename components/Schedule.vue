@@ -44,7 +44,7 @@ watch(
   async () => {
     allLiveScheduleData.value = await Promise.all(
       allCurrentStations.value.map((station) => {
-        return fetchScheduleSimple(station.slug, new Date())
+        return fetchScheduleSimple(station, new Date())
       })
     )
   },
@@ -61,7 +61,7 @@ const getAllScheduleData = async () => {
   const results = await Promise.all(
     allCurrentStations.value.map((station) => {
       return fetchScheduleSimple(
-        station.slug,
+        station,
         currentScheduleDate.value,
         abortController.signal
       )
@@ -200,10 +200,9 @@ const handleCurrentEpisode = (entry, index) => {
                   </h2>
                   <HtmlConvert
                     v-if="
-                      currentEpisodeHolder.details &&
-                      handleCurrentEpisode(entry, entryIndex)
+                      entry.station.episodeBody && handleCurrentEpisode(entry, entryIndex)
                     "
-                    :htmlContent="currentEpisodeHolder.details"
+                    :htmlContent="entry.station.episodeBody"
                     class="desc truncate t3lines mt-1"
                     no-blocks
                   />
@@ -219,14 +218,20 @@ const handleCurrentEpisode = (entry, index) => {
                   />
                 </div>
               </div>
-              <div v-if="handleCurrentEpisode(entry, entryIndex)" class="hidden md:block">
+              <div
+                v-if="
+                  handleCurrentEpisode(entry, entryIndex) &&
+                  entry.station.onTodaysShowImageTemplate
+                "
+                class="hidden md:block"
+              >
                 <VImage
                   :src="{
-                    template:
-                      currentEpisodeHolder.onTodaysShowTemplate ||
-                      currentEpisodeHolder.image.template,
+                    template: entry.station.onTodaysShowImageTemplate,
                   }"
-                  alt="on today's show image"
+                  :alt="
+                    entry.station.onTodaysShowImageAltText || 'on today\'s show image'
+                  "
                   :size="{ md: [320, 213] }"
                   class="flex-none w-20rem"
                   :srcset="[2]"

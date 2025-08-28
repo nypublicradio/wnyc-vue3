@@ -36,6 +36,7 @@ export async function updateAllLiveStreams(init = true) {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams to the filtered array
         allCurrentStations.value = fetchingAll.filter(Boolean)
+        console.log('All current stations:', allCurrentStations.value)
         let thisStation = null
 
         if (init) {
@@ -249,7 +250,7 @@ export default function useLiveStream() {
     // Fetch the schedule simple return
     const fetchScheduleSimple = async (station, date = new Date(), signal = null) => {
         const config = useRuntimeConfig()
-        const currentStreamStation = useCurrentStreamStation()
+        //const currentStreamStation = useCurrentStreamStation()
         const globalToast = useGlobalToast()
 
         try {
@@ -267,13 +268,14 @@ export default function useLiveStream() {
             }
 
             const schedule = await $fetch(
-                `${config.public.BFF_URL}/api/schedule/${station}`,
+                `${config.public.BFF_URL}/api/schedule/${station.slug}`,
                 fetchOptions
             )
 
             // add the slug to the schedule data to pass to the local notification system
             schedule.forEach((entry) => {
-                entry.slug = station
+                entry.slug = station.slug
+                entry.station = station
             })
 
             return schedule
