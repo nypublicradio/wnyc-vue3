@@ -323,7 +323,7 @@ html {
   //   }
   // }
   .schedule {
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     .schedule-entry {
       .date-tools {
         .day-change-btn {

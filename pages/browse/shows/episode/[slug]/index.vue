@@ -383,7 +383,7 @@ watch(
             </div>
           </div>
         </div>
-        <div class="col-fixed hidden lg:block w-20rem"></div>
+        <div class="col-fixed hidden xl:block w-20rem"></div>
       </div>
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
