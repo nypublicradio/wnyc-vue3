@@ -86,6 +86,10 @@ const parseHtml = () => {
       }
     })
     .replace("<p>&nbsp;</p>", "")
+    // remove a p tag if it has a script
+    .replace(/<p>(.*?)<\/p>/g, (match, content) => {
+      return content.includes("<script") ? "" : match
+    })
 
   theParcedHtml.value = updatedHTML
 }
