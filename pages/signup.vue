@@ -31,7 +31,7 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    <section class="grid m-auto pb-0 pr-0 pt-0">
+    <section class="grid m-auto pb-0 lg:pr-0 pt-0">
       <Signup isRoute class="col-12 lg:col-6" />
       <LoginSignupSideContent class="hidden col-6 lg:flex" />
     </section>
