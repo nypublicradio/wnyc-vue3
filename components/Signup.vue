@@ -97,7 +97,7 @@ const closeAll = () => {
       <Divider
         class="my-4"
         align="center"
-        pt:content:style="background:var(--p-surface-25)"
+        pt:content:style="background:var(--p-surface-0)"
       >
         <b>or</b>
       </Divider>
