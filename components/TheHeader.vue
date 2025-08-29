@@ -63,7 +63,7 @@ const handleLogoClick = () => {
                 size="small"
                 trackingLocation="header utility nav"
                 route="/login"
-                :to="currentUser ? '/dashboard' : 'login'"
+                :to="currentUser ? '/dashboard' : '/login'"
               >
                 <template #icon>
                   <UserIcon />
