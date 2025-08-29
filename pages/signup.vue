@@ -15,7 +15,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="signup-page mt-4">
+  <div class="signup-page md:mt-4">
     <Html lang="en">
       <Head>
         <Title>
