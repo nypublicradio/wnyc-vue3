@@ -16,7 +16,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="login-page mt-4">
+  <div class="login-page md:mt-4">
     <Html lang="en">
       <Head>
         <Title>
