@@ -274,22 +274,25 @@ const submitForm = async () => {
       </div>
     </Transition>
     <template v-if="sbErrorMsg && sbErrorMsg !== undefined">
-      <Message
-        class="center mb-3"
-        severity="warning"
-        @close="clearMsg()"
-        icons="ci-warn "
-      >
-        <span v-html="sbErrorMsg"></span>
-        <Button
-          v-if="showForgotPasswordButton"
-          severity="secondary"
-          variant="link"
-          class="link m-auto block my-4"
-          @click="openForgotPassword"
-          label="Forgot password?"
-        ></Button>
-      </Message>
+      <ScrollIntoView>
+        <Message
+          class="center my-3"
+          severity="warning"
+          @close="clearMsg()"
+          icons="ci-warn "
+          variant="simple"
+        >
+          <span v-html="sbErrorMsg"></span>
+          <Button
+            v-if="showForgotPasswordButton"
+            severity="secondary"
+            variant="link"
+            class="link m-auto block my-4"
+            @click="openForgotPassword"
+            label="Forgot password?"
+          ></Button>
+        </Message>
+      </ScrollIntoView>
     </template>
   </div>
 </template>
