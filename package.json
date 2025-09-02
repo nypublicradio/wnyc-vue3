@@ -12,6 +12,7 @@
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
     "build-theme": "node assets/build-theme.js",
     "jwt": "node scripts/jwt-utils.js",
+    "sf-auth-setup": "node scripts/salesforce-auth-setup.js",
     "test-sf-auth": "node scripts/test-sf-auth.js",
     "test-sf-auth-sandbox": "node scripts/test-sf-auth.js --sandbox"
   },
