@@ -27,7 +27,7 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <section
+    <div
       v-if="
         props.article.cmsSource === cmsSources.PUBLISHER ||
         props.article.cmsSource === cmsSources.NPR
@@ -38,11 +38,11 @@ onMounted(() => {
         :htmlContent="props.article.body"
         :key="`article-body-${props.article.id || 'default'}`"
       />
-    </section>
+    </div>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
-      <section v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
+      <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
         <VImage
           :src="block.value.image"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
@@ -69,9 +69,9 @@ onMounted(() => {
             </div>
           </template>
         </VImage>
-      </section>
+      </div>
 
-      <section v-else>
+      <div v-else>
         <!-- paragraph -->
         <HtmlConvert
           :htmlContent="block.value"
@@ -124,7 +124,7 @@ onMounted(() => {
           :quote="block.value.pullQuote"
           :author="block.value.attribution"
         />
-      </section>
+      </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
         v-if="index === Math.floor(streamfield.length / 2)"

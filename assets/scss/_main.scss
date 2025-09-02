@@ -14,6 +14,12 @@
   width: calc(100vw - (100vw - 100%));
 }
 
+.thinContent {
+  width: 100%;
+  max-width: $thinContentWidth;
+  margin: auto;
+}
+
 figure {
   margin: 0;
 }

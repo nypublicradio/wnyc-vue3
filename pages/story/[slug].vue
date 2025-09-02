@@ -149,11 +149,11 @@ const togglePlayHere = (story) => {
         <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
       </Head>
     </Html>
-    <section class="">
+    <section class="thinContent">
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
-          class="back-btn text-color -ml-3"
+          class="back-btn text-color -ml-3 mb-3"
           icon="pi pi-chevron-left"
           rounded
           text
@@ -163,44 +163,46 @@ const togglePlayHere = (story) => {
           label="Back"
         />
       </div>
-    </section>
-    <FetchError v-if="error" />
-    <div v-if="!pending">
-      <VImage
-        v-if="topImage"
-        :src="topImage"
-        :maxWidth="storyData.image.width"
-        :maxHeight="storyData.image.height"
-        sizes="xs:390px md:768px"
-        density="x1 x2"
-        :alt="storyData.image.alt"
-        class="story-page-image"
-      >
-        <template #caption>
-          <VImageCaption v-if="storyData.image.caption" :text="storyData.image.caption" />
-        </template>
-        <template #gallery>
-          <VImageGallery
-            v-if="gallery?.slides"
-            :count="String(gallery.slides.length)"
-            :gallery-link="galleryLink"
-          />
-        </template>
-        <template #belowImage>
-          <div>
-            <p class="text-right px-4 mt-1 type-fineprint">
-              {{ storyData.image.credit }}
-            </p>
-          </div>
-        </template>
-      </VImage>
-      <Skeleton
-        v-else
-        borderRadius="0px"
-        height="auto"
-        class="episode-page-image mb-2 opacity-60"
-      />
-      <section>
+      <FetchError v-if="error" />
+      <div v-if="!pending">
+        <VImage
+          v-if="topImage"
+          :src="topImage"
+          :maxWidth="storyData.image.width"
+          :maxHeight="storyData.image.height"
+          sizes="xs:390px md:768px"
+          density="x1 x2"
+          :alt="storyData.image.alt"
+          class="story-page-image"
+        >
+          <template #caption>
+            <VImageCaption
+              v-if="storyData.image.caption"
+              :text="storyData.image.caption"
+            />
+          </template>
+          <template #gallery>
+            <VImageGallery
+              v-if="gallery?.slides"
+              :count="String(gallery.slides.length)"
+              :gallery-link="galleryLink"
+            />
+          </template>
+          <template #belowImage>
+            <div>
+              <p class="text-right px-4 mt-1 type-fineprint">
+                {{ storyData.image.credit }}
+              </p>
+            </div>
+          </template>
+        </VImage>
+        <Skeleton
+          v-else
+          borderRadius="0px"
+          height="auto"
+          class="episode-page-image mb-2 opacity-60"
+        />
+
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>
             <span>
@@ -246,19 +248,19 @@ const togglePlayHere = (story) => {
             </Button>
           </div>
         </div>
-      </section>
 
-      <v-streamfield
-        v-if="storyData?.body"
-        class="story-page-body"
-        :article="storyData"
-      />
+        <v-streamfield
+          v-if="storyData?.body"
+          class="story-page-body"
+          :article="storyData"
+        />
 
-      <story-article-footer :article="storyData" />
-    </div>
-    <div v-else>
-      <skeleton-article />
-    </div>
+        <story-article-footer :article="storyData" />
+      </div>
+      <div v-else>
+        <skeleton-article />
+      </div>
+    </section>
     <section v-if="topStories">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">WNYC Picks</h2>
