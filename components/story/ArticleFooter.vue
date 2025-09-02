@@ -41,7 +41,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
     <div class="grid grid-nogutter">
       <div class="profile-col col-12">
         <!-- <pre>{{ profileData }}</pre> -->
-        <section>
+        <div>
           <VPerson
             v-for="profile in profileData"
             :key="profile.id"
@@ -53,7 +53,7 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
             :onStaffPage="!profile.url"
             :truncate="5"
           />
-        </section>
+        </div>
         <hr class="black mb-6" />
         <div class="mx-auto mb-6" style="width: 300px">
           <story-htlAd
@@ -68,9 +68,9 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
           class="mb-4"
         >
           <hr class="black mb-4" />
-          <section v-if="props.article.cmsSource === cmsSources.WAGTAIL">
+          <div v-if="props.article.cmsSource === cmsSources.WAGTAIL">
             <story-comments-section :article="props.article" />
-          </section>
+          </div>
         </div>
       </div>
     </div>
