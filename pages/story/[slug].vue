@@ -171,6 +171,11 @@ const togglePlayHere = (story) => {
           :maxWidth="storyData.image.width"
           :maxHeight="storyData.image.height"
           sizes="xs:390px md:768px"
+          :size="{
+            xs: [375, 250],
+            sm: [576, 384],
+            md: [768, 512],
+          }"
           density="x1 x2"
           :alt="storyData.image.alt"
           class="story-page-image"
@@ -282,11 +287,6 @@ const togglePlayHere = (story) => {
   width: 28px;
 }
 
-.story-page .story-page-image {
-  width: 100vw;
-  max-width: calc($contentWidth - 100px);
-  margin: auto;
-}
 .story-page .v-byline .flexible-link {
   color: var(--p-text-color) !important;
   text-decoration: none !important;
