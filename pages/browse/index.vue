@@ -249,7 +249,7 @@ watch(
           <!-- if no results show this -->
           <div
             v-if="search.results.length === 0"
-            class="text-center flex flex-column gap-4 mt-8"
+            class="text-center flex flex-column gap-4 my-6"
           >
             <h2>No results for "{{ searchFieldValue }}"</h2>
             <NoResultsGraphic class="max-w-6rem m-auto" alt="No Results" />
