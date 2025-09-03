@@ -131,7 +131,7 @@ const togglePlayHere = (story) => {
             md: [768, 512],
           }"
           :alt="storyData.alt"
-          class="npr-story-page-image"
+          class="npr-story-page-image -mx-3 md:mx-0"
         >
           <template #caption>
             <VImageCaption

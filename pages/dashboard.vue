@@ -171,21 +171,23 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <!-- <pre>{{ profileData }}</pre> -->
+      <pre>{{ profileData }}</pre>
       <!-- Member Profile Section -->
       <h2 class="mb-4">Member Center</h2>
 
       <div class="member-profile mb-6 grid grid-lggutter">
-        <div v-if="currentUser && profileData && !isLoading" class="col-12 md:col-6">
+        <div v-if="currentUser && profileData && !isLoading" class="col-12">
           <div class="card">
             <div class="flex flex-wrap align-items-start gap-3">
-              <img
-                src="/cert.svg"
-                alt="Membership certificate icon"
-                class="max-w-4rem h-auto"
-              />
+              <MemberStatusIcon />
               <div>
-                <p class="font-bold">WNYC Member</p>
+                <p class="font-bold">
+                  {{
+                    profileData.isActiveSustainer
+                      ? "WNYC Sustaining Member"
+                      : "WNYC Member"
+                  }}
+                </p>
                 <p>Last donation: {{ formatDate(profileData.lastDonationDate) }}</p>
                 <Button
                   class="mt-3 px-3"
@@ -217,7 +219,8 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- <div v-if="currentUser && profileData" class="member-profile mb-6">
+      <!-- Member Profile Section -->
+      <div v-if="currentUser && profileData" class="member-profile mb-6">
         <div class="card">
           <div class="flex align-items-center mb-4">
             <i class="mr-2 pi pi-user"></i>
@@ -270,7 +273,8 @@ onMounted(async () => {
             </SBox>
           </div>
         </div>
-      </div> -->
+      </div>
+      <!-- Member Profile Section -->
 
       <h2 class="mb-4">Listening Preferences</h2>
       <div v-if="currentUser" class="account-info mb-6 grid grid-lggutter">
