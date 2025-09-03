@@ -178,7 +178,7 @@ const togglePlayHere = (story) => {
           }"
           density="x1 x2"
           :alt="storyData.image.alt"
-          class="story-page-image"
+          class="story-page-image -mx-3 md:mx-0"
         >
           <template #caption>
             <VImageCaption
