@@ -18,6 +18,7 @@ interface ProfileResponse {
     lastDonationAmount: number | null;
     isActiveSustainer: boolean;
     activeRecurringDonations: RecurringDonation[];
+    queryStringEncrypted: string | null;
 }
 
 /**
@@ -81,14 +82,14 @@ const getContactData = async (lookupParams: { salesforceID?: string; email?: str
             contact = await salesforce.findOne(
                 'Contact',
                 { Id: lookupParams.salesforceID },
-                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Query_String_Encrypted__c']
             );
         } else if (lookupParams.email) {
             // Lookup by email
             contact = await salesforce.findOne(
                 'Contact',
                 { Email: lookupParams.email },
-                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c']
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Query_String_Encrypted__c']
             );
         }
 
@@ -200,7 +201,8 @@ const buildProfileResponse = (
         lastDonationDate: contact.npo02__LastCloseDate__c,
         lastDonationAmount: contact.npo02__LastOppAmount__c,
         isActiveSustainer,
-        activeRecurringDonations: formattedRecurringDonations
+        activeRecurringDonations: formattedRecurringDonations,
+        queryStringEncrypted: contact.Query_String_Encrypted__c
     };
 };
 
