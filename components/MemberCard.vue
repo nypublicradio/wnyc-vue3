@@ -10,6 +10,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["onDonateNow", "onCancelMembership"])
+
 const memberStatus = {
   CHECK: "check",
   ERROR: "error",
@@ -52,20 +54,11 @@ const getBrand = computed(() => {
 const onSomethingMissing = () => {
   // Handle the "Something missing? Tell us" click event
 }
-const onDonateNow = () => {
-  // Handle the "Donate Now" click event
-}
 const onUpdateGiftAmount = () => {
   // Handle the "Update gift amount" click event
 }
 const onChangePaymentInfo = () => {
   // Handle the "Change payment info" click event
-}
-const onCancelMembership = () => {
-  // Handle the "Cancel membership" click event
-}
-const onUpdatePaymentInfo = () => {
-  // Handle the "Update payment info" click event
 }
 </script>
 
@@ -80,7 +73,7 @@ const onUpdatePaymentInfo = () => {
           <div class="flex gap-3 mt-3 align-items-center flex-wrap">
             <Button
               class="px-3"
-              @click="onUpdatePaymentInfo"
+              @click="onChangePaymentInfo"
               label="Update payment info"
               size="small"
             />
@@ -122,7 +115,7 @@ const onUpdatePaymentInfo = () => {
             severity="secondary"
             variant="link"
             class="link"
-            @click="onCancelMembership"
+            @click="emit('onCancelMembership')"
             label="Cancel membership"
             size="small"
           ></Button>
@@ -139,7 +132,12 @@ const onUpdatePaymentInfo = () => {
             public media.
           </p>
           <div class="flex gap-3 mt-3 align-items-center flex-wrap">
-            <Button class="px-3" @click="onDonateNow" label="Donate Now" size="small" />
+            <Button
+              class="px-5"
+              @click="emit('onDonateNow')"
+              label="Donate Now"
+              size="small"
+            />
             <Button
               severity="secondary"
               variant="link"
