@@ -8,6 +8,15 @@ import {
 } from "~/composables/states"
 import { trackClickEvent, initializeStationList } from "~/utilities/helpers"
 import { useProfileApi } from "~/composables/useProfileApi"
+import { useDialog } from "primevue/usedialog"
+
+const dialog = useDialog()
+const dialogStyles = {
+  width: "100%",
+  maxWidth: "672px",
+  padding: "1.75rem 1rem 1rem 1rem",
+  borderRadius: "0",
+}
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -18,13 +27,7 @@ const isLiveStream = useIsLiveStream()
 const defaultStreamRef = ref(null)
 
 // Profile API composable for member profile data
-const {
-  profile: profileData,
-  loading: isLoading,
-  getMembershipInfo,
-  formatCurrency,
-  formatDate,
-} = useProfileApi()
+const { profile: profileData, loading: isLoading, getMembershipInfo } = useProfileApi()
 
 // Check if user is authenticated with email (not social login)
 const isEmail = computed(() => currentUser.value?.app_metadata?.provider === "email")
@@ -68,6 +71,61 @@ const onUpdateStation = (data) => {
 // handles the dropdown menu click event
 const clickThisMenu = (ref) => {
   ref.toggleDrawer()
+}
+
+// handle the "Donate now" emit click event
+const onDonateNow = () => {
+  window.open(
+    "https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button",
+    "_blank"
+  )
+}
+
+// Handle the "Cancel membership" emit click event
+const onCancelMembership = async (springboardId) => {
+  console.log("Cancel membership clicked for ID:", springboardId)
+
+  const { default: CancelMembership } = await import(
+    "~/components/account-modals/CancelMembership.vue"
+  )
+
+  dialog.open(CancelMembership, {
+    data: {
+      springboardId: springboardId,
+    },
+    props: {
+      showHeader: false,
+      style: dialogStyles,
+      draggable: false,
+      dismissableMask: true,
+      modal: true,
+    },
+    emits: {
+      onCancel: () => {
+        console.log("canceled emit dialog")
+        onCancelMembershipThankYou()
+      },
+      onAdjust: (e) => {
+        console.log("adjusted", e)
+      },
+    },
+  })
+}
+// Handle the "Cancel membership" emit click event
+const onCancelMembershipThankYou = async () => {
+  const { default: CancelMembership } = await import(
+    "~/components/account-modals/CancelMembershipThankYou.vue"
+  )
+
+  dialog.open(CancelMembership, {
+    props: {
+      showHeader: false,
+      style: dialogStyles,
+      draggable: false,
+      dismissableMask: true,
+      modal: true,
+    },
+  })
 }
 
 onMounted(async () => {
@@ -579,14 +637,6 @@ const profileDataTemp = ref({
   ],
   queryStringEncrypted: "placeholder",
 })
-
-const getTotalMonthlyDonations = computed(() => {
-  let total = 0
-  profileDataTemp.value.activeRecurringDonations.forEach((donation) => {
-    total += donation.amount
-  })
-  return formatCurrency(total)
-})
 </script>
 <template>
   <div class="dashboard-page">
@@ -690,12 +740,13 @@ const getTotalMonthlyDonations = computed(() => {
 
       <div class="member-profile mb-6 grid grid-lggutter">
         <div v-if="currentUser && profileData && !isLoading" class="col-12">
-          <div class="mb-2">
-            Total monthly donations:
-            {{ getTotalMonthlyDonations }}
-          </div>
           <!-- TEMP to show no donation history -->
-          <MemberCard :donation="null" :profileData="profileData" class="mb-3" />
+          <MemberCard
+            :donation="null"
+            :profileData="profileData"
+            class="mb-3"
+            @onDonateNow="onDonateNow"
+          />
           <!-- TEMP to show no donation history -->
           <div
             v-if="profileDataTemp.activeRecurringDonations.length > 0"
@@ -706,11 +757,13 @@ const getTotalMonthlyDonations = computed(() => {
               :key="donation.springboardId"
               :donation="donation"
               :profileData="profileDataTemp"
+              @onDonateNow="onDonateNow"
+              @onCancelMembership="onCancelMembership(donation.springboardId)"
             />
           </div>
           <MemberCard v-else :donation="null" :profileData="profileData" />
-          <pre>{{ profileData }}</pre>
-          <pre>{{ profileDataTemp }}</pre>
+          <!-- <pre>{{ profileData }}</pre>
+          <pre>{{ profileDataTemp }}</pre> -->
         </div>
         <!-- loading skeleton for membership card -->
         <div v-else class="col-12 md:col-6">
@@ -733,7 +786,7 @@ const getTotalMonthlyDonations = computed(() => {
       </div>
 
       <!-- Member Profile Section -->
-      <div v-if="currentUser && profileData" class="member-profile mb-6">
+      <!-- <div v-if="currentUser && profileData" class="member-profile mb-6">
         <div class="card">
           <div class="flex align-items-center mb-4">
             <i class="mr-2 pi pi-user"></i>
@@ -786,7 +839,7 @@ const getTotalMonthlyDonations = computed(() => {
             </SBox>
           </div>
         </div>
-      </div>
+      </div> -->
       <!-- Member Profile Section -->
 
       <h2 class="mb-4">Listening Preferences</h2>
