@@ -10,7 +10,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["onDonateNow", "onCancelMembership"])
+const emit = defineEmits(["onDonateNow", "onCancelMembership", "onUpdateGiftAmount"])
 
 const memberStatus = {
   CHECK: "check",
@@ -54,9 +54,6 @@ const getBrand = computed(() => {
 const onSomethingMissing = () => {
   // Handle the "Something missing? Tell us" click event
 }
-const onUpdateGiftAmount = () => {
-  // Handle the "Update gift amount" click event
-}
 const onChangePaymentInfo = () => {
   // Handle the "Change payment info" click event
 }
@@ -92,14 +89,14 @@ const onChangePaymentInfo = () => {
           }}
         </p>
         <p>
-          Thank you for your {{ formatCurrency(props.donation.amount) }} monthly gift!
+          Thank you for your {{ formatCurrency(props.donation?.amount) }} monthly gift!
           <br />
           Your next donation will process {{ formatDate(props.donation.nextChargeDate) }}
         </p>
         <div class="flex gap-3 mt-3 align-items-center flex-wrap">
           <Button
             class="px-3"
-            @click="onUpdateGiftAmount"
+            @click="emit('onUpdateGiftAmount')"
             label="Update gift amount"
             size="small"
           />

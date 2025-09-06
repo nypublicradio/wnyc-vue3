@@ -6,17 +6,11 @@ import {
   useAllCurrentStations,
   useIsLiveStream,
 } from "~/composables/states"
+import { useMembership } from "~/composables/useMembership"
 import { trackClickEvent, initializeStationList } from "~/utilities/helpers"
 import { useProfileApi } from "~/composables/useProfileApi"
-import { useDialog } from "primevue/usedialog"
 
-const dialog = useDialog()
-const dialogStyles = {
-  width: "100%",
-  maxWidth: "672px",
-  padding: "1.75rem 1rem 1rem 1rem",
-  borderRadius: "0",
-}
+const { onCancelMembership, onUpdateGiftAmount } = useMembership()
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -79,53 +73,6 @@ const onDonateNow = () => {
     "https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button",
     "_blank"
   )
-}
-
-// Handle the "Cancel membership" emit click event
-const onCancelMembership = async (springboardId) => {
-  console.log("Cancel membership clicked for ID:", springboardId)
-
-  const { default: CancelMembership } = await import(
-    "~/components/account-modals/CancelMembership.vue"
-  )
-
-  dialog.open(CancelMembership, {
-    data: {
-      springboardId: springboardId,
-    },
-    props: {
-      showHeader: false,
-      style: dialogStyles,
-      draggable: false,
-      dismissableMask: true,
-      modal: true,
-    },
-    emits: {
-      onCancel: () => {
-        console.log("canceled emit dialog")
-        onCancelMembershipThankYou()
-      },
-      onAdjust: (e) => {
-        console.log("adjusted", e)
-      },
-    },
-  })
-}
-// Handle the "Cancel membership" emit click event
-const onCancelMembershipThankYou = async () => {
-  const { default: CancelMembership } = await import(
-    "~/components/account-modals/CancelMembershipThankYou.vue"
-  )
-
-  dialog.open(CancelMembership, {
-    props: {
-      showHeader: false,
-      style: dialogStyles,
-      draggable: false,
-      dismissableMask: true,
-      modal: true,
-    },
-  })
 }
 
 onMounted(async () => {
@@ -759,6 +706,7 @@ const profileDataTemp = ref({
               :profileData="profileDataTemp"
               @onDonateNow="onDonateNow"
               @onCancelMembership="onCancelMembership(donation.springboardId)"
+              @onUpdateGiftAmount="onUpdateGiftAmount(donation.amount)"
             />
           </div>
           <MemberCard v-else :donation="null" :profileData="profileData" />
