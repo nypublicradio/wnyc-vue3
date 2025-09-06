@@ -5,7 +5,7 @@ const dialogRef = inject("dialogRef")
 </script>
 
 <template>
-  <div class="cancel-membership">
+  <div class="cancel-membership-thank-you">
     <div class="flex justify-content-between align-items-center mb-3">
       <h2>Thank you for your support</h2>
       <Button
@@ -35,6 +35,6 @@ const dialogRef = inject("dialogRef")
 </template>
 
 <style lang="scss" scoped>
-.cancel-membership {
+.cancel-membership-thank-you {
 }
 </style>

@@ -1,9 +1,10 @@
 <script setup>
+const { formatCurrency } = useProfileApi()
 const emit = defineEmits(["adjust", "cancel"])
 
 const dialogRef = inject("dialogRef")
 
-const springboardId = ref(null)
+const currentDonationAmount = ref(null)
 
 const onCancel = () => {
   console.log("canceling emit fired")
@@ -15,15 +16,18 @@ const onAdjust = () => {
   emit("adjust")
 }
 
+const value = ref("$15/mo")
+const options = ref(["$15/mo", "$30/mo", "$34/mo", "other"])
+
 onMounted(() => {
-  springboardId.value = dialogRef.value.data.springboardId
+  currentDonationAmount.value = dialogRef.value.data.currentDonationAmount
 })
 </script>
 
 <template>
-  <div class="cancel-membership">
+  <div class="adjust-donation">
     <div class="flex justify-content-between align-items-center mb-3">
-      <h2>Before you go...</h2>
+      <h2>Update Gift Amount</h2>
       <Button
         class="-mr-2"
         rounded
@@ -33,22 +37,32 @@ onMounted(() => {
         @click="dialogRef.close()"
       />
     </div>
-    <p>
-      Would you consider adjusting your donation amount instead of canceling? Even small
-      contributions go a long way.
-    </p>
+    <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
+
+    <div class="amount-rb flex align-items-center gap-2 my-4">
+      <Button
+        v-for="amount in options"
+        class="px-3"
+        :label="amount"
+        severity="secondary"
+        size="small"
+        @click="value = amount"
+        :class="value === amount ? 'selected' : ''"
+      />
+    </div>
+
     <div class="flex flex-column gap-3 align-items-center mt-3">
       <Button
         class="w-full px-3 max-w-15rem"
         @click="onAdjust"
-        label="Adjust donation amount"
+        label="Save Changes"
         size="small"
       />
       <Button
         class="w-full px-3 max-w-15rem"
         severity="secondary"
         @click="onCancel"
-        label="Cancel membership"
+        label="Never mind, don't update"
         size="small"
       />
     </div>
@@ -56,6 +70,15 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.cancel-membership {
+.adjust-donation {
+  .amount-rb {
+    .p-button {
+      &.selected {
+        background-color: #000000;
+        border-color: transparent;
+        color: #fff;
+      }
+    }
+  }
 }
 </style>
