@@ -70,10 +70,10 @@ onMounted(() => {
       />
     </div>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
-    <div class="amount-rb flex align-items-center mt-4 w-full gap-2">
-      <div v-for="amount in options" class="w-6 md:w-3">
+    <div class="amount-rb flex flex-wrap align-items-center mt-4 w-full">
+      <div v-for="amount in options" class="w-6 md:w-3 px-2 py-2 md:px-1">
         <Button
-          class="px-2 w-full"
+          class="w-full"
           severity="secondary"
           size="small"
           @click="onRbClicked(amount)"
