@@ -705,7 +705,9 @@ const profileDataTemp = ref({
               :donation="donation"
               :profileData="profileDataTemp"
               @onDonateNow="onDonateNow"
-              @onCancelMembership="onCancelMembership(donation.springboardId)"
+              @onCancelMembership="
+                onCancelMembership(donation.springboardId, donation.amount)
+              "
               @onUpdateGiftAmount="onUpdateGiftAmount(donation.amount)"
             />
           </div>

@@ -1,6 +1,6 @@
 <script setup>
 const { formatCurrency } = useProfileApi()
-const emit = defineEmits(["adjust", "cancel"])
+const emit = defineEmits(["save", "cancel"])
 
 const dialogRef = inject("dialogRef")
 
@@ -16,7 +16,7 @@ const onCancel = () => {
   dialogRef.value.close()
   emit("cancel")
 }
-const onAdjust = () => {
+const onSave = () => {
   // finalAmount should already be set by now, but add safety check
   if (value.value === "other") {
     if (otherAmount.value === null || otherAmount.value < 1) {
@@ -27,11 +27,11 @@ const onAdjust = () => {
       isOtherError.value = false
 
       dialogRef.value.close()
-      emit("adjust", { amount: finalAmount.value })
+      emit("save", { amount: finalAmount.value })
     }
   } else {
     dialogRef.value.close()
-    emit("adjust", { amount: finalAmount.value })
+    emit("save", { amount: finalAmount.value })
   }
 }
 
@@ -103,7 +103,7 @@ onMounted(() => {
             placeholder="Enter amount"
             fluid
             :invalid="isOtherError"
-            @keyup.enter="onAdjust"
+            @keyup.enter="onSave"
           />
         </Button>
       </div>
@@ -115,7 +115,7 @@ onMounted(() => {
     <div class="flex flex-column gap-3 align-items-center mt-6">
       <Button
         class="w-full px-3 max-w-15rem"
-        @click="onAdjust"
+        @click="onSave"
         label="Save Changes"
         size="small"
       />
