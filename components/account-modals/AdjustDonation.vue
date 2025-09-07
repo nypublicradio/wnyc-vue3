@@ -6,36 +6,48 @@ const dialogRef = inject("dialogRef")
 
 const currentDonationAmount = ref(null)
 
+const finalAmount = ref(null)
+const value = ref(15)
+const otherAmount = ref(null)
+const options = ref([15, 30, 45, "other"])
+const isOtherError = ref(false)
+
 const onCancel = () => {
-  console.log("canceling emit fired")
   dialogRef.value.close()
   emit("cancel")
 }
 const onAdjust = () => {
-  dialogRef.value.close()
-  emit("adjust")
+  // finalAmount should already be set by now, but add safety check
+  if (value.value === "other") {
+    if (otherAmount.value === null || otherAmount.value < 1) {
+      isOtherError.value = true
+      return
+    } else {
+      finalAmount.value = otherAmount.value
+      isOtherError.value = false
+
+      dialogRef.value.close()
+      emit("adjust", { amount: finalAmount.value })
+    }
+  } else {
+    dialogRef.value.close()
+    emit("adjust", { amount: finalAmount.value })
+  }
 }
 
-const InputNumberRef = ref(null)
-
-const finalAmount = ref(15)
-const value = ref(15)
-const otherAmount = ref(null)
-const options = ref([15, 30, 45, "other"])
-
-const onUpdateOtherAmount = (e) => {
-  console.log("updating other amount = ", e.value)
-  finalAmount.value = e.value
-}
 const onRbClicked = (e) => {
-  console.log("clicked RB", e)
   value.value = e
-  finalAmount.value = e
-  if (e === "other") {
-    console.log("is other")
-    // set focus to the inputtext element after nextTick()
 
-    InputNumberRef.value.focus()
+  if (e === "other") {
+    // Don't set finalAmount here, let the user input determine it
+    nextTick(() => {
+      document.getElementById("otherInputId")?.focus()
+    })
+  } else {
+    isOtherError.value = false
+    otherAmount.value = null
+    // For preset amounts, update finalAmount immediately
+    finalAmount.value = e
   }
 }
 
@@ -58,39 +70,49 @@ onMounted(() => {
       />
     </div>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
-    {{ value }}
-    {{ finalAmount }}
-    <div class="amount-rb flex align-items-center gap-2 my-4">
-      <Button
-        v-for="amount in options"
-        class="px-3"
-        severity="secondary"
-        size="small"
-        @click="onRbClicked(amount)"
-        :class="[{ selected: value === amount }, { other: value === 'other' }]"
-      >
-        <p v-if="amount !== 'other'" class="font-bold">${{ amount }}/mo</p>
-        <p v-else-if="amount === 'other' && value !== amount" class="font-bold">
-          $ Other
-        </p>
+    <div class="amount-rb flex align-items-center mt-4 w-full gap-2">
+      <div v-for="amount in options" class="w-6 md:w-3">
+        <Button
+          class="px-2 w-full"
+          severity="secondary"
+          size="small"
+          @click="onRbClicked(amount)"
+          :class="[
+            { selected: value === amount },
+            { other: value === 'other' },
+            { 'p-invalid': isOtherError && amount === 'other' },
+          ]"
+          :aria-label="
+            amount === 'other' ? 'Enter custom amount' : `Select $${amount} per month`
+          "
+        >
+          <p v-if="amount !== 'other'" class="font-bold">${{ amount }}/mo</p>
+          <p v-else-if="amount === 'other' && value !== amount" class="font-bold">
+            Custom
+          </p>
 
-        <InputNumber
-          v-else
-          ref="InputNumberRef"
-          prefix="$"
-          suffix="/mo"
-          v-model="otherAmount"
-          inputId="minmaxfraction"
-          :minFractionDigits="2"
-          :maxFractionDigits="5"
-          placeholder="$0.00/mo"
-          fluid
-          @value-change="onUpdateOtherAmount"
-        />
-      </Button>
+          <InputNumber
+            v-else
+            prefix="$"
+            suffix="/mo"
+            v-model="otherAmount"
+            inputId="otherInputId"
+            :minFractionDigits="0"
+            :maxFractionDigits="5"
+            :min="0"
+            placeholder="Enter amount"
+            fluid
+            :invalid="isOtherError"
+            @keyup.enter="onAdjust"
+          />
+        </Button>
+      </div>
     </div>
+    <small v-if="isOtherError" class="w-full p-error mb-2">
+      Please enter an amount of $1 or more
+    </small>
 
-    <div class="flex flex-column gap-3 align-items-center mt-3">
+    <div class="flex flex-column gap-3 align-items-center mt-6">
       <Button
         class="w-full px-3 max-w-15rem"
         @click="onAdjust"
@@ -119,18 +141,23 @@ onMounted(() => {
         p {
           color: #fff;
         }
-        &.other {
-        }
       }
       .p-inputnumber {
         .p-inputtext {
-          max-width: 110px;
+          text-align: center;
           padding: 0;
           background-color: transparent;
           border: transparent;
           font-weight: 700;
           color: #ffffff;
+
+          @include media("<md") {
+            font-size: 0.8725rem;
+          }
         }
+      }
+      &.p-invalid {
+        border: 4px solid var(--p-primary-500);
       }
     }
   }
