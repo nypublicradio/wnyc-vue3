@@ -8,12 +8,17 @@ const props = defineProps({
     type: String,
     default: "check",
   },
+  size: {
+    type: String,
+    default: "max-w-4rem",
+  },
 })
 </script>
 <template>
   <img
     :src="`/member-status-icon/${props.brand}-${props.status}.svg`"
     alt="Membership certificate icon"
-    class="max-w-4rem h-auto"
+    class="h-auto"
+    :class="props.size"
   />
 </template>

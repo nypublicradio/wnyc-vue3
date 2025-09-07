@@ -61,26 +61,27 @@ const onChangePaymentInfo = () => {
 
 <template>
   <div class="member-card card">
-    <div v-if="hasPaymentFailed">
-      <div class="flex flex-wrap align-items-start gap-3">
-        <MemberStatusIcon :brand="getBrand" :status="getStatus" />
-        <div>
-          <p class="font-bold">Your membership needs to be updated</p>
-          <p>We can’t process your donation. Please update your payment method.</p>
-          <div class="flex gap-3 mt-3 align-items-center flex-wrap">
-            <Button
-              class="px-3"
-              @click="onChangePaymentInfo"
-              label="Update payment info"
-              size="small"
-            />
-          </div>
+    <div
+      class="flex flex-wrap sm:flex-nowrap align-items-start justify-content-center sm:justify-content-start gap-3"
+    >
+      <MemberStatusIcon :brand="getBrand" :status="getStatus" />
+
+      <div v-if="hasPaymentFailed">
+        <p class="font-bold">Your membership needs to be updated</p>
+        <p>We can’t process your donation. Please update your payment method.</p>
+        <div
+          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+        >
+          <Button
+            class="px-3 w-full sm:w-auto"
+            @click="onChangePaymentInfo"
+            label="Update payment info"
+            size="small"
+          />
         </div>
       </div>
-    </div>
-    <div v-else-if="hasDonationHistory" class="flex flex-wrap align-items-start gap-3">
-      <MemberStatusIcon :brand="getBrand" :status="getStatus" />
-      <div>
+
+      <div v-else-if="hasDonationHistory">
         <p class="font-bold">
           {{
             props.profileData.isActiveSustainer
@@ -91,59 +92,60 @@ const onChangePaymentInfo = () => {
         <p>
           Thank you for your {{ formatCurrency(props.donation?.amount) }} monthly gift!
           <br />
-          Your next donation will process {{ formatDate(props.donation.nextChargeDate) }}
+          Your next donation will process
+          {{ formatDate(props.donation.nextChargeDate) }}
         </p>
-        <div class="flex gap-3 mt-3 align-items-center flex-wrap">
+        <div
+          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+        >
           <Button
-            class="px-3"
+            class="px-3 w-full sm:w-auto"
             @click="emit('onUpdateGiftAmount')"
             label="Update gift amount"
             size="small"
           />
           <Button
+            class="link w-full sm:w-auto"
             severity="secondary"
             variant="link"
-            class="link"
             @click="onChangePaymentInfo"
             label="Change payment info"
             size="small"
           ></Button>
           <Button
+            class="link w-full sm:w-auto"
             severity="secondary"
             variant="link"
-            class="link"
             @click="emit('onCancelMembership')"
             label="Cancel membership"
             size="small"
           ></Button>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <div class="flex align-items-start gap-3">
-        <MemberStatusIcon :brand="getBrand" :status="getStatus" />
-        <div>
-          <p class="font-bold">Become a WNYC Member</p>
-          <p>
-            A monthly gift will provide us steady support to help secure the future of
-            public media.
-          </p>
-          <div class="flex gap-3 mt-3 align-items-center flex-wrap">
-            <Button
-              class="px-5"
-              @click="emit('onDonateNow')"
-              label="Donate Now"
-              size="small"
-            />
-            <Button
-              severity="secondary"
-              variant="link"
-              class="link"
-              @click="onSomethingMissing"
-              label="Something missing? Tell us"
-              size="small"
-            ></Button>
-          </div>
+
+      <div v-else>
+        <p class="font-bold">Become a WNYC Member</p>
+        <p>
+          A monthly gift will provide us steady support to help secure the future of
+          public media.
+        </p>
+        <div
+          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+        >
+          <Button
+            class="px-5 w-full sm:w-auto"
+            @click="emit('onDonateNow')"
+            label="Donate Now"
+            size="small"
+          />
+          <Button
+            class="link w-full sm:w-auto"
+            severity="secondary"
+            variant="link"
+            @click="onSomethingMissing"
+            label="Something missing? Tell us"
+            size="small"
+          ></Button>
         </div>
       </div>
     </div>
