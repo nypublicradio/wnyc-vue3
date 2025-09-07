@@ -29,7 +29,7 @@ export const useMembership = () => {
   }
 
   // Handle the "Cancel membership" emit click event
-  const onCancelMembership = async (springboardId) => {
+  const onCancelMembership = async (springboardId, amount) => {
     console.log("Cancel membership clicked for ID:", springboardId)
 
     const { default: CancelMembership } = await import(
@@ -47,7 +47,8 @@ export const useMembership = () => {
           onCancelMembershipThankYou()
         },
         onAdjust: (e) => {
-          console.log("adjusted", e)
+          onUpdateGiftAmount(amount)
+          console.log("adjusted")
         },
       },
     })
@@ -70,7 +71,7 @@ export const useMembership = () => {
         onCancel: () => {
           console.log("canceled emit dialog")
         },
-        onAdjust: (e) => {
+        onSave: (e) => {
           console.log("adjusted", e)
         },
       },
