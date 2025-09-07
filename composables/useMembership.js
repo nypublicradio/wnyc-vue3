@@ -48,7 +48,7 @@ export const useMembership = () => {
         },
         onAdjust: (e) => {
           onUpdateGiftAmount(amount)
-          console.log("adjusted")
+          console.log("sent to adjust/update the amount")
         },
       },
     })
@@ -78,7 +78,15 @@ export const useMembership = () => {
     })
   }
 
-  return { onCancelMembership, onUpdateGiftAmount }
+  // handle the "Donate now" emit click event
+  const onDonateNow = () => {
+    window.open(
+      "https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button",
+      "_blank"
+    )
+  }
+
+  return { onCancelMembership, onUpdateGiftAmount, onDonateNow }
 }
 
 

@@ -10,7 +10,7 @@ import { useMembership } from "~/composables/useMembership"
 import { trackClickEvent, initializeStationList } from "~/utilities/helpers"
 import { useProfileApi } from "~/composables/useProfileApi"
 
-const { onCancelMembership, onUpdateGiftAmount } = useMembership()
+const { onCancelMembership, onUpdateGiftAmount, onDonateNow } = useMembership()
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -65,14 +65,6 @@ const onUpdateStation = (data) => {
 // handles the dropdown menu click event
 const clickThisMenu = (ref) => {
   ref.toggleDrawer()
-}
-
-// handle the "Donate now" emit click event
-const onDonateNow = () => {
-  window.open(
-    "https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button",
-    "_blank"
-  )
 }
 
 onMounted(async () => {
