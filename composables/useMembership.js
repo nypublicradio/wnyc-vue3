@@ -1,9 +1,10 @@
 import { useDialog } from "primevue/usedialog"
-
+import { useToast } from "primevue/usetoast"
 
 export const useMembership = () => {
 
   const dialog = useDialog()
+  const toast = useToast()
   const dialogStyles = {
     width: "100%",
     maxWidth: "672px",
@@ -45,6 +46,12 @@ export const useMembership = () => {
         onCancel: () => {
           console.log("canceled emit dialog")
           onCancelMembershipThankYou()
+          toast.add({
+            severity: "success",
+            summary:
+              "Your membership donation has been successfully canceled.",
+            closable: true,
+          })
         },
         onAdjust: (e) => {
           onUpdateGiftAmount(amount)
@@ -73,6 +80,13 @@ export const useMembership = () => {
         },
         onSave: (e) => {
           console.log("adjusted", e)
+          toast.add({
+            severity: "success",
+            summary:
+              `Your donation has been successfully updated to $${e.amount}/mo.`,
+            life: 6000,
+            closable: true,
+          })
         },
       },
     })
