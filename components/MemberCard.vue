@@ -62,7 +62,7 @@ const onChangePaymentInfo = () => {
 <template>
   <div class="member-card card">
     <div v-if="hasPaymentFailed">
-      <div class="flex align-items-start gap-3">
+      <div class="flex flex-wrap align-items-start gap-3">
         <MemberStatusIcon :brand="getBrand" :status="getStatus" />
         <div>
           <p class="font-bold">Your membership needs to be updated</p>
