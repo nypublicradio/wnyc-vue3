@@ -69,7 +69,6 @@ export const useMembership = () => {
       emits: {
         onCancel: () => {
           console.log("canceled emit dialog")
-          onCancelMembershipThankYou()
         },
         onAdjust: (e) => {
           console.log("adjusted", e)
