@@ -10,7 +10,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["onDonateNow", "onCancelMembership", "onUpdateGiftAmount"])
+const emit = defineEmits([
+  "onDonateNow",
+  "onCancelMembership",
+  "onUpdateGiftAmount",
+  "onContactListenerServices",
+])
 
 const memberStatus = {
   CHECK: "check",
@@ -51,9 +56,6 @@ const getBrand = computed(() => {
     : memberBrand.WNYC
 })
 
-const onTellUs = () => {
-  // Handle the "Something missing? Tell us" click event
-}
 const onChangePaymentInfo = () => {
   // Handle the "Change payment info" click event
 }
@@ -142,10 +144,9 @@ const onChangePaymentInfo = () => {
             class="link w-full sm:w-auto"
             severity="secondary"
             variant="link"
-            @click="onTellUs"
+            @click="emit('onContactListenerServices')"
             label="Not what you expected? Tell us"
             size="small"
-            v-tooltip.bottom="'Enter your username'"
           ></Button>
         </div>
       </div>
@@ -168,7 +169,7 @@ const onChangePaymentInfo = () => {
             class="link w-full sm:w-auto"
             severity="secondary"
             variant="link"
-            @click="onTellUs"
+            @click="emit('onContactListenerServices')"
             label="Something missing? Tell us"
             size="small"
           ></Button>

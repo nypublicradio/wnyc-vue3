@@ -10,7 +10,12 @@ import { useMembership } from "~/composables/useMembership"
 import { trackClickEvent, initializeStationList } from "~/utilities/helpers"
 import { useProfileApi } from "~/composables/useProfileApi"
 
-const { onCancelMembership, onUpdateGiftAmount, onDonateNow } = useMembership()
+const {
+  onCancelMembership,
+  onUpdateGiftAmount,
+  onDonateNow,
+  onContactListenerServices,
+} = useMembership()
 
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
@@ -692,12 +697,14 @@ const profileDataTemp = ref({
             :profileData="profileDataTemp2"
             class="mb-3"
             @onDonateNow="onDonateNow"
+            @onContactListenerServices="onContactListenerServices()"
           />
           <MemberCard
             :donation="null"
             :profileData="profileData"
             class="mb-3"
             @onDonateNow="onDonateNow"
+            @onContactListenerServices="onContactListenerServices()"
           />
           <!-- TEMP to show no donation history -->
           <div
@@ -714,6 +721,7 @@ const profileDataTemp = ref({
                 onCancelMembership(donation.springboardId, donation.amount)
               "
               @onUpdateGiftAmount="onUpdateGiftAmount(donation.amount)"
+              @onContactListenerServices="onContactListenerServices()"
             />
           </div>
           <MemberCard v-else :donation="null" :profileData="profileData" />
