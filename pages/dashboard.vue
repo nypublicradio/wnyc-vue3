@@ -15,6 +15,7 @@ const {
   onUpdateGiftAmount,
   onDonateNow,
   onContactListenerServices,
+  onChangePaymentInfo,
 } = useMembership()
 
 const currentUser = useCurrentUser()
@@ -722,11 +723,14 @@ const profileDataTemp = ref({
               "
               @onUpdateGiftAmount="onUpdateGiftAmount(donation.amount)"
               @onContactListenerServices="onContactListenerServices()"
+              @onChangePaymentInfo="
+                onChangePaymentInfo(profileDataTemp.queryStringEncrypted)
+              "
             />
           </div>
           <MemberCard v-else :donation="null" :profileData="profileData" />
-          <!-- <pre>{{ profileData }}</pre>
-          <pre>{{ profileDataTemp }}</pre> -->
+          <!-- <pre>{{ profileData }}</pre> -->
+          <!--<pre>{{ profileDataTemp }}</pre> -->
         </div>
         <!-- loading skeleton for membership card -->
         <div v-else class="col-12 md:col-6">
