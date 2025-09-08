@@ -70,7 +70,14 @@ const clickThisMenu = (ref) => {
 onMounted(async () => {
   await getMembershipInfo()
 })
-
+const profileDataTemp2 = ref({
+  name: "Susan Manning",
+  lastDonationDate: "2024-09-04",
+  lastDonationAmount: 8,
+  isActiveSustainer: false,
+  activeRecurringDonations: [],
+  queryStringEncrypted: "placeholder",
+})
 const profileDataTemp = ref({
   name: "Susan Manning",
   lastDonationDate: "2025-09-04",
@@ -680,6 +687,12 @@ const profileDataTemp = ref({
       <div class="member-profile mb-6 grid grid-lggutter">
         <div v-if="currentUser && profileData && !isLoading" class="col-12">
           <!-- TEMP to show no donation history -->
+          <MemberCard
+            :donation="null"
+            :profileData="profileDataTemp2"
+            class="mb-3"
+            @onDonateNow="onDonateNow"
+          />
           <MemberCard
             :donation="null"
             :profileData="profileData"
