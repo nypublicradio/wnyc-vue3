@@ -57,14 +57,14 @@ export const PLAYER_SKIP_TIME = 10
 //browse topics
 export const showTopics = [
     {
-        label: 'Arts & Culture',
+        label: 'Arts',
         value: 'arts-and-culture',
         url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-arts&api_key=culture',
         color: 'var(--teal-lake)',
         image: '/topics-btn-images/arts.jpg',
     },
     {
-        label: 'News',
+        label: 'Local News',
         value: 'news',
         url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-news&api_key=atc',
         color: 'var(--p-primary-color)',
@@ -78,7 +78,7 @@ export const showTopics = [
         image: '/topics-btn-images/politics.jpg',
     },
     {
-        label: 'Tech & Media',
+        label: 'Technology',
         value: 'tech-and-media',
         url: 'https://www.wnyc.org/api/v2/discover/shows/?discover_station=wnyc-vue3-app-techmedia&api_key=otm',
         color: 'var(--honolulu-blue)',
