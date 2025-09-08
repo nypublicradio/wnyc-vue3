@@ -18,6 +18,11 @@ export const useMembership = () => {
     dismissableMask: true,
     modal: true,
   }
+
+  const sustainerLink = "https://pledge.wnyc.org/support/sustainer"
+  const donationLink = "https://pledge.wnyc.org/support/wnyc"
+
+
   // Handle the "Cancel membership" emit click event
   const onCancelMembershipThankYou = async () => {
     const { default: CancelMembership } = await import(
@@ -105,14 +110,21 @@ export const useMembership = () => {
   }
 
   // handle the "Donate now" emit click event
-  const onDonateNow = () => {
+  const onDonateNow = (utmParams = { utm_source: "wnyc", utm_medium: "wnyc", utm_campaign: "donate-button" }) => {
+    const queryString = new URLSearchParams(utmParams).toString()
     window.open(
-      "https://pledge.wnyc.org/support/wnyc?utm_source=wnyc&utm_medium=wnyc&utm_campaign=donate-button",
+      `${donationLink}?${queryString}`,
       "_blank"
     )
   }
 
-  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices }
+  //onChangePaymentInfo
+  const onChangePaymentInfo = (queryStringEncrypted) => {
+    const url = `${sustainerLink}?af=${queryStringEncrypted}`
+    window.open(url, "_blank")
+  }
+
+  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo }
 }
 
 

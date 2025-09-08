@@ -15,6 +15,7 @@ const emit = defineEmits([
   "onCancelMembership",
   "onUpdateGiftAmount",
   "onContactListenerServices",
+  "onChangePaymentInfo",
 ])
 
 const memberStatus = {
@@ -55,10 +56,6 @@ const getBrand = computed(() => {
     ? memberBrand.WQXR
     : memberBrand.WNYC
 })
-
-const onChangePaymentInfo = () => {
-  // Handle the "Change payment info" click event
-}
 </script>
 
 <template>
@@ -76,7 +73,7 @@ const onChangePaymentInfo = () => {
         >
           <Button
             class="px-3 w-full sm:w-auto"
-            @click="onChangePaymentInfo"
+            @click="emit('onChangePaymentInfo')"
             label="Update payment info"
             size="small"
           />
@@ -110,7 +107,7 @@ const onChangePaymentInfo = () => {
             class="link w-full sm:w-auto"
             severity="secondary"
             variant="link"
-            @click="onChangePaymentInfo"
+            @click="emit('onChangePaymentInfo')"
             label="Change payment info"
             size="small"
           ></Button>
