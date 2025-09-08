@@ -17,6 +17,12 @@ const allOrFeatured = ref(true)
 const { breakpoint } = useBreakpoints()
 const isMobile = computed(() => breakpoint("<md"))
 
+// computed property to get the current shows based on allOrFeatured
+const currentShows = computed(() => {
+  if (!shows.value) return []
+  return allOrFeatured.value ? shows.value.featuredShows : shows.value.all
+})
+
 const options = computed(() => ({
   fuseOptions: {
     keys: ["title"],
@@ -126,13 +132,13 @@ watch(
         <div class="topics">
           <section class="topics-header flex justify-content-between align-items-center">
             <h2>Browse By Topic</h2>
-            <Button
+            <!-- <Button
               severity="secondary"
               variant="link"
               class="link -mr-2"
               @click="handleAllTopics"
               label="All Topics"
-            ></Button>
+            ></Button> -->
           </section>
           <HorizontalScrollFeature v-if="isMobile" class="topics-holder" :data="shows">
             <div class="flex w-full">
@@ -162,7 +168,7 @@ watch(
               >
                 <div class="relative topic-btn-holder">
                   <Button
-                    class="topic-btn text-sm md:text-base"
+                    class="topic-btn text-lg"
                     :label="topic.label"
                     :aria-label="`${topic.label} topic button`"
                     @click="selectTopic(topic)"
@@ -177,7 +183,11 @@ watch(
 
         <section class="tabs mt-2">
           <div class="flex justify-content-between align-items-center mb-4">
-            <h2>{{ allOrFeatured ? "Featured" : "All" }} Shows</h2>
+            <Transition name="fade" mode="out-in">
+              <h2 :key="allOrFeatured ? 'featured' : 'all'">
+                {{ allOrFeatured ? "Featured" : "All" }} Shows
+              </h2>
+            </Transition>
             <div class="-mr-2">
               <Button
                 v-if="allOrFeatured"
@@ -197,11 +207,15 @@ watch(
               ></Button>
             </div>
           </div>
-
-          <div class="shows grid">
-            <template v-if="status === 'success'">
+          <!-- <pre>{{ currentShows }}</pre> -->
+          <Transition name="fade" mode="out-in">
+            <div
+              v-if="status === 'success'"
+              :key="`shows-${allOrFeatured}`"
+              class="shows grid"
+            >
               <ShowItem
-                v-for="show in allOrFeatured ? shows?.featuredShows : shows?.all"
+                v-for="show in currentShows"
                 :data="show"
                 :key="show.title"
                 class="col-12 md:col-4 md:mb-5"
@@ -212,18 +226,18 @@ watch(
                 :hideButtons="!isMobile"
                 @onClick="goToShowPage(show)"
               />
-            </template>
-
-            <skeleton-show-item
-              v-else
-              v-for="(show, index) in 27"
-              :key="`sk1-${index}`"
-              class="col-12 md:col-4 md:mb-5"
-              contentClass="md:flex-column gap-3 md:gap-2"
-              imageClass="w-7rem md:w-13rem h-7rem md:h-13rem"
-              :hideButtons="!isMobile"
-            />
-          </div>
+            </div>
+            <div v-else key="loading" class="shows grid">
+              <skeleton-show-item
+                v-for="(show, index) in 27"
+                :key="`sk1-${index}`"
+                class="col-12 md:col-4 md:mb-5"
+                contentClass="md:flex-column gap-3 md:gap-2"
+                imageClass="w-7rem md:w-13rem h-7rem md:h-13rem"
+                :hideButtons="!isMobile"
+              />
+            </div>
+          </Transition>
         </section>
       </div>
       <div v-else>
@@ -299,6 +313,17 @@ watch(
             border-radius: 16px;
             background-size: cover;
             background-position: center;
+            transition: transform var(--p-transition-duration),
+              opacity var(--p-transition-duration);
+            -webkit-transition: transform var(--p-transition-duration),
+              opacity var(--p-transition-duration);
+            &:hover {
+              //opacity: 1;
+              transform: scale(1.1);
+            }
+            .p-button-label {
+              margin-top: -2rem;
+            }
           }
         }
       }
@@ -332,6 +357,46 @@ watch(
         &.activetopicholder {
           .arrow {
             bottom: -10px;
+          }
+        }
+      }
+    }
+    .shows {
+      .browse-item {
+        transition: transform var(--p-transition-duration),
+          opacity var(--p-transition-duration);
+        -webkit-transition: transform var(--p-transition-duration),
+          opacity var(--p-transition-duration);
+        &:hover {
+          opacity: 0.8;
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
+
+<style lang="scss">
+.browse-page {
+  .content-holder {
+    .topics {
+      .station-holder {
+        &.desktop {
+          .topic-btn {
+            .p-button-label {
+              margin-top: -2rem;
+            }
           }
         }
       }

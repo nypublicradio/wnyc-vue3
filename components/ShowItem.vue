@@ -123,8 +123,8 @@ const getDotMenuItems = (bucketItem) => {
         <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
           {{ props.data.title }}
         </h2>
-        <p v-for="org in props.data?.producingOrganizations" :key="org.name">
-          {{ org.name }}
+        <p v-if="props.data?.producingOrganizations?.length">
+          {{ props.data.producingOrganizations.map((org) => org.name).join(" and ") }}
         </p>
       </div>
     </div>
