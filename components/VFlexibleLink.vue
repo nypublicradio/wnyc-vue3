@@ -44,6 +44,13 @@ const props = defineProps({
     default: "2px",
     type: String,
   },
+  /**
+   * radius on the link
+   */
+  wordBreak: {
+    default: "normal",
+    type: String,
+  },
 })
 
 const emit = defineEmits(["flexible-link-click"])
@@ -109,6 +116,7 @@ const isAnchor = computed(() => {
 <style lang="scss" scoped>
 .flexible-link {
   border-radius: v-bind(radius);
+  word-break: v-bind(wordBreak);
 }
 .flexible-link:not(.raw):not(.null) {
   color: var(--link-button-color);

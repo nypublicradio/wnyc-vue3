@@ -3,9 +3,9 @@ const dialogRef = inject("dialogRef")
 </script>
 
 <template>
-  <div class="cancel-membership-thank-you">
+  <div class="contact-listener-services">
     <div class="flex justify-content-between align-items-center mb-3">
-      <h2>Thank you for your support</h2>
+      <h2>Contact Listener Services</h2>
       <Button
         class="-mr-2"
         rounded
@@ -16,16 +16,19 @@ const dialogRef = inject("dialogRef")
       />
     </div>
     <p>
-      Your donation has been cancelled. We understand, circumstances change. Your
-      generosity has made a difference, and we hope you’ll consider coming back when the
-      time is right for you. In the meantime, feel free to stay connected with us and see
-      how your past contributions continue to make an impact.
+      <strong
+        ><VFlexibleLink
+          @click="dialogRef.close()"
+          to="https://newyorkpublicradio.my.site.com/wnyc/s/"
+          >Reach out to us
+        </VFlexibleLink></strong
+      >for any questions or assistance regarding your membership. We're here to help!
     </p>
     <div class="flex flex-column gap-3 align-items-center mt-3">
       <Button
         class="w-full px-3 max-w-15rem"
         @click="dialogRef.close()"
-        label="Done"
+        label="Close"
         size="small"
       />
     </div>
@@ -33,6 +36,6 @@ const dialogRef = inject("dialogRef")
 </template>
 
 <style lang="scss" scoped>
-.cancel-membership-thank-you {
+.contact-listener-services {
 }
 </style>

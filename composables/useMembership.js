@@ -29,6 +29,18 @@ export const useMembership = () => {
     })
   }
 
+  // Handle the onContactListenerServices emit click event on the Tell Us" buttons
+  const onContactListenerServices = async () => {
+    console.log("Contact Listener Services clicked")
+    const { default: ContactListenerServices } = await import(
+      "~/components/account-modals/ContactListenerServices.vue"
+    )
+
+    dialog.open(ContactListenerServices, {
+      props: dialogProps,
+    })
+  }
+
   // Handle the "Cancel membership" emit click event
   const onCancelMembership = async (springboardId, amount) => {
     console.log("Cancel membership clicked for ID:", springboardId)
@@ -100,7 +112,7 @@ export const useMembership = () => {
     )
   }
 
-  return { onCancelMembership, onUpdateGiftAmount, onDonateNow }
+  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices }
 }
 
 
