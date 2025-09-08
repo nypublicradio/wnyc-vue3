@@ -51,7 +51,7 @@ const getBrand = computed(() => {
     : memberBrand.WNYC
 })
 
-const onSomethingMissing = () => {
+const onTellUs = () => {
   // Handle the "Something missing? Tell us" click event
 }
 const onChangePaymentInfo = () => {
@@ -81,7 +81,7 @@ const onChangePaymentInfo = () => {
         </div>
       </div>
 
-      <div v-else-if="hasDonationHistory">
+      <div v-else-if="hasDonationHistory && isActiveSustainer">
         <p class="font-bold">
           {{
             props.profileData.isActiveSustainer
@@ -93,7 +93,7 @@ const onChangePaymentInfo = () => {
           Thank you for your {{ formatCurrency(props.donation?.amount) }} monthly gift!
           <br />
           Your next donation will process
-          {{ formatDate(props.donation.nextChargeDate) }}
+          {{ formatDate(props.donation?.nextChargeDate) }}
         </p>
         <div
           class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
@@ -123,6 +123,32 @@ const onChangePaymentInfo = () => {
         </div>
       </div>
 
+      <div v-else-if="hasDonationHistory && !isActiveSustainer">
+        <p class="font-bold">We need your support now more than ever</p>
+        <p>
+          Your last donation was {{ formatDate(props.profileData.lastDonationDate) }}.
+          Become a WNYC Member now and help secure the future of public media.
+        </p>
+        <div
+          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+        >
+          <Button
+            class="px-5 w-full sm:w-auto"
+            @click="emit('onDonateNow')"
+            label="Donate Now"
+            size="small"
+          />
+          <Button
+            class="link w-full sm:w-auto"
+            severity="secondary"
+            variant="link"
+            @click="onTellUs"
+            label="Not what you expected? Tell us"
+            size="small"
+            v-tooltip.bottom="'Enter your username'"
+          ></Button>
+        </div>
+      </div>
       <div v-else>
         <p class="font-bold">Become a WNYC Member</p>
         <p>
@@ -142,7 +168,7 @@ const onChangePaymentInfo = () => {
             class="link w-full sm:w-auto"
             severity="secondary"
             variant="link"
-            @click="onSomethingMissing"
+            @click="onTellUs"
             label="Something missing? Tell us"
             size="small"
           ></Button>
