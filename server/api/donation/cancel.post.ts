@@ -75,7 +75,7 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string)
         // Prepare the request payload
         const requestBody = {
             did: donationId,
-            reason: reason
+            reason
         };
 
         const response = await axios.post(apiUrl, requestBody, {
