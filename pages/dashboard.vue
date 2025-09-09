@@ -700,6 +700,9 @@ const profileDataTemp = ref({
             class="mb-3"
             @onDonateNow="onDonateNow"
             @onContactListenerServices="onContactListenerServices()"
+            @onChangePaymentInfo="
+              onChangePaymentInfo(profileDataTemp.queryStringEncrypted)
+            "
           />
           <MemberCard
             :donation="null"
@@ -707,6 +710,9 @@ const profileDataTemp = ref({
             class="mb-3"
             @onDonateNow="onDonateNow"
             @onContactListenerServices="onContactListenerServices()"
+            @onChangePaymentInfo="
+              onChangePaymentInfo(profileDataTemp.queryStringEncrypted)
+            "
           />
           <!-- TEMP to show no donation history -->
           <div
