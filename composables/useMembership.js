@@ -18,8 +18,9 @@ export const useMembership = () => {
     dismissableMask: true,
     modal: true,
   }
+  const config = useRuntimeConfig()
 
-  const sustainerLink = "https://pledge.wnyc.org/support/sustainer"
+  const springboardLink = config.public.SPRINGBOARD_URL
   const donationLink = "https://pledge.wnyc.org/support/wnyc"
 
 
@@ -62,6 +63,8 @@ export const useMembership = () => {
       emits: {
         onCancel: () => {
           console.log("canceled emit dialog")
+          // TODO: actually CANCEL the membership here
+          //
           onCancelMembershipThankYou()
           toast.add({
             severity: "success",
@@ -120,7 +123,7 @@ export const useMembership = () => {
 
   //onChangePaymentInfo
   const onChangePaymentInfo = (queryStringEncrypted) => {
-    const url = `${sustainerLink}?af=${queryStringEncrypted}`
+    const url = `${springboardLink}? =${queryStringEncrypted}`
     window.open(url, "_blank")
   }
 

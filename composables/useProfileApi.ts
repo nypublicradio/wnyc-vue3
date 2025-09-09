@@ -79,6 +79,9 @@ export const useProfileApi = () => {
                             sessionData.session.refresh_token
                         )
                     }
+                } else {
+                    // no supabase session, route to login
+                    navigateTo("/login")
                 }
             } catch (error) {
                 console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
