@@ -232,6 +232,7 @@ export default defineNuxtConfig({
         process.env.SETTINGS_MENU_DONATION_URL ??
         "https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=settings_menu",
       APP_VERSION: process.env.APP_VERSION ?? "x.x.x",
+      SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
     },
   },
 
