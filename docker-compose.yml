@@ -51,6 +51,8 @@ services:
       - SF_CLIENT_ID=$SF_CLIENT_ID
       - SF_PRIVATE_KEY=$SF_PRIVATE_KEY
       - JWT_SECRET=$JWT_SECRET
+      - SPRINGBOARD_URL=$SPRINGBOARD_URL
+      - SPRINGBOARD_KEY=$SPRINGBOARD_KEY
     ports:
       - 8880:8080
     command: ['./scripts/entrypoint.sh']
