@@ -56,6 +56,8 @@ export const useProfileApi = () => {
         // Check if we have an auth token, if not try to initialize it
         const authComposable = useAuth()
 
+        console.log("🐛  BEFORE", authComposable)
+
         if (!authComposable.isAuthenticated.value) {
             // No JWT token found
             try {
@@ -84,7 +86,6 @@ export const useProfileApi = () => {
                 console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
             }
         }
-
         // Wait for currentUser to be populated (with 10 second timeout)
         try {
             await until(currentUser).toMatch(v => v !== null, { timeout: 10000 })
@@ -93,6 +94,7 @@ export const useProfileApi = () => {
             return
         }
 
+        console.log("🐛 Dashboard Debug - Authenticated:", authComposable.isAuthenticated.value)
         // Now try to fetch profile data if we have auth
         if (authComposable.isAuthenticated.value) {
             // Fetch profile data from /api/profile if user has a Salesforce ID

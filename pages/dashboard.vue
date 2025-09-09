@@ -76,6 +76,7 @@ const clickThisMenu = (ref) => {
 onMounted(async () => {
   await getMembershipInfo()
 })
+
 const profileDataTemp2 = ref({
   name: "Susan Manning",
   lastDonationDate: "2024-09-04",
@@ -730,7 +731,7 @@ const profileDataTemp = ref({
           </div>
           <MemberCard v-else :donation="null" :profileData="profileData" />
           <!-- <pre>{{ profileData }}</pre> -->
-          <!--<pre>{{ profileDataTemp }}</pre> -->
+          <pre>{{ profileDataTemp }}</pre>
         </div>
         <!-- loading skeleton for membership card -->
         <div v-else class="col-12 md:col-6">
