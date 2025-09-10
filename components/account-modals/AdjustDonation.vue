@@ -7,9 +7,10 @@ const dialogRef = inject("dialogRef")
 const currentDonationAmount = ref(null)
 
 const finalAmount = ref(null)
-const value = ref(15)
+const value = ref(3)
 const otherAmount = ref(null)
-const options = ref([15, 30, 45, "other"])
+// adjust these numbers below to control the amount added to the current donation amount
+const options = ref([3, 4, 8, "other"])
 const isOtherError = ref(false)
 
 // Handle the cancel action
@@ -54,6 +55,14 @@ const onRbClicked = (e) => {
 
 onMounted(() => {
   currentDonationAmount.value = dialogRef.value.data.currentDonationAmount
+  options.value = options.value.map((amount) => {
+    if (typeof amount === "number") {
+      const adjustedAmount = Math.ceil(amount + Math.ceil(currentDonationAmount.value))
+      value.value = adjustedAmount
+      return adjustedAmount
+    }
+    return amount
+  })
 })
 </script>
 
@@ -71,7 +80,10 @@ onMounted(() => {
       />
     </div>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
-    <div class="amount-rb flex flex-wrap align-items-center mt-4 w-full">
+    <div
+      v-if="currentDonationAmount"
+      class="amount-rb flex flex-wrap align-items-center mt-4 w-full"
+    >
       <div
         v-for="amount in options"
         :key="`rb-${amount}`"
@@ -139,9 +151,9 @@ onMounted(() => {
 .adjust-donation {
   .amount-rb {
     .p-button {
-      border-color: #000000;
+      border-color: var(--p-darkblue-500);
       &.selected {
-        background-color: #000000;
+        background-color: var(--p-darkblue-500);
         border-color: transparent;
         p {
           color: #fff;
