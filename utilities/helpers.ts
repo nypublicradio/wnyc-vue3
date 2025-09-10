@@ -1179,10 +1179,6 @@ export const logOutUser = async () => {
   // logout of OneSignal
   useOneSignal().logout()
 
-  // logout of the useAuth composable
-  const { logout } = useAuth()
-  await logout()
-
   getAndSetUserProfile()
 }
 
