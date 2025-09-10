@@ -78,6 +78,7 @@ onMounted(() => {
         severity="secondary"
         @click="dialogRef.close()"
       />
+      <ModalCloseButton @clickEmit="dialogRef.close()" />
     </div>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
     <div
@@ -87,7 +88,7 @@ onMounted(() => {
       <div
         v-for="amount in options"
         :key="`rb-${amount}`"
-        class="w-6 md:w-3 px-2 py-2 md:px-1"
+        class="w-6 md:w-3 px-2 py-2 md:px-1 relative"
       >
         <Button
           class="w-full"
@@ -97,6 +98,7 @@ onMounted(() => {
           :class="[
             { selected: value === amount },
             { other: value === 'other' },
+            { otherRb: amount === 'other' },
             { 'p-invalid': isOtherError && amount === 'other' },
           ]"
           :aria-label="
@@ -105,7 +107,7 @@ onMounted(() => {
         >
           <p v-if="amount !== 'other'" class="font-bold">${{ amount }}/mo</p>
           <p v-else-if="amount === 'other' && value !== amount" class="font-bold">
-            Custom
+            $ <span>Other</span>
           </p>
 
           <InputNumber
@@ -117,12 +119,15 @@ onMounted(() => {
             :minFractionDigits="0"
             :maxFractionDigits="5"
             :min="0"
-            placeholder="Enter amount"
+            placeholder="$0/mo"
             fluid
             :invalid="isOtherError"
             @keyup.enter="onSave"
           />
         </Button>
+        <small v-if="amount === 'other'" class="absolute left-0 top-100 ml-2"
+          >Enter amount</small
+        >
       </div>
     </div>
     <small v-if="isOtherError" class="w-full p-error mb-2">
@@ -157,6 +162,12 @@ onMounted(() => {
         border-color: transparent;
         p {
           color: #fff;
+        }
+      }
+      &.otherRb {
+        border-color: #c3c3c3;
+        p span {
+          color: #c3c3c3;
         }
       }
       .p-inputnumber {
