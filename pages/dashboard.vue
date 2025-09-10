@@ -627,7 +627,10 @@ const profileDataTemp = ref({
 
       <h2 class="mb-4">Personal Information</h2>
       <!-- Account Information Section -->
-      <div v-if="currentUser" class="account-info mb-6 grid grid-lggutter">
+      <div
+        v-if="currentUser"
+        class="account-info mb-6 grid grid-lggutter mobile-lggutter"
+      >
         <div class="col-12 md:col-6">
           <div class="card">
             <div class="flex justify-content-between flex-wrap align-items-end">
@@ -872,6 +875,9 @@ const profileDataTemp = ref({
       background: var(--p-surface-0);
       border-radius: 10px;
       padding: 2rem 1.5rem;
+      @include media("<md") {
+        padding: 1rem 1.5rem;
+      }
     }
 
     .disabled {
