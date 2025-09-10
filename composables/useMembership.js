@@ -50,7 +50,7 @@ export const useMembership = () => {
 
   // Handle the "onUpdateGiftAmount" emit click event
   const onUpdateGiftAmount = async (currentDonationAmount) => {
-    console.log("Update gift amount :", currentDonationAmount)
+    //console.log("Update gift amount :", currentDonationAmount)
 
     const { default: AdjustDonation } = await import(
       "~/components/account-modals/AdjustDonation.vue"
@@ -80,7 +80,7 @@ export const useMembership = () => {
 
   // Handle the "Cancel membership" emit click event
   const onCancelMembership = async (springboardId, amount) => {
-    console.log("Cancel membership clicked for ID:", springboardId)
+    //console.log("Cancel membership clicked for ID:", springboardId)
 
     const { default: CancelMembership } = await import(
       "~/components/account-modals/CancelMembership.vue"
@@ -95,7 +95,7 @@ export const useMembership = () => {
         onCancel: async () => {
           //actually CANCEL the membership here
           const { authenticatedFetch } = useAuth()
-          const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account portal." }
+          const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
 
           const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
             method: 'POST',
@@ -109,7 +109,6 @@ export const useMembership = () => {
               life: 8000,
               closable: true,
             })
-            return
           } else {
             // Successfully canceled membership
             onCancelMembershipThankYou()
@@ -123,7 +122,7 @@ export const useMembership = () => {
         },
         onAdjust: () => {
           onUpdateGiftAmount(amount)
-          console.log("sent to adjust/update the amount")
+          //console.log("sent to adjust/update the amount")
         },
       },
     })
