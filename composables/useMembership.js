@@ -61,17 +61,35 @@ export const useMembership = () => {
       },
       props: dialogProps,
       emits: {
-        onCancel: () => {
+        onCancel: async () => {
           console.log("canceled emit dialog")
-          // TODO: actually CANCEL the membership here
-          //
-          onCancelMembershipThankYou()
-          toast.add({
-            severity: "success",
-            summary:
-              "Your membership donation has been successfully canceled.",
-            closable: true,
+          //actually CANCEL the membership here
+          const { authenticatedFetch } = useAuth()
+          const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account portal." }
+
+          const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
+            method: 'POST',
+            body: requestBody,
           })
+
+          if (data?.error) {
+            toast.add({
+              severity: "error",
+              summary: "There was an error canceling your membership. Please try again later.",
+              life: 8000,
+              closable: true,
+            })
+            return
+          } else {
+            // Successfully canceled membership
+            onCancelMembershipThankYou()
+            toast.add({
+              severity: "success",
+              summary:
+                "Your membership donation has been successfully canceled.",
+              closable: true,
+            })
+          }
         },
         onAdjust: (e) => {
           onUpdateGiftAmount(amount)
