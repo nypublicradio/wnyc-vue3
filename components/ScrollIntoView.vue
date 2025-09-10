@@ -37,6 +37,7 @@ const props = defineProps({
 
 const elementRef = ref(null)
 
+// Function to scroll the element into view
 const scrollIntoView = () => {
   if (elementRef.value) {
     elementRef.value.scrollIntoView({

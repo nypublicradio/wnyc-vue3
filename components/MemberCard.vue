@@ -4,9 +4,11 @@ import { useProfileApi } from "~/composables/useProfileApi"
 const props = defineProps({
   profileData: {
     type: Object,
+    default: null,
   },
   donation: {
     type: Object,
+    default: null,
   },
 })
 

@@ -1,6 +1,7 @@
 import { useDialog } from "primevue/usedialog"
 import { useToast } from "primevue/usetoast"
 
+// Composable for handling membership-related actions and dialogs
 export const useMembership = () => {
 
   const dialog = useDialog()
@@ -37,13 +38,43 @@ export const useMembership = () => {
 
   // Handle the onContactListenerServices emit click event on the Tell Us" buttons
   const onContactListenerServices = async () => {
-    console.log("Contact Listener Services clicked")
     const { default: ContactListenerServices } = await import(
       "~/components/account-modals/ContactListenerServices.vue"
     )
 
     dialog.open(ContactListenerServices, {
       props: dialogProps,
+    })
+  }
+
+
+  // Handle the "onUpdateGiftAmount" emit click event
+  const onUpdateGiftAmount = async (currentDonationAmount) => {
+    console.log("Update gift amount :", currentDonationAmount)
+
+    const { default: AdjustDonation } = await import(
+      "~/components/account-modals/AdjustDonation.vue"
+    )
+
+    dialog.open(AdjustDonation, {
+      data: {
+        currentDonationAmount,
+      },
+      props: dialogProps,
+      emits: {
+        onCancel: () => {
+          console.error("canceled emit dialog")
+        },
+        onSave: (e) => {
+          toast.add({
+            severity: "success",
+            summary:
+              `Your donation has been successfully updated to $${e.amount}/mo.`,
+            life: 6000,
+            closable: true,
+          })
+        },
+      },
     })
   }
 
@@ -57,12 +88,11 @@ export const useMembership = () => {
 
     dialog.open(CancelMembership, {
       data: {
-        springboardId: springboardId,
+        springboardId,
       },
       props: dialogProps,
       emits: {
         onCancel: async () => {
-          console.log("canceled emit dialog")
           //actually CANCEL the membership here
           const { authenticatedFetch } = useAuth()
           const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account portal." }
@@ -91,7 +121,7 @@ export const useMembership = () => {
             })
           }
         },
-        onAdjust: (e) => {
+        onAdjust: () => {
           onUpdateGiftAmount(amount)
           console.log("sent to adjust/update the amount")
         },
@@ -99,36 +129,6 @@ export const useMembership = () => {
     })
   }
 
-  // Handle the "onUpdateGiftAmount" emit click event
-  const onUpdateGiftAmount = async (currentDonationAmount) => {
-    console.log("Update gift amount :", currentDonationAmount)
-
-    const { default: AdjustDonation } = await import(
-      "~/components/account-modals/AdjustDonation.vue"
-    )
-
-    dialog.open(AdjustDonation, {
-      data: {
-        currentDonationAmount: currentDonationAmount,
-      },
-      props: dialogProps,
-      emits: {
-        onCancel: () => {
-          console.log("canceled emit dialog")
-        },
-        onSave: (e) => {
-          console.log("adjusted", e)
-          toast.add({
-            severity: "success",
-            summary:
-              `Your donation has been successfully updated to $${e.amount}/mo.`,
-            life: 6000,
-            closable: true,
-          })
-        },
-      },
-    })
-  }
 
   // handle the "Donate now" emit click event
   const onDonateNow = (utmParams = { utm_source: "wnyc", utm_medium: "wnyc", utm_campaign: "donate-button" }) => {
