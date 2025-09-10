@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createError, defineEventHandler, getQuery } from 'h3';
+import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../../utils/jwt';
 import { rateLimit } from '../../utils/rateLimiter';
 
@@ -17,9 +17,9 @@ interface DonationCancelResponse {
 /**
  * Validates the input parameters for the donation cancellation request
  */
-const validateCancelRequest = (query: any): { did: number; reason: string } => {
-    const did = query?.did;
-    const reason = query?.reason;
+const validateCancelRequest = (body: any): { did: number; reason: string } => {
+    const did = body?.did;
+    const reason = body?.reason;
 
     // Validate donation ID
     if (!did) {
@@ -146,7 +146,7 @@ const rateLimiter = rateLimit({
  * 
  * Cancels a recurring donation through the Springboard API.
  * 
- * Required URL Parameters:
+ * Required Request Body Parameters:
  * - did: Donation ID (number)
  * - reason: Cancellation reason (string)
  * 
@@ -165,11 +165,11 @@ export default defineEventHandler(async (event): Promise<DonationCancelResponse>
     // Verify JWT authentication
     requireAuth(event);
 
-    // Get URL parameters
-    const query = getQuery(event);
+    // Get request body
+    const body = await readBody(event);
 
     // Validate input parameters
-    const { did, reason } = validateCancelRequest(query);
+    const { did, reason } = validateCancelRequest(body);
 
     // Make the cancellation request to Springboard
     const cancellationResult = await cancelDonationWithSpringboard(did, reason);
