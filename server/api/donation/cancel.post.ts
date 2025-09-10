@@ -3,9 +3,6 @@ import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../../utils/jwt';
 import { rateLimit } from '../../utils/rateLimiter';
 
-// Runtime config for environment variables
-const config = useRuntimeConfig();
-
 // Response type definition
 interface DonationCancelResponse {
     status: string;
@@ -59,8 +56,8 @@ const validateCancelRequest = (body: any): { did: number; reason: string } => {
  */
 const cancelDonationWithSpringboard = async (donationId: number, reason: string): Promise<DonationCancelResponse> => {
     try {
-        const springboardUrl = config.SPRINGBOARD_URL;
-        const springboardKey = config.SPRINGBOARD_KEY;
+        const springboardUrl = process.env.SPRINGBOARD_URL;
+        const springboardKey = process.env.SPRINGBOARD_KEY;
 
         if (!springboardUrl || !springboardKey) {
             throw createError({
@@ -71,18 +68,14 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string)
         }
 
         const apiUrl = `${springboardUrl}/springboard-api/springboard-donation/cancel`;
-
-        // Prepare the request payload
-        const requestBody = {
-            did: donationId,
-            reason
-        };
-
-        const response = await axios.post(apiUrl, requestBody, {
+        const response = await axios.get(apiUrl, {
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${springboardKey}`,
+                'api-key': springboardKey,
                 'Accept': 'application/json'
+            },
+            params: {
+                did: donationId,
+                reason: encodeURIComponent(reason)
             }
         });
 
