@@ -1,6 +1,7 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import { Device, type DeviceInfo } from '@capacitor/device';
+import { useAuth } from "~/composables/useAuth"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
@@ -1156,9 +1157,13 @@ export const logOutUser = async () => {
   const currentEpisode = useCurrentEpisode()
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   const isEpisodePlaying = useIsEpisodePlaying()
+  const { logout } = useAuth()
 
   // sign out from supabase
   await client.auth.signOut()
+
+  // clear JWT authentication state
+  logout()
 
   // set the currentUser composable to null
   currentUser.value = null
