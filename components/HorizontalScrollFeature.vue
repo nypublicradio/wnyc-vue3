@@ -73,15 +73,16 @@ const reactiveData = toRef(props, "data")
   .scroll {
     .item {
       &:first-child {
-        @include media(">=md") {
-          margin-left: calc(((100% - 768px) / 2) + v-bind(buffer));
-        }
       }
       &:not(.large-card):last-child {
-        margin-right: 3rem;
+        @include media("<md") {
+          margin-right: 3rem;
+        }
       }
       &.large-card:last-child {
-        margin-right: 3rem;
+        @include media("<md") {
+          margin-right: 3rem;
+        }
       }
       &.btn,
       .btn {

@@ -116,9 +116,9 @@ watch(
   show,
   (newShow) => {
     if (newShow) {
-      page.value = newShow.episodes?.meta?.pagination.page
-      maxPages = newShow.episodes?.meta?.pagination.pages
-      episodes.value = newShow.episodes?.data
+      page.value = newShow?.episodes?.meta?.pagination.page
+      maxPages = newShow?.episodes?.meta?.pagination.pages
+      episodes.value = newShow?.episodes?.data
     }
   },
   { immediate: true }
@@ -179,13 +179,14 @@ onUnmounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
+    <!-- <pre>{{ show }}</pre> -->
     <div class="show-header-holder style-mode-dark py-3 md:py-6">
       <section class="grid m-auto">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <ShowHeader :show="show" />
         </div>
-        <div class="col-fixed hidden lg:block w-20rem"></div>
+        <div class="col-fixed hidden xl:block w-20rem"></div>
       </section>
     </div>
     <!-- JUMP LINKS -->
@@ -295,7 +296,7 @@ onUnmounted(() => {
             <h2 class="md:text-xl">About</h2>
             <!-- <pre>{{ show.show.description }}</pre>
             <HtmlConvert :htmlContent="show.show.description" /> -->
-            <p>{{ show.show.description }}</p>
+            <p>{{ show?.show?.description }}</p>
           </div>
           <div ref="supportRef" class="flex flex-column gap-5 mt-8">
             <h2 class="md:text-xl">Support Our Show</h2>

@@ -17,6 +17,10 @@ const props = defineProps({
     default: false,
     type: Boolean,
   },
+  justify: {
+    default: "justify-content-center md:justify-content-start",
+    type: String,
+  },
 })
 
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -50,7 +54,7 @@ const isLiveOnly = computed(() => {
 </script>
 
 <template>
-  <div class="play-and-skip-buttons flex gap-3 justify-content-center">
+  <div class="play-and-skip-buttons flex gap-3" :class="props.justify">
     <template v-if="!props.hideSkip">
       <Button
         v-if="!isLive"

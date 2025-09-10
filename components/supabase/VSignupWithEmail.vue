@@ -7,6 +7,7 @@ import InputText from "primevue/inputtext"
 import Message from "primevue/message"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
+import { useLoginSideBar, useForgotPasswordSideBar, useIsApp } from "~/composables/states"
 
 const props = defineProps({
   client: {
@@ -46,7 +47,9 @@ const emit = defineEmits([
   "submit-success",
   "login-success",
 ])
-
+const isApp = useIsApp()
+const loginSideBar = useLoginSideBar()
+const forgotPasswordSideBar = useForgotPasswordSideBar()
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
 // fallback incase the parent component doesn't pass in the client and config
@@ -64,6 +67,17 @@ const formData = reactive({
 
 const sbErrorMsg = ref("")
 const sbSuccessMsg = ref("")
+const showForgotPasswordButton = ref(false)
+
+// open the forgot password sidebar
+const openForgotPassword = () => {
+  if (isApp.value) {
+    loginSideBar.value = false
+    forgotPasswordSideBar.value = true
+  } else {
+    navigateTo("/forgot-password")
+  }
+}
 
 const hasAtleastOneNumber = helpers.withMessage(
   "Must contain at least 1 number",
@@ -127,6 +141,7 @@ const submitForm = async () => {
       // error with Supabase
       emit("submit-error", sbError?.error?.message)
       if (sbError?.error?.message.toString().includes("already registered")) {
+        showForgotPasswordButton.value = true
         sbErrorMsg.value = props.errorAlreadyRegistered
       } else {
         sbErrorMsg.value = `${props.error} ${sbError?.error?.message}`
@@ -138,17 +153,6 @@ const submitForm = async () => {
 
 <template>
   <div>
-    <template v-if="sbErrorMsg && sbErrorMsg !== undefined">
-      <Message
-        class="center mb-3"
-        severity="warning"
-        @close="clearMsg()"
-        icons="ci-warn "
-      >
-        <span v-html="sbErrorMsg"></span>
-      </Message>
-    </template>
-
     <Transition name="fade" mode="out-in">
       <div v-if="sbSuccessMsg" key="1">
         <div>
@@ -269,5 +273,26 @@ const submitForm = async () => {
         </form>
       </div>
     </Transition>
+    <template v-if="sbErrorMsg && sbErrorMsg !== undefined">
+      <ScrollIntoView>
+        <Message
+          class="center my-3"
+          severity="warning"
+          @close="clearMsg()"
+          icons="ci-warn "
+          variant="simple"
+        >
+          <span v-html="sbErrorMsg"></span>
+          <Button
+            v-if="showForgotPasswordButton"
+            severity="secondary"
+            variant="link"
+            class="link m-auto block my-4"
+            @click="openForgotPassword"
+            label="Forgot password?"
+          ></Button>
+        </Message>
+      </ScrollIntoView>
+    </template>
   </div>
 </template>

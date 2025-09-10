@@ -103,11 +103,11 @@ const togglePlayHere = (story) => {
         <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
       </Head>
     </Html>
-    <section class="">
+    <section class="thinContent">
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
-          class="back-btn text-color -ml-3"
+          class="back-btn text-color -ml-3 mb-3"
           icon="pi pi-chevron-left"
           rounded
           text
@@ -117,53 +117,50 @@ const togglePlayHere = (story) => {
           label="Back"
         />
       </div>
-    </section>
-    <FetchError v-if="error || error2" />
-    <div v-if="!pending">
-      <VImage
-        v-if="storyData.image"
-        :src="storyData.image"
-        :maxWidth="storyData.width"
-        :maxHeight="storyData.height"
-        :size="{
-          xs: [375, 250],
-          sm: [576, 384],
-          md: [768, 512],
-          lg: [992, 661],
-          xl: [1200, 800],
-          xxl: [1340, 893],
-        }"
-        :alt="storyData.alt"
-        class="npr-story-page-image"
-      >
-        <template #caption>
-          <VImageCaption
-            v-if="storyData.leadImageCaption"
-            :text="storyData.leadImageCaption"
-          />
-        </template>
-        <!--         <template #gallery>
+
+      <FetchError v-if="error || error2" />
+      <div v-if="!pending">
+        <VImage
+          v-if="storyData.image"
+          :src="storyData.image"
+          :maxWidth="storyData.width"
+          :maxHeight="storyData.height"
+          :size="{
+            xs: [375, 250],
+            sm: [576, 384],
+            md: [768, 512],
+          }"
+          :alt="storyData.alt"
+          class="npr-story-page-image -mx-3 md:mx-0"
+        >
+          <template #caption>
+            <VImageCaption
+              v-if="storyData.leadImageCaption"
+              :text="storyData.leadImageCaption"
+            />
+          </template>
+          <!--         <template #gallery>
           <VImageGallery
             v-if="gallery?.slides"
             :count="String(gallery.slides.length)"
             :gallery-link="galleryLink"
           />
         </template> -->
-        <!--         <template #belowImage>
+          <!--         <template #belowImage>
           <div>
             <p class="text-left px-4 mt-1 text-xs">
               {{ storyData.image.credit }}
             </p>
           </div>
         </template> -->
-      </VImage>
-      <Skeleton
-        v-else
-        borderRadius="0px"
-        height="auto"
-        class="episode-page-image mb-2 opacity-60"
-      />
-      <section>
+        </VImage>
+        <Skeleton
+          v-else
+          borderRadius="0px"
+          height="auto"
+          class="episode-page-image mb-2 opacity-60"
+        />
+
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>
             <span>
@@ -215,19 +212,19 @@ const togglePlayHere = (story) => {
             </Button> -->
           </div>
         </div>
-      </section>
-      <v-streamfield
-        v-if="storyData?.body"
-        class="npr-story-page-body"
-        :article="storyData"
-      />
+        <v-streamfield
+          v-if="storyData?.body"
+          class="npr-story-page-body"
+          :article="storyData"
+        />
 
-      <story-article-footer :article="storyData" :isDisableComments="true" />
-    </div>
-    <div v-else>
-      <skeleton-article />
-    </div>
-    <section>
+        <story-article-footer :article="storyData" :isDisableComments="true" />
+      </div>
+      <div v-else>
+        <skeleton-article />
+      </div>
+    </section>
+    <section v-if="topStories">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">Top Stories From Gothamist</h2>
       <TopStories :articles="topStories" />
@@ -241,12 +238,6 @@ const togglePlayHere = (story) => {
   font-size: var(--font-size-8);
   font-weight: var(--font-weight-700);
   line-height: var(--font-size-10);
-}
-
-.npr-story-page .npr-story-page-image {
-  width: 100vw;
-  max-width: calc($contentWidth - 100px);
-  margin: auto;
 }
 
 .npr-story-page .star-icon {

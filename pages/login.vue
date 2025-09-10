@@ -16,11 +16,41 @@ onMounted(() => {
 </script>
 
 <template>
-  <Login isRoute />
+  <div class="login-page md:mt-4">
+    <Html lang="en">
+      <Head>
+        <Title>
+          Login | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
+        </Title>
+        <Meta
+          name="og:title"
+          content="Login | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+        <Meta
+          name="twitter:title"
+          content="Login | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+        />
+      </Head>
+    </Html>
+    <section class="grid m-auto pb-0 lg:pr-0 pt-0">
+      <Login isRoute class="col-12 lg:col-6" />
+      <LoginSignupSideContent class="hidden col-6 lg:flex" />
+    </section>
+  </div>
 </template>
 
 <style lang="scss">
-.page.login {
-  background: var(--p-surface-25);
+body {
+  main {
+    @include media(">=lg") {
+      padding-bottom: 0;
+    }
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.login-page {
+  //background: var(--p-surface-25);
 }
 </style>

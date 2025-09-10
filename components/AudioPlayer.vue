@@ -407,7 +407,7 @@ onMounted(async () => {
         :isMuted="isMuted"
       >
         <template #expanded-player-title>
-          <PipeData class="text-xs">
+          <PipeData class="text-xs md:text-base">
             <template #left>
               {{
                 currentEpisode.showTitle ||
@@ -511,7 +511,7 @@ body {
   .content {
     max-width: $playerMaxWidth;
     margin: auto;
-    width: 100vw;
+    width: 100%;
   }
   &.expanded {
     bottom: 0;
@@ -542,10 +542,13 @@ body {
         @include content-formatting();
       }
       .expanded-title {
-        font-size: 18px;
+        font-size: 2rem;
         font-family: var(--font-family-header);
-        line-height: 26.78px;
+        line-height: 1.25em;
         font-weight: var(--font-weight-600);
+        @include media("<md") {
+          font-size: 18px;
+        }
       }
       .expanded-footer {
         background-color: var(--persistent-player-header-footer-bg);

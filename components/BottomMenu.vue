@@ -72,7 +72,7 @@ const menuClick = (item) => {
   bottom: 0;
   left: 0;
   z-index: 1001;
-  width: 100vw;
+  width: 100%;
   padding-bottom: env(safe-area-inset-bottom);
   animation: liftBottomMenu 1.5s ease-out;
   .buttons-holder {

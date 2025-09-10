@@ -94,6 +94,9 @@ onMounted(() => {
         />
       </div>
     </section>
+
+    <DonateBanner />
+
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>

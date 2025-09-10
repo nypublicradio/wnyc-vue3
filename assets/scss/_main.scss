@@ -2,6 +2,24 @@
 @import './transitions';
 @import './cssvars';
 @import './v-cssvars/_cssvars';
+
+/* Utility for full-width elements that respect scrollbar */
+.full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Alternative to 100vw that accounts for scrollbar */
+.full-viewport {
+  width: calc(100vw - (100vw - 100%));
+}
+
+.thinContent {
+  width: 100%;
+  max-width: $thinContentWidth;
+  margin: auto;
+}
+
 figure {
   margin: 0;
 }
@@ -35,6 +53,8 @@ html {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   overscroll-behavior: none;
   height: 100%;
+  /* Define the actual available width accounting for scrollbar */
+  --full-width: 100%;
 }
 
 body {
@@ -51,7 +71,7 @@ body {
   background: var(--background);
   transform: none;
   height: 100% !important;
-  width: 100vw;
+  width: 100%;
   background-repeat: no-repeat;
   background-attachment: fixed;
   max-height: unset !important;
@@ -108,12 +128,47 @@ a {
   }
 }
 
+/* grid padding classes */
+.grid-lggutter {
+  margin-right: -1rem;
+  margin-left: -1rem;
+  margin-top: -1rem;
+  & > * {
+    padding: 1rem;
+  }
+}
+.grid-xlgutter {
+  margin-right: -1.5rem;
+  margin-left: -1.5rem;
+  margin-top: -1.5rem;
+  & > * {
+    padding: 1.5rem;
+  }
+}
+.grid-xxlgutter {
+  margin-right: -2rem;
+  margin-left: -2rem;
+  margin-top: -2rem;
+  & > * {
+    padding: 2rem;
+  }
+}
+/* grid padding classes */
+.grid-1rem {
+  margin-right: -1rem;
+  margin-left: -1rem;
+  margin-top: -1rem;
+  & > * {
+    padding: 1rem;
+  }
+}
+
 .font-meta {
-  font-family: var(--font-family-header);
+  font-family: var(--font-family-header) !important;
 }
 
 .font-tisa {
-  font-family: var(--font-family-tisa);
+  font-family: var(--font-family-tisa) !important;
 }
 
 label {
@@ -138,7 +193,7 @@ hr {
   right: 0;
   z-index: 9999;
   background: var(--header-background);
-  width: 100vw;
+  width: 100%;
 }
 
 section {
@@ -152,6 +207,21 @@ section {
       margin-block-start: 0;
       margin-block-end: 0;
     }
+  }
+  &.line-height-1 * {
+    line-height: 1;
+  }
+  &.line-height-2 * {
+    line-height: 1.25;
+  }
+  &.line-height-3 * {
+    line-height: 1.5;
+  }
+  &.line-height-4 * {
+    line-height: 1.75;
+  }
+  &.line-height-5 * {
+    line-height: 2;
   }
 }
 
@@ -248,13 +318,30 @@ section {
 // extensions
 
 /* Customizations to the theme for components that CAN"T be done with the tokens should be defined here */
-.tabs {
+.p-tabs {
+  &.p-tabs-scrollable .p-tablist {
+    //overflow: visible;
+  }
+  .p-tablist-prev-button {
+    margin-left: -1rem;
+  }
+  .p-tablist-next-button {
+    margin-right: -1rem;
+  }
   .p-tablist-tab-list {
-    gap: 1.5rem;
+    gap: 2.5rem;
     .p-tab {
       font-family: var(--font-family);
-      font-size: var(--font-size-5);
+      font-size: var(--font-size-7);
+      font-weight: 700;
       line-height: normal;
+      padding-bottom: 0;
+      &.p-tab-active {
+        color: var(--p-primary-color);
+      }
+    }
+    .p-tablist-active-bar {
+      background: var(--p-primary-color);
     }
   }
 }

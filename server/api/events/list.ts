@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { camelizeKeys } from 'humps'
+import humps from 'humps'
 
 const config = useRuntimeConfig();
 
@@ -36,7 +36,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
         }
 
         const res = await axios(options);
-        const data = camelizeKeys(res.data);
+        const data = humps.camelizeKeys(res.data);
 
         // Transform the response to include both data and meta
         return {

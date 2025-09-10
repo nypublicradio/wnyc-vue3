@@ -36,7 +36,7 @@ export async function updateAllLiveStreams(init = true) {
         const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
         // set all streams to the filtered array
         allCurrentStations.value = fetchingAll.filter(Boolean)
-
+        //console.log('All current stations:', allCurrentStations.value)
         let thisStation = null
 
         if (init) {
@@ -53,6 +53,7 @@ export async function updateAllLiveStreams(init = true) {
             thisStation = allCurrentStations.value.find(
                 (option) => {
                     return option.slug === currentStreamStation.value
+
                 }
             )
         }
@@ -72,7 +73,9 @@ export async function updateAllLiveStreams(init = true) {
 
 
 const liveScheduleData = ref(null)
+const allLiveScheduleData = ref([])
 let timeout = null
+let scheduleAbortController = null
 
 // base liveStream composable
 export default function useLiveStream() {
@@ -86,13 +89,37 @@ export default function useLiveStream() {
     const isEpisodePlaying = useIsEpisodePlaying()
     const isStreamLoading = useIsStreamLoading()
     const globalToast = useGlobalToast()
-    // toggle play here
-    // not sure why I am using this, probably should use the helper function
+
+    const currentScheduleDate = ref(new Date())
+    const isToday = ref(true)
+
+    watch(currentScheduleDate, (newDate) => {
+        isToday.value = newDate.toDateString() === new Date().toDateString()
+    })
+
+    // return the next day from the current schedule date
+    const getNextDay = () => {
+        const nextDay = new Date(currentScheduleDate.value)
+        nextDay.setDate(nextDay.getDate() + 1)
+        return nextDay
+    }
+
+    // return the previous day from the current schedule date
+    const getPreviousDay = () => {
+        const previousDay = new Date(currentScheduleDate.value)
+        previousDay.setDate(previousDay.getDate() - 1)
+        return previousDay
+    }
+
+    const nextDayScheduleDate = computed(() => getNextDay())
+    const previousDayScheduleDate = computed(() => getPreviousDay())
+
+
+    // toggle play live stream here
     const togglePlayHere = () => {
         if (currentEpisode.value?.id !== currentEpisodeHolder.value?.id) {
             //update slug
             currentStreamStation.value = currentEpisodeHolder.value.slug
-            //currentEpisode.value = currentEpisodeHolder.value
             togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
         } else {
             togglePlayTrigger.value = !togglePlayTrigger.value
@@ -113,7 +140,7 @@ export default function useLiveStream() {
             minute: "numeric",
             hour12: true,
         })
-        return index === 0 ? `Now Until ${endTime}` : startTime
+        return index === 0 && isToday.value ? `Now Until ${endTime}` : startTime
     }
 
     // Function to calculate the time difference between now and the target time
@@ -163,6 +190,21 @@ export default function useLiveStream() {
         }
     }
 
+    // Function to abort all schedule fetches
+    const abortScheduleFetches = () => {
+        if (scheduleAbortController) {
+            scheduleAbortController.abort()
+            scheduleAbortController = null
+        }
+    }
+
+    // Function to create new abort controller for schedule fetches
+    const createScheduleAbortController = () => {
+        abortScheduleFetches()
+        scheduleAbortController = new AbortController()
+        return scheduleAbortController
+    }
+
     // Fetch the schedule
     const fetchSchedule = async () => {
         clearAllTimeout()
@@ -205,8 +247,74 @@ export default function useLiveStream() {
         }
     }
 
+    // Fetch the schedule simple return
+    const fetchScheduleSimple = async (station, date = new Date(), signal = null) => {
+        const config = useRuntimeConfig()
+        //const currentStreamStation = useCurrentStreamStation()
+        const globalToast = useGlobalToast()
+
+        try {
+            const fetchOptions: any = {
+                method: "POST",
+                body: {
+                    localDate: date,
+                    isToday: isToday.value
+                }
+            }
+
+            // Add signal if provided
+            if (signal) {
+                fetchOptions.signal = signal
+            }
+
+            const schedule = await $fetch(
+                `${config.public.BFF_URL}/api/schedule/${station.slug}`,
+                fetchOptions
+            )
+
+            // add the slug to the schedule data to pass to the local notification system
+            schedule.forEach((entry) => {
+                entry.slug = station.slug
+                entry.station = station
+            })
+
+            return schedule
+
+        } catch (error) {
+            // Don't show error toast for aborted requests
+            if (error.name === 'AbortError') {
+                console.log('Schedule fetch was aborted')
+                return null
+            }
+
+            globalToast.value = {
+                severity: "error",
+                summary:
+                    "Sorry. We are having trouble. Please try again later.",
+                life: null,
+                closable: true,
+            }
+            console.error("error = ", error)
+            return null
+        }
+    }
+
+    // Set the schedule to the next day
+    const setToNextDay = () => {
+        const nextDay = new Date(currentScheduleDate.value)
+        nextDay.setDate(nextDay.getDate() + 1)
+        currentScheduleDate.value = nextDay
+    }
+
+    // Set the schedule to the previous day
+    const setToPreviousDay = () => {
+        const previousDay = new Date(currentScheduleDate.value)
+        previousDay.setDate(previousDay.getDate() - 1)
+        currentScheduleDate.value = previousDay
+    }
+
     // targets the active station and scrolls to it
-    const scrollToActiveStation = (behavior = "smooth") => {
+    const scrollToActiveStation = (behavior: ScrollBehavior = "smooth") => {
         const activeStation = document.getElementsByClassName("activestation")
         if (activeStation[0]) {
             activeStation[0].scrollIntoView({
@@ -223,9 +331,10 @@ export default function useLiveStream() {
             if (isEpisodePlaying.value && isPLayingCheck) {
                 if (station?.slug !== currentStreamStation.value) {
                     await updateLiveStream(station.slug)
-                    togglePlayTrigger.value = !togglePlayTrigger.value
-                    currentEpisode.value = station
-                    currentStreamStation.value = station.slug
+                    //togglePlayTrigger.value = !togglePlayTrigger.value
+                    togglePlayHere()
+                    //currentEpisode.value = station
+                    //currentStreamStation.value = station.slug
                     isLiveStream.value = true
                 }
             } else {
@@ -237,6 +346,7 @@ export default function useLiveStream() {
                 currentStreamStation.value = station.slug
                 currentEpisodeHolder.value = station
             }
+
 
             trackClickEvent(
                 "Click Tracking - Station Button",
@@ -250,7 +360,7 @@ export default function useLiveStream() {
     const getStationBySlugAndPlayIt = async (querySlug, autoplay = false) => {
         // If stations aren't loaded, wait for them to load then continue
         if (!allCurrentStations.value) {
-            await new Promise((resolve) => {
+            await new Promise<void>((resolve) => {
                 // because the watch is in a Promise, it will not be destroyed when the component is unmounted, so we need to unwatch it
                 const unwatch = watch(
                     allCurrentStations,
@@ -274,5 +384,8 @@ export default function useLiveStream() {
             }, 100)
         }
     }
-    return { getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData }
+    return {
+        getStationBySlugAndPlayIt, switchStation, scrollToActiveStation, fetchSchedule, fetchScheduleSimple, clearAllTimeout, getTimeDifference, getTheTime, togglePlayHere, liveScheduleData, allLiveScheduleData, currentScheduleDate, nextDayScheduleDate, previousDayScheduleDate, setToNextDay,
+        setToPreviousDay, isToday, abortScheduleFetches, createScheduleAbortController
+    }
 }

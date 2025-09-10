@@ -1,4 +1,9 @@
 import { ref, readonly } from 'vue';
+import { until } from '@vueuse/core';
+import {
+    useCurrentUser,
+    useCurrentUserProfile,
+} from "~/composables/states"
 
 /**
  * Hook providing profile API methods and state.
@@ -10,6 +15,9 @@ export const useProfileApi = () => {
     const profile = ref(null);
     const loading = ref(false);
     const error = ref(null);
+
+    const currentUser = useCurrentUser()
+    const currentUserProfile = useCurrentUserProfile()
 
     /**
      * Fetches the user profile by Salesforce ID or email.
@@ -43,6 +51,66 @@ export const useProfileApi = () => {
         }
     };
 
+
+    const getMembershipInfo = async () => {
+        // Check if we have an auth token, if not try to initialize it
+        const authComposable = useAuth()
+
+        if (!authComposable.isAuthenticated.value) {
+            // No JWT token found
+            try {
+                const supabase = useSupabaseClient()
+                const { data: sessionData } = await supabase.auth.getSession()
+
+                if (sessionData.session) {
+                    // Convert Supabase session to JWT
+                    const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
+                        method: "POST",
+                        body: {
+                            access_token: sessionData.session.access_token,
+                            refresh_token: sessionData.session.refresh_token,
+                        },
+                    })
+
+                    if (jwtResponse.success && jwtResponse.token) {
+                        authComposable.setAuthState(
+                            jwtResponse.token,
+                            jwtResponse.user,
+                            sessionData.session.refresh_token
+                        )
+                    }
+                } else {
+                    // no supabase session, route to login
+                    navigateTo("/login")
+                }
+            } catch (error) {
+                console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
+            }
+        }
+        // Wait for currentUser to be populated (with 10 second timeout)
+        try {
+            await until(currentUser).toMatch(v => v !== null, { timeout: 10000 })
+        } catch (error) {
+            console.warn("Timeout waiting for currentUser to be populated")
+            return
+        }
+
+        // Now try to fetch profile data if we have auth
+        if (authComposable.isAuthenticated.value) {
+            // Fetch profile data from /api/profile if user has a Salesforce ID
+            if (currentUserProfile.value?.salesforce_id) {
+                await fetchProfile(currentUserProfile.value.salesforce_id)
+            } else if (currentUser.value?.email) {
+                await fetchProfile(currentUser.value.email)
+            } else {
+                // No Salesforce ID or email found
+            }
+        } else {
+            // No authentication available. Do something like redirect to login.
+            navigateTo("/login")
+        }
+    }
+
     /**
      * Formats a number as USD currency string.
      * @param {number|null} amount - Amount to format.
@@ -75,6 +143,7 @@ export const useProfileApi = () => {
         loading: readonly(loading),
         error: readonly(error),
         fetchProfile,
+        getMembershipInfo,
         formatCurrency,
         formatDate
     }

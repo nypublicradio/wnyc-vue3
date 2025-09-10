@@ -63,7 +63,7 @@ const handleLogoClick = () => {
                 size="small"
                 trackingLocation="header utility nav"
                 route="/login"
-                :to="currentUser ? '/dashboard' : 'login'"
+                :to="currentUser ? '/dashboard' : '/login'"
               >
                 <template #icon>
                   <UserIcon />
@@ -147,7 +147,7 @@ const handleLogoClick = () => {
 .the-header {
   background: var(--header-background);
   backdrop-filter: blur(4px);
-  max-width: 100vw;
+  max-width: 100%;
   margin: auto;
   .content {
     max-width: $contentWidth;

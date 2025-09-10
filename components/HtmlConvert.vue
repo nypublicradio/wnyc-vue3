@@ -21,6 +21,8 @@ const props = defineProps({
   },
 })
 
+const reactiveHtmlContent = toRef(props, "htmlContent")
+
 const theParcedHtml = ref(null)
 const imagePropsMap = ref({})
 const htmlConvertRef = ref(null)
@@ -42,8 +44,7 @@ const isGif = (imageUrl) => {
 
 const parseHtml = () => {
   // make it HTML by wrapping it in a div
-  const htmlClasses = props.htmlClasses ? ` ${props.htmlClasses}` : ""
-  const asHtml = `<div class="html-convert${htmlClasses}">${props.htmlContent}</div>`
+  const asHtml = `<div class="html-convert">${reactiveHtmlContent.value}</div>`
 
   // Reset the image props map
   imagePropsMap.value = {}
@@ -85,6 +86,10 @@ const parseHtml = () => {
       }
     })
     .replace("<p>&nbsp;</p>", "")
+    // remove a p tag if it has a script
+    .replace(/<p>(.*?)<\/p>/g, (match, content) => {
+      return content.includes("<script") ? "" : match
+    })
 
   theParcedHtml.value = updatedHTML
 }
@@ -105,34 +110,36 @@ const updateParentWidth = () => {
   }
 }
 
-onMounted(() => {
-  // If there's no HTML content, no need to do anything
-  if (!props.htmlContent) {
-    return
-  }
+// Watch for changes to htmlContent prop and re-parse HTML
+watch(
+  reactiveHtmlContent,
+  (newContent) => {
+    // If there's no HTML content, clear the parsed HTML
+    if (!newContent) {
+      theParcedHtml.value = null
+      return
+    }
 
-  // Check if HTML content contains images
-  const hasImages = /<img[^>]*>/i.test(props.htmlContent)
+    // Check if HTML content contains images
+    const hasImages = /<img[^>]*>/i.test(newContent)
 
-  if (hasImages) {
-    // Only measure parent width if there are images
-    // Set initial fallback width
-    parentWidth.value = getFallbackWidth()
+    if (hasImages) {
+      // Only measure parent width if there are images
+      // Set initial fallback width
+      parentWidth.value = getFallbackWidth()
 
-    // Get actual width after DOM is rendered, then parse HTML once
-    nextTick(() => {
-      updateParentWidth()
+      // Get actual width after DOM is rendered, then parse HTML
+      nextTick(() => {
+        updateParentWidth()
+        parseHtml()
+      })
+    } else {
+      // No images, just parse HTML without measuring width
       parseHtml()
-    })
-  } else {
-    // No images, just parse HTML without measuring width
-    parseHtml()
-  }
-})
-
-onUnmounted(() => {
-  // Clean up if needed
-})
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

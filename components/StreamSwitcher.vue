@@ -156,7 +156,7 @@ onMounted(() => {
 }
 .stream-switcher-dropdown {
   top: 126px !important;
-  width: 100vw;
+  width: 100%;
   max-width: fit-content;
   max-width: 440px;
   .p-dropdown-item {
