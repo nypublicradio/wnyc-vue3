@@ -123,7 +123,7 @@ export const useMembership = () => {
 
   //onChangePaymentInfo
   const onChangePaymentInfo = (queryStringEncrypted) => {
-    const url = `${springboardLink}? =${queryStringEncrypted}`
+    const url = `${springboardLink}?=${queryStringEncrypted}`
     window.open(url, "_blank")
   }
 
