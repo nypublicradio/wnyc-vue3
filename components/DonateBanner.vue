@@ -21,6 +21,7 @@ if (props.link) {
   donateLink.value = props.link
 }
 
+// Handle the donate button click
 const onDonate = () => {
   if (donateLink.value) {
     window.open(donateLink.value, "_blank")

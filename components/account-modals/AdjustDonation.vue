@@ -12,16 +12,17 @@ const otherAmount = ref(null)
 const options = ref([15, 30, 45, "other"])
 const isOtherError = ref(false)
 
+// Handle the cancel action
 const onCancel = () => {
   dialogRef.value.close()
   emit("cancel")
 }
+// Handle the save action
 const onSave = () => {
   // finalAmount should already be set by now, but add safety check
   if (value.value === "other") {
     if (otherAmount.value === null || otherAmount.value < 1) {
       isOtherError.value = true
-      return
     } else {
       finalAmount.value = otherAmount.value
       isOtherError.value = false
@@ -34,7 +35,7 @@ const onSave = () => {
     emit("save", { amount: finalAmount.value })
   }
 }
-
+// Handle radio button click
 const onRbClicked = (e) => {
   value.value = e
 
@@ -71,7 +72,11 @@ onMounted(() => {
     </div>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
     <div class="amount-rb flex flex-wrap align-items-center mt-4 w-full">
-      <div v-for="amount in options" class="w-6 md:w-3 px-2 py-2 md:px-1">
+      <div
+        v-for="amount in options"
+        :key="`rb-${amount}`"
+        class="w-6 md:w-3 px-2 py-2 md:px-1"
+      >
         <Button
           class="w-full"
           severity="secondary"

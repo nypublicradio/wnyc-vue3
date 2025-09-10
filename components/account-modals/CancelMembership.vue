@@ -5,11 +5,12 @@ const dialogRef = inject("dialogRef")
 
 const springboardId = ref(null)
 
+// Handle the cancel action
 const onCancel = () => {
-  console.log("canceling emit fired")
   dialogRef.value.close()
   emit("cancel")
 }
+// Handle the adjust action
 const onAdjust = () => {
   dialogRef.value.close()
   emit("adjust")

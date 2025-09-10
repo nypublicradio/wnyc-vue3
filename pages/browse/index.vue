@@ -48,9 +48,9 @@ const selectTopic = (topic) => {
 }
 
 // handle the click on the "All Topics" button
-const handleAllTopics = () => {
-  // not sure what we are doing here yet.
-}
+// const handleAllTopics = () => {
+//   // not sure what we are doing here yet.
+// }
 
 // handle the toggle of all or featured shows
 const toggleAllShows = () => {
