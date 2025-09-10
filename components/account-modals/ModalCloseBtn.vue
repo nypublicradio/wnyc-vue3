@@ -5,7 +5,6 @@ const emit = defineEmits(["clickEmit"])
 <template>
   <div class="modal-close-btn">
     <Button
-      class="-mr-2"
       rounded
       icon="pi pi-times"
       variant="text"
@@ -15,11 +14,11 @@ const emit = defineEmits(["clickEmit"])
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .modal-close-btn {
   .p-button {
-    .p-button-label {
-      font-size: 1.5rem;
+    .p-button-icon {
+      font-size: 1.1rem;
     }
   }
 }

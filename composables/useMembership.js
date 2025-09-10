@@ -18,6 +18,7 @@ export const useMembership = () => {
     draggable: false,
     dismissableMask: true,
     modal: true,
+    breakpoints: { '768px': '90vw' }
   }
   const config = useRuntimeConfig()
 
@@ -93,32 +94,33 @@ export const useMembership = () => {
       props: dialogProps,
       emits: {
         onCancel: async () => {
+          onCancelMembershipThankYou()
           //actually CANCEL the membership here
-          const { authenticatedFetch } = useAuth()
-          const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
+          // const { authenticatedFetch } = useAuth()
+          // const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
 
-          const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
-            method: 'POST',
-            body: requestBody,
-          })
+          // const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
+          //   method: 'POST',
+          //   body: requestBody,
+          // })
 
-          if (data?.error) {
-            toast.add({
-              severity: "error",
-              summary: "There was an error canceling your membership. Please try again later.",
-              life: 8000,
-              closable: true,
-            })
-          } else {
-            // Successfully canceled membership
-            onCancelMembershipThankYou()
-            toast.add({
-              severity: "success",
-              summary:
-                "Your membership donation has been successfully canceled.",
-              closable: true,
-            })
-          }
+          // if (data?.error) {
+          //   toast.add({
+          //     severity: "error",
+          //     summary: "There was an error canceling your membership. Please try again later.",
+          //     life: 8000,
+          //     closable: true,
+          //   })
+          // } else {
+          //   // Successfully canceled membership
+          //  onCancelMembershipThankYou()
+          //   toast.add({
+          //     severity: "success",
+          //     summary:
+          //       "Your membership donation has been successfully canceled.",
+          //     closable: true,
+          //   })
+          // }
         },
         onAdjust: () => {
           onUpdateGiftAmount(amount)
