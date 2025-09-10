@@ -1,4 +1,5 @@
 <script setup>
+import ModalCloseBtn from "./ModalCloseBtn.vue"
 const { formatCurrency } = useProfileApi()
 const emit = defineEmits(["save", "cancel"])
 
@@ -7,7 +8,7 @@ const dialogRef = inject("dialogRef")
 const currentDonationAmount = ref(null)
 
 const finalAmount = ref(null)
-const value = ref(3)
+const value = ref(null)
 const otherAmount = ref(null)
 // adjust these numbers below to control the amount added to the current donation amount
 const options = ref([3, 4, 8, "other"])
@@ -21,19 +22,21 @@ const onCancel = () => {
 // Handle the save action
 const onSave = () => {
   // finalAmount should already be set by now, but add safety check
-  if (value.value === "other") {
-    if (otherAmount.value === null || otherAmount.value < 1) {
-      isOtherError.value = true
-    } else {
-      finalAmount.value = otherAmount.value
-      isOtherError.value = false
+  if (value.value) {
+    if (value.value === "other") {
+      if (otherAmount.value === null || otherAmount.value < 1) {
+        isOtherError.value = true
+      } else {
+        finalAmount.value = otherAmount.value
+        isOtherError.value = false
 
+        dialogRef.value.close()
+        emit("save", { amount: finalAmount.value })
+      }
+    } else {
       dialogRef.value.close()
       emit("save", { amount: finalAmount.value })
     }
-  } else {
-    dialogRef.value.close()
-    emit("save", { amount: finalAmount.value })
   }
 }
 // Handle radio button click
@@ -58,7 +61,7 @@ onMounted(() => {
   options.value = options.value.map((amount) => {
     if (typeof amount === "number") {
       const adjustedAmount = Math.ceil(amount + Math.ceil(currentDonationAmount.value))
-      value.value = adjustedAmount
+      //value.value = adjustedAmount
       return adjustedAmount
     }
     return amount
@@ -68,17 +71,9 @@ onMounted(() => {
 
 <template>
   <div class="adjust-donation">
-    <div class="flex justify-content-between align-items-center mb-3">
-      <h2>Update Gift Amount</h2>
-      <Button
-        class="-mr-2"
-        rounded
-        icon="pi pi-times"
-        variant="text"
-        severity="secondary"
-        @click="dialogRef.close()"
-      />
-      <ModalCloseButton @clickEmit="dialogRef.close()" />
+    <div class="flex justify-content-between align-items-center mb-2">
+      <div class="font-meta text-2xl font-bold">Update Gift Amount</div>
+      <ModalCloseBtn class="-mr-2" @clickEmit="dialogRef.close()" />
     </div>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
     <div
@@ -140,6 +135,7 @@ onMounted(() => {
         @click="onSave"
         label="Save Changes"
         size="small"
+        :disabled="!value"
       />
       <Button
         class="w-full px-3 max-w-15rem"
