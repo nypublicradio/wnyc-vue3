@@ -12,7 +12,8 @@ function getCurrentBreakpoint(width) {
         return 'md' // Default fallback
     }
 
-    if (width < parseInt(breakpoints.xs)) return 'xs'
+    if (width < parseInt(breakpoints.xxs)) return 'xxs'
+    if (width < parseInt(breakpoints.xs)) return 'xxs'
     if (width < parseInt(breakpoints.sm)) return 'xs'
     if (width < parseInt(breakpoints.md)) return 'sm'
     if (width < parseInt(breakpoints.lg)) return 'md'
@@ -24,13 +25,14 @@ function getCurrentBreakpoint(width) {
 
 // Add breakpoint order mapping for comparisons
 const breakpointOrder = {
-    'xs': 0,
-    'sm': 1,
-    'md': 2,
-    'lg': 3,
-    'xl': 4,
-    'xxl': 5,
-    'xxxl': 6
+    'xxs': 0,
+    'xs': 1,
+    'sm': 2,
+    'md': 3,
+    'lg': 4,
+    'xl': 5,
+    'xxl': 6,
+    'xxxl': 7
 }
 
 // Global shared state and resize handler

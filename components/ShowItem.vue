@@ -115,15 +115,14 @@ const getDotMenuItems = (bucketItem) => {
         :srcFallback="FALLBACKIMAGEWAGTAIL"
         :size="props.size"
         :class="props.imageClass"
-        :style="`height: ${props.size[0]}px;
-      width: ${props.size[1]}px; background-color: var(--p-surface-25)`"
+        style="background-color: var(--p-surface-25)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
-        <h2 class="text-sm line-height-2 truncate t2lines no-hyphens">
+        <h2 class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens">
           {{ props.data.title }}
         </h2>
-        <p v-if="props.data?.producingOrganizations?.length">
+        <p class="font-meta" v-if="props.data?.producingOrganizations?.length">
           {{ props.data.producingOrganizations.map((org) => org.name).join(" and ") }}
         </p>
       </div>
