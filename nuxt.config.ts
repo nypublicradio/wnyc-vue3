@@ -26,8 +26,6 @@ export default defineNuxtConfig({
   },
 
   supabase: {
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_KEY,
     redirect: false,
   },
 
@@ -133,8 +131,10 @@ export default defineNuxtConfig({
       process.env.SENTRY_ENV === "development"
         ? null
         : sentryVitePlugin({
-          include: ".nuxt/dist",
-          ignore: ["node_modules", "nuxt.config.ts"],
+          sourcemaps: {
+            assets: ".nuxt/dist/**",
+            ignore: ["node_modules", "nuxt.config.ts"],
+          },
           org: "nypublicradio",
           project: "wnyc-vue3",
           authToken: process.env.SENTRY_AUTH_TOKEN,
