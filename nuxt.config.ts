@@ -133,8 +133,10 @@ export default defineNuxtConfig({
       process.env.SENTRY_ENV === "development"
         ? null
         : sentryVitePlugin({
-          include: ".nuxt/dist",
-          ignore: ["node_modules", "nuxt.config.ts"],
+          sourcemaps: {
+            assets: ".nuxt/dist/**",
+            ignore: ["node_modules", "nuxt.config.ts"],
+          },
           org: "nypublicradio",
           project: "wnyc-vue3",
           authToken: process.env.SENTRY_AUTH_TOKEN,

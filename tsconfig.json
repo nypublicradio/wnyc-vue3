@@ -3,6 +3,7 @@
   "extends": "./.nuxt/tsconfig.json",
   "files": ["types.d.ts"],
   "compilerOptions": {
+    "baseUrl": ".",
     "jsx": "preserve",
     "target": "ESNext",
     "module": "ESNext",
@@ -10,9 +11,13 @@
     "strict": false,
     "allowJs": true,
     "resolveJsonModule": true,
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
     "types": [
       "node",
-      "vitest/globals",
+      "vitest/globals"
     ]
   }
 }
