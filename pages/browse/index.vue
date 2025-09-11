@@ -189,22 +189,24 @@ watch(
               </h2>
             </Transition>
             <div class="-mr-2">
-              <Button
-                v-if="allOrFeatured"
-                severity="secondary"
-                variant="link"
-                class="link"
-                @click="toggleAllShows"
-                label="All Shows"
-              ></Button>
-              <Button
-                v-else
-                severity="secondary"
-                variant="link"
-                class="link"
-                @click="toggleAllShows"
-                label="Featured Shows"
-              ></Button>
+              <Transition name="fade" mode="out-in">
+                <Button
+                  v-if="allOrFeatured"
+                  severity="secondary"
+                  variant="link"
+                  class="link"
+                  @click="toggleAllShows"
+                  label="All Shows"
+                ></Button>
+                <Button
+                  v-else
+                  severity="secondary"
+                  variant="link"
+                  class="link"
+                  @click="toggleAllShows"
+                  label="Featured Shows"
+                ></Button>
+              </Transition>
             </div>
           </div>
           <!-- <pre>{{ currentShows }}</pre> -->
