@@ -221,8 +221,8 @@ watch(
                 class="col-12 md:col-4 md:mb-5"
                 rootClass="md:align-items-start"
                 contentClass="md:flex-column gap-3 md:gap-2"
-                imageClass="w-7rem md:w-13rem"
-                :size="{ xs: [112, 112], md: [208, 208] }"
+                imageClass="w-6rem xs:w-7rem md:w-13rem"
+                :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
                 :hideButtons="!isMobile"
                 @onClick="goToShowPage(show)"
               />
@@ -254,8 +254,8 @@ watch(
               class="col-12 md:col-4 md:mb-5"
               rootClass="md:align-items-start"
               contentClass="md:flex-column gap-3 md:gap-2"
-              imageClass="w-7rem md:w-13rem"
-              :size="{ xs: [112, 112], md: [208, 208] }"
+              imageClass="w-6rem xs:w-7rem md:w-13rem"
+              :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
               :hideButtons="!isMobile"
               @onClick="goToShowPage(show.item)"
             />
@@ -318,8 +318,7 @@ watch(
             -webkit-transition: transform var(--p-transition-duration),
               opacity var(--p-transition-duration);
             &:hover {
-              //opacity: 1;
-              transform: scale(1.1);
+              transform: scale(1.05);
             }
             .p-button-label {
               margin-top: -2rem;
@@ -361,18 +360,6 @@ watch(
         }
       }
     }
-    .shows {
-      .browse-item {
-        transition: transform var(--p-transition-duration),
-          opacity var(--p-transition-duration);
-        -webkit-transition: transform var(--p-transition-duration),
-          opacity var(--p-transition-duration);
-        &:hover {
-          opacity: 0.8;
-          transform: scale(1.1);
-        }
-      }
-    }
   }
 }
 
@@ -398,6 +385,22 @@ watch(
               margin-top: -2rem;
             }
           }
+        }
+      }
+    }
+    .shows {
+      .browse-item {
+        &:hover {
+          .v-image-wrapper {
+            opacity: 0.8;
+            transform: scale(1.05);
+          }
+        }
+        .v-image-wrapper {
+          transition: transform var(--p-transition-duration),
+            opacity var(--p-transition-duration);
+          -webkit-transition: transform var(--p-transition-duration),
+            opacity var(--p-transition-duration);
         }
       }
     }

@@ -77,8 +77,8 @@ onUnmounted(() => {
           class="col-12 md:col-4 md:mb-5"
           rootClass="md:align-items-start"
           contentClass="md:flex-column gap-3 md:gap-2"
-          imageClass="w-7rem md:w-13rem"
-          :size="{ xs: [112, 112], md: [208, 208] }"
+          imageClass="w-6rem xs:w-7rem md:w-13rem"
+          :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
           :hideButtons="!isMobile"
           @onClick="goToShowPage(show)"
         />
