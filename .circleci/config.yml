@@ -33,12 +33,14 @@ workflows:
       - build:
           context: "dockerhub"
           <<: *filter_all
+          env: "demo"
       - test_nginx:
           context: "dockerhub"
           <<: *filter_all  
       - test:
           context: "dockerhub"
           <<: *filter_all
+          env: "demo"
           requires:
             - build
       - nypr-deploy/build_and_deploy:
@@ -112,6 +114,11 @@ jobs:
   # built project. 
   build:
     executor: default
+    parameters:
+      env:
+        type: enum
+        default: "demo"
+        enum: ["demo", "prod"]
     steps:
       - checkout
       - setup_npmrc
@@ -124,6 +131,11 @@ jobs:
 
   test:
     executor: default
+    parameters:
+      env:
+        type: enum
+        default: "demo"
+        enum: ["demo", "prod"]
     steps:
       - checkout
       - setup_npmrc
