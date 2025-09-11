@@ -115,6 +115,7 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
+      - setup_mobile_env
       - node/install-packages
       - run: 
           name: Assert that it builds
@@ -126,6 +127,7 @@ jobs:
     steps:
       - checkout
       - setup_npmrc
+      - setup_mobile_env
       - node/install-packages
       - run:
           name: Run unit tests
