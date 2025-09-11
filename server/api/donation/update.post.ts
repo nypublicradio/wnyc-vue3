@@ -23,7 +23,7 @@ const createValidationError = (message: string) => createError({
 /**
  * Creates a standardized server error
  */
-const createServerError = (message: string, statusCode: number = 500, statusMessage: string = 'Internal Server Error') => createError({
+const createServerError = (message: string, statusCode = 500, statusMessage = 'Internal Server Error') => createError({
     statusCode,
     statusMessage,
     message
