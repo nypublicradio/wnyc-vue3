@@ -266,79 +266,14 @@ const showNotificationTypes = computed(() => {
       </SBox>
     </section>
 
-    <!-- Member Profile Section -->
-    <section v-if="currentUser && profileData" class="member-profile p-0">
+    <!-- Member Center Section -->
+    <section class="member-center p-0">
       <div class="flex s-title-holder">
-        <i class="mr-2 pi pi-user"></i>
-        <div class="s-title">Member Profile</div>
+        <div class="s-title">Member Center</div>
       </div>
 
-      <SBox label="Member Name" :ripple="false">
-        <p>{{ profileData.name || "N/A" }}</p>
-      </SBox>
-
-      <SBox label="Active Sustainer" :ripple="false">
-        <p :class="profileData.isActiveSustainer ? 'text-green-600' : 'text-gray-500'">
-          {{ profileData.isActiveSustainer ? "Yes" : "No" }}
-        </p>
-      </SBox>
-
-      <SBox v-if="profileData.lastDonationDate" label="Last Donation" :ripple="false">
-        <div class="text-right">
-          <p>{{ formatDate(profileData.lastDonationDate) }}</p>
-          <p v-if="profileData.lastDonationAmount" class="text-sm opacity-75">
-            {{ formatCurrency(profileData.lastDonationAmount) }}
-          </p>
-        </div>
-      </SBox>
-
-      <div
-        v-if="
-          profileData.activeRecurringDonations &&
-          profileData.activeRecurringDonations.length > 0
-        "
-      >
-        <SBox
-          v-for="(donation, index) in profileData.activeRecurringDonations"
-          :key="donation.springboardId"
-          :label="`Active Donation ${index + 1}`"
-          :ripple="false"
-        >
-          <div class="text-right">
-            <p class="font-medium">{{ donation.brand }}</p>
-            <p>{{ formatCurrency(donation.amount) }}</p>
-            <p class="text-sm opacity-75">
-              Next charge: {{ formatDate(donation.nextChargeDate) }}
-            </p>
-            <p class="text-xs opacity-60">
-              Member since: {{ formatDate(donation.membershipStartDate) }}
-            </p>
-          </div>
-        </SBox>
-      </div>
-    </section>
-
-    <!-- Loading state for member profile -->
-    <section v-else-if="currentUser && isLoading" class="member-profile p-0">
-      <div class="flex s-title-holder">
-        <i class="mr-2 pi pi-user"></i>
-        <div class="s-title">Member Profile</div>
-      </div>
-      <SBox label="Loading member data..." :ripple="false">
-        <div class="flex justify-end">
-          <i class="pi pi-spin pi-spinner"></i>
-        </div>
-      </SBox>
-    </section>
-
-    <!-- Error state for member profile -->
-    <section v-else-if="currentUser && error" class="member-profile p-0">
-      <div class="flex s-title-holder">
-        <i class="mr-2 pi pi-user"></i>
-        <div class="s-title">Member Profile</div>
-      </div>
-      <SBox label="Unable to load member data" :ripple="false">
-        <p class="text-red-500 text-right">{{ error }}</p>
+      <SBox :clickable="false" :ripple="false">
+        <MemberCenter />
       </SBox>
     </section>
 
@@ -573,7 +508,7 @@ const showNotificationTypes = computed(() => {
     }
   }
 
-  .member-profile {
+  .member-center {
     .text-green-600 {
       color: #059669;
     }
