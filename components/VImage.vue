@@ -115,6 +115,7 @@ const dynamicComponent = computed(() => {
 <template>
   <div class="v-image-wrapper">
     <!-- Image component positioned absolutely when loading -->
+    {{}}
     <component
       :is="dynamicComponent"
       :key="`${cmsSource}-${imageTemplate}`"

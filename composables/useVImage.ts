@@ -158,7 +158,7 @@ export function useVImage() {
 
     // checks if the image is from Wagtail
     const isWagtailImage = (srcImg) => {
-        return (typeof srcImg === "object" && srcImg?.fileHash) || /^\d+$/.test(srcImg)
+        return (typeof srcImg === "object" && "fileHash" in srcImg) || /^\d+$/.test(srcImg)
     }
     // checks if the image is from Publisher
     const isPublisherImage = (srcImg) => {
