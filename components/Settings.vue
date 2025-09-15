@@ -6,7 +6,6 @@ import {
   setFontSize,
   setDarkMode,
   toggleAskNotificationPermissions,
-  getAndSetUserProfile,
   initializeStationList,
   //toSystemSettings,
 } from "~/utilities/helpers"
@@ -25,7 +24,6 @@ import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
-import { useProfileApi } from "~/composables/useProfileApi"
 const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
@@ -51,14 +49,6 @@ const isDisabled = computed(() => {
 })
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
-const {
-  profile: profileData,
-  loading: isLoading,
-  error,
-  fetchProfile,
-  formatCurrency,
-  formatDate,
-} = useProfileApi()
 
 // main function to update the toast component
 const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
@@ -73,7 +63,7 @@ const showMessage = (mySeverity = "success", myMessage = "Settings updated.") =>
 const updateProfile = async () => {
   // update supabase and local storage
   if (currentUser.value && currentUserProfile.value) {
-    await client
+    const { error } = await client
       .from("profiles")
       .upsert({
         id: currentUser.value.id,
@@ -112,19 +102,6 @@ const tempEmail = shallowRef(currentUser.value?.email)
 
 onMounted(async () => {
   stationsMenuData.value = await initializeStationList(allCurrentStations.value)
-
-  // Fetch user profile if user is authenticated
-  if (currentUser.value) {
-    await getAndSetUserProfile()
-
-    // Fetch profile data from /api/profile if user has a Salesforce ID
-    if (currentUserProfile.value?.salesforce_id) {
-      await fetchProfile(currentUserProfile.value.salesforce_id)
-    } else if (currentUser.value?.email) {
-      // Try email lookup if no Salesforce ID is available
-      await fetchProfile(undefined, currentUser.value.email)
-    }
-  }
 })
 
 watch(currentUserProfile.value, () => {
@@ -505,52 +482,6 @@ const showNotificationTypes = computed(() => {
       cursor: default !important;
       pointer-events: none;
       user-select: none;
-    }
-  }
-
-  .member-center {
-    .text-green-600 {
-      color: #059669;
-    }
-
-    .text-gray-500 {
-      color: #6b7280;
-    }
-
-    .text-red-500 {
-      color: #dc2626;
-    }
-
-    .text-right {
-      text-align: right;
-    }
-
-    .text-sm {
-      font-size: 0.875rem;
-    }
-
-    .text-xs {
-      font-size: 0.75rem;
-    }
-
-    .opacity-75 {
-      opacity: 0.75;
-    }
-
-    .opacity-60 {
-      opacity: 0.6;
-    }
-
-    .font-medium {
-      font-weight: 500;
-    }
-
-    .flex {
-      display: flex;
-    }
-
-    .justify-end {
-      justify-content: flex-end;
     }
   }
 
