@@ -53,7 +53,7 @@ import {
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
-import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+import { ConsentType, FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -247,10 +247,15 @@ export function setFontSize(size: string) {
  * helper function to toggle darkmode of the status bar
  */
 export async function setStatusDarkMode(bool: boolean) {
-  if (useIsApp().value) {
-    bool
-      ? await StatusBar.setStyle({ style: Style.Dark })
-      : await StatusBar.setStyle({ style: Style.Light })
+  await nextTick()
+  const isApp = useIsApp()
+  if (isApp.value) {
+    // delay needed for some reason
+    setTimeout(async () => {
+      bool
+        ? await StatusBar.setStyle({ style: Style.Dark })
+        : await StatusBar.setStyle({ style: Style.Light })
+    }, 1000)
   }
 }
 /**
@@ -258,7 +263,8 @@ export async function setStatusDarkMode(bool: boolean) {
  */
 export async function setDarkMode(bool: boolean) {
   // TEMP, no dark ode for browser yet
-  const dmBool = useIsApp().value ? bool : false
+  const isApp = useIsApp()
+  const dmBool = isApp.value ? bool : false
   dmBool
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
@@ -666,7 +672,7 @@ export const getAndSetUserProfile = async () => {
 
         // update streams and settings
         updateAllLiveStreams()
-        setDisplaySettings(data)
+        setDisplaySettings(currentUserProfile.value)
       }
     }
   }
