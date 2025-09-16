@@ -23,8 +23,8 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       overlaysWebView: true,
-      style: "DEFAULT",
-      backgroundColor: "#e01e3f",
+      //style: "DEFAULT",
+      //backgroundColor: "#e01e3f",
     },
     SplashScreen: {
       splashBackgroundColor: "#e01e3f",
