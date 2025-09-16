@@ -7,7 +7,9 @@ const config: CapacitorConfig = {
   backgroundColor: "#d4d4d4",
   android: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
-    appendUserAgent: 'Android-WNYC-App'
+    appendUserAgent: 'Android-WNYC-App',
+    // @ts-ignore
+    androidDisplayMode: 'immersive',
   },
   ios: {
     overrideUserAgent: `${process.env.USER_AGENT}`,

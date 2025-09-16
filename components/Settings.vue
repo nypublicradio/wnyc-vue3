@@ -249,7 +249,7 @@ const showNotificationTypes = computed(() => {
         <div class="s-title">Member Center</div>
       </div>
 
-      <SBox :clickable="false" :ripple="false">
+      <SBox :clickable="false" :ripple="false" class="py-2">
         <MemberCenter />
       </SBox>
     </section>
