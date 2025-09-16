@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli'
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'org.wnyc.android',
@@ -8,39 +8,20 @@ const config: CapacitorConfig = {
   android: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
     appendUserAgent: 'Android-WNYC-App',
-    allowMixedContent: true,
-    captureInput: true,
-    webContentsDebuggingEnabled: true,
+    // @ts-ignore
+    androidDisplayMode: 'immersive',
   },
   ios: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
     appendUserAgent: 'iOS-WNYC-App',
     handleApplicationNotifications: false,
-    allowsInlineMediaPlayback: true,
   },
   plugins: {
-    BackgroundMode: {
-      enabled: true,
-      silent: false,
-      hidden: false,
-      resume: true,
-      wakeup: true,
-      title: "Playing audio",
-      text: "WNYC is playing content",
-      icon: "icon",
-      keepAlive: true,
-      disableWebViewOptimizations: true
-    },
     CapacitorCookies: {
       enabled: true,
     },
     CapacitorHttp: {
       enabled: true,
-    },
-    StatusBar: {
-      overlaysWebView: true,
-      //style: "DEFAULT",
-      //backgroundColor: "#e01e3f",
     },
     SplashScreen: {
       splashBackgroundColor: "#e01e3f",
@@ -63,6 +44,6 @@ const config: CapacitorConfig = {
       sound: "notification.wav"
     },
   }
-}
+};
 
-export default config
+export default config;

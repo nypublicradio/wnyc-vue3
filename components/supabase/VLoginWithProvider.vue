@@ -37,20 +37,21 @@ if (!props.client && !props.config) {
   innerConfig.value = useRuntimeConfig()
 }
 
-
 const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 
 // method triggered by the form submit to handle supabase login logic
 const login = async () => {
   emit("submit-click")
-  
+
   // Use the runtime config value if no redirectUrl prop is provided
   const configRedirectTo = innerConfig.value.public?.supabaseAuthSignInRedirectTo
-  
-  const redirectTo = props.redirectUrl !== "http://localhost:3000" 
-    ? props.redirectUrl 
-    : configRedirectTo || props.redirectUrl
-  
+  console.log("innerConfig.value:", innerConfig.value)
+  console.log("configRedirectTo:", configRedirectTo)
+  const redirectTo =
+    props.redirectUrl !== "http://localhost:3000"
+      ? props.redirectUrl
+      : configRedirectTo || props.redirectUrl
+
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
       redirectTo,
