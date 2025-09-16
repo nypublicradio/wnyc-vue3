@@ -244,14 +244,14 @@ const showNotificationTypes = computed(() => {
     </section>
 
     <!-- Member Center Section -->
-    <section class="member-center p-0">
+    <section v-if="currentUser" class="member-center p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Member Center</div>
       </div>
 
-      <SBox :clickable="false" :ripple="false" class="py-2">
+      <SBoxEmpty :clickable="false" :ripple="false" class="py-2">
         <MemberCenter />
-      </SBox>
+      </SBoxEmpty>
     </section>
 
     <section class="listening-preferences p-0">
