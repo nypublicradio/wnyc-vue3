@@ -1,22 +1,7 @@
 <script setup>
-import {
-  useCurrentUser,
-  useCurrentUserProfile,
-  useEditProfileSideBar,
-  useAllCurrentStations,
-  useIsLiveStream,
-} from "~/composables/states"
+import { useCurrentUser } from "~/composables/states"
 import { useProfileApi } from "~/composables/useProfileApi"
 import { useMembership } from "~/composables/useMembership"
-
-const props = defineProps({
-  //   propVar: {
-  //     type: Boolean,
-  //     default: false,
-  //   },
-})
-
-//const emit = defineEmits(["change", "click"]);
 
 // Profile API composable for member profile data
 const { profile: profileData, loading: isLoading, getMembershipInfo } = useProfileApi()
@@ -593,19 +578,24 @@ onMounted(async () => {
       <!-- <pre>{{ profileDataTemp }}</pre> -->
     </div>
     <!-- loading skeleton for membership card -->
-    <div v-else class="col-12 md:col-6">
-      <div class="card">
+    <div v-else class="col-12">
+      <div class="p-4">
         <div class="flex flex-wrap align-items-start gap-3">
           <Skeleton shape="circle" class="w-4rem h-4rem" />
-          <div>
-            <Skeleton width="7rem" class="mb-2" borderRadius="16px"></Skeleton>
-            <Skeleton width="10rem" class="mb-1" borderRadius="16px"></Skeleton>
-            <Skeleton
-              width="11rem"
-              height="2rem"
-              class="mt-3"
-              borderRadius="16px"
-            ></Skeleton>
+          <div class="flex flex-column gap-2 flex-grow-1">
+            <Skeleton width="35%" borderRadius="16px"></Skeleton>
+            <Skeleton width="50%" height="0.75rem" borderRadius="16px"></Skeleton>
+            <Skeleton width="70%" height="0.75rem" borderRadius="16px"></Skeleton>
+            <div class="flex gap-4 flex-grow-1 align-items-center mt-3">
+              <Skeleton
+                width="11rem"
+                height="2rem"
+                class="flex-none"
+                borderRadius="16px"
+              ></Skeleton>
+              <Skeleton height="1rem" borderRadius="16px"></Skeleton>
+              <Skeleton height="1rem" borderRadius="16px"></Skeleton>
+            </div>
           </div>
         </div>
       </div>
