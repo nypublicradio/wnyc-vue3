@@ -81,7 +81,7 @@ export const useProfileApi = () => {
                     }
                 } else {
                     // no supabase session, route to login
-                    navigateTo("/login")
+                    //navigateTo("/login")
                 }
             } catch (error) {
                 console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
@@ -107,7 +107,7 @@ export const useProfileApi = () => {
             }
         } else {
             // No authentication available. Do something like redirect to login.
-            navigateTo("/login")
+            //navigateTo("/login")
         }
     }
 
