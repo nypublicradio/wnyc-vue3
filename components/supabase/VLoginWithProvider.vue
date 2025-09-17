@@ -50,16 +50,6 @@ const login = async () => {
   const redirectTo = props.redirectUrl !== "http://localhost:3000" 
     ? props.redirectUrl 
     : configRedirectTo || props.redirectUrl
-
-  // Debug logging
-  console.log('=== OAuth Debug Info ===')
-  console.log('Provider:', props.provider)
-  console.log('Props redirectUrl:', props.redirectUrl)
-  console.log('Config redirectTo:', configRedirectTo)
-  console.log('Final redirectTo:', redirectTo)
-  console.log('Supabase URL:', innerClient.value.supabaseUrl)
-  console.log('Current URL:', window.location.href)
-  console.log('========================')
   
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
@@ -67,11 +57,7 @@ const login = async () => {
     },
     provider: props.provider,
   })
-  
-  console.log('OAuth Response:', res)
-  
   if (res.error) {
-    console.error('OAuth Error:', res.error)
     emit("submit-error", res.error)
     errorMessage.value = res.error
   } else {
