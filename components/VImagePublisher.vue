@@ -245,7 +245,11 @@ const srcset = computed(() => {
 })
 
 onBeforeMount(() => {
-  isVertical.value = props.allowVerticalEffect && props.maxHeight >= props.maxWidth
+  isVertical.value =
+    props.allowVerticalEffect &&
+    props.maxHeight >= props.maxWidth &&
+    props.maxHeight !== Infinity &&
+    props.maxWidth !== Infinity
 })
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {

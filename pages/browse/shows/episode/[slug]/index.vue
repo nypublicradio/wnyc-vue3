@@ -217,11 +217,7 @@ const togglePlayHere = (epData, index = 0) => {
 const getEpisodeImage = () => {
   const epImage = episodeData.value?.image
   const showImage = episodeData.value?.headers.brand.logoImage
-  return epImage
-    ? epImage.template !== showImage.template
-      ? epImage
-      : getEpisodeHeadFallBackImage()
-    : getEpisodeHeadFallBackImage()
+  return epImage ? (epImage.template !== showImage.template ? epImage : null) : null
 }
 
 const theEpImage = computed(() => getEpisodeImage())
@@ -288,7 +284,10 @@ watch(
           <div
             class="pt-4 pb-2 lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
           >
-            <div class="flex align-items-center gap-2">
+            <div
+              v-if="!hasSegments && hasAudio(episodeData?.audio)"
+              class="flex align-items-center gap-2"
+            >
               <PlayButton
                 v-if="!hasSegments && hasAudio(episodeData?.audio)"
                 :label="getMinutes(episodeData?.estimatedDuration, 1)"
@@ -388,7 +387,7 @@ watch(
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div class="episode-page-image-holder relative mb-4">
+          <div v-if="theEpImage" class="episode-page-image-holder relative mb-4">
             <VImage
               v-if="status === 'success'"
               :src="theEpImage"
