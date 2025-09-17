@@ -1,5 +1,5 @@
 import { ref, computed, readonly } from 'vue';
-
+import { Preferences } from "@capacitor/preferences"
 interface User {
     id: string;
     email: string;
@@ -19,33 +19,40 @@ const refreshTokenValue = ref<string | null>(null);
 const isAuthenticated = computed(() => Boolean(authToken.value) && Boolean(currentUser.value));
 
 export const useAuth = () => {
-    // Initialize from localStorage on client side
-    if (import.meta.client) {
-        const stored = localStorage.getItem('auth_token');
-        if (stored) {
-            authToken.value = stored;
-        }
+    // Initialize from Preferences on client side
+    const initializeAuth = async () => {
+        if (import.meta.client) {
+            const stored = await Preferences.get({ key: 'auth_token' });
+            if (stored.value) {
+                authToken.value = stored.value;
+            }
 
-        const storedUser = localStorage.getItem('auth_user');
-        if (storedUser) {
-            try {
-                currentUser.value = JSON.parse(storedUser);
-            } catch (error) {
-                console.error('Failed to parse stored user data:', error);
-                localStorage.removeItem('auth_user');
+            const storedUser = await Preferences.get({ key: 'auth_user' });
+            if (storedUser.value) {
+                try {
+                    currentUser.value = JSON.parse(storedUser.value);
+                } catch (error) {
+                    console.error('Failed to parse stored user data:', error);
+                    await Preferences.remove({ key: 'auth_user' });
+                }
+            }
+
+            const storedRefreshToken = await Preferences.get({ key: 'refresh_token' });
+            if (storedRefreshToken.value) {
+                refreshTokenValue.value = storedRefreshToken.value;
             }
         }
+    };
 
-        const storedRefreshToken = localStorage.getItem('refresh_token');
-        if (storedRefreshToken) {
-            refreshTokenValue.value = storedRefreshToken;
-        }
+    // Initialize auth state
+    if (import.meta.client) {
+        initializeAuth();
     }
 
     /**
      * Set authentication state (used by confirm page)
      */
-    const setAuthState = (token: string, user: User, refreshToken?: string) => {
+    const setAuthState = async (token: string, user: User, refreshToken?: string) => {
         authToken.value = token;
         currentUser.value = user;
 
@@ -54,10 +61,10 @@ export const useAuth = () => {
         }
 
         if (import.meta.client) {
-            localStorage.setItem('auth_token', token);
-            localStorage.setItem('auth_user', JSON.stringify(user));
+            await Preferences.set({ key: 'auth_token', value: token });
+            await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) });
             if (refreshToken) {
-                localStorage.setItem('refresh_token', refreshToken);
+                await Preferences.set({ key: 'refresh_token', value: refreshToken });
             }
         }
     };
@@ -65,15 +72,15 @@ export const useAuth = () => {
     /**
      * Logout and clear authentication state
      */
-    const logout = () => {
+    const logout = async () => {
         authToken.value = null;
         currentUser.value = null;
         refreshTokenValue.value = null;
 
         if (import.meta.client) {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_user');
-            localStorage.removeItem('refresh_token');
+            await Preferences.remove({ key: 'auth_token' });
+            await Preferences.remove({ key: 'auth_user' });
+            await Preferences.remove({ key: 'refresh_token' });
         }
     };
 
@@ -112,8 +119,8 @@ export const useAuth = () => {
                 currentUser.value = data.user;
 
                 if (import.meta.client) {
-                    localStorage.setItem('auth_token', data.token);
-                    localStorage.setItem('auth_user', JSON.stringify(data.user));
+                    await Preferences.set({ key: 'auth_token', value: data.token });
+                    await Preferences.set({ key: 'auth_user', value: JSON.stringify(data.user) });
                 }
 
                 return true;
@@ -164,12 +171,12 @@ export const useAuth = () => {
                 } else {
                     // Refresh failed, logout user
                     console.log('Token refresh failed, logging out user');
-                    logout();
+                    await logout();
                     throw new Error('Authentication required');
                 }
             } else if (error.statusCode === 401) {
                 // No refresh token available, logout immediately
-                logout();
+                await logout();
                 throw new Error('Authentication required');
             }
             throw error;
@@ -191,7 +198,7 @@ export const useAuth = () => {
                 payload = JSON.parse(atob(base64Url));
             } catch (decodeError) {
                 console.error('Failed to decode JWT payload:', decodeError);
-                logout();
+                await logout();
                 return;
             }
             const currentTime = Math.floor(Date.now() / 1000);
@@ -202,7 +209,7 @@ export const useAuth = () => {
                 await refreshToken(refreshTokenValue.value);
             }
         } catch (error) {
-            logout();
+            await logout();
         }
     };
 
@@ -257,6 +264,7 @@ export const useAuth = () => {
         isAuthenticated,
 
         // Methods
+        initializeAuth,
         setAuthState,
         logout,
         verifyToken,
