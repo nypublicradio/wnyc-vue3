@@ -83,7 +83,6 @@ const closeAll = () => {
         label="Sign up with Google"
         severity="secondary"
         class="center my-3"
-        redirect-url="https://demo.native-app.wnyc.org/"
         @login-success="onSignup('google')"
       />
       <VLoginWithProvider
@@ -93,7 +92,6 @@ const closeAll = () => {
         severity="secondary"
         class="center"
         label="Sign up with Apple"
-        redirect-url="https://demo.native-app.wnyc.org/"
         @login-success="onSignup('apple')"
       />
       <Divider

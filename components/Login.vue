@@ -90,7 +90,6 @@ const openForgotPassword = () => {
         label="Log in with Google"
         severity="secondary"
         class="center my-3"
-        redirect-url="https://demo.native-app.wnyc.org/"
         @submit-success="onLogin('google')"
       />
       <VLoginWithProvider
@@ -100,7 +99,6 @@ const openForgotPassword = () => {
         label="Log in with Apple"
         severity="secondary"
         class="center"
-        redirect-url="https://demo.native-app.wnyc.org/"
         @submit-success="onLogin('apple')"
       />
       <!--  pt:content:style="background:var(--p-surface-25)" -->
