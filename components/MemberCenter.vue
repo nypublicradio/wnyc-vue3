@@ -536,6 +536,9 @@ onMounted(async () => {
 
 <template>
   <div class="member-center mb-6 grid grid-lggutter">
+    <!-- {{ isLoading }}
+    <pre class="text-xs">{{ profileData }}</pre>
+    <pre class="text-xs">{{ currentUser }}</pre> -->
     <div v-if="currentUser && profileData && !isLoading" class="col-12">
       <!-- TEMP to show no donation history -->
       <MemberCard
