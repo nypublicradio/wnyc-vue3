@@ -47,8 +47,7 @@ jobs:
         with:
           secrets: |
             ENV=review
-            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
-            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
+            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}            
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
             PUBLISHER_BASE_API=${{ vars.PUBLISHER_BASE_API }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -68,6 +67,7 @@ jobs:
             SENTRY_ENV=${{ vars.SENTRY_ENV }}
             LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
             NAVIGATION_API=${{ vars.NAVIGATION_API }}
+            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
             SYSTEM_MESSAGES_API=${{ vars.SYSTEM_MESSAGES_API }}
             STORIES_API=${{ vars.STORIES_API }}
             IMAGE_BASE_URL=${{ vars.IMAGE_BASE_URL }}

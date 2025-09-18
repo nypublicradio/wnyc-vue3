@@ -148,23 +148,23 @@ onUnmounted(() => {
 
 <template>
   <div class="shows-page pb-7">
+    <Html lang="en">
+      <Head>
+        <Title
+          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News</Title
+        >
+        <Meta
+          name="og:title"
+          :content="`${show?.show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
+        />
+        <Meta
+          name="twitter:title"
+          :content="`${show?.show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
+        />
+      </Head>
+    </Html>
     <section>
-      <Html lang="en">
-        <Head>
-          <Title
-            >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-            News</Title
-          >
-          <Meta
-            name="og:title"
-            content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-          <Meta
-            name="twitter:title"
-            content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-        </Head>
-      </Html>
       <div class="flex lg:hidden align-items-center">
         <Button
           class="back-btn text-color -ml-3"
@@ -294,9 +294,7 @@ onUnmounted(() => {
           </div>
           <div ref="aboutRef" class="flex flex-column gap-5 mt-8">
             <h2 class="md:text-xl">About</h2>
-            <!-- <pre>{{ show.show.description }}</pre>
-            <HtmlConvert :htmlContent="show.show.description" /> -->
-            <p>{{ show?.show?.description }}</p>
+            <HtmlConvert :htmlContent="show?.show?.description" />
           </div>
           <div ref="supportRef" class="flex flex-column gap-5 mt-8">
             <h2 class="md:text-xl">Support Our Show</h2>
