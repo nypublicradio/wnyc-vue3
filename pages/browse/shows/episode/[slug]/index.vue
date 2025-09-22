@@ -270,7 +270,7 @@ watch(
     <section class="py-3 md:py-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
+        <div v-if="status === 'success'" class="col pr-2 lg:pr-4">
           <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
             {{ episodeData?.title }}
           </h1>
@@ -380,6 +380,39 @@ watch(
                 </template>
               </DotMenu>
             </div>
+          </div>
+        </div>
+        <div
+          v-else-if="status !== 'success'"
+          class="flex flex-column gap-2 md:gap-3 col pr-2 lg:pr-4 mt-3 mb-6"
+        >
+          <Skeleton width="90%" borderRadius="16px" class="h-1rem md:h-3rem" />
+          <Skeleton width="65%" borderRadius="16px" class="h-1rem md:h-3rem" />
+          <div class="article-metadata">
+            <div class="flex gap-2 align-items-center mb-1">
+              <Skeleton
+                height="12px"
+                width="120px"
+                borderRadius="16px"
+                class="opacity-70"
+              />
+              <Skeleton height="8px" width="8px" borderRadius="50%" class="opacity-50" />
+              <Skeleton
+                height="12px"
+                width="70px"
+                borderRadius="16px"
+                class="opacity-70"
+              />
+            </div>
+          </div>
+          <div class="button-holder flex align-items-center gap-3 flex-wrap">
+            <Skeleton height="28px" width="140px" borderRadius="16px" class="z-2" />
+
+            <slot>
+              <div class="flex align-items-center gap-4">
+                <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
+              </div>
+            </slot>
           </div>
         </div>
         <div class="col-fixed hidden xl:block w-20rem"></div>
