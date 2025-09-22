@@ -440,7 +440,53 @@ watch(
               />
             </div>
           </div>
-          <div v-else>
+          <div v-if="status !== 'success'">
+            <!-- <div class="mb-8">
+              <Skeleton height="2.25rem" width="95%" borderRadius="16px" class="mb-2" />
+              <Skeleton height="2.25rem" width="75%" borderRadius="16px" class="mb-4" />
+              <div class="flex gap-2 align-items-center mb-1">
+                <Skeleton
+                  height="12px"
+                  width="70px"
+                  borderRadius="16px"
+                  class="opacity-70"
+                />
+                <Skeleton
+                  height="8px"
+                  width="8px"
+                  borderRadius="50%"
+                  class="opacity-50"
+                />
+                <Skeleton
+                  height="12px"
+                  width="50px"
+                  borderRadius="16px"
+                  class="opacity-70"
+                />
+              </div>
+              <div class="flex gap-3 mt-4 mb-5">
+                <div>
+                  <Skeleton height="29px" width="140px" borderRadius="16px" />
+                </div>
+                <div class="flex gap-3">
+                  <Skeleton height="29px" width="29px" borderRadius="16px" />
+                </div>
+              </div>
+            </div> -->
+            <skeleton-media-card
+              v-for="i in 10"
+              :key="`sk1-${i}`"
+              is-horizontal
+              imgCol="w-7rem md:w-10rem"
+              :size="[1, 1]"
+              :showBg="false"
+              :showBgMobile="false"
+              showTease
+              :showImage="!hasSegments"
+              class="mb-5"
+            />
+          </div>
+          <!-- <div>
             <Skeleton
               height="12px"
               width="75px"
@@ -461,7 +507,7 @@ watch(
               </div>
             </div>
             <skeleton-text :lines="6" class="mt-1" />
-          </div>
+          </div> -->
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
           <ShowSummary :show="show" />

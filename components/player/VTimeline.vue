@@ -91,7 +91,14 @@ const handleClick = () => {
 <template>
   <div
     class="timeline-holder align-items-center flex gap-0 flex-column"
-    :class="[{ minimized: props.minimized, slim: props.slim, live: isLiveStream }]"
+    :class="[
+      {
+        minimized: props.minimized,
+        slim: props.slim,
+        live: isLiveStream,
+        active: props.isActive,
+      },
+    ]"
   >
     <Slider
       v-if="!isLiveStream"
@@ -130,6 +137,14 @@ const handleClick = () => {
   &:hover {
     .timeline {
       height: 6px !important;
+    }
+  }
+  &.minimized {
+    // hides the thumb handle on small screens when minimized
+    @include media("<lg") {
+      .p-slider-handle {
+        display: none;
+      }
     }
   }
 }
@@ -212,6 +227,9 @@ const handleClick = () => {
       }
       .time {
         display: none !important;
+      }
+      .p-slider-handle {
+        display: none;
       }
     }
   }

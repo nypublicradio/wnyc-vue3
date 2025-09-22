@@ -63,8 +63,8 @@ const togglePlayHere = async () => {
               v-if="currentEpisodeHolder"
               class="flex flex-column gap-2 xl:gap-3 justify-content-center px-3"
             >
-              <div class="hidden md:flex align-items-center">
-                <LiveBadge fontSize="0.9rem" class="-ml-2" />
+              <div class="hidden md:flex align-items-center gap-2">
+                <LiveBadge fontSize="0.9rem" bgColor="var(--p-surface-25)" />
                 <p
                   v-if="currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd"
                   class="font-bold"
