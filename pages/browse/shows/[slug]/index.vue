@@ -233,19 +233,21 @@ onUnmounted(() => {
               ></Button>
             </div>
             <template v-for="ep in episodes" :key="ep.id">
+              <!-- <pre class="text-xs w-30rem">{{ ep }}</pre> -->
+              <!--<p>ep?.type !== 'segment' = {{ ep?.type !== "segment" }}</p>
+              <p>ep.estimatedDuration = {{ ep.estimatedDuration }}</p>
+              <p>ep?.hasAudio = {{ ep?.hasAudio }}</p> -->
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <MediaCard
-                v-if="
-                  ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
-                "
+                v-if="ep.estimatedDuration !== 0 && ep?.hasAudio"
                 :data="ep"
-                showPlayButton
                 is-horizontal
                 imgCol="w-7rem md:w-10rem"
                 :size="{ xs: [112, 112], md: [160, 160] }"
                 showTease
                 :showBg="false"
                 :showBgMobile="false"
+                :hasSegments="ep.hasSegments"
                 @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
               />
             </template>
