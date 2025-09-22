@@ -33,7 +33,7 @@ const onDonate = () => {
 </script>
 
 <template>
-  <div class="donate-banner px-2 py-4 md:px-4 md:py-5">
+  <div class="donate-banner px-2 py-4 md:px-4 md:py-5 style-mode-light">
     <section class="flex flex-column gap-5 justify-content-center align-items-center">
       <h2 class="font-bold font-tisa text-center">{{ props.headline }}</h2>
       <p class="text-center">{{ props.blurb }}</p>
@@ -45,6 +45,9 @@ const onDonate = () => {
 <style lang="scss" scoped>
 .donate-banner {
   background-color: var(--p-yellow-500);
+  &.style-mode-light {
+    --p-text-color: var(--p-surface-950);
+  }
   section {
     max-width: $thinContentWidth;
   }

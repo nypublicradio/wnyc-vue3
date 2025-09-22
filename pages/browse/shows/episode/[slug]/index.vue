@@ -387,9 +387,11 @@ watch(
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div v-if="theEpImage" class="episode-page-image-holder relative mb-4">
+          <div
+            v-if="theEpImage && status === 'success'"
+            class="episode-page-image-holder relative mb-4"
+          >
             <VImage
-              v-if="status === 'success'"
               :src="theEpImage"
               :size="{
                 xs: [327, 218],
@@ -405,8 +407,12 @@ watch(
               :alt="episodeData?.image?.altText"
               class="episode-page-image mb-2"
             />
+          </div>
+          <div
+            v-else-if="status !== 'success'"
+            class="episode-page-image-holder relative mb-5"
+          >
             <Skeleton
-              v-else
               borderRadius="0px"
               class="episode-page-image mb-2 opacity-60 w-full h-auto"
             />
@@ -441,38 +447,6 @@ watch(
             </div>
           </div>
           <div v-if="status !== 'success'">
-            <!-- <div class="mb-8">
-              <Skeleton height="2.25rem" width="95%" borderRadius="16px" class="mb-2" />
-              <Skeleton height="2.25rem" width="75%" borderRadius="16px" class="mb-4" />
-              <div class="flex gap-2 align-items-center mb-1">
-                <Skeleton
-                  height="12px"
-                  width="70px"
-                  borderRadius="16px"
-                  class="opacity-70"
-                />
-                <Skeleton
-                  height="8px"
-                  width="8px"
-                  borderRadius="50%"
-                  class="opacity-50"
-                />
-                <Skeleton
-                  height="12px"
-                  width="50px"
-                  borderRadius="16px"
-                  class="opacity-70"
-                />
-              </div>
-              <div class="flex gap-3 mt-4 mb-5">
-                <div>
-                  <Skeleton height="29px" width="140px" borderRadius="16px" />
-                </div>
-                <div class="flex gap-3">
-                  <Skeleton height="29px" width="29px" borderRadius="16px" />
-                </div>
-              </div>
-            </div> -->
             <skeleton-media-card
               v-for="i in 10"
               :key="`sk1-${i}`"
@@ -486,28 +460,6 @@ watch(
               class="mb-5"
             />
           </div>
-          <!-- <div>
-            <Skeleton
-              height="12px"
-              width="75px"
-              borderRadius="16px"
-              class="mb-2 opacity-50"
-            />
-            <Skeleton height="1.25rem" width="95%" borderRadius="16px" class="mb-1" />
-            <Skeleton height="1.25rem" width="75%" borderRadius="16px" class="mb-1" />
-            <div class="flex justify-content-between mt-4 mb-5">
-              <div>
-                <Skeleton height="29px" width="92px" borderRadius="16px" />
-              </div>
-              <div class="flex gap-3">
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-              </div>
-            </div>
-            <skeleton-text :lines="6" class="mt-1" />
-          </div> -->
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
           <ShowSummary :show="show" />
