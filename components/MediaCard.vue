@@ -78,6 +78,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hasSegments: {
+    type: Boolean,
+    default: false,
+  },
   showLive: {
     type: Boolean,
     default: false,

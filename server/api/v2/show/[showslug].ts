@@ -33,6 +33,8 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
     episodes = await Promise.all(res.data.resources.map(async (item) => {
         const episodeImage = await npr.findEpisodeImage(item, 'image-square');
         const hasAudio = await npr.hasAudio(item.id);
+        const audio = await npr.findAudio(item.id, { resources: [{ title: item.title }] });
+        const hasSegments = audio.length > 0;
         return {
             id: item.id,
             title: item.title,
@@ -51,6 +53,7 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
             image: episodeImage,
             url: item.webPages[0]?.href,
             hasAudio,
+            hasSegments
         };
     }));
 
