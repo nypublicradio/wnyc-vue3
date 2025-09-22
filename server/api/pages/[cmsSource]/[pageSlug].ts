@@ -2,10 +2,15 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 
-const config = useRuntimeConfig();
+// Helper to obtain runtime config, with test override support.
+const __getConfig = () => {
+    const testCfg = (globalThis as any)?.__testRuntimeConfig
+    return testCfg ?? useRuntimeConfig()
+}
 
 // getting flat page data from the publisher api
 const getPublisherPageData = async (pageSlug: string) => {
+    const config = __getConfig();
     const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/flatpages/${pageSlug}`);
     const resData = humps.camelizeKeys(res.data);
     return resData
@@ -13,6 +18,7 @@ const getPublisherPageData = async (pageSlug: string) => {
 
 // getting page data from the wagtail api
 const getWagtailPageData = async (pageSlug: string) => {
+    const config = __getConfig();
     const res = await axios(`${config.public.AVIARY_BASE_API}pages/${pageSlug}`);
     const resData = humps.camelizeKeys(res.data);
     return resData
@@ -31,7 +37,7 @@ const getPageData = async (pageSlug: string, cmsSource: string) => {
 };
 
 // get page data from CMS
-export default defineEventHandler(async (event) => {
+export default async function (event) {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (pageSlug && cmsSource) {
@@ -40,4 +46,4 @@ export default defineEventHandler(async (event) => {
     } else {
         return null
     }
-});
+}
