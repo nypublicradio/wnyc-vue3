@@ -645,14 +645,13 @@ defineExpose({
                   </Button>
                 </Transition>
               </div>
-              <div class="hidden lg:block w-full">
+              <div class="w-full">
                 <player-v-timeline
                   :currentEpisodeProgress
                   :currentEpisodeDuration
                   :isLiveStream
                   minimized
                   slim
-                  class="w-full"
                   @scrub-timeline-end="emit('scrub-timeline-end', $event)"
                 />
               </div>

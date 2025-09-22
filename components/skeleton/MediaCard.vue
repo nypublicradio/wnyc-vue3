@@ -24,6 +24,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hasSegments: {
+    type: Boolean,
+    default: false,
+  },
   showImage: {
     type: Boolean,
     default: true,
@@ -95,12 +99,12 @@ const { width: imageWidth, height: imageHeight } = useVImageDimensions({
         class="event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
       ></div>
       <div
+        v-if="props.showImage"
         class="image overflow-hidden p-0 col-fixed"
         :class="props.imgCol"
         :style="`aspect-ratio: ${imageWidth / imageHeight};`"
       >
         <Skeleton
-          v-if="props.showImage"
           class="flex-none skeleton-image"
           borderRadius="0px"
           :style="`aspect-ratio: ${imageWidth / imageHeight};`"
@@ -199,7 +203,7 @@ const { width: imageWidth, height: imageHeight } = useVImageDimensions({
             class="button-holder flex justify-content-between align-items-center flex-wrap"
           >
             <Skeleton
-              v-if="props.showPlayButton"
+              v-if="props.showPlayButton && !props.hasSegments"
               height="28px"
               width="92px"
               borderRadius="16px"
