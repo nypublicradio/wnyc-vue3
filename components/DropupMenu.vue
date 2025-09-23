@@ -261,6 +261,7 @@ defineExpose({
               Vmodel = {{ vModel }} -->
               <div :key="item.label" class="flex align-items-center station-options">
                 <VImage
+                  v-if="item.image"
                   :src="item.image"
                   alt="item.label"
                   class="mr-3 flex-none"

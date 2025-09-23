@@ -16,7 +16,6 @@ import {
   checkIsFavorited,
   shareAPI,
   addToFavorites2,
-  getEpisodeHeadFallBackImage,
   hasAudio,
 } from "~/utilities/helpers"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -217,11 +216,7 @@ const togglePlayHere = (epData, index = 0) => {
 const getEpisodeImage = () => {
   const epImage = episodeData.value?.image
   const showImage = episodeData.value?.headers.brand.logoImage
-  return epImage
-    ? epImage.template !== showImage.template
-      ? epImage
-      : getEpisodeHeadFallBackImage()
-    : getEpisodeHeadFallBackImage()
+  return epImage ? (epImage.template !== showImage.template ? epImage : null) : null
 }
 
 const theEpImage = computed(() => getEpisodeImage())
@@ -274,7 +269,7 @@ watch(
     <section class="py-3 md:py-6">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
+        <div v-if="status === 'success'" class="col pr-2 lg:pr-4">
           <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
             {{ episodeData?.title }}
           </h1>
@@ -288,7 +283,10 @@ watch(
           <div
             class="pt-4 pb-2 lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
           >
-            <div class="flex align-items-center gap-2">
+            <div
+              v-if="!hasSegments && hasAudio(episodeData?.audio)"
+              class="flex align-items-center gap-2"
+            >
               <PlayButton
                 v-if="!hasSegments && hasAudio(episodeData?.audio)"
                 :label="getMinutes(episodeData?.estimatedDuration, 1)"
@@ -383,14 +381,49 @@ watch(
             </div>
           </div>
         </div>
+        <div
+          v-else-if="status !== 'success'"
+          class="flex flex-column gap-2 md:gap-3 col pr-2 lg:pr-4 mt-3 mb-6"
+        >
+          <Skeleton width="90%" borderRadius="16px" class="h-1rem md:h-3rem" />
+          <Skeleton width="65%" borderRadius="16px" class="h-1rem md:h-3rem" />
+          <div class="article-metadata">
+            <div class="flex gap-2 align-items-center mb-1">
+              <Skeleton
+                height="12px"
+                width="120px"
+                borderRadius="16px"
+                class="opacity-70"
+              />
+              <Skeleton height="8px" width="8px" borderRadius="50%" class="opacity-50" />
+              <Skeleton
+                height="12px"
+                width="70px"
+                borderRadius="16px"
+                class="opacity-70"
+              />
+            </div>
+          </div>
+          <div class="button-holder flex align-items-center gap-3 flex-wrap">
+            <Skeleton height="28px" width="140px" borderRadius="16px" class="z-2" />
+
+            <slot>
+              <div class="flex align-items-center gap-4">
+                <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
+              </div>
+            </slot>
+          </div>
+        </div>
         <div class="col-fixed hidden xl:block w-20rem"></div>
       </div>
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div class="episode-page-image-holder relative mb-4">
+          <div
+            v-if="theEpImage && status === 'success'"
+            class="episode-page-image-holder relative mb-4"
+          >
             <VImage
-              v-if="status === 'success'"
               :src="theEpImage"
               :size="{
                 xs: [327, 218],
@@ -406,8 +439,12 @@ watch(
               :alt="episodeData?.image?.altText"
               class="episode-page-image mb-2"
             />
+          </div>
+          <div
+            v-else-if="status !== 'success'"
+            class="episode-page-image-holder relative mb-5"
+          >
             <Skeleton
-              v-else
               borderRadius="0px"
               class="episode-page-image mb-2 opacity-60 w-full h-auto"
             />
@@ -441,27 +478,19 @@ watch(
               />
             </div>
           </div>
-          <div v-else>
-            <Skeleton
-              height="12px"
-              width="75px"
-              borderRadius="16px"
-              class="mb-2 opacity-50"
+          <div v-if="status !== 'success'">
+            <skeleton-media-card
+              v-for="i in 10"
+              :key="`sk1-${i}`"
+              is-horizontal
+              imgCol="w-7rem md:w-10rem"
+              :size="[1, 1]"
+              :showBg="false"
+              :showBgMobile="false"
+              showTease
+              :showImage="!hasSegments"
+              class="mb-5"
             />
-            <Skeleton height="1.25rem" width="95%" borderRadius="16px" class="mb-1" />
-            <Skeleton height="1.25rem" width="75%" borderRadius="16px" class="mb-1" />
-            <div class="flex justify-content-between mt-4 mb-5">
-              <div>
-                <Skeleton height="29px" width="92px" borderRadius="16px" />
-              </div>
-              <div class="flex gap-3">
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-                <Skeleton height="29px" width="29px" borderRadius="16px" />
-              </div>
-            </div>
-            <skeleton-text :lines="6" class="mt-1" />
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">

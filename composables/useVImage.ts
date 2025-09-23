@@ -136,7 +136,6 @@ export function useVImage() {
     const templatizeWagtailImageUrl = (url: string): string => {
 
         // formatted :https://cms.prod.nypr.digital/images/352462/fill-592x395-c0|format-webp|webpquality-80
-
         return url.replace(/fill-(\d+)x(\d+)-c0/, 'fill-%s/%s/c0').replace(/format-[a-zA-Z]+/, 'format-%s').replace(/(webp|jpeg|jpg|png)quality-(\d+)/, '%squality-%s')
 
     }
@@ -158,7 +157,7 @@ export function useVImage() {
 
     // checks if the image is from Wagtail
     const isWagtailImage = (srcImg) => {
-        return (typeof srcImg === "object" && srcImg?.fileHash) || /^\d+$/.test(srcImg)
+        return (typeof srcImg === "object" && "fileHash" in srcImg) || /^\d+$/.test(srcImg)
     }
     // checks if the image is from Publisher
     const isPublisherImage = (srcImg) => {

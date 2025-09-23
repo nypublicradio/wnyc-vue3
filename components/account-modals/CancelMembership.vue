@@ -1,4 +1,5 @@
 <script setup>
+import ModalCloseBtn from "./ModalCloseBtn.vue"
 const emit = defineEmits(["adjust", "cancel"])
 
 const dialogRef = inject("dialogRef")
@@ -23,16 +24,9 @@ onMounted(() => {
 
 <template>
   <div class="cancel-membership">
-    <div class="flex justify-content-between align-items-center mb-3">
-      <h2>Before you go...</h2>
-      <Button
-        class="-mr-2"
-        rounded
-        icon="pi pi-times"
-        variant="text"
-        severity="secondary"
-        @click="dialogRef.close()"
-      />
+    <div class="flex justify-content-between align-items-center mb-2">
+      <div class="font-meta text-2xl font-bold">Before you go...</div>
+      <ModalCloseBtn class="-mr-2" @clickEmit="dialogRef.close()" />
     </div>
     <p>
       Would you consider adjusting your donation amount instead of canceling? Even small

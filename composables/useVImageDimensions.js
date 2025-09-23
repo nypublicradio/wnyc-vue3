@@ -19,7 +19,7 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
 
     // Handle object format with smart cascading defaults
     if (sizeConfig && typeof sizeConfig === 'object') {
-        const breakpointOrder = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl']
+        const breakpointOrder = ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl']
         const currentIndex = breakpointOrder.indexOf(breakpoint)
 
         // Look for the size at current breakpoint or cascade down to find the closest defined size
@@ -30,7 +30,15 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
             }
         }
 
-        // If no size found, use default
+        // If no size found cascading down, cascade up to find the next available size
+        for (let i = currentIndex + 1; i < breakpointOrder.length; i++) {
+            const bp = breakpointOrder[i]
+            if (sizeConfig[bp]) {
+                return sizeConfig[bp]
+            }
+        }
+
+        // If no size found at all, use default
         return [112, 112] // Default 1:1 ratio at 112px width
     }
 
@@ -42,7 +50,7 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
  * Composable for responsive image dimensions based on breakpoint-specific sizes
  * @param {Object} options - Configuration options
  * @param {Object|Array} options.size - Responsive size configuration:
- *   - Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
+ *   - Object format: { xxs: [100,100], xs: [112,112], md: [600,400] } - different sizes per breakpoint
  *   - Array format (legacy): [3, 2] - converted to ratio-based default size
  *   - Default: {} (uses [300,200] default size)
  * @returns {Object} - Reactive width, height, and current breakpoint

@@ -5,6 +5,8 @@
 // a new "primeflex.min.css" file will be generated in the "dist" folder
 // copy and replace the new "primeflex.min.css" file in the "src/assets/library" folder
 //
+$xxsmall: 320px;
+$xxs: 320px;
 $xsmall: 375px;
 $xs: 375px;
 $small: 576px;
@@ -25,6 +27,8 @@ $breakpoints: (
     'phone': $xsmall,
     'tablet': $medium,
     'desktop': $xlarge,
+    'xxsmall': $xxsmall,
+    'xxs': $xxsmall,
     'xsmall': $xsmall,
     'xs': $xsmall,
     'small': $small,
@@ -39,5 +43,5 @@ $breakpoints: (
     'xxl': $xxlarge,
     'xxxlarge': $xxxlarge,
     'xxxl': $xxxlarge,
-    'max': $max,
+    'max': $max
 );

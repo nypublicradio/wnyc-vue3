@@ -45,6 +45,7 @@ export const useProfileApi = () => {
             return data;
         } catch (err: any) {
             error.value = err;
+            console.error('Failed to fetch profile:', err);
             throw err;
         } finally {
             loading.value = false;
@@ -55,13 +56,13 @@ export const useProfileApi = () => {
     const getMembershipInfo = async () => {
         // Check if we have an auth token, if not try to initialize it
         const authComposable = useAuth()
+        await nextTick()
 
         if (!authComposable.isAuthenticated.value) {
             // No JWT token found
             try {
                 const supabase = useSupabaseClient()
                 const { data: sessionData } = await supabase.auth.getSession()
-
                 if (sessionData.session) {
                     // Convert Supabase session to JWT
                     const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
@@ -71,17 +72,19 @@ export const useProfileApi = () => {
                             refresh_token: sessionData.session.refresh_token,
                         },
                     })
-
                     if (jwtResponse.success && jwtResponse.token) {
                         authComposable.setAuthState(
                             jwtResponse.token,
                             jwtResponse.user,
                             sessionData.session.refresh_token
                         )
+                    } else {
+                        console.error("No success setAuthState", JSON.stringify(jwtResponse))
                     }
                 } else {
+                    console.error("No supabase session")
                     // no supabase session, route to login
-                    navigateTo("/login")
+                    //navigateTo("/login")
                 }
             } catch (error) {
                 console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
@@ -107,7 +110,8 @@ export const useProfileApi = () => {
             }
         } else {
             // No authentication available. Do something like redirect to login.
-            navigateTo("/login")
+            console.error("No authentication available", JSON.stringify(authComposable.isAuthenticated.value))
+            //navigateTo("/login")
         }
     }
 

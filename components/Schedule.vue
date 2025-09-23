@@ -6,6 +6,7 @@ import {
   useIsApp,
   useCurrentEpisodeHolder,
 } from "~/composables/states"
+import { useDebounceFn } from "@vueuse/core"
 
 import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 
@@ -53,27 +54,40 @@ watch(
 
 // Fetch all schedule data for all stations
 const getAllScheduleData = async () => {
+  // Don't fetch if stations aren't loaded yet
+  if (!allCurrentStations.value || allCurrentStations.value.length === 0) {
+    return
+  }
+
   allLiveScheduleData.value = []
 
   // Create new abort controller (automatically aborts any existing fetches)
   const abortController = createScheduleAbortController()
 
-  const results = await Promise.all(
-    allCurrentStations.value.map((station) => {
-      return fetchScheduleSimple(
-        station,
-        currentScheduleDate.value,
-        abortController.signal
-      )
-    })
-  )
+  try {
+    const results = await Promise.all(
+      allCurrentStations.value.map((station) => {
+        return fetchScheduleSimple(
+          station,
+          currentScheduleDate.value,
+          abortController.signal
+        )
+      })
+    )
 
-  // Filter out null results (aborted requests)
-  allLiveScheduleData.value = results.filter((result) => result !== null)
+    // Filter out null results (aborted requests)
+    allLiveScheduleData.value = results.filter((result) => result !== null)
+  } catch (error) {
+    console.error("Error in getAllScheduleData:", error)
+  }
 }
 
+// Debounce the schedule data fetching to prevent rapid successive calls
+const debouncedGetAllScheduleData = useDebounceFn(getAllScheduleData, 300)
+
 watch(currentScheduleDate, () => {
-  getAllScheduleData()
+  allLiveScheduleData.value.length = 0
+  debouncedGetAllScheduleData()
 })
 
 onMounted(() => {
@@ -276,7 +290,10 @@ const handleCurrentEpisode = (entry, index) => {
         <Skeleton height="20px" width="110px" borderRadius="4px" />
       </div>
     </div>
-    <div v-if="!allLiveScheduleData.length > 0" class="skeleton flex flex-column gap-5">
+    <div
+      v-if="!allLiveScheduleData.length > 0"
+      class="skeleton flex flex-column gap-5 -mt-3"
+    >
       <Skeleton
         v-if="isToday"
         height="213px"
@@ -290,9 +307,9 @@ const handleCurrentEpisode = (entry, index) => {
         class="flex align-items-center justify-content-between pr-2"
       >
         <div class="flex gap-3">
-          <div class="flex flex-column gap-3">
-            <Skeleton class="opacity-50" height="12px" width="64px" borderRadius="4px" />
-            <Skeleton height="16px" width="174px" borderRadius="4px" />
+          <div class="flex flex-column gap-2">
+            <Skeleton class="opacity-50" height="14px" width="64px" borderRadius="4px" />
+            <Skeleton height="22px" width="174px" borderRadius="4px" />
           </div>
         </div>
         <Skeleton

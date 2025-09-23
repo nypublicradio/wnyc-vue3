@@ -78,6 +78,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hasSegments: {
+    type: Boolean,
+    default: false,
+  },
   showLive: {
     type: Boolean,
     default: false,
@@ -435,7 +439,7 @@ const handleHasAudio = computed(() => {
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
           >
-            <template v-if="!isLive">
+            <template v-if="!isLive && !props.hasSegments">
               <PlayButton
                 v-if="handleHasAudio"
                 :data="props.data"

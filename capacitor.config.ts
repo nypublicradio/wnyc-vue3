@@ -1,4 +1,4 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'org.wnyc.android',
@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   backgroundColor: "#d4d4d4",
   android: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
-    appendUserAgent: 'Android-WNYC-App'
+    appendUserAgent: 'Android-WNYC-App',
   },
   ios: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
@@ -20,6 +20,11 @@ const config: CapacitorConfig = {
     },
     CapacitorHttp: {
       enabled: true,
+    },
+    StatusBar: {
+      overlaysWebView: true,
+      //style: "DEFAULT",
+      //backgroundColor: "#e01e3f",
     },
     SplashScreen: {
       splashBackgroundColor: "#e01e3f",

@@ -18,6 +18,7 @@ export const useMembership = () => {
     draggable: false,
     dismissableMask: true,
     modal: true,
+    breakpoints: { '768px': '90vw' }
   }
   const config = useRuntimeConfig()
 
@@ -93,6 +94,7 @@ export const useMembership = () => {
       props: dialogProps,
       emits: {
         onCancel: async () => {
+          //onCancelMembershipThankYou()
           //actually CANCEL the membership here
           const { authenticatedFetch } = useAuth()
           const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }

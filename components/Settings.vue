@@ -6,7 +6,6 @@ import {
   setFontSize,
   setDarkMode,
   toggleAskNotificationPermissions,
-  getAndSetUserProfile,
   initializeStationList,
   //toSystemSettings,
 } from "~/utilities/helpers"
@@ -25,7 +24,6 @@ import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
-import { useProfileApi } from "~/composables/useProfileApi"
 const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
@@ -51,14 +49,6 @@ const isDisabled = computed(() => {
 })
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
-const {
-  profile: profileData,
-  loading: isLoading,
-  error,
-  fetchProfile,
-  formatCurrency,
-  formatDate,
-} = useProfileApi()
 
 // main function to update the toast component
 const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
@@ -73,7 +63,7 @@ const showMessage = (mySeverity = "success", myMessage = "Settings updated.") =>
 const updateProfile = async () => {
   // update supabase and local storage
   if (currentUser.value && currentUserProfile.value) {
-    await client
+    const { error } = await client
       .from("profiles")
       .upsert({
         id: currentUser.value.id,
@@ -112,19 +102,6 @@ const tempEmail = shallowRef(currentUser.value?.email)
 
 onMounted(async () => {
   stationsMenuData.value = await initializeStationList(allCurrentStations.value)
-
-  // Fetch user profile if user is authenticated
-  if (currentUser.value) {
-    await getAndSetUserProfile()
-
-    // Fetch profile data from /api/profile if user has a Salesforce ID
-    if (currentUserProfile.value?.salesforce_id) {
-      await fetchProfile(currentUserProfile.value.salesforce_id)
-    } else if (currentUser.value?.email) {
-      // Try email lookup if no Salesforce ID is available
-      await fetchProfile(undefined, currentUser.value.email)
-    }
-  }
 })
 
 watch(currentUserProfile.value, () => {
@@ -266,80 +243,15 @@ const showNotificationTypes = computed(() => {
       </SBox>
     </section>
 
-    <!-- Member Profile Section -->
-    <section v-if="currentUser && profileData" class="member-profile p-0">
+    <!-- Member Center Section -->
+    <section v-if="currentUser" class="member-center p-0">
       <div class="flex s-title-holder">
-        <i class="mr-2 pi pi-user"></i>
-        <div class="s-title">Member Profile</div>
+        <div class="s-title">Member Center</div>
       </div>
 
-      <SBox label="Member Name" :ripple="false">
-        <p>{{ profileData.name || "N/A" }}</p>
-      </SBox>
-
-      <SBox label="Active Sustainer" :ripple="false">
-        <p :class="profileData.isActiveSustainer ? 'text-green-600' : 'text-gray-500'">
-          {{ profileData.isActiveSustainer ? "Yes" : "No" }}
-        </p>
-      </SBox>
-
-      <SBox v-if="profileData.lastDonationDate" label="Last Donation" :ripple="false">
-        <div class="text-right">
-          <p>{{ formatDate(profileData.lastDonationDate) }}</p>
-          <p v-if="profileData.lastDonationAmount" class="text-sm opacity-75">
-            {{ formatCurrency(profileData.lastDonationAmount) }}
-          </p>
-        </div>
-      </SBox>
-
-      <div
-        v-if="
-          profileData.activeRecurringDonations &&
-          profileData.activeRecurringDonations.length > 0
-        "
-      >
-        <SBox
-          v-for="(donation, index) in profileData.activeRecurringDonations"
-          :key="donation.springboardId"
-          :label="`Active Donation ${index + 1}`"
-          :ripple="false"
-        >
-          <div class="text-right">
-            <p class="font-medium">{{ donation.brand }}</p>
-            <p>{{ formatCurrency(donation.amount) }}</p>
-            <p class="text-sm opacity-75">
-              Next charge: {{ formatDate(donation.nextChargeDate) }}
-            </p>
-            <p class="text-xs opacity-60">
-              Member since: {{ formatDate(donation.membershipStartDate) }}
-            </p>
-          </div>
-        </SBox>
-      </div>
-    </section>
-
-    <!-- Loading state for member profile -->
-    <section v-else-if="currentUser && isLoading" class="member-profile p-0">
-      <div class="flex s-title-holder">
-        <i class="mr-2 pi pi-user"></i>
-        <div class="s-title">Member Profile</div>
-      </div>
-      <SBox label="Loading member data..." :ripple="false">
-        <div class="flex justify-end">
-          <i class="pi pi-spin pi-spinner"></i>
-        </div>
-      </SBox>
-    </section>
-
-    <!-- Error state for member profile -->
-    <section v-else-if="currentUser && error" class="member-profile p-0">
-      <div class="flex s-title-holder">
-        <i class="mr-2 pi pi-user"></i>
-        <div class="s-title">Member Profile</div>
-      </div>
-      <SBox label="Unable to load member data" :ripple="false">
-        <p class="text-red-500 text-right">{{ error }}</p>
-      </SBox>
+      <SBoxEmpty :clickable="false" :ripple="false" class="py-2">
+        <MemberCenter />
+      </SBoxEmpty>
     </section>
 
     <section class="listening-preferences p-0">
@@ -570,52 +482,6 @@ const showNotificationTypes = computed(() => {
       cursor: default !important;
       pointer-events: none;
       user-select: none;
-    }
-  }
-
-  .member-profile {
-    .text-green-600 {
-      color: #059669;
-    }
-
-    .text-gray-500 {
-      color: #6b7280;
-    }
-
-    .text-red-500 {
-      color: #dc2626;
-    }
-
-    .text-right {
-      text-align: right;
-    }
-
-    .text-sm {
-      font-size: 0.875rem;
-    }
-
-    .text-xs {
-      font-size: 0.75rem;
-    }
-
-    .opacity-75 {
-      opacity: 0.75;
-    }
-
-    .opacity-60 {
-      opacity: 0.6;
-    }
-
-    .font-medium {
-      font-weight: 500;
-    }
-
-    .flex {
-      display: flex;
-    }
-
-    .justify-end {
-      justify-content: flex-end;
     }
   }
 
