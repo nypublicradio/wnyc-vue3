@@ -1,5 +1,6 @@
 <script setup>
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { BackgroundMode } from "bp-capacitor-background-mode"
 import { Capacitor } from "@capacitor/core"
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
@@ -63,6 +64,32 @@ const route = useRoute()
 let delay = 250
 const isError = ref(null)
 
+// Enable background mode when starting audio (especially live streams)
+const enableBackgroundMode = async () => {
+  try {
+    await BackgroundMode.enable({
+      title: "Audio Playing",
+      text: "WNYC audio is active",
+      icon: "icon",
+      wakeup: true,
+      silent: false,
+    })
+    console.log("Background mode enabled")
+  } catch (error) {
+    console.error("Failed to enable background mode:", error)
+  }
+}
+
+// Disable background mode when audio stops
+const disableBackgroundMode = async () => {
+  try {
+    await BackgroundMode.disable()
+    console.log("Background mode disabled")
+  } catch (error) {
+    console.error("Failed to disable background mode:", error)
+  }
+}
+
 const getDescription = computed(() => {
   if (isLiveStream.value) {
     return currentEpisode?.value?.episodeTitle
@@ -123,11 +150,13 @@ const getConfiguredAudioUrl = computed(() => {
 const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
+  await disableBackgroundMode()
   await RemoteStreamer.stop()
   currentEpisode.value = val
   isStreamLoading.value = true
   //isLiveStream.value = val.hls ? true : false
   await nextTick()
+  await enableBackgroundMode()
   await RemoteStreamer.play({
     url: getConfiguredAudioUrl.value,
     enableCommandCenter: true,
@@ -158,10 +187,12 @@ const handleSeekTo = (e) => {
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
   if (e && !isEpisodePlaying.value) {
+    await enableBackgroundMode()
     await RemoteStreamer.resume()
     isEpisodePlaying.value = true
   }
   if (!e && isEpisodePlaying.value) {
+    await disableBackgroundMode()
     await RemoteStreamer.pause()
     isEpisodePlaying.value = false
   }
@@ -189,8 +220,9 @@ const handleIsExpanded = (e) => {
 
 // function that handles the error event from the persistent player emit
 //I have to check for "e" it fires 2 times... once with the error and once without
-const handleError = (e) => {
+const handleError = async (e) => {
   if (e) {
+    await disableBackgroundMode()
     globalToast.value = {
       severity: "error",
       summary: "We are having a problem loading the audio. Please try again later.",
@@ -213,7 +245,7 @@ const handleError = (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
+const episodeEnded = async () => {
   if (isPlayerExpanded.value) {
     playerRef.value.toggleExpanded()
     handleIsExpanded(false)
@@ -226,6 +258,7 @@ const episodeEnded = () => {
     currentEpisode.value = null
     handleIsExpanded(false)
   }
+  await disableBackgroundMode()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
