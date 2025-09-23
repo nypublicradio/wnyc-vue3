@@ -37,8 +37,11 @@ const togglePlayHere = async () => {
         <div class="image-holder">
           <transition name="fade" mode="out-in">
             <VImage
-              v-if="currentEpisodeHolder?.image"
-              :src="templatizePublisherImageUrl(currentEpisodeHolder?.image)"
+              v-if="currentEpisodeHolder?.image.template"
+              :src="
+                currentEpisodeHolder?.image.template ??
+                templatizePublisherImageUrl(currentEpisodeHolder?.image)
+              "
               :width="138"
               :height="138"
               :ratio="[1, 1]"
