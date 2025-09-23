@@ -45,8 +45,6 @@ const login = async () => {
 
   // Use the runtime config value if no redirectUrl prop is provided
   const configRedirectTo = innerConfig.value.public?.supabaseAuthSignInRedirectTo
-  console.log("innerConfig.value:", innerConfig.value)
-  console.log("configRedirectTo:", configRedirectTo)
   const redirectTo =
     props.redirectUrl !== "http://localhost:3000"
       ? props.redirectUrl

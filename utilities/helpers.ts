@@ -53,7 +53,7 @@ import {
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
-import { ConsentType, FirebaseAnalytics } from '@capacitor-firebase/analytics'
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
