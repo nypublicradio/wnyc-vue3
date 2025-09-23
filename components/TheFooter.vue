@@ -1,12 +1,38 @@
 <script lang="ts" setup>
-import { getYear } from "~/utilities/helpers"
-import { useCurrentEpisode } from "~/composables/states"
-import { allSocialData } from "~/composables/navigationData.js"
+import { getYear } from '~/utilities/helpers'
+import { useCurrentEpisode } from '~/composables/states'
+import { allSocialData } from '~/composables/navigationData.js'
+
+const emit = defineEmits<(e: 'submit', value: any) => void>()
+
+const config = useRuntimeConfig()
+
 const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
 const isCurrentEpisode = useCurrentEpisode()
-// placeholder function for submitting the form
-const submitForm = (event) => {
-  event.preventDefault()
+const isSubmitting = ref(false)
+const submissionStatus = ref(null)
+
+// function for submitting the newsletter form
+const submitForm = email => {
+  isSubmitting.value = true
+  submissionStatus.value = null
+  $fetch(config.public.NEWSLETTER_API, {
+    method: 'POST',
+    body: {
+      source: 'wnyc_footer',
+      list: config.public.NEWSLETTER_MULTI_LIST_IDS,
+      email
+    }
+  })
+    .then(() => {
+      submissionStatus.value = 'success'
+      emit('submit', 'success')
+    })
+    .catch(() => {
+      submissionStatus.value = 'error'
+      isSubmitting.value = false
+      emit('submit', 'error')
+    })
 }
 </script>
 
@@ -24,9 +50,10 @@ const submitForm = (event) => {
               </div>
               <div>
                 <p class="blurb line-height-3 text-xs">
-                  Listener-supported WNYC is the home for independent journalism and
-                  courageous conversation on air and online. Broadcasting live from New
-                  York City on 93.9 FM and AM 820 and available online and on the go.
+                  Listener-supported WNYC is the home for independent journalism
+                  and courageous conversation on air and online. Broadcasting
+                  live from New York City on 93.9 FM and AM 820 and available
+                  online and on the go.
                 </p>
               </div>
             </div>
@@ -37,14 +64,22 @@ const submitForm = (event) => {
               <div class="newsletter">
                 <h2 class="mb-3">Sign up for our newsletter</h2>
                 <p class="line-height-3 text-xs">
-                  Sign up for for a weekly, behind-the-scenes update from the people
-                  behind your favorite shows.
+                  Sign up for for a weekly, behind-the-scenes update from the
+                  people behind your favorite shows.
                   <VFlexibleLink to="/newsletter">See More </VFlexibleLink>
                 </p>
-                <email-collector-form class="form mt-5" @submit="submitForm">
+                <email-collector-form
+                  class="form mt-5"
+                  @submit="submitForm"
+                  :is-submitting="isSubmitting"
+                  :submission-status="submissionStatus"
+                >
                   By submitting your information, you're agreeing to receive
-                  communications from New York Public Radio in accordance with our
-                  <VFlexibleLink to="https://www.wnyc.org/terms/"> Terms </VFlexibleLink>.
+                  communications from New York Public Radio in accordance with
+                  our
+                  <VFlexibleLink to="https://www.wnyc.org/terms/">
+                    Terms </VFlexibleLink
+                  >.
                 </email-collector-form>
               </div>
             </div>
@@ -107,11 +142,11 @@ const submitForm = (event) => {
       .menu-holder {
         min-width: 170px;
 
-        @include media(">xxl") {
+        @include media('>xxl') {
           min-width: 200px;
         }
 
-        @include media("<sm") {
+        @include media('<sm') {
           min-width: 150px;
         }
       }
