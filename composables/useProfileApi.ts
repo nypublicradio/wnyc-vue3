@@ -42,7 +42,6 @@ export const useProfileApi = () => {
             });
 
             profile.value = data;
-            console.log('Fetched profile:', data);
             return data;
         } catch (err: any) {
             error.value = err;
@@ -58,15 +57,12 @@ export const useProfileApi = () => {
         // Check if we have an auth token, if not try to initialize it
         const authComposable = useAuth()
         await nextTick()
-        console.log("######## init", JSON.stringify(authComposable.isAuthenticated.value))
-
 
         if (!authComposable.isAuthenticated.value) {
             // No JWT token found
             try {
                 const supabase = useSupabaseClient()
                 const { data: sessionData } = await supabase.auth.getSession()
-                console.log("######## sessionData", JSON.stringify(sessionData))
                 if (sessionData.session) {
                     // Convert Supabase session to JWT
                     const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
@@ -76,19 +72,17 @@ export const useProfileApi = () => {
                             refresh_token: sessionData.session.refresh_token,
                         },
                     })
-                    console.log("######## jwtResponse.success && jwtResponse.token", JSON.stringify(jwtResponse))
                     if (jwtResponse.success && jwtResponse.token) {
-                        console.log("######## success setAuthState", JSON.stringify(jwtResponse))
                         authComposable.setAuthState(
                             jwtResponse.token,
                             jwtResponse.user,
                             sessionData.session.refresh_token
                         )
-                    }else{
-                        console.log("######## no success setAuthState", JSON.stringify(jwtResponse))
+                    } else {
+                        console.error("No success setAuthState", JSON.stringify(jwtResponse))
                     }
                 } else {
-                    console.log("######## no supabase session")
+                    console.error("No supabase session")
                     // no supabase session, route to login
                     //navigateTo("/login")
                 }
@@ -116,7 +110,7 @@ export const useProfileApi = () => {
             }
         } else {
             // No authentication available. Do something like redirect to login.
-            console.log("######## no authentication available", JSON.stringify(authComposable.isAuthenticated.value))
+            console.error("No authentication available", JSON.stringify(authComposable.isAuthenticated.value))
             //navigateTo("/login")
         }
     }

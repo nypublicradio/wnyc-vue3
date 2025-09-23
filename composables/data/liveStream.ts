@@ -284,9 +284,9 @@ export default function useLiveStream() {
         fetchOptions.signal = signal
       }
 
-    //   console.log(
-    //     `Fetching schedule for station: ${station.slug}, date: ${formattedDate}`
-    //   )
+      //   console.log(
+      //     `Fetching schedule for station: ${station.slug}, date: ${formattedDate}`
+      //   )
 
       const schedule = await $fetch(
         `${config.public.BFF_URL}/api/schedule/${station.slug}`,
@@ -320,7 +320,7 @@ export default function useLiveStream() {
         status: error.status,
         statusText: error.statusText,
         url: `${config.public.BFF_URL}/api/schedule/${station?.slug}`,
-        date: date,
+        date,
         isToday: isToday.value,
       })
 

@@ -16,7 +16,6 @@ import {
   checkIsFavorited,
   shareAPI,
   addToFavorites2,
-  getEpisodeHeadFallBackImage,
   hasAudio,
 } from "~/utilities/helpers"
 import useSleepTimer from "~/composables/useSleepTimer"
