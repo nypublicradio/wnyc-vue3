@@ -23,7 +23,6 @@ import {
   useDeviceId,
   useCurrentUserProfile,
   useGlobalToast,
-  useIsApp,
 } from "~/composables/states"
 import {
   trackAudioEvent,
@@ -54,7 +53,6 @@ const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
 const globalToast = useGlobalToast()
-const isApp = useIsApp()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
@@ -315,13 +313,13 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
-  await RemoteStreamer.addListener("play", async () => {
+  await RemoteStreamer.addListener("play", () => {
     isEpisodePlaying.value = true
     isStreamLoading.value = false
     currentEpisodeDuration.value = currentEpisode.value.duration
   })
 
-  await RemoteStreamer.addListener("pause", async () => {
+  await RemoteStreamer.addListener("pause", () => {
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
       trackAudioEvent("pause", getMediaType.value, getTitle.value, getDescription.value)
