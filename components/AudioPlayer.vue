@@ -119,12 +119,29 @@ const getConfiguredAudioUrl = computed(() => {
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
+//Safe release utility function (for android only)
+const safeReleasePlayer = async () => {
+  if (
+    RemoteStreamer.releasePlayer &&
+    typeof RemoteStreamer.releasePlayer === "function"
+  ) {
+    try {
+      await RemoteStreamer.releasePlayer()
+    } catch (error) {
+      console.warn("Failed to release player:", error)
+    }
+  } else {
+    // ios
+    await RemoteStreamer.stop()
+  }
+}
+
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
 
-  await RemoteStreamer.releasePlayer()
+  await safeReleasePlayer()
 
   // Small delay to ensure cleanup completes
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -199,7 +216,7 @@ const handleIsExpanded = (e) => {
 //I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = async (e) => {
   if (e) {
-    await RemoteStreamer.releasePlayer()
+    await safeReleasePlayer()
     globalToast.value = {
       severity: "error",
       summary: "We are having a problem loading the audio. Please try again later.",
@@ -235,7 +252,7 @@ const episodeEnded = async () => {
     currentEpisode.value = null
     handleIsExpanded(false)
   }
-  await RemoteStreamer.releasePlayer()
+  await safeReleasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
