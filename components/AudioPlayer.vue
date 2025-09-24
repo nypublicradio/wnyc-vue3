@@ -119,20 +119,13 @@ const getConfiguredAudioUrl = computed(() => {
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
-//Safe release utility function (for android only)
-const safeReleasePlayer = async () => {
-  if (
-    RemoteStreamer.releasePlayer &&
-    typeof RemoteStreamer.releasePlayer === "function"
-  ) {
-    try {
-      await RemoteStreamer.releasePlayer()
-    } catch (error) {
-      console.warn("Failed to release player:", error)
-    }
-  } else {
-    // ios
-    await RemoteStreamer.stop()
+//player release utility function
+// ios and web just calls stop(), android calls releasePlayer()
+const releasePlayer = async () => {
+  try {
+    await RemoteStreamer.releasePlayer()
+  } catch (error) {
+    console.warn("Failed to release player:", error)
   }
 }
 
@@ -141,7 +134,7 @@ const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
 
-  await safeReleasePlayer()
+  await releasePlayer()
 
   // Small delay to ensure cleanup completes
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -216,7 +209,7 @@ const handleIsExpanded = (e) => {
 //I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = async (e) => {
   if (e) {
-    await safeReleasePlayer()
+    await releasePlayer()
     globalToast.value = {
       severity: "error",
       summary: "We are having a problem loading the audio. Please try again later.",
@@ -252,7 +245,7 @@ const episodeEnded = async () => {
     currentEpisode.value = null
     handleIsExpanded(false)
   }
-  await safeReleasePlayer()
+  await releasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
