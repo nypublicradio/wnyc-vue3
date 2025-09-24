@@ -26,7 +26,9 @@ const config: CapacitorConfig = {
       wakeup: true,
       title: "Playing audio",
       text: "WNYC is playing content",
-      icon: "icon"
+      icon: "icon",
+      keepAlive: true,
+      disableWebViewOptimizations: true
     },
     CapacitorCookies: {
       enabled: true,
