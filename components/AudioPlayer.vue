@@ -1,6 +1,5 @@
 <script setup>
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
-import { BackgroundMode } from "bp-capacitor-background-mode"
 import { Capacitor } from "@capacitor/core"
 import { ref, watch } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
@@ -65,73 +64,6 @@ const route = useRoute()
 
 let delay = 250
 const isError = ref(null)
-const isBackgroundModeEnabled = ref(false)
-
-const enableBackgroundMode = async () => {
-  if (!isApp.value) return // Skip on web
-
-  if (isBackgroundModeEnabled.value) {
-    console.log("#### Background mode already enabled, skipping")
-    return
-  }
-
-  try {
-    if (isLiveStream.value) {
-      console.log("#### Enabling background mode for live stream")
-      await BackgroundMode.enable({
-        title: "Live Stream Playing",
-        text: "WNYC live stream is active",
-        icon: "icon",
-        wakeup: true,
-        silent: false,
-      })
-    } else {
-      console.log("#### Enabling background mode for on demand episode")
-      await BackgroundMode.enable({
-        title: "Episode Playing",
-        text: "WNYC episode is playing",
-        icon: "icon",
-      })
-    }
-    isBackgroundModeEnabled.value = true
-    console.log("#### Background mode enabled")
-  } catch (error) {
-    console.error("Failed to enable background mode:", error)
-  }
-}
-
-const disableBackgroundMode = async () => {
-  if (!isApp.value) return // Skip on web
-
-  if (!isBackgroundModeEnabled.value) {
-    console.log("#### Background mode already disabled, skipping")
-    return
-  }
-
-  try {
-    await BackgroundMode.disable()
-    isBackgroundModeEnabled.value = false
-    console.log("#### Background mode disabled")
-  } catch (error) {
-    console.error("Failed to disable background mode:", error)
-  }
-}
-
-// Add this helper function near your other functions
-const cleanupPlayerResources = async () => {
-  try {
-    console.log("#### 🔍 CLEANUP CALLED - Stack trace:")
-    console.trace("cleanupPlayerResources called from:")
-
-    await RemoteStreamer.releasePlayer()
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    await RemoteStreamer.stop()
-    await disableBackgroundMode()
-    console.log("#### ✅ Player resources cleaned up")
-  } catch (error) {
-    console.warn("Player cleanup failed:", error)
-  }
-}
 
 const getDescription = computed(() => {
   if (isLiveStream.value) {
@@ -194,7 +126,7 @@ const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
 
-  await cleanupPlayerResources()
+  await RemoteStreamer.releasePlayer()
 
   // Small delay to ensure cleanup completes
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -208,7 +140,6 @@ const switchEpisode = async (val) => {
     enableCommandCenter: true,
     enableCommandCenterSeek: !isLiveStream.value,
   })
-  //await enableBackgroundMode()
 
   // initializes the media session in ~/utilities/media-session.js
   initMediaSession(currentEpisode.value)
@@ -234,7 +165,6 @@ const handleSeekTo = (e) => {
 // handle the toggle play button and tracking
 const togglePlayHere = async (e) => {
   if (e && !isEpisodePlaying.value) {
-    // Resuming/Starting playback
     await RemoteStreamer.resume()
     //await enableBackgroundMode()
     isEpisodePlaying.value = true
@@ -246,9 +176,6 @@ const togglePlayHere = async (e) => {
     }
     isNewEpisode.value = false
   } else if (!e && isEpisodePlaying.value) {
-    // Pausing playback - ADD LOGGING HERE
-    console.log("#### 🔍 PAUSE TRIGGERED - Stack trace:")
-    console.trace("togglePlayHere(false) called from:")
     // Pausing playback
     await RemoteStreamer.pause()
     //await disableBackgroundMode()
@@ -274,7 +201,7 @@ const handleIsExpanded = (e) => {
 //I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = async (e) => {
   if (e) {
-    await cleanupPlayerResources()
+    await RemoteStreamer.releasePlayer()
     globalToast.value = {
       severity: "error",
       summary: "We are having a problem loading the audio. Please try again later.",
@@ -310,7 +237,7 @@ const episodeEnded = async () => {
     currentEpisode.value = null
     handleIsExpanded(false)
   }
-  await cleanupPlayerResources()
+  await RemoteStreamer.releasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
@@ -389,16 +316,12 @@ onMounted(async () => {
     currentEpisodeProgress.value = data.currentTime
   })
   await RemoteStreamer.addListener("play", async () => {
-    console.log("#### 🎵 PLAY LISTENER FIRED - Native controls")
     isEpisodePlaying.value = true
     isStreamLoading.value = false
     currentEpisodeDuration.value = currentEpisode.value.duration
-    await enableBackgroundMode()
   })
 
   await RemoteStreamer.addListener("pause", async () => {
-    console.log("#### ⏸️ PAUSE LISTENER FIRED - Native controls")
-    console.trace("Native pause listener triggered by:")
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
       trackAudioEvent("pause", getMediaType.value, getTitle.value, getDescription.value)
