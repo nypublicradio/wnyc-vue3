@@ -330,7 +330,7 @@ const showNotificationTypes = computed(() => {
         "
       ></SBox> -->
     </section>
-    <section class="display p-0">
+    <section v-if="isApp" class="display p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Display</div>
       </div>
@@ -368,7 +368,7 @@ const showNotificationTypes = computed(() => {
         />
       </SBox>
     </section>
-    <section class="wnyc p-0">
+    <section v-if="isApp" class="wnyc p-0">
       <div class="flex s-title-holder">
         <div class="s-title">WNYC</div>
       </div>
@@ -446,7 +446,7 @@ const showNotificationTypes = computed(() => {
       >
       </SBox>
     </section>
-    <section class="footer mb-4">
+    <section v-if="isApp" class="footer mb-4">
       <WnycLogo style="fill: var(--bw-toggle)" />
       <p>© {{ getYear() }} New York Public Radio. All rights reserved.</p>
       <p>Version {{ config.public.APP_VERSION }}</p>

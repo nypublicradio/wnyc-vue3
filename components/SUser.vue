@@ -126,6 +126,11 @@ const avatarUrl = computed(() => {
         />
       </template>
     </Avatar>
+    <i
+      v-if="avatarUrl && currentUser && props.isEmail"
+      class="pi pi-plus"
+      aria-label="upload image plus icon"
+    />
     <Dialog
       v-model:visible="imageUploadModal"
       modal

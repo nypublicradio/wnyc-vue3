@@ -78,10 +78,13 @@ const clickThisMenu = (ref) => {
         />
       </Head>
     </Html>
-
-    <section class="py-6">
+    <!-- <md break point -->
+    <div class="py-5 block md:hidden">
       <!--   <h1>Dashboard</h1> -->
-
+      <Settings v-if="currentUser" />
+    </div>
+    <!-- >= md break point -->
+    <section class="py-6 hidden md:block">
       <!-- User Profile Section -->
       <div v-if="currentUser" class="user-profile mb-6">
         <div class="">
