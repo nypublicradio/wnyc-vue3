@@ -1310,9 +1310,22 @@ export function getPathAndQuery(urlString) {
 export const initializeStationList = (stations) => {
   const tempMenuData = []
 
+  // the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
+  const getCustomStation = (station) => {
+    switch (station.slug) {
+      case 'wnyc-fm939':
+        return 'WNYC'
+      case 'wqxr':
+        return 'WQXR'
+      default:
+        return station.station
+    }
+  }
+
   stations.forEach((station) => {
+    const customStation = getCustomStation(station)
     tempMenuData.push({
-      id: station.station,
+      id: station.station,  // what gets saved to Supabase
       label: station.station,
       name: station.title,
       station: station.station,
