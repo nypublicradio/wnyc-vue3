@@ -1,5 +1,4 @@
 <script setup>
-import { onMounted } from "vue"
 import {
   trackClickEvent,
   getYear,
@@ -42,7 +41,7 @@ const textSizeRef = ref(null)
 
 //const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
-const isEmail = currentUser.value?.app_metadata?.provider === "email"
+const isEmail = computed(() => currentUser.value?.app_metadata?.provider === "email")
 const isDisabled = computed(() => {
   return currentUser.value?.app_metadata?.provider !== "email"
 })
@@ -95,7 +94,7 @@ const updateProfile = async (newProfile) => {
   }
 }
 
-const tempEmail = shallowRef(currentUser.value?.email)
+const tempEmail = computed(() => currentUser.value?.email)
 
 // handles setting the font size and tracking the event
 const onUpdateTextSize = (data) => {
@@ -233,7 +232,9 @@ watch(
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
-          <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
+          <p :class="[{ disabled: isDisabled }]">
+            {{ tempEmail }}
+          </p>
         </SBox>
         <SBox
           label="Password"
@@ -273,7 +274,7 @@ watch(
                 <p class="font-bold">
                   Email <span><i :class="`${accountHeader.icon}`"></i></span>
                 </p>
-                <p>{{ currentUserProfile?.email }}</p>
+                <p>{{ tempEmail }}</p>
               </div>
               <Button
                 v-if="!isDisabled"
@@ -287,7 +288,7 @@ watch(
             </div>
           </div>
         </div>
-        <div class="col-12 md:col-6">
+        <div v-if="isEmail" class="col-12 md:col-6">
           <div class="card">
             <div class="flex justify-content-between flex-wrap align-items-end">
               <div>
