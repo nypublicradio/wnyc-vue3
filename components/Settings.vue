@@ -44,7 +44,7 @@ const textSizeRef = ref(null)
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
 const isEmail = currentUser.value?.app_metadata?.provider === "email"
 const isDisabled = computed(() => {
-  return !isEmail
+  return currentUser.value?.app_metadata?.provider !== "email"
 })
 
 const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
@@ -121,13 +121,6 @@ const updateProfile = async () => {
 }
 
 const tempEmail = shallowRef(currentUser.value?.email)
-
-watchEffect(() => {
-  if (currentUserProfile.value) {
-    console.log("profile changed, updating")
-    updateProfile()
-  }
-})
 
 // handles setting the font size and tracking the event
 const onUpdateTextSize = (data) => {
@@ -224,6 +217,8 @@ const showNotificationTypes = computed(() => {
     masterNotificationChannelsArray.value?.length > 0
   )
 })
+
+watch(currentUserProfile, () => updateProfile(), { deep: true })
 </script>
 
 <template>

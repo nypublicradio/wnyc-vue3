@@ -644,7 +644,8 @@ export const getAndSetUserProfile = async () => {
           })
 
           // set the current user profile state again after updating the channels
-          currentUserProfile.value = data
+          //currentUserProfile.value = data
+          Object.assign(currentUserProfile.value, data)
 
         } else {
 
@@ -666,7 +667,8 @@ export const getAndSetUserProfile = async () => {
             .match({ id: currentUser.value.id })
 
           // set the current user profile state again after the sync
-          currentUserProfile.value = data
+          //currentUserProfile.value = data
+          Object.assign(currentUserProfile.value, data)
 
         }
 
