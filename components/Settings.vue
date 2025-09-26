@@ -59,26 +59,24 @@ const showMessage = (mySeverity = "success", myMessage = "Settings updated.") =>
 }
 
 // handles updating the profile settings in supabase and local storage
-const updateProfile = async () => {
+const updateProfile = async (newProfile) => {
   console.log("updating profile")
   // update supabase and local storage
-  if (currentUser.value && currentUserProfile.value) {
+  if (currentUser.value && newProfile) {
     const { error } = await client
       .from("profiles")
       .upsert({
         id: currentUser.value.id,
         updated_at: new Date().toISOString(),
-        name: currentUserProfile.value.name,
+        name: newProfile.name,
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
-        default_live_stream: currentUserProfile.value.default_live_stream,
-        dark_mode: currentUserProfile.value.dark_mode,
-        receive_general_notifications:
-          currentUserProfile.value.receive_general_notifications,
-        one_signal_notification_channels:
-          currentUserProfile.value.one_signal_notification_channels,
-        text_size: currentUserProfile.value.text_size,
-        autodownload: currentUserProfile.value.autodownload,
+        default_live_stream: newProfile.default_live_stream,
+        dark_mode: newProfile.dark_mode,
+        receive_general_notifications: newProfile.receive_general_notifications,
+        one_signal_notification_channels: newProfile.one_signal_notification_channels,
+        text_size: newProfile.text_size,
+        autodownload: newProfile.autodownload,
       })
       .match({ id: currentUser.value.id })
     if (error) {
@@ -87,7 +85,7 @@ const updateProfile = async () => {
       showMessage()
     }
   } else {
-    const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
+    const currentUserProfileSTRING = JSON.stringify(newProfile)
     await Preferences.set({
       key: localUserProfileKey,
       value: currentUserProfileSTRING,
@@ -196,7 +194,13 @@ const showNotificationTypes = computed(() => {
   )
 })
 
-watch(currentUserProfile, () => updateProfile(), { deep: true })
+watch(
+  currentUserProfile,
+  (newProfile, oldProfile) => {
+    if (oldProfile) updateProfile(newProfile)
+  },
+  { deep: true, immediate: false }
+)
 </script>
 
 <template>
