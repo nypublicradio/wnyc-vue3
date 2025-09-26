@@ -35,7 +35,8 @@ import {
   FALLBACKIMAGEEPDARK,
   FALLBACKIMAGEEPHEADDARK,
   FALLBACKUSER,
-  FALLBACKUSERDARK
+  FALLBACKUSERDARK,
+  liveStationPreferences,
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
@@ -1306,27 +1307,27 @@ export function getPathAndQuery(urlString) {
   }
 }
 
+// the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
+export const getCustomStationLabel = (station: string): string => {
+  const stationPreference = liveStationPreferences.find(pref => pref.station === station)
+  return stationPreference?.label ?? station
+}
+
 // formats the station list for the dropdown
 export const initializeStationList = (stations) => {
   const tempMenuData = []
 
   // the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
-  const getCustomStation = (station) => {
-    switch (station.slug) {
-      case 'wnyc-fm939':
-        return 'WNYC'
-      case 'wqxr':
-        return 'WQXR'
-      default:
-        return station.station
-    }
+  const getCustomStationLabelFromSlug = (station) => {
+    const stationPreference = liveStationPreferences.find(pref => pref.slug === station.slug)
+    return stationPreference?.label ?? station.station
   }
 
   stations.forEach((station) => {
-    const customStation = getCustomStation(station)
+    const customStation = getCustomStationLabelFromSlug(station)
     tempMenuData.push({
       id: station.station,  // what gets saved to Supabase
-      label: station.station,
+      label: customStation,
       name: station.title,
       station: station.station,
       code: station.title,
