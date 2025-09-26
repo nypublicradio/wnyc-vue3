@@ -40,6 +40,7 @@ const togglePlayHere = async () => {
 
 <template>
   <div class="live-feature">
+    <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
     <div class="holder">
       <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
       <div class="flex align-items-start">

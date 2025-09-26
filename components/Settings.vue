@@ -60,7 +60,6 @@ const showMessage = (mySeverity = "success", myMessage = "Settings updated.") =>
 
 // handles updating the profile settings in supabase and local storage
 const updateProfile = async (newProfile) => {
-  console.log("updating profile")
   // update supabase and local storage
   if (currentUser.value && newProfile) {
     const { error } = await client
@@ -333,7 +332,6 @@ watch(
       >
         <DropupMenu
           ref="defaultStreamRef"
-          id="default-stream"
           v-model="currentUserProfile.default_live_stream"
           :options="initializeStationList(allCurrentStations)"
           optionLabel="station"
