@@ -6,6 +6,7 @@ import {
   setDarkMode,
   toggleAskNotificationPermissions,
   initializeStationList,
+  getCustomStationLabel,
   //toSystemSettings,
 } from "~/utilities/helpers"
 import {
@@ -214,6 +215,10 @@ const showNotificationTypes = computed(() => {
   )
 })
 
+const customDefaultStationLabel = computed(() => {
+  return getCustomStationLabel(currentUserProfile.value?.default_live_stream)
+})
+
 watch(
   currentUserProfile,
   (newProfile, oldProfile) => {
@@ -343,7 +348,7 @@ watch(
       </SBoxEmpty>
     </section>
 
-    <section class="listening-preferences p-0">
+    <section v-if="currentUser" class="listening-preferences p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
@@ -372,7 +377,7 @@ watch(
             <div class="flex justify-content-between flex-wrap align-items-end">
               <div>
                 <p class="font-bold">Default Stream</p>
-                <p>{{ currentUserProfile?.default_live_stream }}</p>
+                <p>{{ customDefaultStationLabel }}</p>
               </div>
               <Button
                 v-if="!isDisabled"

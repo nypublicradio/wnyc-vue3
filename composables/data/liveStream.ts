@@ -48,7 +48,6 @@ export async function updateAllLiveStreams(init = true) {
     const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
     // set all streams to the filtered array
     allCurrentStations.value = fetchingAll.filter(Boolean)
-    //console.log('All current stations:', allCurrentStations.value)
     let thisStation = null
 
     if (init) {
