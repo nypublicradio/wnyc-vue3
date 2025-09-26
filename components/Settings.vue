@@ -35,7 +35,6 @@ const isApp = useIsApp()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 
 const allCurrentStations = useAllCurrentStations()
-const stationsMenuData = ref([])
 const client = useSupabaseClient()
 
 const defaultStreamRef = ref(null)
@@ -61,6 +60,7 @@ const showMessage = (mySeverity = "success", myMessage = "Settings updated.") =>
 
 // handles updating the profile settings in supabase and local storage
 const updateProfile = async () => {
+  console.log("updating profile")
   // update supabase and local storage
   if (currentUser.value && currentUserProfile.value) {
     const { error } = await client
@@ -100,12 +100,11 @@ const updateProfile = async () => {
 
 const tempEmail = shallowRef(currentUser.value?.email)
 
-onMounted(async () => {
-  stationsMenuData.value = await initializeStationList(allCurrentStations.value)
-})
-
-watch(currentUserProfile.value, () => {
-  updateProfile()
+watchEffect(() => {
+  if (currentUserProfile.value) {
+    console.log("profile changed, updating")
+    updateProfile()
+  }
 })
 
 // handles setting the font size and tracking the event
@@ -198,49 +197,118 @@ const onDeleteAccountClick = () => {
 // show the notification types section if the user has notifications enabled, is an app, and the topics are available
 const showNotificationTypes = computed(() => {
   return (
-    currentUserProfile.value.receive_general_notifications &&
-    masterNotificationChannelsArray.value.length > 0 &&
-    isApp.value
+    isApp &&
+    currentUserProfile.value?.receive_general_notifications &&
+    masterNotificationChannelsArray.value?.length > 0
   )
 })
 </script>
 
 <template>
   <div class="settings -mt-2">
-    <section class="user">
-      <SUser :disabled="isDisabled" :isEmail="isEmail" />
-    </section>
+    <div class="user pl-4 pb-6 md:pl-0">
+      <SUser
+        :disabled="isDisabled"
+        :isEmail="isEmail"
+        size="xlarge"
+        text-size="text-lg md:text-4xl lg:text-5xl"
+      />
+    </div>
     <section v-if="currentUser" class="user-preferences p-0">
       <div class="flex s-title-holder">
         <i :class="`${accountHeader.icon}`"></i>
         <div class="s-title">{{ accountHeader.label }}</div>
       </div>
-      <SBox
-        v-if="currentUserProfile?.name"
-        label="Name"
-        @click="editField('name')"
-        :clickable="!isDisabled"
-        :ripple="!isDisabled"
-      >
-        <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
-      </SBox>
-      <SBox
-        label="Email"
-        @click="editField('email')"
-        :clickable="!isDisabled"
-        :ripple="!isDisabled"
-      >
-        <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
-      </SBox>
-      <SBox
-        label="Password"
-        v-if="isEmail"
-        @click="editField('password')"
-        :clickable="!isDisabled"
-        :ripple="!isDisabled"
-      >
-        <p :class="[{ disabled: isDisabled }]">*********</p>
-      </SBox>
+      <div class="block md:hidden">
+        <SBox
+          v-if="currentUserProfile?.name"
+          label="Name"
+          @click="editField('name')"
+          :clickable="!isDisabled"
+          :ripple="!isDisabled"
+        >
+          <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
+        </SBox>
+        <SBox
+          label="Email"
+          @click="editField('email')"
+          :clickable="!isDisabled"
+          :ripple="!isDisabled"
+        >
+          <p :class="[{ disabled: isDisabled }]">{{ tempEmail }}</p>
+        </SBox>
+        <SBox
+          label="Password"
+          v-if="isEmail"
+          @click="editField('password')"
+          :clickable="!isDisabled"
+          :ripple="!isDisabled"
+        >
+          <p :class="[{ disabled: isDisabled }]">*********</p>
+        </SBox>
+      </div>
+      <!-- >= md break point -->
+      <div class="hidden md:flex account-info mb-6 grid grid-lggutter mobile-lggutter">
+        <div class="col-12 md:col-6">
+          <div class="card">
+            <div class="flex justify-content-between flex-wrap align-items-end">
+              <div>
+                <p class="font-bold">Name</p>
+                <p>{{ currentUserProfile?.name }}</p>
+              </div>
+              <Button
+                v-if="!isDisabled"
+                severity="secondary"
+                variant="link"
+                class="link -mb-1 -ml-2"
+                @click="editField()"
+                label="Update"
+                size="small"
+              ></Button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="card">
+            <div class="flex justify-content-between flex-wrap align-items-end">
+              <div>
+                <p class="font-bold">
+                  Email <span><i :class="`${accountHeader.icon}`"></i></span>
+                </p>
+                <p>{{ currentUserProfile?.email }}</p>
+              </div>
+              <Button
+                v-if="!isDisabled"
+                severity="secondary"
+                variant="link"
+                class="link -mb-1 -ml-2"
+                @click="editField()"
+                label="Update"
+                size="small"
+              ></Button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div class="card">
+            <div class="flex justify-content-between flex-wrap align-items-end">
+              <div>
+                <p class="font-bold">Password</p>
+                <p class="mt-2">••••••••••</p>
+              </div>
+              <Button
+                v-if="!isDisabled"
+                severity="secondary"
+                variant="link"
+                class="link -mb-1 -ml-2"
+                @click="editField()"
+                label="Update"
+                size="small"
+              ></Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Member Center Section -->
@@ -259,15 +327,16 @@ const showNotificationTypes = computed(() => {
         <div class="s-title">Listening Preferences</div>
       </div>
       <SBox
+        v-if="currentUserProfile && allCurrentStations?.length > 0"
         label="Default stream"
-        class="cursor-pointer"
+        class="md:hidden cursor-pointer"
         @click="clickThisMenu(defaultStreamRef)"
       >
         <DropupMenu
           ref="defaultStreamRef"
           id="default-stream"
           v-model="currentUserProfile.default_live_stream"
-          :options="stationsMenuData"
+          :options="initializeStationList(allCurrentStations)"
           optionLabel="station"
           placeholder="Select a station"
           label="Default stream"
@@ -277,6 +346,27 @@ const showNotificationTypes = computed(() => {
           checkMark
         />
       </SBox>
+      <div class="hidden md:flex account-info mb-6 grid grid-lggutter">
+        <div class="col-12 md:col-6">
+          <div class="card">
+            <div class="flex justify-content-between flex-wrap align-items-end">
+              <div>
+                <p class="font-bold">Default Stream</p>
+                <p>{{ currentUserProfile?.default_live_stream }}</p>
+              </div>
+              <Button
+                v-if="!isDisabled"
+                severity="secondary"
+                variant="link"
+                class="link -mb-1 -ml-2"
+                @click="clickThisMenu(defaultStreamRef)"
+                label="Update"
+                size="small"
+              ></Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
     <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">
@@ -456,19 +546,22 @@ const showNotificationTypes = computed(() => {
 
 <style lang="scss" scoped>
 .settings {
+  @include media(">=md") {
+    padding: 0.75rem 1.5rem;
+  }
   section {
     margin-bottom: 30px;
   }
 
   .s-title-holder {
-    padding: 0 1.25rem;
-    margin-bottom: 8px;
+    margin-bottom: 1rem;
 
     .s-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      opacity: 0.7;
-      color: var(--p-text-color);
+      @include font-config($type-header2);
+      @include media("<md") {
+        font-size: 1rem;
+        padding: 0 1.25rem;
+      }
     }
 
     .pi {
@@ -512,6 +605,14 @@ const showNotificationTypes = computed(() => {
     top: calc(env(safe-area-inset-top) + 40px);
     left: 0;
     right: 0;
+  }
+  .card {
+    background: var(--p-surface-0);
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    @include media("<md") {
+      padding: 1rem 1.5rem;
+    }
   }
 }
 </style>
