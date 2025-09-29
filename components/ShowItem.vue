@@ -82,7 +82,7 @@ const onMenuChange = (e) => {
 const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: "Unfollow show",
+      label: `${isFavorited.value ? "Unfollow show" : "Follow show"}`,
       customIcon: FollowIcon,
       active: isFavorited.value,
       title: bucketItem.title,
@@ -141,7 +141,7 @@ const getDotMenuItems = (bucketItem) => {
         plain
         rounded
         class="flex-none z-1 flex-row-reverse"
-        aria-label="follow"
+        :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
       >
         <template #icon>
           <FollowIcon

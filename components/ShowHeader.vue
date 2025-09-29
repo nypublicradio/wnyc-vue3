@@ -152,13 +152,13 @@ const handleAddToFavorites = () => {
         <Button
           rounded
           severity="secondary"
-          aria-label="follow"
-          label="Follow"
+          :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
+          :label="isFavorited ? 'Unfollow' : 'Follow'"
           @click="handleAddToFavorites"
         >
           <template #icon>
-            <FollowIcon :active="isFavorited" style="height: 20px; width: 20px"
-          /></template>
+            <FollowIcon :active="isFavorited" style="height: 20px; width: 20px" />
+          </template>
         </Button>
 
         <SleepTimerButton
@@ -215,7 +215,13 @@ const handleAddToFavorites = () => {
     v-if="show"
     class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
   >
-    <Button rounded text plain aria-label="follow" @click="handleAddToFavorites">
+    <Button
+      rounded
+      text
+      plain
+      :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
+      @click="handleAddToFavorites"
+    >
       <template #icon> <FollowIcon :active="isFavorited" class="w-2rem mt-1" /></template>
     </Button>
 
