@@ -1,4 +1,3 @@
-<script setup lang="ts"></script>
 <template>
   <div class="dashboard-page">
     <Html lang="en">
