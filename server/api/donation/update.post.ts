@@ -65,7 +65,7 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
 
     try {
         const apiUrl = `${springboardUrl}/springboard-api/springboard-donation/update-amount`;
-        const response = await axios.get(apiUrl, {
+        const response = await axios.post(apiUrl, {
             headers: {
                 'api-key': springboardKey,
                 'Accept': 'application/json'
