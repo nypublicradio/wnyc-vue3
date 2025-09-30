@@ -97,6 +97,8 @@ jobs:
             USER_AGENT=${{ vars.USER_AGENT }}
             APP_VERSION=${{ vars.APP_VERSION }}
             SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
+            NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
+            NEWSLETTER_MULTI_LIST_IDS=${{ vars.NEWSLETTER_MULTI_LIST_IDS }}
 
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
@@ -113,19 +115,18 @@ jobs:
             } catch (error) {
               console.log('Environment not found or already deleted:', error.message);
             }
-            
+
       - name: Send Slack notification
         if: ${{ github.event.action != 'closed' }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: '#audience-pr-review'
-          SLACK_COLOR: 'good'
-          SLACK_ICON_EMOJI: ':rocket:'
-          SLACK_TITLE: 'Review App Deployed'
+          SLACK_CHANNEL: "#audience-pr-review"
+          SLACK_COLOR: "good"
+          SLACK_ICON_EMOJI: ":rocket:"
+          SLACK_TITLE: "Review App Deployed"
           SLACK_MESSAGE: |
             **Pull Request:** <${{ github.event.pull_request.html_url }}|#${{ github.event.number }}: ${{ github.event.pull_request.title }}>
             **Review App URL:** <${{ steps.set-url.outputs.url }}|${{ steps.set-url.outputs.url }}>
             **Branch:** ${{ github.head_ref }}
             **Author:** ${{ github.event.pull_request.user.login }}
-
