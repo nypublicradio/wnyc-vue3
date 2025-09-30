@@ -208,6 +208,7 @@ watch(
 
 <template>
   <div class="settings -mt-2">
+    <pre>hello:{{ currentUser?.app_metadata }}</pre>
     <div class="user pl-4 pb-6 md:pl-0">
       <SUser
         :disabled="isDisabled"
@@ -217,9 +218,9 @@ watch(
       />
     </div>
     <section v-if="currentUser" class="user-preferences p-0">
-      <div class="flex s-title-holder">
-        <i :class="`${accountHeader.icon}`"></i>
+      <div class="flex s-title-holder align-items-center gap-2">
         <div class="s-title">{{ accountHeader.label }}</div>
+        <i :class="`${accountHeader.icon}`"></i>
       </div>
       <div class="block md:hidden">
         <SBox
@@ -563,7 +564,7 @@ watch(
       @include font-config($type-header2);
       @include media("<md") {
         font-size: 1rem;
-        padding: 0 1.25rem;
+        padding-left: 1.25rem;
       }
     }
 
