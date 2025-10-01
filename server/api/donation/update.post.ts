@@ -79,6 +79,7 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
 
         return response.data as DonationUpdateResponse;
     } catch (error: any) {
+        console.log('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
         const statusCode = error.response?.status || 500;
         const statusMessage = error.response?.statusText || 'Internal Server Error';
         const message = error.response?.data?.message ||
