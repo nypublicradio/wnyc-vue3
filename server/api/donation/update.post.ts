@@ -3,6 +3,7 @@ import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../../utils/jwt';
 import { rateLimit } from '../../utils/rateLimiter';
 
+const config = useRuntimeConfig();
 // Response type definition
 interface DonationUpdateResponse {
     status: string;
@@ -56,7 +57,7 @@ const validateUpdateRequest = (body: any): { did: number; amount: number } => {
  * Makes the update request to Springboard API
  */
 const updateDonationWithSpringboard = async (donationId: number, newAmount: number): Promise<DonationUpdateResponse> => {
-    const springboardUrl = process.env.SPRINGBOARD_URL;
+    const springboardUrl = config.public.SPRINGBOARD_URL;
     const springboardKey = process.env.SPRINGBOARD_KEY;
 
     if (!springboardUrl || !springboardKey) {
