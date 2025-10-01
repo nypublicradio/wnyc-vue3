@@ -70,7 +70,7 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string)
         }
 
         const apiUrl = `${springboardUrl}/springboard-api/springboard-donation/cancel`;
-        const response = await axios.post(apiUrl, {
+        const response = await axios.post(apiUrl, null, {
             headers: {
                 'api-key': springboardKey,
                 'Accept': 'application/json'
