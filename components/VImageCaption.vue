@@ -35,6 +35,7 @@ const toggleCaption = () => {
     </transition>
     <div class="caption-button-holder">
       <Button
+        rounded
         :icon="`pi pi-${showCaption ? 'times' : 'info'}`"
         class="caption-button"
         aria-label="caption button"
