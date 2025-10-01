@@ -208,7 +208,6 @@ watch(
 
 <template>
   <div class="settings -mt-2">
-    <pre>hello:{{ currentUser?.app_metadata }}</pre>
     <div class="user pl-4 pb-6 md:pl-0">
       <SUser
         :disabled="isDisabled"
