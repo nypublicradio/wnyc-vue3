@@ -236,7 +236,18 @@ export default defineNuxtConfig({
       APP_VERSION: process.env.APP_VERSION ?? "x.x.x",
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
       NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
-      NEWSLETTER_MULTI_LIST_IDS: process.env.NEWSLETTER_MULTI_LIST_IDS ?? 'WNYC Weekly Brief++WNYC Membership',
+      NEWSLETTER_MULTI_LIST_IDS: (() => {
+        const value = process.env.NEWSLETTER_MULTI_LIST_IDS ?? 'WNYC Weekly Brief++WNYC Membership';
+        // Check if it's base64 encoded (no spaces, only valid base64 chars)
+        if (value && !/\s/.test(value) && /^[A-Za-z0-9+/]+=*$/.test(value)) {
+          try {
+            return Buffer.from(value, 'base64').toString('utf-8');
+          } catch {
+            return value;
+          }
+        }
+        return value;
+      })(),
     },
   },
 
