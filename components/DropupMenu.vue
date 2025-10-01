@@ -1,6 +1,8 @@
 <script setup>
 import { useSwipe } from "@vueuse/core"
+import { useIsApp } from "~/composables/states"
 import VImage from "./VImage.vue"
+import { pop } from "~/ios/App/App/public/cordova_plugins"
 const props = defineProps({
   options: {
     type: Array,
@@ -42,8 +44,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["change", "swipe-down"])
-
+const isApp = useIsApp()
 const drawerRef = ref(null)
+const popover = ref(null)
 const panel = ref(null)
 // to match the total height of the shadow that is being applied to the panel
 const shadowHeight = 70
@@ -79,6 +82,10 @@ const removeBodyTouch = () => {
 const closeMenu = () => {
   drawerRef.value.hide()
   removeBodyTouch()
+}
+// clicks the dropdown again to close it
+const closePopover = () => {
+  popover.value.hide()
 }
 
 // brings teh panel back up to the top
@@ -188,24 +195,42 @@ const onMenuUpdate = async (event) => {
 const toggleDrawer = () => {
   visibleBottom.value = props.startOpen ? true : !visibleBottom.value
 }
+//toggles the popover
+const togglePopover = (event) => {
+  popover.value.toggle(event)
+}
 // toggles the dropdown on click wrapper
-const toggleDrawerClick = () => {
+const toggleDrawerClick = (event) => {
   if (props.blockClick) return
-  toggleDrawer()
+  if (isApp.value) {
+    toggleDrawer()
+  } else {
+    togglePopover(event)
+  }
 }
 
 onMounted(() => {
   if (props.startOpen) {
-    toggleDrawer()
+    if (isApp.value) {
+      toggleDrawer()
+    } else {
+      popover.value.show()
+    }
   }
 })
 onUnmounted(() => {
-  unsetPanel()
+  if (isApp.value) {
+    unsetPanel()
+  } else {
+    closePopover()
+  }
 })
 
 defineExpose({
   closeMenu,
   toggleDrawer,
+  togglePopover,
+  closePopover,
 })
 </script>
 <template>
@@ -219,6 +244,7 @@ defineExpose({
     </div>
 
     <Drawer
+      v-if="isApp"
       v-model:visible="visibleBottom"
       ref="drawerRef"
       position="bottom"
@@ -256,9 +282,6 @@ defineExpose({
                 },
               ]"
             >
-              <!-- id = {{ item }}
-              <br />
-              Vmodel = {{ vModel }} -->
               <div :key="item.label" class="flex align-items-center station-options">
                 <VImage
                   v-if="item.image"
@@ -287,6 +310,44 @@ defineExpose({
         </div>
       </template>
     </Drawer>
+    <Popover v-else ref="popover">
+      <div class="p-menu-list">
+        <div class="p-menu-item">
+          <div
+            v-for="item in options"
+            :key="item.label"
+            class="style-mode-dark item p-menu-item-content relative"
+            @click="onMenuUpdate(item)"
+            :class="[
+              {
+                selected:
+                  item.id === (typeof vModel === 'object' ? vModel.id : vModel) &&
+                  props.checkMark,
+              },
+            ]"
+          >
+            <div :key="item.label" class="flex align-items-center station-options">
+              <VImage
+                v-if="item.image"
+                :src="item.image"
+                alt="item.label"
+                class="mr-3 flex-none"
+                style="width: 40px; height: 40px"
+                :srcset="[2]"
+              />
+              <i v-if="item.icon" class="mr-3" :class="item.icon"></i>
+              <component
+                class="mr-3 custom-icon"
+                :active="item.active ?? false"
+                v-if="item.customIcon"
+                :is="item.customIcon"
+              />
+              <div class="option pointer-events-none">{{ item.label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Popover>
   </div>
 </template>
 
