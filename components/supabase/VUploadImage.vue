@@ -51,7 +51,11 @@ const props = defineProps({
     type: Number,
   },
   success: {
-    default: "<p>Success! <br/> Your changes have been saved.</p>",
+    default: "Success! Your changes have been saved.",
+    type: String,
+  },
+  deleted: {
+    default: "Success! Your image has been deleted.",
     type: String,
   },
   table: {
@@ -182,7 +186,7 @@ const deleteImage = async () => {
     //console.log(error)
     errorMessage.value = `Error: ${error}`
   } else {
-    successMessage.value = "Success! Your file has been deleted."
+    successMessage.value = props.deleted
     imageUrl.value = null
     emit("image-uploaded", null)
   }
@@ -221,20 +225,20 @@ function triggerFileUpload() {
       <Message
         :sticky="false"
         :life="6000"
-        class="center mt-0 text-only error"
+        class="center mt-0 text-only error mb-3"
         severity="error"
       >
-        <div class="text-center" v-html="errorMessage"></div>
+        <div class="text-center">{{ errorMessage }}</div>
       </Message>
     </template>
     <template v-if="successMessage">
       <Message
         :sticky="false"
         :life="6000"
-        class="center mt-0 text-only"
+        class="center mt-0 text-only mb-3"
         severity="success"
       >
-        <div class="text-center" v-html="successMessage"></div>
+        <div class="text-center">{{ successMessage }}</div>
       </Message>
     </template>
     <slot v-else name="above-button"> </slot>

@@ -535,7 +535,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="member-center mb-6 grid grid-lggutter">
+  <div class="member-center grid grid-lggutter">
     <!-- {{ isLoading }}
     <pre class="text-xs">{{ profileData }}</pre>
     <pre class="text-xs">{{ currentUser }}</pre> -->

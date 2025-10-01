@@ -35,7 +35,8 @@ import {
   FALLBACKIMAGEEPDARK,
   FALLBACKIMAGEEPHEADDARK,
   FALLBACKUSER,
-  FALLBACKUSERDARK
+  FALLBACKUSERDARK,
+  liveStationPreferences,
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
@@ -644,7 +645,8 @@ export const getAndSetUserProfile = async () => {
           })
 
           // set the current user profile state again after updating the channels
-          currentUserProfile.value = data
+          //currentUserProfile.value = data
+          Object.assign(currentUserProfile.value, data)
 
         } else {
 
@@ -666,7 +668,8 @@ export const getAndSetUserProfile = async () => {
             .match({ id: currentUser.value.id })
 
           // set the current user profile state again after the sync
-          currentUserProfile.value = data
+          //currentUserProfile.value = data
+          Object.assign(currentUserProfile.value, data)
 
         }
 
@@ -1304,14 +1307,27 @@ export function getPathAndQuery(urlString) {
   }
 }
 
+// the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
+export const getCustomStationLabel = (station: string): string => {
+  const stationPreference = liveStationPreferences.find(pref => pref.station === station)
+  return stationPreference?.label ?? station
+}
+
 // formats the station list for the dropdown
 export const initializeStationList = (stations) => {
   const tempMenuData = []
 
+  // the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
+  const getCustomStationLabelFromSlug = (station) => {
+    const stationPreference = liveStationPreferences.find(pref => pref.slug === station.slug)
+    return stationPreference?.label ?? station.station
+  }
+
   stations.forEach((station) => {
+    const customStation = getCustomStationLabelFromSlug(station)
     tempMenuData.push({
-      id: station.station,
-      label: station.station,
+      id: station.station,  // what gets saved to Supabase
+      label: customStation,
       name: station.title,
       station: station.station,
       code: station.title,

@@ -9,6 +9,30 @@ export const cmsSources = {
     SIMPLECAST: 'simplecast',
 }
 
+export const liveStationPreferences = [
+    {
+        slug: 'wnyc-fm939',
+        station: 'WNYC 93.9 FM',
+        label: 'WNYC',
+    },
+    {
+        slug: 'wqxr',
+        station: 'WQXR 105.9 FM',
+        label: 'WQXR',
+    },
+    {
+        slug: 'q2',
+        station: 'New Sounds',
+        label: 'New Sounds',
+    },
+    {
+        slug: 'wqxr-holiday-channel-on-wnyc',
+        station: 'WQXR Holiday Channel',
+        label: 'WQXR Holiday Channel',
+    },
+
+]
+
 export const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
 
 export const mediaTypes = {
