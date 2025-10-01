@@ -8,6 +8,9 @@ const config: CapacitorConfig = {
   android: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
     appendUserAgent: 'Android-WNYC-App',
+    allowMixedContent: true,
+    captureInput: true,
+    webContentsDebuggingEnabled: true,
   },
   ios: {
     overrideUserAgent: `${process.env.USER_AGENT}`,
@@ -15,6 +18,18 @@ const config: CapacitorConfig = {
     handleApplicationNotifications: false,
   },
   plugins: {
+    BackgroundMode: {
+      enabled: true,
+      silent: false,
+      hidden: false,
+      resume: true,
+      wakeup: true,
+      title: "Playing audio",
+      text: "WNYC is playing content",
+      icon: "icon",
+      keepAlive: true,
+      disableWebViewOptimizations: true
+    },
     CapacitorCookies: {
       enabled: true,
     },
