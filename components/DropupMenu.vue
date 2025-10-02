@@ -70,9 +70,7 @@ const handleSwipeDown = () => {
 // Expose methods for external access (maintains API compatibility)
 defineExpose({
   closeMenu: () => menuRef.value?.closeMenu?.(),
-  toggleDrawer: () => menuRef.value?.toggleDrawer?.(),
-  togglePopover: (event) => menuRef.value?.togglePopover?.(event),
-  closePopover: () => menuRef.value?.closePopover?.(),
+  toggleMenu: () => menuRef.value?.toggleMenu?.(),
 })
 </script>
 <template>

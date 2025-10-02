@@ -144,7 +144,7 @@ const editField = (field) => {
 }
 // handles the dropdown menu click event
 const clickThisMenu = (ref) => {
-  ref.toggleDrawer()
+  ref.toggleMenu()
 }
 
 // handles the notification switch change event
@@ -357,15 +357,29 @@ watch(
                 <p class="font-bold">Default Stream</p>
                 <p>{{ customDefaultStationLabel }}</p>
               </div>
-              <Button
-                v-if="!isDisabled"
-                severity="secondary"
-                variant="link"
-                class="link -mb-1 -ml-2"
-                @click="clickThisMenu(defaultStreamRef)"
-                label="Update"
-                size="small"
-              ></Button>
+
+              <DropupMenu
+                ref="defaultStreamRef"
+                v-model="currentUserProfile.default_live_stream"
+                :options="initializeStationList(allCurrentStations)"
+                optionLabel="station"
+                placeholder="Select a station"
+                label="Default stream"
+                width="auto"
+                @change="onUpdateStation"
+                checkMark
+              >
+                <template #customButton>
+                  <Button
+                    v-if="!isDisabled"
+                    severity="secondary"
+                    variant="link"
+                    class="link -mb-1 -ml-2"
+                    label="Update"
+                    size="small"
+                  />
+                </template>
+              </DropupMenu>
             </div>
           </div>
         </div>
