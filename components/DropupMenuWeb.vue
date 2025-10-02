@@ -29,7 +29,7 @@ const vModel = defineModel()
 
 // clicks the popover to close it
 const closeMenu = () => {
-  popover.value.hide()
+  popover.value?.hide()
 }
 
 // handles the menu item click
@@ -43,7 +43,7 @@ const onMenuUpdate = async (event) => {
 
 //toggles the popover
 const toggleMenu = (event) => {
-  popover.value.toggle(event)
+  popover.value?.toggle(event)
 }
 
 // toggles the popover on click wrapper
@@ -54,12 +54,14 @@ const toggleMenuClick = (event) => {
 
 onMounted(() => {
   if (props.startOpen) {
-    popover.value.show()
+    popover.value?.show()
   }
 })
 
 onUnmounted(() => {
-  closeMenu()
+  if (popover.value) {
+    closeMenu()
+  }
 })
 
 defineExpose({

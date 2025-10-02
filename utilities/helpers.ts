@@ -1315,6 +1315,8 @@ export const getCustomStationLabel = (station: string): string => {
 
 // formats the station list for the dropdown
 export const initializeStationList = (stations) => {
+  if (!stations) return []
+
   const tempMenuData = []
 
   // the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
