@@ -185,18 +185,18 @@ const onMenuUpdate = async (event) => {
   emit("change", event)
 }
 //toggles the dropdown
-const toggleDrawer = () => {
+const toggleMenu = () => {
   visibleBottom.value = props.startOpen ? true : !visibleBottom.value
 }
 //toggles the dropdown on click wrapper
-const toggleDrawerClick = (event) => {
+const toggleMenuClick = (event) => {
   if (props.blockClick) return
-  toggleDrawer()
+  toggleMenu()
 }
 
 onMounted(() => {
   if (props.startOpen) {
-    toggleDrawer()
+    toggleMenu()
   }
 })
 
@@ -206,12 +206,12 @@ onUnmounted(() => {
 
 defineExpose({
   closeMenu,
-  toggleDrawer,
+  toggleMenu,
 })
 </script>
 <template>
   <div class="dropup-panel-holder">
-    <div class="ans" @click="toggleDrawerClick">
+    <div class="ans" @click="toggleMenuClick">
       <slot name="customButton" label="">
         <div class="ans">
           {{ vModel }}

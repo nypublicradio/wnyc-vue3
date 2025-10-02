@@ -7,26 +7,6 @@ const props = defineProps({
     default: null,
     required: true,
   },
-  optionLabel: {
-    type: String,
-    default: "label",
-  },
-  label: {
-    type: String,
-    default: null,
-  },
-  placeholder: {
-    type: String,
-    default: "Select",
-  },
-  width: {
-    type: String,
-    default: "40px",
-  },
-  height: {
-    type: String,
-    default: "40px",
-  },
   startOpen: {
     type: Boolean,
     default: false,
@@ -48,7 +28,7 @@ const popover = ref(null)
 const vModel = defineModel()
 
 // clicks the popover to close it
-const closePopover = () => {
+const closeMenu = () => {
   popover.value.hide()
 }
 
@@ -56,20 +36,20 @@ const closePopover = () => {
 const onMenuUpdate = async (event) => {
   vModel.value = event.id
   event.command && event.command()
-  closePopover()
+  closeMenu()
   await nextTick()
   emit("change", event)
 }
 
 //toggles the popover
-const togglePopover = (event) => {
+const toggleMenu = (event) => {
   popover.value.toggle(event)
 }
 
 // toggles the popover on click wrapper
-const togglePopoverClick = (event) => {
+const toggleMenuClick = (event) => {
   if (props.blockClick) return
-  togglePopover(event)
+  toggleMenu(event)
 }
 
 onMounted(() => {
@@ -79,17 +59,17 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  closePopover()
+  closeMenu()
 })
 
 defineExpose({
-  closePopover,
-  togglePopover,
+  closeMenu,
+  toggleMenu,
 })
 </script>
 <template>
   <div class="dropup-panel-holder">
-    <div class="ans" @click="togglePopoverClick">
+    <div class="ans" @click="toggleMenuClick">
       <slot name="customButton" label="">
         <div class="ans">
           {{ vModel }}
