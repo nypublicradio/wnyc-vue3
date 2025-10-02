@@ -533,3 +533,29 @@ html:not(.style-mode-dark) {
     }
   }
 }
+
+.p-popover {
+  // remove the arrows on popovers
+  &:before,
+  &:after {
+    display: none;
+  }
+  .p-popover-content {
+    .p-menu-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      .p-menu-item-content {
+        cursor: pointer;
+        &:hover {
+          opacity: 0.8;
+        }
+        .option {
+          font-family: var(--font-family);
+          font-size: var(--font-size-5);
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
