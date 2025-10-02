@@ -1261,6 +1261,16 @@ const MyPreset = definePreset(Aura, {
       submenuLabel: {
         padding: '0',
       }
+    },
+    popover: {
+      root: {
+        borderColor: "{surface.100}",
+        shadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+        borderRadius: "20px",
+      },
+      content: {
+        padding: "1.25rem 1.75rem 1.25rem 1.25rem",
+      },
     }
   },
 })
