@@ -120,10 +120,23 @@ defineExpose({
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .dropup-panel-holder {
   .ans {
     @include font-config($type-paragraph1);
+  }
+}
+.p-menu-item-content {
+  &.selected .option {
+    &:after {
+      font-family: primeicons;
+      content: "\e909";
+      position: relative;
+      margin-left: 20px;
+      width: 1rem;
+      height: 1rem;
+      color: var(--surface-950);
+    }
   }
 }
 </style>

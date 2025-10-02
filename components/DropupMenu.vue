@@ -101,3 +101,20 @@ defineExpose({
     </template>
   </component>
 </template>
+
+<style lang="scss">
+@mixin checkMark {
+  &:after {
+    font-family: primeicons;
+    content: "\e909";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    right: 20px;
+    width: 1rem;
+    height: 1rem;
+    color: #ffffff;
+  }
+}
+</style>
