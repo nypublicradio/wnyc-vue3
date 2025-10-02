@@ -69,6 +69,7 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string)
             });
         }
 
+        const encodedReason = encodeURIComponent(reason);
         const apiUrl = `${springboardUrl}/springboard-api/springboard-donation/cancel`;
         const response = await axios.post(apiUrl, null, {
             headers: {
@@ -77,7 +78,7 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string)
             },
             params: {
                 did: donationId,
-                reason: encodeURIComponent(reason)
+                reason: encodedReason
             }
         });
 
