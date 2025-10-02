@@ -340,6 +340,7 @@ defineExpose({
     z-index: 10010;
     background-color: var(--dropupBg);
     border: none;
+    padding: 0 env(safe-area-inset-left);
     &.release {
       transition: bottom 0.25s;
       -webkit-transition: bottom 0.25s;
