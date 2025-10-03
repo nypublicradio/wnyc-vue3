@@ -98,14 +98,12 @@ export const useMembership = () => {
           //actually CANCEL the membership here
           const { authenticatedFetch } = useAuth()
           const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
-          console.log('cancel bff')
 
           try {
             const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
               method: 'POST',
               body: requestBody,
             })
-            console.log('cancel response', data)
 
             if (data?.error) {
               toast.add({
