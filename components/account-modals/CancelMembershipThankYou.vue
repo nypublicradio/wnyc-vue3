@@ -1,14 +1,11 @@
 <script setup>
-import ModalCloseBtn from "./ModalCloseBtn.vue"
+import AccountModalHeader from "./AccountModalHeader.vue"
 const dialogRef = inject("dialogRef")
 </script>
 
 <template>
   <div class="cancel-membership-thank-you">
-    <div class="flex justify-content-between align-items-center mb-2">
-      <div class="font-meta text-2xl font-bold">Thank you for your support</div>
-      <ModalCloseBtn class="-mr-2" @clickEmit="dialogRef.close()" />
-    </div>
+    <AccountModalHeader>Thank you for your support</AccountModalHeader>
     <p>
       Your donation has been cancelled. We understand, circumstances change. Your
       generosity has made a difference, and we hope you’ll consider coming back when the

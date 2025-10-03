@@ -1,14 +1,11 @@
 <script setup>
-import ModalCloseBtn from "./ModalCloseBtn.vue"
+import AccountModalHeader from "./AccountModalHeader.vue"
 const dialogRef = inject("dialogRef")
 </script>
 
 <template>
   <div class="contact-listener-services">
-    <div class="flex justify-content-between align-items-center mb-2">
-      <div class="font-meta text-2xl font-bold">Contact Listener Services</div>
-      <ModalCloseBtn class="-mr-2" @clickEmit="dialogRef.close()" />
-    </div>
+    <AccountModalHeader>Contact Listener Services</AccountModalHeader>
     <p>
       <strong
         ><VFlexibleLink

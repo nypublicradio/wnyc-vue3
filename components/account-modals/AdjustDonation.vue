@@ -1,5 +1,5 @@
 <script setup>
-import ModalCloseBtn from "./ModalCloseBtn.vue"
+import AccountModalHeader from "./AccountModalHeader.vue"
 const { formatCurrency } = useProfileApi()
 const emit = defineEmits(["save", "cancel"])
 
@@ -11,7 +11,7 @@ const finalAmount = ref(null)
 const value = ref(null)
 const otherAmount = ref(null)
 // adjust these numbers below to control the amount added to the current donation amount
-const options = ref([3, 4, 8, "other"])
+const options = ref([3, 5, 8, "other"])
 const isOtherError = ref(false)
 
 // Handle the cancel action
@@ -71,10 +71,7 @@ onMounted(() => {
 
 <template>
   <div class="adjust-donation">
-    <div class="flex justify-content-between align-items-center mb-2">
-      <div class="font-meta text-2xl font-bold">Update Gift Amount</div>
-      <ModalCloseBtn class="-mr-2" @clickEmit="dialogRef.close()" />
-    </div>
+    <AccountModalHeader>Update Gift Amount</AccountModalHeader>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
     <div
       v-if="currentDonationAmount"
