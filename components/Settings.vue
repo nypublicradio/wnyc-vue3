@@ -323,9 +323,9 @@ watch(
         <div class="s-title">Member Center</div>
       </div>
 
-      <SBoxEmpty :clickable="false" :ripple="false" class="py-2">
-        <MemberCenter />
-      </SBoxEmpty>
+      <!--  <SBoxEmpty :clickable="false" :ripple="false" class="py-2"> -->
+      <MemberCenter class="px-2 md:px-0" />
+      <!-- </SBoxEmpty> -->
     </section>
 
     <section v-if="currentUser" class="listening-preferences p-0">

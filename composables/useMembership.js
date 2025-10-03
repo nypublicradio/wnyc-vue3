@@ -98,26 +98,38 @@ export const useMembership = () => {
           //actually CANCEL the membership here
           const { authenticatedFetch } = useAuth()
           const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
+          console.log('cancel bff')
 
-          const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
-            method: 'POST',
-            body: requestBody,
-          })
+          try {
+            const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
+              method: 'POST',
+              body: requestBody,
+            })
+            console.log('cancel response', data)
 
-          if (data?.error) {
+            if (data?.error) {
+              toast.add({
+                severity: "error",
+                summary: "There was an error canceling your membership. Please try again later.",
+                life: 8000,
+                closable: true,
+              })
+            } else {
+              // Successfully canceled membership
+              onCancelMembershipThankYou()
+              toast.add({
+                severity: "success",
+                summary:
+                  "Your membership donation has been successfully canceled.",
+                closable: true,
+              })
+            }
+          } catch (error) {
+            console.error('Cancel membership error:', error)
             toast.add({
               severity: "error",
               summary: "There was an error canceling your membership. Please try again later.",
               life: 8000,
-              closable: true,
-            })
-          } else {
-            // Successfully canceled membership
-            onCancelMembershipThankYou()
-            toast.add({
-              severity: "success",
-              summary:
-                "Your membership donation has been successfully canceled.",
               closable: true,
             })
           }
