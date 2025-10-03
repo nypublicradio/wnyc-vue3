@@ -48,8 +48,8 @@ const togglePlayHere = async () => {
           <transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :src="currentEpisodeHolder?.image"
               :size="{ xs: [172, 172], xl: [280, 280] }"
+              :src="currentEpisodeHolder?.image"
               alt="show poster image"
               class="image"
               :key="currentEpisodeHolder?.id"
