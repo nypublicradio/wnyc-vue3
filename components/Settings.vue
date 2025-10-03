@@ -160,7 +160,7 @@ const handleNotificationChange = async (e) => {
 // handles the notification channel switch change events
 const handleNotificationChannelChange = (channel) => {
   if (!currentUserProfile.value?.one_signal_notification_channels) return
-  
+
   const key = channel.key
   const val = currentUserProfile.value.one_signal_notification_channels.find(
     (c) => c.key === channel.key
@@ -342,16 +342,16 @@ watch(
           ref="defaultStreamRef"
           v-model="currentUserProfile.default_live_stream"
           :options="initializeStationList(allCurrentStations)"
-          optionLabel="station"
-          placeholder="Select a station"
           label="Default stream"
-          width="auto"
           @change="onUpdateStation"
           blockClick
           checkMark
         />
       </SBox>
-      <div v-if="currentUserProfile?.default_live_stream" class="hidden md:flex account-info mb-6 grid grid-lggutter">
+      <div
+        v-if="currentUserProfile?.default_live_stream"
+        class="hidden md:flex account-info mb-6 grid grid-lggutter"
+      >
         <div class="col-12 md:col-6">
           <div class="card">
             <div class="flex justify-content-between flex-wrap align-items-end">
@@ -361,13 +361,9 @@ watch(
               </div>
 
               <DropupMenu
-                ref="defaultStreamRef"
                 v-model="currentUserProfile.default_live_stream"
                 :options="initializeStationList(allCurrentStations)"
-                optionLabel="station"
-                placeholder="Select a station"
                 label="Default stream"
-                width="auto"
                 @change="onUpdateStation"
                 checkMark
               >
@@ -391,7 +387,11 @@ watch(
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox v-if="currentUserProfile?.receive_general_notifications !== undefined" label="Allow Notifications" :ripple="false">
+      <SBox
+        v-if="currentUserProfile?.receive_general_notifications !== undefined"
+        label="Allow Notifications"
+        :ripple="false"
+      >
         <VToggleSwitch
           yes="ON"
           no="OFF"
@@ -452,19 +452,19 @@ watch(
       >
         <DropupMenu
           ref="textSizeRef"
-          id="text-size"
           v-model="currentUserProfile.text_size"
           :options="textSizeOptions"
-          optionLabel="label"
-          placeholder="Select a Text Size"
           label="Text Size"
-          width="auto"
           blockClick
           checkMark
           @change="onUpdateTextSize"
         />
       </SBox>
-      <SBox v-if="currentUserProfile?.dark_mode !== undefined" label="Dark theme" :ripple="false">
+      <SBox
+        v-if="currentUserProfile?.dark_mode !== undefined"
+        label="Dark theme"
+        :ripple="false"
+      >
         <VToggleSwitch
           yes="ON"
           no="OFF"

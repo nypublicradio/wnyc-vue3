@@ -8,25 +8,9 @@ const props = defineProps({
     default: null,
     required: true,
   },
-  optionLabel: {
-    type: String,
-    default: "label",
-  },
   label: {
     type: String,
     default: null,
-  },
-  placeholder: {
-    type: String,
-    default: "Select",
-  },
-  width: {
-    type: String,
-    default: "40px",
-  },
-  height: {
-    type: String,
-    default: "40px",
   },
   startOpen: {
     type: Boolean,
@@ -77,7 +61,7 @@ const removeBodyTouch = () => {
 
 // clicks the dropdown again to close it
 const closeMenu = () => {
-  drawerRef.value.hide()
+  drawerRef.value?.hide()
   removeBodyTouch()
 }
 
@@ -189,7 +173,7 @@ const toggleMenu = () => {
   visibleBottom.value = props.startOpen ? true : !visibleBottom.value
 }
 //toggles the dropdown on click wrapper
-const toggleMenuClick = (event) => {
+const toggleMenuClick = () => {
   if (props.blockClick) return
   toggleMenu()
 }

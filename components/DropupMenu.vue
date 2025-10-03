@@ -7,25 +7,9 @@ const props = defineProps({
     default: null,
     required: true,
   },
-  optionLabel: {
-    type: String,
-    default: "label",
-  },
   label: {
     type: String,
     default: null,
-  },
-  placeholder: {
-    type: String,
-    default: "Select",
-  },
-  width: {
-    type: String,
-    default: "40px",
-  },
-  height: {
-    type: String,
-    default: "40px",
   },
   startOpen: {
     type: Boolean,
@@ -62,7 +46,7 @@ const menuRef = ref(null)
 const handleChange = (event) => {
   emit("change", event)
 }
-
+// Forward events from child component
 const handleSwipeDown = () => {
   emit("swipe-down")
 }
@@ -79,11 +63,7 @@ defineExpose({
     ref="menuRef"
     v-model="vModel"
     :options="props.options"
-    :optionLabel="props.optionLabel"
     :label="props.label"
-    :placeholder="props.placeholder"
-    :width="props.width"
-    :height="props.height"
     :startOpen="props.startOpen"
     :checkMark="props.checkMark"
     :blockClick="props.blockClick"
@@ -101,20 +81,3 @@ defineExpose({
     </template>
   </component>
 </template>
-
-<style lang="scss">
-@mixin checkMark {
-  &:after {
-    font-family: primeicons;
-    content: "\e909";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    right: 20px;
-    width: 1rem;
-    height: 1rem;
-    color: #ffffff;
-  }
-}
-</style>
