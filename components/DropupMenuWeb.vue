@@ -7,6 +7,10 @@ const props = defineProps({
     default: null,
     required: true,
   },
+  label: {
+    type: String,
+    default: null,
+  },
   startOpen: {
     type: Boolean,
     default: false,
@@ -120,12 +124,15 @@ defineExpose({
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dropup-panel-holder {
   .ans {
     @include font-config($type-paragraph1);
   }
 }
+</style>
+
+<style lang="scss">
 .p-menu-item-content {
   &.selected .option {
     &:after {
