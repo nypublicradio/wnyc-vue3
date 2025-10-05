@@ -119,15 +119,30 @@ const getConfiguredAudioUrl = computed(() => {
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
+//player release utility function
+// ios and web just calls stop(), android calls releasePlayer()
+const releasePlayer = async () => {
+  try {
+    await RemoteStreamer.releasePlayer()
+  } catch (error) {
+    console.warn("Failed to release player:", error)
+  }
+}
+
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
   isNewEpisode.value = true
   showPlayer.value = false
-  await RemoteStreamer.stop()
+
+  await releasePlayer()
+
+  // Small delay to ensure cleanup completes
+  await new Promise((resolve) => setTimeout(resolve, 100))
+
   currentEpisode.value = val
   isStreamLoading.value = true
-  //isLiveStream.value = val.hls ? true : false
   await nextTick()
+
   await RemoteStreamer.play({
     url: getConfiguredAudioUrl.value,
     enableCommandCenter: true,
@@ -159,19 +174,22 @@ const handleSeekTo = (e) => {
 const togglePlayHere = async (e) => {
   if (e && !isEpisodePlaying.value) {
     await RemoteStreamer.resume()
+    //await enableBackgroundMode()
     isEpisodePlaying.value = true
-  }
-  if (!e && isEpisodePlaying.value) {
+
+    if (isNewEpisode.value) {
+      trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
+    } else {
+      trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
+    }
+    isNewEpisode.value = false
+  } else if (!e && isEpisodePlaying.value) {
+    // Pausing playback
     await RemoteStreamer.pause()
+    //await disableBackgroundMode()
     isEpisodePlaying.value = false
   }
-  if (isEpisodePlaying.value && isNewEpisode.value) {
-    trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
-  } else if (isEpisodePlaying.value && !isNewEpisode.value) {
-    trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
-  }
-  isEpisodePlaying.value = e
-  isNewEpisode.value = false
+  // Remove the redundant isEpisodePlaying.value = e line
 }
 
 //const handleCast = () => {
@@ -189,8 +207,9 @@ const handleIsExpanded = (e) => {
 
 // function that handles the error event from the persistent player emit
 //I have to check for "e" it fires 2 times... once with the error and once without
-const handleError = (e) => {
+const handleError = async (e) => {
   if (e) {
+    await releasePlayer()
     globalToast.value = {
       severity: "error",
       summary: "We are having a problem loading the audio. Please try again later.",
@@ -213,7 +232,7 @@ const handleError = (e) => {
 }
 
 /*function that fires when the episode has ended/completed */
-const episodeEnded = () => {
+const episodeEnded = async () => {
   if (isPlayerExpanded.value) {
     playerRef.value.toggleExpanded()
     handleIsExpanded(false)
@@ -226,6 +245,7 @@ const episodeEnded = () => {
     currentEpisode.value = null
     handleIsExpanded(false)
   }
+  await releasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 }
 
