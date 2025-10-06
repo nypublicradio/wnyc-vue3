@@ -40,9 +40,6 @@ jobs:
           # Construct the predictable review app URL
           REVIEW_APP_URL="https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev"
           echo "url=$REVIEW_APP_URL" >> $GITHUB_OUTPUT
-          # Base64 encode newsletter list IDs to handle spaces and special characters
-          NEWSLETTER_IDS_BASE64=$(echo -n '${{ vars.NEWSLETTER_MULTI_LIST_IDS }}' | base64)
-          echo "newsletter_ids_encoded=$NEWSLETTER_IDS_BASE64" >> $GITHUB_OUTPUT
 
       - name: Deploy PR Review App
         id: deploy
@@ -101,7 +98,6 @@ jobs:
             APP_VERSION=${{ vars.APP_VERSION }}
             SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
             NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
-            NEWSLETTER_MULTI_LIST_IDS=${{ steps.set-url.outputs.newsletter_ids_encoded }}
 
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'

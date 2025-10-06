@@ -54,7 +54,6 @@ services:
       - SPRINGBOARD_URL=$SPRINGBOARD_URL
       - SPRINGBOARD_KEY=$SPRINGBOARD_KEY
       - NEWSLETTER_API=$NEWSLETTER_API
-      - NEWSLETTER_MULTI_LIST_IDS=$NEWSLETTER_MULTI_LIST_IDS
     ports:
       - 8880:8080
     command: ["./scripts/entrypoint.sh"]
