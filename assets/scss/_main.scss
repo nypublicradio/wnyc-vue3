@@ -566,16 +566,29 @@ html:not(.style-mode-dark) {
     .p-menu-item {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1rem;
       .p-menu-item-content {
         cursor: pointer;
+        transition: color var(--p-transition-duration);
+        -webkit-transition: color var(--p-transition-duration);
+        padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+        border: 2px solid transparent;
         &:hover {
-          opacity: 0.8;
+          text-decoration: underline;
+          color: var(--p-red-500);
         }
         .option {
           font-family: var(--font-family);
           font-size: var(--font-size-5);
           font-weight: 700;
+        }
+        &:focus-visible {
+          outline: none;
+          text-decoration: underline;
+          color: var(--p-red-500);
+          border: 2px solid var(--p-button-secondary-focus-ring-color);
+          outline-color: var(--p-button-secondary-focus-ring-color);
+          border-radius: 30px;
         }
       }
     }

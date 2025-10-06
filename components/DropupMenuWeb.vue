@@ -45,6 +45,14 @@ const onMenuUpdate = async (event) => {
   emit("change", event)
 }
 
+// handles keyboard navigation for menu items
+const onKeyDown = (event, item) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault()
+    onMenuUpdate(item)
+  }
+}
+
 //toggles the popover
 const toggleMenu = (event) => {
   popover.value?.toggle(event)
@@ -84,13 +92,18 @@ defineExpose({
     </div>
 
     <Popover ref="popover">
-      <div class="p-menu-list">
+      <div class="p-menu-list" role="menu" aria-label="Menu options">
         <div class="p-menu-item">
           <div
-            v-for="item in options"
+            v-for="(item, index) in options"
             :key="item.label"
             class="style-mode-dark item p-menu-item-content relative"
             @click="onMenuUpdate(item)"
+            @keydown="onKeyDown($event, item)"
+            tabindex="0"
+            :autofocus="index === 0"
+            role="menuitem"
+            :aria-label="item.label"
             :class="[
               {
                 selected:
