@@ -181,7 +181,9 @@ const getBrand = computed(() => {
 <style lang="scss" scoped>
 .member-card {
   &.card {
-    padding: 2rem 2rem 2rem 1.5rem !important;
+    padding: 1rem 1.5rem 1rem 1rem !important;
+    background-color: #ffffff;
+    border-radius: 10px;
   }
 }
 </style>
