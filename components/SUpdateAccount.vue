@@ -6,11 +6,7 @@ import InputText from "primevue/inputtext"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
 import { trackClickEvent } from "~/utilities/helpers"
-import {
-  useCurrentUser,
-  useCurrentUserProfile,
-  useEditProfileSideBar,
-} from "~/composables/states"
+import { useCurrentUser, useCurrentUserProfile } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
@@ -27,7 +23,6 @@ const client = useSupabaseClient()
 //const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-const editProfileSideBar = useEditProfileSideBar()
 
 const tempPassword = "••••••••••"
 
