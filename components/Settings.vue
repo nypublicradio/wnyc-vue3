@@ -1,4 +1,5 @@
 <script setup>
+import { useDialog } from "primevue/usedialog"
 import {
   trackClickEvent,
   getYear,
@@ -24,6 +25,7 @@ import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
+import { useMembership } from "~/composables/useMembership"
 const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
@@ -39,6 +41,8 @@ const client = useSupabaseClient()
 
 const defaultStreamRef = ref(null)
 const textSizeRef = ref(null)
+const dialog = useDialog()
+const { dialogProps } = useMembership()
 
 //const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
@@ -131,10 +135,26 @@ const accountHeader = computed(() => {
   }
 })
 
-// fire edit profile sidebar if the user clicks on a field
-const editField = (field) => {
+// edit profile dialog for web and sidebar for app
+const editField = async (field) => {
   if (!isDisabled.value) {
-    editProfileSideBar.value = true
+    if (isApp.value) {
+      // app
+      editProfileSideBar.value = true
+    } else {
+      // web
+      const { default: EditProfile } = await import("~/components/EditProfile.vue")
+
+      const dialogRef = dialog.open(EditProfile, {
+        props: dialogProps,
+        emits: {
+          onClose: () => {
+            dialogRef.close()
+          },
+        },
+      })
+    }
+    // track the event
     trackClickEvent(
       "Click Tracking - edit user profile",
       "Settings Sidebar - Account",
@@ -142,6 +162,7 @@ const editField = (field) => {
     )
   }
 }
+
 // handles the dropdown menu click event
 const clickThisMenu = (ref, event) => {
   ref.toggleMenu(event)
@@ -267,7 +288,7 @@ watch(
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="editField('name')"
                 label="Update"
                 size="small"
               ></Button>
@@ -288,7 +309,7 @@ watch(
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="editField('email')"
                 label="Update"
                 size="small"
               ></Button>
@@ -307,7 +328,7 @@ watch(
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="editField('password')"
                 label="Update"
                 size="small"
               ></Button>

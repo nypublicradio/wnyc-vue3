@@ -156,7 +156,7 @@ export const useMembership = () => {
     window.open(url, "_blank")
   }
 
-  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo }
+  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo, dialogProps }
 }
 
 
