@@ -6,6 +6,7 @@ export const useMembership = () => {
 
   const dialog = useDialog()
   const toast = useToast()
+
   const dialogStyles = {
     width: "100%",
     maxWidth: "672px",
@@ -17,8 +18,8 @@ export const useMembership = () => {
     style: dialogStyles,
     draggable: false,
     dismissableMask: true,
-    modal: true,
-    breakpoints: { '768px': '90vw' }
+    modal: false,
+    breakpoints: { '768px': '90vw' },
   }
   const config = useRuntimeConfig()
 
