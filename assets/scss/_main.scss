@@ -550,6 +550,12 @@ html:not(.style-mode-dark) {
   }
 }
 
+/* Custom styling for non-modal dialogs */
+.p-dialog-mask {
+  background-color: var(--p-mask-background) !important;
+  pointer-events: auto !important;
+}
+
 .p-popover {
   // remove the arrows on popovers
   &:before,

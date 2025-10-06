@@ -7,10 +7,12 @@ import {
   useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
+  useIsApp,
 } from "~/composables/states.ts"
 import { trackClickEvent, logOutUser } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 const toast = useToast()
+const isApp = useIsApp()
 
 const props = defineProps({
   disabled: {
@@ -45,7 +47,11 @@ const imageUploadModal = shallowRef(false)
 const user = await client.auth.getSession()
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
-  loginSideBar.value = true
+  if (isApp.value) {
+    loginSideBar.value = true
+  } else {
+    navigateTo("/login")
+  }
   trackClickEvent(
     "Click Tracking - login button",
     "Settings Sidebar - user section",
@@ -74,7 +80,12 @@ const onLogOut = async () => {
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
-  signupSideBar.value = true
+  if (isApp.value) {
+    signupSideBar.value = true
+  } else {
+    navigateTo("/signup")
+  }
+
   trackClickEvent(
     "Click Tracking - sign up link",
     "Settings Sidebar - user section",
@@ -163,7 +174,7 @@ const avatarUrl = computed(() => {
 
       <p>
         Don't have an account yet?
-        <VFlexibleLink to="#" @click="onSignUp"> Sign up </VFlexibleLink>
+        <VFlexibleLink to="#" @click.prevent="onSignUp"> Sign up </VFlexibleLink>
       </p>
     </div>
   </div>
