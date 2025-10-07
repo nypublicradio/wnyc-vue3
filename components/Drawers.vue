@@ -163,7 +163,7 @@ const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
         }
       "
     >
-      <EditProfile @close="editProfileSideBar.value = false" />
+      <EditProfile @close="editProfileSideBar = false" />
     </Drawer>
     <Drawer
       v-model:visible="accountPromptSideBar"

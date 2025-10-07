@@ -153,15 +153,19 @@ const getDotMenuItems = () => {
               handleFollow(currentEpisode.value.showSlug)
             },
           },
-          {
-            label: "Sleep Timer",
-            customIcon: SleepIcon,
-            active: sleepTimerRunning.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleSleepTimer()
-            },
-          },
+          ...(isApp.value
+            ? [
+                {
+                  label: "Sleep Timer",
+                  customIcon: SleepIcon,
+                  active: sleepTimerRunning.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleSleepTimer()
+                  },
+                },
+              ]
+            : []),
           // ...(showShare.value
           //   ? [
           //       {
@@ -199,15 +203,19 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
-          {
-            label: "Sleep Timer",
-            customIcon: SleepIcon,
-            active: sleepTimerRunning.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleSleepTimer()
-            },
-          },
+          ...(isApp.value
+            ? [
+                {
+                  label: "Sleep Timer",
+                  customIcon: SleepIcon,
+                  active: sleepTimerRunning.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleSleepTimer()
+                  },
+                },
+              ]
+            : []),
           ...(showDownload.value
             ? [
                 {
@@ -285,7 +293,7 @@ const moreFromClick = () => {
   <section class="expanded-player flex flex-column gap-3">
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
-      <div v-if="isLive" class="flex gap-3">
+      <div v-if="isLive && isApp" class="flex gap-3">
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
       </div>
       <div v-else class="flex gap-3">
@@ -301,7 +309,11 @@ const moreFromClick = () => {
             <StarIcon :active="isFavorited" />
           </template>
         </Button>
-        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
+        <SleepTimerButton
+          v-if="isApp"
+          @emit-click="handleSleepTimer"
+          :isActive="sleepTimerRunning"
+        />
         <Button
           text
           severity="secondary"

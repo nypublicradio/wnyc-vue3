@@ -1,6 +1,5 @@
 <script setup>
 import VImage from "./VImage.vue"
-
 const props = defineProps({
   options: {
     type: Array,
@@ -90,7 +89,6 @@ defineExpose({
         </div>
       </slot>
     </div>
-
     <Popover ref="popover">
       <div class="p-menu-list" role="menu" aria-label="Menu options">
         <div class="p-menu-item">

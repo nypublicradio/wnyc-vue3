@@ -26,6 +26,7 @@ import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
@@ -34,6 +35,7 @@ const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
 const isLiveStream = useIsLiveStream()
 const isApp = useIsApp()
+const { isMobileBreakpoint } = useBreakpoints()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 
 const allCurrentStations = useAllCurrentStations()
@@ -138,7 +140,7 @@ const accountHeader = computed(() => {
 // edit profile dialog for web and sidebar for app
 const editField = async (field) => {
   if (!isDisabled.value) {
-    if (isApp.value) {
+    if (isMobileBreakpoint.value) {
       // app
       editProfileSideBar.value = true
     } else {

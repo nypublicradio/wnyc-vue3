@@ -1,21 +1,21 @@
 <script async setup>
-import { useIsApp } from "~/composables/states.ts"
 import ModalCloseBtn from "./account-modals/ModalCloseBtn.vue"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const updateAccountRef = ref(null)
 const emit = defineEmits(["close"])
-const isApp = useIsApp()
+const { isMobileBreakpoint } = useBreakpoints()
 </script>
 
 <template>
   <div class="edit-profile">
     <section>
       <ModalCloseBtn
-        v-if="!isApp"
+        v-if="!isMobileBreakpoint"
         @clickEmit="updateAccountRef.beforeYouLeave()"
         class="absolute right-0 top-0 p-2"
       />
       <SHeader
-        :showButton="isApp"
+        :showButton="isMobileBreakpoint"
         label="Account"
         @close-sidebar="updateAccountRef.beforeYouLeave()"
       />
