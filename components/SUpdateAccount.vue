@@ -227,7 +227,6 @@ const beforeYouLeaveDialog = ref(false)
 
 // handles the before you leave dialog. If there are changes, then show the dialog, otherwise close the sidebar
 const beforeYouLeave = () => {
-  console.log("beforeYouLeave")
   if (hasAnyFieldsChanged()) {
     beforeYouLeaveDialog.value = true
   } else {
