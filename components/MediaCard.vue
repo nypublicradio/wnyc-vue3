@@ -5,7 +5,7 @@ import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { useIsNetworkConnected, useCurrentUser } from "~/composables/states"
+import { useIsNetworkConnected, useCurrentUser, useIsApp } from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -157,6 +157,7 @@ const props = defineProps({
 })
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
+const isApp = useIsApp()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 //handle if it this is downloaded
@@ -272,15 +273,19 @@ const getDotMenuItems = (bucketItem) => {
             },
           ]
         : []),
-      {
-        label: "Sleep Timer",
-        customIcon: SleepIcon,
-        active: sleepTimerRunning.value,
-        title: "Sleep Timer",
-        command: () => {
-          handleSleepTimer()
-        },
-      },
+      ...(isApp.value
+        ? [
+            {
+              label: "Sleep Timer",
+              customIcon: SleepIcon,
+              active: sleepTimerRunning.value,
+              title: "Sleep Timer",
+              command: () => {
+                handleSleepTimer()
+              },
+            },
+          ]
+        : []),
     ]
   } else {
     return [

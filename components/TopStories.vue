@@ -15,6 +15,7 @@ const reactiveArticles = toRef(props, "articles")
       <MediaCard
         v-if="reactiveArticles.length > 0"
         class="col-12 lg:col-8 mb-3"
+        titleClasses="t7lines"
         :data="reactiveArticles[0]"
         is-horizontal
         is-feature
