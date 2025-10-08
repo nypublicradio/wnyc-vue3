@@ -211,7 +211,7 @@ onUnmounted(() => {
     <!-- <pre>{{ allLiveScheduleData }}</pre> -->
     <!-- <pre>{{ currentEpisode }}</pre> -->
     <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
-    <section class="schedule">
+    <section class="schedule-holder">
       <div class="grid m-auto">
         <div class="col w-full pr-2 lg:pr-4">
           <Schedule />
@@ -281,5 +281,8 @@ html {
       }
     }
   }
+  // .schedule-holder {
+  //   background: var(--header-background);
+  // }
 }
 </style>
