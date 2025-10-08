@@ -154,12 +154,6 @@ const togglePlayHere = (story) => {
           </div>
         </template> -->
       </VImage>
-      <Skeleton
-        v-else
-        borderRadius="0px"
-        height="auto"
-        class="episode-page-image mb-2 opacity-60"
-      />
       <section>
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>
