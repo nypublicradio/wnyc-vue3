@@ -22,7 +22,7 @@
 </template>
 <style lang="scss" scoped>
 .member-card-skeleton {
-  background-color: var(--p-surface-50);
+  background-color: var(--s-box-background-color);
   border-radius: 10px;
   padding: 1rem;
 }
