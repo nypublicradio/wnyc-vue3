@@ -164,50 +164,43 @@ const togglePlayHere = (story) => {
         />
       </div>
       <FetchError v-if="error" />
-      <div v-if="!pending">
-        <VImage
-          v-if="topImage"
-          :src="topImage"
-          :maxWidth="storyData.image.width"
-          :maxHeight="storyData.image.height"
-          sizes="xs:390px sm:576px md:768px"
-          :size="{
-            xs: [375, 250],
-            sm: [576, 384],
-            md: [768, 512],
-          }"
-          density="x1 x2"
-          :alt="storyData.image.alt"
-          class="story-page-image -mx-3 md:mx-0"
-        >
-          <template #caption>
-            <VImageCaption
-              v-if="storyData.image.caption"
-              :text="storyData.image.caption"
-            />
-          </template>
-          <template #gallery>
-            <VImageGallery
-              v-if="gallery?.slides"
-              :count="String(gallery.slides.length)"
-              :gallery-link="galleryLink"
-            />
-          </template>
-          <template #belowImage>
-            <div>
-              <p class="text-right px-4 mt-1 type-fineprint">
-                {{ storyData.image.credit }}
-              </p>
-            </div>
-          </template>
-        </VImage>
-        <Skeleton
-          v-else
-          borderRadius="0px"
-          height="auto"
-          class="episode-page-image mb-2 opacity-60"
-        />
+    </section>
+    <div v-if="!pending" class="thinContent">
+      <VImage
+        v-if="topImage"
+        :src="topImage"
+        :maxWidth="storyData.image.width"
+        :maxHeight="storyData.image.height"
+        sizes="xs:390px sm:576px md:768px"
+        :size="{
+          xs: [375, 250],
+          sm: [576, 384],
+          md: [768, 512],
+        }"
+        density="x1 x2"
+        :alt="storyData.image.alt"
+        class="story-page-image mb-4 md:px-4"
+      >
+        <template #caption>
+          <VImageCaption v-if="storyData.image.caption" :text="storyData.image.caption" />
+        </template>
+        <template #gallery>
+          <VImageGallery
+            v-if="gallery?.slides"
+            :count="String(gallery.slides.length)"
+            :gallery-link="galleryLink"
+          />
+        </template>
+        <template #belowImage>
+          <div>
+            <p class="text-right px-4 mt-1 type-fineprint">
+              {{ storyData.image.credit }}
+            </p>
+          </div>
+        </template>
+      </VImage>
 
+      <section>
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>
             <span>
@@ -261,11 +254,12 @@ const togglePlayHere = (story) => {
         />
 
         <story-article-footer :article="storyData" />
-      </div>
-      <div v-else>
-        <skeleton-article />
-      </div>
+      </section>
+    </div>
+    <section v-else>
+      <skeleton-article class="-mx-4" />
     </section>
+
     <section v-if="topStories">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">WNYC Picks</h2>
