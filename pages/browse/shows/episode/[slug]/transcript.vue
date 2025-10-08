@@ -7,14 +7,14 @@ import {
   getEpisodeHeadFallBackImage,
   copyToClipBoard,
 } from "~/utilities/helpers"
-
+import { useIsApp } from "~/composables/states"
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const isMinimized = ref(false)
-
+const isApp = useIsApp()
 definePageMeta({
   pageTransition: false,
 })
@@ -150,7 +150,7 @@ watch(
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
 
-    <section class="pinned mt-0 lg:mt-6">
+    <section class="pinned mt-0 lg:mt-6" :class="{ isApp: isApp }">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
@@ -245,11 +245,16 @@ watch(
 .episode-page {
   .pinned {
     position: sticky;
-    top: var(--header-height);
     z-index: 10;
     background-color: var(--header-background);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
+    top: calc(var(--header-height) + env(safe-area-inset-top));
+    @include media("<md") {
+      &.isApp {
+        top: env(safe-area-inset-top);
+      }
+    }
     .episode-page-image {
       transition: width var(--p-transition-duration), height var(--p-transition-duration);
       -webkit-transition: width var(--p-transition-duration),
