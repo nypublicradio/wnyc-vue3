@@ -232,7 +232,7 @@ watch(
 </script>
 
 <template>
-  <div class="settings -mt-2">
+  <div class="settings">
     <div class="user pl-4 pb-6 md:pl-0">
       <SUser
         :disabled="isDisabled"

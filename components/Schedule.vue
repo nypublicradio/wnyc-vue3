@@ -145,7 +145,12 @@ const handleCurrentEpisode = (entry, index) => {
         label="Weekly Schedule (pdf)"
       ></Button>
     </div>
-    <Tabs value="0" scrollable v-if="allCurrentStations">
+    <Tabs
+      class="schedule-station-tabs relative"
+      value="0"
+      scrollable
+      v-if="allCurrentStations"
+    >
       <TabList>
         <Tab
           v-for="(entry, index) in allCurrentStations"
@@ -353,7 +358,9 @@ html {
       }
       &.selected {
         *:not(.p-button .p-button-label) {
-          color: var(--p-surface-950) !important;
+          @include media(">md") {
+            color: var(--p-surface-950) !important;
+          }
         }
       }
     }
@@ -362,6 +369,21 @@ html {
 </style>
 <style lang="scss" scoped>
 .schedule {
+  .schedule-station-tabs {
+    &:before {
+      background-color: var(--p-tabs-nav-button-background);
+      //background-color: var(--p-darkblue-500);
+      width: 100vw;
+      height: 4.6rem;
+      content: "";
+      position: absolute;
+      top: -1rem;
+      left: -3.5em;
+      @include media("<md") {
+        left: -2em;
+      }
+    }
+  }
   .schedule-entry {
     position: relative;
     // .left {

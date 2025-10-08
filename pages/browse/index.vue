@@ -13,9 +13,7 @@ const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
 const allOrFeatured = ref(true)
-
-const { breakpoint } = useBreakpoints()
-const isMobile = computed(() => breakpoint("<md"))
+const { isMobileBreakpoint } = useBreakpoints()
 
 // computed property to get the current shows based on allOrFeatured
 const currentShows = computed(() => {
@@ -140,7 +138,11 @@ watch(
               label="All Topics"
             ></Button> -->
           </section>
-          <HorizontalScrollFeature v-if="isMobile" class="topics-holder" :data="shows">
+          <HorizontalScrollFeature
+            v-if="isMobileBreakpoint"
+            class="topics-holder"
+            :data="shows"
+          >
             <div class="flex w-full">
               <div
                 v-for="topic in showTopics"
@@ -197,6 +199,7 @@ watch(
                   class="link"
                   @click="toggleAllShows"
                   label="All Shows"
+                  :size="isMobileBreakpoint ? 'small' : 'base'"
                 ></Button>
                 <Button
                   v-else
@@ -205,6 +208,7 @@ watch(
                   class="link"
                   @click="toggleAllShows"
                   label="Featured Shows"
+                  :size="isMobileBreakpoint ? 'small' : 'base'"
                 ></Button>
               </Transition>
             </div>
@@ -225,7 +229,7 @@ watch(
                 contentClass="md:flex-column gap-3 md:gap-2"
                 imageClass="w-6rem xs:w-7rem md:w-13rem"
                 :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
-                :hideButtons="!isMobile"
+                :hideButtons="!isMobileBreakpoint"
                 @onClick="goToShowPage(show)"
               />
             </div>
@@ -236,7 +240,7 @@ watch(
                 class="col-12 md:col-4 md:mb-5"
                 contentClass="md:flex-column gap-3 md:gap-2"
                 imageClass="w-7rem md:w-13rem h-7rem md:h-13rem"
-                :hideButtons="!isMobile"
+                :hideButtons="!isMobileBreakpoint"
               />
             </div>
           </Transition>
@@ -258,7 +262,7 @@ watch(
               contentClass="md:flex-column gap-3 md:gap-2"
               imageClass="w-6rem xs:w-7rem md:w-13rem"
               :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
-              :hideButtons="!isMobile"
+              :hideButtons="!isMobileBreakpoint"
               @onClick="goToShowPage(show.item)"
             />
           </div>
