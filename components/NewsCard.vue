@@ -89,7 +89,7 @@ const emit = defineEmits(["on-click"])
 
 <style lang="scss" scoped>
 .news-card {
-  background-color: var(--p-surface-25);
+  background-color: var(--p-content-background);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
