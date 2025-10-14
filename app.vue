@@ -61,9 +61,9 @@ useHead({
   script: [],
   noscript: [],
 
-  // bodyAttrs: {
-  //   class: 'safe-area-padding',
-  // },
+  bodyAttrs: {
+    class: "style-mode-dark",
+  },
 })
 
 // to clear all displayed toasts

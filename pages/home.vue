@@ -57,7 +57,7 @@ onMounted(() => {
 
     <section class="my-4">
       <div class="home-top grid grid-nogutter gap-4">
-        <LiveFeature class="col-12 lg:col" />
+        <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
 
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2 || error3" />

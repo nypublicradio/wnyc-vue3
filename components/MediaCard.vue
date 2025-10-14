@@ -608,7 +608,7 @@ const handleHasAudio = computed(() => {
 
   &.show-bg {
     .holder {
-      background-color: var(--p-surface-25);
+      background-color: var(--p-content-background);
       border-radius: var(--media-card-border-radius);
 
       .content {
@@ -631,7 +631,7 @@ const handleHasAudio = computed(() => {
   &.show-bg-mobile {
     @include media("<md") {
       .holder {
-        background-color: var(--p-surface-25);
+        background-color: var(--p-content-background);
         border-radius: var(--media-card-border-radius);
 
         .content {
@@ -682,7 +682,7 @@ const handleHasAudio = computed(() => {
 
     @include media("<md") {
       .holder {
-        background-color: var(--p-surface-25);
+        background-color: var(--p-content-background);
         flex-direction: column;
 
         .image {
@@ -717,7 +717,7 @@ const handleHasAudio = computed(() => {
 
     .holder {
       flex-direction: column;
-      background-color: var(--p-surface-25);
+      background-color: var(--p-content-background);
 
       .content {
         padding: 1rem !important;

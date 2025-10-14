@@ -43,12 +43,12 @@ const togglePlayHere = async () => {
     <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
     <div class="holder">
       <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
-      <div class="flex align-items-start">
+      <div class="flex align-items-center md:align-items-start">
         <div class="image-holder relative">
           <transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :size="{ xs: [172, 172], xl: [280, 280] }"
+              :size="{ xs: [138, 138], sm: [172, 172], xl: [280, 280] }"
               :src="currentEpisodeHolder?.image"
               alt="show poster image"
               class="image"
@@ -91,7 +91,7 @@ const togglePlayHere = async () => {
                 "
               ></div>
               <div class="flex align-items-start justify-content-between">
-                <div class="flex flex-column gap-3">
+                <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                   <PlayButton
                     :label="isEpisodePlaying ? listeningButtonLabel : defaultButtonLabel"
                     :data="currentEpisodeHolder"
@@ -214,8 +214,8 @@ const togglePlayHere = async () => {
       height: 172px;
     }
     @include media("<md") {
-      width: 112px;
-      height: 112px;
+      width: 138px;
+      height: 138px;
     }
     background-color: #ffffff99;
     .image,
@@ -227,8 +227,8 @@ const togglePlayHere = async () => {
         height: 172px;
       }
       @include media("<md") {
-        width: 112px;
-        height: 112px;
+        width: 138px;
+        height: 138px;
       }
       display: flex;
       align-items: center;
@@ -251,6 +251,7 @@ const togglePlayHere = async () => {
   .live-feature .holder {
     max-width: $contentWidth !important;
     margin: 0 auto;
+    background-color: var(--p-content-background);
   }
 }
 
