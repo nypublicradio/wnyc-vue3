@@ -136,7 +136,7 @@ const handleCurrentEpisode = (entry, index) => {
 <template>
   <div class="schedule">
     <div class="flex flex-wrap justify-content-between align-items-end mb-4">
-      <h2 class="text-5xl">Schedule</h2>
+      <h2 class="text-xl md:text-5xl">Schedule</h2>
       <Button
         severity="secondary"
         variant="link"
