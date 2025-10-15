@@ -90,7 +90,7 @@ const handleClick = () => {
 
 <template>
   <div
-    class="timeline-holder align-items-center flex gap-0 flex-column"
+    class="timeline-holder align-items-center flex gap-0 flex-column w-full"
     :class="[
       {
         minimized: props.minimized,
@@ -230,6 +230,11 @@ const handleClick = () => {
       }
       .p-slider-handle {
         display: none;
+      }
+      &.live {
+        .live-timeline {
+          display: none;
+        }
       }
     }
   }
