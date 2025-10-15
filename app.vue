@@ -61,9 +61,7 @@ useHead({
   script: [],
   noscript: [],
 
-  bodyAttrs: {
-    class: "style-mode-dark",
-  },
+  bodyAttrs: {},
 })
 
 // to clear all displayed toasts

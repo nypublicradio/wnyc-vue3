@@ -146,21 +146,35 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+// light and darkmode vars
+:root,
+[data-style-mode="light"],
+.style-mode-light {
+  --rb-selected-borderColor: var(--p-darkblue-500);
+}
+[data-style-mode="dark"],
+.style-mode-dark {
+  --rb-selected-borderColor: var(--p-darkblue-100);
+}
+
 .adjust-donation {
   .amount-rb {
     .p-button {
       border-color: var(--p-darkblue-500);
+      p {
+        color: var(--p-surface-950) !important;
+      }
       &.selected {
         background-color: var(--p-darkblue-500);
-        border-color: transparent;
+        border-color: var(--rb-selected-borderColor);
         p {
-          color: #fff;
+          color: #fff !important;
         }
       }
       &.otherRb {
         border-color: #c3c3c3;
         p span {
-          color: #c3c3c3;
+          color: #c3c3c3 !important;
         }
       }
       .p-inputnumber {
@@ -170,7 +184,7 @@ onMounted(() => {
           background-color: transparent;
           border: transparent;
           font-weight: 700;
-          color: #ffffff;
+          color: #ffffff !important;
 
           @include media("<md") {
             font-size: 0.8725rem;

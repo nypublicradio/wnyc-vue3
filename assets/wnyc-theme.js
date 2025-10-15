@@ -502,17 +502,17 @@ const MyPreset = definePreset(Aura, {
         },
         overlay: {
           select: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
           popover: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
           modal: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
@@ -628,18 +628,18 @@ const MyPreset = definePreset(Aura, {
         },
         overlay: {
           select: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
           popover: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
           modal: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
         },
@@ -1288,7 +1288,7 @@ const MyPreset = definePreset(Aura, {
       content: {
         padding: "1.25rem 1.75rem 1.25rem 1.25rem",
       },
-    }
+    },
   },
 })
 
