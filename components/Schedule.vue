@@ -6,6 +6,7 @@ import {
   useAllCurrentStations,
   useIsApp,
   useCurrentEpisodeHolder,
+  useIsDarkMode,
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
 
@@ -26,6 +27,7 @@ const {
 
 const allCurrentStations = useAllCurrentStations()
 const isApp = useIsApp()
+const isDarkMode = useIsDarkMode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const { isMobileBreakpoint } = useBreakpoints()
 
@@ -142,10 +144,11 @@ const handleScheduleNavigationButtonLabel = (date) => {
     return null
   }
 }
+//isDarkMode.value = true
 </script>
 
 <template>
-  <div class="schedule">
+  <div class="schedule" :class="{ 'dark-mode': isDarkMode }">
     <div class="flex flex-wrap justify-content-between align-items-end mb-4">
       <h2 class="text-xl md:text-5xl">Schedule</h2>
       <Button
@@ -395,6 +398,17 @@ html {
       }
     }
   }
+  @mixin selectedEntry {
+    background-color: var(--p-content-background);
+    border-radius: 10px;
+    overflow: hidden;
+    .active-content {
+      padding: 1rem 1rem 0.5rem 1rem;
+    }
+    &:before {
+      display: none;
+    }
+  }
   .schedule-entry {
     position: relative;
     // .left {
@@ -431,15 +445,7 @@ html {
         padding: 0rem 1rem 0rem 1rem;
       }
       @include media(">=md") {
-        background-color: var(--p-content-background);
-        border-radius: 10px;
-        overflow: hidden;
-        .active-content {
-          padding: 1rem 1rem 0.5rem 1rem;
-        }
-        &:before {
-          display: none;
-        }
+        @include selectedEntry();
       }
       @include media("<md") {
         .more-from,
@@ -451,6 +457,14 @@ html {
     .follow-icon {
       width: 28px;
       height: 28px;
+    }
+  }
+  &.dark-mode {
+    .schedule-entry.selected {
+      @include selectedEntry();
+      .active-content {
+        padding-top: 0.5rem;
+      }
     }
   }
 }
