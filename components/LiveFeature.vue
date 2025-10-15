@@ -105,7 +105,7 @@ const togglePlayHere = async () => {
                     v-if="!isApp"
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
+                    class="hidden sm:flex p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
                     @click="
                       navigateTo(appDownloadLink, {
                         external: appDownloadLink.startsWith('http') ? true : false,
@@ -183,7 +183,7 @@ const togglePlayHere = async () => {
   .content {
     .blurb {
       * {
-        line-height: 1.5rem !important;
+        line-height: 1.25rem !important;
         margin-block-start: 0em;
         margin-block-end: 0em;
       }
