@@ -542,7 +542,7 @@ const handleHasAudio = computed(() => {
 
   .holder {
     position: relative;
-    //overflow: hidden;
+    overflow: hidden;
     height: 100%;
 
     .event {
