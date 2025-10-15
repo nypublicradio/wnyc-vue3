@@ -1,5 +1,6 @@
 <script setup>
 import { trackClickEvent, formatDate } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 import useLiveStream from "~/composables/data/liveStream"
 import {
   useAllCurrentStations,
@@ -26,6 +27,7 @@ const {
 const allCurrentStations = useAllCurrentStations()
 const isApp = useIsApp()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const { isMobileBreakpoint } = useBreakpoints()
 
 // schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
@@ -131,6 +133,15 @@ const handleCurrentEpisode = (entry, index) => {
   const badSlugs = ["q2", "wqxr-holiday-channel-on-wnyc"]
   return isToday.value && index === 0 && !badSlugs.includes(entry.slug)
 }
+
+// handle the next and prev buttons for the schedule. Hide the label at a smaller size
+const handleScheduleNavigationButtonLabel = (date) => {
+  if (!isMobileBreakpoint.value) {
+    return formatDate(date, "EEEE")
+  } else {
+    return null
+  }
+}
 </script>
 
 <template>
@@ -166,7 +177,7 @@ const handleCurrentEpisode = (entry, index) => {
           variant="text"
           class="day-change-btn link -ml-3"
           @click="setToPreviousDay()"
-          :label="formatDate(previousDayScheduleDate, 'EEEE')"
+          :label="handleScheduleNavigationButtonLabel(previousDayScheduleDate)"
           icon="pi pi-chevron-left"
         ></Button>
         <div class="today flex flex-column gap-0 align-items-center text-center">
@@ -183,7 +194,7 @@ const handleCurrentEpisode = (entry, index) => {
           iconPos="right"
           class="day-change-btn link -mr-3"
           @click="setToNextDay()"
-          :label="formatDate(nextDayScheduleDate, 'EEEE')"
+          :label="handleScheduleNavigationButtonLabel(nextDayScheduleDate)"
           icon="pi pi-chevron-right"
         ></Button>
       </div>
