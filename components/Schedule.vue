@@ -151,7 +151,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
       <Button
         severity="secondary"
         variant="link"
-        class="link -ml-2"
+        class="hidden md:block -ml-2"
         @click="handleScheduleDownload"
         label="Weekly Schedule (pdf)"
       ></Button>
@@ -367,13 +367,13 @@ html {
           }
         }
       }
-      &.selected {
+      /*    &.selected {
         *:not(.p-button .p-button-label) {
           @include media(">md") {
             color: var(--p-surface-950) !important;
           }
         }
-      }
+      } */
     }
   }
 }
@@ -431,7 +431,7 @@ html {
         padding: 0rem 1rem 0rem 1rem;
       }
       @include media(">=md") {
-        background-color: var(--p-surface-50);
+        background-color: var(--p-content-background);
         border-radius: 10px;
         overflow: hidden;
         .active-content {
