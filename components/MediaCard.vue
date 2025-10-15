@@ -642,7 +642,7 @@ const handleHasAudio = computed(() => {
   }
 
   .button-holder {
-    margin-bottom: -6px;
+    //margin-bottom: -6px;
   }
 
   &.is-feature {
