@@ -172,6 +172,8 @@ const handleScheduleNavigationButtonLabel = (date) => {
           :value="index.toString()"
           >{{ entry.station }}</Tab
         >
+        <!-- blank entry for spacing -->
+        <div>&nbsp;</div>
       </TabList>
       <hr class="w-full mt-5" />
       <div class="date-tools flex justify-content-between align-items-center my-4">
@@ -360,6 +362,28 @@ html {
   // }
   .schedule {
     margin-bottom: 50px;
+    // hide arrows
+    .p-tabs {
+      .p-tablist {
+        margin-left: -2rem;
+        margin-right: -2rem;
+        .p-tablist-content {
+          padding-left: 2rem;
+          .p-tab {
+            &:last-child {
+              padding-right: 2rem;
+            }
+          }
+        }
+        .p-tablist-prev-button {
+          left: -2rem;
+        }
+        .p-tablist-next-button {
+          right: -2rem;
+        }
+      }
+    }
+
     .schedule-entry {
       .date-tools {
         .day-change-btn {
