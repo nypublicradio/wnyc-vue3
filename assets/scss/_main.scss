@@ -514,16 +514,15 @@ html:not(.style-mode-dark) {
     -webkit-transition: all calc(var(--p-transition-duration) * 1.5);
   }
   &.p-button-secondary.link {
+    .p-button-label {
+      text-decoration-color: var(--link-button-color);
+      color: var(--link-button-color);
+    }
     &:hover {
       .p-button-label {
         text-decoration-color: var(--link-button-hover-color);
         color: var(--link-button-hover-color);
       }
-    }
-
-    .p-button-label {
-      text-decoration-color: var(--link-button-color);
-      color: var(--link-button-color);
     }
   }
 }
@@ -589,6 +588,25 @@ html:not(.style-mode-dark) {
           border: 2px solid var(--p-button-secondary-focus-ring-color);
           outline-color: var(--p-button-secondary-focus-ring-color);
           border-radius: 10px;
+        }
+      }
+    }
+  }
+}
+
+// DARK MODE
+
+.style-mode-dark {
+  .p-button-link {
+    &.p-button-secondary.link {
+      .p-button-label {
+        text-decoration-color: var(--p-text-color);
+        color: var(--p-text-color);
+      }
+      &:hover {
+        .p-button-label {
+          text-decoration-color: var(--link-button-hover-color);
+          color: var(--link-button-hover-color);
         }
       }
     }
