@@ -375,13 +375,14 @@ section {
       font-size: var(--font-size-7);
       font-weight: 700;
       line-height: normal;
-      //padding-bottom: 0;
+      padding-bottom: 0;
+      @include media('<md') {
+        font-size: var(--font-size-5);
+      }
       &.p-tab-active {
-        color: var(--p-primary-color);
       }
     }
     .p-tablist-active-bar {
-      background: var(--p-primary-color);
     }
   }
 }
