@@ -1032,7 +1032,7 @@ const MyPreset = definePreset(Aura, {
       },
       tab: {
         padding: "0.5rem 0rem",
-        activeColor: "{text.color}",
+        activeColor: "{primary.500}",
         borderColor: "transparent",
         hoverBorderColor: "transparent",
         activeBorderColor: "transparent",
@@ -1043,7 +1043,7 @@ const MyPreset = definePreset(Aura, {
       activeBar: {
         height: "2px",
         bottom: "-2px",
-        background: "{text.color}",
+        background: "{primary.500}",
       },
       tabpanel: {
         padding: "1.25rem 0rem 1.125rem 0rem",
@@ -1057,10 +1057,16 @@ const MyPreset = definePreset(Aura, {
           }
         },
         dark: {
+          tab: {
+            activeColor: "{text.color}",
+          },
           navButton: {
             background: "{darkblue-500}",
             shadow: '0px 0px 10px 50px color-mix(in srgb, {darkblue-500}, transparent 50%)'
-          }
+          },
+          activeBar: {
+            background: "{text.color}",
+          },
         }
       },
     },

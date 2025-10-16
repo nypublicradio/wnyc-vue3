@@ -367,6 +367,22 @@ html {
       .p-tablist {
         margin-left: -2rem;
         margin-right: -2rem;
+
+        webkit-mask-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0) 0%,
+          rgb(0, 0, 0) 6%,
+          rgb(0, 0, 0) 94%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0) 0%,
+          rgb(0, 0, 0) 6%,
+          rgb(0, 0, 0) 94%,
+          rgba(0, 0, 0, 0) 100%
+        );
+
         .p-tablist-content {
           padding-left: 2rem;
           .p-tab {
@@ -375,12 +391,18 @@ html {
             }
           }
         }
-        .p-tablist-prev-button {
-          left: -2rem;
+        .p-tablist-nav-button {
+          box-shadow: none;
+          background-color: transparent;
+          svg,
+          span {
+            display: none;
+          }
         }
-        .p-tablist-next-button {
-          right: -2rem;
-        }
+        // .p-tablist-prev-button {
+        // }
+        // .p-tablist-next-button {
+        // }
       }
     }
 
@@ -408,19 +430,19 @@ html {
 <style lang="scss" scoped>
 .schedule {
   .schedule-station-tabs {
-    &:before {
-      background-color: var(--p-tabs-nav-button-background);
-      //background-color: var(--p-darkblue-500);
-      width: 100vw;
-      height: 4.6rem;
-      content: "";
-      position: absolute;
-      top: -1rem;
-      left: -3.5em;
-      @include media("<md") {
-        left: -2em;
-      }
-    }
+    // &:before {
+    //   background-color: var(--p-tabs-nav-button-background);
+    //   //background-color: var(--p-darkblue-500);
+    //   width: 100vw;
+    //   height: 4.6rem;
+    //   content: "";
+    //   position: absolute;
+    //   top: -1rem;
+    //   left: -3.5em;
+    //   @include media("<md") {
+    //     left: -2em;
+    //   }
+    // }
   }
   @mixin selectedEntry {
     background-color: var(--p-content-background);
