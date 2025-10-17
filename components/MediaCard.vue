@@ -136,7 +136,7 @@ const props = defineProps({
   },
   teaseClasses: {
     type: String,
-    default: "hidden md:block",
+    default: "",
   },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint

@@ -1,4 +1,8 @@
 import { useIsApp } from "./states"
+import HomeIcon from "~/components/icons/HomeIcon.vue"
+import LiveIcon from "~/components/icons/LiveIcon.vue"
+import BrowseIcon from "~/components/icons/BrowseIcon.vue"
+import StarIcon from "~/components/icons/StarIcon.vue"
 
 export const localUserProfileKey = 'localUserProfile'
 
@@ -8,6 +12,13 @@ export const cmsSources = {
     NPR: 'npr',
     SIMPLECAST: 'simplecast',
 }
+
+export const appMenuOptions = ref([
+    { icon: markRaw(HomeIcon), value: "home", slug: "/home" },
+    { icon: markRaw(LiveIcon), value: "live", slug: "/live" },
+    { icon: markRaw(BrowseIcon), value: "browse", slug: "/browse" },
+    { icon: markRaw(StarIcon), value: "saved", slug: "/saved" },
+])
 
 export const liveStationPreferences = [
     {
