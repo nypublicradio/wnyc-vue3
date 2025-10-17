@@ -9,6 +9,7 @@ import {
   initializeStationList,
   getCustomStationLabel,
   //toSystemSettings,
+  capitalizeFirstLetter,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -22,7 +23,7 @@ import {
   useGlobalToast,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
-import { localUserProfileKey } from "~/composables/globals"
+import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
@@ -239,6 +240,17 @@ watch(
         :isEmail="isEmail"
         size="xlarge"
         text-size="text-lg md:text-4xl lg:text-5xl"
+      />
+    </div>
+    <div v-if="isApp" class="app-menu mb-5">
+      <SBox
+        v-for="item in appMenuOptions"
+        :key="item.value"
+        :is-route="true"
+        :label="capitalizeFirstLetter(item.value)"
+        :ripple="true"
+        textClass="text-lg"
+        @click="navigateTo(item.slug)"
       />
     </div>
     <section v-if="currentUser" class="user-preferences p-0">

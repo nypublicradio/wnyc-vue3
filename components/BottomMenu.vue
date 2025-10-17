@@ -1,20 +1,10 @@
 <script setup>
-import { ref, watch } from "vue"
+import { watch } from "vue"
 import { useBottomMenuState } from "~/composables/states"
-import HomeIcon from "./icons/HomeIcon.vue"
-import LiveIcon from "./icons/LiveIcon.vue"
-import BrowseIcon from "./icons/BrowseIcon.vue"
-import StarIcon from "./icons/StarIcon.vue"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
+import { appMenuOptions as options } from "~/composables/globals"
 const route = useRoute()
-
 const bottomMenuState = useBottomMenuState()
-const options = ref([
-  { icon: markRaw(HomeIcon), value: "home", slug: "/home" },
-  { icon: markRaw(LiveIcon), value: "live", slug: "/live" },
-  { icon: markRaw(BrowseIcon), value: "browse", slug: "/browse" },
-  { icon: markRaw(StarIcon), value: "saved", slug: "/saved" },
-])
 
 // if another trigger changes the route, update the bottom menu state
 watch(

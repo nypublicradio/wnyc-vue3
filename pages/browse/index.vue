@@ -104,7 +104,7 @@ watch(
     </Html>
     <div class="search z-2">
       <section class="thinContent">
-        <h1 class="mb-3 md:mb-4">Browse All Shows</h1>
+        <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>
         <IconField>
           <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner z-2" />
           <InputIcon v-else class="pi pi-search z-2" />
