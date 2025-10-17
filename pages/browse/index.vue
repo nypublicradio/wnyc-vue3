@@ -3,8 +3,9 @@ import { useFuse } from "@vueuse/integrations/useFuse"
 import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
-
+import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
+const isApp = useIsApp()
 const { data: shows, status, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/v2/shows`
 )
@@ -102,7 +103,7 @@ watch(
         />
       </Head>
     </Html>
-    <div class="search z-2">
+    <div class="search z-2" :class="{ 'is-app': isApp }">
       <section class="thinContent">
         <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>
         <IconField>
@@ -307,6 +308,9 @@ watch(
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     z-index: 1;
+    &.is-app {
+      top: env(safe-area-inset-top);
+    }
   }
   .content-holder {
     max-width: $thinContentWidth;
