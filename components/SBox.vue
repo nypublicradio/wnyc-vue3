@@ -1,5 +1,4 @@
 <script setup>
-import { text } from "ionicons/icons"
 import { useSettingSideBar } from "~/composables/states.ts"
 const props = defineProps({
   label: {
