@@ -22,9 +22,8 @@ import {
   useAccountDeleteSideBar,
   useGlobalToast,
 } from "~/composables/states.ts"
-import { appMenuOptions } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
-import { localUserProfileKey } from "~/composables/globals"
+import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
