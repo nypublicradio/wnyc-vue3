@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { image } from 'ionicons/icons';
 import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
 import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
