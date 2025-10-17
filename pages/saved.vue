@@ -11,6 +11,7 @@ const selectedSavedTab = useSelectedSavedTab()
 const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
 const isDarkMode = useIsDarkMode()
 
+// function to scroll to the selected item
 const scrollToActiveItem = () => {
   const selectedItem = document.getElementsByClassName("selected")
   if (selectedItem[0]) {
@@ -22,6 +23,7 @@ const scrollToActiveItem = () => {
   }
 }
 
+// function to handle when a menu item is clicked
 const selectMenuItem = async (menuItem, index) => {
   try {
     selectedMenuItem.value = menuItem
@@ -39,6 +41,7 @@ const selectMenuItem = async (menuItem, index) => {
   }
 }
 
+// function to dynamically load the component based on the selected menu item
 const loadComponent = (componentName) => {
   return defineAsyncComponent({
     loader: () => import(`~/components/saved/${componentName}.vue`),
