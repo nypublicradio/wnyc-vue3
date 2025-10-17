@@ -4,9 +4,9 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  buffer: {
+  gap: {
     type: String,
-    default: "40px",
+    default: "3",
   },
 })
 const { isMobile } = useDevice()
@@ -16,8 +16,8 @@ const reactiveData = toRef(props, "data")
 <template>
   <div class="horizontal-scroll-feature">
     <div
-      class="scroll flex gap-2 align-items-stretch"
-      :class="[{ hideScrollBar: isMobile }]"
+      class="scroll flex align-items-stretch"
+      :class="[{ hideScrollBar: isMobile }, `gap-${props.gap}`]"
     >
       <slot name="default" v-if="reactiveData" />
       <slot v-else name="skeleton">
@@ -73,20 +73,21 @@ const reactiveData = toRef(props, "data")
   .scroll {
     .item {
       &:first-child {
+        margin-left: 1.5rem;
       }
       &:not(.large-card):last-child {
         @include media("<md") {
-          margin-right: 3rem;
+          margin-right: 1.5;
         }
       }
       &.large-card:last-child {
         @include media("<md") {
-          margin-right: 3rem;
+          margin-right: 1.5;
         }
       }
-      &.btn,
+      &.btn:first-child,
       .btn {
-        margin-left: 1.5rem;
+        //margin-left: 1.5rem;
       }
     }
   }

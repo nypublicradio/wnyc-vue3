@@ -106,6 +106,7 @@ const handleAddToFavorites = () => {
 
 <template>
   <div class="show-header flex justify-content-start gap-3 md:gap-5">
+    <!-- <pre class="text-white">{{ show }}</pre> -->
     <VImage
       v-if="show"
       :src="showImage"

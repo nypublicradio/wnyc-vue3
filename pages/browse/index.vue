@@ -145,23 +145,23 @@ watch(
             class="topics-holder"
             :data="shows"
           >
-            <div class="flex w-full">
-              <div
-                v-for="topic in showTopics"
-                class="station-holder item"
-                :key="topic.label"
-              >
-                <div class="relative topic-btn-holder">
-                  <Button
-                    class="topic-btn text-sm white-space-nowrap btn"
-                    :label="topic.label"
-                    :aria-label="`${topic.label} topic button`"
-                    @click="selectTopic(topic)"
-                    :style="`background-color: ${topic.color};`"
-                  />
-                </div>
+            <!-- <div class="flex w-full"> -->
+            <div
+              v-for="topic in showTopics"
+              class="station-holder item"
+              :key="topic.label"
+            >
+              <div class="relative topic-btn-holder">
+                <Button
+                  class="topic-btn text-sm white-space-nowrap btn"
+                  :label="topic.label"
+                  :aria-label="`${topic.label} topic button`"
+                  @click="selectTopic(topic)"
+                  :style="`background-color: ${topic.color};`"
+                />
               </div>
             </div>
+            <!-- </div> -->
           </HorizontalScrollFeature>
           <section v-else>
             <div class="grid">
@@ -186,7 +186,7 @@ watch(
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div class="flex justify-content-between align-items-center mb-4">
+          <div class="flex md:justify-content-between align-items-center mb-4 gap-3">
             <Transition name="fade" mode="out-in">
               <h2 :key="allOrFeatured ? 'featured' : 'all'">
                 {{ allOrFeatured ? "Featured" : "All" }} Shows

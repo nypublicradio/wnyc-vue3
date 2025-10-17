@@ -106,7 +106,7 @@ const getShow = async (slug: string) => {
                 }
             };
             const { data } = await axios(options);
-            //console.log('=======npr show data', data.resources[0]);
+            //console.log('=======npr show data', data.resources[0].assets);
             const image = npr.findImageUrl(data);
             return {
                 id: show.showId,

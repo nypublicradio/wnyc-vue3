@@ -152,6 +152,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
     <div class="flex flex-wrap justify-content-between align-items-center mb-4">
       <h2 class="text-xl md:text-5xl">Schedule</h2>
       <Button
+        v-if="!isApp"
         severity="secondary"
         variant="link"
         class="link -mr-2 text-sm md:text-base"
