@@ -1,9 +1,15 @@
 <script setup>
-import { watch } from "vue"
 import { useBottomMenuState } from "~/composables/states"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
 import { appMenuOptions as options } from "~/composables/globals"
+
+// Function to dynamically load icon components
+const getIconComponent = (iconName) => {
+  return defineAsyncComponent(() => import(`./icons/${iconName}.vue`))
+}
+
 const route = useRoute()
+
 const bottomMenuState = useBottomMenuState()
 
 // if another trigger changes the route, update the bottom menu state
@@ -11,7 +17,7 @@ watch(
   () => route.path,
   (e) => {
     bottomMenuState.value = { value: null }
-    options.value.forEach((item) => {
+    options.forEach((item) => {
       if (e.includes(item.value)) bottomMenuState.value = { value: item.value }
     })
   },
@@ -35,7 +41,10 @@ const menuClick = (item) => {
             :aria-label="`${item.value} menu button`"
           >
             <div class="item">
-              <component :is="item.icon" :active="bottomMenuState.value == item.value">
+              <component
+                :is="getIconComponent(item.icon)"
+                :active="bottomMenuState.value?.value === item.value"
+              >
               </component>
               {{ capitalizeFirstLetter(item.value) }}
             </div>
