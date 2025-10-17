@@ -1,8 +1,8 @@
 import { useIsApp } from "./states"
-import HomeIcon from "~/components/icons/HomeIcon.vue"
-import LiveIcon from "~/components/icons/LiveIcon.vue"
-import BrowseIcon from "~/components/icons/BrowseIcon.vue"
-import StarIcon from "~/components/icons/StarIcon.vue"
+import HomeIcon from "../components/icons/HomeIcon.vue"
+import LiveIcon from "../components/icons/LiveIcon.vue"
+import BrowseIcon from "../components/icons/BrowseIcon.vue"
+import StarIcon from "../components/icons/StarIcon.vue"
 
 export const localUserProfileKey = 'localUserProfile'
 
