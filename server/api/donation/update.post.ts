@@ -3,6 +3,7 @@ import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../../utils/jwt';
 import { rateLimit } from '../../utils/rateLimiter';
 
+const config = useRuntimeConfig();
 // Response type definition
 interface DonationUpdateResponse {
     status: string;
@@ -56,7 +57,7 @@ const validateUpdateRequest = (body: any): { did: number; amount: number } => {
  * Makes the update request to Springboard API
  */
 const updateDonationWithSpringboard = async (donationId: number, newAmount: number): Promise<DonationUpdateResponse> => {
-    const springboardUrl = process.env.SPRINGBOARD_URL;
+    const springboardUrl = config.public.SPRINGBOARD_URL;
     const springboardKey = process.env.SPRINGBOARD_KEY;
 
     if (!springboardUrl || !springboardKey) {
@@ -65,7 +66,7 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
 
     try {
         const apiUrl = `${springboardUrl}/springboard-api/springboard-donation/update-amount`;
-        const response = await axios.post(apiUrl, {
+        const response = await axios.post(apiUrl, null, {
             headers: {
                 'api-key': springboardKey,
                 'Accept': 'application/json'
@@ -78,6 +79,7 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
 
         return response.data as DonationUpdateResponse;
     } catch (error: any) {
+        console.log('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
         const statusCode = error.response?.status || 500;
         const statusMessage = error.response?.statusText || 'Internal Server Error';
         const message = error.response?.data?.message ||
