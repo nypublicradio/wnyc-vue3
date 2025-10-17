@@ -235,6 +235,8 @@ export default defineNuxtConfig({
         "https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=settings_menu",
       APP_VERSION: process.env.APP_VERSION ?? "x.x.x",
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
+      NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
+      NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
     },
   },
 

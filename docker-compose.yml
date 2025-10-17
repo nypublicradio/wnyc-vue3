@@ -53,7 +53,8 @@ services:
       - JWT_SECRET=$JWT_SECRET
       - SPRINGBOARD_URL=$SPRINGBOARD_URL
       - SPRINGBOARD_KEY=$SPRINGBOARD_KEY
+      - NEWSLETTER_API=$NEWSLETTER_API
     ports:
       - 8880:8080
-    command: ['./scripts/entrypoint.sh']
-    restart: 'always'
+    command: ["./scripts/entrypoint.sh"]
+    restart: "always"
