@@ -22,8 +22,9 @@ import {
   useAccountDeleteSideBar,
   useGlobalToast,
 } from "~/composables/states.ts"
+import { appMenuOptions } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
-import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
+import { localUserProfileKey } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
@@ -222,7 +223,6 @@ const showNotificationTypes = computed(() => {
 const customDefaultStationLabel = computed(() => {
   return getCustomStationLabel(currentUserProfile.value?.default_live_stream)
 })
-
 watch(
   currentUserProfile,
   (newProfile, oldProfile) => {
