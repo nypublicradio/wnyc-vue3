@@ -212,8 +212,8 @@ onUnmounted(() => {
     <!-- <pre>{{ currentEpisode }}</pre> -->
     <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
     <section class="schedule-holder">
-      <div class="grid m-auto">
-        <div class="col w-full pr-2 lg:pr-4">
+      <div class="grid grid-nogutter m-auto">
+        <div class="col w-full md:pr-2 lg:pr-4">
           <Schedule />
         </div>
         <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
