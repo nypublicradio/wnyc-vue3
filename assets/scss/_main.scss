@@ -369,7 +369,7 @@ section {
     margin-right: -1rem;
   }
   .p-tablist-tab-list {
-    gap: 2.5rem;
+    gap: 2rem;
     .p-tab {
       font-family: var(--font-family);
       font-size: var(--font-size-7);
@@ -462,6 +462,14 @@ html:not(.style-mode-dark) {
     &.on-white {
       background-color: var(--p-surface-25);
     }
+  }
+}
+
+// force searchfield on browse page to be white on dark mode
+html.style-mode-dark {
+  .p-inputtext.search {
+    background-color: #ffffff;
+    color: var(--p-surface-950);
   }
 }
 

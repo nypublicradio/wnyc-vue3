@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, formatDate } from "~/utilities/helpers"
+import { trackClickEvent, formatDate, getCustomStationLabel } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import useLiveStream from "~/composables/data/liveStream"
 import {
@@ -149,12 +149,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
 
 <template>
   <div class="schedule" :class="{ 'dark-mode': isDarkMode }">
-    <div class="flex flex-wrap justify-content-between align-items-end mb-4">
+    <div class="flex flex-wrap justify-content-between align-items-center mb-4">
       <h2 class="text-xl md:text-5xl">Schedule</h2>
       <Button
         severity="secondary"
         variant="link"
-        class="hidden md:block -ml-2"
+        class="link -mr-2 text-sm md:text-base"
         @click="handleScheduleDownload"
         label="Weekly Schedule (pdf)"
       ></Button>
@@ -170,12 +170,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
           v-for="(entry, index) in allCurrentStations"
           :key="entry.id"
           :value="index.toString()"
-          >{{ entry.station }}</Tab
+          >{{ getCustomStationLabel(entry.station) }}</Tab
         >
         <!-- blank entry for spacing -->
         <div>&nbsp;</div>
       </TabList>
-      <hr class="w-full mt-5" />
+      <hr class="w-full mt-5 opacity-40" />
       <div class="date-tools flex justify-content-between align-items-center my-4">
         <Button
           severity="secondary"

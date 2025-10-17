@@ -102,29 +102,31 @@ watch(
         />
       </Head>
     </Html>
-    <section class="search z-2">
-      <h1 class="mb-3 md:mb-4">Browse All Shows</h1>
-      <IconField>
-        <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-        <InputIcon v-else class="pi pi-search text-color" />
-        <InputText
-          v-model="searchFieldValue"
-          placeholder="Search"
-          class="w-full on-white"
-        />
-        <InputIcon v-if="searchFieldValue" class="relative">
-          <Button
-            rounded
-            text
-            plain
-            icon="pi pi-times text-color"
-            aria-label="clear search"
-            class="absolute right-0 top-0 bottom-0 m-auto"
-            @click="clearSearchField"
-          ></Button>
-        </InputIcon>
-      </IconField>
-    </section>
+    <div class="search z-2">
+      <section class="thinContent">
+        <h1 class="mb-3 md:mb-4">Browse All Shows</h1>
+        <IconField>
+          <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner z-2" />
+          <InputIcon v-else class="pi pi-search z-2" />
+          <InputText
+            v-model="searchFieldValue"
+            placeholder="Search"
+            class="search w-full on-white"
+          />
+          <InputIcon v-if="searchFieldValue" class="relative">
+            <Button
+              rounded
+              text
+              plain
+              icon="pi pi-times text-color"
+              aria-label="clear search"
+              class="absolute right-0 top-0 bottom-0 m-auto"
+              @click="clearSearchField"
+            ></Button>
+          </InputIcon>
+        </IconField>
+      </section>
+    </div>
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
         <div class="topics">
@@ -298,15 +300,17 @@ watch(
 
 <style lang="scss" scoped>
 .browse-page {
-  max-width: $thinContentWidth;
-  margin: auto;
   .search {
     position: sticky;
-    top: env(safe-area-inset-top);
-    background: var(--background2);
+    top: calc(env(safe-area-inset-top) + $headerHeight);
+    background: var(--header-background);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     z-index: 1;
   }
   .content-holder {
+    max-width: $thinContentWidth;
+    margin: auto;
     .topics {
       .station-holder {
         &:last-child:not(.desktop) {

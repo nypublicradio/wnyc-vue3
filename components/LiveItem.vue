@@ -48,14 +48,14 @@ const startEndTime = computed(() => {
             <LiveBadge class="text-xxs md:text-base md:line-height-2" />
             <p>{{ startEndTime }}</p>
           </div>
-          <h1 class="truncate t2lines no-hyphens">
+          <h1 class="truncate t2lines no-hyphens text-xl md:text-6xl mt-1">
             {{ reactiveData?.title || reactiveData?.showTitle }}
           </h1>
           <HtmlConvert
-            class="blurb truncate t3lines my-3"
+            class="blurb truncate t3lines mt-1 mb-3"
             noBlocks
             :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
-            htmlClasses="line-height-4"
+            htmlClasses="line-height-3"
           />
           <div class="hidden md:flex">
             <PlayAndSkipButtons
