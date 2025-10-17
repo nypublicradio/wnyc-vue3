@@ -28,12 +28,14 @@ const selectMenuItem = async (menuItem, index) => {
     selectedSavedTab.value = index
     await nextTick()
     // update the route query with the selected slug
-    await router.replace({ query: { ...router.currentRoute.value.query, slug: menuItem.value } })
+    await router.replace({
+      query: { ...router.currentRoute.value.query, slug: menuItem.value },
+    })
     // scroll to the active item
     await nextTick()
     scrollToActiveItem()
   } catch (error) {
-    console.error('Error in selectMenuItem:', error)
+    console.error("Error in selectMenuItem:", error)
   }
 }
 
@@ -77,7 +79,7 @@ watch(
         })
       }
     } catch (error) {
-      console.error('Error in route watcher:', error)
+      console.error("Error in route watcher:", error)
     }
   },
   { immediate: true }
@@ -130,26 +132,24 @@ onMounted(() => {
     </section>
     <div v-if="user">
       <HorizontalScrollFeature class="items-holder my-3" :data="savedMenuItems">
-        <div class="flex w-full">
-          <div
-            v-for="(item, index) in savedMenuItems"
-            class="item-holder item"
-            :class="[{ selected: selectedMenuItem.value === item.value }]"
-            :key="item.label"
-          >
-            <div class="relative item-btn-holder">
-              <Button
-                class="item-btn text-sm white-space-nowrap btn"
-                :label="item.label"
-                :aria-label="`${item.label} button`"
-                @click="selectMenuItem(item, index)"
-                :severity="
-                  selectedMenuItem.value === item.value ? 'primary' : 'secondary'
-                "
-              />
-            </div>
+        <!-- <div class="flex w-full"> -->
+        <div
+          v-for="(item, index) in savedMenuItems"
+          class="item-holder item"
+          :class="[{ selected: selectedMenuItem.value === item.value }]"
+          :key="item.label"
+        >
+          <div class="relative item-btn-holder">
+            <Button
+              class="item-btn text-sm white-space-nowrap btn"
+              :label="item.label"
+              :aria-label="`${item.label} button`"
+              @click="selectMenuItem(item, index)"
+              :severity="selectedMenuItem.value === item.value ? 'primary' : 'secondary'"
+            />
           </div>
         </div>
+        <!-- </div> -->
       </HorizontalScrollFeature>
 
       <div class="current-component">

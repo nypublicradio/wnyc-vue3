@@ -113,7 +113,7 @@ onMounted(async () => {
   // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
-    if (isActive) {
+    if (isActive /* && isApp.value */) {
       // refresh data
       refreshData()
 

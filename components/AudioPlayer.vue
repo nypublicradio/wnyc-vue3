@@ -427,7 +427,7 @@ onMounted(async () => {
         :isMuted="isMuted"
       >
         <template #expanded-player-title>
-          <PipeData class="text-xs md:text-base">
+          <PipeData v-if="!isLiveStream" class="text-xs md:text-base">
             <template #left>
               {{
                 currentEpisode.showTitle ||

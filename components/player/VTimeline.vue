@@ -158,6 +158,7 @@ const handleClick = () => {
     -webkit-transition: height var(--p-transition-duration);
   }
   .live-timeline {
+    display: none;
     position: relative;
     width: 100%;
     height: 3px;
@@ -212,6 +213,11 @@ const handleClick = () => {
     }
   }
   &.minimized {
+    &.live {
+      .live-timeline {
+        display: block;
+      }
+    }
     @include media("<lg") {
       position: absolute;
       left: 0;
