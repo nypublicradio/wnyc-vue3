@@ -581,7 +581,7 @@ onMounted(async () => {
       <!-- <pre>{{ profileDataTemp }}</pre> -->
     </div>
     <!-- loading skeleton for membership card -->
-    <div class="col-12">
+    <div v-else class="col-12">
       <SkeletonMemberCard />
     </div>
   </div>

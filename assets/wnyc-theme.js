@@ -1091,14 +1091,14 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           root: {
-            background: "{surface.50}",
+            background: "{darkblue.500}",
             disabledBackground: "{form.field.disabled.background}",
-            hoverBackground: "{surface.100}",
+            hoverBackground: "{darkblue.800}",
           },
           handle: {
-            background: "{surface.300}",
+            background: "{surface.100}",
             disabledBackground: "{form.field.disabled.color}",
-            hoverBackground: "{surface.400}",
+            hoverBackground: "{surface.300}",
             checkedBackground: "{surface.0}",
             checkedHoverBackground: "{surface.0}",
           },
