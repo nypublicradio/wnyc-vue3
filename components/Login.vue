@@ -102,11 +102,7 @@ const openForgotPassword = () => {
         @submit-success="onLogin('apple')"
       />
       <!--  pt:content:style="background:var(--p-surface-25)" -->
-      <Divider
-        class="my-4"
-        align="center"
-        pt:content:style="background:var(--p-surface-0)"
-      >
+      <Divider class="my-4 mask" align="center" pt:content:style="background:transparent">
         <b>or</b>
       </Divider>
       <VLoginWithEmail
