@@ -469,8 +469,6 @@ html.style-mode-dark .persistent-player {
   .expanded-view .header,
   .expanded-view .expanded-footer {
     background-color: var(--persistent-player-header-footer-bg) !important;
-    opacity: var(--persistent-player-header-footer-bg-opacity);
-    backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
   }
 }
 body {
@@ -572,8 +570,21 @@ body {
       }
       .expanded-footer {
         background-color: var(--persistent-player-header-footer-bg);
-        opacity: var(--persistent-player-header-footer-bg-opacity);
-        backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
+        &:after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: -75px;
+          height: 75px;
+
+          // background gradient for fade effect
+          background: linear-gradient(
+            to top,
+            var(--persistent-player-header-footer-bg) 0%,
+            rgba(255, 255, 255, 0) 100%
+          );
+        }
       }
     }
     #expandedControls {
