@@ -654,6 +654,10 @@ const handleHasAudio = computed(() => {
       font-size: var(--font-size-7);
       line-height: var(--font-size-9);
       @include t4lines();
+      @include media("<md") {
+        font-size: var(--font-size-5);
+        line-height: 1.25rem;
+      }
     }
   }
 

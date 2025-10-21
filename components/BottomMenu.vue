@@ -3,9 +3,18 @@ import { useBottomMenuState } from "~/composables/states"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
 import { appMenuOptions as options } from "~/composables/globals"
 
-// Function to dynamically load icon components
+// Cache for icon components to prevent reloading
+const iconComponentCache = new Map()
+
+// Function to dynamically load icon components with memoization
 const getIconComponent = (iconName) => {
-  return defineAsyncComponent(() => import(`./icons/${iconName}.vue`))
+  if (!iconComponentCache.has(iconName)) {
+    iconComponentCache.set(
+      iconName,
+      defineAsyncComponent(() => import(`./icons/${iconName}.vue`))
+    )
+  }
+  return iconComponentCache.get(iconName)
 }
 
 const route = useRoute()

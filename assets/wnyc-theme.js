@@ -1295,6 +1295,23 @@ const MyPreset = definePreset(Aura, {
         padding: "1.25rem 1.75rem 1.25rem 1.25rem",
       },
     },
+    divider: {
+      content: {
+        background: "transparent"
+      },
+      colorScheme: {
+        light: {
+          root: {
+            borderColor: '{content.border.color}'
+          },
+        },
+        dark: {
+          root: {
+            borderColor: '#ffffffE6'
+          },
+        },
+      },
+    },
   },
 })
 
