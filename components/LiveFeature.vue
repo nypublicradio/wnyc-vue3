@@ -43,9 +43,9 @@ const togglePlayHere = async () => {
     <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
     <div class="holder">
       <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
-      <div class="flex align-items-center md:align-items-start">
+      <div class="flex align-items-start">
         <div class="image-holder relative">
-          <transition name="fade" mode="out-in">
+          <Transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
               :size="{ xs: [138, 138], sm: [172, 172], xl: [280, 280] }"
@@ -56,10 +56,10 @@ const togglePlayHere = async () => {
               loading="eager"
             />
             <WnycLoader v-else class="image-loader-anim" size="1rem" bg spinner />
-          </transition>
+          </Transition>
         </div>
-        <div class="content w-full relative">
-          <transition name="fade">
+        <div class="content w-full relative mt-2 md:mt-0">
+          <Transition name="fade">
             <div
               v-if="currentEpisodeHolder"
               class="flex flex-column gap-2 xl:gap-3 justify-content-center px-3"
@@ -122,7 +122,7 @@ const togglePlayHere = async () => {
             </div>
             <div
               v-else
-              class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full absolute px-3"
+              class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full absolute px-3 mt-1"
             >
               <Skeleton
                 class="hidden md:block mb-2 mt-1"
@@ -171,7 +171,7 @@ const togglePlayHere = async () => {
                 borderRadius="16px"
               />
             </div>
-          </transition>
+          </Transition>
         </div>
       </div>
     </div>
