@@ -124,7 +124,7 @@ const handleAddToFavorites = () => {
       class="flex-none show-image w-7rem md:w-13rem h-7rem md:h-13rem"
       borderRadius="0px"
     />
-    <div v-if="isApp">
+    <div v-if="!isApp">
       <div v-if="show" class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2">
         <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
         <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
