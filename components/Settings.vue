@@ -20,6 +20,7 @@ import {
   useIsLiveStream,
   useIsApp,
   useAccountDeleteSideBar,
+  useSettingSideBar,
   useGlobalToast,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
@@ -38,6 +39,7 @@ const isLiveStream = useIsLiveStream()
 const isApp = useIsApp()
 const { isMobileBreakpoint } = useBreakpoints()
 const accountDeleteSideBar = useAccountDeleteSideBar()
+const settingSideBar = useSettingSideBar()
 
 const allCurrentStations = useAllCurrentStations()
 const client = useSupabaseClient()
@@ -222,6 +224,19 @@ const showNotificationTypes = computed(() => {
 const customDefaultStationLabel = computed(() => {
   return getCustomStationLabel(currentUserProfile.value?.default_live_stream)
 })
+
+// when the nav buttons in are clicked. only shows in app
+const onNavButtons = (route) => {
+  navigateTo(route)
+
+  trackClickEvent(
+    "Click Tracking - app settings nav button",
+    "Settings Sidebar - nav buttons",
+    route
+  )
+  settingSideBar.value = false
+}
+
 watch(
   currentUserProfile,
   (newProfile, oldProfile) => {
@@ -245,11 +260,11 @@ watch(
       <SBox
         v-for="item in appMenuOptions"
         :key="item.value"
-        :is-route="true"
+        :is-route="false"
         :label="capitalizeFirstLetter(item.value)"
         :ripple="true"
         textClass="text-lg"
-        @click="navigateTo(item.slug)"
+        @click="onNavButtons(item.slug)"
       />
     </div>
     <section v-if="currentUser" class="user-preferences p-0">
