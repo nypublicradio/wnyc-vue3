@@ -55,7 +55,7 @@ onMounted(() => {
       </Head>
     </Html>
 
-    <section class="my-4">
+    <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
 
