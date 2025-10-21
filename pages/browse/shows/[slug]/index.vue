@@ -147,7 +147,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="shows-page pb-7">
+  <div class="shows-page pb-7" :class="{ 'is-app': isApp }">
     <Html lang="en">
       <Head>
         <Title
@@ -180,7 +180,7 @@ onUnmounted(() => {
       <FetchError v-if="error" />
     </section>
     <!-- <pre>{{ show }}</pre> -->
-    <div class="show-header-holder style-mode-dark py-3 md:py-6">
+    <div class="show-header-holder py-3 md:py-6 style-mode-dark">
       <section class="grid m-auto">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
@@ -280,21 +280,23 @@ onUnmounted(() => {
             @click="handleViewAll"
           />
 
-          <div ref="featuredRef" class="flex flex-column gap-5 mt-8">
-            <h2 class="md:text-xl">Featured</h2>
-          </div>
-          <div ref="seriesRef" class="flex flex-column gap-5 mt-8">
-            <h2 class="md:text-xl">Series</h2>
-          </div>
-          <div ref="newsletterRef" class="flex flex-column gap-5 mt-8">
-            <h2 class="md:text-xl">Newsletter</h2>
-          </div>
-          <div ref="aboutRef" class="flex flex-column gap-5 mt-8">
-            <h2 class="md:text-xl">About</h2>
-            <HtmlConvert :htmlContent="show?.show?.description" />
-          </div>
-          <div ref="supportRef" class="flex flex-column gap-5 mt-8">
-            <h2 class="md:text-xl">Support Our Show</h2>
+          <div v-if="!isApp">
+            <div ref="featuredRef" class="flex flex-column gap-5 mt-8">
+              <h2 class="md:text-xl">Featured</h2>
+            </div>
+            <div ref="seriesRef" class="flex flex-column gap-5 mt-8">
+              <h2 class="md:text-xl">Series</h2>
+            </div>
+            <div ref="newsletterRef" class="flex flex-column gap-5 mt-8">
+              <h2 class="md:text-xl">Newsletter</h2>
+            </div>
+            <div ref="aboutRef" class="flex flex-column gap-5 mt-8">
+              <h2 class="md:text-xl">About</h2>
+              <HtmlConvert :htmlContent="show?.show?.description" />
+            </div>
+            <div ref="supportRef" class="flex flex-column gap-5 mt-8">
+              <h2 class="md:text-xl">Support Our Show</h2>
+            </div>
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
