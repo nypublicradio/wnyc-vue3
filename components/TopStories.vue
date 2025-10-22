@@ -41,7 +41,6 @@ const reactiveArticles = toRef(props, "articles")
         />
       </div>
       <template v-if="reactiveArticles.length > 0">
-        <pre>{{ reactiveArticles?.slice(1) }}</pre>
         <MediaCard
           v-for="(article, index) in reactiveArticles?.slice(1)"
           :key="`${article.id}-${index}`"
