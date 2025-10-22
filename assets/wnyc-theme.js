@@ -2,9 +2,11 @@ import Aura from "@primevue/themes/aura"
 // link to Aura tokens to reference
 //https://github.com/primefaces/primeuix/blob/main/packages/themes/src/presets/aura/
 
-import { definePreset } from "@primevue/themes"
+import {
+  definePreset
+} from "@primevue/themes"
 
-const MyPreset = definePreset(Aura, {
+const MyPreset = definePreset( Aura, {
   primitive: {
     borderRadius: {
       none: "0",
@@ -689,6 +691,12 @@ const MyPreset = definePreset(Aura, {
     },
   },
   components: {
+    breadcrumb: {
+      root: {
+        padding: '0',
+        gap: '4px',
+      },
+    },
     skeleton: {
       colorScheme: {
         light: {
@@ -1263,6 +1271,6 @@ const MyPreset = definePreset(Aura, {
       }
     }
   },
-})
+} )
 
 export default MyPreset
