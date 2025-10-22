@@ -227,7 +227,7 @@ onUnmounted(() => {
               <Button
                 severity="secondary"
                 variant="link"
-                class="link"
+                class="link text-sm md:text-lg"
                 @click="handleViewAll"
                 label="View All"
               ></Button>
@@ -249,7 +249,7 @@ onUnmounted(() => {
             </template>
           </div>
           <div v-if="status !== 'success'">
-            <div class="flex justify-content-between align-items-center mb-5">
+            <div class="flex justify-content-between align-items-center mb-5 mt-2">
               <Skeleton height="18px" width="80px" borderRadius="4px" />
               <Skeleton height="18px" width="80px" borderRadius="4px" />
             </div>
@@ -262,7 +262,7 @@ onUnmounted(() => {
               :showBg="false"
               :showBgMobile="false"
               showTease
-              class="mb-5"
+              class="mb-6 mt-5"
             />
           </div>
           <WnycLoader
