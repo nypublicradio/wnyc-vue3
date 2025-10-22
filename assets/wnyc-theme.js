@@ -2,11 +2,9 @@ import Aura from '@primevue/themes/aura'
 // link to Aura tokens to reference
 //https://github.com/primefaces/primeuix/blob/main/packages/themes/src/presets/aura/
 
-import {
-  definePreset
-} from '@primevue/themes'
+import { definePreset } from '@primevue/themes'
 
-const MyPreset = definePreset( Aura, {
+const MyPreset = definePreset(Aura, {
   primitive: {
     borderRadius: {
       none: '0',
@@ -419,20 +417,24 @@ const MyPreset = definePreset( Aura, {
     overlay: {
       select: {
         borderRadius: '{border.radius.md}',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
+        shadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
       },
       popover: {
         borderRadius: '{border.radius.md}',
         padding: '0.75rem',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
+        shadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
       },
       modal: {
         borderRadius: '{border.radius.xl}',
         padding: '1.25rem',
-        shadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
+        shadow:
+          '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
       },
       navigation: {
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
+        shadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
       }
     },
     colorScheme: {
@@ -1271,6 +1273,6 @@ const MyPreset = definePreset( Aura, {
       }
     }
   }
-} )
+})
 
 export default MyPreset

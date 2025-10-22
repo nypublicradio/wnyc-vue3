@@ -44,7 +44,7 @@ const {
 } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
   {
-    onResponse({ response }) {
+    onResponse ({ response }) {
       const res = response._data
       $analytics.sendPageView({
         page_title: res.title,
@@ -65,7 +65,7 @@ const {
         router.replace({ query: { ...route.query, autoplay: null } })
       }
     },
-    onResponseError() {
+    onResponseError () {
       globalToast.value = {
         severity: 'error',
         summary:
