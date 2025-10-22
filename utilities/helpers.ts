@@ -975,12 +975,11 @@ export const goToLivePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
+  console.log('nav')
   const theLink = story.url || story.link
-  if (Capacitor.getPlatform() === "web" && theLink) {
-    if (story.cmsSource === cmsSources.WAGTAIL) {
-      // open in new tab if web and wagtail source (Gothamist)
-      window.open(theLink, "_blank")
-    }
+  if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
+    // open in new tab if web and wagtail source (Gothamist)
+    window.open(theLink, "_blank")
   } else {
     navigateTo({
       path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
@@ -1090,6 +1089,7 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
+    console.log('item.type = ', item.type)
     switch (item.type) {
       case mediaTypes.LIVE:
         goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
