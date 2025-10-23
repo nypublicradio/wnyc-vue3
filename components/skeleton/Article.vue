@@ -1,18 +1,20 @@
 <template>
   <div class="skeleton-holder flex flex-column">
-    <Skeleton
-      class="flex-none"
-      height="auto"
-      width="100%"
-      borderRadius="0px"
-      style="aspect-ratio: 3 / 2"
-    />
-    <Skeleton
-      class="opacity-50 align-self-end mt-1 mr-3"
-      height="12px"
-      width="40%"
-      borderRadius="16px"
-    />
+    <div class="flex flex-column md:px-6">
+      <Skeleton
+        class="flex-none"
+        height="auto"
+        width="100%"
+        borderRadius="0px"
+        style="aspect-ratio: 3 / 2"
+      />
+      <Skeleton
+        class="opacity-50 align-self-end mt-1 mr-3"
+        height="12px"
+        width="40%"
+        borderRadius="16px"
+      />
+    </div>
 
     <section>
       <div class="flex w-full flex-column">
