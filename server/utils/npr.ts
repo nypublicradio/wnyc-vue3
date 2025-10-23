@@ -35,12 +35,11 @@ export class NPR {
         try {
             let imageUrl = null;
             for (const asset of Object.values(item.resources[0].assets)) {
-                if (asset.profiles[0]?.href === '/v1/profiles/image') {
+                if (asset.profiles?.some(profile => profile.href === '/v1/profiles/image')) {
                     const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-square'));
                     if (imageEnclosure) {
                         imageUrl = { href: imageEnclosure.href, template: imageEnclosure.hrefTemplate };
                         break; // Exit the loop once the matching image URL is found
-
                     }
                 }
             }
@@ -55,7 +54,6 @@ export class NPR {
         try {
             if (item?.assets) {
                 for (const asset of Object.values(item?.assets)) {
-
                     if (asset.cardStyle === 'ProgramSegment') {
                         const res = await this.getDocument(asset?.documentLink?.href);
                         for (const asset of Object.values(res.resources[0].assets)) {
@@ -63,6 +61,7 @@ export class NPR {
                                 const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes(imageRatio));
                                 if (imageEnclosure) {
                                     return {
+                                        image: imageEnclosure.href,
                                         template: imageEnclosure.hrefTemplate,
                                         alt: asset.altText,
                                     }

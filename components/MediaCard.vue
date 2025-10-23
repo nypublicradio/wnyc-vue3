@@ -5,7 +5,7 @@ import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { useIsNetworkConnected, useCurrentUser } from "~/composables/states"
+import { useIsNetworkConnected, useCurrentUser, useIsApp } from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -136,7 +136,7 @@ const props = defineProps({
   },
   teaseClasses: {
     type: String,
-    default: "hidden md:block",
+    default: "",
   },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
@@ -157,6 +157,7 @@ const props = defineProps({
 })
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
+const isApp = useIsApp()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 //handle if it this is downloaded
@@ -272,15 +273,19 @@ const getDotMenuItems = (bucketItem) => {
             },
           ]
         : []),
-      {
-        label: "Sleep Timer",
-        customIcon: SleepIcon,
-        active: sleepTimerRunning.value,
-        title: "Sleep Timer",
-        command: () => {
-          handleSleepTimer()
-        },
-      },
+      ...(isApp.value
+        ? [
+            {
+              label: "Sleep Timer",
+              customIcon: SleepIcon,
+              active: sleepTimerRunning.value,
+              title: "Sleep Timer",
+              command: () => {
+                handleSleepTimer()
+              },
+            },
+          ]
+        : []),
     ]
   } else {
     return [
@@ -537,7 +542,7 @@ const handleHasAudio = computed(() => {
 
   .holder {
     position: relative;
-    //overflow: hidden;
+    overflow: hidden;
     height: 100%;
 
     .event {
@@ -603,7 +608,7 @@ const handleHasAudio = computed(() => {
 
   &.show-bg {
     .holder {
-      background-color: var(--p-surface-25);
+      background-color: var(--p-content-background);
       border-radius: var(--media-card-border-radius);
 
       .content {
@@ -626,7 +631,7 @@ const handleHasAudio = computed(() => {
   &.show-bg-mobile {
     @include media("<md") {
       .holder {
-        background-color: var(--p-surface-25);
+        background-color: var(--p-content-background);
         border-radius: var(--media-card-border-radius);
 
         .content {
@@ -637,7 +642,7 @@ const handleHasAudio = computed(() => {
   }
 
   .button-holder {
-    margin-bottom: -6px;
+    //margin-bottom: -6px;
   }
 
   &.is-feature {
@@ -649,6 +654,10 @@ const handleHasAudio = computed(() => {
       font-size: var(--font-size-7);
       line-height: var(--font-size-9);
       @include t4lines();
+      @include media("<md") {
+        font-size: var(--font-size-5);
+        line-height: 1.25rem;
+      }
     }
   }
 
@@ -677,7 +686,7 @@ const handleHasAudio = computed(() => {
 
     @include media("<md") {
       .holder {
-        background-color: var(--p-surface-25);
+        background-color: var(--p-content-background);
         flex-direction: column;
 
         .image {
@@ -712,7 +721,7 @@ const handleHasAudio = computed(() => {
 
     .holder {
       flex-direction: column;
-      background-color: var(--p-surface-25);
+      background-color: var(--p-content-background);
 
       .content {
         padding: 1rem !important;

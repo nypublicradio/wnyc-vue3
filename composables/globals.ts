@@ -1,5 +1,4 @@
 import { useIsApp } from "./states"
-
 export const localUserProfileKey = 'localUserProfile'
 
 export const cmsSources = {
@@ -8,6 +7,13 @@ export const cmsSources = {
     NPR: 'npr',
     SIMPLECAST: 'simplecast',
 }
+
+export const appMenuOptions = [
+    { icon: "HomeIcon", value: "home", slug: "/home" },
+    { icon: "LiveIcon", value: "live", slug: "/live" },
+    { icon: "BrowseIcon", value: "browse", slug: "/browse" },
+    { icon: "StarIcon", value: "saved", slug: "/saved" },
+]
 
 export const liveStationPreferences = [
     {

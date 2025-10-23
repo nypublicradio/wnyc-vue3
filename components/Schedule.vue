@@ -1,10 +1,12 @@
 <script setup>
-import { trackClickEvent, formatDate } from "~/utilities/helpers"
+import { trackClickEvent, formatDate, getCustomStationLabel } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 import useLiveStream from "~/composables/data/liveStream"
 import {
   useAllCurrentStations,
   useIsApp,
   useCurrentEpisodeHolder,
+  useIsDarkMode,
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
 
@@ -25,7 +27,9 @@ const {
 
 const allCurrentStations = useAllCurrentStations()
 const isApp = useIsApp()
+const isDarkMode = useIsDarkMode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const { isMobileBreakpoint } = useBreakpoints()
 
 // schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
@@ -131,37 +135,55 @@ const handleCurrentEpisode = (entry, index) => {
   const badSlugs = ["q2", "wqxr-holiday-channel-on-wnyc"]
   return isToday.value && index === 0 && !badSlugs.includes(entry.slug)
 }
+
+// handle the next and prev buttons for the schedule. Hide the label at a smaller size
+const handleScheduleNavigationButtonLabel = (date) => {
+  if (!isMobileBreakpoint.value) {
+    return formatDate(date, "EEEE")
+  } else {
+    return null
+  }
+}
+//isDarkMode.value = true
 </script>
 
 <template>
-  <div class="schedule">
-    <div class="flex flex-wrap justify-content-between align-items-end mb-4">
-      <h2 class="text-5xl">Schedule</h2>
+  <div class="schedule" :class="{ 'dark-mode': isDarkMode }">
+    <div class="flex flex-wrap justify-content-between align-items-center mb-4">
+      <h2 class="text-xl md:text-5xl">Schedule</h2>
       <Button
+        v-if="!isApp"
         severity="secondary"
         variant="link"
-        class="link -ml-2"
+        class="link -mr-2 text-sm md:text-base"
         @click="handleScheduleDownload"
         label="Weekly Schedule (pdf)"
       ></Button>
     </div>
-    <Tabs value="0" scrollable v-if="allCurrentStations">
+    <Tabs
+      class="schedule-station-tabs relative"
+      value="0"
+      scrollable
+      v-if="allCurrentStations"
+    >
       <TabList>
         <Tab
           v-for="(entry, index) in allCurrentStations"
           :key="entry.id"
           :value="index.toString()"
-          >{{ entry.station }}</Tab
+          >{{ getCustomStationLabel(entry.station) }}</Tab
         >
+        <!-- blank entry for spacing -->
+        <div>&nbsp;</div>
       </TabList>
-      <hr class="w-full mt-5" />
+      <hr class="w-full mt-5 opacity-40" />
       <div class="date-tools flex justify-content-between align-items-center my-4">
         <Button
           severity="secondary"
           variant="text"
           class="day-change-btn link -ml-3"
           @click="setToPreviousDay()"
-          :label="formatDate(previousDayScheduleDate, 'EEEE')"
+          :label="handleScheduleNavigationButtonLabel(previousDayScheduleDate)"
           icon="pi pi-chevron-left"
         ></Button>
         <div class="today flex flex-column gap-0 align-items-center text-center">
@@ -178,7 +200,7 @@ const handleCurrentEpisode = (entry, index) => {
           iconPos="right"
           class="day-change-btn link -mr-3"
           @click="setToNextDay()"
-          :label="formatDate(nextDayScheduleDate, 'EEEE')"
+          :label="handleScheduleNavigationButtonLabel(nextDayScheduleDate)"
           icon="pi pi-chevron-right"
         ></Button>
       </div>
@@ -341,6 +363,50 @@ html {
   // }
   .schedule {
     margin-bottom: 50px;
+    // hide arrows
+    .p-tabs {
+      .p-tablist {
+        margin-left: -2rem;
+        margin-right: -2rem;
+
+        webkit-mask-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0) 0%,
+          rgb(0, 0, 0) 6%,
+          rgb(0, 0, 0) 94%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0) 0%,
+          rgb(0, 0, 0) 6%,
+          rgb(0, 0, 0) 94%,
+          rgba(0, 0, 0, 0) 100%
+        );
+
+        .p-tablist-content {
+          padding-left: 2rem;
+          .p-tab {
+            &:last-child {
+              padding-right: 2rem;
+            }
+          }
+        }
+        .p-tablist-nav-button {
+          box-shadow: none;
+          background-color: transparent;
+          svg,
+          span {
+            display: none;
+          }
+        }
+        // .p-tablist-prev-button {
+        // }
+        // .p-tablist-next-button {
+        // }
+      }
+    }
+
     .schedule-entry {
       .date-tools {
         .day-change-btn {
@@ -351,17 +417,45 @@ html {
           }
         }
       }
-      &.selected {
+      /*    &.selected {
         *:not(.p-button .p-button-label) {
-          color: var(--p-surface-950) !important;
+          @include media(">md") {
+            color: var(--p-surface-950) !important;
+          }
         }
-      }
+      } */
     }
   }
 }
 </style>
 <style lang="scss" scoped>
 .schedule {
+  .schedule-station-tabs {
+    // &:before {
+    //   background-color: var(--p-tabs-nav-button-background);
+    //   //background-color: var(--p-darkblue-500);
+    //   width: 100vw;
+    //   height: 4.6rem;
+    //   content: "";
+    //   position: absolute;
+    //   top: -1rem;
+    //   left: -3.5em;
+    //   @include media("<md") {
+    //     left: -2em;
+    //   }
+    // }
+  }
+  @mixin selectedEntry {
+    background-color: var(--p-content-background);
+    border-radius: 10px;
+    overflow: hidden;
+    .active-content {
+      padding: 1rem 1rem 0.5rem 1rem;
+    }
+    &:before {
+      display: none;
+    }
+  }
   .schedule-entry {
     position: relative;
     // .left {
@@ -398,15 +492,7 @@ html {
         padding: 0rem 1rem 0rem 1rem;
       }
       @include media(">=md") {
-        background-color: var(--p-surface-50);
-        border-radius: 10px;
-        overflow: hidden;
-        .active-content {
-          padding: 1rem 1rem 0.5rem 1rem;
-        }
-        &:before {
-          display: none;
-        }
+        @include selectedEntry();
       }
       @include media("<md") {
         .more-from,
@@ -418,6 +504,14 @@ html {
     .follow-icon {
       width: 28px;
       height: 28px;
+    }
+  }
+  &.dark-mode {
+    .schedule-entry.selected {
+      @include selectedEntry();
+      .active-content {
+        padding-top: 0.5rem;
+      }
     }
   }
 }

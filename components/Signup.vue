@@ -94,11 +94,7 @@ const closeAll = () => {
         label="Sign up with Apple"
         @login-success="onSignup('apple')"
       />
-      <Divider
-        class="my-4"
-        align="center"
-        pt:content:style="background:var(--p-surface-0)"
-      >
+      <Divider class="my-4" align="center" pt:content:style="background:transparent">
         <b>or</b>
       </Divider>
       <VSignupWithEmail

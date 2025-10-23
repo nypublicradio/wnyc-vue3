@@ -107,6 +107,7 @@ const cleanupBreakpoints = () => {
  * @returns {Object} - Reactive current breakpoint and breakpoint comparison function
  */
 export function useBreakpoints() {
+    const isMobileBreakpoint = computed(() => breakpoint("<md"))
     onMounted(() => {
         listenerCount++
         initializeBreakpoints()
@@ -119,6 +120,6 @@ export function useBreakpoints() {
 
     return {
         currentBreakpoint: globalBreakpoint,
-        breakpoint,
+        breakpoint, isMobileBreakpoint
     }
 }

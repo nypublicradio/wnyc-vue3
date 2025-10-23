@@ -105,7 +105,11 @@ const handleAddToFavorites = () => {
 </script>
 
 <template>
-  <div class="show-header flex justify-content-start gap-3 md:gap-5">
+  <div
+    class="show-header flex justify-content-start gap-3 md:gap-5"
+    :class="isApp ? 'justify-content-center' : 'justify-content-start'"
+  >
+    <!-- <pre class="text-white">{{ show }}</pre> -->
     <VImage
       v-if="show"
       :src="showImage"
@@ -120,93 +124,95 @@ const handleAddToFavorites = () => {
       class="flex-none show-image w-7rem md:w-13rem h-7rem md:h-13rem"
       borderRadius="0px"
     />
-    <div v-if="show" class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2">
-      <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
-      <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
-        {{ showScheduleSummary }}
-      </p>
-      <HtmlConvert
-        v-if="showTease"
-        no-blocks
-        :htmlContent="showTease"
-        :key="`tease-${showSlug}`"
-        class="hidden md:block text-sm md:text-base"
-      />
-      <!-- desktop buttons -->
-      <div class="hidden md:flex align-items-center gap-3">
-        <Button
-          class="play-btn flex-none"
-          severity="secondary"
-          rounded
-          aria-label="play toggle"
-          tabindex="0"
-          :disabled="!hasEpisodes"
-          @click="togglePlayMostRecentEpisode"
-        >
-          <template #icon>
-            <PauseIcon v-if="isEpisodePlaying" />
-            <PlayIcon v-else />
-          </template>
-        </Button>
-
-        <Button
-          rounded
-          severity="secondary"
-          :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
-          :label="isFavorited ? 'Unfollow' : 'Follow'"
-          @click="handleAddToFavorites"
-        >
-          <template #icon>
-            <FollowIcon :active="isFavorited" style="height: 20px; width: 20px" />
-          </template>
-        </Button>
-
-        <SleepTimerButton
-          v-if="isApp"
-          @emit-click="handleSleepTimer"
-          :isActive="sleepTimerRunning"
-          :isText="false"
-          label="Sleep Timer"
-          iconClass=""
-          iconStyles="height: 20px; width: 20px;"
+    <div v-if="!isApp">
+      <div v-if="show" class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2">
+        <h2 class="line-height-1 text-2xl md:text-6xl">{{ showTitle }}</h2>
+        <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
+          {{ showScheduleSummary }}
+        </p>
+        <HtmlConvert
+          v-if="showTease"
+          no-blocks
+          :htmlContent="showTease"
+          :key="`tease-${showSlug}`"
+          class="hidden md:block text-sm md:text-base"
         />
-        <Button
-          v-else
-          label="Listen in the app"
-          severity="secondary"
-          rounded
-          class=""
-          @click="
-            navigateTo(appDownloadLink, {
-              external: appDownloadLink.startsWith('http') ? true : false,
-            })
-          "
-        >
-          <template #icon>
-            <DevicesIcon style="height: 20px; width: 20px" />
-          </template>
-        </Button>
+        <!-- desktop buttons -->
+        <div class="hidden md:flex align-items-center gap-3">
+          <Button
+            class="play-btn flex-none"
+            severity="secondary"
+            rounded
+            aria-label="play toggle"
+            tabindex="0"
+            :disabled="!hasEpisodes"
+            @click="togglePlayMostRecentEpisode"
+          >
+            <template #icon>
+              <PauseIcon v-if="isEpisodePlaying" />
+              <PlayIcon v-else />
+            </template>
+          </Button>
+
+          <Button
+            rounded
+            severity="secondary"
+            :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
+            :label="isFavorited ? 'Unfollow' : 'Follow'"
+            @click="handleAddToFavorites"
+          >
+            <template #icon>
+              <FollowIcon :active="isFavorited" style="height: 20px; width: 20px" />
+            </template>
+          </Button>
+
+          <SleepTimerButton
+            v-if="isApp"
+            @emit-click="handleSleepTimer"
+            :isActive="sleepTimerRunning"
+            :isText="false"
+            label="Sleep Timer"
+            iconClass=""
+            iconStyles="height: 20px; width: 20px;"
+          />
+          <Button
+            v-else
+            label="Listen in the app"
+            severity="secondary"
+            rounded
+            class=""
+            @click="
+              navigateTo(appDownloadLink, {
+                external: appDownloadLink.startsWith('http') ? true : false,
+              })
+            "
+          >
+            <template #icon>
+              <DevicesIcon style="height: 20px; width: 20px" />
+            </template>
+          </Button>
+        </div>
       </div>
-    </div>
-    <div v-else class="hidden md:flex flex-column gap-3 w-full">
-      <div class="flex flex-column gap-0">
-        <Skeleton class="my-2" height="48px" width="65%" borderRadius="24px" />
-        <Skeleton
-          v-if="showScheduleSummary"
-          height="14px"
-          width="35%"
-          borderRadius="24px"
-        />
-      </div>
-      <div class="flex flex-column gap-2">
-        <Skeleton height="14px" width="100%" borderRadius="24px" />
-        <Skeleton height="14px" width="100%" borderRadius="24px" />
-        <Skeleton height="14px" width="72%" borderRadius="24px" />
-      </div>
-      <div class="flex gap-3">
-        <Skeleton height="48px" width="48px" borderRadius="24px" />
-        <Skeleton height="41px" width="99px" borderRadius="24px" />
-        <Skeleton height="41px" width="178px" borderRadius="24px" />
+      <div v-else class="hidden md:flex flex-column gap-3 w-full">
+        <div class="flex flex-column gap-0">
+          <Skeleton class="my-2" height="48px" width="65%" borderRadius="24px" />
+          <Skeleton
+            v-if="showScheduleSummary"
+            height="14px"
+            width="35%"
+            borderRadius="24px"
+          />
+        </div>
+        <div class="flex flex-column gap-2">
+          <Skeleton height="14px" width="100%" borderRadius="24px" />
+          <Skeleton height="14px" width="100%" borderRadius="24px" />
+          <Skeleton height="14px" width="72%" borderRadius="24px" />
+        </div>
+        <div class="flex gap-3">
+          <Skeleton height="48px" width="48px" borderRadius="24px" />
+          <Skeleton height="41px" width="99px" borderRadius="24px" />
+          <Skeleton height="41px" width="178px" borderRadius="24px" />
+        </div>
       </div>
     </div>
   </div>

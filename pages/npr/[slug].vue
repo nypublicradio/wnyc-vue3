@@ -117,50 +117,44 @@ const togglePlayHere = (story) => {
           label="Back"
         />
       </div>
-
       <FetchError v-if="error || error2" />
-      <div v-if="!pending">
-        <VImage
-          v-if="storyData.image"
-          :src="storyData.image"
-          :maxWidth="storyData.width"
-          :maxHeight="storyData.height"
-          :size="{
-            xs: [375, 250],
-            sm: [576, 384],
-            md: [768, 512],
-          }"
-          :alt="storyData.alt"
-          class="npr-story-page-image -mx-3 md:mx-0"
-        >
-          <template #caption>
-            <VImageCaption
-              v-if="storyData.leadImageCaption"
-              :text="storyData.leadImageCaption"
-            />
-          </template>
-          <!--         <template #gallery>
+    </section>
+    <div v-if="!pending" class="thinContent">
+      <VImage
+        v-if="storyData.image"
+        :src="storyData.image"
+        :maxWidth="storyData.width"
+        :maxHeight="storyData.height"
+        :size="{
+          xs: [375, 250],
+          sm: [576, 384],
+          md: [768, 512],
+        }"
+        :alt="storyData.alt"
+        class="npr-story-page-image mb-4 md:px-4"
+      >
+        <template #caption>
+          <VImageCaption
+            v-if="storyData.leadImageCaption"
+            :text="storyData.leadImageCaption"
+          />
+        </template>
+        <!--         <template #gallery>
           <VImageGallery
             v-if="gallery?.slides"
             :count="String(gallery.slides.length)"
             :gallery-link="galleryLink"
           />
         </template> -->
-          <!--         <template #belowImage>
+        <!--         <template #belowImage>
           <div>
             <p class="text-left px-4 mt-1 text-xs">
               {{ storyData.image.credit }}
             </p>
           </div>
         </template> -->
-        </VImage>
-        <Skeleton
-          v-else
-          borderRadius="0px"
-          height="auto"
-          class="episode-page-image mb-2 opacity-60"
-        />
-
+      </VImage>
+      <section>
         <PipeData class="my-2 text-xs opacity-70">
           <template #left>
             <span>
@@ -219,11 +213,12 @@ const togglePlayHere = (story) => {
         />
 
         <story-article-footer :article="storyData" :isDisableComments="true" />
-      </div>
-      <div v-else>
-        <skeleton-article />
-      </div>
-    </section>
+      </section>
+    </div>
+    <div v-else>
+      <skeleton-article />
+    </div>
+
     <section v-if="topStories">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">Top Stories From Gothamist</h2>

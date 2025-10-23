@@ -494,7 +494,7 @@ const MyPreset = definePreset(Aura, {
           hoverMutedColor: "{surface.600}",
         },
         content: {
-          background: "{surface.0}",
+          background: "{surface.25}",
           hoverBackground: "{surface.100}",
           borderColor: "{surface.200}",
           color: "{text.color}",
@@ -502,17 +502,17 @@ const MyPreset = definePreset(Aura, {
         },
         overlay: {
           select: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
           popover: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
           modal: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
@@ -620,26 +620,26 @@ const MyPreset = definePreset(Aura, {
           hoverMutedColor: "{surface.300}",
         },
         content: {
-          background: "{surface.900}",
-          hoverBackground: "{surface.800}",
+          background: "#ffffff1A",
+          hoverBackground: "#ffffff4D",
           borderColor: "{surface.700}",
           color: "{text.color}",
           hoverColor: "{text.hover.color}",
         },
         overlay: {
           select: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
           popover: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
           modal: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
         },
@@ -1032,19 +1032,42 @@ const MyPreset = definePreset(Aura, {
       },
       tab: {
         padding: "0.5rem 0rem",
-        activeColor: "{text.color}",
+        activeColor: "{primary.500}",
         borderColor: "transparent",
         hoverBorderColor: "transparent",
         activeBorderColor: "transparent",
       },
+      navButton: {
+        background: "{darkblue-500}",
+      },
       activeBar: {
         height: "2px",
         bottom: "-2px",
-        background: "{text.color}",
+        background: "{primary.500}",
       },
       tabpanel: {
         padding: "1.25rem 0rem 1.125rem 0rem",
         background: "transparent",
+      },
+      colorScheme: {
+        light: {
+          navButton: {
+            background: "{surface.0}",
+            shadow: '0px 0px 10px 50px rgba(255, 255, 255, 0.6)'
+          }
+        },
+        dark: {
+          tab: {
+            activeColor: "{text.color}",
+          },
+          navButton: {
+            background: "{darkblue-500}",
+            shadow: '0px 0px 10px 50px color-mix(in srgb, {darkblue-500}, transparent 50%)'
+          },
+          activeBar: {
+            background: "{text.color}",
+          },
+        }
       },
     },
     toggleswitch: {
@@ -1068,14 +1091,14 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           root: {
-            background: "{surface.50}",
+            background: "{darkblue.500}",
             disabledBackground: "{form.field.disabled.background}",
-            hoverBackground: "{surface.100}",
+            hoverBackground: "{darkblue.800}",
           },
           handle: {
-            background: "{surface.300}",
+            background: "{surface.100}",
             disabledBackground: "{form.field.disabled.color}",
-            hoverBackground: "{surface.400}",
+            hoverBackground: "{surface.300}",
             checkedBackground: "{surface.0}",
             checkedHoverBackground: "{surface.0}",
           },
@@ -1261,7 +1284,34 @@ const MyPreset = definePreset(Aura, {
       submenuLabel: {
         padding: '0',
       }
-    }
+    },
+    popover: {
+      root: {
+        borderColor: "{surface.100}",
+        shadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+        borderRadius: "20px",
+      },
+      content: {
+        padding: "1.25rem 1.75rem 1.25rem 1.25rem",
+      },
+    },
+    divider: {
+      content: {
+        background: "transparent"
+      },
+      colorScheme: {
+        light: {
+          root: {
+            borderColor: '{content.border.color}'
+          },
+        },
+        dark: {
+          root: {
+            borderColor: '#ffffffE6'
+          },
+        },
+      },
+    },
   },
 })
 

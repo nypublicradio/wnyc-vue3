@@ -734,9 +734,7 @@ defineExpose({
               />
               <div v-if="isLiveStream" class="flex flex-column gap-2">
                 <div class="live flex gap-2 align-items-center">
-                  <div class="media-live-indicator">
-                    <span class="media-live-indicator-text">Live</span>
-                  </div>
+                  <LiveBadge fontSize="0.65rem" />
                   <div class="text-sm md:text-base">{{ props.station }}</div>
                 </div>
                 <slot name="expanded-player-title">{{ props.title }}</slot>
@@ -1077,37 +1075,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   @media (hover: hover) and (pointer: fine) {
     .media-button:hover {
       background: var(--persistent-player-button-bg-color-hover);
-    }
-  }
-
-  // live button
-  .media-live-indicator {
-    width: 40px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    /* Browser resets. */
-    padding: 0;
-    user-select: none;
-    appearance: none;
-    background: none;
-    outline: none;
-    border: none;
-  }
-
-  .media-live-indicator-text {
-    text-transform: uppercase;
-    background-color: var(--p-red-500);
-    border-radius: 2px;
-    color: #f5f5f5;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: var(--font-weight-900);
-    letter-spacing: 1.5px;
-    padding: 0px 4px;
-    transition: color 0.3s ease;
-    @include media("<md") {
-      font-size: 9px;
     }
   }
 }

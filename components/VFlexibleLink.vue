@@ -70,7 +70,7 @@ const isAnchor = computed(() => {
 <template>
   <div
     v-if="!to"
-    class="flexible-link null"
+    class="flexible-link null inline"
     v-bind="{ ...$attrs }"
     @click="emit('flexible-link-click', to)"
   >

@@ -174,6 +174,12 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Server-only runtime values (read at runtime by Nitro)
+    aviaryBaseApi:
+      ((process.env.ENV === 'demo' || process.env.environment === 'demo')
+        ? (process.env.DEMO_AVIARY_BASE_API || process.env.AVIARY_BASE_API)
+        : process.env.AVIARY_BASE_API) ||
+      "https://cms.prod.nypr.digital/api/v2/",
     public: {
       SENTRY_DSN: process.env["SENTRY_DSN"],
       SENTRY_ENV: process.env.SENTRY_ENV ?? "development",
@@ -197,7 +203,10 @@ export default defineNuxtConfig({
         "https://cms.prod.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false",
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? "https://api.wnyc.org/api/",
       AVIARY_BASE_API:
-        process.env.AVIARY_BASE_API ?? "https://cms.prod.nypr.digital/api/v2/",
+        ((process.env.ENV === 'demo' || process.env.environment === 'demo')
+          ? (process.env.DEMO_AVIARY_BASE_API || process.env.AVIARY_BASE_API)
+          : process.env.AVIARY_BASE_API) ||
+        "https://cms.prod.nypr.digital/api/v2/",
       IMAGE_BASE_URL:
         process.env.IMAGE_BASE_URL ?? "https://cms.prod.nypr.digital/images/",
       FEATURED_SHOWS:

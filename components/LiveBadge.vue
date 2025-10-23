@@ -6,7 +6,7 @@ const props = defineProps({
   },
   bgColor: {
     type: String,
-    default: "#ffffff",
+    default: "#f5f5f5",
   },
   fontSize: {
     type: String,
