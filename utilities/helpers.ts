@@ -975,7 +975,6 @@ export const goToLivePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
-  console.log('nav')
   const theLink = story.url || story.link
   if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
     // open in new tab if web and wagtail source (Gothamist)
