@@ -30,6 +30,12 @@ const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => 
   }
 })
 
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  { label: show.value?.show?.title, route: `/browse/shows/${show.value?.show?.slug}` },
+])
+
 // clean up the useIntersectionObserver
 onUnmounted(() => {
   stop()
@@ -61,12 +67,6 @@ const loadMore = async () => {
     }
     console.error("error = ", e)
   }
-}
-
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 // if user is logged in, check if item is already favorited
@@ -124,18 +124,7 @@ onMounted(() => {
           />
         </Head>
       </Html>
-      <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="routeBack"
-          label="Back"
-        />
-      </div>
+      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
       <FetchError v-if="error" />
     </section>
 
