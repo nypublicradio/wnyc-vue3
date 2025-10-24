@@ -127,12 +127,12 @@ onUnmounted(() => {
             >
               <div class="relative">
                 <Button
-                  class="station-btn text-sm ml-4 max-w-15rem md:px-4"
+                  class="station-btn text-sm ml-3 max-w-15rem md:px-4"
                   :severity="
                     currentEpisodeHolder?.station === station.station ||
                     currentEpisode?.station === station.station
                       ? 'primary'
-                      : 'contrast'
+                      : 'secondary '
                   "
                   :label="station.station"
                   :aria-label="`${station.station} button`"
@@ -211,9 +211,9 @@ onUnmounted(() => {
     <!-- <pre>{{ allLiveScheduleData }}</pre> -->
     <!-- <pre>{{ currentEpisode }}</pre> -->
     <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
-    <section class="schedule">
-      <div class="grid m-auto">
-        <div class="col w-full pr-2 lg:pr-4">
+    <section class="schedule-holder">
+      <div class="grid grid-nogutter m-auto">
+        <div class="col w-full md:pr-2 lg:pr-4">
           <Schedule />
         </div>
         <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
@@ -281,5 +281,8 @@ html {
       }
     }
   }
+  // .schedule-holder {
+  //   background: var(--header-background);
+  // }
 }
 </style>

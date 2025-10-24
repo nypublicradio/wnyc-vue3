@@ -90,7 +90,7 @@ const handleClick = () => {
 
 <template>
   <div
-    class="timeline-holder align-items-center flex gap-0 flex-column"
+    class="timeline-holder align-items-center flex gap-0 flex-column w-full"
     :class="[
       {
         minimized: props.minimized,
@@ -158,6 +158,7 @@ const handleClick = () => {
     -webkit-transition: height var(--p-transition-duration);
   }
   .live-timeline {
+    display: none;
     position: relative;
     width: 100%;
     height: 3px;
@@ -212,6 +213,11 @@ const handleClick = () => {
     }
   }
   &.minimized {
+    &.live {
+      .live-timeline {
+        display: block;
+      }
+    }
     @include media("<lg") {
       position: absolute;
       left: 0;
@@ -230,6 +236,11 @@ const handleClick = () => {
       }
       .p-slider-handle {
         display: none;
+      }
+      &.live {
+        .live-timeline {
+          display: none;
+        }
       }
     }
   }

@@ -1,5 +1,10 @@
 <script setup>
-import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states"
+import {
+  useCurrentUser,
+  useCurrentEpisode,
+  useGlobalToast,
+  useIsApp,
+} from "~/composables/states"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -27,6 +32,7 @@ const router = useRouter()
 const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const globalToast = useGlobalToast()
+const isApp = useIsApp()
 const progress = ref({})
 
 // Use the shared breakpoint composable
@@ -184,15 +190,19 @@ const getDotMenuItems = (bucketItem) => {
         moreFromClick()
       },
     },
-    {
-      label: "Sleep Timer",
-      customIcon: SleepIcon,
-      active: sleepTimerRunning.value,
-      title: currentEpisode.value?.title ?? "No audio playing",
-      command: () => {
-        handleSleepTimer()
-      },
-    },
+    ...(isApp.value
+      ? [
+          {
+            label: "Sleep Timer",
+            customIcon: SleepIcon,
+            active: sleepTimerRunning.value,
+            title: currentEpisode.value?.title ?? "No audio playing",
+            command: () => {
+              handleSleepTimer()
+            },
+          },
+        ]
+      : []),
   ]
 }
 

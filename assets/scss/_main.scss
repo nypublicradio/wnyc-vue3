@@ -209,6 +209,22 @@ hr {
   }
 }
 
+.safe-padding-left {
+  padding-left: env(safe-area-inset-left);
+}
+.safe-padding-right {
+  padding-right: env(safe-area-inset-right);
+}
+.safe-padding-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-padding {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
 .top-safe-cover {
   height: env(safe-area-inset-top);
   position: fixed;
@@ -353,19 +369,20 @@ section {
     margin-right: -1rem;
   }
   .p-tablist-tab-list {
-    gap: 2.5rem;
+    gap: 2rem;
     .p-tab {
       font-family: var(--font-family);
       font-size: var(--font-size-7);
       font-weight: 700;
       line-height: normal;
       padding-bottom: 0;
+      @include media('<md') {
+        font-size: var(--font-size-5);
+      }
       &.p-tab-active {
-        color: var(--p-primary-color);
       }
     }
     .p-tablist-active-bar {
-      background: var(--p-primary-color);
     }
   }
 }
@@ -448,6 +465,14 @@ html:not(.style-mode-dark) {
   }
 }
 
+// force searchfield on browse page to be white on dark mode
+html.style-mode-dark {
+  .p-inputtext.search {
+    background-color: #ffffff;
+    color: var(--p-surface-950);
+  }
+}
+
 // removes the sticky hover effect on mobile touch devices by setting the hover color to the same as the default color
 @media (hover: none) and (pointer: coarse) {
   .p-button:hover {
@@ -498,16 +523,15 @@ html:not(.style-mode-dark) {
     -webkit-transition: all calc(var(--p-transition-duration) * 1.5);
   }
   &.p-button-secondary.link {
+    .p-button-label {
+      text-decoration-color: var(--link-button-color);
+      color: var(--link-button-color);
+    }
     &:hover {
       .p-button-label {
         text-decoration-color: var(--link-button-hover-color);
         color: var(--link-button-hover-color);
       }
-    }
-
-    .p-button-label {
-      text-decoration-color: var(--link-button-color);
-      color: var(--link-button-color);
     }
   }
 }
@@ -529,6 +553,140 @@ html:not(.style-mode-dark) {
       margin-left: -0.5rem;
       @include media('<md') {
         margin-left: 0;
+      }
+    }
+  }
+}
+
+/* Custom styling for non-modal dialogs */
+.p-dialog-mask {
+  background-color: var(--p-mask-background) !important;
+  pointer-events: auto !important;
+}
+
+.p-popover {
+  // remove the arrows on popovers
+  &:before,
+  &:after {
+    display: none;
+  }
+  .p-popover-content {
+    .p-menu-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      .p-menu-item-content {
+        cursor: pointer;
+        transition: color var(--p-transition-duration);
+        -webkit-transition: color var(--p-transition-duration);
+        padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+        border: 2px solid transparent;
+        &:hover {
+          text-decoration: underline;
+          color: var(--p-red-500);
+        }
+        .option {
+          font-family: var(--font-family);
+          font-size: var(--font-size-5);
+          font-weight: 700;
+        }
+        &:focus-visible {
+          outline: none;
+          text-decoration: underline;
+          color: var(--p-red-500);
+          border: 2px solid var(--p-button-secondary-focus-ring-color);
+          outline-color: var(--p-button-secondary-focus-ring-color);
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+}
+.p-divider {
+  &.mask {
+    &.p-divider-center {
+      &:before {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 40%,
+          rgba(0, 0, 0, 0) 45%,
+          rgba(0, 0, 0, 0) 55%,
+          rgba(0, 0, 0) 60%,
+          rgb(0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 40%,
+          rgba(0, 0, 0, 0) 45%,
+          rgba(0, 0, 0, 0) 55%,
+          rgba(0, 0, 0) 60%,
+          rgb(0, 0, 0) 100%
+        );
+      }
+    }
+    &.p-divider-left {
+      &:before {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 1%,
+          rgba(0, 0, 0, 0) 4%,
+          rgba(0, 0, 0, 0) 10%,
+          rgba(0, 0, 0) 14%,
+          rgb(0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 1%,
+          rgba(0, 0, 0, 0) 4%,
+          rgba(0, 0, 0, 0) 10%,
+          rgba(0, 0, 0) 14%,
+          rgb(0, 0, 0) 100%
+        );
+      }
+    }
+    &.p-divider-right {
+      &:before {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 86%,
+          rgba(0, 0, 0, 0) 90%,
+          rgba(0, 0, 0, 0) 96%,
+          rgba(0, 0, 0) 99%,
+          rgb(0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 86%,
+          rgba(0, 0, 0, 0) 90%,
+          rgba(0, 0, 0, 0) 96%,
+          rgba(0, 0, 0) 99%,
+          rgb(0, 0, 0) 100%
+        );
+      }
+    }
+  }
+}
+
+// DARK MODE
+
+.style-mode-dark {
+  .p-button-link {
+    &.p-button-secondary.link {
+      .p-button-label {
+        text-decoration-color: var(--p-text-color);
+        color: var(--p-text-color);
+      }
+      &:hover {
+        .p-button-label {
+          text-decoration-color: var(--link-button-hover-color);
+          color: var(--link-button-hover-color);
+        }
       }
     }
   }

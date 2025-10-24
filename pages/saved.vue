@@ -11,6 +11,7 @@ const selectedSavedTab = useSelectedSavedTab()
 const selectedMenuItem = ref(savedMenuItems.value[selectedSavedTab.value])
 const isDarkMode = useIsDarkMode()
 
+// function to scroll to the selected item
 const scrollToActiveItem = () => {
   const selectedItem = document.getElementsByClassName("selected")
   if (selectedItem[0]) {
@@ -22,21 +23,25 @@ const scrollToActiveItem = () => {
   }
 }
 
+// function to handle when a menu item is clicked
 const selectMenuItem = async (menuItem, index) => {
   try {
     selectedMenuItem.value = menuItem
     selectedSavedTab.value = index
     await nextTick()
     // update the route query with the selected slug
-    await router.replace({ query: { ...router.currentRoute.value.query, slug: menuItem.value } })
+    await router.replace({
+      query: { ...router.currentRoute.value.query, slug: menuItem.value },
+    })
     // scroll to the active item
     await nextTick()
     scrollToActiveItem()
   } catch (error) {
-    console.error('Error in selectMenuItem:', error)
+    console.error("Error in selectMenuItem:", error)
   }
 }
 
+// function to dynamically load the component based on the selected menu item
 const loadComponent = (componentName) => {
   return defineAsyncComponent({
     loader: () => import(`~/components/saved/${componentName}.vue`),
@@ -77,7 +82,7 @@ watch(
         })
       }
     } catch (error) {
-      console.error('Error in route watcher:', error)
+      console.error("Error in route watcher:", error)
     }
   },
   { immediate: true }
@@ -130,26 +135,24 @@ onMounted(() => {
     </section>
     <div v-if="user">
       <HorizontalScrollFeature class="items-holder my-3" :data="savedMenuItems">
-        <div class="flex w-full">
-          <div
-            v-for="(item, index) in savedMenuItems"
-            class="item-holder item"
-            :class="[{ selected: selectedMenuItem.value === item.value }]"
-            :key="item.label"
-          >
-            <div class="relative item-btn-holder">
-              <Button
-                class="item-btn text-sm white-space-nowrap btn"
-                :label="item.label"
-                :aria-label="`${item.label} button`"
-                @click="selectMenuItem(item, index)"
-                :severity="
-                  selectedMenuItem.value === item.value ? 'primary' : 'secondary'
-                "
-              />
-            </div>
+        <!-- <div class="flex w-full"> -->
+        <div
+          v-for="(item, index) in savedMenuItems"
+          class="item-holder item"
+          :class="[{ selected: selectedMenuItem.value === item.value }]"
+          :key="item.label"
+        >
+          <div class="relative item-btn-holder">
+            <Button
+              class="item-btn text-sm white-space-nowrap btn"
+              :label="item.label"
+              :aria-label="`${item.label} button`"
+              @click="selectMenuItem(item, index)"
+              :severity="selectedMenuItem.value === item.value ? 'primary' : 'secondary'"
+            />
           </div>
         </div>
+        <!-- </div> -->
       </HorizontalScrollFeature>
 
       <div class="current-component">

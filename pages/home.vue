@@ -55,9 +55,9 @@ onMounted(() => {
       </Head>
     </Html>
 
-    <section class="my-4">
+    <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
-        <LiveFeature class="col-12 lg:col" />
+        <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
 
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2 || error3" />
@@ -76,7 +76,7 @@ onMounted(() => {
 
     <section>
       <div
-        class="ad-holder col mb-3 flex lg:hidden align-items-center justify-content-center"
+        class="ad-holder col mb-6 flex lg:hidden align-items-center justify-content-center"
       >
         <story-htlAd
           layout="rectangle"
@@ -95,12 +95,12 @@ onMounted(() => {
       </div>
     </section>
 
-    <DonateBanner />
+    <DonateBanner class="my-6" />
 
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
-          <h2 class="mt-4">{{ section.title }}</h2>
+          <h2>{{ section.title }}</h2>
         </section>
         <section v-if="section.componentType === 'default'">
           <div class="grid">

@@ -6,6 +6,7 @@ export const useMembership = () => {
 
   const dialog = useDialog()
   const toast = useToast()
+
   const dialogStyles = {
     width: "100%",
     maxWidth: "672px",
@@ -17,8 +18,8 @@ export const useMembership = () => {
     style: dialogStyles,
     draggable: false,
     dismissableMask: true,
-    modal: true,
-    breakpoints: { '768px': '90vw' }
+    modal: false,
+    breakpoints: { '768px': '90vw' },
   }
   const config = useRuntimeConfig()
 
@@ -99,25 +100,35 @@ export const useMembership = () => {
           const { authenticatedFetch } = useAuth()
           const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
 
-          const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
-            method: 'POST',
-            body: requestBody,
-          })
+          try {
+            const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
+              method: 'POST',
+              body: requestBody,
+            })
 
-          if (data?.error) {
+            if (data?.error) {
+              toast.add({
+                severity: "error",
+                summary: "There was an error canceling your membership. Please try again later.",
+                life: 8000,
+                closable: true,
+              })
+            } else {
+              // Successfully canceled membership
+              onCancelMembershipThankYou()
+              toast.add({
+                severity: "success",
+                summary:
+                  "Your membership donation has been successfully canceled.",
+                closable: true,
+              })
+            }
+          } catch (error) {
+            console.error('Cancel membership error:', error)
             toast.add({
               severity: "error",
               summary: "There was an error canceling your membership. Please try again later.",
               life: 8000,
-              closable: true,
-            })
-          } else {
-            // Successfully canceled membership
-            onCancelMembershipThankYou()
-            toast.add({
-              severity: "success",
-              summary:
-                "Your membership donation has been successfully canceled.",
               closable: true,
             })
           }
@@ -146,7 +157,7 @@ export const useMembership = () => {
     window.open(url, "_blank")
   }
 
-  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo }
+  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo, dialogProps }
 }
 
 

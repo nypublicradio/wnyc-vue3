@@ -19,7 +19,7 @@ const emit = defineEmits(["close-sidebar"])
       <div class="flex align-items-center">
         <Button
           v-if="props.showButton"
-          class="-ml-3"
+          class="-ml-3 mr-1"
           icon="pi pi-chevron-left"
           rounded
           text

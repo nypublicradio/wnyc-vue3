@@ -101,7 +101,7 @@ $fontSize: v-bind(fontSize);
         pointer-events: none;
         &.no {
           text-align: left;
-          color: #000000;
+          color: var(--p-text-color);
         }
         &.yes {
           text-align: right;

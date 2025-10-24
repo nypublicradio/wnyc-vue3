@@ -1,4 +1,5 @@
 <script setup>
+import { useDialog } from "primevue/usedialog"
 import {
   trackClickEvent,
   getYear,
@@ -8,6 +9,7 @@ import {
   initializeStationList,
   getCustomStationLabel,
   //toSystemSettings,
+  capitalizeFirstLetter,
 } from "~/utilities/helpers"
 import {
   useAllCurrentStations,
@@ -18,12 +20,15 @@ import {
   useIsLiveStream,
   useIsApp,
   useAccountDeleteSideBar,
+  useSettingSideBar,
   useGlobalToast,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
-import { localUserProfileKey } from "~/composables/globals"
+import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
+import { useMembership } from "~/composables/useMembership"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const globalToast = useGlobalToast()
 const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
@@ -32,13 +37,17 @@ const textSizeOptions = useTextSizeOption()
 const editProfileSideBar = useEditProfileSideBar()
 const isLiveStream = useIsLiveStream()
 const isApp = useIsApp()
+const { isMobileBreakpoint } = useBreakpoints()
 const accountDeleteSideBar = useAccountDeleteSideBar()
+const settingSideBar = useSettingSideBar()
 
 const allCurrentStations = useAllCurrentStations()
 const client = useSupabaseClient()
 
 const defaultStreamRef = ref(null)
 const textSizeRef = ref(null)
+const dialog = useDialog()
+const { dialogProps } = useMembership()
 
 //const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
@@ -131,10 +140,26 @@ const accountHeader = computed(() => {
   }
 })
 
-// fire edit profile sidebar if the user clicks on a field
-const editField = (field) => {
+// edit profile dialog for web and sidebar for app
+const editField = async (field) => {
   if (!isDisabled.value) {
-    editProfileSideBar.value = true
+    if (isMobileBreakpoint.value) {
+      // app
+      editProfileSideBar.value = true
+    } else {
+      // web
+      const { default: EditProfile } = await import("~/components/EditProfile.vue")
+
+      const dialogRef = dialog.open(EditProfile, {
+        props: dialogProps,
+        emits: {
+          onClose: () => {
+            dialogRef.close()
+          },
+        },
+      })
+    }
+    // track the event
     trackClickEvent(
       "Click Tracking - edit user profile",
       "Settings Sidebar - Account",
@@ -142,9 +167,10 @@ const editField = (field) => {
     )
   }
 }
+
 // handles the dropdown menu click event
-const clickThisMenu = (ref) => {
-  ref.toggleDrawer()
+const clickThisMenu = (ref, event) => {
+  ref.toggleMenu(event)
 }
 
 // handles the notification switch change event
@@ -159,10 +185,12 @@ const handleNotificationChange = async (e) => {
 
 // handles the notification channel switch change events
 const handleNotificationChannelChange = (channel) => {
+  if (!currentUserProfile.value?.one_signal_notification_channels) return
+
   const key = channel.key
   const val = currentUserProfile.value.one_signal_notification_channels.find(
     (c) => c.key === channel.key
-  ).value
+  )?.value
 
   trackClickEvent(
     "Click Tracking - Notification Channel switch",
@@ -197,6 +225,18 @@ const customDefaultStationLabel = computed(() => {
   return getCustomStationLabel(currentUserProfile.value?.default_live_stream)
 })
 
+// when the nav buttons in are clicked. only shows in app
+const onNavButtons = (route) => {
+  navigateTo(route)
+
+  trackClickEvent(
+    "Click Tracking - app settings nav button",
+    "Settings Sidebar - nav buttons",
+    route
+  )
+  settingSideBar.value = false
+}
+
 watch(
   currentUserProfile,
   (newProfile, oldProfile) => {
@@ -207,13 +247,24 @@ watch(
 </script>
 
 <template>
-  <div class="settings -mt-2">
+  <div class="settings">
     <div class="user pl-4 pb-6 md:pl-0">
       <SUser
         :disabled="isDisabled"
         :isEmail="isEmail"
         size="xlarge"
         text-size="text-lg md:text-4xl lg:text-5xl"
+      />
+    </div>
+    <div v-if="isApp" class="app-menu mb-5">
+      <SBox
+        v-for="item in appMenuOptions"
+        :key="item.value"
+        :is-route="false"
+        :label="capitalizeFirstLetter(item.value)"
+        :ripple="true"
+        textClass="text-lg"
+        @click="onNavButtons(item.slug)"
       />
     </div>
     <section v-if="currentUser" class="user-preferences p-0">
@@ -265,7 +316,7 @@ watch(
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="editField('name')"
                 label="Update"
                 size="small"
               ></Button>
@@ -286,7 +337,7 @@ watch(
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="editField('email')"
                 label="Update"
                 size="small"
               ></Button>
@@ -305,7 +356,7 @@ watch(
                 severity="secondary"
                 variant="link"
                 class="link -mb-1 -ml-2"
-                @click="editField()"
+                @click="editField('password')"
                 label="Update"
                 size="small"
               ></Button>
@@ -321,9 +372,9 @@ watch(
         <div class="s-title">Member Center</div>
       </div>
 
-      <SBoxEmpty :clickable="false" :ripple="false" class="py-2">
-        <MemberCenter />
-      </SBoxEmpty>
+      <!--  <SBoxEmpty :clickable="false" :ripple="false" class="py-2"> -->
+      <MemberCenter class="px-2 md:px-0" />
+      <!-- </SBoxEmpty> -->
     </section>
 
     <section v-if="currentUser" class="listening-preferences p-0">
@@ -331,25 +382,25 @@ watch(
         <div class="s-title">Listening Preferences</div>
       </div>
       <SBox
-        v-if="currentUserProfile && allCurrentStations?.length > 0"
+        v-if="currentUserProfile?.default_live_stream && allCurrentStations?.length > 0"
         label="Default stream"
         class="md:hidden cursor-pointer"
-        @click="clickThisMenu(defaultStreamRef)"
+        @click="(e) => clickThisMenu(defaultStreamRef, e)"
       >
         <DropupMenu
           ref="defaultStreamRef"
           v-model="currentUserProfile.default_live_stream"
           :options="initializeStationList(allCurrentStations)"
-          optionLabel="station"
-          placeholder="Select a station"
           label="Default stream"
-          width="auto"
           @change="onUpdateStation"
           blockClick
           checkMark
         />
       </SBox>
-      <div class="hidden md:flex account-info mb-6 grid grid-lggutter">
+      <div
+        v-if="currentUserProfile?.default_live_stream"
+        class="hidden md:flex account-info mb-6 grid grid-lggutter"
+      >
         <div class="col-12 md:col-6">
           <div class="card">
             <div class="flex justify-content-between flex-wrap align-items-end">
@@ -357,15 +408,25 @@ watch(
                 <p class="font-bold">Default Stream</p>
                 <p>{{ customDefaultStationLabel }}</p>
               </div>
-              <Button
-                v-if="!isDisabled"
-                severity="secondary"
-                variant="link"
-                class="link -mb-1 -ml-2"
-                @click="clickThisMenu(defaultStreamRef)"
-                label="Update"
-                size="small"
-              ></Button>
+
+              <DropupMenu
+                v-model="currentUserProfile.default_live_stream"
+                :options="initializeStationList(allCurrentStations)"
+                label="Default stream"
+                @change="onUpdateStation"
+                checkMark
+              >
+                <template #customButton>
+                  <Button
+                    v-if="!isDisabled"
+                    severity="secondary"
+                    variant="link"
+                    class="link -mb-1 -ml-2"
+                    label="Update"
+                    size="small"
+                  />
+                </template>
+              </DropupMenu>
             </div>
           </div>
         </div>
@@ -375,7 +436,11 @@ watch(
       <div class="flex s-title-holder">
         <div class="s-title">Notifications</div>
       </div>
-      <SBox label="Allow Notifications" :ripple="false">
+      <SBox
+        v-if="currentUserProfile?.receive_general_notifications !== undefined"
+        label="Allow Notifications"
+        :ripple="false"
+      >
         <VToggleSwitch
           yes="ON"
           no="OFF"
@@ -428,22 +493,27 @@ watch(
         <div class="s-title">Display</div>
       </div>
       <!-- <pre class="text-xs">{{ currentUserProfile }}</pre> -->
-      <SBox label="Text size" class="cursor-pointer" @click="clickThisMenu(textSizeRef)">
+      <SBox
+        v-if="currentUserProfile?.text_size"
+        label="Text size"
+        class="cursor-pointer"
+        @click="(e) => clickThisMenu(textSizeRef, e)"
+      >
         <DropupMenu
           ref="textSizeRef"
-          id="text-size"
           v-model="currentUserProfile.text_size"
           :options="textSizeOptions"
-          optionLabel="label"
-          placeholder="Select a Text Size"
           label="Text Size"
-          width="auto"
           blockClick
           checkMark
           @change="onUpdateTextSize"
         />
       </SBox>
-      <SBox label="Dark theme" :ripple="false">
+      <SBox
+        v-if="currentUserProfile?.dark_mode !== undefined"
+        label="Dark theme"
+        :ripple="false"
+      >
         <VToggleSwitch
           yes="ON"
           no="OFF"
@@ -610,7 +680,7 @@ watch(
     right: 0;
   }
   .card {
-    background: var(--p-surface-0);
+    background: var(--s-box-background-color);
     border-radius: 10px;
     padding: 2rem 1.5rem;
     @include media("<md") {

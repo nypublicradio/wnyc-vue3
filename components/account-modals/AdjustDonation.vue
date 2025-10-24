@@ -1,5 +1,5 @@
 <script setup>
-import ModalCloseBtn from "./ModalCloseBtn.vue"
+import AccountModalHeader from "./AccountModalHeader.vue"
 const { formatCurrency } = useProfileApi()
 const emit = defineEmits(["save", "cancel"])
 
@@ -11,7 +11,7 @@ const finalAmount = ref(null)
 const value = ref(null)
 const otherAmount = ref(null)
 // adjust these numbers below to control the amount added to the current donation amount
-const options = ref([3, 4, 8, "other"])
+const options = ref([3, 5, 8, "other"])
 const isOtherError = ref(false)
 
 // Handle the cancel action
@@ -71,10 +71,7 @@ onMounted(() => {
 
 <template>
   <div class="adjust-donation">
-    <div class="flex justify-content-between align-items-center mb-2">
-      <div class="font-meta text-2xl font-bold">Update Gift Amount</div>
-      <ModalCloseBtn class="-mr-2" @clickEmit="dialogRef.close()" />
-    </div>
+    <AccountModalHeader>Update Gift Amount</AccountModalHeader>
     <p>Your current monthly gift is {{ formatCurrency(currentDonationAmount) }}.</p>
     <div
       v-if="currentDonationAmount"
@@ -149,21 +146,35 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+// light and darkmode vars
+:root,
+[data-style-mode="light"],
+.style-mode-light {
+  --rb-selected-borderColor: var(--p-darkblue-500);
+}
+[data-style-mode="dark"],
+.style-mode-dark {
+  --rb-selected-borderColor: var(--p-darkblue-100);
+}
+
 .adjust-donation {
   .amount-rb {
     .p-button {
       border-color: var(--p-darkblue-500);
+      p {
+        color: var(--p-surface-950) !important;
+      }
       &.selected {
         background-color: var(--p-darkblue-500);
-        border-color: transparent;
+        border-color: var(--rb-selected-borderColor);
         p {
-          color: #fff;
+          color: #fff !important;
         }
       }
       &.otherRb {
         border-color: #c3c3c3;
         p span {
-          color: #c3c3c3;
+          color: #c3c3c3 !important;
         }
       }
       .p-inputnumber {
@@ -173,7 +184,7 @@ onMounted(() => {
           background-color: transparent;
           border: transparent;
           font-weight: 700;
-          color: #ffffff;
+          color: #ffffff !important;
 
           @include media("<md") {
             font-size: 0.8725rem;

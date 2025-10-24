@@ -1,27 +1,32 @@
 <script setup>
-import { ref, watch } from "vue"
 import { useBottomMenuState } from "~/composables/states"
-import HomeIcon from "./icons/HomeIcon.vue"
-import LiveIcon from "./icons/LiveIcon.vue"
-import BrowseIcon from "./icons/BrowseIcon.vue"
-import StarIcon from "./icons/StarIcon.vue"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
+import { appMenuOptions as options } from "~/composables/globals"
+
+// Cache for icon components to prevent reloading
+const iconComponentCache = new Map()
+
+// Function to dynamically load icon components with memoization
+const getIconComponent = (iconName) => {
+  if (!iconComponentCache.has(iconName)) {
+    iconComponentCache.set(
+      iconName,
+      defineAsyncComponent(() => import(`./icons/${iconName}.vue`))
+    )
+  }
+  return iconComponentCache.get(iconName)
+}
+
 const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
-const options = ref([
-  { icon: markRaw(HomeIcon), value: "home", slug: "/home" },
-  { icon: markRaw(LiveIcon), value: "live", slug: "/live" },
-  { icon: markRaw(BrowseIcon), value: "browse", slug: "/browse" },
-  { icon: markRaw(StarIcon), value: "saved", slug: "/saved" },
-])
 
 // if another trigger changes the route, update the bottom menu state
 watch(
   () => route.path,
   (e) => {
     bottomMenuState.value = { value: null }
-    options.value.forEach((item) => {
+    options.forEach((item) => {
       if (e.includes(item.value)) bottomMenuState.value = { value: item.value }
     })
   },
@@ -45,7 +50,10 @@ const menuClick = (item) => {
             :aria-label="`${item.value} menu button`"
           >
             <div class="item">
-              <component :is="item.icon" :active="bottomMenuState.value == item.value">
+              <component
+                :is="getIconComponent(item.icon)"
+                :active="bottomMenuState.value?.value === item.value"
+              >
               </component>
               {{ capitalizeFirstLetter(item.value) }}
             </div>

@@ -182,7 +182,7 @@ const getBrand = computed(() => {
 .member-card {
   &.card {
     padding: 1rem 1.5rem 1rem 1rem !important;
-    background-color: #ffffff;
+    background-color: var(--s-box-background-color);
     border-radius: 10px;
   }
 }

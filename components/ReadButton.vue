@@ -52,7 +52,7 @@ const emit = defineEmits(["on-click"])
 .read-button {
   .p-button {
     padding: 0.219rem 0.75rem;
-    min-height: 28px;
+    min-height: 33px;
     &.active {
       //border: var(--bw-toggle) 1px solid;
     }

@@ -976,11 +976,9 @@ export const goToLivePage = (ep, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link
-  if (Capacitor.getPlatform() === "web" && theLink) {
-    if (story.cmsSource === cmsSources.WAGTAIL) {
-      // open in new tab if web and wagtail source (Gothamist)
-      window.open(theLink, "_blank")
-    }
+  if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
+    // open in new tab if web and wagtail source (Gothamist)
+    window.open(theLink, "_blank")
   } else {
     navigateTo({
       path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
@@ -1315,6 +1313,8 @@ export const getCustomStationLabel = (station: string): string => {
 
 // formats the station list for the dropdown
 export const initializeStationList = (stations) => {
+  if (!stations) return []
+
   const tempMenuData = []
 
   // the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here

@@ -3,8 +3,9 @@ import { useFuse } from "@vueuse/integrations/useFuse"
 import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
-
+import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
+const isApp = useIsApp()
 const { data: shows, status, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/v2/shows`
 )
@@ -13,9 +14,7 @@ const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
 const allOrFeatured = ref(true)
-
-const { breakpoint } = useBreakpoints()
-const isMobile = computed(() => breakpoint("<md"))
+const { isMobileBreakpoint } = useBreakpoints()
 
 // computed property to get the current shows based on allOrFeatured
 const currentShows = computed(() => {
@@ -104,29 +103,31 @@ watch(
         />
       </Head>
     </Html>
-    <section class="search z-2">
-      <h1 class="mb-3 md:mb-4">Browse All Shows</h1>
-      <IconField>
-        <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-        <InputIcon v-else class="pi pi-search text-color" />
-        <InputText
-          v-model="searchFieldValue"
-          placeholder="Search"
-          class="w-full on-white"
-        />
-        <InputIcon v-if="searchFieldValue" class="relative">
-          <Button
-            rounded
-            text
-            plain
-            icon="pi pi-times text-color"
-            aria-label="clear search"
-            class="absolute right-0 top-0 bottom-0 m-auto"
-            @click="clearSearchField"
-          ></Button>
-        </InputIcon>
-      </IconField>
-    </section>
+    <div class="search z-2" :class="{ 'is-app': isApp }">
+      <section class="thinContent">
+        <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>
+        <IconField>
+          <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner z-2" />
+          <InputIcon v-else class="pi pi-search z-2" />
+          <InputText
+            v-model="searchFieldValue"
+            placeholder="Search"
+            class="search w-full on-white"
+          />
+          <InputIcon v-if="searchFieldValue" class="relative">
+            <Button
+              rounded
+              text
+              plain
+              icon="pi pi-times text-color"
+              aria-label="clear search"
+              class="absolute right-0 top-0 bottom-0 m-auto"
+              @click="clearSearchField"
+            ></Button>
+          </InputIcon>
+        </IconField>
+      </section>
+    </div>
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
         <div class="topics">
@@ -140,24 +141,28 @@ watch(
               label="All Topics"
             ></Button> -->
           </section>
-          <HorizontalScrollFeature v-if="isMobile" class="topics-holder" :data="shows">
-            <div class="flex w-full">
-              <div
-                v-for="topic in showTopics"
-                class="station-holder item"
-                :key="topic.label"
-              >
-                <div class="relative topic-btn-holder">
-                  <Button
-                    class="topic-btn text-sm white-space-nowrap btn"
-                    :label="topic.label"
-                    :aria-label="`${topic.label} topic button`"
-                    @click="selectTopic(topic)"
-                    :style="`background-color: ${topic.color};`"
-                  />
-                </div>
+          <HorizontalScrollFeature
+            v-if="isMobileBreakpoint"
+            class="topics-holder"
+            :data="shows"
+          >
+            <!-- <div class="flex w-full"> -->
+            <div
+              v-for="topic in showTopics"
+              class="station-holder item"
+              :key="topic.label"
+            >
+              <div class="relative topic-btn-holder">
+                <Button
+                  class="topic-btn text-sm white-space-nowrap btn"
+                  :label="topic.label"
+                  :aria-label="`${topic.label} topic button`"
+                  @click="selectTopic(topic)"
+                  :style="`background-color: ${topic.color};`"
+                />
               </div>
             </div>
+            <!-- </div> -->
           </HorizontalScrollFeature>
           <section v-else>
             <div class="grid">
@@ -182,7 +187,7 @@ watch(
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div class="flex justify-content-between align-items-center mb-4">
+          <div class="flex md:justify-content-between align-items-center mb-4 gap-3">
             <Transition name="fade" mode="out-in">
               <h2 :key="allOrFeatured ? 'featured' : 'all'">
                 {{ allOrFeatured ? "Featured" : "All" }} Shows
@@ -197,6 +202,7 @@ watch(
                   class="link"
                   @click="toggleAllShows"
                   label="All Shows"
+                  :size="isMobileBreakpoint ? 'small' : 'base'"
                 ></Button>
                 <Button
                   v-else
@@ -205,6 +211,7 @@ watch(
                   class="link"
                   @click="toggleAllShows"
                   label="Featured Shows"
+                  :size="isMobileBreakpoint ? 'small' : 'base'"
                 ></Button>
               </Transition>
             </div>
@@ -225,7 +232,7 @@ watch(
                 contentClass="md:flex-column gap-3 md:gap-2"
                 imageClass="w-6rem xs:w-7rem md:w-13rem"
                 :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
-                :hideButtons="!isMobile"
+                :hideButtons="!isMobileBreakpoint"
                 @onClick="goToShowPage(show)"
               />
             </div>
@@ -236,7 +243,7 @@ watch(
                 class="col-12 md:col-4 md:mb-5"
                 contentClass="md:flex-column gap-3 md:gap-2"
                 imageClass="w-7rem md:w-13rem h-7rem md:h-13rem"
-                :hideButtons="!isMobile"
+                :hideButtons="!isMobileBreakpoint"
               />
             </div>
           </Transition>
@@ -258,7 +265,7 @@ watch(
               contentClass="md:flex-column gap-3 md:gap-2"
               imageClass="w-6rem xs:w-7rem md:w-13rem"
               :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
-              :hideButtons="!isMobile"
+              :hideButtons="!isMobileBreakpoint"
               @onClick="goToShowPage(show.item)"
             />
           </div>
@@ -294,15 +301,20 @@ watch(
 
 <style lang="scss" scoped>
 .browse-page {
-  max-width: $thinContentWidth;
-  margin: auto;
   .search {
     position: sticky;
-    top: env(safe-area-inset-top);
-    background: var(--background2);
+    top: calc(env(safe-area-inset-top) + $headerHeight);
+    background: var(--header-background);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     z-index: 1;
+    &.is-app {
+      top: env(safe-area-inset-top);
+    }
   }
   .content-holder {
+    max-width: $thinContentWidth;
+    margin: auto;
     .topics {
       .station-holder {
         &:last-child:not(.desktop) {

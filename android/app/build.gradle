@@ -10,7 +10,6 @@ ext.versionMinor = System.getenv("APP_VERSION_MINOR") ?: 0
 ext.versionPatch = System.getenv("APP_VERSION_PATCH") ?: 2
 ext.versionClassifier = null
 ext.isSnapShot = false
-ext.minSdkVersion = 30
 ext.circleCiBuildNumber = System.getenv("CIRCLE_BUILD_NUM") ?: "0"
 
 private Integer generateVersionCode() {
@@ -19,7 +18,7 @@ private Integer generateVersionCode() {
     int patchVersion = ext.versionPatch.toInteger()
     int circleCiBuildNum = ext.circleCiBuildNumber.toInteger()
 
-    int versionCode = ext.minSdkVersion * 10000000 +
+    int versionCode = rootProject.ext.minSdkVersion * 10000000 +
                       majorVersion * 10000 +
                       minorVersion * 100 +
                       patchVersion +

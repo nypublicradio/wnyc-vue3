@@ -46,6 +46,17 @@ export async function updateAllLiveStreams(init = true) {
   // BFF
   try {
     const fetchingAll = await $fetch(`${config.public.BFF_URL}/api/streams`)
+
+    // make sure that the stream with the slug "wqxr" comes directly before the stream with the slug "wqxr-holiday-channel-on-wnyc"
+    const wqxrIndex = fetchingAll.findIndex((stream) => stream.slug === "wqxr")
+    const wqxrHolidayIndex = fetchingAll.findIndex(
+      (stream) => stream.slug === "wqxr-holiday-channel-on-wnyc"
+    )
+    if (wqxrIndex > wqxrHolidayIndex && wqxrHolidayIndex !== -1) {
+      const [wqxrStream] = fetchingAll.splice(wqxrIndex, 1)
+      fetchingAll.splice(wqxrHolidayIndex, 0, wqxrStream)
+    }
+
     // set all streams to the filtered array
     allCurrentStations.value = fetchingAll.filter(Boolean)
     let thisStation = null
