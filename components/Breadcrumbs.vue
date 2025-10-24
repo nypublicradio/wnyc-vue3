@@ -28,8 +28,6 @@ const props = defineProps({
 }
 .p-breadcrumb button {
   padding: 0;
-  &:hover {
-    overflow: inherit !important;
-  }
+  overflow: inherit !important;
 }
 </style>
