@@ -1,13 +1,13 @@
 <script setup>
-import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states";
-import { useBreakpoints } from "~/composables/useBreakpoints";
-import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system";
-import StarIcon from "~/components/icons/StarIcon.vue";
-import DownloadIcon from "~/components/icons/DownloadIcon.vue";
-import TranscriptIcon from "~/components/icons/TranscriptIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import SleepIcon from "~/components/icons/SleepIcon.vue";
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue";
+import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states"
+import { useBreakpoints } from "~/composables/useBreakpoints"
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
+import StarIcon from "~/components/icons/StarIcon.vue"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import TranscriptIcon from "~/components/icons/TranscriptIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import {
   getMinutes,
   trackClickEvent,
@@ -17,27 +17,27 @@ import {
   shareAPI,
   addToFavorites2,
   hasAudio,
-} from "~/utilities/helpers";
-import useSleepTimer from "~/composables/useSleepTimer";
-const { handleSleepTimer, sleepTimerRunning } = useSleepTimer();
-const { $analytics } = useNuxtApp();
-const config = useRuntimeConfig();
-const route = useRoute();
-const router = useRouter();
-const currentEpisode = useCurrentEpisode();
-const user = useCurrentUser();
-const globalToast = useGlobalToast();
-const progress = ref({});
+} from "~/utilities/helpers"
+import useSleepTimer from "~/composables/useSleepTimer"
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+const { $analytics } = useNuxtApp()
+const config = useRuntimeConfig()
+const route = useRoute()
+const router = useRouter()
+const currentEpisode = useCurrentEpisode()
+const user = useCurrentUser()
+const globalToast = useGlobalToast()
+const progress = ref({})
 
 // Use the shared breakpoint composable
-const { breakpoint } = useBreakpoints();
-const isMobileBtn = computed(() => breakpoint("<md"));
+const { breakpoint } = useBreakpoints()
+const isMobileBtn = computed(() => breakpoint("<md"))
 
 const { data: episode, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
   {
     onResponse({ response }) {
-      const res = response._data;
+      const res = response._data
       $analytics.sendPageView({
         page_title: res.title,
         page_type: "episode_page",
@@ -46,13 +46,13 @@ const { data: episode, status, error } = useFetch(
         article_publish_date: res.publicationDate,
         article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
         article_title: res.title,
-      });
+      })
 
       // check route param autoplay exists and if so, play the first segment
       if (route.query.autoplay === "true") {
-        togglePlayEpisode(res.audio[0]);
+        togglePlayEpisode(res.audio[0])
         // remove the autoplay query param
-        router.replace({ query: { ...route.query, autoplay: null } });
+        router.replace({ query: { ...route.query, autoplay: null } })
       }
     },
     onResponseError() {
@@ -61,50 +61,50 @@ const { data: episode, status, error } = useFetch(
         summary: "We are having a problem loading this episode. Please try again later.",
         life: 6000,
         closable: true,
-      };
+      }
     },
   }
-);
-const episodeData = computed(() => episode.value);
+)
+const episodeData = computed(() => episode.value)
 const theSlug = computed(
   () =>
     episodeData.value?.showSlug ||
     episodeData.value?.show ||
     episodeData.value?.headers.brand.slug
-);
+)
 
 const theShowTitle = computed(
   () =>
     episodeData.value?.showTitle ||
     episodeData.value?.headers.brand.title ||
     episodeData.value?.title
-);
+)
 
-const hasSegments = computed(() => Array.isArray(episodeData.value?.audio));
+const hasSegments = computed(() => Array.isArray(episodeData.value?.audio))
 
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title);
-  progress.value = await fetchAndStoreMp3(epD);
-};
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+  progress.value = await fetchAndStoreMp3(epD)
+}
 
 //handle the share of the episode
 const handleShare = () => {
-  shareAPI(episodeData.value, "episode slug");
-};
+  shareAPI(episodeData.value, "episode slug")
+}
 
 //handle the transcript of the episode
 const handleTranscript = () => {
   navigateTo(
     `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-  );
-};
+  )
+}
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(false);
+const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug);
-});
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -112,11 +112,11 @@ const handleAddToFavorites = (bucketItem) => {
   addToFavorites2({
     item: bucketItem,
     isFavorited: isFavorited.value,
-  });
+  })
   if (user.value) {
-    isFavorited.value = !isFavorited.value;
+    isFavorited.value = !isFavorited.value
   }
-};
+}
 
 // handles the click on the show image and dots menu
 const moreFromClick = () => {
@@ -124,9 +124,9 @@ const moreFromClick = () => {
     "Click Tracking - Show image",
     `Episode slug page: ${theSlug.value}`,
     theShowTitle.value
-  );
-  navigateTo(`/browse/shows/${theSlug.value}`);
-};
+  )
+  navigateTo(`/browse/shows/${theSlug.value}`)
+}
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -137,7 +137,7 @@ const getDotMenuItems = (bucketItem) => {
       active: isFavorited.value,
       title: bucketItem?.title,
       command: () => {
-        handleAddToFavorites(bucketItem);
+        handleAddToFavorites(bucketItem)
       },
     },
     ...(hasAudio(bucketItem?.audio)
@@ -150,7 +150,7 @@ const getDotMenuItems = (bucketItem) => {
             customIcon: DownloadIcon,
             title: bucketItem?.title,
             command: () => {
-              handleDownload(bucketItem);
+              handleDownload(bucketItem)
             },
           },
         ]
@@ -163,7 +163,7 @@ const getDotMenuItems = (bucketItem) => {
             customIcon: TranscriptIcon,
             title: bucketItem?.title,
             command: () => {
-              handleTranscript();
+              handleTranscript()
             },
           },
         ]
@@ -173,7 +173,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem?.title,
       command: () => {
-        handleShare();
+        handleShare()
       },
     },
     {
@@ -181,7 +181,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: MoreEpisodesIcon,
       title: bucketItem?.title,
       command: () => {
-        moreFromClick();
+        moreFromClick()
       },
     },
     {
@@ -190,30 +190,30 @@ const getDotMenuItems = (bucketItem) => {
       active: sleepTimerRunning.value,
       title: currentEpisode.value?.title ?? "No audio playing",
       command: () => {
-        handleSleepTimer();
+        handleSleepTimer()
       },
     },
-  ];
-};
+  ]
+}
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e?.value?.command();
-};
+  e?.value?.command()
+}
 
 // handle the toggle play button and tracking
 const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, index);
-};
+  togglePlayEpisode(epData, index)
+}
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
-  const epImage = episodeData.value?.image;
-  const showImage = episodeData.value?.headers.brand.logoImage;
-  return epImage ? (epImage.template !== showImage.template ? epImage : null) : null;
-};
+  const epImage = episodeData.value?.image
+  const showImage = episodeData.value?.headers.brand.logoImage
+  return epImage ? (epImage.template !== showImage.template ? epImage : null) : null
+}
 
-const theEpImage = computed(() => getEpisodeImage());
+const theEpImage = computed(() => getEpisodeImage())
 
 const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch(
   () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
@@ -221,23 +221,23 @@ const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch
     immediate: false,
     server: false,
   }
-);
+)
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/" },
   { label: "Browse", route: "/browse" },
   { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
-]);
+])
 
 watch(
   status,
   () => {
     if (status.value === "success" && theSlug.value) {
-      executeShowFetch();
+      executeShowFetch()
     }
   },
   { immediate: false }
-);
+)
 </script>
 
 <template>
