@@ -10,7 +10,7 @@ import {
     useCurrentUser,
     useIsLiveStream
 } from "~/composables/states"
-import { Capacitor } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core'
 import { prepForPlayer, getEpisodeFallBackImage } from "~/utilities/helpers"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
@@ -27,19 +27,19 @@ const appDirectory = "wnyc-downloads"
 
 // check if a file has an extension
 const hasExtension = (filename) => {
-    const lastDotIndex = filename.lastIndexOf('.');
-    return lastDotIndex !== -1 && lastDotIndex < filename.length - 1;
-};
+    const lastDotIndex = filename.lastIndexOf('.')
+    return lastDotIndex !== -1 && lastDotIndex < filename.length - 1
+}
 
 // fetch the image mime type
 const fetchImageMimeType = async (imageUrl) => {
     try {
-        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-        return response.headers['content-type'];
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
+        return response.headers['content-type']
     } catch (error) {
-        return 'image/jpeg';
+        return 'image/jpeg'
     }
-};
+}
 
 // get the file name from a URL
 export const fileNameFromURL = async (url: string) => {
@@ -181,29 +181,29 @@ const downloadFileToDesktop = async (url, filename) => {
     }
     try {
         // Fetch the file data
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(url)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
         // Get the Blob from the response
-        const blob = await response.blob();
+        const blob = await response.blob()
 
         // Create a Blob URL
-        const blobUrl = URL.createObjectURL(blob);
+        const blobUrl = URL.createObjectURL(blob)
 
         // Create an anchor element and set its attributes
-        const aElm = document.createElement('a');
-        aElm.href = blobUrl;
-        aElm.download = filename;
+        const aElm = document.createElement('a')
+        aElm.href = blobUrl
+        aElm.download = filename
 
         // Append the anchor element to the body
-        document.body.appendChild(aElm);
+        document.body.appendChild(aElm)
 
         // Trigger a click event on the anchor element to start the download
-        aElm.click();
+        aElm.click()
 
         // Cleanup: remove the anchor element and revoke the Blob URL
-        document.body.removeChild(aElm);
-        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(aElm)
+        URL.revokeObjectURL(blobUrl)
 
         // alert the user
         globalToast.value = {
@@ -213,7 +213,7 @@ const downloadFileToDesktop = async (url, filename) => {
         }
 
     } catch (error) {
-        console.error('Error downloading file:', error);
+        console.error('Error downloading file:', error)
         // alert the user
         globalToast.value = {
             severity: "error",
@@ -233,7 +233,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
 
     //const uid = Number(file.id)
     // set the originalId initally only to keep track of the original id
-    file.originalId = file.originalId || file.id;
+    file.originalId = file.originalId || file.id
     const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
     file.id = uniqueDirId
 
@@ -241,6 +241,8 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
         // is runnning in the browser
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
+        console.log("desktop download file =", file)
+        console.log("desktop download =", audioFile)
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
@@ -308,15 +310,15 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 const audioNameFromUrl = isSegments ? `${slug}.mp3` : await fileNameFromURL(file.audio)
 
                 // Add progress listener
-                const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
+                const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 })
                 const progressListener = await Filesystem.addListener('progress', (event) => {
                     progress.value = {
                         loadedBytes: event.bytes,
                         totalBytes: event.contentLength,
                         percentage: (event.bytes / event.contentLength) * 100,
-                    };
+                    }
                     //console.log('progress = ', progress.value.percentage)
-                });
+                })
 
                 Filesystem.downloadFile({
                     url: isSegments ? file.audio[index] : file.audio,
@@ -326,7 +328,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 })
                     .then(async (fileURI) => {
                         // remove the progress listener once the file is downloaded
-                        progressListener.remove();
+                        progressListener.remove()
                         await updateFileSystem().then(() => {
 
                             setTimeout(async () => {
@@ -394,12 +396,12 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
 export const fetchAndStoreMp3 = async (file) => {
     // if multiple audio and multiple segments, download all
     if (Array.isArray(file.audio) && Array.isArray(file.segments)) {
-        const progressResults = [];
+        const progressResults = []
         for (let i = 0; i < file.audio.length; i++) {
-            const progress = await handleFetchAndStoreMp3(file, i);
-            progressResults.push(progress);
+            const progress = await handleFetchAndStoreMp3(file, i)
+            progressResults.push(progress)
         }
-        return progressResults;
+        return progressResults
     } else {
         return handleFetchAndStoreMp3(file)
     }
@@ -421,14 +423,14 @@ export const playStoredMp3 = async (file) => {
             })
             await nextTick()
             //const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
-            const savedAudioSrc = audio.uri;
+            const savedAudioSrc = audio.uri
             // get image file
             const image = await Filesystem.getUri({
                 path: `${appDirectory}/${file.id}/${file?.directoryImage?.name}`,
                 directory: directoryToSaveTo,
             })
             await nextTick()
-            const savedImageSrc = Capacitor.convertFileSrc(image.uri);
+            const savedImageSrc = Capacitor.convertFileSrc(image.uri)
 
             // set the currentEpisode to the file with updated stored URIs for the image adn audio
             currentEpisode.value = {
