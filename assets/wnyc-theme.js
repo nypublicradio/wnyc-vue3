@@ -697,6 +697,7 @@ const MyPreset = definePreset(Aura, {
       root: {
         padding: "0",
         gap: "4px",
+        background: "none"
       },
     },
     skeleton: {
