@@ -17,6 +17,8 @@ import {
 } from "~/utilities/helpers"
 
 import { useCurrentUser } from "~/composables/states"
+import { useTopStories } from "~/composables/useTopStories"
+const { topStories } = useTopStories()
 
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
@@ -26,18 +28,67 @@ const router = useRouter()
 const user = useCurrentUser()
 const config = useRuntimeConfig()
 
-const { data: storyData, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`
-)
 const isWagtail = route.query.src === cmsSources.WAGTAIL
 const storySource = isWagtail ? "Gothamist" : "WNYC"
-const topStories = ref(null)
 const gallery = ref(null)
 const topImage = ref(null)
 const topCaption = ref(null)
 const galleryLength = ref(null)
 
 const galleryLink = ref(null)
+
+const { data: storyData, status, error } = useFetch(
+  `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`,
+  {
+    async onResponse({ response }) {
+      const res = response._data
+      // send GA page view
+      const { $analytics } = useNuxtApp()
+      $analytics.sendPageView({
+        page_title: res?.title,
+        page_type: "article",
+        content_group: `${storySource}_article`,
+        article_authors: res?.authors?.map((author) => author.name).join(","),
+        article_publish_date: res?.publicationDate,
+        article_updated_date: res?.updatedDate ? res?.updatedDate : res?.publicationDate,
+        article_title: res?.title,
+      })
+
+      if (res?.leadGallery) {
+        gallery.value = await usePageById(res.leadGallery.gallery).then(({ data }) =>
+          normalizeGalleryPage(data.value)
+        )
+      }
+
+      topImage.value = res?.image || gallery.value?.slides?.[0]?.image || null
+
+      topCaption.value =
+        res?.leadImageCaption ??
+        topImage.value?.caption ??
+        gallery.value?.slides?.[0]?.image.caption ??
+        null
+
+      if (res?.leadGallery) {
+        galleryLength.value = gallery.value?.slides?.length ?? 0
+        galleryLink.value = String(
+          `photos/${res?.leadGallery.gallery}?article=${res?.id}&src=${route.query.src}`
+        )
+      }
+      if (isWagtail) {
+        // get comment count if Wagtail only
+        useUpdateCommentCounts([res])
+      }
+    },
+    onResponseError() {
+      globalToast.value = {
+        severity: "error",
+        summary: "We are having a problem loading this story. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+    },
+  }
+)
 
 const commentCounts = ref(useCommentCounts())
 const commentCount = computed(() => {
@@ -83,57 +134,6 @@ const handleShare = () => {
   shareAPI(storyData.value, "story slug")
 }
 
-watch(
-  storyData,
-  async () => {
-    // send GA page view
-    const { $analytics } = useNuxtApp()
-    $analytics.sendPageView({
-      page_title: storyData.value?.title,
-      page_type: "article",
-      content_group: `${storySource}_article`,
-      article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
-      article_publish_date: storyData.value?.publicationDate,
-      article_updated_date: storyData.value?.updatedDate
-        ? storyData.value?.updatedDate
-        : storyData.value?.publicationDate,
-      article_title: storyData.value?.title,
-    })
-
-    if (storyData.value?.leadGallery) {
-      gallery.value = await usePageById(
-        storyData.value.leadGallery.gallery
-      ).then(({ data }) => normalizeGalleryPage(data.value))
-    }
-
-    topImage.value = storyData.value?.image || gallery.value?.slides?.[0]?.image || null
-
-    topCaption.value =
-      storyData.value?.leadImageCaption ??
-      topImage.value?.caption ??
-      gallery.value?.slides?.[0]?.image.caption ??
-      null
-
-    if (storyData.value?.leadGallery) {
-      galleryLength.value = gallery.value?.slides?.length ?? 0
-      galleryLink.value = String(
-        `photos/${storyData.value?.leadGallery.gallery}?article=${storyData.value?.id}&src=${route.query.src}`
-      )
-    }
-    if (isWagtail) {
-      // get comment count if Wagtail only
-      useUpdateCommentCounts([storyData.value])
-    }
-
-    // handle top storied data
-    const topStoriesData = await $fetch(`${config.public.BFF_URL}/api/homepagetopstories`)
-    topStories.value = topStoriesData.top_stories.filter(
-      (item) => item.id !== storyData.value?.id
-    )
-  },
-  { once: true }
-)
-
 // handle the toggle play button and tracking
 const togglePlayHere = (story) => {
   togglePlayEpisode(story, mediaTypes.EPISODE)
@@ -150,7 +150,6 @@ const togglePlayHere = (story) => {
       </Head>
     </Html>
     <section class="thinContent">
-      <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-3 mb-3"
@@ -165,7 +164,7 @@ const togglePlayHere = (story) => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <div v-if="!pending" class="thinContent">
+    <div v-if="status === 'success'" class="thinContent">
       <VImage
         v-if="topImage"
         :src="topImage"

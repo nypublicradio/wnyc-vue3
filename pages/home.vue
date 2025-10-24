@@ -1,15 +1,13 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useTopStories } from "~/composables/useTopStories"
+const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
-
-const { data: topStoriesData, error: error3 } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepagetopstories`
 )
 
 const { data: pagedata, error } = useLazyFetch(
@@ -20,11 +18,6 @@ definePageMeta({
   layout: "default",
   layoutTransition: {
     name: "login",
-  },
-})
-useHead({
-  bodyAttrs: {
-    //class: "show-header",
   },
 })
 
@@ -60,7 +53,7 @@ onMounted(() => {
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
 
         <div class="latestNewsHolder col">
-          <FetchError v-if="error || error2 || error3" />
+          <FetchError v-if="error || error2" />
           <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
           <LatestNewsUpdates
             :localNewscast="latestNewsUpdatesData?.local_newscast"
@@ -69,8 +62,6 @@ onMounted(() => {
         </div>
       </div>
     </section>
-
-    <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
@@ -85,7 +76,7 @@ onMounted(() => {
         />
       </div>
       <h2 class="mb-3">WNYC Picks</h2>
-      <TopStories :articles="topStoriesData?.top_stories" />
+      <TopStories :articles="topStories" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
         <story-htlAd
           layout="rectangle"
