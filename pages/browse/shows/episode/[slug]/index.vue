@@ -234,7 +234,7 @@ const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch
 )
 
 const breadcrumbs = computed(() => [
-  { label: "Home", route: "/" },
+  { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
 ])
