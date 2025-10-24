@@ -1,17 +1,13 @@
 <script setup>
-import {
-  useCurrentUser,
-  useCurrentEpisode,
-  useGlobalToast
-} from '~/composables/states'
-import { useBreakpoints } from '~/composables/useBreakpoints'
-import { isAlreadyDownloaded, fetchAndStoreMp3 } from '~/utilities/file-system'
-import StarIcon from '~/components/icons/StarIcon.vue'
-import DownloadIcon from '~/components/icons/DownloadIcon.vue'
-import TranscriptIcon from '~/components/icons/TranscriptIcon.vue'
-import ShareIcon from '~/components/icons/ShareIcon.vue'
-import SleepIcon from '~/components/icons/SleepIcon.vue'
-import MoreEpisodesIcon from '~/components/icons/MoreEpisodesIcon.vue'
+import { useCurrentUser, useCurrentEpisode, useGlobalToast } from "~/composables/states";
+import { useBreakpoints } from "~/composables/useBreakpoints";
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system";
+import StarIcon from "~/components/icons/StarIcon.vue";
+import DownloadIcon from "~/components/icons/DownloadIcon.vue";
+import TranscriptIcon from "~/components/icons/TranscriptIcon.vue";
+import ShareIcon from "~/components/icons/ShareIcon.vue";
+import SleepIcon from "~/components/icons/SleepIcon.vue";
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue";
 import {
   getMinutes,
   trackClickEvent,
@@ -20,245 +16,228 @@ import {
   checkIsFavorited,
   shareAPI,
   addToFavorites2,
-  hasAudio
-} from '~/utilities/helpers'
-import useSleepTimer from '~/composables/useSleepTimer'
-const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
-const { $analytics } = useNuxtApp()
-const config = useRuntimeConfig()
-const route = useRoute()
-const router = useRouter()
-const currentEpisode = useCurrentEpisode()
-const user = useCurrentUser()
-const globalToast = useGlobalToast()
-const progress = ref({})
+  hasAudio,
+} from "~/utilities/helpers";
+import useSleepTimer from "~/composables/useSleepTimer";
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer();
+const { $analytics } = useNuxtApp();
+const config = useRuntimeConfig();
+const route = useRoute();
+const router = useRouter();
+const currentEpisode = useCurrentEpisode();
+const user = useCurrentUser();
+const globalToast = useGlobalToast();
+const progress = ref({});
 
 // Use the shared breakpoint composable
-const { breakpoint } = useBreakpoints()
-const isMobileBtn = computed(() => breakpoint('<md'))
+const { breakpoint } = useBreakpoints();
+const isMobileBtn = computed(() => breakpoint("<md"));
 
-const {
-  data: episode,
-  status,
-  error
-} = useFetch(
+const { data: episode, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
   {
-    onResponse ({ response }) {
-      const res = response._data
+    onResponse({ response }) {
+      const res = response._data;
       $analytics.sendPageView({
         page_title: res.title,
-        page_type: 'episode_page',
-        content_group: 'on_demand_episode',
-        article_authors: res?.authors?.map(author => author.name).join(','),
+        page_type: "episode_page",
+        content_group: "on_demand_episode",
+        article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate
-          ? res.updatedDate
-          : res.publicationDate,
-        article_title: res.title
-      })
+        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
+        article_title: res.title,
+      });
 
       // check route param autoplay exists and if so, play the first segment
-      if (route.query.autoplay === 'true') {
-        togglePlayEpisode(res.audio[0])
+      if (route.query.autoplay === "true") {
+        togglePlayEpisode(res.audio[0]);
         // remove the autoplay query param
-        router.replace({ query: { ...route.query, autoplay: null } })
+        router.replace({ query: { ...route.query, autoplay: null } });
       }
     },
-    onResponseError () {
+    onResponseError() {
       globalToast.value = {
-        severity: 'error',
-        summary:
-          'We are having a problem loading this episode. Please try again later.',
+        severity: "error",
+        summary: "We are having a problem loading this episode. Please try again later.",
         life: 6000,
-        closable: true
-      }
-    }
+        closable: true,
+      };
+    },
   }
-)
-const episodeData = computed(() => episode.value)
+);
+const episodeData = computed(() => episode.value);
 const theSlug = computed(
   () =>
     episodeData.value?.showSlug ||
     episodeData.value?.show ||
     episodeData.value?.headers.brand.slug
-)
+);
 
 const theShowTitle = computed(
   () =>
     episodeData.value?.showTitle ||
     episodeData.value?.headers.brand.title ||
     episodeData.value?.title
-)
+);
 
-const hasSegments = computed(() => Array.isArray(episodeData.value?.audio))
+const hasSegments = computed(() => Array.isArray(episodeData.value?.audio));
 
 // handle the download of the audio file or multiple files request and feed the progress
-const handleDownload = async epD => {
-  trackClickEvent('Click Tracking - Audio Download', 'Episode slug', epD.title)
-  progress.value = await fetchAndStoreMp3(epD)
-}
+const handleDownload = async (epD) => {
+  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title);
+  progress.value = await fetchAndStoreMp3(epD);
+};
 
 //handle the share of the episode
 const handleShare = () => {
-  shareAPI(episodeData.value, 'episode slug')
-}
+  shareAPI(episodeData.value, "episode slug");
+};
 
 //handle the transcript of the episode
 const handleTranscript = () => {
   navigateTo(
     `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-  )
-}
+  );
+};
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
+const isFavorited = ref(false);
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
+  isFavorited.value = await checkIsFavorited(route.params.slug);
+});
 
 // add item to favorites
-const handleAddToFavorites = bucketItem => {
+const handleAddToFavorites = (bucketItem) => {
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: bucketItem,
-    isFavorited: isFavorited.value
-  })
+    isFavorited: isFavorited.value,
+  });
   if (user.value) {
-    isFavorited.value = !isFavorited.value
+    isFavorited.value = !isFavorited.value;
   }
-}
+};
 
 // handles the click on the show image and dots menu
 const moreFromClick = () => {
   trackClickEvent(
-    'Click Tracking - Show image',
+    "Click Tracking - Show image",
     `Episode slug page: ${theSlug.value}`,
     theShowTitle.value
-  )
-  navigateTo(`/browse/shows/${theSlug.value}`)
-}
+  );
+  navigateTo(`/browse/shows/${theSlug.value}`);
+};
 
 // set the items for the Dot menu
-const getDotMenuItems = bucketItem => {
+const getDotMenuItems = (bucketItem) => {
   return [
     {
-      label: `${isFavorited.value ? 'Unfavorite Episode' : 'Favorite Episode'}`,
+      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
       customIcon: StarIcon,
       active: isFavorited.value,
       title: bucketItem?.title,
       command: () => {
-        handleAddToFavorites(bucketItem)
-      }
+        handleAddToFavorites(bucketItem);
+      },
     },
     ...(hasAudio(bucketItem?.audio)
       ? [
           {
             label: `Download ${
-              bucketItem.segments && Array.isArray(bucketItem?.audio)
-                ? 'All'
-                : ''
+              bucketItem.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
             }`,
             //icon: 'pi pi-google',
             customIcon: DownloadIcon,
             title: bucketItem?.title,
             command: () => {
-              handleDownload(bucketItem)
-            }
-          }
+              handleDownload(bucketItem);
+            },
+          },
         ]
       : []),
     ...(bucketItem?.transcript
       ? [
           {
-            label: 'Transcript',
+            label: "Transcript",
             //icon: 'pi pi-google',
             customIcon: TranscriptIcon,
             title: bucketItem?.title,
             command: () => {
-              handleTranscript()
-            }
-          }
+              handleTranscript();
+            },
+          },
         ]
       : []),
     {
-      label: 'Share',
+      label: "Share",
       customIcon: ShareIcon,
       title: bucketItem?.title,
       command: () => {
-        handleShare()
-      }
+        handleShare();
+      },
     },
     {
-      label: 'More episodes',
+      label: "More episodes",
       customIcon: MoreEpisodesIcon,
       title: bucketItem?.title,
       command: () => {
-        moreFromClick()
-      }
+        moreFromClick();
+      },
     },
     {
-      label: 'Sleep Timer',
+      label: "Sleep Timer",
       customIcon: SleepIcon,
       active: sleepTimerRunning.value,
-      title: currentEpisode.value?.title ?? 'No audio playing',
+      title: currentEpisode.value?.title ?? "No audio playing",
       command: () => {
-        handleSleepTimer()
-      }
-    }
-  ]
-}
+        handleSleepTimer();
+      },
+    },
+  ];
+};
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
-const onMenuChange = e => {
-  e?.value?.command()
-}
+const onMenuChange = (e) => {
+  e?.value?.command();
+};
 
 // handle the toggle play button and tracking
 const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, index)
-}
+  togglePlayEpisode(epData, index);
+};
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
-  const epImage = episodeData.value?.image
-  const showImage = episodeData.value?.headers.brand.logoImage
-  return epImage
-    ? epImage.template !== showImage.template
-      ? epImage
-      : null
-    : null
-}
+  const epImage = episodeData.value?.image;
+  const showImage = episodeData.value?.headers.brand.logoImage;
+  return epImage ? (epImage.template !== showImage.template ? epImage : null) : null;
+};
 
-const theEpImage = computed(() => getEpisodeImage())
+const theEpImage = computed(() => getEpisodeImage());
 
-const {
-  data: show,
-  error: showError,
-  execute: executeShowFetch
-} = useLazyFetch(
+const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch(
   () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
   {
     immediate: false,
-    server: false
+    server: false,
   }
-)
+);
 
 const breadcrumbs = computed(() => [
-  { label: 'Home', route: '/' },
-  { label: 'Browse', route: '/browse' },
-  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` }
-])
+  { label: "Home", route: "/" },
+  { label: "Browse", route: "/browse" },
+  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
+]);
 
 watch(
   status,
   () => {
-    if (status.value === 'success' && theSlug.value) {
-      executeShowFetch()
+    if (status.value === "success" && theSlug.value) {
+      executeShowFetch();
     }
   },
   { immediate: false }
-)
+);
 </script>
 
 <template>
@@ -289,9 +268,7 @@ watch(
           <PipeData class="text-sm" :hide-pipe="!!!episodeData?.showTitle">
             <template #left>{{ episodeData?.showTitle }}</template>
             <template #right>
-              <span class="nobreak">{{
-                getDate(episodeData, 'LLL d, yyyy')
-              }}</span>
+              <span class="nobreak">{{ getDate(episodeData, "LLL d, yyyy") }}</span>
             </template>
           </PipeData>
           <div
@@ -344,9 +321,7 @@ watch(
                 aria-label="download"
                 @click="handleDownload(episodeData)"
               >
-                <template #icon>
-                  <DownloadIcon class="w-1rem h-1rem"
-                /></template>
+                <template #icon> <DownloadIcon class="w-1rem h-1rem" /></template>
               </Button>
               <!-- <Button class="" text plain rounded aria-label="share" @click="handleShare">
                 <template #icon> <ShareIcon /></template>
@@ -362,9 +337,7 @@ watch(
                 aria-label="transcript"
                 @click="handleTranscript"
               >
-                <template #icon>
-                  <TranscriptIcon class="w-1rem h-1rem"
-                /></template>
+                <template #icon> <TranscriptIcon class="w-1rem h-1rem" /></template>
               </Button>
               <DotMenu
                 :menuItems="getDotMenuItems(episodeData)"
@@ -413,12 +386,7 @@ watch(
                 borderRadius="16px"
                 class="opacity-70"
               />
-              <Skeleton
-                height="8px"
-                width="8px"
-                borderRadius="50%"
-                class="opacity-50"
-              />
+              <Skeleton height="8px" width="8px" borderRadius="50%" class="opacity-50" />
               <Skeleton
                 height="12px"
                 width="70px"
@@ -428,21 +396,11 @@ watch(
             </div>
           </div>
           <div class="button-holder flex align-items-center gap-3 flex-wrap">
-            <Skeleton
-              height="28px"
-              width="140px"
-              borderRadius="16px"
-              class="z-2"
-            />
+            <Skeleton height="28px" width="140px" borderRadius="16px" class="z-2" />
 
             <slot>
               <div class="flex align-items-center gap-4">
-                <Skeleton
-                  class="mr-2"
-                  height="25px"
-                  width="5px"
-                  borderRadius="16px"
-                />
+                <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
               </div>
             </slot>
           </div>
@@ -464,7 +422,7 @@ watch(
                 md: [672, 448],
                 lg: [560, 373],
                 xl: [933, 621],
-                xxl: [688, 458]
+                xxl: [688, 458],
               }"
               :maxHeight="episodeData?.imageFullHeight"
               :maxWidth="episodeData?.imageFullWidth"
@@ -485,10 +443,7 @@ watch(
           <div v-if="status === 'success'">
             <div>
               <!-- SEGMENTS -->
-              <ol
-                v-if="hasSegments"
-                class="flex flex-column gap-3 mt-5 segment-list"
-              >
+              <ol v-if="hasSegments" class="flex flex-column gap-3 mt-5 segment-list">
                 <li
                   v-for="segment in episodeData?.audio"
                   class="mb-3 pr-0 beforeHack"
@@ -542,7 +497,7 @@ watch(
 <style lang="scss">
 .episode-page .segment-list .beforeHack {
   &::before {
-    content: '';
+    content: "";
     display: block;
     height: 0px;
   }
