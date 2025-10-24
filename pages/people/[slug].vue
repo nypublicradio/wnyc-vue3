@@ -12,7 +12,7 @@ const personName = ref(null)
 const pageTitle = ref(null)
 const personSlug = route.params.slug
 //const newPageData = ref(null)
-const { data: pagedata, pending, error } = useFetch(
+const { data: pagedata, status, error } = useFetch(
   `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
 )
 
@@ -90,7 +90,7 @@ const routeBack = () => {
         v-if="error"
         msg="An error occured while loading this persons profile."
       />
-      <div v-if="!pending && pagedata !== null" class="content">
+      <div v-if="status === 'success' && pagedata !== null" class="content">
         <div class="grid mt-4">
           <div class="col-12">
             <VPerson
