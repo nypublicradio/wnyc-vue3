@@ -1307,7 +1307,7 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           root: {
-            borderColor: '#ffffffE6'
+            borderColor: "#ffffffE6"
           },
         },
       },
