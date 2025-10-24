@@ -24,6 +24,8 @@ import {
   hasAudio,
 } from "~/utilities/helpers"
 import useSleepTimer from "~/composables/useSleepTimer"
+import { useTopStories } from "~/composables/useTopStories"
+const { getFilteredTopStories } = useTopStories()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
@@ -71,6 +73,7 @@ const { data: episode, status, error } = useFetch(
     },
   }
 )
+
 const episodeData = computed(() => episode.value)
 const theSlug = computed(
   () =>
@@ -278,6 +281,7 @@ watch(
 
     <section class="py-3 md:py-6">
       <div class="grid">
+        <!-- <pre>{{ episodeData }}</pre> -->
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div v-if="status === 'success'" class="col pr-2 lg:pr-4">
           <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
@@ -507,6 +511,12 @@ watch(
           <ShowSummary :show="show" />
         </div>
       </div>
+    </section>
+
+    <section v-if="getFilteredTopStories">
+      <Divider class="mt-2 mb-5" />
+      <h2 class="mb-3">Top Stories From Gothamist</h2>
+      <TopStories :articles="getFilteredTopStories(episodeData)" />
     </section>
 
     <BackToTopButton />
