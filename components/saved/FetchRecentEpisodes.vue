@@ -13,7 +13,7 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 
-const { data, pending, error } = useFetch(
+const { data, status, error } = useFetch(
   `${config.public.BFF_URL}/api/show/${props.show.slug}`,
   {
     params: {
@@ -23,7 +23,7 @@ const { data, pending, error } = useFetch(
 )
 </script>
 <template>
-  <div v-if="!pending">
+  <div v-if="status === 'success'">
     <MediaCard
       v-for="episode in data.episodes.data"
       :key="episode.id"
