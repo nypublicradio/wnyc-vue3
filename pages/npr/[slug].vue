@@ -1,25 +1,12 @@
 <script setup>
-import StarIcon from "~/components/icons/StarIcon.vue"
-//import ShareIcon from "~/components/icons/ShareIcon.vue"
-import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
-import {
-  checkIsFavorited,
-  //shareAPI,
-  trackClickEvent,
-  whenTime,
-  getMinutes,
-  togglePlayEpisode,
-  addToFavorites2,
-} from "~/utilities/helpers"
+import { trackClickEvent } from "~/utilities/helpers"
 
-import { useCurrentUser } from "~/composables/states"
 import { useTopStories } from "~/composables/useTopStories"
 const { topStories } = useTopStories()
 
 const route = useRoute()
 const router = useRouter()
 
-const user = useCurrentUser()
 const config = useRuntimeConfig()
 const { $analytics } = useNuxtApp()
 
@@ -57,41 +44,6 @@ const routeBack = () => {
   trackClickEvent("story", "story page", "route back")
   window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
-
-const progress = ref({})
-// handle the download of the audio file or multiple files request and feed the progress
-const handleDownload = async (epD) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
-  progress.value = await fetchAndStoreMp3(epD)
-}
-
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
-
-// add item to favorites
-const handleAddToFavorites = () => {
-  // helper func for adding to favorites, also handles account prompt if not logged in
-  addToFavorites2({
-    item: storyData.value,
-    isFavorited: isFavorited.value,
-  })
-  if (user.value) {
-    isFavorited.value = !isFavorited.value
-  }
-}
-// handle share button
-/* const handleShare = () => {
-  shareAPI(storyData.value, "NPR story slug")
-} */
-
-// handle the toggle play button and tracking
-const togglePlayHere = (story) => {
-  togglePlayEpisode(story, mediaTypes.EPISODE)
-}
 </script>
 
 <template>
@@ -104,11 +56,21 @@ const togglePlayHere = (story) => {
       </Head>
     </Html>
     <!-- <pre>{{ storyData }}</pre> -->
-
+    <section class="flex align-items-center py-0">
+      <Button
+        class="back-btn text-color -ml-3"
+        icon="pi pi-chevron-left"
+        rounded
+        text
+        severity="secondary"
+        aria-label="back to previous page"
+        @click="routeBack"
+        label="Back"
+      />
+    </section>
     <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData" />
 
-    <section class="thinContent">
-      <!-- <pre class="text-xs">{{ storyData }}</pre> -->
+    <!-- <section class="thinContent">
       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-3 mb-3"
@@ -122,8 +84,8 @@ const togglePlayHere = (story) => {
         />
       </div>
       <FetchError v-if="error" />
-    </section>
-    <div v-if="status === 'success'" class="thinContent">
+    </section> -->
+    <!-- <div v-if="status === 'success'" class="thinContent">
       <VImage
         v-if="storyData.image"
         :src="storyData.image"
@@ -143,20 +105,6 @@ const togglePlayHere = (story) => {
             :text="storyData.leadImageCaption"
           />
         </template>
-        <!--         <template #gallery>
-          <VImageGallery
-            v-if="gallery?.slides"
-            :count="String(gallery.slides.length)"
-            :gallery-link="galleryLink"
-          />
-        </template> -->
-        <!--         <template #belowImage>
-          <div>
-            <p class="text-left px-4 mt-1 text-xs">
-              {{ storyData.image.credit }}
-            </p>
-          </div>
-        </template> -->
       </VImage>
       <section>
         <PipeData class="my-2 text-xs opacity-70">
@@ -205,9 +153,6 @@ const togglePlayHere = (story) => {
             >
               <template #icon> <DownloadIcon /></template>
             </Button>
-            <!--      <Button text plain rounded aria-label="share" @click="handleShare">
-              <template #icon> <ShareIcon /></template>
-            </Button> -->
           </div>
         </div>
         <v-streamfield
@@ -221,7 +166,7 @@ const togglePlayHere = (story) => {
     </div>
     <div v-else class="thinContent">
       <skeleton-article />
-    </div>
+    </div> -->
 
     <section v-if="topStories">
       <Divider class="mt-2 mb-5" />

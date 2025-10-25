@@ -21,7 +21,9 @@ const props = defineProps({
 //const tags = ref(props.article.tags)
 const isSponsored = ref(props.article?.sponsoredContent ?? false)
 const isDisableComments = ref(props.article?.disableComments ?? false)
-const profileData = isSponsored.value ? props.article?.sponsors : props.article?.authors
+const profileData = computed(() =>
+  isSponsored.value ? props.article?.sponsors : props.article?.authors
+)
 
 // function attached to the emit of the article-tags when clicked
 // const onTagClick = (tag) => {
