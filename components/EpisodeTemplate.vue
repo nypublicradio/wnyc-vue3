@@ -209,25 +209,21 @@ const getDotMenuItems = (bucketItem) => {
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">
-        <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
+        <h1 class="text-2xl md:text-6xl line-height-2">
           {{ props.episodeData?.title }}
         </h1>
-        <div class="npr-story-page-author opacity-70 mb-3 text-xs">
+        <div class="npr-story-page-author opacity-70 text-xs">
           <VByline
             v-if="props.episodeData?.authors?.length > 0"
             :authors="props.episodeData?.authors"
           />
         </div>
-        <PipeData class="text-sm" :hide-pipe="!!!props.episodeData?.showTitle">
+        <PipeData class="text-sm mt-3" :hide-pipe="!!!props.episodeData?.showTitle">
           <template #left>{{ props.episodeData?.showTitle }}</template>
           <template #right>
             <span class="nobreak inline-flex gap-1"
               >{{ getDate(props.episodeData, "LLL d, yyyy") }}
-              <span>|</span>
-              <VByline
-                v-if="props.episodeData?.authors?.length > 0"
-                :authors="props.episodeData?.authors"
-            /></span>
+            </span>
           </template>
         </PipeData>
         <div
@@ -434,12 +430,18 @@ const getDotMenuItems = (bucketItem) => {
             class="mb-5"
           />
         </div>
+        <story-article-footer
+          class="lg:hidden"
+          :article="props.episodeData"
+          :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
+          :showAd="!props.show"
+        />
       </div>
       <div class="col-fixed hidden lg:block w-20rem">
         <ShowSummary v-if="props.show" :show="props.show" />
         <story-article-footer
           :article="props.episodeData"
-          :isDisableComments="true"
+          :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
           :showAd="!props.show"
         />
       </div>
