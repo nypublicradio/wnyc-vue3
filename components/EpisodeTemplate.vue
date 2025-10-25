@@ -50,13 +50,13 @@ const theSlug = computed(
   () =>
     props.episodeData?.showSlug ||
     props.episodeData?.show ||
-    props.episodeData?.headers.brand.slug
+    props.episodeData?.headers?.brand?.slug
 )
 
 const theShowTitle = computed(
   () =>
     props.episodeData?.showTitle ||
-    props.episodeData?.headers.brand.title ||
+    props.episodeData?.headers?.brand?.title ||
     props.episodeData?.title
 )
 
@@ -120,8 +120,13 @@ const moreFromClick = () => {
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
   const epImage = props.episodeData?.image
-  const showImage = props.episodeData?.headers.brand.logoImage
-  return epImage ? (epImage.template !== showImage.template ? epImage : null) : null
+  const showImage = props.episodeData?.headers?.brand?.logoImage
+
+  return epImage && typeof epImage === "object"
+    ? epImage?.template !== showImage?.template
+      ? epImage
+      : null
+    : epImage
 }
 
 const theEpImage = computed(() => getEpisodeImage())
@@ -207,11 +212,22 @@ const getDotMenuItems = (bucketItem) => {
         <h1 class="mb-3 text-2xl md:text-6xl line-height-2">
           {{ props.episodeData?.title }}
         </h1>
-
+        <div class="npr-story-page-author opacity-70 mb-3 text-xs">
+          <VByline
+            v-if="props.episodeData?.authors?.length > 0"
+            :authors="props.episodeData?.authors"
+          />
+        </div>
         <PipeData class="text-sm" :hide-pipe="!!!props.episodeData?.showTitle">
           <template #left>{{ props.episodeData?.showTitle }}</template>
           <template #right>
-            <span class="nobreak">{{ getDate(props.episodeData, "LLL d, yyyy") }}</span>
+            <span class="nobreak inline-flex gap-1"
+              >{{ getDate(props.episodeData, "LLL d, yyyy") }}
+              <span>|</span>
+              <VByline
+                v-if="props.episodeData?.authors?.length > 0"
+                :authors="props.episodeData?.authors"
+            /></span>
           </template>
         </PipeData>
         <div
@@ -294,7 +310,7 @@ const getDotMenuItems = (bucketItem) => {
                 <div>
                   <div class="flex gap-3 align-items-center px-4">
                     <VImage
-                      :src="props.episodeData?.image || theEpImage"
+                      :src="theEpImage"
                       :alt="`${props.episodeData?.title} show image`"
                       :width="112"
                       :height="112"
@@ -348,10 +364,7 @@ const getDotMenuItems = (bucketItem) => {
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col pr-2 lg:pr-4">
-        <div
-          v-if="theEpImage && !props.pending"
-          class="episode-page-image-holder relative mb-4"
-        >
+        <div v-if="!props.pending" class="episode-page-image-holder relative mb-4">
           <VImage
             :src="theEpImage"
             :size="{
@@ -369,7 +382,7 @@ const getDotMenuItems = (bucketItem) => {
             class="episode-page-image mb-2"
           />
         </div>
-        <div v-else-if="props.pending" class="episode-page-image-holder relative mb-5">
+        <div v-if="props.pending" class="episode-page-image-holder relative mb-5">
           <Skeleton
             borderRadius="0px"
             class="episode-page-image mb-2 opacity-60 w-full h-auto"
@@ -423,7 +436,12 @@ const getDotMenuItems = (bucketItem) => {
         </div>
       </div>
       <div class="col-fixed hidden lg:block w-20rem">
-        <ShowSummary :show="props.show" />
+        <ShowSummary v-if="props.show" :show="props.show" />
+        <story-article-footer
+          :article="props.episodeData"
+          :isDisableComments="true"
+          :showAd="!props.show"
+        />
       </div>
     </div>
   </section>

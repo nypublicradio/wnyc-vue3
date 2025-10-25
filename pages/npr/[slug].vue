@@ -104,6 +104,9 @@ const togglePlayHere = (story) => {
       </Head>
     </Html>
     <!-- <pre>{{ storyData }}</pre> -->
+
+    <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData" />
+
     <section class="thinContent">
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
       <div class="flex align-items-center">
