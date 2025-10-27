@@ -463,7 +463,7 @@ watch(
             <template #gallery>
               <VImageGallery
                 v-if="gallery?.slides"
-                :count="String(gallery.slides.length)"
+                :count="String(gallery?.slides.length)"
                 :gallery-link="galleryLink"
               />
             </template>
