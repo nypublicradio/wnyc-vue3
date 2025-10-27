@@ -153,6 +153,16 @@ onMounted(() => {
           </VImage>
         </div>
       </div>
+      <Button
+        class="back-btn text-color -ml-3 my-4"
+        icon="pi pi-chevron-left"
+        rounded
+        text
+        severity="secondary"
+        aria-label="back to previous page"
+        @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
+        label="Return"
+      />
     </section>
   </div>
 </template>
