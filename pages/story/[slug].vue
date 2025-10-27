@@ -285,7 +285,7 @@ const togglePlayHere = (story) => {
 
 .story-page .v-byline .flexible-link {
   color: var(--p-text-color) !important;
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 // .story-page .comments-btn {

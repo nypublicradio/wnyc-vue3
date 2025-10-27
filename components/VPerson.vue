@@ -240,10 +240,9 @@ const accountNameFromUrl = (url) => {
 }
 
 const getImageSrc = computed(() => {
-  console.log("profile", profile)
   return props.sponsored
     ? profile.value.logo
-    : profile.value.image || profile.value.photoID || props.imageFallbackPath
+    : profile.value.image || String(profile.value.photoID) || props.imageFallbackPath
 })
 
 // cssvars
