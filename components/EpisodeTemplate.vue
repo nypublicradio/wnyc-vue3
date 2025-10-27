@@ -8,6 +8,9 @@ import TranscriptIcon from "~/components/icons/TranscriptIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+import CommentsIcon from "~/components/icons/CommentsIcon.vue"
+import { normalizeGalleryPage } from "~/composables/data/galleryPages"
+import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import {
   getMinutes,
   trackClickEvent,
@@ -46,6 +49,44 @@ const progress = ref({})
 const { breakpoint } = useBreakpoints()
 const isMobileBtn = computed(() => breakpoint("<md"))
 
+const isWagtail = route.query.src === cmsSources.WAGTAIL
+const storySource = computed(() =>
+  isWagtail
+    ? `Gothamist${
+        props.episodeData?.section?.name ? `-${props.episodeData.section.name}` : ""
+      }`
+    : props.episodeData?.headers?.brand?.title || "WNYC"
+)
+
+const gallery = computed(async () => {
+  if (props.episodeData?.leadGallery) {
+    return await usePageById(props.episodeData?.leadGallery.gallery).then(({ data }) =>
+      normalizeGalleryPage(data.value)
+    )
+  }
+})
+const galleryLength = computed(() => {
+  if (props.episodeData?.leadGallery) {
+    return gallery.value?.slides?.length ?? 0
+  }
+})
+const galleryLink = computed(() => {
+  if (props.episodeData?.leadGallery) {
+    return String(
+      `photos/${res?.leadGallery.gallery}?article=${res?.id}&src=${route.query.src}`
+    )
+  }
+})
+if (isWagtail) {
+  // get comment count if Wagtail only
+  useUpdateCommentCounts([props.episodeData])
+}
+const commentCounts = ref(useCommentCounts())
+const commentCount = computed(() => {
+  const result = commentCounts.value[props.episodeData?.commentId]
+  return result ?? 0
+})
+
 const theSlug = computed(
   () =>
     props.episodeData?.showSlug ||
@@ -79,6 +120,16 @@ const handleTranscript = () => {
   navigateTo(
     `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
   )
+}
+
+// handle comments button click
+const handleComments = () => {
+  const activeStation = document.getElementById("comments")
+  activeStation.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+    inline: "start",
+  })
 }
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
@@ -125,12 +176,19 @@ const getEpisodeImage = () => {
   return epImage && typeof epImage === "object"
     ? epImage?.template !== showImage?.template
       ? epImage
-      : null
+      : epImage || gallery.value?.slides?.[0]?.image || null
     : epImage
 }
 
 const theEpImage = computed(() => getEpisodeImage())
-
+const theEpImageCaption = computed(() => {
+  return (
+    props.episodeData?.leadImageCaption ??
+    theEpImage?.caption ??
+    gallery.value?.slides?.[0]?.image.caption ??
+    null
+  )
+})
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -202,10 +260,16 @@ const getDotMenuItems = (bucketItem) => {
       : []),
   ]
 }
+watch(
+  () => props.episodeData,
+  () => {
+    console.log("episodeData in EpisodeTemplate:", props.episodeData)
+  }
+)
 </script>
 
 <template>
-  <section class="episode-template py-3 md:py-6">
+  <section class="episode-template">
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">
@@ -218,8 +282,9 @@ const getDotMenuItems = (bucketItem) => {
             :authors="props.episodeData?.authors"
           />
         </div>
-        <PipeData class="text-sm mt-3" :hide-pipe="!!!props.episodeData?.showTitle">
-          <template #left>{{ props.episodeData?.showTitle }}</template>
+        <!-- :hide-pipe="!!!props.episodeData?.showTitle" -->
+        <PipeData class="text-sm mt-3">
+          <template #left>{{ props.episodeData?.showTitle || storySource }}</template>
           <template #right>
             <span class="nobreak inline-flex gap-1"
               >{{ getDate(props.episodeData, "LLL d, yyyy") }}
@@ -294,6 +359,21 @@ const getDotMenuItems = (bucketItem) => {
             >
               <template #icon> <TranscriptIcon class="w-1rem h-1rem" /></template>
             </Button>
+            <Button
+              v-if="isWagtail && commentCount > 0"
+              plain
+              rounded
+              severity="secondary"
+              :label="` ${String(commentCount)} ${
+                commentCount === 1 ? 'comment' : 'comments'
+              }`"
+              class="comments-btn text-sm"
+              aria-label="comments"
+              @click="handleComments()"
+            >
+              <template #icon> <CommentsIcon class="w-1rem h-1rem" /></template>
+            </Button>
+
             <DotMenu
               :menuItems="getDotMenuItems(props.episodeData)"
               label=""
@@ -376,7 +456,25 @@ const getDotMenuItems = (bucketItem) => {
             allowVerticalEffect
             :alt="props.episodeData?.image?.altText"
             class="episode-page-image mb-2"
-          />
+          >
+            <template #caption>
+              <VImageCaption v-if="theEpImageCaption" :text="theEpImageCaption" />
+            </template>
+            <template #gallery>
+              <VImageGallery
+                v-if="gallery?.slides"
+                :count="String(gallery.slides.length)"
+                :gallery-link="galleryLink"
+              />
+            </template>
+            <template #belowImage>
+              <div>
+                <p class="text-right mt-1 type-fineprint">
+                  {{ props.episodeData?.image.credit }}
+                </p>
+              </div>
+            </template>
+          </VImage>
         </div>
         <div v-if="props.pending" class="episode-page-image-holder relative mb-5">
           <Skeleton
@@ -449,6 +547,10 @@ const getDotMenuItems = (bucketItem) => {
   </section>
 </template>
 
-<script lang="ts" setup></script>
-
-<style></style>
+<style lang="scss">
+.episode-template .comments-btn {
+  .comments-icon {
+    //margin-top: 3px;
+  }
+}
+</style>

@@ -1,6 +1,6 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
-import { Device, type DeviceInfo } from '@capacitor/device';
+import { Device, type DeviceInfo } from '@capacitor/device'
 import { useAuth } from "~/composables/useAuth"
 import {
   useCurrentEpisode,
@@ -53,7 +53,7 @@ import {
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
-import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
+import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 // function to check if a URL returns a 404
@@ -94,7 +94,7 @@ export const whenTime = (data) => {
 }
 
 // format ISO timestamp to return only the time
-export function formatTime(date: any, formatString = "h:mm a") {
+export function formatTime (date: any, formatString = "h:mm a") {
   if (date) {
     const dateObject = new Date(date)
     return format(dateObject, formatString)
@@ -103,7 +103,7 @@ export function formatTime(date: any, formatString = "h:mm a") {
 }
 
 // Function to strip HTML tags and return text content
-function stripHtmlTags(str) {
+function stripHtmlTags (str) {
   const parser = new DOMParser()
   const dom = parser.parseFromString(str, "text/html")
   return dom.body.textContent ?? ""
@@ -166,7 +166,7 @@ export const trackClickEvent = (category, component, label) => {
 /**
  * to get how long ago a date was
  */
-export function howLongAgo(date) {
+export function howLongAgo (date) {
   if (date) {
     // check if unix tiumestamp
     if (Number.isInteger(date)) {
@@ -185,7 +185,7 @@ export function howLongAgo(date) {
 /**
  * to get the desired date format for the header
  */
-export function getDate(data = null, formatString = "EEE, MMM do") {
+export function getDate (data = null, formatString = "EEE, MMM do") {
   const date = data?.updatedDate || data?.publicationDate
   if (date) {
     const currentYear = new Date().getFullYear()
@@ -209,7 +209,7 @@ export function getDate(data = null, formatString = "EEE, MMM do") {
 /**
  * to get the desired date format for the header
  */
-export function formatDate(date = null, formatString = "EEE, MMM do") {
+export function formatDate (date = null, formatString = "EEE, MMM do") {
   if (date) {
     //const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
@@ -226,28 +226,28 @@ export function formatDate(date = null, formatString = "EEE, MMM do") {
 /**
  * to get the yaer for the footer in the settings
  */
-export function getYear() {
+export function getYear () {
   return new Date().getFullYear()
 }
 
 /**
  * helper function to capitalize the first letter of a string
  */
-export function capitalizeFirstLetter(str) {
+export function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**
  * helper function to change the global font size
  */
-export function setFontSize(size: string) {
+export function setFontSize (size: string) {
   document.documentElement.style.fontSize = size
 }
 
 /**
  * helper function to toggle darkmode of the status bar
  */
-export async function setStatusDarkMode(bool: boolean) {
+export async function setStatusDarkMode (bool: boolean) {
   await nextTick()
   const isApp = useIsApp()
   if (isApp.value) {
@@ -262,7 +262,7 @@ export async function setStatusDarkMode(bool: boolean) {
 /**
  * helper function to toggle darkmode
  */
-export async function setDarkMode(bool: boolean) {
+export async function setDarkMode (bool: boolean) {
   // TEMP, no dark ode for browser yet
   const isApp = useIsApp()
   const dmBool = isApp.value ? bool : false
@@ -327,44 +327,44 @@ export const toSystemSettings = () => {
     })
   } else {
     // for iOS, we are using a custom plugin
-    capacitorIosNotificationSettings.openNotificationSettings();
+    capacitorIosNotificationSettings.openNotificationSettings()
   }
 }
 
 // get device information
-export async function getFullDeviceInfo(): Promise<DeviceInfo | null> {
+export async function getFullDeviceInfo (): Promise<DeviceInfo | null> {
   try {
-    const info = await Device.getInfo();
-    return info;
+    const info = await Device.getInfo()
+    return info
   } catch (error) {
-    console.error('Error getting full device info:', error);
-    return null;
+    console.error('Error getting full device info:', error)
+    return null
   }
 }
 
 //determine where to send the user to get the app based on their platform or if on browser
 export const getAppDownloadLink = async () => {
-  const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android";
-  const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771";
+  const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android"
+  const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771"
 
-  const info = await getFullDeviceInfo();
+  const info = await getFullDeviceInfo()
 
   if (info?.platform === "android") {
-    return androidStoreUrl;
+    return androidStoreUrl
   } else if (info?.platform === "ios") {
-    return iosStoreUrl;
+    return iosStoreUrl
   } else if (info?.operatingSystem === 'ios') {
-    return iosStoreUrl;
+    return iosStoreUrl
   } else if (info?.operatingSystem === 'android') {
-    return androidStoreUrl;
+    return androidStoreUrl
   } else {
     // For web browsers, redirect to the mobile route
-    return "/mobile";
+    return "/mobile"
   }
-};
+}
 
 // helper function to open a link in the browser IN the app
-export async function openLinkInAppBrowser(url: string) {
+export async function openLinkInAppBrowser (url: string) {
   await Browser.open({ url })
 }
 
@@ -427,9 +427,9 @@ export const shareAPI = async (
     title: removeHTMLTags(content.socialTitle || content.title),
     text: removeHTMLTags(content.rawBody || content.description || content.title),
     url: content.url || content.titleLink,
-  };
+  }
 
-  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title);
+  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
   // Native Mobile Sharing
   if (Capacitor.isNativePlatform()) {
     await Share.share({
@@ -437,8 +437,8 @@ export const shareAPI = async (
       text: shareData.text,
       url: shareData.url,
       dialogTitle: "Share with buddies",
-    });
-    return; // Exit after native share
+    })
+    return // Exit after native share
   }
 
   // Web Share API
@@ -448,25 +448,25 @@ export const shareAPI = async (
         title: shareData.title,
         text: shareData.text,
         url: shareData.url,
-      });
+      })
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
         // User cancelled the share. No action needed.
       } else {
         // Any other error, we fallback to clipboard
-        console.error("Web Share API error:", error);
-        copyToClipBoard(shareData.url);
+        console.error("Web Share API error:", error)
+        copyToClipBoard(shareData.url)
       }
     }
   } else {
     // Fallback for browsers without Web Share API or if URL is missing
     if (shareData.url) {
-      copyToClipBoard(shareData.url);
+      copyToClipBoard(shareData.url)
     } else {
-      console.error("No URL provided to share or copy.");
+      console.error("No URL provided to share or copy.")
     }
   }
-};
+}
 
 // handle the delete of the stored audio file and GA tracking
 export const handleDelete = (file) => {
@@ -563,10 +563,10 @@ export const getAndSetUserProfile = async () => {
 
         // some odd timing hack to fix the text_size and default station if they come over as an object
         if (typeof ls.text_size === 'object') {
-          ls.text_size = ls.text_size.label;
+          ls.text_size = ls.text_size.label
         }
         if (typeof ls.default_live_stream === 'object') {
-          ls.default_live_stream = ls.default_live_stream.station;
+          ls.default_live_stream = ls.default_live_stream.station
         }
 
         // get the system's notification permission and apply it to the ls
@@ -1035,54 +1035,54 @@ export const getWagtailRawBody = (bodyArr) => {
   return bodyArr
     .filter((item) => item.type === "paragraph")
     .map((item) => item.value.replace(/<\/?[^>]+(>|$)/g, "")) // Strip HTML tags
-    .join(" ");
+    .join(" ")
 }
 
 // Define the interface for the function parameters
 interface AddToFavoritesParams {
-  item: any; // Replace 'any' with the actual type of bucketItem
-  isFavorited: boolean;
-  message?: string;
-  callback?: () => void;
+  item: any // Replace 'any' with the actual type of bucketItem
+  isFavorited: boolean
+  message?: string
+  callback?: () => void
 }
 // function to add to the favorites
 export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited ? "Removed from Favorites." : "Added to Favorites.", callback }: AddToFavoritesParams) => {
-  const user = useCurrentUser();
-  const accountPromptSideBar = useAccountPromptSideBar();
+  const user = useCurrentUser()
+  const accountPromptSideBar = useAccountPromptSideBar()
   if (user.value) {
-    const globalToast = useGlobalToast();
+    const globalToast = useGlobalToast()
     const episode = {
       ...item,
       slug: item.meta?.slug ?? item.slug,
       estimatedDuration: item.estimatedDuration || item.duration,
-    };
+    }
     if (isFavorited) {
-      await deleteFavorite(episode);
-      getFavoritedItems();
+      await deleteFavorite(episode)
+      getFavoritedItems()
       if (callback) {
-        callback();
+        callback()
       }
     } else {
-      await saveFavorite(episode, episode.type);
-      getFavoritedItems();
+      await saveFavorite(episode, episode.type)
+      getFavoritedItems()
       if (callback) {
-        callback();
+        callback()
       }
     }
     globalToast.value = {
       severity: "info",
       summary: message,
       life: 3000,
-    };
+    }
     trackClickEvent(
       `Click Tracking - ${message}`,
       "Episode Item",
       item.title
-    );
+    )
   } else {
-    accountPromptSideBar.value = true;
+    accountPromptSideBar.value = true
   }
-};
+}
 
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
@@ -1126,8 +1126,8 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 
 // handles the permissions for push & local notifications
 export const askNotificationPermissions = () => {
-  const oneSignal = useOneSignal();
-  oneSignal.requestNotificationPermission();
+  const oneSignal = useOneSignal()
+  oneSignal.requestNotificationPermission()
 }
 
 // handles iOS asking permission for tracking
@@ -1201,7 +1201,7 @@ export const requestAccountDeletion = async () => {
     await $fetch('https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
       method: 'POST',
       body: { "email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id }
-    });
+    })
   }
 
   logOutUser()
@@ -1224,33 +1224,33 @@ export const requestAccountDeletion = async () => {
 export const customAlphabeticalSort = (key = 'title') => {
   return (a, b) => {
     // get the value from the key
-    const getValue = (obj, key) => obj[key];
+    const getValue = (obj, key) => obj[key]
 
     // get the title without "A " or "The " at the beginning
     const getTitle = (title) => {
-      const prefixes = ["A ", "The "];
+      const prefixes = ["A ", "The "]
       for (const prefix of prefixes) {
         if (title.startsWith(prefix)) {
-          return title.substring(prefix.length);
+          return title.substring(prefix.length)
         }
       }
-      return title;
-    };
-
-    const aValue = getTitle(getValue(a, key));
-    const bValue = getTitle(getValue(b, key));
-
-    if (aValue !== bValue) {
-      return aValue.localeCompare(bValue);
+      return title
     }
 
-    return a.localeCompare(b);
-  };
-};
+    const aValue = getTitle(getValue(a, key))
+    const bValue = getTitle(getValue(b, key))
+
+    if (aValue !== bValue) {
+      return aValue.localeCompare(bValue)
+    }
+
+    return a.localeCompare(b)
+  }
+}
 
 // function that converts and array to a set to remove the dups
 export const deduplicateArray = (array) => {
-  return [...new Set(array)];
+  return [...new Set(array)]
 }
 
 // a func to refresh all data
@@ -1295,13 +1295,13 @@ export const refreshData = async (refreshUser = false) => {
 }
 
 // function that gets a URL and returns the path and query only
-export function getPathAndQuery(urlString) {
+export function getPathAndQuery (urlString) {
   try {
-    const url = new URL(urlString);
-    return `${url.pathname}${url.search}`;
+    const url = new URL(urlString)
+    return `${url.pathname}${url.search}`
   } catch (error) {
-    console.error("Invalid URL:", error);
-    return null;
+    console.error("Invalid URL:", error)
+    return null
   }
 }
 
