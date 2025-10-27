@@ -149,10 +149,10 @@ const togglePlayHere = (story) => {
         <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
       </Head>
     </Html>
-    <section class="thinContent">
+    <section>
       <div class="flex align-items-center">
         <Button
-          class="back-btn text-color -ml-3 mb-3"
+          class="back-btn text-color -ml-3"
           icon="pi pi-chevron-left"
           rounded
           text
@@ -164,7 +164,10 @@ const togglePlayHere = (story) => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <div v-if="status === 'success'" class="thinContent">
+
+    <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData" />
+
+    <!-- <div v-if="status === 'success'" class="thinContent">
       <VImage
         v-if="topImage"
         :src="topImage"
@@ -257,7 +260,7 @@ const togglePlayHere = (story) => {
     </div>
     <section v-else>
       <skeleton-article class="-mx-4" />
-    </section>
+    </section> -->
 
     <section v-if="topStories">
       <Divider class="mt-2 mb-5" />
@@ -285,9 +288,9 @@ const togglePlayHere = (story) => {
   text-decoration: none !important;
 }
 
-.story-page .comments-btn {
-  .comments-icon {
-    margin-top: 3px;
-  }
-}
+// .story-page .comments-btn {
+//   .comments-icon {
+//     margin-top: 3px;
+//   }
+// }
 </style>
