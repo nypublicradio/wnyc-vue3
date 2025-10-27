@@ -53,35 +53,37 @@ const isWagtail = route.query.src === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
     ? `Gothamist${
-        props.episodeData?.section?.name ? `-${props.episodeData.section.name}` : ""
+        props.episodeData?.section?.name ? ` - ${props.episodeData.section.name}` : ""
       }`
     : props.episodeData?.headers?.brand?.title || "WNYC"
 )
 
-const gallery = computed(async () => {
-  if (props.episodeData?.leadGallery) {
-    return await usePageById(props.episodeData?.leadGallery.gallery).then(({ data }) =>
-      normalizeGalleryPage(data.value)
-    )
-  }
-})
-const galleryLength = computed(() => {
-  if (props.episodeData?.leadGallery) {
-    return gallery.value?.slides?.length ?? 0
-  }
-})
-const galleryLink = computed(() => {
-  if (props.episodeData?.leadGallery) {
-    return String(
-      `photos/${res?.leadGallery.gallery}?article=${res?.id}&src=${route.query.src}`
-    )
-  }
-})
-if (isWagtail) {
-  // get comment count if Wagtail only
-  useUpdateCommentCounts([props.episodeData])
-}
-const commentCounts = ref(useCommentCounts())
+const gallery = ref(null)
+const galleryLength = ref(null)
+const galleryLink = ref(null)
+
+const commentCounts = ref(null)
+watch(
+  () => props.episodeData,
+  async () => {
+    useUpdateCommentCounts([props.episodeData])
+    commentCounts.value = useCommentCounts()
+
+    if (props.episodeData?.leadGallery) {
+      gallery.value = await usePageById(
+        props.episodeData?.leadGallery.gallery
+      ).then(({ data }) => normalizeGalleryPage(data.value))
+
+      galleryLength.value = gallery.value?.slides?.length ?? 0
+
+      galleryLink.value = String(
+        `photos/${props.episodeData?.leadGallery.gallery}?article=${props.episodeData?.id}&src=${route.query.src}`
+      )
+    }
+  },
+  { once: true }
+)
+
 const commentCount = computed(() => {
   const result = commentCounts.value[props.episodeData?.commentId]
   return result ?? 0
@@ -106,13 +108,13 @@ const hasSegments = computed(() => Array.isArray(props.episodeData?.audio))
 
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode slug", epD.title)
+  trackClickEvent("Click Tracking - Audio Download", "EpisodeTemplate", epD.title)
   progress.value = await fetchAndStoreMp3(epD)
 }
 
 //handle the share of the episode
 const handleShare = () => {
-  shareAPI(props.episodeData, "episode slug")
+  shareAPI(props.episodeData, "EpisodeTemplate")
 }
 
 //handle the transcript of the episode
@@ -137,8 +139,8 @@ const onMenuChange = (e) => {
   e?.value?.command()
 }
 
-const togglePlayHere = (epData, index = 0) => {
-  togglePlayEpisode(epData, index)
+const togglePlayHere = (epData) => {
+  togglePlayEpisode(epData, props.episodeData?.type)
 }
 
 const isFavorited = ref(false)
@@ -548,9 +550,8 @@ watch(
 </template>
 
 <style lang="scss">
-.episode-template .comments-btn {
-  .comments-icon {
-    //margin-top: 3px;
-  }
+.episode-template .v-byline .flexible-link {
+  color: var(--p-text-color) !important;
+  text-decoration: none;
 }
 </style>
