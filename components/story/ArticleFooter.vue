@@ -53,8 +53,8 @@ const profileData = computed(() =>
               v-for="profile in profileData"
               :key="profile.id"
               :profileData="profile"
-              :imageSize="60"
-              imageFlexBasis="60px"
+              :imageSize="66"
+              imageFlexBasis="66px"
               class="mb-4 text-sm gap-4"
               :imageFallbackPath="!profile.photoID ? getUserFallBackImage() : null"
               :onStaffPage="!profile.url"
@@ -63,7 +63,11 @@ const profileData = computed(() =>
           </div>
           <hr class="black mb-6" />
         </div>
-        <div v-if="props.showAd" class="mx-auto mb-6" style="width: 300px">
+        <div
+          v-if="props.showAd"
+          class="mx-auto mb-6"
+          style="max-width: 300px; width: 100%"
+        >
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_article_rectangle"

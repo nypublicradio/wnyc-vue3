@@ -13,7 +13,7 @@ const props = defineProps({
 })
 </script>
 <template>
-  <div class="social-buttons flex gap-3 align-items-center">
+  <div class="social-buttons flex gap-3 align-items-center flex-wrap">
     <p v-if="props.label" class="text-sm">{{ props.label }}</p>
     <VFlexibleLink
       v-for="item in props.data"
