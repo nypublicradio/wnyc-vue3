@@ -244,14 +244,18 @@ const getDotMenuItems = (bucketItem) => {
         handleShare()
       },
     },
-    {
-      label: "More episodes",
-      customIcon: MoreEpisodesIcon,
-      title: bucketItem?.title,
-      command: () => {
-        moreFromClick()
-      },
-    },
+    ...(theSlug.value
+      ? [
+          {
+            label: "More episodes",
+            customIcon: MoreEpisodesIcon,
+            title: bucketItem?.title,
+            command: () => {
+              moreFromClick()
+            },
+          },
+        ]
+      : []),
     ...(isApp.value
       ? [
           {
@@ -543,7 +547,11 @@ const getDotMenuItems = (bucketItem) => {
         />
       </div>
       <div class="col-fixed hidden lg:block w-20rem">
-        <ShowSummary v-if="props.showPending || props.show" :show="props.show" class="mb-6" />
+        <ShowSummary
+          v-if="props.showPending || props.show"
+          :show="props.show"
+          class="mb-6"
+        />
         <story-article-footer
           :article="props.episodeData"
           :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
