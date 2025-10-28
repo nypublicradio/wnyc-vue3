@@ -1,5 +1,6 @@
 <script setup>
 import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
+import { useIsApp } from "~/composables/states"
 
 const props = defineProps({
   styleMode: {
@@ -15,6 +16,7 @@ const props = defineProps({
 const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
+const isApp = useIsApp()
 
 const bgColorRef = ref(props.bgColor)
 </script>
@@ -34,11 +36,13 @@ const bgColorRef = ref(props.bgColor)
       </p>
       <p class="px-4">
         <VFlexibleLink
-          to="#"
+          :to="!isApp ? '/login' : '#'"
           @click="
             () => {
               accountPromptSideBar = false
-              loginSideBar = true
+              if (isApp) {
+                loginSideBar = true
+              }
             }
           "
         >
@@ -57,7 +61,11 @@ const bgColorRef = ref(props.bgColor)
         @click="
           () => {
             accountPromptSideBar = false
-            signupSideBar = true
+            if (isApp) {
+              signupSideBar = true
+            } else {
+              navigateTo('/signup')
+            }
           }
         "
       />
