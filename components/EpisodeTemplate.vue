@@ -36,6 +36,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  showPending: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
@@ -539,7 +543,7 @@ const getDotMenuItems = (bucketItem) => {
         />
       </div>
       <div class="col-fixed hidden lg:block w-20rem">
-        <ShowSummary v-if="props.show" :show="props.show" />
+        <ShowSummary v-if="props.showPending || props.show" :show="props.show" class="mb-6" />
         <story-article-footer
           :article="props.episodeData"
           :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
