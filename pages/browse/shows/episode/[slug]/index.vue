@@ -57,13 +57,15 @@ const backHome = () => {
   router.go(-1)
 }
 
-const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
-  {
-    immediate: false,
-    server: false,
-  }
-)
+const {
+  data: show,
+  status: showStatus,
+  error: showError,
+  execute: executeShowFetch,
+} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
+  immediate: false,
+  server: false,
+})
 
 watch(
   status,
@@ -106,6 +108,7 @@ watch(
       :pending="status !== 'success'"
       :episodeData="episodeData"
       :show="show"
+      :showPending="showStatus === 'pending'"
     />
 
     <section v-if="getFilteredTopStories">
