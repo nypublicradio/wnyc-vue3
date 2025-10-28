@@ -46,7 +46,7 @@ const profileData = computed(() =>
     <div class="grid grid-nogutter">
       <div class="profile-col col-12">
         <!-- <pre>{{ profileData }}</pre> -->
-        <div v-if="profileData.length">
+        <div v-if="profileData?.length">
           <hr class="black mb-4 mt-0" />
           <div>
             <VPerson
