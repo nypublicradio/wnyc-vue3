@@ -137,7 +137,7 @@ const createAppDirectory = async () => {
     }
 }
 
-// initial pull of the preferencce plugin files data
+// initial pull of the preference plugin files data
 export const initReadOfPreferences = async () => {
     let val = []
     try {
@@ -232,17 +232,15 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const slug = isSegments ? file.segments[index].slug : file.meta?.slug
 
     //const uid = Number(file.id)
-    // set the originalId initally only to keep track of the original id
+    // set the originalId initially only to keep track of the original id
     file.originalId = file.originalId || file.id
     const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
     file.id = uniqueDirId
 
     if (!isApp.value) {
-        // is runnning in the browser
+        // is running in the browser
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
-        console.log("desktop download file =", file)
-        console.log("desktop download =", audioFile)
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
@@ -293,7 +291,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 } else {
                     imgNameFromUrl = await fileNameFromURL(imgUrl)
                 }
-                // downlaod image
+                // download image
                 await Filesystem.downloadFile({
                     url: imgUrl,
                     path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
@@ -353,7 +351,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                                     return subStrings.some((substring) => mainString.includes(substring))
                                 })
 
-                                //append directory,image and aduio to the file object
+                                //append directory,image and audio to the file object
                                 const newFile = {
                                     ...file,
                                     directory: thisFileSystemEntry,
