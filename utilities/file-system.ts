@@ -172,7 +172,7 @@ export const updateFileSystem = async () => {
 }
 
 // handle downloading a file to the desktop
-const downloadFileToDesktop = async (url, filename) => {
+const downloadFileToDesktop = async (url: string, filename: string) => {
     const globalToast = useGlobalToast()
     globalToast.value = {
         severity: "info",
@@ -180,8 +180,11 @@ const downloadFileToDesktop = async (url, filename) => {
         life: 3000,
     }
     try {
-        // Fetch the file data
-        const response = await fetch(url)
+        // Use server-side proxy to avoid CORS issues
+        const proxyUrl = `/api/download-proxy?url=${encodeURIComponent(url)}`
+
+        // Fetch the file data through the proxy
+        const response = await fetch(proxyUrl)
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
         // Get the Blob from the response
