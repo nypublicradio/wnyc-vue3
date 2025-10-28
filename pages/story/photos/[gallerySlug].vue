@@ -124,9 +124,12 @@ onMounted(() => {
     <section class="pt-0 -mt-2">
       <!-- <pre class="text-xs">{{ gallery.slides[0] }}</pre> -->
       <div v-if="gallery?.slides" class="grid mt-0">
-        <div v-for="(img, index) in gallery.slides" class="col-12 md:col-6 xl:col-4">
+        <div
+          v-for="img in gallery.slides"
+          :key="img.image.id"
+          class="col-12 md:col-6 xl:col-4"
+        >
           <VImage
-            :key="img.image.id"
             :src="img.image"
             :ratio="[img.image.width, img.image.height]"
             sizes="xs:390px md:768px"

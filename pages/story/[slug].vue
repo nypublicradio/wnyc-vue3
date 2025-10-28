@@ -15,7 +15,7 @@ const storySource = isWagtail ? "Gothamist" : "WNYC"
 const { data: storyData, status, error } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`,
   {
-    async onResponse({ response }) {
+    onResponse({ response }) {
       const res = response._data
       // send GA page view
       const { $analytics } = useNuxtApp()

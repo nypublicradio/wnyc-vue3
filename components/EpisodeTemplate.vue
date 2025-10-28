@@ -139,6 +139,7 @@ const onMenuChange = (e) => {
   e?.value?.command()
 }
 
+// handle play toggle
 const togglePlayHere = (epData) => {
   togglePlayEpisode(epData, props.episodeData?.type)
 }
@@ -262,12 +263,12 @@ const getDotMenuItems = (bucketItem) => {
       : []),
   ]
 }
-watch(
-  () => props.episodeData,
-  () => {
-    console.log("episodeData in EpisodeTemplate:", props.episodeData)
-  }
-)
+// watch(
+//   () => props.episodeData,
+//   () => {
+//     console.log("episodeData in EpisodeTemplate:", props.episodeData)
+//   }
+// )
 </script>
 
 <template>

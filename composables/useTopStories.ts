@@ -1,7 +1,7 @@
 interface Article {
   readonly id: string | number
 }
-
+// ROOT LEVEL COMPOSABLE TO FETCH TOP STORIES
 export const useTopStories = () => {
   const config = useRuntimeConfig()
   const toast = useToast()
