@@ -1,6 +1,5 @@
 <script setup>
-import { useSignupSideBar, useLoginSideBar } from "~/composables/states"
-import { useIsApp } from "~/composables/states"
+import { useSignupSideBar, useLoginSideBar, useIsApp } from "~/composables/states"
 
 const props = defineProps({
   styleMode: {
