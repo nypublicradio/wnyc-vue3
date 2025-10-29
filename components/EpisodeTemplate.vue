@@ -455,11 +455,12 @@ const getDotMenuItems = (bucketItem) => {
           <VImage
             :src="theEpImage"
             :size="{
-              xs: [327, 218],
-              sm: [528, 352],
-              md: [672, 448],
-              lg: [560, 373],
-              xl: [933, 621],
+              xxs: [316, 210],
+              xs: [517, 344],
+              sm: [709, 472],
+              md: [885, 589],
+              lg: [757, 504],
+              xl: [923, 614],
               xxl: [688, 458],
             }"
             :maxHeight="props.episodeData?.imageFullHeight"
