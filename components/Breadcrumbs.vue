@@ -1,20 +1,46 @@
 <script setup>
+import { trackClickEvent } from "~/utilities/helpers"
+
 const props = defineProps({
   items: {
     type: Array,
     default: () => [],
   },
 })
+
+const lastItem = computed(() => {
+  return props.items.length > 0 ? props.items[props.items.length - 1] : null
+})
+
+const routeBack = () => {
+  trackClickEvent(
+    "Click Tracking - Back Button",
+    `${lastItem?.label} breadcrumbs`,
+    "route back"
+  )
+  navigateTo(lastItem.value?.route || "/home")
+}
 </script>
 
 <template>
-  <Breadcrumb :model="items" class="hidden xs:block">
+  <Button
+    v-if="isApp"
+    class="back-btn text-color -ml-3"
+    icon="pi pi-chevron-left"
+    rounded
+    text
+    severity="secondary"
+    aria-label="back to previous page"
+    @click="routeBack"
+    label="Back"
+  />
+  <Breadcrumb v-else :model="items" class="hidden xs:block">
     <template #item="{ item }">
       <NavButton
         v-if="item.route && item.label"
         size="small"
         :label="item.label"
-        trackingLocation="breadcrumbs"
+        :trackingLocation="`${lastItem?.label} breadcrumbs`"
         :route="item.route"
       />
     </template>
