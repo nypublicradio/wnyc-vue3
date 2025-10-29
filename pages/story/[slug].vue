@@ -9,7 +9,6 @@ import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 import {
   checkIsFavorited,
   shareAPI,
-  trackClickEvent,
   whenTime,
   getMinutes,
   togglePlayEpisode,
@@ -21,7 +20,6 @@ import { useCurrentUser } from "~/composables/states"
 // TO DO - replace dummy data with BFF data
 //import storyDataRaw from './story-data.json'
 const route = useRoute()
-const router = useRouter()
 
 const user = useCurrentUser()
 const config = useRuntimeConfig()
@@ -45,11 +43,7 @@ const commentCount = computed(() => {
   return result ?? 0
 })
 
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
-}
+const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const handleComments = () => {
   const activeStation = document.getElementById("comments")
@@ -151,18 +145,7 @@ const togglePlayHere = (story) => {
     </Html>
     <section class="thinContent">
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
-      <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-3 mb-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="routeBack"
-          label="Back"
-        />
-      </div>
+      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
       <FetchError v-if="error" />
     </section>
     <div v-if="!pending" class="thinContent">

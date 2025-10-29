@@ -15,7 +15,6 @@ import {
 import { useCurrentUser } from "~/composables/states"
 
 const route = useRoute()
-const router = useRouter()
 
 const user = useCurrentUser()
 const config = useRuntimeConfig()
@@ -30,11 +29,7 @@ const { data: topStoriesData, error: error2 } = useLazyFetch(
 const storySource = "NPR"
 const topStories = ref(null)
 
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
-}
+const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const progress = ref({})
 // handle the download of the audio file or multiple files request and feed the progress
@@ -105,18 +100,7 @@ const togglePlayHere = (story) => {
     </Html>
     <section class="thinContent">
       <!-- <pre class="text-xs">{{ storyData }}</pre> -->
-      <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-3 mb-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="routeBack"
-          label="Back"
-        />
-      </div>
+      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
       <FetchError v-if="error || error2" />
     </section>
     <div v-if="!pending" class="thinContent">
