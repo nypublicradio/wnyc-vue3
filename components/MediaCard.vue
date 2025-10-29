@@ -684,7 +684,7 @@ const handleHasAudio = computed(() => {
       flex-direction: row;
     }
 
-    @include media("<md") {
+    @include media("<=md") {
       .holder {
         background-color: var(--p-content-background);
         flex-direction: column;

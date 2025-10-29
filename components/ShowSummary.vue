@@ -58,7 +58,7 @@ const handleShowClick = () => {
 </script>
 <template>
   <div v-if="show" class="flex flex-column gap-3">
-    <div @click="handleShowClick" class="flex gap-4 cursor-pointer">
+    <div @click="handleShowClick" class="flex gap-3 cursor-pointer">
       <VImage
         :src="showImage"
         :srcFallback="getEpisodeFallBackImage()"
