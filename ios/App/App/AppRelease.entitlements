@@ -10,5 +10,9 @@
 		<string>applinks:native-app.wnyc.org</string>
 		<string>activitycontinuation:native-app.wnyc.org</string>
 	</array>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.org.wnyc.iphone.onesignal</string>
+	</array>
 </dict>
 </plist>
