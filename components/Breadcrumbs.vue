@@ -1,4 +1,5 @@
 <script setup>
+import { useIsApp } from "~/composables/states"
 import { trackClickEvent } from "~/utilities/helpers"
 
 const props = defineProps({
@@ -7,6 +8,8 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+const isApp = useIsApp()
 
 const lastItem = computed(() => {
   return props.items.length > 0 ? props.items[props.items.length - 1] : null
