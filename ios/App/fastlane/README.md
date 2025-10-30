@@ -23,6 +23,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 certs
 
+### ios regenerate_profiles
+
+```sh
+[bundle exec] fastlane ios regenerate_profiles
+```
+
+Regenerate certificates and provisioning profiles
+
 ### ios test
 
 ```sh
