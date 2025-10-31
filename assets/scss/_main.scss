@@ -107,9 +107,12 @@ body.overlay-is-active {
   overflow: hidden;
 }
 
-a {
-  -webkit-touch-callout: none; /* disable the iOS long press action */
-  -webkit-user-select: none; /* disable text selection */
+// media query for touch devices
+@media (hover: none) and (pointer: coarse) {
+  a {
+    -webkit-touch-callout: none; /* disable the iOS long press action */
+    -webkit-user-select: none; /* disable text selection */
+  }
 }
 
 .no-wrap {
