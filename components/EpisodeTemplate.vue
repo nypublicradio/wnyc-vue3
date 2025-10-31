@@ -284,17 +284,17 @@ const getDotMenuItems = (bucketItem) => {
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">
-        <h1 class="text-2xl md:text-6xl line-height-2">
+        <h1 class="text-2xl md:text-6xl line-height-2 mb-3">
           {{ props.episodeData?.title }}
         </h1>
-        <div class="npr-story-page-author opacity-70 text-xs">
+        <div class="npr-story-page-author opacity-70 text-sm">
           <VByline
             v-if="props.episodeData?.authors?.length > 0"
             :authors="props.episodeData?.authors"
           />
         </div>
         <!-- :hide-pipe="!!!props.episodeData?.showTitle" -->
-        <PipeData class="text-sm mt-3">
+        <PipeData class="text-sm mt-2">
           <template #left>{{ props.episodeData?.showTitle || storySource }}</template>
           <template #right>
             <span class="nobreak inline-flex gap-1"
