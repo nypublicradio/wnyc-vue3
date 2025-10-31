@@ -1,7 +1,6 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { getPodcastFromURL } from 'podcast-feed-parser'
 import { cmsSources } from '~/composables/globals'
 import { estimateMp3Duration } from '~/server/utils/duration'
 
@@ -64,31 +63,6 @@ const getNationalNewscast = async () => {
 	return null
 }
 
-// Get NYC-NOW newscast from rss feed
-const getNYCNowNewscast = async () => {
-	try {
-		const feedItems = await getPodcastFromURL(config.public.WNYC_NOW_FEED_URL);
-		const item = feedItems.episodes[0];
-		const episode = {
-			id: 1234567890, // hardcoded ID needed
-			file: item.enclosure.url,
-			audio: item.enclosure.url,
-			duration: item.duration,
-			image: feedItems.meta.imageURL,
-			cardTitle: feedItems.meta.title,
-			showTitle: feedItems.meta.title,
-			cmsSource: cmsSources.SIMPLECAST,
-			hideFavorite: true,
-			newsdate: item.pubDate,
-			url: item.link,
-		};
-		return episode;
-	} catch (e) {
-		console.error('getNYCNowNewscast = ', e);
-	}
-	return null
-}
-
 /**
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
@@ -96,17 +70,7 @@ const getNYCNowNewscast = async () => {
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page LATEST NEWS data')
 	const res = event?.node?.res;
-	// WNYC NOW Newscast is only available on weekdays between 7am and 7pm
-	// If it is not available, use the local newscast instead.
-	const requestTime = new Date();
-	const day = requestTime.getDay();
-	const hour = requestTime.getHours();
-	let local_newscast;
-	if (day > 0 && day < 6 && hour > 6 && hour < 19) {
-		local_newscast = await getNYCNowNewscast();
-	} else {
-		local_newscast = await getLocalNewscast();
-	}
+	const local_newscast = await getLocalNewscast();
 	const national_newscast = await getNationalNewscast();
 	res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate');
 	return {
