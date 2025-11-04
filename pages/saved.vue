@@ -142,7 +142,7 @@ onMounted(() => {
           :class="[{ selected: selectedMenuItem.value === item.value }]"
           :key="item.label"
         >
-          <div class="relative item-btn-holder">
+          <div class="relative btn-holder">
             <Button
               class="item-btn text-sm white-space-nowrap btn"
               :label="item.label"

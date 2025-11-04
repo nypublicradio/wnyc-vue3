@@ -152,7 +152,7 @@ watch(
               class="station-holder item"
               :key="topic.label"
             >
-              <div class="relative topic-btn-holder">
+              <div class="relative topic-btn-holder btn-holder">
                 <Button
                   class="topic-btn text-sm white-space-nowrap btn"
                   :label="topic.label"
