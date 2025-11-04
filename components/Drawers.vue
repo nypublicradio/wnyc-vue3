@@ -105,7 +105,9 @@ const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
       "
     >
       <!-- <template #header><h1 class="font-medium">Log in</h1></template> -->
-      <Login />
+      <section>
+        <Login />
+      </section>
     </Drawer>
     <Drawer
       v-model:visible="signinSideBar"
@@ -124,7 +126,9 @@ const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
         }
       "
     >
-      <Signup />
+      <section>
+        <Signup />
+      </section>
     </Drawer>
     <Drawer
       v-model:visible="forgotPasswordSideBar"
