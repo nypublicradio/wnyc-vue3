@@ -183,7 +183,7 @@ const getEpisodeImage = () => {
   return epImage && typeof epImage === "object"
     ? epImage?.template !== showImage?.template
       ? epImage
-      : epImage || gallery.value?.slides?.[0]?.image || null
+      : gallery.value?.slides?.[0]?.image || null
     : epImage
 }
 
@@ -451,8 +451,9 @@ const getDotMenuItems = (bucketItem) => {
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col pr-2 lg:pr-4">
-        <div v-if="!props.pending" class="episode-page-image-holder relative mb-4">
+        <div v-if="!props.pending" class="episode-page-image-holder relative">
           <VImage
+            v-if="theEpImage"
             :src="theEpImage"
             :size="{
               xxs: [316, 210],
@@ -467,7 +468,7 @@ const getDotMenuItems = (bucketItem) => {
             :maxWidth="props.episodeData?.imageFullWidth"
             allowVerticalEffect
             :alt="props.episodeData?.image?.altText"
-            class="episode-page-image mb-2"
+            class="episode-page-image mb-3 md:mb-5"
           >
             <template #caption>
               <VImageCaption v-if="theEpImageCaption" :text="theEpImageCaption" />
@@ -497,17 +498,17 @@ const getDotMenuItems = (bucketItem) => {
 
         <v-streamfield
           v-if="props.episodeData?.body && !props.pending"
-          class="my-5"
+          class="mb-5"
           :article="props.episodeData"
         />
-        <div v-else-if="props.pending" class="my-5">
+        <div v-else-if="props.pending" class="mb-5">
           <skeleton-text />
         </div>
 
         <!-- SEGMENTS -->
         <ol
           v-if="hasSegments && !props.pending"
-          class="flex flex-column gap-3 mt-5 segment-list"
+          class="flex flex-column gap-3 segment-list mt-0"
         >
           <li
             v-for="segment in props.episodeData?.audio"

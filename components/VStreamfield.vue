@@ -154,4 +154,7 @@ onMounted(() => {
   border-left: 1px solid rgba(234, 234, 234, 1);
   padding-left: 1rem;
 }
+.streamfield *:first-child {
+  margin-top: 0;
+}
 </style>
