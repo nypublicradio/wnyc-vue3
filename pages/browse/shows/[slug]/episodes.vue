@@ -156,7 +156,7 @@ onMounted(() => {
                 showTease
                 :showBg="false"
                 :showBgMobile="false"
-                @onClick="dynamicNavigation(ep)"
+                @on-click="dynamicNavigation(ep)"
               />
             </template>
           </div>
