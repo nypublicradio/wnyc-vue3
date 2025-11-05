@@ -46,7 +46,8 @@ const config = useRuntimeConfig()
   color: #ffffff;
 }
 .streamfield-donation .p-button {
-  width: 181px;
+  max-width: 181px;
+  width: 100%;
   height: 39px;
 }
 </style>

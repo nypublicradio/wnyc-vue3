@@ -28,7 +28,7 @@
         />
       </div>
     </div>
-    <NuxtLink to="/home">GO back home</NuxtLink>
+    <!-- <NuxtLink to="/home">GO back home</NuxtLink> -->
   </section>
 </template>
 

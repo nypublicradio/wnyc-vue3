@@ -1,12 +1,10 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-
 import { checkIsFavorited, trackClickEvent, goToEpisodePage } from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const router = useRouter()
 
 const { data: show, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
@@ -20,6 +18,12 @@ const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  { label: show.value?.show?.title, route: `/browse/shows/${show.value?.show?.slug}` },
+])
 
 const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
   // so it does not trigger on initial load and before we have data
@@ -61,12 +65,6 @@ const loadMore = async () => {
     }
     console.error("error = ", e)
   }
-}
-
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
 }
 
 // if user is logged in, check if item is already favorited
@@ -124,18 +122,7 @@ onMounted(() => {
           />
         </Head>
       </Html>
-      <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="routeBack"
-          label="Back"
-        />
-      </div>
+      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
       <FetchError v-if="error" />
     </section>
 

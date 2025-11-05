@@ -366,8 +366,8 @@ html {
     // hide arrows
     .p-tabs {
       .p-tablist {
-        margin-left: -2rem;
-        margin-right: -2rem;
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
 
         webkit-mask-image: linear-gradient(
           to right,
@@ -385,10 +385,10 @@ html {
         );
 
         .p-tablist-content {
-          padding-left: 2rem;
+          padding-left: 1.5rem;
           .p-tab {
             &:last-child {
-              padding-right: 2rem;
+              padding-right: 1.5rem;
             }
           }
         }

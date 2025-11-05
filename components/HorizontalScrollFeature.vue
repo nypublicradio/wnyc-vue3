@@ -72,17 +72,20 @@ const reactiveData = toRef(props, "data")
 .horizontal-scroll-feature {
   .scroll {
     .item {
-      &:first-child {
-        margin-left: 1.5rem;
-      }
-      &:not(.large-card):last-child {
+      &:first-child .btn-holder {
+        margin-left: 3rem;
         @include media("<md") {
-          margin-right: 1.5;
+          margin-left: 1.5rem;
         }
       }
-      &.large-card:last-child {
+      &:not(.large-card):last-child .btn-holder {
         @include media("<md") {
-          margin-right: 1.5;
+          margin-right: 1.5rem;
+        }
+      }
+      &.large-card:last-child .btn-holder {
+        @include media("<md") {
+          margin-right: 1.5rem;
         }
       }
       &.btn:first-child,

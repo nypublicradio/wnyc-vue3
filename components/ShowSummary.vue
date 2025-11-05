@@ -58,14 +58,14 @@ const handleShowClick = () => {
 </script>
 <template>
   <div v-if="show" class="flex flex-column gap-3">
-    <div @click="handleShowClick" class="flex gap-4 cursor-pointer">
+    <div @click="handleShowClick" class="flex gap-3 cursor-pointer">
       <VImage
         :src="showImage"
         :srcFallback="getEpisodeFallBackImage()"
         :alt="`${showTitle} show image`"
         :size="[80, 80]"
         :srcset="[2]"
-        class="w-5rem"
+        class="w-5rem flex-none"
       ></VImage>
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
@@ -93,8 +93,8 @@ const handleShowClick = () => {
   </div>
   <div v-else class="flex flex-column gap-4">
     <!-- Image and Title skeleton -->
-    <div class="flex gap-4 align-items-start">
-      <Skeleton size="5rem" borderRadius="8px" />
+    <div class="flex gap-3 align-items-start">
+      <Skeleton size="80px" borderRadius="0px" />
       <div class="flex align-items-center flex-1">
         <Skeleton class="mt-2" height="1rem" width="60%" borderRadius="16px" />
       </div>

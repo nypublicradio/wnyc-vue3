@@ -124,31 +124,48 @@ onMounted(() => {
     <section class="pt-0 -mt-2">
       <!-- <pre class="text-xs">{{ gallery.slides[0] }}</pre> -->
       <div v-if="gallery?.slides" class="grid mt-0">
-        <VImage
-          v-for="(img, index) in gallery.slides"
+        <div
+          v-for="img in gallery.slides"
           :key="img.image.id"
-          :src="img.image"
-          :ratio="[img.image.width, img.image.height]"
-          sizes="xs:390px md:768px"
-          density="x1 x2"
-          :max-width="Number(img.image.width)"
-          :max-height="Number(img.image.height)"
-          :alt="img.image.alt"
-          class="story-page-image col-12 md:col-6 xl:col-4"
-          allowPreview
+          class="col-12 md:col-6 xl:col-4"
         >
-          <template #belowImage>
-            <div>
-              <p class="mt-1">
-                {{ img.image.caption }}
-              </p>
-              <p class="mt-1 mb-5 text-xs opacity-80">
-                {{ img.image.credit }}
-              </p>
-            </div>
-          </template>
-        </VImage>
+          <VImage
+            :src="img.image"
+            :ratio="[img.image.width, img.image.height]"
+            sizes="xs:390px md:768px"
+            density="x1 x2"
+            :max-width="Number(img.image.width)"
+            :max-height="Number(img.image.height)"
+            :alt="img.image.alt"
+            class="story-page-image"
+            allowPreview
+          >
+            <template #belowImage>
+              <div>
+                <HtmlConvert
+                  v-if="img.image.caption"
+                  :htmlContent="img.image.caption"
+                  class="mt-1"
+                  htmlClasses="text-xs"
+                />
+                <p class="mt-1 mb-5 text-xs opacity-80">
+                  {{ img.image.credit }}
+                </p>
+              </div>
+            </template>
+          </VImage>
+        </div>
       </div>
+      <Button
+        class="back-btn text-color -ml-3 my-4"
+        icon="pi pi-chevron-left"
+        rounded
+        text
+        severity="secondary"
+        aria-label="back to previous page"
+        @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
+        label="Return"
+      />
     </section>
   </div>
 </template>

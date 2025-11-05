@@ -242,9 +242,7 @@ const accountNameFromUrl = (url) => {
 const getImageSrc = computed(() => {
   return props.sponsored
     ? profile.value.logo
-    : profile.value.image
-    ? profile.value.image
-    : props.imageFallbackPath
+    : profile.value.image || String(profile.value.photoID) || props.imageFallbackPath
 })
 
 // cssvars
@@ -376,6 +374,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     margin-left: 0;
     margin-top: 0;
     gap: 1rem;
+    overflow-wrap: anywhere;
     .profile {
       height: auto;
       flex-basis: v-bind(cssImageFlexBasis) !important;

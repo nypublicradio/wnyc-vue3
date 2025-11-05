@@ -571,6 +571,7 @@ body {
       .expanded-footer {
         background-color: var(--persistent-player-header-footer-bg);
         &:after {
+          pointer-events: none;
           content: "";
           position: absolute;
           left: 0;

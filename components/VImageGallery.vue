@@ -1,6 +1,6 @@
 <script setup>
-import VFlexibleLink from './VFlexibleLink.vue'
-import Button from 'primevue/button'
+import VFlexibleLink from "./VFlexibleLink.vue"
+import Button from "primevue/button"
 const props = defineProps({
   count: {
     default: null,
@@ -12,12 +12,12 @@ const props = defineProps({
     type: String,
   },
   label: {
-    default: 'View all',
+    default: "View all",
     type: String,
   },
 })
 
-const emit = defineEmits(['gallery-click'])
+const emit = defineEmits(["gallery-click"])
 </script>
 
 <template>
@@ -28,6 +28,7 @@ const emit = defineEmits(['gallery-click'])
     @click="emit('gallery-click', props.galleryLink)"
   >
     <Button
+      severity="secondary"
       :label="props.label"
       :badge="props.count"
       class="gallery-button"

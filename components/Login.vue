@@ -64,14 +64,14 @@ const openForgotPassword = () => {
 
 <template>
   <div class="login">
-    <section>
+    <section class="px-0 md:px-6">
       <SHeader
         label="Log in"
         :showButton="isApp"
         @close-sidebar="props.isRoute ? navigateTo('/home') : (loginSideBar = false)"
       />
     </section>
-    <section>
+    <section class="px-0 md:px-6">
       <p>
         Don't have an account yet?
         <VFlexibleLink
@@ -102,7 +102,7 @@ const openForgotPassword = () => {
         @submit-success="onLogin('apple')"
       />
       <!--  pt:content:style="background:var(--p-surface-25)" -->
-      <Divider class="my-4 mask" align="center" pt:content:style="background:transparent">
+      <Divider class="my-4 mask" align="center">
         <b>or</b>
       </Divider>
       <VLoginWithEmail

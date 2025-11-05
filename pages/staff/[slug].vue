@@ -10,7 +10,7 @@ const authorName = ref(null)
 const pageTitle = ref(null)
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const { data: pagedata, pending, error } = useFetch(
+const { data: pagedata, status, error } = useFetch(
   `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
 )
 
@@ -137,7 +137,7 @@ watch(loadMoreRefVisible, (val) => {
         v-if="error"
         msg="An error occured while loading this persons profile."
       />
-      <div v-if="!pending" class="content">
+      <div v-if="status === 'success'" class="content">
         <div class="grid mt-4">
           <div class="col-12">
             <!-- <pre>{{ pagedata.authorData }}</pre> -->

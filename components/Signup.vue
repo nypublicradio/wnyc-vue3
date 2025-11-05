@@ -58,14 +58,14 @@ const closeAll = () => {
 
 <template>
   <div class="signup">
-    <section>
+    <section class="px-0 md:px-6">
       <SHeader
         label="Sign up"
         :showButton="isApp"
         @close-sidebar="props.isRoute ? navigateTo('/home') : (signUpSideBar = false)"
       />
     </section>
-    <section>
+    <section class="px-0 md:px-6">
       <p>
         Already have an account?
         <VFlexibleLink
@@ -94,7 +94,7 @@ const closeAll = () => {
         label="Sign up with Apple"
         @login-success="onSignup('apple')"
       />
-      <Divider class="my-4" align="center" pt:content:style="background:transparent">
+      <Divider class="my-4 mask" align="center">
         <b>or</b>
       </Divider>
       <VSignupWithEmail
