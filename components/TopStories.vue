@@ -1,4 +1,5 @@
 <script setup>
+import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   articles: {
     type: Array,
@@ -21,6 +22,7 @@ const reactiveArticles = toRef(props, "articles")
         is-feature
         imgCol="w-8"
         :size="{ xs: [369, 246], sm: [592, 280], lg: [592, 480] }"
+        @onClick="dynamicNavigation(reactiveArticles[0])"
       />
       <skeleton-media-card
         v-else
@@ -47,6 +49,7 @@ const reactiveArticles = toRef(props, "articles")
           class="col-12 md:col-4 mb-3"
           :data="article"
           :size="{ xs: [112, 112], md: [438, 292] }"
+          @onClick="dynamicNavigation(article)"
         />
       </template>
       <skeleton-media-card
@@ -66,6 +69,7 @@ const reactiveArticles = toRef(props, "articles")
         is-vertical
         is-feature
         :size="{ xs: [369, 246], md: [664, 443] }"
+        @onClick="dynamicNavigation(reactiveArticles[0])"
       />
       <skeleton-media-card
         v-else
@@ -86,6 +90,7 @@ const reactiveArticles = toRef(props, "articles")
             is-event
             imgCol="md:w-7rem lg:w-6"
             :size="{ xs: [112, 112], lg: [220, 152], xl: [332, 184] }"
+            @onClick="dynamicNavigation(article)"
           />
         </template>
         <skeleton-media-card

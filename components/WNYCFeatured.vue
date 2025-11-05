@@ -1,4 +1,5 @@
 <script async setup>
+import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   articles: {
     type: Object,
@@ -23,6 +24,7 @@ const props = defineProps({
             :hideDate="true"
             :showTease="true"
             class="item btn"
+            @on-click="dynamicNavigation(item)"
           />
         </template>
         <template #skeleton>

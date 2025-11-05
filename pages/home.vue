@@ -1,6 +1,7 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { useTopStories } from "~/composables/useTopStories"
+import { dynamicNavigation } from "~/utilities/helpers"
 const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
@@ -106,6 +107,7 @@ onMounted(() => {
               :showBg="false"
               :showBgMobile="false"
               class="col-12 lg:col-6 xl:col-4 mb-3"
+              @on-click="dynamicNavigation(ep)"
             />
           </div>
         </section>
@@ -131,6 +133,7 @@ onMounted(() => {
                 :index="index"
                 :showBg="false"
                 :showBgMobile="false"
+                @on-click="dynamicNavigation(article)"
               />
             </div>
           </div>
