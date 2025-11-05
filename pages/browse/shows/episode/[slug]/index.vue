@@ -9,6 +9,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+
 const { data: episode, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
   {
@@ -51,11 +52,12 @@ const theSlug = computed(
     episodeData.value?.headers.brand.slug
 )
 
-// navigate back to home and track it
-const backHome = () => {
-  trackClickEvent("episode", "episode page", "back show page")
-  router.go(-1)
-}
+const theShowTitle = computed(
+  () =>
+    episodeData.value?.showTitle ||
+    episodeData.value?.headers.brand.title ||
+    episodeData.value?.title
+)
 
 const {
   data: show,
@@ -66,6 +68,12 @@ const {
   immediate: false,
   server: false,
 })
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
+])
 
 watch(
   status,
@@ -89,16 +97,7 @@ watch(
     </Html>
     <section>
       <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="backHome"
-          label="Back"
-        />
+        <Breadcrumbs :items="breadcrumbs" />
       </div>
     </section>
     <FetchError v-if="error" />
