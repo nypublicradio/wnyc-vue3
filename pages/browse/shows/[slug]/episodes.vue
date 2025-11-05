@@ -5,7 +5,6 @@ import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const router = useRouter()
 
 const { data: show, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
