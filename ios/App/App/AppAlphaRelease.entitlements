@@ -10,5 +10,11 @@
 		<string>applinks:demo.native-app.wnyc.org</string>
 		<string>activitycontinuation:demo.native-app.wnyc.org</string>
 	</array>
+	<key>com.apple.developer.group-session</key>
+	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.org.nypr.ios.WNYC.onesignal</string>
+	</array>
 </dict>
 </plist>
