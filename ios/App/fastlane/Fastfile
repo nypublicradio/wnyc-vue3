@@ -18,12 +18,30 @@ default_platform(:ios)
 platform :ios do
   before_all do
     setup_circle_ci
-    match(type: "appstore", readonly: true) # Ensure all necessary profiles are pulled
+    match(type: "appstore") # Ensure all necessary profiles are pulled
   end
 
   desc "certs"
   lane :certificates do
-    match(app_identifier: ["org.wnyc.iphone", "org.wnyc.iphone.ImageNotification", "org.nypr.ios.WNYC", "org.nypr.ios.WNYC.ImageNotification"])
+    match(app_identifier: ["org.wnyc.iphone", "org.wnyc.iphone.ImageNotification","org.wnyc.iphone.OneSignalNotificationServiceExtension", "org.nypr.ios.WNYC", "org.nypr.ios.WNYC.ImageNotification","org.nypr.ios.WNYC.OneSignalNotificationServiceExtensionAlpha","org.nypr.ios.WNYC.OneSignalNotificationServiceExtensionLocal"])
+  end
+  
+  desc "Regenerate certificates and provisioning profiles"
+  lane :regenerate_profiles do
+    match(
+      type: "appstore",
+      app_identifier: [
+        "org.wnyc.iphone", 
+        "org.wnyc.iphone.ImageNotification",
+        "org.wnyc.iphone.OneSignalNotificationServiceExtension", 
+        "org.nypr.ios.WNYC", 
+        "org.nypr.ios.WNYC.ImageNotification",
+        "org.nypr.ios.WNYC.OneSignalNotificationServiceExtensionAlpha",
+        "org.nypr.ios.WNYC.OneSignalNotificationServiceExtensionLocal"
+      ],
+      force_for_new_devices: true,
+      readonly: false
+    )
   end
 
   desc "Test the ios app"
