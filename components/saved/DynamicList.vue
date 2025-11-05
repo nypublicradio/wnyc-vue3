@@ -1,5 +1,6 @@
 <script setup>
 import { mediaTypes } from "~/composables/globals"
+import { dynamicNavigation } from "~/utilities/helpers"
 
 const props = defineProps({
   table: {
@@ -152,6 +153,7 @@ watch(
             :size="{ xs: [112, 112] }"
             :showBg="false"
             :showBgMobile="false"
+            @on-click="dynamicNavigation(item)"
           />
           <slot name="recent-episodes" :show="item" />
         </div>
