@@ -689,6 +689,13 @@ const MyPreset = definePreset(Aura, {
     },
   },
   components: {
+    breadcrumb: {
+      root: {
+        padding: "0",
+        gap: "4px",
+        background: "none"
+      },
+    },
     skeleton: {
       colorScheme: {
         light: {

@@ -1,16 +1,15 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
-import { trackClickEvent } from "~/utilities/helpers"
-
 import { useTopStories } from "~/composables/useTopStories"
 const { topStories } = useTopStories()
 
 const route = useRoute()
-const router = useRouter()
 const config = useRuntimeConfig()
 
 const isWagtail = route.query.src === cmsSources.WAGTAIL
 const storySource = isWagtail ? "Gothamist" : "WNYC"
+
+const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const { data: storyData, status, error } = useFetch(
   `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`,
@@ -39,12 +38,6 @@ const { data: storyData, status, error } = useFetch(
     },
   }
 )
-
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
-}
 </script>
 
 <template>
@@ -57,18 +50,7 @@ const routeBack = () => {
       </Head>
     </Html>
     <section>
-      <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="routeBack"
-          label="Back"
-        />
-      </div>
+      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
       <FetchError v-if="error" />
     </section>
 

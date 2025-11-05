@@ -1,16 +1,13 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
-
 import { useTopStories } from "~/composables/useTopStories"
 const { topStories } = useTopStories()
 
 const route = useRoute()
-const router = useRouter()
-
 const config = useRuntimeConfig()
 const { $analytics } = useNuxtApp()
 
 const storySource = "NPR"
+const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const { data: storyData, status, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
@@ -38,12 +35,6 @@ const { data: storyData, status, error } = useLazyFetch(
     },
   }
 )
-
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
-}
 </script>
 
 <template>
@@ -56,17 +47,8 @@ const routeBack = () => {
       </Head>
     </Html>
     <!-- <pre>{{ storyData }}</pre> -->
-    <section class="flex align-items-center py-0">
-      <Button
-        class="back-btn text-color -ml-3"
-        icon="pi pi-chevron-left"
-        rounded
-        text
-        severity="secondary"
-        aria-label="back to previous page"
-        @click="routeBack"
-        label="Back"
-      />
+    <section class="flex align-items-center">
+      <Breadcrumbs :items="breadcrumbs" />
     </section>
     <FetchError v-if="error" />
     <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData" />
