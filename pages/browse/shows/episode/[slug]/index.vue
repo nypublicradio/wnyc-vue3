@@ -1,6 +1,6 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { trackClickEvent, togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 import EpisodeTemplate from "~/components/EpisodeTemplate.vue"
 const { getFilteredTopStories } = useTopStories()
