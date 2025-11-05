@@ -19,7 +19,6 @@ import {
   getReadingTime,
   getOrg,
   formatTime,
-  dynamicNavigation,
 } from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
@@ -332,7 +331,6 @@ const toggleDownloadedPlay = (file) => {
 
 // handle click event & emit
 const handleClick = () => {
-  dynamicNavigation(props.data)
   emit("on-click")
 }
 
