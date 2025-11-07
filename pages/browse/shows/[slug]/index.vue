@@ -6,7 +6,6 @@ import { useGlobalToast, useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const router = useRouter()
 
 const { data: show, status, error } = useFetch(
   `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
@@ -77,12 +76,6 @@ const loadMore = async () => {
   }
 }
 
-// navigate back to home and track it
-const routeBack = () => {
-  trackClickEvent("story", "story page", "route back")
-  window.history.state.back ? router.go(-1) : navigateTo("/home")
-}
-
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -110,6 +103,12 @@ const scrollToSection = (sectionRef, behavior = "smooth", offset = 90) => {
     })
   }
 }
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  // { label: theShowTitle.value, route: `/browse/shows/${showSlug.value}` },
+])
 
 // Watch for show data changes to update episodes and pagination
 watch(
@@ -165,17 +164,8 @@ onUnmounted(() => {
       </Head>
     </Html>
     <section>
-      <div class="flex lg:hidden align-items-center">
-        <Button
-          class="back-btn text-color -ml-3"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="routeBack"
-          label="Back"
-        />
+      <div class="flex align-items-center">
+        <Breadcrumbs :items="breadcrumbs" />
       </div>
       <FetchError v-if="error" />
     </section>
