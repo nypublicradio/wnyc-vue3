@@ -2,9 +2,12 @@ import axios from 'axios';
 import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../../utils/jwt';
 import { rateLimit } from '../../utils/rateLimiter';
+import { supabaseClient } from '~/server/utils/supabaseClient';
+import { NyprDb } from '~/server/utils/nyprdb';
 
 const config = useRuntimeConfig();
-
+const supabase = supabaseClient();
+const nyprDb = new NyprDb(supabase);
 // Response type definition
 interface DonationCancelResponse {
     status: string;
@@ -16,8 +19,9 @@ interface DonationCancelResponse {
 /**
  * Validates the input parameters for the donation cancellation request
  */
-const validateCancelRequest = (body: any): { did: number; reason: string } => {
+const validateCancelRequest = (body: any): { did: number; salesforceId: string; reason: string } => {
     const did = body?.did;
+    const salesforceId = body?.salesforce_id;
     const reason = body?.reason;
 
     // Validate donation ID
@@ -47,8 +51,17 @@ const validateCancelRequest = (body: any): { did: number; reason: string } => {
         });
     }
 
+    if (!salesforceId || typeof salesforceId !== 'string' || salesforceId.trim() === '') {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Bad Request',
+            message: 'Salesforce ID (salesforce_id) is required'
+        });
+    }
+
     return {
         did: donationId,
+        salesforceId: salesforceId || '',
         reason: reason.trim()
     };
 };
@@ -56,7 +69,7 @@ const validateCancelRequest = (body: any): { did: number; reason: string } => {
 /**
  * Makes the cancellation request to Springboard API
  */
-const cancelDonationWithSpringboard = async (donationId: number, reason: string): Promise<DonationCancelResponse> => {
+const cancelDonationWithSpringboard = async (donationId: number, reason: string, salesforceId: string): Promise<DonationCancelResponse> => {
     try {
         const springboardUrl = config.public.SPRINGBOARD_URL;
         const springboardKey = process.env.SPRINGBOARD_KEY;
@@ -92,6 +105,14 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string)
                 message: 'Invalid response format from Springboard API'
             });
         }
+
+        await nyprDb.insertTransaction({
+            springboard_id: donationId,
+            salesforce_id: salesforceId ?? null,
+            type: 'donation_cancel',
+            status: 'pending',
+
+        });
 
         return {
             status: responseData.status,
@@ -165,10 +186,10 @@ export default defineEventHandler(async (event): Promise<DonationCancelResponse>
     const body = await readBody(event);
 
     // Validate input parameters
-    const { did, reason } = validateCancelRequest(body);
+    const { did, reason, salesforceId } = validateCancelRequest(body);
 
     // Make the cancellation request to Springboard
-    const cancellationResult = await cancelDonationWithSpringboard(did, reason);
+    const cancellationResult = await cancelDonationWithSpringboard(did, reason, salesforceId);
 
     return cancellationResult;
 });

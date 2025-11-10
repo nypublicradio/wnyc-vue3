@@ -2,8 +2,12 @@ import axios from 'axios';
 import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../../utils/jwt';
 import { rateLimit } from '../../utils/rateLimiter';
+import { supabaseClient } from '~/server/utils/supabaseClient';
+import { NyprDb } from '~/server/utils/nyprdb';
 
 const config = useRuntimeConfig();
+const supabase = supabaseClient();
+const nyprDb = new NyprDb(supabase);
 // Response type definition
 interface DonationUpdateResponse {
     status: string;
@@ -33,8 +37,8 @@ const createServerError = (message: string, statusCode = 500, statusMessage = 'I
 /**
  * Validates the input parameters for the donation update request
  */
-const validateUpdateRequest = (body: any): { did: number; amount: number } => {
-    const { did, new_amount: newAmount } = body || {};
+const validateUpdateRequest = (body: any): { did: number; amount: number; salesforceId?: string } => {
+    const { did, new_amount: newAmount, salesforce_id: salesforceId } = body || {};
 
     // Validate and convert donation ID
     if (!did) throw createValidationError('Donation ID (did) is required');
@@ -50,13 +54,13 @@ const validateUpdateRequest = (body: any): { did: number; amount: number } => {
         throw createValidationError('New amount must be a valid positive number');
     }
 
-    return { did: donationId, amount };
+    return { did: donationId, amount, salesforceId };
 };
 
 /**
  * Makes the update request to Springboard API
  */
-const updateDonationWithSpringboard = async (donationId: number, newAmount: number): Promise<DonationUpdateResponse> => {
+const updateDonationWithSpringboard = async (donationId: number, newAmount: number, salesforceId?: string): Promise<DonationUpdateResponse> => {
     const springboardUrl = config.public.SPRINGBOARD_URL;
     const springboardKey = process.env.SPRINGBOARD_KEY;
 
@@ -75,6 +79,14 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
                 did: donationId,
                 amount: newAmount
             }
+        });
+
+        await nyprDb.insertTransaction({
+            springboard_id: donationId,
+            salesforce_id: salesforceId ?? null,
+            type: 'donation_update',
+            status: 'pending',
+            new_amount: newAmount,
         });
 
         return response.data as DonationUpdateResponse;
@@ -107,10 +119,10 @@ export default defineEventHandler(async (event) => {
 
     // Parse and validate request body
     const body = await readBody(event);
-    const { did, amount } = validateUpdateRequest(body);
+    const { did, amount, salesforceId } = validateUpdateRequest(body);
 
     // Update donation via Springboard API
-    const updateResponse = await updateDonationWithSpringboard(did, amount);
+    const updateResponse = await updateDonationWithSpringboard(did, amount, salesforceId);
 
     return updateResponse;
 });
