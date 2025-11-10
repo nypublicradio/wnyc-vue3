@@ -105,7 +105,7 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string,
                 message: 'Invalid response format from Springboard API'
             });
         }
-
+        // Log the cancellation transaction
         await nyprDb.insertTransaction({
             springboard_id: donationId,
             salesforce_id: salesforceId ?? null,

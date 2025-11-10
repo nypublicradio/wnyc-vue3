@@ -80,7 +80,7 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
                 amount: newAmount
             }
         });
-
+        // Log the update transaction
         await nyprDb.insertTransaction({
             springboard_id: donationId,
             salesforce_id: salesforceId ?? null,
