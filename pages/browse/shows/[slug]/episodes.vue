@@ -1,6 +1,6 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-import { checkIsFavorited, trackClickEvent, goToEpisodePage } from "~/utilities/helpers"
+import { checkIsFavorited, trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -156,7 +156,7 @@ onMounted(() => {
                 showTease
                 :showBg="false"
                 :showBgMobile="false"
-                @onClick="goToEpisodePage(ep, { src: ep.cmsSource, type: ep.type })"
+                @on-click="dynamicNavigation(ep)"
               />
             </template>
           </div>

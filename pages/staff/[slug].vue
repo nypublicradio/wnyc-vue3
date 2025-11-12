@@ -1,5 +1,9 @@
 <script setup>
-import { trackClickEvent, goToStoryPage, getUserFallBackImage } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  dynamicNavigation,
+  getUserFallBackImage,
+} from "~/utilities/helpers"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"
 
@@ -167,7 +171,7 @@ watch(loadMoreRefVisible, (val) => {
                 imgCol="w-7rem"
                 :showBg="false"
                 :showBgMobile="false"
-                @on-click="goToStoryPage(article, { src: article.cmsSource })"
+                @on-click="dynamicNavigation(article)"
               />
             </div>
           </div>
