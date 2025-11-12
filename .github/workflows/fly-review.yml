@@ -61,6 +61,7 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}
             SPRINGBOARD_KEY=${{ secrets.SPRINGBOARD_KEY }}
+            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           build_args: |
             ENV=review
             SENTRY_DSN=${{ vars.SENTRY_DSN }}
