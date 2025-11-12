@@ -1,18 +1,69 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
 /**
+ * Interface for show data
+ */
+interface Show {
+    readonly id?: number;
+    readonly showId?: number | null;
+    readonly title?: string | null;
+    readonly slug?: string | null;
+    readonly description?: string | null;
+    readonly cmsSource?: string | null;
+    readonly featured?: boolean | null;
+    readonly createdAt?: string;
+    readonly guid?: string | null;
+}
+
+/**
+ * Interface for transaction data
+ */
+interface Transaction {
+    readonly id?: number;
+    readonly salesforce_id?: string | null;
+    readonly springboard_id?: number | null;
+    readonly type?: string | null;
+    readonly status?: string | null;
+    readonly created_at?: string;
+    readonly updated_at?: string | null;
+}
+
+/**
+ * Interface for transaction insert data
+ */
+interface TransactionInsert {
+    readonly salesforce_id?: string | null;
+    readonly springboard_id?: number | null;
+    readonly type?: string | null;
+    readonly status?: string | null;
+    readonly new_amount?: number | null;
+}
+
+/**
+ * Interface for transaction update data
+ */
+interface TransactionUpdate {
+    readonly salesforce_id?: string | null;
+    readonly springboard_id?: string | null;
+    readonly type?: string | null;
+    readonly status?: string | null;
+    readonly new_amount?: number | null;
+    readonly updated_at?: string | null;
+}
+
+/**
  * Class to handle all database queries
  */
 
 export class NyprDb {
     supabase: SupabaseClient;
 
-    constructor(supabase) {
+    constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
 
     // Get all NPR shows
-    async getNPRShows() {
+    async getNPRShows(): Promise<Show[] | null> {
         const { data } = await this.supabase
             .from('shows')
             .select('*')
@@ -20,8 +71,9 @@ export class NyprDb {
             .order('title', { ascending: false });
         return data;
     }
+
     // Get NPR show by slug
-    async getNPRShowBySlug(slug) {
+    async getNPRShowBySlug(slug: string): Promise<Show[] | null> {
         const { data } = await this.supabase
             .from('shows')
             .select('*')
@@ -30,7 +82,7 @@ export class NyprDb {
     }
 
     // return the slug for NPR shows from Supabase by providing the showId
-    async getNPRSlugFromSupabase(showId) {
+    async getNPRSlugFromSupabase(showId: number): Promise<string | null> {
         const { data, error } = await this.supabase
             .from("shows")
             .select("slug")
@@ -41,6 +93,117 @@ export class NyprDb {
             console.error("Error fetching slug:", error)
             return null
         }
-        return data?.slug
+        return data?.slug ?? null
     }
+
+    /**
+     * Insert a new transaction or update if it exists with the same salesforce_id, springboard_id, and type
+     */
+    async insertTransaction(transaction: TransactionInsert): Promise<Transaction | null> {
+        // First, try to find an existing transaction with the same salesforce_id, springboard_id, and type
+        const { data: existingData, error: findError } = await this.supabase
+            .from('transactions')
+            .select('*')
+            .eq('salesforce_id', transaction.salesforce_id ?? '')
+            .eq('springboard_id', transaction.springboard_id ?? 0)
+            .eq('type', transaction.type ?? '')
+            .maybeSingle();
+
+        if (findError) {
+            console.error('Error finding existing transaction:', findError);
+            return null;
+        }
+
+        // If a matching transaction exists, update it
+        if (existingData) {
+            const { data, error } = await this.supabase
+                .from('transactions')
+                .update({
+                    ...transaction,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', existingData.id)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error updating transaction:', error);
+                return null;
+            }
+
+            return data;
+        }
+
+        // If no matching transaction exists, insert a new one
+        const { data, error } = await this.supabase
+            .from('transactions')
+            .insert(transaction)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error inserting transaction:', error);
+            return null;
+        }
+
+        return data;
+    }
+
+    /**
+     * Update an existing transaction by id
+     */
+    async updateTransaction(id: number, updates: TransactionUpdate): Promise<Transaction | null> {
+        const { data, error } = await this.supabase
+            .from('transactions')
+            .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating transaction:', error);
+            return null;
+        }
+
+        return data;
+    }
+
+    /**
+     * Update transaction by salesforce_id
+     */
+    async updateTransactionBySalesforceId(salesforce_id: string, updates: TransactionUpdate): Promise<Transaction | null> {
+        const { data, error } = await this.supabase
+            .from('transactions')
+            .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq('salesforce_id', salesforce_id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating transaction by salesforce_id:', error);
+            return null;
+        }
+
+        return data;
+    }
+
+    /**
+     * Update transaction by springboard_id
+     */
+    async updateTransactionBySpringboardId(springboard_id: string, updates: TransactionUpdate): Promise<Transaction | null> {
+        const { data, error } = await this.supabase
+            .from('transactions')
+            .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq('springboard_id', springboard_id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating transaction by springboard_id:', error);
+            return null;
+        }
+
+        return data;
+    }
+
 }
