@@ -97,9 +97,44 @@ export class NyprDb {
     }
 
     /**
-     * Insert a new transaction
+     * Insert a new transaction or update if it exists with the same salesforce_id, springboard_id, and type
      */
     async insertTransaction(transaction: TransactionInsert): Promise<Transaction | null> {
+        // First, try to find an existing transaction with the same salesforce_id, springboard_id, and type
+        const { data: existingData, error: findError } = await this.supabase
+            .from('transactions')
+            .select('*')
+            .eq('salesforce_id', transaction.salesforce_id ?? '')
+            .eq('springboard_id', transaction.springboard_id ?? 0)
+            .eq('type', transaction.type ?? '')
+            .maybeSingle();
+
+        if (findError) {
+            console.error('Error finding existing transaction:', findError);
+            return null;
+        }
+
+        // If a matching transaction exists, update it
+        if (existingData) {
+            const { data, error } = await this.supabase
+                .from('transactions')
+                .update({
+                    ...transaction,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', existingData.id)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error updating transaction:', error);
+                return null;
+            }
+
+            return data;
+        }
+
+        // If no matching transaction exists, insert a new one
         const { data, error } = await this.supabase
             .from('transactions')
             .insert(transaction)
