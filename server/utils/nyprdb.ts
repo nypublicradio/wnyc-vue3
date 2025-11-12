@@ -101,7 +101,7 @@ export class NyprDb {
      */
     async insertTransaction(transaction: TransactionInsert): Promise<Transaction | null> {
         const { data, error } = await this.supabase
-            .from('transaction')
+            .from('transactions')
             .insert(transaction)
             .select()
             .single();
@@ -119,7 +119,7 @@ export class NyprDb {
      */
     async updateTransaction(id: number, updates: TransactionUpdate): Promise<Transaction | null> {
         const { data, error } = await this.supabase
-            .from('transaction')
+            .from('transactions')
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq('id', id)
             .select()
@@ -138,7 +138,7 @@ export class NyprDb {
      */
     async updateTransactionBySalesforceId(salesforce_id: string, updates: TransactionUpdate): Promise<Transaction | null> {
         const { data, error } = await this.supabase
-            .from('transaction')
+            .from('transactions')
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq('salesforce_id', salesforce_id)
             .select()
@@ -157,7 +157,7 @@ export class NyprDb {
      */
     async updateTransactionBySpringboardId(springboard_id: string, updates: TransactionUpdate): Promise<Transaction | null> {
         const { data, error } = await this.supabase
-            .from('transaction')
+            .from('transactions')
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq('springboard_id', springboard_id)
             .select()
