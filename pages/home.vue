@@ -2,6 +2,7 @@
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { useTopStories } from "~/composables/useTopStories"
 import { dynamicNavigation } from "~/utilities/helpers"
+import { tempData } from "./tempdata"
 const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
@@ -14,6 +15,10 @@ const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
 const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
 )
+
+const getLayoutComponent = (layout) => {
+  return defineAsyncComponent(() => import(`~/components/layouts/${layout}.vue`))
+}
 
 definePageMeta({
   layout: "default",
@@ -88,9 +93,21 @@ onMounted(() => {
     </section>
 
     <DonateBanner class="my-6" />
-    <pre class="text-xs">{{ pagedata?.home_template }}</pre>
-    ########
-    <pre class="text-xs">{{ pagedata?.new_home_template }}</pre>
+
+    <div v-for="section in tempData.curatedContent" :key="section.id">
+      <div v-if="section.value.list.listItems.length">
+        <section>
+          <component
+            :is="getLayoutComponent(section.value.layout)"
+            :list="section.value.list"
+          />
+        </section>
+      </div>
+    </div>
+
+    <!-- <pre class="text-xs">{{ pagedata?.home_template }}</pre>-->
+
+    <!-- <pre class="text-xs">{{ pagedata?.new_home_template }}</pre> -->
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
@@ -116,7 +133,8 @@ onMounted(() => {
         <WNYCFeatured v-else class="mt-2 mb-4" :articles="section.data" />
       </div>
     </div>
-    <div v-if="pagedata?.npr_stories?.length">
+
+    <!-- <div v-if="pagedata?.npr_stories?.length">
       <section>
         <h2 class="my-3">NPR Stories</h2>
         <div
@@ -142,7 +160,7 @@ onMounted(() => {
           <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
         </div>
       </section>
-    </div>
+    </div> -->
     <SponsorBanner
       v-if="isApp"
       class="mt-4"
