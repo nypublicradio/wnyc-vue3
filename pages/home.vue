@@ -105,9 +105,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- <pre class="text-xs">{{ pagedata?.home_template }}</pre>-->
-
-    <!-- <pre class="text-xs">{{ pagedata?.new_home_template }}</pre> -->
+    ########
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>

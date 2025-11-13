@@ -2,9 +2,13 @@
 const props = defineProps({
   list: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
+
+const items = toRef(props.list, "listItems")
+console.log("Featured Topic Items:", items.value)
+console.log("Featured Topic Items:", props.list.listItems)
 </script>
 
 <template>
