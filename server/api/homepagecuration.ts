@@ -65,7 +65,7 @@ const getNewHomeTemplate = async () => {
 	let res = null
 	try {
 		// Call the internal server API endpoint
-		res = await $fetch('https://demo.native-app.wnyc.org/api/pages/wagtail/3')
+		res = await $fetch('https://demo.native-app.wnyc.org/api/pages/wagtail/151286')
 		return res
 	} catch (e) {
 		console.error('getHomeTemplate = ', e)

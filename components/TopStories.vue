@@ -12,6 +12,7 @@ const reactiveArticles = toRef(props, "articles")
 
 <template>
   <div>
+    <!-- <pre>{{ reactiveArticles[0] }}</pre> -->
     <div class="top-stories grid">
       <MediaCard
         v-if="reactiveArticles.length > 0"

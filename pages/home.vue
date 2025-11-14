@@ -71,6 +71,21 @@ onMounted(() => {
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
+    ########
+    <div v-for="section in tempData.curatedContent" :key="section.id">
+      <div v-if="section.value.list.listItems.length">
+        <section>
+          <component
+            :is="getLayoutComponent(section.value.layout)"
+            :list="section.value.list"
+          />
+        </section>
+      </div>
+    </div>
+    <pre>{{ tempData }}</pre>
+
+    ########
+
     <section>
       <div
         class="ad-holder col mb-6 flex lg:hidden align-items-center justify-content-center"
@@ -94,18 +109,6 @@ onMounted(() => {
 
     <DonateBanner class="my-6" />
 
-    <div v-for="section in tempData.curatedContent" :key="section.id">
-      <div v-if="section.value.list.listItems.length">
-        <section>
-          <component
-            :is="getLayoutComponent(section.value.layout)"
-            :list="section.value.list"
-          />
-        </section>
-      </div>
-    </div>
-
-    ########
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
