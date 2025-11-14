@@ -16,8 +16,15 @@ const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
 )
 
+// Cache layout components to prevent re-creating them on each render
+const layoutComponents = {}
 const getLayoutComponent = (layout) => {
-  return defineAsyncComponent(() => import(`~/components/layouts/${layout}.vue`))
+  if (!layoutComponents[layout]) {
+    layoutComponents[layout] = defineAsyncComponent(() =>
+      import(`~/components/layouts/${layout}.vue`)
+    )
+  }
+  return layoutComponents[layout]
 }
 
 definePageMeta({
@@ -80,7 +87,7 @@ onMounted(() => {
         />
       </section>
     </div>
-    <pre>{{ tempData }}</pre>
+    <!-- <pre>{{ tempData }}</pre> -->
 
     ########
 
