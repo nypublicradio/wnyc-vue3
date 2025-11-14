@@ -989,18 +989,6 @@ const transformedCuratedContent = await Promise.all(
                 })
                 delete listItem.content
 
-                // Extract lead_image from leadAsset and place at root level
-                // if (listItem.leadAsset && Array.isArray(listItem.leadAsset)) {
-                //     const leadImageAsset = listItem.leadAsset.find(asset => asset.type === 'lead_image')
-                //     if (leadImageAsset && leadImageAsset.value && leadImageAsset.value.image) {
-                //         listItem.image = {
-                //             ...leadImageAsset.value.image,
-                //             imageLink: leadImageAsset.value.imageLink
-                //         }
-                //     }
-                //     delete listItem.leadAsset
-                // }
-
                 return normalizeWagtailListItem(listItem)
             })
         )
