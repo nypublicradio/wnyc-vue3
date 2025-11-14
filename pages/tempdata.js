@@ -1,4 +1,5 @@
-export const tempData = {
+import { normalizeWagtailListItem } from "~/composables/data/articlePages"
+const data = {
     "id": 151286,
     "meta": {
         "firstPublishedAt": "2023-02-07T10:59:51.037756-05:00",
@@ -973,4 +974,52 @@ export const tempData = {
             }
         }
     ]
+}
+console.log('data.curatedContent= ', data.curatedContent)
+
+const transformedCuratedContent = await Promise.all(
+    data.curatedContent.map(async (item) => {
+        const transformedListItems = await Promise.all(
+            item.value.list.listItems.map(async (listItem) => {
+                listItem.cmsSource = cmsSources.WAGTAIL
+                listItem.sortDate = listItem.publicationDate
+                // I need to take everything that in inside listItem.content and move it up a level
+                Object.keys(listItem.content).forEach((key) => {
+                    listItem[key] = listItem.content[key]
+                })
+                delete listItem.content
+
+                // Extract lead_image from leadAsset and place at root level
+                // if (listItem.leadAsset && Array.isArray(listItem.leadAsset)) {
+                //     const leadImageAsset = listItem.leadAsset.find(asset => asset.type === 'lead_image')
+                //     if (leadImageAsset && leadImageAsset.value && leadImageAsset.value.image) {
+                //         listItem.image = {
+                //             ...leadImageAsset.value.image,
+                //             imageLink: leadImageAsset.value.imageLink
+                //         }
+                //     }
+                //     delete listItem.leadAsset
+                // }
+
+                return normalizeWagtailListItem(listItem)
+            })
+        )
+
+        // Return the entire item structure with transformed listItems
+        return {
+            ...item,
+            value: {
+                ...item.value,
+                list: {
+                    ...item.value.list,
+                    listItems: transformedListItems
+                }
+            }
+        }
+    })
+)
+
+export const tempData = {
+    ...data,
+    curatedContent: transformedCuratedContent
 }
