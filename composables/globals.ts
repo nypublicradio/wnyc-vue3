@@ -45,6 +45,7 @@ export const mediaTypes = {
     LIVE: 'live',
     SIMPLECAST: 'simplecast',
     SHOW: 'show',
+    EVENT: 'event',
     EPISODE: 'episode',
     SEGMENT: 'segment',
     STORY: 'story',

@@ -73,14 +73,12 @@ onMounted(() => {
 
     ########
     <div v-for="section in tempData.curatedContent" :key="section.id">
-      <div v-if="section.value.list.listItems.length">
-        <section>
-          <component
-            :is="getLayoutComponent(section.value.layout)"
-            :list="section.value.list"
-          />
-        </section>
-      </div>
+      <section v-if="section.value.list.listItems.length">
+        <component
+          :is="getLayoutComponent(section.value.layout)"
+          :list="section.value.list"
+        />
+      </section>
     </div>
     <pre>{{ tempData }}</pre>
 
