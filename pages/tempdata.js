@@ -981,15 +981,12 @@ const transformedCuratedContent = await Promise.all(
     data.curatedContent.map(async (item) => {
         const transformedListItems = await Promise.all(
             item.value.list.listItems.map(async (listItem) => {
-                listItem.cmsSource = cmsSources.WAGTAIL
-                listItem.sortDate = listItem.publicationDate
                 // I need to take everything that in inside listItem.content and move it up a level
                 Object.keys(listItem.content).forEach((key) => {
                     listItem[key] = listItem.content[key]
                 })
                 delete listItem.content
                 const normalizedData = listItem.contentType === 'article_page' ? await normalizeWagtailListItem(listItem) : await normalizeSimplecastListItem(listItem)
-                console.log('normalizedData=', normalizedData)
                 return normalizedData
             })
         )

@@ -78,6 +78,7 @@ onMounted(() => {
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
+    <pre>{{ pagedata?.new_home_template }}</pre>
     ########
     <div v-for="section in tempData.curatedContent" :key="section.id">
       <section v-if="section.value.list.listItems.length">
@@ -87,7 +88,6 @@ onMounted(() => {
         />
       </section>
     </div>
-    <!-- <pre>{{ tempData }}</pre> -->
 
     ########
 
