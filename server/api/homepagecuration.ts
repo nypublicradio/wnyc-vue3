@@ -3,7 +3,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizePublisherListItem, normalizeNprPage } from '~/composables/data/articlePages'
 import { hasAudio } from '~/utilities/helpers'
-
+import { normalizeWagtailListItem, normalizeSimplecastListItem } from "~/composables/data/articlePages"
 
 // Get curated SHOW content from the WNYC Puplisher API
 const getSectionData = async (slug: string) => {
@@ -66,7 +66,41 @@ const getNewHomeTemplate = async () => {
 	try {
 		// Call the internal server API endpoint
 		res = await $fetch('https://demo.native-app.wnyc.org/api/pages/wagtail/151286')
-		return res
+
+		const transformedCuratedContent = await Promise.all(
+			res.curatedContent.map(async (item) => {
+				const transformedListItems = await Promise.all(
+					item.value.list.listItems.map(async (listItem) => {
+						// I need to take everything that in inside listItem.content and move it up a level
+						Object.keys(listItem.content).forEach((key) => {
+							listItem[key] = listItem.content[key]
+						})
+						delete listItem.content
+						const normalizedData = listItem.contentType === 'article_page' ? await normalizeWagtailListItem(listItem) : await normalizeSimplecastListItem(listItem)
+						return normalizedData
+					})
+				)
+
+				// Return the entire item structure with transformed listItems
+				return {
+					...item,
+					value: {
+						...item.value,
+						list: {
+							...item.value.list,
+							listItems: transformedListItems
+						}
+					}
+				}
+			})
+		)
+
+		return {
+			...res,
+			curatedContent: transformedCuratedContent
+		}
+
+
 	} catch (e) {
 		console.error('getHomeTemplate = ', e)
 		return null
