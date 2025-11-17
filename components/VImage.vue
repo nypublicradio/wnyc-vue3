@@ -92,6 +92,8 @@ const dynamicComponent = computed(() => {
         return () => import("./VImageNpr.vue")
       case cmsSources.WAGTAIL:
         return () => import("./VImageWagtail.vue")
+      case cmsSources.SIMPLECAST:
+        return () => import("./VImageWagtail.vue")
       default:
         return () => import("./VImageWagtail.vue")
     }
