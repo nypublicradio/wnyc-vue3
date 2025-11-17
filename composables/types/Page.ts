@@ -44,9 +44,9 @@ export interface ArticlePage extends Page {
   gallerySlides?: any[]
   legacyId?: string
   meta: {
-    firstPublishedAt: string;
-    slug: string;
-  };
+    firstPublishedAt: string
+    slug: string
+  }
   publicationDate: Date
   publishAt: Date
   updatedDate: Date | null

@@ -1,4 +1,4 @@
-import { normalizeWagtailListItem } from "~/composables/data/articlePages"
+import { normalizeWagtailListItem, normalizeSimplecastListItem } from "~/composables/data/articlePages"
 const data = {
     "id": 151286,
     "meta": {
@@ -988,8 +988,9 @@ const transformedCuratedContent = await Promise.all(
                     listItem[key] = listItem.content[key]
                 })
                 delete listItem.content
-
-                return normalizeWagtailListItem(listItem)
+                const normalizedData = listItem.contentType === 'article_page' ? await normalizeWagtailListItem(listItem) : await normalizeSimplecastListItem(listItem)
+                console.log('normalizedData=', normalizedData)
+                return normalizedData
             })
         )
 
