@@ -78,18 +78,17 @@ onMounted(() => {
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
-    <pre>{{ pagedata?.new_home_template }}</pre>
     ########
-    <div v-for="section in tempData.curatedContent" :key="section.id">
-      <section v-if="section.value.list.listItems.length">
+    <div v-for="section in pagedata?.new_home_template.curatedContent" :key="section?.id">
+      <section v-if="section?.value?.list?.listItems?.length">
         <component
-          :is="getLayoutComponent(section.value.layout)"
-          :list="section.value.list"
+          :is="getLayoutComponent(section?.value?.layout)"
+          :list="section?.value?.list"
         />
       </section>
     </div>
-
     ########
+    <pre>{{ pagedata?.new_home_template }}</pre>
 
     <section>
       <div
@@ -114,7 +113,7 @@ onMounted(() => {
 
     <DonateBanner class="my-6" />
 
-    <div v-for="section in pagedata?.home_template" :key="section.title">
+    <!-- <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">
         <section>
           <h2>{{ section.title }}</h2>
@@ -138,7 +137,7 @@ onMounted(() => {
         </section>
         <WNYCFeatured v-else class="mt-2 mb-4" :articles="section.data" />
       </div>
-    </div>
+    </div> -->
 
     <!-- <div v-if="pagedata?.npr_stories?.length">
       <section>
