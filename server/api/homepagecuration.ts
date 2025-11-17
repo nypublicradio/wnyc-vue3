@@ -168,17 +168,17 @@ const getNprStories = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	//console.log('getting home page CURATION data')
+	console.log('getting home page CURATION data')
 	const res = event?.node?.res
-	const homeTemplate = await getHomeTemplate()
+	//const homeTemplate = await getHomeTemplate()
 	const newHomeTemplate = await getNewHomeTemplate()
-	const nprStories = await getNprStories()
+	//const nprStories = await getNprStories()
 
 	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
-
+	console.log('DONE getting home page CURATION data')
 	return {
-		home_template: homeTemplate,
+		//home_template: homeTemplate,
 		new_home_template: newHomeTemplate,
-		npr_stories: nprStories,
+		//npr_stories: nprStories,
 	}
 })
