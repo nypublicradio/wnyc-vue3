@@ -77,6 +77,22 @@ export interface ArticlePage extends Page {
   segments?: any
   transcript?: string
   embedCode?: string
+
+  // Event-specific fields
+  contentType?: string
+  subtitle?: string
+  eventDate?: string
+  endDate?: string | null
+  startTime?: string
+  endTime?: string | null
+  duration?: string
+  ticketUrl?: string
+  price?: string
+  eventLocation?: string
+  venueName?: string
+  eventUrl?: string
+  startDatetime?: string
+  endDatetime?: string | null
 }
 
 export interface InformationPage extends Page {

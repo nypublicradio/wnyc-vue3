@@ -2,7 +2,7 @@
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { useTopStories } from "~/composables/useTopStories"
 import { dynamicNavigation } from "~/utilities/helpers"
-import { tempData } from "./tempdata"
+//import { tempData } from "./tempdata"
 const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
@@ -90,7 +90,7 @@ onMounted(() => {
     ########
     <pre>{{ pagedata?.new_home_template }}</pre>
 
-    <section>
+    <!-- <section>
       <div
         class="ad-holder col mb-6 flex lg:hidden align-items-center justify-content-center"
       >
@@ -109,7 +109,7 @@ onMounted(() => {
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
-    </section>
+    </section> -->
 
     <DonateBanner class="my-6" />
 

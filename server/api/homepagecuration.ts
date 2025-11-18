@@ -71,17 +71,16 @@ const getNewHomeTemplate = async () => {
 			res.curatedContent.map(async (item) => {
 				const transformedListItems = await Promise.all(
 					item.value.list.listItems.map(async (listItem) => {
-						// I need to take everything that in inside listItem.content and move it up a level
-						Object.keys(listItem.content).forEach((key) => {
-							listItem[key] = listItem.content[key]
-						})
-						delete listItem.content
-						const normalizedData = listItem.contentType === 'article_page' ? await normalizeWagtailListItem(listItem) : await normalizeSimplecastListItem(listItem)
-						return normalizedData
+						// Move content properties to root level, keeping existing root properties
+						const mergedItem = { ...listItem.content, ...listItem }
+						delete mergedItem.content
+
+						return mergedItem.contentType === 'episode'
+							? await normalizeSimplecastListItem(mergedItem)
+							: await normalizeWagtailListItem(mergedItem)
 					})
 				)
 
-				// Return the entire item structure with transformed listItems
 				return {
 					...item,
 					value: {
@@ -168,17 +167,17 @@ const getNprStories = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-	console.log('getting home page CURATION data')
+	//console.log('getting home page CURATION data')
 	const res = event?.node?.res
 	//const homeTemplate = await getHomeTemplate()
 	const newHomeTemplate = await getNewHomeTemplate()
-	//const nprStories = await getNprStories()
+	const nprStories = await getNprStories()
 
 	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
-	console.log('DONE getting home page CURATION data')
+
 	return {
 		//home_template: homeTemplate,
 		new_home_template: newHomeTemplate,
-		//npr_stories: nprStories,
+		npr_stories: nprStories,
 	}
 })
