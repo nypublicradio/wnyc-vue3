@@ -21,6 +21,11 @@
  * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD)
  * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - used with dateRange mode
  * 
+ * Date Validation:
+ * - For 'specificDate' and 'dateRange' modes, dates are validated against available data
+ * - Returns 400 error if requested dates fall outside the available range
+ * - Error message includes the available date range for reference
+ * 
  * @example
  * // Get next 24 hours of schedule
  * GET /api/v2/schedule/wnyc?filterMode=next24hours
@@ -180,6 +185,55 @@ const filterByDate = (scheduleData: any, targetDate: string) => {
     }
 }
 
+// Get the available date range from schedule data
+const getAvailableDateRange = (scheduleData: any): { minDate: Date, maxDate: Date } | null => {
+    if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes) || scheduleData.episodes.length === 0) {
+        return null
+    }
+
+    const dates = scheduleData.episodes.map((episode: any) => new Date(episode.startTime))
+    const minDate = new Date(Math.min(...dates.map(d => d.getTime())))
+    const maxDate = new Date(Math.max(...scheduleData.episodes.map((episode: any) => new Date(episode.endTime).getTime())))
+    
+    return { minDate, maxDate }
+}
+
+// Validate that requested dates are within available data range
+const validateDateRange = (scheduleData: any, requestedDate: string | Date, endDate?: string | Date) => {
+    const availableRange = getAvailableDateRange(scheduleData)
+    
+    if (!availableRange) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: 'No schedule data available',
+        })
+    }
+
+    const { minDate, maxDate } = availableRange
+    const requestedStart = new Date(requestedDate)
+    requestedStart.setUTCHours(0, 0, 0, 0)
+    
+    const requestedEnd = endDate ? new Date(endDate) : requestedStart
+    requestedEnd.setUTCHours(23, 59, 59, 999)
+
+    // Format dates for error messages
+    const formatDate = (date: Date) => date.toISOString().split('T')[0]
+    
+    if (requestedStart < minDate || requestedStart > maxDate) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: `Requested date ${formatDate(requestedStart)} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
+        })
+    }
+    
+    if (endDate && (requestedEnd < minDate || requestedEnd > maxDate)) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: `Requested end date ${formatDate(requestedEnd)} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
+        })
+    }
+}
+
 // Filter episodes for a date range
 const filterByDateRange = (scheduleData: any, startDate: string, endDate: string) => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
@@ -245,6 +299,8 @@ export default defineEventHandler(async (event) => {
                         statusMessage: 'startDate is required for specificDate mode',
                     })
                 }
+                // Validate that the requested date is within available data range
+                validateDateRange(scheduleData, startDate)
                 return filterByDate(scheduleData, startDate)
             
             case 'dateRange':
@@ -254,6 +310,8 @@ export default defineEventHandler(async (event) => {
                         statusMessage: 'startDate and endDate are required for dateRange mode',
                     })
                 }
+                // Validate that the requested date range is within available data range
+                validateDateRange(scheduleData, startDate, endDate)
                 return filterByDateRange(scheduleData, startDate, endDate)
             
             case 'all':
