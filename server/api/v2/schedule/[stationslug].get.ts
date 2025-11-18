@@ -207,6 +207,7 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
 
 export default defineEventHandler(async (event) => {
     const slug = event?.context?.params?.stationslug as string
+    const res = event?.node?.res
     const query = getQuery(event)
     const filterMode = (query?.filterMode as string) || 'next24hours'
     const startDate = query?.startDate as string | undefined
@@ -231,7 +232,7 @@ export default defineEventHandler(async (event) => {
             const key = `schedule-${slug}.json`
             scheduleData = await getScheduleFromS3(bucketName, key)
         }
-
+        res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate');
         // Apply filtering based on mode
         switch (filterMode) {
             case 'next24hours':
