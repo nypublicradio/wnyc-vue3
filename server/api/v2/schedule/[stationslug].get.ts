@@ -217,18 +217,23 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
     // Format dates for error messages
     const formatDate = (date: Date) => date.toISOString().split('T')[0]
     
-    if (requestedStart < minDate || requestedStart > maxDate) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: `Requested date ${formatDate(requestedStart)} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
-        })
-    }
-    
-    if (endDate && (requestedEnd < minDate || requestedEnd > maxDate)) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: `Requested end date ${formatDate(requestedEnd)} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
-        })
+    // For single date requests, validate the date is within range
+    if (!endDate) {
+        if (requestedStart < minDate || requestedStart > maxDate) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: `Requested date ${formatDate(requestedStart)} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
+            })
+        }
+    } else {
+        // For date ranges, check if there's ANY overlap with available data
+        // Only error if the requested range is completely outside the available range
+        if (requestedEnd < minDate || requestedStart > maxDate) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: `Requested date range ${formatDate(requestedStart)} to ${formatDate(requestedEnd)} does not overlap with available data: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
+            })
+        }
     }
 }
 
@@ -247,8 +252,9 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
-        // Include episodes that overlap with the date range
-        return startTime <= rangeEnd && endTime >= rangeStart
+        // Include episodes that start within the date range OR are actively playing during the range
+        // Exclude episodes that only touch the boundary (e.g., end exactly at rangeStart)
+        return startTime <= rangeEnd && endTime > rangeStart
     })
 
     return {
