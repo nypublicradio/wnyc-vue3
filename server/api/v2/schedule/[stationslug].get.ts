@@ -53,7 +53,7 @@ const shouldUseMockData = (): boolean => {
     
     // Auto-detect: use mock data in development or when S3 bucket is not configured
     const isDevEnvironment = process.env.NODE_ENV === 'development' || process.env.ENV === 'demo'
-    const hasS3Config = !!process.env.S3_SCHEDULE_BUCKET
+    const hasS3Config = Boolean(process.env.S3_SCHEDULE_BUCKET)
     
     return isDevEnvironment && !hasS3Config
 }
@@ -65,7 +65,6 @@ const getScheduleFromLocalFile = async (stationSlug: string) => {
         const fileContent = await readFile(filePath, 'utf-8')
         const jsonData = JSON.parse(fileContent)
         
-        console.log(`Using local mock schedule data for ${stationSlug}`)
         return humps.camelizeKeys(jsonData)
     } catch (error) {
         console.error('Error reading local schedule file:', error)
@@ -109,7 +108,6 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
         if (!response.Body) {
             throw new Error('No data received from S3')
         }
-        console.log('S3 response received')
         const bodyString = await streamToString(response.Body)
         const jsonData = JSON.parse(bodyString)
 
