@@ -8,6 +8,7 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
+import { ar } from 'date-fns/locale'
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages (queryParams: any) {
   const defaultParams = {
@@ -207,6 +208,23 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,
+
+    // Event-specific fields
+    contentType: article.contentType,
+    subtitle: article.subtitle,
+    body: article.body,
+    eventDate: article.eventDate,
+    endDate: article.endDate,
+    startTime: article.startTime,
+    endTime: article.endTime,
+    duration: article.duration,
+    ticketUrl: article.ticketUrl,
+    price: article.price,
+    eventLocation: article.eventLocation,
+    venueName: article.venueName,
+    eventUrl: article.eventUrl,
+    startDatetime: article.startDatetime,
+    endDatetime: article.endDatetime,
   })
 }
 
@@ -238,8 +256,9 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     // for comments
     estimatedDuration: article.duration,
     sortDate: article.publishedAt,
-    meta: undefined,
+    meta: { slug: article.slug, type: article.contentType },
     showTitle: article.showTitle,
+
   })
 }
 

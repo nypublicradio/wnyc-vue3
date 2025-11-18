@@ -6,6 +6,8 @@ export const WAGTAIL_PAGE_TYPES = {
   'standardpages.IndexPage': 'section_page',
   'standardpages.InformationPage': 'information_page',
   'tagpages.TagPage': 'tag_page',
+  'event_page': 'event',
+  'episode': 'episode',
 }
 
 /**
@@ -47,7 +49,7 @@ export function normalizePage (page: Record<string, any>): Page {
     id: idToNumber(page.id),
     title: page.title,
     uuid: page.uuid,
-    type: WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
+    type: WAGTAIL_PAGE_TYPES[page.contentType] ?? WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
 
     listingTitle: page.listingTitle || page.title,
     listingDescription: page.listingSummary || page.description,

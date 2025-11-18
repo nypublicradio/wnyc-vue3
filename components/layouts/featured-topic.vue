@@ -7,27 +7,25 @@ const props = defineProps({
   },
 })
 
-// const reactiveItems = toRef(props.list, "listItems")
-onMounted(() => {
-  console.log("hello")
-})
+const reactiveItems = toRef(props.list, "listItems")
 </script>
 
 <template>
   <div class="layout layout-featured-topic">
-    <h2>{{ props.list?.title }}</h2>
+    <h2 class="mb-4">{{ props.list?.title }}</h2>
 
     <div class="top-stories grid">
       <MediaCard
-        v-if="props.list?.listItems.length > 0"
+        v-if="reactiveItems?.length > 0"
         class="col-12 lg:col-8 mb-3"
         titleClasses="t7lines"
-        :data="props.list?.listItems[0]"
+        :data="reactiveItems[0]"
         is-horizontal
         is-feature
+        :is-event="reactiveItems[0].type === 'event'"
         imgCol="w-8"
         :size="{ xs: [369, 246], sm: [592, 280], lg: [592, 480] }"
-        @on-click="dynamicNavigation(props.list?.listItems[0])"
+        @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
         v-else
@@ -45,12 +43,13 @@ onMounted(() => {
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
-      <template v-if="props.list?.listItems.length > 0">
+      <template v-if="reactiveItems?.length > 0">
         <MediaCard
-          v-for="(article, index) in props.list?.listItems?.slice(1)"
+          v-for="(article, index) in reactiveItems?.slice(1)"
           :key="`${article.id}-${index}`"
           class="col-12 md:col-4 mb-3"
           :data="article"
+          :is-event="article.type === 'event'"
           :size="{ xs: [112, 112], md: [438, 292] }"
           @on-click="dynamicNavigation(article)"
         />
