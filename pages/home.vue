@@ -12,7 +12,7 @@ const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
 )
 
-const { data: pagedata, error } = useLazyFetch(
+const { data: pagedata, error, status } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
 )
 
@@ -78,18 +78,62 @@ onMounted(() => {
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
-    ########
-    <div v-for="section in pagedata?.new_home_template.curatedContent" :key="section?.id">
+    <div
+      v-if="status === 'success'"
+      v-for="section in pagedata?.new_home_template.curatedContent"
+      :key="section?.id"
+    >
       <section v-if="section?.value?.list?.listItems?.length">
         <component
           :is="getLayoutComponent(section?.value?.layout)"
           :list="section?.value?.list"
         />
       </section>
-      <!-- skeleton here -->
     </div>
-    ########
-    <pre>{{ pagedata?.new_home_template }}</pre>
+    <section v-else>
+      <Skeleton
+        height="20px"
+        width="226px"
+        borderRadius="16px"
+        style="margin-bottom: 4px; margin-top: 4px"
+        class="mb-4"
+      />
+      <div class="grid">
+        <skeleton-media-card
+          class="col-12 lg:col-8 mb-3"
+          is-horizontal
+          is-feature
+          imgCol="w-8"
+          :size="{ xs: [369, 246], sm: [592, 395] }"
+        />
+
+        <div
+          class="ad col mb-3 hidden lg:flex flex-column align-items-center justify-content-center"
+        >
+          <Skeleton
+            height="250px"
+            width="300px"
+            borderRadius="0px"
+            style="margin-bottom: 4px; margin-top: 4px"
+          />
+          <Skeleton
+            height="12px"
+            width="286px"
+            borderRadius="16px"
+            style="margin-bottom: 4px; margin-top: 4px"
+          />
+        </div>
+
+        <skeleton-media-card
+          v-for="index in 3"
+          :key="`skeleton-1-${index}`"
+          class="col-12 md:col-4 mb-3"
+          :size="{ xs: [112, 112], md: [438, 292] }"
+        />
+      </div>
+    </section>
+
+    <!-- <pre>{{ pagedata?.new_home_template }}</pre> -->
 
     <!-- <section>
       <div
