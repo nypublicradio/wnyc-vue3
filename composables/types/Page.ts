@@ -13,6 +13,7 @@ export interface Page {
   uuid: string
   type: string
 
+  tease?: string
   listingTitle?: string
   listingDescription?: string
   listingImage?: Image
