@@ -80,6 +80,7 @@ COPY --chown=www:www --from=build /code/.output/ ./.output/
 COPY --chown=www:www --from=build /code/.nuxt/ ./.nuxt/
 COPY --chown=www:www --from=build /code/node_modules/ ./node_modules/
 COPY --chown=www:www --from=build /code/package.json .
+COPY --chown=www:www --from=build /code/server/data/ ./server/data/
 
 RUN mkdir -p /var/run/nginx/ && \
     mkdir -p /var/log/nginx/ && \

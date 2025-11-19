@@ -34,6 +34,11 @@ jobs:
           echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.PAT }}" >> .npmrc
 
+      - name: Update Mock Schedule Data
+        run: |
+          chmod +x scripts/update-mock-schedule.sh
+          ./scripts/update-mock-schedule.sh wnyc
+
       - name: Set Review App URL
         id: set-url
         run: |
