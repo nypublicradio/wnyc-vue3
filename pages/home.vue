@@ -16,8 +16,8 @@ const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
 )
 
-// Cache layout components to prevent re-creating them on each render
 const layoutComponents = {}
+// dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
   if (!layoutComponents[layout]) {
     layoutComponents[layout] = defineAsyncComponent(() =>

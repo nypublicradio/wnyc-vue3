@@ -8,7 +8,6 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
-import { ar } from 'date-fns/locale'
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages (queryParams: any) {
   const defaultParams = {

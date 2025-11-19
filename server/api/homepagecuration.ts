@@ -1,9 +1,8 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { normalizePublisherListItem, normalizeNprPage } from '~/composables/data/articlePages'
+import { normalizePublisherListItem, normalizeNprPage, normalizeWagtailListItem, normalizeSimplecastListItem } from '~/composables/data/articlePages'
 import { hasAudio } from '~/utilities/helpers'
-import { normalizeWagtailListItem, normalizeSimplecastListItem } from "~/composables/data/articlePages"
 
 // Get curated SHOW content from the WNYC Puplisher API
 const getSectionData = async (slug: string) => {
