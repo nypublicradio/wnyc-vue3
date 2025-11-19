@@ -86,6 +86,7 @@ onMounted(() => {
           :list="section?.value?.list"
         />
       </section>
+      <!-- skeleton here -->
     </div>
     ########
     <pre>{{ pagedata?.new_home_template }}</pre>
