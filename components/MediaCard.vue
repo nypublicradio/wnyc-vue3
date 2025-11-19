@@ -373,6 +373,7 @@ const handleHasAudio = computed(() => {
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
+      :title="props.data?.title"
     ></div>
     <div class="holder flex flex-nogutter">
       <div
