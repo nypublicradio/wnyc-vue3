@@ -1,14 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import { trackClickEvent } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
+import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
+
 const props = defineProps({
   article: {
     type: Object,
     default: null,
   },
+  streamfieldBlocks: {
+    type: Array as () => StreamfieldBlock[],
+    default: null,
+  },
 })
 
-const streamfield = props.article.body
+const streamfield = props.article?.body
 
 onMounted(() => {
   // you can't have script tags in v-html
@@ -29,8 +35,8 @@ onMounted(() => {
   <div class="streamfield">
     <div
       v-if="
-        props.article.cmsSource === cmsSources.PUBLISHER ||
-        props.article.cmsSource === cmsSources.NPR
+        props.article?.cmsSource === cmsSources.PUBLISHER ||
+        props.article?.cmsSource === cmsSources.NPR
       "
     >
       <HtmlConvert
@@ -38,6 +44,64 @@ onMounted(() => {
         :htmlContent="props.article.body"
         :key="`article-body-${props.article.id || 'default'}`"
       />
+    </div>
+    <div v-else-if="streamfieldBlocks">
+      <template v-for="block in streamfieldBlocks">
+        <StreamfieldBlockQuote
+          v-if="block.type === 'block_quote'"
+          :key="`${block.id}-block-quote`"
+          :block="block"
+        />
+
+        <StreamfieldCode
+          v-else-if="block.type === 'code'"
+          :key="`${block.id}-code`"
+          :block="block"
+        />
+
+        <StreamfieldContentCollection
+          v-else-if="block.type === 'content_collection'"
+          :key="`${block.id}-content-collection`"
+          :block="block"
+          tracking-component-location="Streamfield"
+        />
+
+        <StreamfieldEmbed
+          v-else-if="block.type === 'embed'"
+          :key="`${block.id}-embed`"
+          :block="block"
+        />
+
+        <StreamfieldHeading
+          v-else-if="block.type === 'heading'"
+          :key="`${block.id}-heading`"
+          :block="block"
+        />
+
+        <StreamfieldImage
+          v-else-if="block.type === 'image'"
+          :key="`${block.id}-image`"
+          :block="block"
+        />
+
+        <StreamfieldParagraph
+          v-else-if="block.type === 'paragraph'"
+          :key="`${block.id}-paragraph`"
+          :block="block"
+        />
+
+        <StreamfieldPullQuote
+          v-else-if="block.type === 'pull_quote'"
+          :key="`${block.id}-pull-quote`"
+          :block="block"
+        />
+
+        <StreamfieldFactbox
+          v-else-if="block.type === 'factbox'"
+          :key="`${block.id}-factbox`"
+          :block="block"
+        />
+      </template>
     </div>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">

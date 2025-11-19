@@ -235,3 +235,10 @@ export const useDeviceId = () => useState<string>('useDeviceId', () => null)
 
 // track if it's the initial play or not
 export const useIsInitialPlay = () => useState<boolean>('useIsInitialPlay', () => true)
+
+// CMS preview globals
+const previewData = null
+/**
+ * Global state for the current episode object.
+ */
+export const usePreviewData = () => useState('usePreviewData', () => previewData)
