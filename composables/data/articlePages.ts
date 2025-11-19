@@ -208,6 +208,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,
+    tease: article.body,
 
     // Event-specific fields
     contentType: article.contentType,
@@ -258,7 +259,6 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sortDate: article.publishedAt,
     meta: { slug: article.slug, type: article.contentType },
     showTitle: article.showTitle,
-
   })
 }
 

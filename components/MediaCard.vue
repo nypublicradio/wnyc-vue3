@@ -417,7 +417,7 @@ const handleHasAudio = computed(() => {
                 :key="`tease-${props.data.id || props.data.slug || 'default'}`"
               />
             </div>
-            <div class="article-metadata">
+            <div class="article-metadata" v-if="!isEvent">
               <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
                 <template #left>
                   {{
@@ -444,6 +444,7 @@ const handleHasAudio = computed(() => {
           </div>
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
+            v-if="!isEvent"
           >
             <template v-if="!isLive && !props.hasSegments">
               <PlayButton

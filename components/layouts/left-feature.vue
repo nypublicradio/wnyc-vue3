@@ -1,4 +1,5 @@
 <script setup>
+import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   list: {
     type: Object,
