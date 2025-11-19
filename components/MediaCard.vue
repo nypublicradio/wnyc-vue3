@@ -164,11 +164,14 @@ const isDownloaded = ref(false)
 // check if item is already favorited
 const isFavorited = ref(false)
 
+// flag if the type is an event
+const isEvent = props.data?.type === mediaTypes.EVENT
+
 // check if this is a LIVE item
 const isLive = props.data?.type === mediaTypes.LIVE
 
 // this will change once we know how the event date will be passed
-const eventDate = ref(props.data?.publicationDate)
+const eventDate = ref(props.data?.startDatetime)
 
 const reactiveData = toRef(props, "data")
 
@@ -192,7 +195,7 @@ watchEffect(async () => {
   if (!props.data) return
   isDownloaded.value = isAlreadyDownloaded(props.data)
   isFavorited.value = await checkIsFavorited(props.data?.meta?.slug || props.data?.slug)
-  eventDate.value = props.data?.publicationDate
+  eventDate.value = props.data?.startDatetime
 })
 
 // add item to favorites
@@ -373,7 +376,7 @@ const handleHasAudio = computed(() => {
     ></div>
     <div class="holder flex flex-nogutter">
       <div
-        v-if="props.isEvent"
+        v-if="isEvent"
         class="event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
       >
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
@@ -610,7 +613,7 @@ const handleHasAudio = computed(() => {
       border-radius: var(--media-card-border-radius);
 
       .content {
-        padding: 1rem !important;
+        padding: 0.7rem 1rem !important;
       }
     }
 
@@ -633,7 +636,7 @@ const handleHasAudio = computed(() => {
         border-radius: var(--media-card-border-radius);
 
         .content {
-          padding: 1rem !important;
+          padding: 0.7rem 1rem !important;
         }
       }
     }

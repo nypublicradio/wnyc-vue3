@@ -66,7 +66,6 @@ const getNewHomeTemplate = async () => {
 	try {
 		// Call the internal server API endpoint
 		res = await $fetch('https://demo.native-app.wnyc.org/api/pages/wagtail/151286')
-
 		const transformedCuratedContent = await Promise.all(
 			res.curatedContent.map(async (item) => {
 				const transformedListItems = await Promise.all(
@@ -168,16 +167,16 @@ const getNprStories = async () => {
  */
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page CURATION data')
-	const res = event?.node?.res
+	//const res = event?.node?.res
 	//const homeTemplate = await getHomeTemplate()
 	const newHomeTemplate = await getNewHomeTemplate()
-	const nprStories = await getNprStories()
+	//const nprStories = await getNprStories()
 
-	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
+	//res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
 
 	return {
 		//home_template: homeTemplate,
 		new_home_template: newHomeTemplate,
-		npr_stories: nprStories,
+		//npr_stories: nprStories,
 	}
 })

@@ -14,7 +14,7 @@ const reactiveItems = toRef(props.list, "listItems")
   <div class="layout layout-featured-topic">
     <h2 class="mb-4">{{ props.list?.title }}</h2>
 
-    <div class="top-stories grid">
+    <div class="grid">
       <MediaCard
         v-if="reactiveItems?.length > 0"
         class="col-12 lg:col-8 mb-3"
@@ -22,7 +22,7 @@ const reactiveItems = toRef(props.list, "listItems")
         :data="reactiveItems[0]"
         is-horizontal
         is-feature
-        :is-event="reactiveItems[0].type === 'event'"
+        showTease
         imgCol="w-8"
         :size="{ xs: [369, 246], sm: [592, 280], lg: [592, 480] }"
         @on-click="dynamicNavigation(reactiveItems[0])"
@@ -47,9 +47,9 @@ const reactiveItems = toRef(props.list, "listItems")
         <MediaCard
           v-for="(article, index) in reactiveItems?.slice(1)"
           :key="`${article.id}-${index}`"
+          showTease
           class="col-12 md:col-4 mb-3"
           :data="article"
-          :is-event="article.type === 'event'"
           :size="{ xs: [112, 112], md: [438, 292] }"
           @on-click="dynamicNavigation(article)"
         />

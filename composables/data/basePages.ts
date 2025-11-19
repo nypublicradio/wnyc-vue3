@@ -52,6 +52,7 @@ export function normalizePage (page: Record<string, any>): Page {
     type: WAGTAIL_PAGE_TYPES[page.contentType] ?? WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
 
     listingTitle: page.listingTitle || page.title,
+    tease: page.tease || page.listingSummary || page.description,
     listingDescription: page.listingSummary || page.description,
     listingImage: page.listingImage,
     preventSearchIndexing: page.preventSearchIndexing,
