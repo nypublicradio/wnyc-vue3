@@ -5,6 +5,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  maxItems: {
+    type: Number,
+    default: 4,
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -48,7 +52,7 @@ const reactiveItems = toRef(props.list, "listItems")
       <div class="col-12 lg:col-6 grid grid-nogutter">
         <template v-if="reactiveItems.length > 0">
           <MediaCard
-            v-for="(article, index) in reactiveItems.slice(1)"
+            v-for="(article, index) in reactiveItems.slice(1, props.maxItems)"
             :key="`${article.id}-${index}`"
             class="col-12 mb-5"
             :data="article"
