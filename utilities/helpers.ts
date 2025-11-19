@@ -1005,6 +1005,18 @@ export const goToNprPage = (story, log = true) => {
     saveRecentlyPlayed(story)
   }
 }
+
+/* centralized function to route to a event page */
+export const goToEventPage = (story, log = true) => {
+
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
+  })
+  //}
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
+}
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
   navigateTo({
@@ -1113,6 +1125,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
       case mediaTypes.NPR_EPISODE:
       case mediaTypes.NPR_ARTICLE:
         goToNprPage(item)
+        break
+      case mediaTypes.EVENT:
+        goToEventPage(item)
         break
       default:
         goToEpisodePage(item, null, isSaveHistory)
