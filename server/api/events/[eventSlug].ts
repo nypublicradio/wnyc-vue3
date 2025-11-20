@@ -29,6 +29,7 @@ const getWagtailEventData = async (eventSlug: string) => {
 
 export default defineEventHandler(async (event) => {
     const eventSlug: string | undefined = event?.context?.params?.eventSlug
+    console.log("Fetching event data for slug:", eventSlug)
 
     if (eventSlug) {
         const eventData = await getWagtailEventData(eventSlug)

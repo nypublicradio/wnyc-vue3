@@ -12,11 +12,11 @@ const router = useRouter()
 const toast = useToast()
 
 const { data: event, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/events`,
+  `${config.public.BFF_URL}/api/events/list`,
   {
     onResponse({ response }) {
       const res = response._data
-      console.log("event response:", res)
+      console.log("event root response:", res)
       $analytics.sendPageView({
         page_title: res.title,
         page_type: "event_page",
