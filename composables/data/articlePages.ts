@@ -204,7 +204,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     hasAudio: article.audio ? true : false,
     // for comments
     estimatedDuration: undefined,
-    reading_time: article.reading_time,
+    readingTime: article.readingTime,
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,
@@ -251,7 +251,8 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     relatedLinks: undefined,
     url: article.url,
     section: undefined,
-    rawBody: getWagtailRawBody(article.body),
+    //rawBody: getWagtailRawBody(article.body),
+    body: article.body,
     audio: article.enclosureUrl,
     hasAudio: article.enclosureUrl ? true : false,
     // for comments

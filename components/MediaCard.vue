@@ -463,7 +463,13 @@ const handleHasAudio = computed(() => {
               <ReadButton
                 v-else
                 class="z-2"
-                :label="getReadingTime(props.data?.reading_time ?? props.data?.rawBody)"
+                :label="
+                  getReadingTime(
+                    props.data?.reading_time ??
+                      props.data?.readingTime ??
+                      props.data?.rawBody
+                  )
+                "
                 :file="props.data?.name"
                 @on-click="handleClick"
               />

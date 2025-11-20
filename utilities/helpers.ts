@@ -113,7 +113,7 @@ function stripHtmlTags (str) {
 export const getReadingTime = (content: string | number): string => {
   // If content is a number (seconds), convert directly to minutes
   if (typeof content === 'number') {
-    return `${Math.ceil(content / 60)} min read`
+    return `${content} min read`
   }
 
   // If content is a string (HTML), calculate based on word count
