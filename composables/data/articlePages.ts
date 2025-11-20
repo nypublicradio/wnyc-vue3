@@ -204,6 +204,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     hasAudio: article.audio ? true : false,
     // for comments
     estimatedDuration: undefined,
+    reading_time: article.reading_time,
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,

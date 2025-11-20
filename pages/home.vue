@@ -133,7 +133,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- <pre>{{ pagedata?.new_home_template }}</pre> -->
+    <pre>{{ pagedata?.new_home_template }}</pre>
 
     <!-- <section>
       <div
