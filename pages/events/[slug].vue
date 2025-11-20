@@ -16,7 +16,7 @@ const { data: event, status, error } = useFetch(
   {
     onResponse({ response }) {
       const res = response._data
-      console.log("event response:", res)
+      console.log("event response:", response)
       $analytics.sendPageView({
         page_title: res.title,
         page_type: "event_page",
