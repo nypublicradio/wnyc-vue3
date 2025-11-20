@@ -11,6 +11,7 @@ const previewData = usePreviewData()
 const identifier = route.query.identifier
 const token = route.query.token
 
+// Format data received from Aviary
 function formatData(data) {
   const transformedData = transformResponseData(data)
   const normalizedData = normalizeFindPageResponse(transformedData) as ArticlePage
@@ -18,6 +19,7 @@ function formatData(data) {
 }
 let fetchData = null
 
+// Fetch preview data from Aviary
 function handlePreviewData() {
   useFetch(
     `${config.public.AVIARY_BASE_API}page_preview/?identifier=${identifier}&token=${token}`

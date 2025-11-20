@@ -19,11 +19,13 @@ export function useImageUrl (image: Image, options?: { width: number, height: nu
         .replace('%quality%', (options?.quality && String(options.quality)) ?? '%quality%')
 }
 
+// calculate quality based on size multiplier
 function calcQuality (quality, size) {
     const qual = size >= 2 ? quality - Math.round(size * 5) : quality
     return qual >= 15 ? qual : 15
 }
 
+// get responsive sizes based on options
 function getResponsiveSizes (options: {
     sizes: number[]
     width: number
@@ -54,6 +56,7 @@ function getResponsiveSizes (options: {
     return responsiveSizes
 }
 
+// Returns a responsive srcset string for an image
 export function useResponsiveSrcset (image: Image, sizes: number[], options?: { width: number, height: number, quality: number, maxWidth?: number, maxHeight?: number }) {
     const maxWidth = options.maxWidth ?? image.width ?? Number.POSITIVE_INFINITY
     const maxHeight = options.maxHeight ?? image.height ?? Number.POSITIVE_INFINITY
@@ -76,6 +79,7 @@ export function useResponsiveSrcset (image: Image, sizes: number[], options?: { 
     return responsiveSrcset
 }
 
+// Preloads a responsive image by adding a link tag to the server head
 export function usePreloadResponsiveImage (href: string, imagesrcset: string, priority = 9) {
     useServerHead({
         link: [

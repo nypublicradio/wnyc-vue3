@@ -25,7 +25,7 @@ const page = isPreview
         })
       })
 
-const { $analytics } = useNuxtApp()
+// const { $analytics } = useNuxtApp()
 
 // onMounted(() => {
 //   if (isPreview) return

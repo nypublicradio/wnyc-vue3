@@ -4,7 +4,6 @@ import type { EmbedBlock } from "../../composables/types/StreamfieldBlock"
 defineProps<{
   block: EmbedBlock
 }>()
-const el = ref(null)
 </script>
 
 <template>
