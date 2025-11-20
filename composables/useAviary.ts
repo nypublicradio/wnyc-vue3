@@ -1,5 +1,6 @@
 import humps from "humps"
 
+// transformResponseData function to convert keys from snake_case to camelCase
 export function transformResponseData (data: Record<string, any>): Record<string, any> {
   return humps.camelizeKeys(data)
 }
