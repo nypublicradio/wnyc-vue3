@@ -110,8 +110,14 @@ function stripHtmlTags (str) {
 }
 
 // Computed property to calculate reading time
-export const getReadingTime = (htmlContent) => {
-  const textContent = stripHtmlTags(htmlContent)
+export const getReadingTime = (content: string | number): string => {
+  // If content is a number (seconds), convert directly to minutes
+  if (typeof content === 'number') {
+    return `${Math.ceil(content / 60)} min read`
+  }
+
+  // If content is a string (HTML), calculate based on word count
+  const textContent = stripHtmlTags(content)
   const wordsPerMinute = 200 // Average reading speed
   const estimatedWordCount = textContent.split(/\s+/).length
   return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`

@@ -67,6 +67,7 @@ export interface ArticlePage extends Page {
   audio?: string
   hasAudio?: boolean
   estimatedDuration?: number
+  reading_time?: number
   authors?: Author[]
   relatedAuthors?: Author[]
   contributingOrganizations?: ContributingOrganization[]
