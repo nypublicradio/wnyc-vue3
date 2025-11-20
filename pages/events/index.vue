@@ -12,10 +12,11 @@ const router = useRouter()
 const toast = useToast()
 
 const { data: event, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/v2/events/${route.params.slug}`,
+  `${config.public.BFF_URL}/api/events`,
   {
     onResponse({ response }) {
       const res = response._data
+      console.log("event response:", res)
       $analytics.sendPageView({
         page_title: res.title,
         page_type: "event_page",
@@ -37,21 +38,21 @@ const { data: event, status, error } = useFetch(
   }
 )
 
-const eventData = computed(() => event.value)
+// const eventData = computed(() => event.value)
 
-const theSlug = computed(
-  () =>
-    eventData.value?.showSlug ||
-    eventData.value?.show ||
-    eventData.value?.headers.brand.slug
-)
+// const theSlug = computed(
+//   () =>
+//     eventData.value?.showSlug ||
+//     eventData.value?.show ||
+//     eventData.value?.headers.brand.slug
+// )
 
-const theShowTitle = computed(
-  () =>
-    eventData.value?.showTitle ||
-    eventData.value?.headers.brand.title ||
-    eventData.value?.title
-)
+// const theShowTitle = computed(
+//   () =>
+//     eventData.value?.showTitle ||
+//     eventData.value?.headers.brand.title ||
+//     eventData.value?.title
+// )
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -62,7 +63,7 @@ const breadcrumbs = computed(() => [
 
 <template>
   <div class="event-page">
-    <Html lang="en">
+    <!-- <Html lang="en">
       <Head>
         <Title>{{ eventData?.title }} | WNYC</Title>
         <Meta name="og:title" :content="`${eventData?.title} | WNYC`" />
@@ -86,6 +87,6 @@ const breadcrumbs = computed(() => [
       <TopStories :articles="getFilteredTopStories(episodeData)" />
     </section>
 
-    <BackToTopButton />
+    <BackToTopButton />-->
   </div>
 </template>
