@@ -19,7 +19,6 @@ export function normalizeInformationPage (page: Record<string, any>): Informatio
 }
 
 export function normalizeFindPageResponse (pageResponse: Record<string, any>): Page | ArticlePage | TagPage | InformationPage {
-  console.log('KIM normalizeFindPageResponse', pageResponse)
   const pageType = pageResponse.value?.meta?.type
   switch (WAGTAIL_PAGE_TYPES[pageType]) {
     case 'article_page':

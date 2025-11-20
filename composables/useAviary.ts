@@ -12,8 +12,6 @@ export default async function useAviary (path: string, options: Record<string, a
     baseURL: config.public.AVIARY_BASE_API,
     ...options,
   })
-  console.log("KIM useAviary data", data)
   const transformedData = transformResponseData(data)
-  console.log("KIM useAviary transformedData", transformedData)
   return { data: transformedData, error }
 }
