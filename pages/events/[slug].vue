@@ -3,8 +3,10 @@
 import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
+import { dynamicNavigation } from "~/utilities/helpers"
+//import { tempData } from "./tempdata"
 import EpisodeTemplate from "~/components/EpisodeTemplate.vue"
-const { getFilteredTopStories } = useTopStories()
+const { getFilteredTopStories,topStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
