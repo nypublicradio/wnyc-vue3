@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BlockQuoteBlock } from '../../composables/types/StreamfieldBlock'
+import type { BlockQuoteBlock } from "../../composables/types/StreamfieldBlock"
 
 defineProps<{
   block: BlockQuoteBlock
@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="streamfield-block-quote mb-7">
+  <div class="streamfield-block-quote">
     <blockquote>
       <p>
         {{ block.value.blockQuote }}

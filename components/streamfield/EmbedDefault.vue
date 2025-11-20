@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EmbedBlock } from '../../composables/types/StreamfieldBlock'
+import type { EmbedBlock } from "../../composables/types/StreamfieldBlock"
 
 defineProps<{
   block: EmbedBlock
@@ -8,11 +8,7 @@ const el = ref(null)
 </script>
 
 <template>
-  <div
-    ref="el"
-    class="streamfield-embed streamfield-embed-default streamfield-paragraph mb-7"
-    v-html="block.value.embed"
-  />
+  <div v-html="block.value.embed" />
 </template>
 
 <style lang="scss">

@@ -15,11 +15,7 @@ defineProps<{
         </h1>
         <hr />
         <!-- page content -->
-        <v-streamfield
-          v-if="page.body"
-          :streamfield-blocks="page.body"
-          class="pt-4 lg:pt-6"
-        />
+        <v-streamfield v-if="page.body" :streamfield-blocks="page.body" class="pt-4" />
       </div>
     </section>
   </div>

@@ -43,6 +43,12 @@ export interface ParagraphBlock {
   value: string
 }
 
+export interface DocumentBlock {
+  id: string
+  type: "document"
+  value: string
+}
+
 export interface PullQuoteBlock {
   id: string
   type: "pull_quote"
@@ -85,3 +91,4 @@ export type StreamfieldBlock =
   | ParagraphBlock
   | PullQuoteBlock
   | FactboxBlock
+  | DocumentBlock

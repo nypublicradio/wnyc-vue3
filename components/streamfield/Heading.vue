@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="streamfield-heading mb-5">
+  <div class="streamfield-heading">
     <h2>{{ block.value }}</h2>
   </div>
 </template>
