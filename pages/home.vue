@@ -77,18 +77,18 @@ onMounted(() => {
     </section>
 
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
-
-    <div
-      v-if="status === 'success'"
-      v-for="section in pagedata?.new_home_template.curatedContent"
-      :key="section?.id"
-    >
-      <section v-if="section?.value?.list?.listItems?.length">
-        <component
-          :is="getLayoutComponent(section?.value?.layout)"
-          :list="section?.value?.list"
-        />
-      </section>
+    <div v-if="status === 'success'">
+      <div
+        v-for="section in pagedata?.new_home_template.curatedContent"
+        :key="section?.id"
+      >
+        <section v-if="section?.value?.list?.listItems?.length">
+          <component
+            :is="getLayoutComponent(section?.value?.layout)"
+            :list="section?.value?.list"
+          />
+        </section>
+      </div>
     </div>
     <section v-else>
       <Skeleton
