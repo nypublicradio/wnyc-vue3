@@ -51,11 +51,11 @@ const shouldUseMockData = (): boolean => {
         return true
     }
     
-    // Auto-detect: use mock data in development or when S3 bucket is not configured
-    const isDevEnvironment = process.env.NODE_ENV === 'development' || process.env.ENV === 'demo'
+    // Auto-detect: use mock data only in local development when S3 bucket is not configured
+    const isLocalDevelopment = process.env.NODE_ENV === 'development'
     const hasS3Config = Boolean(process.env.S3_SCHEDULE_BUCKET)
     
-    return isDevEnvironment && !hasS3Config
+    return isLocalDevelopment && !hasS3Config
 }
 
 // Function to read JSON data from local file system
