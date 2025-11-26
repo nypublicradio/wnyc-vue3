@@ -104,6 +104,7 @@ jobs:
             APP_VERSION=${{ vars.APP_VERSION }}
             SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
             NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
+            RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
 
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'

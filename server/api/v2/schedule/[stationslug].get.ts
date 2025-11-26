@@ -10,6 +10,7 @@
  * - AWS_REGION: AWS region where the S3 bucket is located (default: us-east-1)
  * - S3_SCHEDULE_BUCKET: Name of the S3 bucket containing schedule data (default: webstream-metadata-demo)
  * - USE_MOCK_SCHEDULE: Set to 'true' to use local mock data instead of S3 (default: auto-detect)
+ * - RAPID_ASSET_URL: Base URL for asset replacement (replaces S3 URLs with this URL)
  * 
  * S3 Object Key Format: schedule-{STATIONSLUG}.json
  * Example: schedule-WNYC.json
@@ -25,6 +26,10 @@
  * - For 'specificDate' and 'dateRange' modes, dates are validated against available data
  * - Returns 400 error if requested dates fall outside the available range
  * - Error message includes the available date range for reference
+ * 
+ * URL Rewriting:
+ * - All URLs containing 'https://s3.us-east-1.amazonaws.com/webstream-assets-demo' are automatically
+ *   rewritten to use the RAPID_ASSET_URL environment variable
  * 
  * @example
  * // Get next 24 hours of schedule
@@ -43,6 +48,42 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import humps from 'humps'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+
+// S3 asset URL pattern to replace
+const S3_ASSET_URL_PATTERN = `https://s3.us-east-1.amazonaws.com/webstream-assets-${process.env.ENV}`
+
+// Recursively rewrite URLs in the data structure
+const rewriteAssetUrls = (data: any): any => {
+    const rapidAssetUrl = process.env.RAPID_ASSET_URL
+    
+    // If no RAPID_ASSET_URL is configured, return data unchanged
+    if (!rapidAssetUrl) {
+        return data
+    }
+
+    // Handle arrays
+    if (Array.isArray(data)) {
+        return data.map(item => rewriteAssetUrls(item))
+    }
+    
+    // Handle objects
+    if (data && typeof data === 'object') {
+        const result: any = {}
+        for (const [key, value] of Object.entries(data)) {
+            // If the value is a string and contains the S3 URL, replace it
+            if (typeof value === 'string' && value.includes(S3_ASSET_URL_PATTERN)) {
+                result[key] = value.replace(S3_ASSET_URL_PATTERN, rapidAssetUrl)
+            } else {
+                // Recursively process nested objects and arrays
+                result[key] = rewriteAssetUrls(value)
+            }
+        }
+        return result
+    }
+    
+    // Return primitives unchanged
+    return data
+}
 
 // Check if we should use mock data (local/review environments)
 const shouldUseMockData = (): boolean => {
@@ -291,10 +332,13 @@ export default defineEventHandler(async (event) => {
             scheduleData = await getScheduleFromS3(bucketName, key)
         }
         res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate');
+        
         // Apply filtering based on mode
+        let filteredData
         switch (filterMode) {
             case 'next24hours':
-                return filterNext24Hours(scheduleData)
+                filteredData = filterNext24Hours(scheduleData)
+                break
             
             case 'specificDate':
                 if (!startDate) {
@@ -305,7 +349,8 @@ export default defineEventHandler(async (event) => {
                 }
                 // Validate that the requested date is within available data range
                 validateDateRange(scheduleData, startDate)
-                return filterByDate(scheduleData, startDate)
+                filteredData = filterByDate(scheduleData, startDate)
+                break
             
             case 'dateRange':
                 if (!startDate || !endDate) {
@@ -316,16 +361,21 @@ export default defineEventHandler(async (event) => {
                 }
                 // Validate that the requested date range is within available data range
                 validateDateRange(scheduleData, startDate, endDate)
-                return filterByDateRange(scheduleData, startDate, endDate)
+                filteredData = filterByDateRange(scheduleData, startDate, endDate)
+                break
             
             case 'all':
                 // Return all future episodes (remove only past ones)
-                return removePastEpisodes(scheduleData)
+                filteredData = removePastEpisodes(scheduleData)
+                break
             
             default:
                 // Default to next 24 hours
-                return filterNext24Hours(scheduleData)
+                filteredData = filterNext24Hours(scheduleData)
         }
+        
+        // Rewrite asset URLs before returning
+        return rewriteAssetUrls(filteredData)
     } catch (error: any) {
         console.error('Error fetching schedule from S3:', error)
 
