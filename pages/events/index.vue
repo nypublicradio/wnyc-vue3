@@ -2,36 +2,48 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
+import { useIntersectionObserver } from "@vueuse/core"
+
 const { getFilteredTopStories, topStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const toast = useToast()
 
+const offset = ref(0)
+const limit = ref(5)
+const totalCount = ref(0)
+const eventList = ref(null)
+
+const pendingMore = ref(false)
+const loadMoreRefVisible = ref(false)
+const loadMoreRef = ref(null)
+const isInitialObserver = ref(true)
+
+const transformEvents = (data) => {
+  data?.events?.forEach(event => {
+    if (event.eventImage) {
+      event.eventImage.fileHash = "sample-hash"
+    }
+  })
+  return {
+    ...data,
+    events: data?.events?.map((event) => ({
+      ...event,
+      image: event.eventImage,
+      type: "event",
+      tease: event.body[0]?.value || "",
+      cmsSource: 'wagtail',
+      //slug: event.meta.slug
+    })),
+  }
+}
+
 const { data: events, status, error } = useFetch(
   `${config.public.BFF_URL}/api/events/list`,
   {
-    transform (data) {
-      data?.events?.forEach(event => {
-        if (event.eventImage) {
-          event.eventImage.fileHash = "sample-hash"
-        }
-      })
-      return {
-        ...data,
-        events: data?.events?.map((event) => ({
-          ...event,
-          image: event.eventImage,
-          type: "event",
-          tease: event.body[0]?.value || "",
-          cmsSource: 'wagtail',
-          //slug: event.meta.slug
-        })),
-      }
-    },
+    transform: transformEvents,
     onResponse ({ response }) {
 
-      const res = response._data
-      console.log("event root response:", res)
       $analytics.sendPageView({
         page_title: "Events Page",
         page_type: "events_page",
@@ -48,6 +60,63 @@ const { data: events, status, error } = useFetch(
     },
   }
 )
+
+watch(events, (newEvents) => {
+  if (newEvents) {
+    eventList.value = newEvents.events
+    if (newEvents.meta) {
+      offset.value = newEvents.meta.offset
+      limit.value = newEvents.meta.limit
+      totalCount.value = newEvents.meta.totalCount
+    } else {
+      console.warn("Pagination metadata missing in events response")
+    }
+  }
+}, { immediate: true })
+
+const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
+  // so it does not trigger on initial load and before we have data
+  if (!isInitialObserver.value && eventList.value) {
+    loadMoreRefVisible.value = isIntersecting
+  } else {
+    isInitialObserver.value = false
+  }
+})
+
+onUnmounted(() => {
+  stop()
+})
+
+const loadMore = async () => {
+  // Check if we've already loaded all events
+  if (eventList.value.length >= totalCount.value || pendingMore.value) return
+
+  const nextOffset = offset.value + limit.value
+  pendingMore.value = true
+  try {
+    const moreEventsRaw = await $fetch(
+      `${config.public.BFF_URL}/api/events/list?offset=${nextOffset}&limit=${limit.value}`
+    )
+    const moreEvents = transformEvents(moreEventsRaw)
+    pendingMore.value = false
+    offset.value = nextOffset
+    eventList.value = [...eventList.value, ...moreEvents.events]
+  } catch (e) {
+    pendingMore.value = false
+    toast.add({
+      severity: "error",
+      summary: "We are having a problem loading more events. Please try again later.",
+      life: 6000,
+      closable: true,
+    })
+  }
+}
+
+watch(loadMoreRefVisible, (val) => {
+  if (val) {
+    loadMore()
+  }
+})
 
 const eventData = computed(() => events.value)
 
@@ -78,7 +147,7 @@ const breadcrumbs = computed(() => [
       <div class="col-12 grid grid-nogutter">
         <template v-if="status === 'success'">
           <MediaCard
-            v-for="(event, index) in eventData.events"
+            v-for="(event, index) in eventList"
             :key="`${event.id}-${index}`"
             class="col-12 mb-5"
             :data="event"
@@ -99,9 +168,16 @@ const breadcrumbs = computed(() => [
           imgCol="w-6"
           :size="{ xs: [112, 112], md: [300, 150] }"
         />
+        <WnycLoader
+          v-if="eventList.length < totalCount"
+          ref="loadMoreRef"
+          spinner
+          size="40px"
+          class="mt-8 flex justify-content-center w-full"
+        />
       </div>
 
-      <pre>{{ eventData?.events }}</pre>
+      <!-- <pre>{{ eventData?.events }}</pre> -->
     </section>
 
     <section v-if="getFilteredTopStories">

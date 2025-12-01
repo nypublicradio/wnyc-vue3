@@ -1,8 +1,8 @@
 import axios from 'axios'
 import humps from 'humps'
-import { co } from '~/ios/App/App/public/_nuxt/DiAnxIFF'
 
 const config = useRuntimeConfig()
+const queryLimit = 10
 
 /**
  * Fetches a list of events from the Wagtail CMS API with optional filtering.
@@ -17,7 +17,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             params: {
                 type: 'events.EventPage',
                 fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary',
-                limit: query.limit || 20,
+                limit: query.limit || queryLimit,
                 offset: query.offset || 0,
             }
         }
@@ -44,7 +44,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             events: data.items || [],
             meta: {
                 totalCount: data.meta?.totalCount || 0,
-                limit: query.limit || 20,
+                limit: query.limit || queryLimit,
                 offset: query.offset || 0,
             }
         }
@@ -54,7 +54,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             events: [],
             meta: {
                 totalCount: 0,
-                limit: query.limit || 20,
+                limit: query.limit || queryLimit,
                 offset: query.offset || 0,
             }
         }
