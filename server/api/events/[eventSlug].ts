@@ -1,5 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
+import { normalizeWagtailEvent } from '~/server/utils/events'
 
 const config = useRuntimeConfig()
 
@@ -32,21 +33,22 @@ export default defineEventHandler(async (event) => {
     console.log("Fetching event data for slug:", eventSlug)
 
     if (eventSlug) {
-        const eventData = await getWagtailEventData(eventSlug)
+        const eventData = await getWagtailEventData(eventSlug);
+        const normalizedEvent = eventData ? normalizeWagtailEvent(eventData) : null;
 
         // Set cache headers - longer cache for past events
-        const res = event?.node?.res
-        if (eventData?.startDatetime) {
-            const eventDate = new Date(eventData.startDatetime)
-            const now = new Date()
-            const cacheTime = eventDate < now ? 3600 : 1800 // 1 hour for past events, 30 min for future
-            res.setHeader('Cache-Control', `maxage=${cacheTime}, stale-while-revalidate`)
+        const res = event?.node?.res;
+        if (normalizedEvent?.startDatetime) {
+            const eventDate = new Date(normalizedEvent.startDatetime);
+            const now = new Date();
+            const cacheTime = eventDate < now ? 3600 : 1800; // 1 hour for past events, 30 min for future
+            res.setHeader('Cache-Control', `maxage=${cacheTime}, stale-while-revalidate`);
         } else {
             res.setHeader('Cache-Control', 'maxage=1800, stale-while-revalidate')
         }
 
-        return eventData
+        return normalizedEvent;
     }
 
     return null
-})
+});

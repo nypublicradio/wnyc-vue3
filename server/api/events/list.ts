@@ -1,5 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
+import { normalizeWagtailEvent } from '~/server/utils/events'
 
 const config = useRuntimeConfig()
 const queryLimit = 10
@@ -36,12 +37,13 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             (options.params as any).venue_name = query.venue
         }
 
-        const res = await axios(options)
-        const data = humps.camelizeKeys(res.data)
+        const res = await axios(options);
+        const data = humps.camelizeKeys(res.data);
+        const events = (data.items || []).map(normalizeWagtailEvent);
 
         // Transform the response to include both data and meta
         return {
-            events: data.items || [],
+            events,
             meta: {
                 totalCount: data.meta?.totalCount || 0,
                 limit: query.limit || queryLimit,
@@ -68,6 +70,6 @@ export default defineEventHandler(async (event) => {
     // Set cache header - short cache for dynamic list
     res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
 
-    const eventsData = await getWagtailEvents(query)
-    return eventsData
-})
+    const eventsData = await getWagtailEvents(query);
+    return eventsData;
+});
