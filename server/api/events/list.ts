@@ -1,5 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
+import { normalizeWagtailEvent } from '~/server/utils/events'
 
 const config = useRuntimeConfig();
 
@@ -37,10 +38,11 @@ const getWagtailEvents = async (query: Record<string, any>) => {
 
         const res = await axios(options);
         const data = humps.camelizeKeys(res.data);
+        const events = (data.items || []).map(normalizeWagtailEvent);
 
         // Transform the response to include both data and meta
         return {
-            events: data.items || [],
+            events,
             meta: {
                 totalCount: data.meta?.totalCount || 0,
                 limit: query.limit || 20,
