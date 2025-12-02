@@ -68,6 +68,7 @@ const reactiveItems = toRef(props.list, "listItems")
     <HorizontalScrollFeature
       :data="reactiveItems"
       itemSize="248px"
+      edgeNegativeMargin="4"
       class="block lg:hidden"
     >
       <template #default>
@@ -80,10 +81,9 @@ const reactiveItems = toRef(props.list, "listItems")
           :key="`horzScroll-${index}-}${item.label}`"
           is-vertical
           :size="{ xs: [248, 166] }"
-          :showBg="true"
-          :showBgMobile="true"
-          :hideDate="true"
-          :showTease="true"
+          showTease
+          showBg
+          showBgMobile
           class="item btn"
           @on-click="dynamicNavigation(item)"
         />
@@ -94,11 +94,10 @@ const reactiveItems = toRef(props.list, "listItems")
             v-for="i in 5"
             :key="`${i}-skeleton`"
             is-vertical
+            showBg
+            showBgMobile
             :size="[3, 2]"
-            :showBg="true"
-            :showBgMobile="true"
-            :hideDate="true"
-            :showTease="true"
+            showTease
             class="item btn"
           />
         </div>

@@ -133,7 +133,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <pre>{{ pagedata?.new_home_template }}</pre>
+    <pre class="text-xs overflow-hidden">{{ pagedata?.new_home_template }}</pre>
 
     <!-- <section>
       <div
