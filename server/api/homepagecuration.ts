@@ -10,10 +10,6 @@ const getSectionData = async (slug: string) => {
 		method: 'GET',
 		url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
 	}
-	// headers: {
-	// 	'X-CMS-Site': 'demo.wnyc.org:443'
-	// }
-	//curl -H "X-CMS-Site: demo.wnyc.org:443" "https://cms.demo.nypr.digital/api/v2/pages/151286/?a=b”
 
 	let res = null
 	try {
@@ -183,12 +179,12 @@ const getNprStories = async () => {
  */
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page CURATION data')
-	//const res = event?.node?.res
+	const res = event?.node?.res
 	//const homeTemplate = await getHomeTemplate()
 	const newHomeTemplate = await getNewHomeTemplate()
 	//const nprStories = await getNprStories()
 
-	//res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
+	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
 
 	return {
 		//home_template: homeTemplate,

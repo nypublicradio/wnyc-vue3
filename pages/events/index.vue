@@ -19,29 +19,10 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const transformEvents = (data) => {
-  data?.events?.forEach(event => {
-    if (event.eventImage) {
-      event.eventImage.fileHash = "sample-hash"
-    }
-  })
-  return {
-    ...data,
-    events: data?.events?.map((event) => ({
-      ...event,
-      image: event.eventImage,
-      type: "event",
-      tease: event.body[0]?.value || "",
-      cmsSource: 'wagtail',
-      //slug: event.meta.slug
-    })),
-  }
-}
-
 const { data: events, status, error } = useFetch(
   `${config.public.BFF_URL}/api/events/list`,
   {
-    transform: transformEvents,
+    //transform: transformEvents,
     onResponse ({ response }) {
 
       $analytics.sendPageView({
@@ -94,10 +75,10 @@ const loadMore = async () => {
   const nextOffset = offset.value + limit.value
   pendingMore.value = true
   try {
-    const moreEventsRaw = await $fetch(
+    const moreEvents = await $fetch(
       `${config.public.BFF_URL}/api/events/list?offset=${nextOffset}&limit=${limit.value}`
     )
-    const moreEvents = transformEvents(moreEventsRaw)
+    //const moreEvents = transformEvents(moreEventsRaw)
     pendingMore.value = false
     offset.value = nextOffset
     eventList.value = [...eventList.value, ...moreEvents.events]
