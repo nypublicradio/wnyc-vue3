@@ -166,12 +166,12 @@ const getNprStories = async () => {
  */
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page CURATION data')
-	//const res = event?.node?.res
+	const res = event?.node?.res
 	//const homeTemplate = await getHomeTemplate()
 	const newHomeTemplate = await getNewHomeTemplate()
 	//const nprStories = await getNprStories()
 
-	//res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
+	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
 
 	return {
 		//home_template: homeTemplate,

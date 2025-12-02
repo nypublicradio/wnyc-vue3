@@ -8,6 +8,10 @@ const props = defineProps({
     type: String,
     default: "3",
   },
+  itemSize: {
+    type: String,
+    default: "",
+  },
 })
 const { isMobile } = useDevice()
 const reactiveData = toRef(props, "data")
@@ -92,6 +96,8 @@ const reactiveData = toRef(props, "data")
       .btn {
         //margin-left: 1.5rem;
       }
+      min-width: v-bind(itemSize);
+      max-width: v-bind(itemSize);
     }
   }
 }
