@@ -16,19 +16,25 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-featured-topic">
+    <div class="ad col mb-3 flex align-items-center lg:hidden justify-content-center">
+      <story-htlAd
+        layout="rectangle"
+        slotClass="htlad-wnyc_homepage_rectangle"
+        fineprint="WNYC is funded by sponsors and member donations"
+      />
+    </div>
     <h2 class="mb-4">{{ props.list?.title }}</h2>
-
     <div class="grid">
       <MediaCard
         v-if="reactiveItems?.length > 0"
-        class="col-12 lg:col-8 mb-3"
+        class="col-12 lg:col-8 mb-3 hidden md:block"
         titleClasses="t7lines"
         :data="reactiveItems[0]"
         is-horizontal
         is-feature
         showTease
         imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 280], lg: [592, 480] }"
+        :size="{ xs: [369, 246], sm: [592, 380], lg: [592, 480] }"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -47,6 +53,14 @@ const reactiveItems = toRef(props.list, "listItems")
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
+      <MediaCard
+        :key="`${reactiveItems[0].id}-0`"
+        showTease
+        class="col-12 md:col-4 mb-3 md:hidden"
+        :data="reactiveItems[0]"
+        :size="{ xs: [112, 112], md: [438, 292] }"
+        @on-click="dynamicNavigation(reactiveItems[0])"
+      />
       <template v-if="reactiveItems?.length > 0">
         <MediaCard
           v-for="(article, index) in reactiveItems?.slice(1, props.maxItems)"
@@ -60,7 +74,7 @@ const reactiveItems = toRef(props.list, "listItems")
       </template>
       <skeleton-media-card
         v-else
-        v-for="index in 6"
+        v-for="index in props.maxItems - 1"
         :key="`skeleton-1-${index}`"
         class="col-12 md:col-4 mb-3"
         :size="{ xs: [112, 112], md: [438, 292] }"
