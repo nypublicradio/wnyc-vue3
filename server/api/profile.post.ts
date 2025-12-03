@@ -2,6 +2,11 @@ import salesforce from '../utils/salesforce';
 import { createError, defineEventHandler, readBody } from 'h3';
 import { requireAuth } from '../utils/jwt';
 import { rateLimit } from '../utils/rateLimiter';
+import { supabaseClient } from '~/server/utils/supabaseClient';
+import { NyprDb } from '~/server/utils/nyprdb';
+
+const supabase = supabaseClient();
+const nyprDb = new NyprDb(supabase);
 
 // Response type definitions
 interface RecurringDonation {
@@ -10,6 +15,7 @@ interface RecurringDonation {
     amount: number | null;
     nextChargeDate: string | null;
     membershipStartDate: string | null;
+    status?: string | null;
 }
 
 interface ProfileResponse {
@@ -142,8 +148,40 @@ const getActiveRecurringDonations = async (contact: any): Promise<any[]> => {
                 'cfg_Digital_Membership_Program_Name__c'
             ]
         );
-
-        return recurringDonations || [];
+        
+        const transactions = await nyprDb.getTransactionsBySalesforceId(contact.Id);
+        
+        // Create maps of springboard_id to status and amount for quick lookup
+        const statusMap = new Map<number, string>();
+        const amountMap = new Map<number, number>();
+        if (transactions && transactions.length > 0) {
+            transactions.forEach(transaction => {
+                if (transaction.springboard_id) {
+                    statusMap.set(transaction.springboard_id, transaction.status || 'Completed');
+                    // If type is donation_update and new_amount exists, store it
+                    if (transaction.type === 'donation_update' && transaction.new_amount != null) {
+                        amountMap.set(transaction.springboard_id, transaction.new_amount);
+                    }
+                }
+            });
+        }
+        
+        // Attach status and updated amount to each recurring donation
+        const donationsWithStatus = (recurringDonations || []).map(donation => {
+            const springboardId = Number(donation.Master_Donation_ID__c);
+            const updatedAmount = donation.Master_Donation_ID__c ? amountMap.get(springboardId) : undefined;
+            
+            return {
+                ...donation,
+                // Use updated amount if available, otherwise use original amount
+                npe03__Amount__c: updatedAmount !== undefined ? updatedAmount : donation.npe03__Amount__c,
+                status: donation.Master_Donation_ID__c 
+                    ? statusMap.get(springboardId) || 'Completed'
+                    : 'Complete'
+            };
+        });
+        
+        return donationsWithStatus;
     } catch (error: any) {
         // Enhanced error handling with categorization
         const statusCode = error.name === 'SalesforceError' && error.type === 'authentication' ? 401 :
@@ -169,7 +207,8 @@ const formatRecurringDonations = (donations: any[]): RecurringDonation[] => {
         brand: donation.nypr_GAU_Property_Name_Current__c,
         amount: donation.npe03__Amount__c,
         nextChargeDate: donation.npe03__Next_Payment_Date__c,
-        membershipStartDate: donation.npe03__Date_Established__c
+        membershipStartDate: donation.npe03__Date_Established__c,
+        status: donation.status
     }));
 };
 
