@@ -133,7 +133,18 @@ onMounted(() => {
       </div>
     </section>
 
-    <pre class="text-xs overflow-hidden">{{ pagedata?.new_home_template }}</pre>
+    <!-- TEXT ONLY EXAMPLE -->
+    <section
+      v-if="pagedata?.new_home_template.curatedContent[2]?.value?.list?.listItems?.length"
+    >
+      <layouts-text-only
+        :list="pagedata?.new_home_template.curatedContent[2].value?.list"
+      />
+    </section>
+
+    <pre class="text-xs overflow-hidden">{{
+      pagedata?.new_home_template.curatedContent[2].value?.list
+    }}</pre>
 
     <!-- <section>
       <div
