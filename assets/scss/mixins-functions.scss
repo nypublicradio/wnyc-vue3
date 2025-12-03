@@ -116,6 +116,7 @@
 }
 
 @mixin cardTitle() {
+  font-family: var(--font-family-header);
   font-size: var(--font-size-6);
   line-height: 1.25em;
   font-weight: var(--font-weight-700);
