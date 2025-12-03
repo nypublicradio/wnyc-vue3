@@ -10,9 +10,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     app: [vueApp],
     dsn: config.public.SENTRY_DSN,
     integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.vueRouterInstrumentation(nuxtApp.$router),
-        tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'demo.native-app.wnyc.org', 'api.wnyc.org'],
+      Sentry.browserTracingIntegration({
+        router: nuxtApp.$router,
+        enableInp: true,
+        interactionsSampleRate: 0.5,
       }),
       new HttpClient(),
       new Sentry.Replay({
@@ -29,7 +30,14 @@ export default defineNuxtPlugin((nuxtApp) => {
       'http://local.dev.nypr.digital:3000',
       'capacitor://localhost',
     ],
+    ignoreErrors: [
+      'ResizeObserver loop limit exceeded',
+      'Failed to fetch',
+      'NetworkError when attempting to fetch resource.',
+      'Load failed',
+    ],
     tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'api.wnyc.org', 'www.wnyc.org'],
+    maxValueLength: 1000,
     trackComponents: true,
     timeout: 2000,
     hooks: ['activate', 'mount', 'update'],
