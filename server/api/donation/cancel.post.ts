@@ -110,7 +110,7 @@ const cancelDonationWithSpringboard = async (donationId: number, reason: string,
             springboard_id: donationId,
             salesforce_id: salesforceId ?? null,
             type: 'donation_cancel',
-            status: 'pending',
+            status: 'Pending',
 
         });
 
