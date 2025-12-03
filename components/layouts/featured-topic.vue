@@ -16,15 +16,15 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-featured-topic">
-    <div class="ad col mb-3 flex align-items-center lg:hidden justify-content-center">
+    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
         fineprint="WNYC is funded by sponsors and member donations"
       />
     </div>
-    <h2 class="mb-4">{{ props.list?.title }}</h2>
     <div class="grid">
+      <h2 class="col-12 mb-4 order-2 lg:order-1">{{ props.list?.title }}</h2>
       <MediaCard
         v-if="reactiveItems?.length > 0"
         class="col-12 lg:col-8 mb-3 hidden md:block"
@@ -39,46 +39,44 @@ const reactiveItems = toRef(props.list, "listItems")
       />
       <skeleton-media-card
         v-else
-        class="col-12 lg:col-8 mb-3"
+        class="col-12 lg:col-8 mb-3 hidden md:block"
         is-horizontal
         is-feature
         imgCol="w-8"
         :size="{ xs: [369, 246], sm: [592, 395] }"
       />
 
-      <div class="ad col mb-3 hidden lg:flex align-items-center justify-content-center">
+      <div
+        class="ad col-12 lg:col align-items-center justify-content-center hidden lg:flex"
+      >
         <story-htlAd
           layout="rectangle"
           slotClass="htlad-wnyc_homepage_rectangle"
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
-      <MediaCard
-        :key="`${reactiveItems[0].id}-0`"
-        showTease
-        class="col-12 md:col-4 mb-3 md:hidden"
-        :data="reactiveItems[0]"
-        :size="{ xs: [112, 112], md: [438, 292] }"
-        @on-click="dynamicNavigation(reactiveItems[0])"
-      />
+
       <template v-if="reactiveItems?.length > 0">
         <MediaCard
-          v-for="(article, index) in reactiveItems?.slice(1, props.maxItems)"
+          v-for="(article, index) in reactiveItems?.slice(0, props.maxItems)"
           :key="`${article.id}-${index}`"
           showTease
-          class="col-12 md:col-4 mb-3"
+          class="col-12 md:col-4 mb-3 order-4"
+          :class="{ 'md:hidden': index === 0 }"
           :data="article"
           :size="{ xs: [112, 112], md: [438, 292] }"
           @on-click="dynamicNavigation(article)"
         />
       </template>
-      <skeleton-media-card
-        v-else
-        v-for="index in props.maxItems - 1"
-        :key="`skeleton-1-${index}`"
-        class="col-12 md:col-4 mb-3"
-        :size="{ xs: [112, 112], md: [438, 292] }"
-      />
+      <template v-else>
+        <skeleton-media-card
+          v-for="index in props.maxItems"
+          :key="`skeleton-${index}`"
+          class="col-12 md:col-4 mb-3 order-4"
+          :class="{ 'md:hidden': index === 1 }"
+          :size="{ xs: [112, 112], md: [438, 292] }"
+        />
+      </template>
     </div>
   </div>
 </template>
