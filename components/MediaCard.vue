@@ -410,7 +410,7 @@ const handleHasAudio = computed(() => {
               </h2>
 
               <HtmlConvert
-                v-if="props.data.tease && props.showTease"
+                v-if="props.data.tease && props.showTease && !isEvent"
                 :htmlContent="props.data.tease"
                 class="tease"
                 :class="props.teaseClasses"
@@ -442,100 +442,118 @@ const handleHasAudio = computed(() => {
                 />
               </div>
             </div>
+            <div v-if="isEvent" class="flex flex-column gap-2">
+              <p class="text-sm">{{ formatTime(props.data.startDatetime) }}</p>
+              <p class="text-sm">{{ props.data.eventLocation }}</p>
+            </div>
           </div>
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
-            v-if="!isEvent"
           >
-            <template v-if="!isLive && !props.hasSegments">
-              <PlayButton
-                v-if="handleHasAudio"
-                :data="props.data"
-                class="z-2"
-                :label="getMinutes(props.data?.estimatedDuration, 1)"
-                @onClick="
-                  isDownloaded && !isNetworkConnected
-                    ? toggleDownloadedPlay(props.data)
-                    : togglePlayEpisode(props.data)
-                "
-              >
-              </PlayButton>
-              <ReadButton
-                v-else
-                class="z-2"
-                :label="
-                  getReadingTime(
-                    props.data?.reading_time ??
-                      props.data?.readingTime ??
-                      props.data?.rawBody
-                  )
-                "
-                :file="props.data?.name"
-                @on-click="handleClick"
-              />
-            </template>
-            <div v-else></div>
-            <slot>
-              <div class="flex gap-1 align-items-center">
-                <DownloadProgress
-                  class="mr-2"
-                  v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
-                  :isDownloaded="isDownloaded"
-                  :progress="progress"
-                  small
-                />
-                <BarsPlaying :data="props.data" />
-                <DotMenu
-                  v-if="!props.saved"
-                  :menuItems="getDotMenuItems(props.data)"
-                  label=""
-                  @changeEmit="onMenuChange"
-                  class="z-1 -mr-2"
+            <template v-if="!isEvent">
+              <template v-if="!isLive && !props.hasSegments">
+                <PlayButton
+                  v-if="handleHasAudio"
+                  :data="props.data"
+                  class="z-2"
+                  :label="getMinutes(props.data?.estimatedDuration, 1)"
+                  @onClick="
+                    isDownloaded && !isNetworkConnected
+                      ? toggleDownloadedPlay(props.data)
+                      : togglePlayEpisode(props.data)
+                  "
                 >
-                  <template #header-bottom>
-                    <div>
-                      <div class="flex gap-3 align-items-center px-4">
-                        <VImage
-                          :src="getImage"
-                          :srcFallback="props.fallbackImage"
-                          :alt="`${props.data?.showTitle} show image`"
-                          class="show-image-in-menu flex-none"
-                          :height="112"
-                          :width="112"
-                          :maxHeight="nativeImageHeight"
-                          :maxWidth="nativeImageWidth"
-                          allowVerticalEffect
-                          :ratio="[1, 1]"
-                          style="
-                            height: 60px;
-                            width: 60px;
-                            background-color: var(--background);
-                          "
-                        />
-                        <div class="info">
-                          <h2 class="card-title-title">{{ props.data?.title }}</h2>
-                          <p>{{ props.data?.showTitle }}</p>
-                        </div>
-                      </div>
-                      <hr class="mt-5 mb-2 dim" />
-                    </div>
-                  </template>
-                </DotMenu>
-                <Button
+                </PlayButton>
+                <ReadButton
                   v-else
-                  text
-                  plain
-                  rounded
-                  class="flex-none z-1"
-                  aria-label="star"
-                  @click="handleAddToFavorites(props.data)"
-                >
-                  <template #icon>
-                    <StarIcon class="h-2rem" :active="isFavorited" />
-                  </template>
-                </Button>
-              </div>
-            </slot>
+                  class="z-2"
+                  :label="
+                    getReadingTime(
+                      props.data?.reading_time ??
+                        props.data?.readingTime ??
+                        props.data?.rawBody
+                    )
+                  "
+                  :file="props.data?.name"
+                  @on-click="handleClick"
+                />
+              </template>
+              <div v-else></div>
+              <slot>
+                <div class="flex gap-1 align-items-center">
+                  <DownloadProgress
+                    class="mr-2"
+                    v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
+                    :isDownloaded="isDownloaded"
+                    :progress="progress"
+                    small
+                  />
+                  <BarsPlaying :data="props.data" />
+                  <DotMenu
+                    v-if="!props.saved"
+                    :menuItems="getDotMenuItems(props.data)"
+                    label=""
+                    @changeEmit="onMenuChange"
+                    class="z-1 -mr-2"
+                  >
+                    <template #header-bottom>
+                      <div>
+                        <div class="flex gap-3 align-items-center px-4">
+                          <VImage
+                            :src="getImage"
+                            :srcFallback="props.fallbackImage"
+                            :alt="`${props.data?.showTitle} show image`"
+                            class="show-image-in-menu flex-none"
+                            :height="112"
+                            :width="112"
+                            :maxHeight="nativeImageHeight"
+                            :maxWidth="nativeImageWidth"
+                            allowVerticalEffect
+                            :ratio="[1, 1]"
+                            style="
+                              height: 60px;
+                              width: 60px;
+                              background-color: var(--background);
+                            "
+                          />
+                          <div class="info">
+                            <h2 class="card-title-title">{{ props.data?.title }}</h2>
+                            <p>{{ props.data?.showTitle }}</p>
+                          </div>
+                        </div>
+                        <hr class="mt-5 mb-2 dim" />
+                      </div>
+                    </template>
+                  </DotMenu>
+                  <Button
+                    v-else
+                    text
+                    plain
+                    rounded
+                    class="flex-none z-1"
+                    aria-label="star"
+                    @click="handleAddToFavorites(props.data)"
+                  >
+                    <template #icon>
+                      <StarIcon class="h-2rem" :active="isFavorited" />
+                    </template>
+                  </Button>
+                </div>
+              </slot>
+            </template>
+            <div v-else class="flex gap-3 align-items-center">
+              <EventButton class="z-2" :file="props.data?.name" @on-click="handleClick" />
+              <VBadge
+                label="LIVE STREAM"
+                color="var(--p-surface-900)"
+                bg-color="var(--p-green-400)"
+              />
+              <VBadge
+                label="IN-PERSON"
+                color="var(--p-surface-0)"
+                bg-color="var(--p-purple-500)"
+              />
+            </div>
           </div>
         </div>
       </div>
