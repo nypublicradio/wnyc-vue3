@@ -70,6 +70,10 @@ onMounted(() => {
       />
     </section>
 
+    <section>
+      <atm-cta />
+    </section>
+
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
     <section>
