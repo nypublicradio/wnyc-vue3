@@ -58,8 +58,8 @@ const reactiveItems = toRef(props.list, "listItems")
             :data="article"
             is-horizontal
             is-event
-            imgCol="md:w-7rem lg:w-6"
-            :size="{ xs: [112, 112], lg: [217, 159], xl: [332, 184] }"
+            imgCol="w-7rem md:w-11rem lg:w-6"
+            :size="{ xs: [112, 112], md: [176, 176], lg: [217, 159], xl: [332, 184] }"
             @on-click="dynamicNavigation(article)"
           />
         </template>
@@ -70,8 +70,8 @@ const reactiveItems = toRef(props.list, "listItems")
           class="col-12 mb-5"
           is-horizontal
           is-event
-          imgCol="w-6"
-          :size="{ xs: [112, 112], lg: [217, 159], xl: [332, 184] }"
+          imgCol="w-7rem md:w-11rem lg:w-6"
+          :size="{ xs: [112, 112], md: [176, 176], lg: [217, 159], xl: [332, 184] }"
         />
       </div>
     </div>

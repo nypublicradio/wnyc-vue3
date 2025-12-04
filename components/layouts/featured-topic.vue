@@ -1,5 +1,6 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   list: {
     type: Object,
@@ -12,6 +13,8 @@ const props = defineProps({
 })
 
 const reactiveItems = toRef(props.list, "listItems")
+const { breakpoint } = useBreakpoints()
+const isLgBreakpoint = computed(() => breakpoint("<lg"))
 </script>
 
 <template>
@@ -61,22 +64,26 @@ const reactiveItems = toRef(props.list, "listItems")
           v-for="(article, index) in reactiveItems?.slice(0, props.maxItems)"
           :key="`${article.id}-${index}`"
           showTease
-          class="col-12 md:col-4 mb-3 order-4"
+          class="col-12 lg:col-4 mb-3 order-4"
           :class="{ 'md:hidden': index === 0 }"
           :data="article"
-          :size="{ xs: [112, 112], md: [438, 292] }"
+          :isHorizontal="isLgBreakpoint"
+          imgCol="w-7rem md:w-11rem lg:w-full"
+          :size="{ xs: [112, 112], md: [176, 176], lg: [438, 292] }"
           @on-click="dynamicNavigation(article)"
         />
       </template>
-      <template v-else>
+      <div v-else class="w-full">
         <skeleton-media-card
           v-for="index in props.maxItems"
           :key="`skeleton-${index}`"
-          class="col-12 md:col-4 mb-3 order-4"
+          class="col-12 lg:col-4 mb-3 order-4"
+          :isHorizontal="isLgBreakpoint"
+          imgCol="w-7rem md:w-11rem lg:w-full"
           :class="{ 'md:hidden': index === 1 }"
-          :size="{ xs: [112, 112], md: [438, 292] }"
+          :size="{ xs: [112, 112], md: [176, 176], lg: [438, 292] }"
         />
-      </template>
+      </div>
     </div>
   </div>
 </template>

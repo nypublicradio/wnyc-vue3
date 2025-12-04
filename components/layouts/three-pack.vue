@@ -1,5 +1,6 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   list: {
     type: Object,
@@ -7,7 +8,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "col-12 md:col-6 lg:col-4 mb-3",
+    default: "md:col-12 lg:col-4 mb-3",
   },
   maxItems: {
     type: Number,
@@ -16,6 +17,8 @@ const props = defineProps({
 })
 
 const reactiveItems = toRef(props.list, "listItems")
+const { breakpoint } = useBreakpoints()
+const isLgBreakpoint = computed(() => breakpoint("<lg"))
 </script>
 
 <template>
@@ -30,9 +33,11 @@ const reactiveItems = toRef(props.list, "listItems")
           showTease
           :class="props.cardClass"
           :data="article"
+          :isHorizontal="isLgBreakpoint"
+          imgCol="w-7rem md:w-11rem lg:w-full"
           :size="{
             xs: [112, 112],
-            md: [423, 290],
+            md: [176, 176],
             lg: [353, 235],
             xl: [437, 292],
           }"
@@ -41,12 +46,14 @@ const reactiveItems = toRef(props.list, "listItems")
       </template>
       <skeleton-media-card
         v-else
-        v-for="index in 4"
+        v-for="index in props.maxItems"
         :key="`skeleton-1-${index}`"
         :class="props.cardClass"
+        :isHorizontal="isLgBreakpoint"
+        imgCol="w-7rem md:w-11rem lg:w-full"
         :size="{
           xs: [112, 112],
-          md: [423, 290],
+          md: [176, 176],
           lg: [261, 174],
           xl: [324, 216],
         }"
