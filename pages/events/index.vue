@@ -99,8 +99,6 @@ watch(loadMoreRefVisible, (val) => {
   }
 })
 
-const eventData = computed(() => events.value)
-
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Events", route: "/events" },
