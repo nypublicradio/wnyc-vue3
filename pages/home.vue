@@ -1,9 +1,8 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
-import { useTopStories } from "~/composables/useTopStories"
-import { dynamicNavigation } from "~/utilities/helpers"
-//import { tempData } from "./tempdata"
-const { topStories } = useTopStories()
+// import { useTopStories } from "~/composables/useTopStories"
+// const { topStories } = useTopStories()
+import { brandCards } from "~/composables/globals.ts"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
@@ -142,9 +141,22 @@ onMounted(() => {
       />
     </section>
 
-    <pre class="text-xs overflow-hidden">{{
+    <section>
+      <div class="grid grid-lggutter mobile-lggutter">
+        <div
+          v-for="brand in brandCards"
+          class="station-holder desktop item col-6 md:col-4 xl:col-2"
+          :key="brand.label"
+        >
+          <BrandCard :brand="brand" />
+        </div>
+      </div>
+    </section>
+
+    <!-- <pre class="text-xs overflow-hidden">{{ brandCards }}</pre> -->
+    <!-- <pre class="text-xs overflow-hidden">{{
       pagedata?.new_home_template.curatedContent[2].value?.list
-    }}</pre>
+    }}</pre> -->
 
     <!-- <section>
       <div

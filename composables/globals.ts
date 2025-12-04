@@ -139,6 +139,58 @@ export const showTopics = [
     },
 ]
 
+//brand cards
+export const brandCards = [
+    {
+        label: 'The New Yorker Radio Hour',
+        svg: '/brand-card-images/radio-hour-logo.svg',
+        value: 'the-new-yorker-radio-hour',
+        url: 'https://www.newyorker.com/podcast/the-new-yorker-radio-hour',
+        color: '#DE1E3D',
+        image: '/brand-card-images/radio-hour-bg.png',
+    },
+    {
+        label: 'Gothamist',
+        svg: '/brand-card-images/gothamist-logo.svg',
+        value: 'gothamist',
+        url: 'https://gothamist.com',
+        color: '#D8D6AF',
+        image: '/brand-card-images/gothamist-bg.png',
+    },
+    {
+        label: 'Radiolab',
+        svg: '/brand-card-images/radiolab-logo.svg',
+        value: 'radiolab',
+        url: 'https://radiolab.org',
+        color: '#0454D6',
+        image: '/brand-card-images/radiolab-bg.png',
+    },
+    {
+        label: 'New Sounds',
+        svg: '/brand-card-images/new-sounds-logo.svg',
+        value: 'new-sounds',
+        url: 'https://www.wnyc.org/shows/newsounds',
+        color: '#E788EF',
+        image: '/brand-card-images/new-sounds-bg.png',
+    },
+    {
+        label: 'On The Media',
+        svg: '/brand-card-images/on-the-media-logo.svg',
+        value: 'on-the-media',
+        url: 'https://www.wnycstudios.org/podcasts/otm',
+        color: '#DDDDDB',
+        image: '/brand-card-images/on-the-media-bg.png',
+    },
+    {
+        label: 'The Greene Space',
+        svg: '/brand-card-images/the-greene-space-logo.svg',
+        value: 'the-greene-space',
+        url: 'https://thegreenespace.org',
+        color: '#91BD63',
+        image: '/brand-card-images/the-greene-space-bg.png',
+    },
+]
+
 //saved menu
 export const getSavedMenuItems = () => {
     const isApp = useIsApp()
