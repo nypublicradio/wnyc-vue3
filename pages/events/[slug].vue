@@ -1,16 +1,13 @@
 <script setup lang="js">
 
 import { useToast } from "primevue/usetoast"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode, dynamicNavigation } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
-import { dynamicNavigation } from "~/utilities/helpers"
-//import { tempData } from "./tempdata"
 import EpisodeTemplate from "~/components/EpisodeTemplate.vue"
 const { getFilteredTopStories,topStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
-const router = useRouter()
 const toast = useToast()
 
 const { data: event, status, error } = useFetch(
@@ -18,7 +15,6 @@ const { data: event, status, error } = useFetch(
   {
     onResponse({ response }) {
       const res = response._data
-      console.log("event response:", response)
       $analytics.sendPageView({
         page_title: res.title,
         page_type: "event_page",
@@ -40,36 +36,26 @@ const { data: event, status, error } = useFetch(
   }
 )
 
-// const eventData = computed(() => event.value)
+const eventData = computed(() => event.value)
 
-// const theSlug = computed(
-//   () =>
-//     eventData.value?.showSlug ||
-//     eventData.value?.show ||
-//     eventData.value?.headers.brand.slug
-// )
+//const theSlug = computed( () => eventData.value?.meta.slug )
+const theId = computed( () => eventData.value?.id )
+const title = computed( () => eventData.value?.title )
 
-// const theShowTitle = computed(
-//   () =>
-//     eventData.value?.showTitle ||
-//     eventData.value?.headers.brand.title ||
-//     eventData.value?.title
-// )
-
-// const breadcrumbs = computed(() => [
-//   { label: "Home", route: "/home" },
-//   { label: "Events", route: "/events" },
-//   { label: theShowTitle.value, route: `/events/${theSlug.value}` },
-// ])
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Events", route: "/events" },
+  { label: title.value, route: `/events/${theId.value}` },
+])
 </script>
 
 <template>
   <div class="event-page">
-    <!-- <Html lang="en">
+    <Html lang="en">
       <Head>
-        <Title>{{ eventData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${eventData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${eventData?.title} | WNYC`" />
+        <Title>{{ title }} | WNYC</Title>
+        <Meta name="og:title" :content="`${title} | WNYC`" />
+        <Meta name="twitter:title" :content="`${title} | WNYC`" />
       </Head>
     </Html>
     <section>
@@ -78,17 +64,17 @@ const { data: event, status, error } = useFetch(
       </div>
     </section>
     <FetchError v-if="error" />
-    <FetchError v-if="showError" />
     <section class="py-6">
-      <h1>This Event</h1>
+      <h1>{{ title }}</h1>
     </section>
+    <pre>{{ eventData }}</pre>
 
     <section v-if="getFilteredTopStories">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">Top Stories From Gothamist</h2>
-      <TopStories :articles="getFilteredTopStories(episodeData)" />
+      <TopStories :articles="getFilteredTopStories()" />
     </section>
 
-    <BackToTopButton /> -->
+    <!-- <BackToTopButton /> -->
   </div>
 </template>

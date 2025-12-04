@@ -16,7 +16,6 @@ const getWagtailEventData = async (eventSlug: string) => {
             url: `${config.public.AVIARY_BASE_API}pages/${eventSlug}/`,
         }
         const res = await axios(option)
-        console.log("Wagtail event data response:", res.data)
         return humps.camelizeKeys(res.data)
     } catch (e) {
         if (e.response && e.response.status === 404) {
@@ -30,25 +29,24 @@ const getWagtailEventData = async (eventSlug: string) => {
 
 export default defineEventHandler(async (event) => {
     const eventSlug: string | undefined = event?.context?.params?.eventSlug
-    console.log("Fetching event data for slug:", eventSlug)
 
     if (eventSlug) {
-        const eventData = await getWagtailEventData(eventSlug);
-        const normalizedEvent = eventData ? normalizeWagtailEvent(eventData) : null;
+        const eventData = await getWagtailEventData(eventSlug)
+        const normalizedEvent = eventData ? normalizeWagtailEvent(eventData) : null
 
         // Set cache headers - longer cache for past events
-        const res = event?.node?.res;
+        const res = event?.node?.res
         if (normalizedEvent?.startDatetime) {
-            const eventDate = new Date(normalizedEvent.startDatetime);
-            const now = new Date();
-            const cacheTime = eventDate < now ? 3600 : 1800; // 1 hour for past events, 30 min for future
-            res.setHeader('Cache-Control', `maxage=${cacheTime}, stale-while-revalidate`);
+            const eventDate = new Date(normalizedEvent.startDatetime)
+            const now = new Date()
+            const cacheTime = eventDate < now ? 3600 : 1800 // 1 hour for past events, 30 min for future
+            res.setHeader('Cache-Control', `maxage=${cacheTime}, stale-while-revalidate`)
         } else {
             res.setHeader('Cache-Control', 'maxage=1800, stale-while-revalidate')
         }
 
-        return normalizedEvent;
+        return normalizedEvent
     }
 
     return null
-});
+})
