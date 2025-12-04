@@ -23,7 +23,7 @@ const { data: events, status, error } = useFetch(
   `${config.public.BFF_URL}/api/events/list`,
   {
     //transform: transformEvents,
-    onResponse ({ response }) {
+    onResponse () {
 
       $analytics.sendPageView({
         page_title: "Events Page",

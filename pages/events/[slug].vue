@@ -1,10 +1,8 @@
 <script setup lang="js">
 
 import { useToast } from "primevue/usetoast"
-import { togglePlayEpisode, dynamicNavigation } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
-import EpisodeTemplate from "~/components/EpisodeTemplate.vue"
-const { getFilteredTopStories,topStories } = useTopStories()
+const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -66,8 +64,8 @@ const breadcrumbs = computed(() => [
     <FetchError v-if="error" />
     <section class="py-6">
       <h1>{{ title }}</h1>
+      <pre v-if="status === 'success'" class="text-xs">{{ eventData }}</pre>
     </section>
-    <pre>{{ eventData }}</pre>
 
     <section v-if="getFilteredTopStories">
       <Divider class="mt-2 mb-5" />
@@ -75,6 +73,6 @@ const breadcrumbs = computed(() => [
       <TopStories :articles="getFilteredTopStories()" />
     </section>
 
-    <!-- <BackToTopButton /> -->
+    <BackToTopButton />
   </div>
 </template>
