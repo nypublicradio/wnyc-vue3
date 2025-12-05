@@ -64,7 +64,7 @@ const scheduleCache = new Map<string, CacheEntry>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
 
 // Transform v2 data structure to match old schedule endpoint format
-const transformToLegacyFormat = (scheduleData: any): any[] => {
+const normalizeSchedule = (scheduleData: any): any[] => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return []
     }
@@ -465,7 +465,7 @@ export default defineEventHandler(async (event) => {
         const rewrittenData = rewriteAssetUrls(filteredData)
         
         // Transform to legacy format
-        const transformedData = transformToLegacyFormat(rewrittenData)
+        const transformedData = normalizeSchedule(rewrittenData)
         
         // Generate ETag based on transformed data
         const dataString = JSON.stringify(transformedData)
