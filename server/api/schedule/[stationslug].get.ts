@@ -18,7 +18,7 @@
  * Local Mock Data Path: server/data/schedules/schedule-{STATIONSLUG}.json
  * 
  * Query Parameters:
- * - filterMode: 'next24hours' | 'specificDate' | 'dateRange' | 'all' (default: 'next24hours')
+ * - filterMode: 'next24hours' | 'specificDate' | 'dateRange' | 'all' (default: 'all')
  * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD)
  * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - used with dateRange mode
  * 
@@ -48,9 +48,74 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import humps from 'humps'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+import { createHash } from 'crypto'
 
 // S3 asset URL pattern to replace
 const S3_ASSET_URL_PATTERN = `https://s3.us-east-1.amazonaws.com/webstream-assets-${process.env.ENV}`
+
+// In-memory cache for schedule data
+interface CacheEntry {
+    data: any
+    etag: string
+    timestamp: number
+}
+
+const scheduleCache = new Map<string, CacheEntry>()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+// Transform v2 data structure to match old schedule endpoint format
+const normalizeSchedule = (scheduleData: any): any[] => {
+    if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
+        return []
+    }
+
+    // Create a map of show IDs to show details for quick lookup
+    const showsMap = new Map()
+    if (scheduleData.shows && Array.isArray(scheduleData.shows)) {
+        scheduleData.shows.forEach((show: any) => {
+            showsMap.set(show.id, show)
+        })
+    }
+
+    // Transform each episode to the legacy format
+    return scheduleData.episodes.map((episode: any, index: number) => {
+        // Generate a unique ID for the schedule event
+        const scheduleId = `ShowSchedule:${index + 1}`
+        
+        // Get show details from the map if available
+        const showDetails = showsMap.get(episode.showId)
+        
+        // Generate parent URL - construct from show name if not available
+        let parentUrl = ''
+        if (showDetails?.name) {
+            // Create a URL-friendly slug from the show name
+            const slug = showDetails.name
+                .toLowerCase()
+                .replace(/[^\w\s-]/g, '') // Remove special characters
+                .replace(/\s+/g, '-')      // Replace spaces with hyphens
+                .replace(/-+/g, '-')       // Replace multiple hyphens with single
+                .replace(/^-|-$/g, '')     // Remove leading/trailing hyphens
+            parentUrl = `https://www.wnyc.org/shows/${slug}`
+        }
+
+        return {
+            id: episode.id || scheduleId,
+            attributes: {
+                start: episode.startTime,
+                end: episode.endTime,
+                scheduleEventTitle: null,
+                scheduleEventUrl: null,
+                parentTitle: episode.name || '',
+                parentUrl,
+                longDescription: episode.longDescription || '',
+                showId: episode.showId || null,
+                images: episode.images ||  [],
+                presenterIds: episode.presenterIds || [],
+                temporaryChanges: episode.temporaryChanges || false,
+            }
+        }
+    })
+}
 
 // Recursively rewrite URLs in the data structure
 const rewriteAssetUrls = (data: any): any => {
@@ -308,7 +373,7 @@ export default defineEventHandler(async (event) => {
     const slug = event?.context?.params?.stationslug as string
     const res = event?.node?.res
     const query = getQuery(event)
-    const filterMode = (query?.filterMode as string) || 'next24hours'
+    const filterMode = (query?.filterMode as string) || 'all'
     const startDate = query?.startDate as string | undefined
     const endDate = query?.endDate as string | undefined
 
@@ -320,6 +385,29 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+        // Generate cache key based on slug and filter parameters
+        const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
+        
+        // Check in-memory cache
+        const cachedEntry = scheduleCache.get(cacheKey)
+        const now = Date.now()
+        
+        // Check if client has current version via ETag
+        const clientEtag = event.node.req.headers['if-none-match']
+        
+        // If cache is valid and client has current version, return 304
+        if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
+            if (clientEtag === cachedEntry.etag) {
+                event.node.res.statusCode = 304
+                res.setHeader('ETag', cachedEntry.etag)
+                res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+                return null
+            }
+            // Cache is valid but client doesn't have current version, return cached data
+            res.setHeader('ETag', cachedEntry.etag)
+            res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+            return cachedEntry.data
+        }
 
         
         // Fetch schedule data from S3 or local mock
@@ -331,7 +419,6 @@ export default defineEventHandler(async (event) => {
             const key = `schedule-${slug}.json`
             scheduleData = await getScheduleFromS3(bucketName, key)
         }
-        res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate');
         
         // Apply filtering based on mode
         let filteredData
@@ -365,17 +452,37 @@ export default defineEventHandler(async (event) => {
                 break
             
             case 'all':
-                // Return all future episodes (remove only past ones)
+                // Return all episodes without any filtering
                 filteredData = removePastEpisodes(scheduleData)
                 break
             
             default:
-                // Default to next 24 hours
-                filteredData = filterNext24Hours(scheduleData)
+                // Default to all episodes without any filtering
+                filteredData = removePastEpisodes(scheduleData)
         }
         
-        // Rewrite asset URLs before returning
-        return rewriteAssetUrls(filteredData)
+        // Rewrite asset URLs before transforming
+        const rewrittenData = rewriteAssetUrls(filteredData)
+        
+        // Transform to legacy format
+        const transformedData = normalizeSchedule(rewrittenData)
+        
+        // Generate ETag based on transformed data
+        const dataString = JSON.stringify(transformedData)
+        const etag = `"${createHash('md5').update(dataString).digest('hex')}"`
+        
+        // Store in cache
+        scheduleCache.set(cacheKey, {
+            data: transformedData,
+            etag,
+            timestamp: now
+        })
+        
+        // Set response headers
+        res.setHeader('ETag', etag)
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+        
+        return transformedData
     } catch (error: any) {
         console.error('Error fetching schedule from S3:', error)
 

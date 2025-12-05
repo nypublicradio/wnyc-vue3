@@ -232,7 +232,7 @@ export default function useLiveStream() {
       const schedule = await $fetch(
         `${config.public.BFF_URL}/api/schedule/${currentStreamStation.value}`,
         {
-          method: "POST",
+          method: "GET",
           // params: {
           //   localDate: String(localDate),
           // },
@@ -277,16 +277,8 @@ export default function useLiveStream() {
     }
 
     try {
-      // Ensure date is properly formatted as ISO string for consistent server parsing
-      const formattedDate =
-        date instanceof Date ? date.toISOString() : new Date(date).toISOString()
-
       const fetchOptions: any = {
-        method: "POST",
-        body: {
-          localDate: formattedDate,
-          isToday: isToday.value,
-        },
+        method: "GET",
       }
 
       // Add signal if provided
