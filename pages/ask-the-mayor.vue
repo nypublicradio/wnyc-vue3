@@ -1,5 +1,12 @@
 
 <script setup>
+import { trackClickEvent } from "~/utilities/helpers";
+import { useLoginSideBar, useSignupSideBar } from "~/composables/states";
+
+const loginSideBar = useLoginSideBar();
+const signinSideBar = useSignupSideBar();
+
+const user = useCurrentUser();
 const UploadMediaREF = ref(null);
 const bucketName = "media";
 const subfolder = "atm";
@@ -13,7 +20,7 @@ const onFormSubmit = async (e) => {
       await UploadMediaREF.value?.uploadFiles();
 
       const updates = {
-        id: user.value.sub,
+        id: user.value.id,
         updated_at: new Date(),
         avatar_url: initialValues.value.avatar_url,
       };
@@ -111,30 +118,53 @@ onMounted(() => {
         />
       </Head>
     </Html>
-  </div>
-  <section>
-    <h1>Ask the Mayor</h1>
-    <!-- :invalid="$form.avatar_url?.invalid" -->
-    <atm-upload-media
-      ref="UploadMediaREF"
-      :bucket="bucketName"
-      :subfolder="subfolder"
-      header="Capture/Upload Video"
-      :uploadButton="false"
-      :videoButton="true"
-      :cameraButton="false"
-      :fileButton="false"
-      :imageButton="false"
-      :audioButton="false"
-      :browseButton="false"
-      :maxFiles="1"
-      @upload-complete="onAvatarUpload"
-      @files-updated="onFilesUpdated"
-      :patientId="user?.sub"
-    />
-    <Button label="Submit" @click="onFormSubmit" />
-  </section>
-</template>
 
+    <section>
+      <div class="flex align-items-center">
+        <Button
+          class="back-btn text-color -ml-4"
+          icon="pi pi-chevron-left"
+          rounded
+          text
+          severity="secondary"
+          aria-label="back to previous page"
+          @click="navigateTo('/home')"
+          label="Back"
+        />
+      </div>
+      <h1>Ask the Mayor</h1>
+      <p>Information about this feature</p>
+
+      <div v-if="!user" class="flex flex-column gap-2 my-4">
+        <p>Must login/create an account to use this feature</p>
+        <Button label="Login" @click="loginSideBar = true" />
+        <Button label="Create Account" @click="signinSideBar = true" />
+      </div>
+      <!-- Have to return the user back to the ATM page after logging in / signing up -->
+
+      <!-- :invalid="$form.avatar_url?.invalid" -->
+      <div v-else class="flex flex-column gap-2 my-4">
+        <atm-upload-media
+          ref="UploadMediaREF"
+          :bucket="bucketName"
+          :subfolder="subfolder"
+          header="Capture/Upload Video"
+          :uploadButton="false"
+          :videoButton="true"
+          :cameraButton="false"
+          :fileButton="false"
+          :imageButton="false"
+          :audioButton="false"
+          :browseButton="false"
+          :maxFiles="1"
+          @upload-complete="onAvatarUpload"
+          @files-updated="onFilesUpdated"
+          :patientId="user?.id"
+        />
+        <Button label="Submit video" @click="onFormSubmit" />
+      </div>
+    </section>
+  </div>
+</template>
 <style>
 </style>
