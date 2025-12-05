@@ -2,7 +2,9 @@
 <script setup>
 import { trackClickEvent } from "~/utilities/helpers";
 import { useLoginSideBar, useSignupSideBar } from "~/composables/states";
+import { useToast } from "primevue/usetoast";
 
+const toast = useToast();
 const loginSideBar = useLoginSideBar();
 const signinSideBar = useSignupSideBar();
 
@@ -16,79 +18,73 @@ const questionLimitReached = ref(false);
 
 // Submit Handler
 const onFormSubmit = async (e) => {
-  if (e.valid) {
-    try {
-      // Upload Avatar if changed
-      await UploadMediaREF.value?.uploadFiles();
+  // if (e.valid) {
+  try {
+    // Upload Avatar if changed
+    await UploadMediaREF.value?.uploadFiles();
 
-      const updates = {
-        id: user.value.id,
-        updated_at: new Date(),
-        avatar_url: initialValues.value.avatar_url,
-      };
+    // const updates = {
+    //   id: user.value.id,
+    //   updated_at: new Date(),
+    //   avatar_url: initialValues.value.avatar_url,
+    // };
 
-      // Cleanup
-      delete updates.address2;
-      // delete updates.email // Don't update email here
+    // const { error } = await supabase.from(profileTable).upsert(updates);
+    // if (error) throw error;
 
-      const { error } = await supabase.from(profileTable).upsert(updates);
-      if (error) throw error;
-
-      toast.add({
-        severity: "success",
-        summary: "Profile Updated",
-        life: 3000,
-      });
-    } catch (error) {
-      console.error("Update error:", error);
-      toast.add({
-        severity: "error",
-        summary: "Update Failed",
-        detail: error.message,
-        life: 3000,
-      });
-    }
-  } else {
+    toast.add({
+      severity: "success",
+      summary: "Video uploaded successfully",
+      life: 3000,
+    });
+  } catch (error) {
+    console.error("Update error:", error);
     toast.add({
       severity: "error",
-      summary: "Validation Failed",
-      detail: "Please check the highlighted fields.",
+      summary: "Update Failed",
+      detail: error.message,
       life: 3000,
     });
   }
+  // } else {
+  //   toast.add({
+  //     severity: "error",
+  //     summary: "Validation Failed",
+  //     detail: "Please check the highlighted fields.",
+  //     life: 3000,
+  //   });
+  // }
 };
 
 const onAvatarUpload = (event) => {
-  if (event.path) {
-    // Construct the full public URL from the relative path
-    const supabaseUrl = supabase.storage
-      .from(bucketName)
-      .getPublicUrl(event.path).data.publicUrl;
-    initialValues.value.avatar_url = supabaseUrl;
-
-    console.log("Avatar uploaded - relative path:", event.path);
-    console.log("Avatar uploaded - full URL:", supabaseUrl);
-
-    // Trigger validation
-    const avatarInput = avatarREF.value?.$el;
-    if (avatarInput) {
-      avatarInput.value = supabaseUrl;
-      avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  }
+  // if (event.path) {
+  //   // Construct the full public URL from the relative path
+  //   const supabaseUrl = supabase.storage
+  //     .from(bucketName)
+  //     .getPublicUrl(event.path).data.publicUrl;
+  //   initialValues.value.avatar_url = supabaseUrl;
+  //   console.log("Avatar uploaded - relative path:", event.path);
+  //   console.log("Avatar uploaded - full URL:", supabaseUrl);
+  //   // Trigger validation
+  //   const avatarInput = avatarREF.value?.$el;
+  //   if (avatarInput) {
+  //     avatarInput.value = supabaseUrl;
+  //     avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
+  //   }
+  // }
 };
 
 const onFilesUpdated = (files) => {
   // This is called when files are selected but not yet uploaded
   // We just use this to clear validation errors, actual path comes from onAvatarUpload
-  if (files && files.length > 0) {
-    const avatarInput = avatarREF.value?.$el;
-    if (avatarInput) {
-      // Set a temporary value to pass validation
-      avatarInput.value = "uploading";
-      avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  }
+  // if (files && files.length > 0) {
+  //   const avatarInput = avatarREF.value?.$el;
+  //   if (avatarInput) {
+  //     // Set a temporary value to pass validation
+  //     avatarInput.value = "uploading";
+  //     avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
+  //   }
+  // }
 };
 
 onMounted(() => {
@@ -165,9 +161,10 @@ onMounted(() => {
           :maxFiles="1"
           @upload-complete="onAvatarUpload"
           @files-updated="onFilesUpdated"
-          :patientId="user?.id"
+          :user="user"
         />
         <Button label="Submit video" @click="onFormSubmit" />
+        <!-- <pre>{{ user }}</pre> -->
       </div>
       <div v-else class="flex flex-column gap-2 my-4">
         <p>Question limit reached. Please try again tomorrow.</p>

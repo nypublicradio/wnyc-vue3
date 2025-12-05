@@ -51,9 +51,9 @@ const props = defineProps({
     type: String,
     default: "50MB", // Increased limit since we auto-process large images
   },
-  patientId: {
-    type: String,
-    default: "",
+  user: {
+    type: Object,
+    default: null,
   },
   acceptedFileTypes: {
     type: Array,
@@ -496,18 +496,24 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
     );
   }
 
+  const timeStampToDate = (timestamp) => {
+    const date = new Date(timestamp);
+    // format date to YYYY_MM_DD
+    return date.toISOString().split("T")[0].replace("-", "_");
+  };
+
   // Generate unique filename with timestamp
   const timestamp = new Date().getTime();
-  const sanitizedName = processedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-  const patientPath =
-    captureMetadata?.originalProps?.patientId ||
-    props.patientId ||
-    "unknown_patient";
+  const userName =
+    props.user?.user_metadata?.name.replace(" ", "_") || "unknown-user";
+  const userId = `--${props.user?.id}--` || "";
   const subfolder =
     captureMetadata?.originalProps?.subfolder || props.subfolder;
-  const fileName = `${patientPath}${
-    subfolder ? `/${subfolder}` : ""
-  }/${timestamp}_${captureMetadata ? "capture" : "upload"}_${sanitizedName}`;
+  const fileName = `${`/${subfolder}`}/${timeStampToDate(
+    timestamp
+  )}/${userName}${userId}_${timeStampToDate(timestamp)}_${
+    captureMetadata ? "capture" : "upload"
+  }`;
 
   try {
     emit("upload-progress", 0);
@@ -802,7 +808,7 @@ const onAddFile = async (error, file) => {
         originalProps: {
           bucket: props.bucket,
           subfolder: props.subfolder,
-          patientId: props.patientId,
+          patientId: props.user?.id,
         },
       };
 
@@ -965,7 +971,7 @@ onMounted(async () => {
       <CaptureImage
         :bucket="props.bucket"
         :subfolder="props.subfolder"
-        :patient-id="props.patientId"
+        :patient-id="props.user?.id"
         :metadata="props.metadata"
         @capture-complete="handleCaptureComplete"
         @capture-error="handleCaptureError"
@@ -979,7 +985,7 @@ onMounted(async () => {
       <CaptureVideoAudio
         :bucket="props.bucket"
         :subfolder="props.subfolder"
-        :patient-id="props.patientId"
+        :patient-id="props.user?.id"
         :metadata="props.metadata"
         @capture-complete="handleCaptureComplete"
         @capture-error="handleCaptureError"
@@ -993,7 +999,7 @@ onMounted(async () => {
       <CaptureAudio
         :bucket="props.bucket"
         :subfolder="props.subfolder"
-        :patient-id="props.patientId"
+        :patient-id="props.user?.id"
         :metadata="props.metadata"
         @capture-complete="handleCaptureComplete"
         @capture-error="handleCaptureError"
