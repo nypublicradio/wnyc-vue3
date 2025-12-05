@@ -7,10 +7,12 @@ const loginSideBar = useLoginSideBar();
 const signinSideBar = useSignupSideBar();
 
 const user = useCurrentUser();
-const UploadMediaREF = ref(null);
 const bucketName = "media";
 const subfolder = "atm";
 const profileTable = "profiles";
+
+const UploadMediaREF = ref(null);
+const questionLimitReached = ref(false);
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -141,9 +143,13 @@ onMounted(() => {
         <Button label="Create Account" @click="signinSideBar = true" />
       </div>
       <!-- Have to return the user back to the ATM page after logging in / signing up -->
+      <!-- will we have limits per user? once a day? -->
 
       <!-- :invalid="$form.avatar_url?.invalid" -->
-      <div v-else class="flex flex-column gap-2 my-4">
+      <div
+        v-else-if="!questionLimitReached"
+        class="flex flex-column gap-2 my-4"
+      >
         <atm-upload-media
           ref="UploadMediaREF"
           :bucket="bucketName"
@@ -162,6 +168,9 @@ onMounted(() => {
           :patientId="user?.id"
         />
         <Button label="Submit video" @click="onFormSubmit" />
+      </div>
+      <div v-else class="flex flex-column gap-2 my-4">
+        <p>Question limit reached. Please try again tomorrow.</p>
       </div>
     </section>
   </div>
