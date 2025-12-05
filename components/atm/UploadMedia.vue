@@ -6,6 +6,7 @@ import vueFilePond from "vue-filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor";
 import FilePondPluginFilePoster from "filepond-plugin-file-poster";
+import FilePondPluginMediaPreview from "filepond-plugin-media-preview";
 
 // Import new capture components
 import CaptureImage from "./CaptureImage.vue";
@@ -25,6 +26,7 @@ import {
 // Import required styles
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css";
+import "filepond-plugin-media-preview/dist/filepond-plugin-media-preview.min.css";
 import "@pqina/pintura/pintura.css";
 
 // Component props with defaults
@@ -81,6 +83,18 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  cameraButtonLabel: {
+    type: String,
+    default: "Capture Photo",
+  },
+  videoButtonLabel: {
+    type: String,
+    default: "Record Video",
+  },
+  audioButtonLabel: {
+    type: String,
+    default: "Record Audio",
+  },
   browseButton: {
     type: Boolean,
     default: true,
@@ -116,6 +130,9 @@ const editedFiles = ref(new Map());
 
 // Track if images are being processed
 const isProcessing = ref(false);
+
+// Track if images are being captured
+const isCapturing = ref(false);
 
 // Track autosave mode
 const isAutosaveMode = computed(() => !!props.autosaveComposable);
@@ -321,7 +338,8 @@ const imageEditorPinturaOptions = {
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginImageEditor,
-  FilePondPluginFilePoster
+  FilePondPluginFilePoster,
+  FilePondPluginMediaPreview
 );
 
 // Function to resize and convert image to WebP if not already processed
@@ -581,6 +599,7 @@ const openCaptureMode = (mode) => {
   showImageCapture.value = mode === "image";
   showVideoAudioCapture.value = mode === "videoaudio";
   showAudioCapture.value = mode === "audio";
+  isCapturing.value = !!mode;
 };
 
 // Event handlers for capture components
@@ -607,25 +626,29 @@ const handleCaptureError = (errorData) => {
   // Keep the capture component open so user can retry
 };
 
+const reset = () => {
+  if (pond.value) {
+    pond.value.removeFiles();
+    hasFiles.value = false;
+    editedFiles.value.clear();
+    captureMetadataMap.value.clear();
+    isProcessing.value = false;
+
+    // In autosave mode, clear all autosaved files
+    if (isAutosaveMode.value && props.autosaveComposable) {
+      // Note: We don't automatically clear autosaved files on reset
+      // They should only be cleared on form submission or explicit user action
+      console.log("[UploadMedia] Reset in autosave mode - files preserved");
+    }
+  }
+};
+
 // Expose method for parent component to trigger upload
 defineExpose({
   uploadFiles: handleFilesReady,
   getFiles: () => pond.value?.getFiles() || [],
   reset: () => {
-    if (pond.value) {
-      pond.value.removeFiles();
-      hasFiles.value = false;
-      editedFiles.value.clear();
-      captureMetadataMap.value.clear();
-      isProcessing.value = false;
-
-      // In autosave mode, clear all autosaved files
-      if (isAutosaveMode.value && props.autosaveComposable) {
-        // Note: We don't automatically clear autosaved files on reset
-        // They should only be cleared on form submission or explicit user action
-        console.log("[UploadMedia] Reset in autosave mode - files preserved");
-      }
-    }
+    reset();
   },
 });
 
@@ -882,6 +905,11 @@ const onPrepareFile = (fileItem, output) => {
 // Map to store capture metadata for files
 const captureMetadataMap = ref(new Map());
 
+const tryAgain = () => {
+  reset();
+  openCaptureMode("videoaudio");
+};
+
 // Restore autosaved files when component mounts
 onMounted(async () => {
   // Wait a bit for FilePond to initialize
@@ -900,14 +928,17 @@ onMounted(async () => {
     :class="props.invalid ? 'p-invalid !border-red-300' : ''"
     :header="props.header"
   >
-    <div class="flex items-center justify-center gap-4 mb-4">
+    <div
+      v-if="!isCapturing && !hasFiles"
+      class="flex items-center justify-center gap-4 mb-4"
+    >
       <Button
         v-if="props.cameraButton"
         @click="openCaptureMode('image')"
         class="grow"
         :class="props.invalid ? '!border-red-300' : ''"
         icon="pi pi-camera"
-        label="Capture Photo"
+        :label="props.cameraButtonLabel"
         severity="secondary"
       />
       <Button
@@ -916,7 +947,7 @@ onMounted(async () => {
         class="grow"
         :class="props.invalid ? '!border-red-300' : ''"
         icon="pi pi-video"
-        label="Capture Video"
+        :label="props.videoButtonLabel"
         severity="secondary"
       />
       <Button
@@ -925,7 +956,7 @@ onMounted(async () => {
         class="grow"
         :class="props.invalid ? '!border-red-300' : ''"
         icon="pi pi-microphone"
-        label="Capture Audio"
+        :label="props.audioButtonLabel"
         severity="secondary"
       />
     </div>
@@ -975,18 +1006,20 @@ onMounted(async () => {
     <!-- Existing FilePond uploader, conditionally hide if a capture mode is active -->
     <ClientOnly>
       <FilePond
-        v-if="props.browseButton"
         v-show="
           !isProcessing &&
           !showImageCapture &&
           !showVideoAudioCapture &&
-          !showAudioCapture
+          !showAudioCapture &&
+          (props.browseButton || hasFiles)
         "
         ref="pond"
         name="media-upload"
         class-name="my-pond"
         label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
         :allow-multiple="true"
+        :allow-browse="props.browseButton"
+        :allow-drop="props.browseButton"
         :accepted-file-types="acceptedFileTypes"
         :max-files="maxFiles"
         :max-file-size="maxFileSize"
@@ -1024,16 +1057,28 @@ onMounted(async () => {
         !showImageCapture &&
         !showVideoAudioCapture &&
         !showAudioCapture &&
-        props.browseButton
+        !showAudioCapture &&
+        (props.browseButton || hasFiles)
       "
     >
       <span v-if="isProcessing" class="processing">
         <i class="pi pi-spin pi-spinner mr-2" style="font-size: 1rem"></i>
         Processing and uploading images...
       </span>
-      <span v-else-if="hasFiles" class="ready">
-        ✅ Files ready for upload (large images will be automatically resized to
-        1920x1080)
+      <span v-else-if="hasFiles" class="ready flex flex-column gap-4">
+        ✅ Your video is ready for submission
+        <Button
+          label="Not happy? Try again."
+          severity="secondary"
+          @click="tryAgain()"
+          class="w-13rem m-auto"
+        />
+        <Button
+          label="Cancel"
+          severity="danger"
+          @click="reset()"
+          class="w-13rem m-auto"
+        />
       </span>
       <span v-else class="empty"> 📁 No files selected </span>
     </div>

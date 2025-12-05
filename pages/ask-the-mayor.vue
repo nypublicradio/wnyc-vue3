@@ -152,6 +152,7 @@ onMounted(() => {
       >
         <atm-upload-media
           ref="UploadMediaREF"
+          :invalid="false"
           :bucket="bucketName"
           :subfolder="subfolder"
           header="Capture/Upload Video"
@@ -159,7 +160,6 @@ onMounted(() => {
           :videoButton="true"
           :cameraButton="false"
           :fileButton="false"
-          :imageButton="false"
           :audioButton="false"
           :browseButton="false"
           :maxFiles="1"
