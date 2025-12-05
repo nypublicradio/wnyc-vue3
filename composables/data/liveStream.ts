@@ -277,10 +277,6 @@ export default function useLiveStream() {
     }
 
     try {
-      // Ensure date is properly formatted as ISO string for consistent server parsing
-      const formattedDate =
-        date instanceof Date ? date.toISOString() : new Date(date).toISOString()
-
       const fetchOptions: any = {
         method: "GET",
       }

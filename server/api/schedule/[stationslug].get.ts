@@ -401,7 +401,7 @@ export default defineEventHandler(async (event) => {
                 event.node.res.statusCode = 304
                 res.setHeader('ETag', cachedEntry.etag)
                 res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
-                return
+                return null
             }
             // Cache is valid but client doesn't have current version, return cached data
             res.setHeader('ETag', cachedEntry.etag)
