@@ -30,7 +30,7 @@ const props = defineProps({
     type: String,
   },
   slug: {
-    default: "/confirm",
+    default: "/ask-the-mayor",
     type: String,
   },
 })

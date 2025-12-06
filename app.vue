@@ -224,6 +224,6 @@ watch(globalError, (error) => {
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />
-  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
+  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn"/>
   <!-- <PullToRefresh v-if="isApp" /> -->
 </template>
