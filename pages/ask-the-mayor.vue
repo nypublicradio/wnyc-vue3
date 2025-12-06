@@ -15,6 +15,7 @@ const submissionTable = "atm_submissions";
 
 const UploadMediaREF = ref(null);
 const questionLimitReached = ref(false);
+const hasFiles = ref(false);
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -155,10 +156,10 @@ onMounted(() => {
           @upload-complete="onUploadComplete"
           @upload-error="onUploadError"
           @files-updated="onFilesUpdated"
+          @has-files="hasFiles = $event"
           :user="user"
         />
-        <Button label="Submit video" @click="onFormSubmit" />
-        <!-- <pre>{{ user }}</pre> -->
+        <Button v-if="hasFiles" label="Submit video" @click="onFormSubmit" />
       </div>
       <div v-else class="flex flex-column gap-2 my-4">
         <p>Question limit reached. Please try again tomorrow.</p>

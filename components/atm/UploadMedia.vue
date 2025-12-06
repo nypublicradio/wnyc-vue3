@@ -116,6 +116,7 @@ const emit = defineEmits([
   "upload-error",
   "upload-progress",
   "files-updated",
+  "has-files",
 ]);
 
 const { embedMetadataInImage } = useGallery();
@@ -503,7 +504,7 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
   const timeStampToDate = (timestamp) => {
     const date = new Date(timestamp);
     // format date to YYYY_MM_DD
-    return date.toISOString().split("T")[0].replace("-", "_");
+    return date.toISOString().split("T")[0];
   };
 
   // Generate unique filename with timestamp
@@ -513,7 +514,7 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
   const userId = `--${props.user?.id}--` || "";
   const subfolder =
     captureMetadata?.originalProps?.subfolder || props.subfolder;
-  const fileName = `${userName}${userId}_${timeStampToDate(timestamp)}_${
+  const fileName = `${userName}${userId}${timeStampToDate(timestamp)}_${
     captureMetadata ? "capture" : "upload"
   }`;
   const fileNamePath = `${`/${subfolder}`}/${timeStampToDate(
@@ -543,22 +544,13 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       ? { ...captureMetadata, path: data.path }
       : { ...fileMetadataArg, path: data.path };
 
-    //if audio or video, we need to get the duration of the file in seconds
-    const duration = null;
-    // if (processedFile.type.startsWith("audio/")) {
-    //   finalMetadata.duration = processedFile.duration;
-    // }
-    // if (processedFile.type.startsWith("video/")) {
-    //   finalMetadata.duration = processedFile.duration;
-    // }
-
     //if the file is audio or video, we need to transcribe it
     let transcription = null;
-    if (processedFile.type.startsWith("audio/")) {
-      transcription = await transcribeAudioFile(processedFile);
-    }
-    if (processedFile.type.startsWith("video/")) {
-      transcription = await transcribeVideoFile(processedFile);
+    if (
+      processedFile.type.startsWith("audio/") ||
+      processedFile.type.startsWith("video/")
+    ) {
+      //   transcription = await transcribeAudioFile(processedFile);
     }
 
     // Save everything to Supabase in the submission table
@@ -571,7 +563,6 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
           metadata: finalMetadata,
           subfolder_date: timeStampToDate(timestamp),
           transcript: transcription,
-          duration: duration,
         },
       ])
       .select();
@@ -954,6 +945,10 @@ const onPrepareFile = (fileItem, output) => {
   // Return the output as-is if we can't process it, or return undefined to let FilePond handle it
   return output;
 };
+
+watch(hasFiles, (newVal) => {
+  emit("has-files", newVal);
+});
 
 // Map to store capture metadata for files
 const captureMetadataMap = ref(new Map());
