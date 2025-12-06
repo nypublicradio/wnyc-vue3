@@ -1,6 +1,5 @@
 
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers";
 import { useLoginSideBar, useSignupSideBar } from "~/composables/states";
 import { useToast } from "primevue/usetoast";
 
