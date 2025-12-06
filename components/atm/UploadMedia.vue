@@ -39,6 +39,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  submissionTable: {
+    type: String,
+    default: null,
+  },
   header: {
     type: String,
     default: "Capture/Upload Media",
@@ -509,11 +513,12 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
   const userId = `--${props.user?.id}--` || "";
   const subfolder =
     captureMetadata?.originalProps?.subfolder || props.subfolder;
-  const fileName = `${`/${subfolder}`}/${timeStampToDate(
-    timestamp
-  )}/${userName}${userId}_${timeStampToDate(timestamp)}_${
+  const fileName = `${userName}${userId}_${timeStampToDate(timestamp)}_${
     captureMetadata ? "capture" : "upload"
   }`;
+  const fileNamePath = `${`/${subfolder}`}/${timeStampToDate(
+    timestamp
+  )}/${fileName}`;
 
   try {
     emit("upload-progress", 0);
@@ -522,7 +527,7 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
     const bucket = captureMetadata?.originalProps?.bucket || props.bucket;
     const { data, error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(fileName, processedFile, {
+      .upload(fileNamePath, processedFile, {
         cacheControl: "3600",
         upsert: false,
       });
@@ -533,12 +538,51 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       return null;
     }
 
-    emit("upload-progress", 100);
-
     // Use the original metadata or capture metadata
     const finalMetadata = captureMetadata
       ? { ...captureMetadata, path: data.path }
       : { ...fileMetadataArg, path: data.path };
+
+    //if audio or video, we need to get the duration of the file in seconds
+    const duration = null;
+    // if (processedFile.type.startsWith("audio/")) {
+    //   finalMetadata.duration = processedFile.duration;
+    // }
+    // if (processedFile.type.startsWith("video/")) {
+    //   finalMetadata.duration = processedFile.duration;
+    // }
+
+    //if the file is audio or video, we need to transcribe it
+    let transcription = null;
+    if (processedFile.type.startsWith("audio/")) {
+      transcription = await transcribeAudioFile(processedFile);
+    }
+    if (processedFile.type.startsWith("video/")) {
+      transcription = await transcribeVideoFile(processedFile);
+    }
+
+    // Save everything to Supabase in the submission table
+    const { data: submissionData, error: submissionError } = await supabase
+      .from(props.submissionTable)
+      .insert([
+        {
+          user_id: props.user?.id,
+          video_filename: fileName,
+          metadata: finalMetadata,
+          subfolder_date: timeStampToDate(timestamp),
+          transcript: transcription,
+          duration: duration,
+        },
+      ])
+      .select();
+
+    if (submissionError) {
+      console.error("Submission error:", submissionError);
+      emit("upload-error", submissionError);
+      return null;
+    }
+
+    emit("upload-progress", 100);
 
     emit("upload-complete", { path: data.path, metadata: finalMetadata });
     return { path: data.path, metadata: finalMetadata };
@@ -590,6 +634,9 @@ const handleFilesReady = async () => {
       // Reset the hasFiles state after upload
       hasFiles.value = false;
     }
+  } catch (error) {
+    isProcessing.value = false;
+    console.error("Upload error:", error);
   } finally {
     isProcessing.value = false;
   }

@@ -11,7 +11,7 @@ const signinSideBar = useSignupSideBar();
 const user = useCurrentUser();
 const bucketName = "media";
 const subfolder = "atm";
-const profileTable = "profiles";
+const submissionTable = "atm_submissions";
 
 const UploadMediaREF = ref(null);
 const questionLimitReached = ref(false);
@@ -23,15 +23,6 @@ const onFormSubmit = async (e) => {
     // Upload Avatar if changed
     await UploadMediaREF.value?.uploadFiles();
 
-    // const updates = {
-    //   id: user.value.id,
-    //   updated_at: new Date(),
-    //   avatar_url: initialValues.value.avatar_url,
-    // };
-
-    // const { error } = await supabase.from(profileTable).upsert(updates);
-    // if (error) throw error;
-
     toast.add({
       severity: "success",
       summary: "Video uploaded successfully",
@@ -41,7 +32,7 @@ const onFormSubmit = async (e) => {
     console.error("Update error:", error);
     toast.add({
       severity: "error",
-      summary: "Update Failed",
+      summary: "Upload Failed",
       detail: error.message,
       life: 3000,
     });
@@ -56,7 +47,8 @@ const onFormSubmit = async (e) => {
   // }
 };
 
-const onAvatarUpload = (event) => {
+const onUploadError = (event) => {};
+const onUploadComplete = (event) => {
   // if (event.path) {
   //   // Construct the full public URL from the relative path
   //   const supabaseUrl = supabase.storage
@@ -76,7 +68,7 @@ const onAvatarUpload = (event) => {
 
 const onFilesUpdated = (files) => {
   // This is called when files are selected but not yet uploaded
-  // We just use this to clear validation errors, actual path comes from onAvatarUpload
+  // We just use this to clear validation errors, actual path comes from onUpload
   // if (files && files.length > 0) {
   //   const avatarInput = avatarREF.value?.$el;
   //   if (avatarInput) {
@@ -151,6 +143,7 @@ onMounted(() => {
           :invalid="false"
           :bucket="bucketName"
           :subfolder="subfolder"
+          :submissionTable="submissionTable"
           header="Capture/Upload Video"
           :uploadButton="false"
           :videoButton="true"
@@ -159,7 +152,8 @@ onMounted(() => {
           :audioButton="false"
           :browseButton="false"
           :maxFiles="1"
-          @upload-complete="onAvatarUpload"
+          @upload-complete="onUploadComplete"
+          @upload-error="onUploadError"
           @files-updated="onFilesUpdated"
           :user="user"
         />
