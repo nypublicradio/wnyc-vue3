@@ -29,6 +29,8 @@ import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css";
 import "filepond-plugin-media-preview/dist/filepond-plugin-media-preview.min.css";
 import "@pqina/pintura/pintura.css";
 
+import useTranscribe from "~/composables/atm/useTranscribe";
+
 // Component props with defaults
 const props = defineProps({
   bucket: {
@@ -120,6 +122,7 @@ const emit = defineEmits([
 ]);
 
 const { embedMetadataInImage } = useGallery();
+const { transcribeMedia } = useTranscribe();
 
 // Supabase client
 const supabase = useSupabaseClient();
@@ -509,6 +512,7 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
 
   // Generate unique filename with timestamp
   const timestamp = new Date().getTime();
+  const sanitizedName = processedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
   const userName =
     props.user?.user_metadata?.name.replace(" ", "_") || "unknown-user";
   const userId = `--${props.user?.id}--` || "";
@@ -516,14 +520,13 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
     captureMetadata?.originalProps?.subfolder || props.subfolder;
   const fileName = `${userName}${userId}${timeStampToDate(timestamp)}_${
     captureMetadata ? "capture" : "upload"
-  }`;
+  }_${sanitizedName}`;
   const fileNamePath = `${`/${subfolder}`}/${timeStampToDate(
     timestamp
   )}/${fileName}`;
 
+  emit("upload-progress", "Video uploading...");
   try {
-    emit("upload-progress", 0);
-
     // Upload the file to Supabase Storage
     const bucket = captureMetadata?.originalProps?.bucket || props.bucket;
     const { data, error: uploadError } = await supabase.storage
@@ -538,6 +541,7 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       emit("upload-error", uploadError);
       return null;
     }
+    emit("upload-progress", "Video transcribing...");
 
     // Use the original metadata or capture metadata
     const finalMetadata = captureMetadata
@@ -550,8 +554,10 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       processedFile.type.startsWith("audio/") ||
       processedFile.type.startsWith("video/")
     ) {
-      //   transcription = await transcribeAudioFile(processedFile);
+      transcription = await transcribeMedia(processedFile);
     }
+
+    emit("upload-progress", "Data processing...");
 
     // Save everything to Supabase in the submission table
     const { data: submissionData, error: submissionError } = await supabase
@@ -573,7 +579,12 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       return null;
     }
 
-    emit("upload-progress", 100);
+    emit("upload-progress", "Upload complete");
+
+    //reset progress
+    setTimeout(() => {
+      emit("upload-progress", null);
+    }, 3000);
 
     emit("upload-complete", { path: data.path, metadata: finalMetadata });
     return { path: data.path, metadata: finalMetadata };

@@ -16,6 +16,7 @@ const submissionTable = "atm_submissions";
 const UploadMediaREF = ref(null);
 const questionLimitReached = ref(false);
 const hasFiles = ref(false);
+const submitProgress = ref(null);
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -157,8 +158,10 @@ onMounted(() => {
           @upload-error="onUploadError"
           @files-updated="onFilesUpdated"
           @has-files="hasFiles = $event"
+          @upload-progress="submitProgress = $event"
           :user="user"
         />
+        <p v-if="submitProgress">{{ submitProgress }}</p>
         <Button v-if="hasFiles" label="Submit video" @click="onFormSubmit" />
       </div>
       <div v-else class="flex flex-column gap-2 my-4">

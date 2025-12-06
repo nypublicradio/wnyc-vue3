@@ -59,6 +59,7 @@
     "@sentry/vue": "^7.118.0",
     "@supabase/supabase-js": "^2.45.1",
     "@tokenizer/http": "^0.6.2",
+    "@transcribe/transcriber": "^3.0.0",
     "@types/humps": "^2.0.4",
     "@types/jsforce": "^1.11.5",
     "@types/jsonwebtoken": "^9.0.10",

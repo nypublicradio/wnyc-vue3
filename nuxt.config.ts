@@ -12,6 +12,15 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
   ],
 
+  routeRules: {
+    '/**': {
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
+    },
+  },
+
   primevue: {
     options: {
       ripple: true,
@@ -140,6 +149,12 @@ export default defineNuxtConfig({
           authToken: process.env.SENTRY_AUTH_TOKEN,
         }),
     ],
+    optimizeDeps: {
+      exclude: ["@transcribe/shout"],
+    },
+    worker: {
+      format: "es",
+    },
   },
 
   sourcemap: {
@@ -170,6 +185,8 @@ export default defineNuxtConfig({
   experimental: {
     crossOriginPrefetch: true,
   },
+
+
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
