@@ -149,12 +149,6 @@ export default defineNuxtConfig({
           authToken: process.env.SENTRY_AUTH_TOKEN,
         }),
     ],
-    optimizeDeps: {
-      exclude: ["@transcribe/shout"],
-    },
-    worker: {
-      format: "es",
-    },
   },
 
   sourcemap: {

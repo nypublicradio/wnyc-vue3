@@ -1,30 +1,47 @@
-import createModule from "@transcribe/shout"
-//import createModule from "@transcribe/shout/src/shout/shout.wasm_no-simd.js"
-import { FileTranscriber } from "@transcribe/transcriber"
+import { pipeline, env } from "@huggingface/transformers"
+
+// Skip local model checks since we're running in browser/client
+env.allowLocalModels = false
+env.useBrowserCache = true
 
 export default function useTranscribe () {
-
   const transcribeMedia = async (mediaFile: File, lang: string = "en") => {
-    let transcriber: FileTranscriber
-    // create new instance
-    transcriber = new FileTranscriber({
-      createModule,
-      //model: "/models/ggml-tiny.bin",
-      model: "/models/ggml-tiny-q5_1.bin",
-    })
+    try {
+      // Initialize the pipeline
+      // Using 'Xenova/whisper-tiny' as it's a good balance for browser usage
+      const transcriber = await pipeline(
+        "automatic-speech-recognition",
+        "Xenova/whisper-tiny"
+      )
 
-    // and initialize the transcriber
-    await transcriber.init()
+      // Create a URL for the file so the pipeline can read it
+      const url = URL.createObjectURL(mediaFile)
 
-    // check if transcriber is initialized
-    if (!transcriber?.isReady) return
+      // Run transcription
+      // return_timestamps: true is optional but good for structure if we need it later
+      // chunk_length_s: 30 is standard for Whisper
+      const result = await transcriber(url, {
+        language: lang,
+        chunk_length_s: 30,
+        return_timestamps: true,
+      })
 
-    // there must be at least one user interaction (e.g click) before you can call this function
-    // @ts-ignore
-    const result = await transcriber.transcribe(mediaFile, { lang: lang })
+      // Cleanup
+      URL.revokeObjectURL(url)
 
-    // do something with the result and return it
-    return result.transcription.map((t) => t.text).join(" ")
+      // The result from the pipeline is typically an object { text: "..." } or array of chunks
+      // We need to return a single string to match previous behavior
+      if (typeof result === "object" && result !== null && "text" in result) {
+        return (result as { text: string }).text
+      } else if (Array.isArray(result)) {
+        return result.map((chunk: any) => chunk.text).join(" ")
+      }
+
+      return ""
+    } catch (error) {
+      console.error("Transcription error:", error)
+      throw error
+    }
   }
 
   return { transcribeMedia }
