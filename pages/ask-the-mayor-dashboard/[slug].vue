@@ -5,78 +5,93 @@ const route = useRoute();
 const slug = route.params.slug;
 const supabase = useSupabaseClient();
 const toast = useToast();
+const user = useCurrentUser();
 
 const submission = ref(null);
 const videoUrl = ref(null);
 const loading = ref(true);
 
 onMounted(async () => {
-    try {
-        const { data: submissionData, error: submissionError } = await supabase
-            .from('atm_submissions')
-            .select('*')
-            .eq('video_filename', slug)
-            .single();
-            
-        if (submissionError) throw submissionError;
+  try {
+    const { data: submissionData, error: submissionError } = await supabase
+      .from("atm_submissions")
+      .select("*")
+      .eq("video_filename", slug)
+      .single();
 
-        // Fetch profile manually
-        if (submissionData && submissionData.user_id) {
-             const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', submissionData.user_id)
-                .single();
-            
-            submissionData.profiles = profileData || null;
-        }
+    if (submissionError) throw submissionError;
 
-        submission.value = submissionData;
-        const data = submissionData; // Keep reference for videoUrl logic below
-        
-        if (data && data.video_filename) {
-             const path = data.subfolder_date 
-                ? `atm/${data.subfolder_date}/${data.video_filename}`
-                : `atm/${data.video_filename}`;
-             
-             const { data: urlData } = supabase.storage
-                .from('media')
-                .getPublicUrl(path);
-            videoUrl.value = urlData.publicUrl;
-            console.log("Video URL:", videoUrl.value);
-        }
-        
-      const { $analytics } = useNuxtApp();
-      $analytics.sendPageView({
-        page_title: "Ask the Mayor Submission",
-        page_type: "ask_the_mayor_submission",
-        content_group: "ask_the_mayor",
-      });
+    // Fetch profile manually
+    if (submissionData && submissionData.user_id) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", submissionData.user_id)
+        .single();
 
-    } catch (e) {
-        console.error("Error fetching submission", e);
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Could not load submission', life: 3000 });
-    } finally {
-        loading.value = false;
+      submissionData.profiles = profileData || null;
     }
+
+    submission.value = submissionData;
+    const data = submissionData; // Keep reference for videoUrl logic below
+
+    if (data && data.video_filename) {
+      const path = data.subfolder_date
+        ? `atm/${data.subfolder_date}/${data.video_filename}`
+        : `atm/${data.video_filename}`;
+
+      const { data: urlData } = supabase.storage
+        .from("media")
+        .getPublicUrl(path);
+      videoUrl.value = urlData.publicUrl;
+      console.log("Video URL:", videoUrl.value);
+    }
+
+    const { $analytics } = useNuxtApp();
+    $analytics.sendPageView({
+      page_title: "Ask the Mayor Submission",
+      page_type: "ask_the_mayor_submission",
+      content_group: "ask_the_mayor",
+    });
+  } catch (e) {
+    console.error("Error fetching submission", e);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Could not load submission",
+      life: 3000,
+    });
+  } finally {
+    loading.value = false;
+  }
 });
 
 const toggleApproved = async () => {
-    if (!submission.value) return;
-    
-    try {
-        const { error } = await supabase
-            .from('atm_submissions')
-            .update({ approved_for_use: submission.value.approved_for_use })
-            .eq('id', submission.value.id);
+  if (!submission.value) return;
 
-        if (error) throw error;
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Status updated', life: 3000 });
-    } catch (error) {
-        console.error('Error updating status:', error);
-        submission.value.approved_for_use = !submission.value.approved_for_use; // Revert on error
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update status', life: 3000 });
-    }
+  try {
+    const { error } = await supabase
+      .from("atm_submissions")
+      .update({ approved_for_use: submission.value.approved_for_use })
+      .eq("id", submission.value.id);
+
+    if (error) throw error;
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Status updated",
+      life: 3000,
+    });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    submission.value.approved_for_use = !submission.value.approved_for_use; // Revert on error
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to update status",
+      life: 3000,
+    });
+  }
 };
 </script>
 
@@ -100,7 +115,7 @@ const toggleApproved = async () => {
     </Html>
 
     <section>
-        <div class="flex align-items-center mb-4">
+      <div class="flex align-items-center mb-4">
         <Button
           class="back-btn text-color -ml-4"
           icon="pi pi-chevron-left"
@@ -111,30 +126,63 @@ const toggleApproved = async () => {
           @click="navigateTo('/ask-the-mayor-dashboard')"
           label="Back"
         />
-        </div>
-        
+      </div>
+
+      <div v-if="user">
         <div v-if="loading">Loading...</div>
         <div v-else-if="submission" class="flex flex-column gap-4">
-            <h1>Submission from {{ submission.profiles?.name || submission.profiles?.first_name || 'Unknown' }}</h1>
-            <p v-if="submission.profiles?.email"><a :href="`mailto:${submission.profiles.email}`">{{ submission.profiles.email }}</a></p>
-            <p class="text-sm text-500">{{ new Date(submission.created_at).toLocaleDateString() }} - {{ new Date(submission.created_at).toLocaleTimeString() }}</p>
-            
-            <div class="flex align-items-center gap-2">
-                <Checkbox v-model="submission.approved_for_use" :binary="true" inputId="approved" @change="toggleApproved" />
-                <label for="approved" class="cursor-pointer">Approved for Use</label>
-            </div>
-            
-            <div v-if="videoUrl" class="video-container surface-card p-4 border-round shadow-2" style="max-width: 800px">
-                <video :src="videoUrl" controls class="w-full border-round"></video>
-            </div>
-            
-            <Panel header="Transcript" toggleable>
-                <p class="m-0 line-height-3">{{ submission.transcript || 'No transcript available.' }}</p>
-            </Panel>
+          <h1>
+            Submission from
+            {{
+              submission.profiles?.name ||
+              submission.profiles?.first_name ||
+              "Unknown"
+            }}
+          </h1>
+          <p v-if="submission.profiles?.email">
+            <a :href="`mailto:${submission.profiles.email}`">{{
+              submission.profiles.email
+            }}</a>
+          </p>
+          <p class="text-sm text-500">
+            {{ new Date(submission.created_at).toLocaleDateString() }} -
+            {{ new Date(submission.created_at).toLocaleTimeString() }}
+          </p>
+
+          <div class="flex align-items-center gap-2">
+            <Checkbox
+              v-model="submission.approved_for_use"
+              :binary="true"
+              inputId="approved"
+              @change="toggleApproved"
+            />
+            <label for="approved" class="cursor-pointer"
+              >Approved for Use</label
+            >
+          </div>
+
+          <div
+            v-if="videoUrl"
+            class="video-container surface-card p-4 border-round shadow-2"
+            style="max-width: 800px"
+          >
+            <video :src="videoUrl" controls class="w-full border-round"></video>
+          </div>
+
+          <Panel header="Transcript" toggleable>
+            <p class="m-0 line-height-3">
+              {{ submission.transcript || "No transcript available." }}
+            </p>
+          </Panel>
         </div>
         <div v-else>
-            <p>Submission not found.</p>
+          <p>Submission not found.</p>
         </div>
+      </div>
+      <div v-else>
+        <p>You are not authorized to view this page. Please log in.</p>
+        <Login />
+      </div>
     </section>
   </div>
 </template>

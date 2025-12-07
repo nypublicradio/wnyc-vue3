@@ -1,37 +1,34 @@
 <script setup>
+import { useLoginSideBar } from "~/composables/states";
+import { useToast } from "primevue/usetoast";
 
-import {
-  useLoginSideBar,
-  useSignupSideBar,
-} from "~/composables/states"
-import { useToast } from "primevue/usetoast"
+const user = useCurrentUser();
 
-const user = useCurrentUser()
-
-const loginSideBar = useLoginSideBar()
-const signinSideBar = useSignupSideBar()
-const toast = useToast()
+const loginSideBar = useLoginSideBar();
+const toast = useToast();
 
 const routeToPage = () => {
-  if(!user.value) {
-    loginSideBar.value = true
-    setTimeout(()=>{
-    toast.add({
-      severity: "error",
-      summary: "You must be logged in to ask the mayor",
-      closable: true,
-      life: 6000,
-    })
-    },200)
-    return
+  if (!user.value) {
+    loginSideBar.value = true;
+    setTimeout(() => {
+      toast.add({
+        severity: "error",
+        summary: "You must be logged in to ask the mayor",
+        closable: true,
+        life: 6000,
+      });
+    }, 200);
+    return;
   } else {
     navigateTo("/ask-the-mayor");
   }
-  
 };
 </script>
 <template>
-  <div class="atm-cta flex items-center w-full cursor-pointer" @click="routeToPage">
+  <div
+    class="atm-cta flex items-center w-full cursor-pointer"
+    @click="routeToPage"
+  >
     <nuxt-img
       src="/atm/mayor.png"
       loading="eager"
