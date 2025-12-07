@@ -8,7 +8,7 @@
     "coverage": "vitest run --coverage",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "patch-package && nuxt prepare",
+    "postinstall": "npx patch-package && npx nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
     "build-theme": "node assets/build-theme.js",
     "jwt": "node scripts/jwt-utils.js"
