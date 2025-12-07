@@ -1,0 +1,12 @@
+diff --git a/node_modules/@transcribe/shout/src/shout/shout.wasm.js b/node_modules/@transcribe/shout/src/shout/shout.wasm.js
+index 923577d..1111111 100644
+--- a/node_modules/@transcribe/shout/src/shout/shout.wasm.js
++++ b/node_modules/@transcribe/shout/src/shout/shout.wasm.js
+@@ -14,7 +14,6 @@
+ import {
+   createModule
+ } from './shout.wasm_no-simd.js';
+-import './shout.wasm.js';
+ 
+ const isSIMDSupported = () => {
+   try {
