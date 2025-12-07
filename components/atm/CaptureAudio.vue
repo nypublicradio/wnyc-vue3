@@ -18,6 +18,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  recordTimeLimit: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["capture-complete", "capture-error"]);

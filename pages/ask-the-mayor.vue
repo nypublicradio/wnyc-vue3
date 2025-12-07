@@ -16,6 +16,7 @@ const UploadMediaREF = ref(null);
 const questionLimitReached = ref(false);
 const hasFiles = ref(false);
 const submitProgress = ref(null);
+const recordTimeLimit = 30;
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -125,6 +126,7 @@ onMounted(() => {
       </div>
       <h1>Ask the Mayor</h1>
       <p>Information about this feature</p>
+      <p>You can record up to {{ recordTimeLimit }} seconds</p>
 
       <div v-if="!user" class="flex flex-column gap-2 my-4">
         <p>Must login/create an account to use this feature</p>
@@ -159,6 +161,7 @@ onMounted(() => {
           @has-files="hasFiles = $event"
           @upload-progress="submitProgress = $event"
           :user="user"
+          :recordTimeLimit="recordTimeLimit"
         />
         <p v-if="submitProgress">{{ submitProgress }}</p>
         <Button v-if="hasFiles" label="Submit video" @click="onFormSubmit" />

@@ -110,6 +110,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  recordTimeLimit: {
+    type: Number,
+    default: null,
+  },
 });
 
 // Component emits
@@ -1040,6 +1044,7 @@ onMounted(async () => {
         :subfolder="props.subfolder"
         :patient-id="props.user?.id"
         :metadata="props.metadata"
+        :record-time-limit="props.recordTimeLimit"
         @capture-complete="handleCaptureComplete"
         @capture-error="handleCaptureError"
       />
@@ -1054,6 +1059,7 @@ onMounted(async () => {
         :subfolder="props.subfolder"
         :patient-id="props.user?.id"
         :metadata="props.metadata"
+        :record-time-limit="props.recordTimeLimit"
         @capture-complete="handleCaptureComplete"
         @capture-error="handleCaptureError"
       />

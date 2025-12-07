@@ -18,6 +18,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  recordTimeLimit: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["capture-complete", "capture-error"]);
@@ -180,6 +184,8 @@ const startRecording = () => {
   error.value = null;
   recordedChunks.value = [];
 
+  recordTimeLimitCountdown();
+
   // Determine preferred MIME type
   const options = { mimeType: "video/webm; codecs=vp9,opus" };
   if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -253,6 +259,18 @@ const stopRecording = () => {
     mediaRecorder.value.stop();
     // onstop handler will manage isRecording = false and processing
   }
+};
+
+const remainingTime = ref(props.recordTimeLimit);
+const recordTimeLimitCountdown = () => {
+  const interval = setInterval(() => {
+    remainingTime.value--;
+    if (remainingTime.value < 0) {
+      clearInterval(interval);
+      stopRecording();
+      remainingTime.value = props.recordTimeLimit;
+    }
+  }, 1000);
 };
 
 onMounted(async () => {
@@ -364,7 +382,7 @@ defineExpose({
 
     <div class="actions">
       <button @click="startRecording" :disabled="isRecording || !stream">
-        Start Recording
+        Start Recording {{ remainingTime }}
       </button>
       <button @click="stopRecording" :disabled="!isRecording">
         Stop Recording
