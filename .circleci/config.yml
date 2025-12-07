@@ -116,6 +116,10 @@ jobs:
       - checkout
       - setup_npmrc
       - node/install-packages
+      - run:
+          name: Apply patches
+          command: |
+             npx patch-package
       - run: 
           name: Assert that it builds
           command: |
