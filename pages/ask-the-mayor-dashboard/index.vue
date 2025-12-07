@@ -64,6 +64,12 @@ const fetchSubmissions = async () => {
             profiles: profilesMap[s.user_id] || null
         }));
 
+        // Auto-expand first date
+        if (groupedSubmissions.value.length > 0) {
+            const firstDate = groupedSubmissions.value[0].date;
+            expandedRows.value = { [firstDate]: true };
+        }
+
     } catch (error) {
         console.error('Error fetching submissions:', error);
         toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to fetch submissions', life: 3000 });

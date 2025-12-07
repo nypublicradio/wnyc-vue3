@@ -35,10 +35,15 @@ onMounted(async () => {
         const data = submissionData; // Keep reference for videoUrl logic below
         
         if (data && data.video_filename) {
+             const path = data.subfolder_date 
+                ? `atm/${data.subfolder_date}/${data.video_filename}`
+                : `atm/${data.video_filename}`;
+             
              const { data: urlData } = supabase.storage
                 .from('media')
-                .getPublicUrl(`atm/${data.video_filename}`);
+                .getPublicUrl(path);
             videoUrl.value = urlData.publicUrl;
+            console.log("Video URL:", videoUrl.value);
         }
         
       const { $analytics } = useNuxtApp();
@@ -55,6 +60,24 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+const toggleApproved = async () => {
+    if (!submission.value) return;
+    
+    try {
+        const { error } = await supabase
+            .from('atm_submissions')
+            .update({ approved_for_use: submission.value.approved_for_use })
+            .eq('id', submission.value.id);
+
+        if (error) throw error;
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Status updated', life: 3000 });
+    } catch (error) {
+        console.error('Error updating status:', error);
+        submission.value.approved_for_use = !submission.value.approved_for_use; // Revert on error
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update status', life: 3000 });
+    }
+};
 </script>
 
 <template>
@@ -92,8 +115,14 @@ onMounted(async () => {
         
         <div v-if="loading">Loading...</div>
         <div v-else-if="submission" class="flex flex-column gap-4">
-            <h1>Submission from {{ submission.profiles?.first_name }} {{ submission.profiles?.last_name }}</h1>
+            <h1>Submission from {{ submission.profiles?.name || submission.profiles?.first_name || 'Unknown' }}</h1>
+            <p v-if="submission.profiles?.email"><a :href="`mailto:${submission.profiles.email}`">{{ submission.profiles.email }}</a></p>
             <p class="text-sm text-500">{{ new Date(submission.created_at).toLocaleDateString() }} - {{ new Date(submission.created_at).toLocaleTimeString() }}</p>
+            
+            <div class="flex align-items-center gap-2">
+                <Checkbox v-model="submission.approved_for_use" :binary="true" inputId="approved" @change="toggleApproved" />
+                <label for="approved" class="cursor-pointer">Approved for Use</label>
+            </div>
             
             <div v-if="videoUrl" class="video-container surface-card p-4 border-round shadow-2" style="max-width: 800px">
                 <video :src="videoUrl" controls class="w-full border-round"></video>
