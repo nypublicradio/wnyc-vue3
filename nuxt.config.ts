@@ -12,14 +12,7 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
   ],
 
-  routeRules: {
-    '/**': {
-      headers: {
-        'Cross-Origin-Embedder-Policy': 'require-corp',
-        'Cross-Origin-Opener-Policy': 'same-origin',
-      },
-    },
-  },
+
 
   primevue: {
     options: {

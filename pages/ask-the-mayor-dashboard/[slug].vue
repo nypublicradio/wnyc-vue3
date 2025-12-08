@@ -155,7 +155,7 @@ const { toggleApproved, shareSubmission, downloadSubmission } = useAtmDashboard(
             class="video-container surface-card p-4 border-round shadow-2"
             style="max-width: 800px"
           >
-            <video :src="videoUrl" controls class="w-full border-round"></video>
+            <video :src="videoUrl" controls class="w-full border-round" crossorigin="anonymous"></video>
           </div>
 
           <Panel header="Transcript" toggleable>
