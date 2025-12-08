@@ -66,33 +66,8 @@ onMounted(async () => {
   }
 });
 
-const toggleApproved = async () => {
-  if (!submission.value) return;
 
-  try {
-    const { error } = await supabase
-      .from("atm_submissions")
-      .update({ approved_for_use: submission.value.approved_for_use })
-      .eq("id", submission.value.id);
-
-    if (error) throw error;
-    toast.add({
-      severity: "success",
-      summary: "Success",
-      detail: "Status updated",
-      life: 3000,
-    });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    submission.value.approved_for_use = !submission.value.approved_for_use; // Revert on error
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Failed to update status",
-      life: 3000,
-    });
-  }
-};
+const { toggleApproved, shareSubmission, downloadSubmission } = useAtmDashboard();
 </script>
 
 <template>
@@ -154,11 +129,25 @@ const toggleApproved = async () => {
               v-model="submission.approved_for_use"
               :binary="true"
               inputId="approved"
-              @change="toggleApproved"
+              @change="toggleApproved(submission)"
             />
             <label for="approved" class="cursor-pointer"
               >Approved for Use</label
             >
+          </div>
+
+          <div class="flex gap-2">
+            <Button
+              icon="pi pi-download"
+              label="Download"
+              @click="downloadSubmission(submission)"
+            />
+            <Button
+              icon="pi pi-share-alt"
+              label="Share"
+              severity="secondary"
+              @click="shareSubmission(submission)"
+            />
           </div>
 
           <div

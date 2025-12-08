@@ -84,71 +84,8 @@ const fetchSubmissions = async () => {
   }
 };
 
-const toggleApproved = async (submission) => {
-  try {
-    const { error } = await supabase
-      .from("atm_submissions")
-      .update({ approved_for_use: submission.approved_for_use })
-      .eq("id", submission.id);
 
-    if (error) throw error;
-    toast.add({
-      severity: "success",
-      summary: "Success",
-      detail: "Status updated",
-      life: 3000,
-    });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    submission.approved_for_use = !submission.approved_for_use; // Revert on error
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Failed to update status",
-      life: 3000,
-    });
-  }
-};
-
-const shareSubmission = async (submission, event) => {
-  // Stop propagation to prevent row click navigation
-  if (event) event.stopPropagation();
-
-  const slug = submission.video_filename; // Assuming video_filename is safe to use as part of URL, or use a dedicated slug field if available
-  const shareUrl = `${window.location.origin}/ask-the-mayor-dashboard/${slug}`;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: "Ask the Mayor Submission",
-        text: `Check out this submission from ${
-          submission.profiles?.first_name || "a user"
-        }:`,
-        url: shareUrl,
-      });
-    } catch (err) {
-      console.error("Error sharing:", err);
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.add({
-        severity: "info",
-        summary: "Link Copied",
-        detail: "Link copied to clipboard",
-        life: 3000,
-      });
-    } catch (err) {
-      console.error("Error copying to clipboard:", err);
-      toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to copy link",
-        life: 3000,
-      });
-    }
-  }
-};
+const { toggleApproved, shareSubmission, downloadSubmission } = useAtmDashboard();
 
 const navigateToSlug = (event) => {
   const submission = event.data;
@@ -252,15 +189,24 @@ onMounted(() => {
                     />
                   </template>
                 </Column>
-                <Column header="Share">
+                <Column header="Actions">
                   <template #body="slotProps">
-                    <Button
-                      icon="pi pi-share-alt"
-                      text
-                      rounded
-                      aria-label="Share"
-                      @click="(event) => shareSubmission(slotProps.data, event)"
-                    />
+                    <div class="flex gap-2">
+                      <Button
+                        icon="pi pi-download"
+                        text
+                        rounded
+                        aria-label="Download"
+                        @click="(event) => downloadSubmission(slotProps.data, event)"
+                      />
+                      <Button
+                        icon="pi pi-share-alt"
+                        text
+                        rounded
+                        aria-label="Share"
+                        @click="(event) => shareSubmission(slotProps.data, event)"
+                      />
+                    </div>
                   </template>
                 </Column>
               </DataTable>
