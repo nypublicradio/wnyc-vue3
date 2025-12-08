@@ -43,6 +43,10 @@
 	<string>Allow WNYC to access your camera to capture video.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow WNYC to access your microphone to capture audio.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow WNYC to access your photo library for media upload.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow WNYC to save media to your photo library.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

@@ -99,6 +99,7 @@
     "vue": "3.4.6",
     "vue-filepond": "^7.0.4",
     "vue-preview-imgs": "^2.0.1",
+    "webrtc-adapter": "^9.0.3",
     "worker-timers": "^8.0.4"
   }
 }
