@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import "webrtc-adapter";
 
 const props = defineProps({
   bucket: {
