@@ -63,7 +63,8 @@ const captureVideo = async (videoFile) => {
 
 const getDevices = async () => {
   try {
-    await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); // Request permissions
+    const permissionStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); // Request permissions
+    permissionStream.getTracks().forEach(track => track.stop()); // Stop stream immediately to release resources and avoid conflict on Android
     const allDevices = await navigator.mediaDevices.enumerateDevices();
     videoDevices.value = allDevices.filter(
       (device) => device.kind === "videoinput"

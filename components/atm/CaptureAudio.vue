@@ -40,7 +40,8 @@ const audioUrl = ref(null); // For playback after recording
 
 const getDevices = async () => {
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true }); // Request audio permission
+    const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true }); // Request audio permission
+    permissionStream.getTracks().forEach(track => track.stop()); // Stop stream immediately to release resources and avoid conflict on Android
     const allDevices = await navigator.mediaDevices.enumerateDevices();
     audioDevices.value = allDevices.filter(
       (device) => device.kind === "audioinput"
