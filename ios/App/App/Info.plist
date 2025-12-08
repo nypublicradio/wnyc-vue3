@@ -39,6 +39,10 @@
 	<string>7214</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow WNYC to access your camera to capture video.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow WNYC to access your microphone to capture audio.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
