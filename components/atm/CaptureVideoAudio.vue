@@ -285,7 +285,8 @@ onMounted(async () => {
     if (audioDevices.value.length > 0 && !selectedAudioDeviceId.value)
       selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
     // startCamera will be called by watchers if values changed and component is mounted
-  } else {
+  } else if (!error.value) {
+    // Only set generic error if no specific error occurred during getDevices
     error.value = "No video or audio input devices found.";
   }
 });

@@ -258,7 +258,8 @@ onMounted(async () => {
   } else if (audioDevices.value.length > 0) {
     selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
     // initializeMedia will be called by watcher
-  } else {
+  } else if (!error.value) {
+    // Only set generic error if no specific error occurred during getDevices
     error.value = "No audio input devices found.";
   }
 });
