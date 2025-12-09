@@ -61,30 +61,45 @@ export default function useCaptureMedia () {
     const error = ref<string | null>(null)
 
     /**
-     * Convert a MediaFile from Cordova to a File object
+     * Convert a MediaFile from Cordova to a File object using native fetch
      */
     const mediaFileToFile = async (mediaFile: MediaFile): Promise<File> => {
         try {
-            // Use Capacitor Filesystem to read the file
-            const { Filesystem } = await import('@capacitor/filesystem')
-
-            // Read file as base64
-            const fileContent = await Filesystem.readFile({
-                path: mediaFile.fullPath
+            console.log('Converting MediaFile:', {
+                name: mediaFile.name,
+                fullPath: mediaFile.fullPath,
+                localURL: mediaFile.localURL,
+                type: mediaFile.type,
+                size: mediaFile.size
             })
 
-            // Convert base64 to blob
-            const base64Response = await fetch(`data:${mediaFile.type};base64,${fileContent.data}`)
-            const blob = await base64Response.blob()
+            // Use Capacitor's convertFileSrc to get the proper webview URL
+            const { Capacitor } = await import('@capacitor/core')
+            const webPath = Capacitor.convertFileSrc(mediaFile.fullPath)
+
+            console.log('Converted to webPath:', webPath)
+
+            // Fetch the file using the webview path
+            const response = await fetch(webPath)
+            if (!response.ok) {
+                throw new Error(`Failed to fetch file: ${response.statusText}`)
+            }
+
+            const blob = await response.blob()
+            console.log('Blob created:', blob.type, blob.size)
 
             // Create File object
-            return new File([blob], mediaFile.name, {
-                type: mediaFile.type,
+            const file = new File([blob], mediaFile.name, {
+                type: mediaFile.type || blob.type,
                 lastModified: mediaFile.lastModifiedDate.getTime()
             })
+
+            console.log('File object created:', file.name, file.type, file.size)
+            return file
         } catch (err) {
             console.error('Error converting MediaFile to File:', err)
-            throw new Error('Failed to convert media file')
+            console.error('MediaFile details:', mediaFile)
+            throw new Error(`Failed to convert media file: ${err.message}`)
         }
     }
 
@@ -97,8 +112,11 @@ export default function useCaptureMedia () {
         if (isNative && navigator.device?.capture) {
             // Use Cordova plugin for native platforms
             return new Promise((resolve, reject) => {
+                console.log('Starting native audio capture with options:', options)
+
                 navigator.device.capture!.captureAudio(
                     async (mediaFiles) => {
+                        console.log('Audio capture success, files:', mediaFiles)
                         try {
                             if (mediaFiles.length > 0) {
                                 const file = await mediaFileToFile(mediaFiles[0])
@@ -107,11 +125,13 @@ export default function useCaptureMedia () {
                                 reject(new Error('No audio file captured'))
                             }
                         } catch (err) {
+                            console.error('Error in audio capture callback:', err)
                             reject(err)
                         }
                     },
                     (err) => {
-                        error.value = `Audio capture failed: ${err.message || 'Unknown error'}`
+                        console.error('Audio capture error:', err)
+                        error.value = `Audio capture failed: ${err.message || 'Unknown error (code: ' + err.code + ')'}`
                         reject(new Error(error.value))
                     },
                     {
@@ -135,8 +155,20 @@ export default function useCaptureMedia () {
         if (isNative && navigator.device?.capture) {
             // Use Cordova plugin for native platforms
             return new Promise((resolve, reject) => {
+                console.log('Starting native video capture with options:', options)
+
+                // Quality: 0 = low (front-facing works better), 1 = high (default)
+                const captureOptions: CaptureVideoOptions = {
+                    limit: 1,
+                    duration: options?.duration,
+                    quality: options?.quality !== undefined ? options.quality : 0 // Default to low quality for better compatibility
+                }
+
+                console.log('Final capture options:', captureOptions)
+
                 navigator.device.capture!.captureVideo(
                     async (mediaFiles) => {
+                        console.log('Video capture success, files:', mediaFiles)
                         try {
                             if (mediaFiles.length > 0) {
                                 const file = await mediaFileToFile(mediaFiles[0])
@@ -145,18 +177,16 @@ export default function useCaptureMedia () {
                                 reject(new Error('No video file captured'))
                             }
                         } catch (err) {
+                            console.error('Error in video capture callback:', err)
                             reject(err)
                         }
                     },
                     (err) => {
-                        error.value = `Video capture failed: ${err.message || 'Unknown error'}`
+                        console.error('Video capture error:', err)
+                        error.value = `Video capture failed: ${err.message || 'Unknown error (code: ' + err.code + ')'}`
                         reject(new Error(error.value))
                     },
-                    {
-                        limit: 1,
-                        duration: options?.duration,
-                        quality: options?.quality
-                    }
+                    captureOptions
                 )
             })
         } else {
@@ -174,8 +204,11 @@ export default function useCaptureMedia () {
         if (isNative && navigator.device?.capture) {
             // Use Cordova plugin for native platforms
             return new Promise((resolve, reject) => {
+                console.log('Starting native image capture with options:', options)
+
                 navigator.device.capture!.captureImage(
                     async (mediaFiles) => {
+                        console.log('Image capture success, files:', mediaFiles)
                         try {
                             if (mediaFiles.length > 0) {
                                 const file = await mediaFileToFile(mediaFiles[0])
@@ -184,11 +217,13 @@ export default function useCaptureMedia () {
                                 reject(new Error('No image file captured'))
                             }
                         } catch (err) {
+                            console.error('Error in image capture callback:', err)
                             reject(err)
                         }
                     },
                     (err) => {
-                        error.value = `Image capture failed: ${err.message || 'Unknown error'}`
+                        console.error('Image capture error:', err)
+                        error.value = `Image capture failed: ${err.message || 'Unknown error (code: ' + err.code + ')'}`
                         reject(new Error(error.value))
                     },
                     {
