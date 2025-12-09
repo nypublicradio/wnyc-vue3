@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import useCaptureMedia from "~/composables/atm/useCaptureMedia";
 
 const props = defineProps({
   bucket: {
@@ -26,8 +27,9 @@ const props = defineProps({
 
 const emit = defineEmits(["capture-complete", "capture-error"]);
 
-const supabase = useSupabaseClient();
+const { isNative, captureAudio: captureAudioNative, error: nativeError } = useCaptureMedia();
 
+// Web API refs (only used in browser)
 const audioDevices = ref([]);
 const selectedAudioDeviceId = ref(null);
 const stream = ref(null);
@@ -36,13 +38,65 @@ const recordedChunks = ref([]);
 const isRecording = ref(false);
 const isProcessing = ref(false);
 const error = ref(null);
-const audioUrl = ref(null); // For playback after recording
+const audioUrl = ref(null);
 
+const supabase = useSupabaseClient();
+
+// Native capture handler
+const handleNativeCapture = async () => {
+  try {
+    isProcessing.value = true;
+    error.value = null;
+
+    const audioFile = await captureAudioNative({
+      duration: props.recordTimeLimit
+    });
+
+    const captureMetadata = {
+      originalFileName: audioFile.name,
+      fileSize: audioFile.size,
+      fileType: audioFile.type,
+      captureTimestamp: Date.now(),
+      captureDate: new Date().toISOString(),
+      captureMethod: "native_audio_recorder",
+      originalProps: {
+        bucket: props.bucket,
+        subfolder: props.subfolder,
+        patientId: props.patientId,
+        metadata: props.metadata,
+      },
+    };
+
+    emit("capture-complete", { file: audioFile, metadata: captureMetadata });
+  } catch (err) {
+    error.value = err.message || "Native audio capture failed";
+    emit("capture-error", error.value);
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
+// Web API handlers (browser only)
 const getDevices = async () => {
   try {
-    const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true }); // Request audio permission
-    permissionStream.getTracks().forEach(track => track.stop()); // Stop stream immediately to release resources and avoid conflict on Android
-    const allDevices = await navigator.mediaDevices.enumerateDevices();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      error.value = "Media devices API not available. Please use a supported browser.";
+      console.error("navigator.mediaDevices.getUserMedia is not available");
+      return;
+    }
+
+    let allDevices = await navigator.mediaDevices.enumerateDevices();
+    const hasLabels = allDevices.some(device => device.label !== '');
+    
+    if (!hasLabels) {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        allDevices = await navigator.mediaDevices.enumerateDevices();
+      } catch (permErr) {
+        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
+      }
+    }
+
     audioDevices.value = allDevices.filter(
       (device) => device.kind === "audioinput"
     );
@@ -53,15 +107,6 @@ const getDevices = async () => {
   } catch (err) {
     console.error("Error enumerating audio devices:", err);
     error.value = `Error accessing audio devices: ${err.name}. Ensure permissions are granted.`;
-    if (err.name === "NotAllowedError") {
-      error.value =
-        "Microphone access was denied. Please enable permissions in your browser settings.";
-    } else if (err.name === "NotFoundError") {
-      error.value =
-        "No microphone found. Please ensure it is connected and enabled.";
-    } else {
-      error.value = `Could not access microphone: ${err.message}.`;
-    }
   }
 };
 
@@ -71,7 +116,7 @@ const stopMedia = () => {
     stream.value = null;
   }
   if (audioUrl.value) {
-    URL.revokeObjectURL(audioUrl.value); // Clean up previous playback URL
+    URL.revokeObjectURL(audioUrl.value);
     audioUrl.value = null;
   }
 };
@@ -86,46 +131,26 @@ const initializeMedia = async () => {
 
   if (!selectedAudioDeviceId.value) {
     error.value = "Microphone not selected or available.";
-    // return; // Allow to proceed if no device, error will be caught by getUserMedia
+    return;
   }
 
   const constraints = {
     audio: selectedAudioDeviceId.value
       ? { deviceId: { exact: selectedAudioDeviceId.value } }
-      : true, // Fallback to default audio if no specific device
-    video: false, // Explicitly no video
+      : true,
+    video: false,
   };
 
   try {
     error.value = null;
     stream.value = await navigator.mediaDevices.getUserMedia(constraints);
-    // No video element to attach stream to
   } catch (err) {
     console.error("Error starting microphone:", err);
     error.value = `Error starting microphone: ${err.name}. Check permissions and device availability.`;
-    if (err.name === "NotAllowedError") {
-      error.value = "Access denied. Please enable microphone permissions.";
-    } else if (
-      err.name === "OverconstrainedError" ||
-      err.name === "ConstraintNotSatisfiedError"
-    ) {
-      error.value =
-        "Selected microphone does not support requested constraints. Trying default.";
-      try {
-        stream.value = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-      } catch (fallbackErr) {
-        error.value = `Fallback microphone access failed: ${fallbackErr.message}`;
-      }
-    } else {
-      error.value = `Could not access microphone: ${err.message}.`;
-    }
   }
 };
 
 const uploadAudio = async (audioFile) => {
-  // Instead of uploading, we'll now emit the captured audio file
   const captureMetadata = {
     originalFileName: audioFile.name,
     fileSize: audioFile.size,
@@ -152,19 +177,17 @@ const startRecording = () => {
   if (isRecording.value) return;
 
   if (audioUrl.value) {
-    // Clean up previous playback URL if any
     URL.revokeObjectURL(audioUrl.value);
     audioUrl.value = null;
   }
-  // error.value = null; // Clear general errors from previous attempts
   recordedChunks.value = [];
 
   let selectedMimeType = "";
   const mimeTypesToTry = [
-    "audio/webm; codecs=opus", // Preferred
-    "audio/webm", // Fallback
-    "audio/ogg; codecs=opus", // Optional: another common alternative
-    "audio/ogg", // Optional: ogg fallback
+    "audio/webm; codecs=opus",
+    "audio/webm",
+    "audio/ogg; codecs=opus",
+    "audio/ogg",
   ];
 
   for (const mime of mimeTypesToTry) {
@@ -181,7 +204,7 @@ const startRecording = () => {
       "Preferred WebM/Ogg Opus mime types not supported. MediaRecorder will use browser default."
     );
   } else {
-    error.value = null; // Clear previous errors if a preferred type is found
+    error.value = null;
   }
 
   const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
@@ -197,15 +220,13 @@ const startRecording = () => {
       isRecording.value = false;
       isProcessing.value = true;
 
-      const blobMimeType = mediaRecorder.value.mimeType || "audio/webm"; // Trust the recorder's actual mimeType
-
+      const blobMimeType = mediaRecorder.value.mimeType || "audio/webm";
       const blob = new Blob(recordedChunks.value, { type: blobMimeType });
       const timestamp = new Date().getTime();
 
-      let fileExtension = "webm"; // Default
+      let fileExtension = "webm";
       if (blobMimeType.includes("ogg")) fileExtension = "ogg";
       else if (blobMimeType.includes("mp4")) fileExtension = "mp4";
-      // webm is default if not ogg or mp4
 
       const fileName = `audio_${timestamp}.${fileExtension}`;
       const audioFile = new File([blob], fileName, { type: blobMimeType });
@@ -253,15 +274,16 @@ const stopRecording = () => {
 };
 
 onMounted(async () => {
-  await getDevices();
-  if (selectedAudioDeviceId.value) {
-    await initializeMedia();
-  } else if (audioDevices.value.length > 0) {
-    selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
-    // initializeMedia will be called by watcher
-  } else if (!error.value) {
-    // Only set generic error if no specific error occurred during getDevices
-    error.value = "No audio input devices found.";
+  // Only initialize web APIs if in browser
+  if (!isNative) {
+    await getDevices();
+    if (selectedAudioDeviceId.value) {
+      await initializeMedia();
+    } else if (audioDevices.value.length > 0) {
+      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+    } else if (!error.value) {
+      error.value = "No audio input devices found.";
+    }
   }
 });
 
@@ -271,14 +293,14 @@ onBeforeUnmount(() => {
 });
 
 watch(selectedAudioDeviceId, async (newVal, oldVal) => {
-  if (newVal && newVal !== oldVal) {
+  if (newVal && newVal !== oldVal && !isNative) {
     await initializeMedia();
   }
 });
 
 watch(audioDevices, (newVal) => {
-  if (newVal.length > 0 && !selectedAudioDeviceId.value) {
-    selectedAudioDeviceId.value = newVal[0].deviceId; // Triggers initializeMedia via watcher
+  if (newVal.length > 0 && !selectedAudioDeviceId.value && !isNative) {
+    selectedAudioDeviceId.value = newVal[0].deviceId;
   }
 });
 
@@ -290,49 +312,60 @@ defineExpose({
 
 <template>
   <div class="capture-audio">
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
 
-    <div class="controls">
-      <div>
-        <label for="audio-device-select">Select Microphone:</label>
-        <select
-          id="audio-device-select"
-          v-model="selectedAudioDeviceId"
-          @change="initializeMedia"
-        >
-          <option
-            v-for="device in audioDevices"
-            :key="device.deviceId"
-            :value="device.deviceId"
-          >
-            {{
-              device.label || `Microphone ${audioDevices.indexOf(device) + 1}`
-            }}
-          </option>
-        </select>
+    <!-- Native platform: Simple button to open native recorder -->
+    <div v-if="isNative">
+      <div class="actions">
+        <button @click="handleNativeCapture" :disabled="isProcessing">
+          {{ isProcessing ? 'Processing...' : 'Record Audio' }}
+        </button>
       </div>
     </div>
 
-    <!-- No video preview needed -->
+    <!-- Browser platform: Full web API controls -->
+    <div v-else>
+      <div class="controls">
+        <div>
+          <label for="audio-device-select">Select Microphone:</label>
+          <select
+            id="audio-device-select"
+            v-model="selectedAudioDeviceId"
+            @change="initializeMedia"
+          >
+            <option
+              v-for="device in audioDevices"
+              :key="device.deviceId"
+              :value="device.deviceId"
+            >
+              {{
+                device.label || `Microphone ${audioDevices.indexOf(device) + 1}`
+              }}
+            </option>
+          </select>
+        </div>
+      </div>
 
-    <div class="actions">
-      <button @click="startRecording" :disabled="isRecording || !stream">
-        Start Recording Audio
-      </button>
-      <button @click="stopRecording" :disabled="!isRecording">
-        Stop Recording Audio
-      </button>
+      <div class="actions">
+        <button @click="startRecording" :disabled="isRecording || !stream">
+          Start Recording Audio
+        </button>
+        <button @click="stopRecording" :disabled="!isRecording">
+          Stop Recording Audio
+        </button>
+      </div>
+
+      <div
+        v-if="audioUrl && !isRecording && !isProcessing"
+        class="audio-playback"
+      >
+        <p>Recording complete. Preview:</p>
+        <audio :src="audioUrl" controls></audio>
+      </div>
     </div>
 
     <div v-if="isProcessing" class="loading-indicator">
       Processing audio capture...
-    </div>
-    <div
-      v-if="audioUrl && !isRecording && !isProcessing"
-      class="audio-playback"
-    >
-      <p>Recording complete. Preview:</p>
-      <audio :src="audioUrl" controls></audio>
     </div>
   </div>
 </template>
@@ -391,7 +424,6 @@ defineExpose({
   background-color: #28a745;
 }
 
-/* Green */
 .actions button:nth-child(1):disabled {
   background-color: #8fbc8f;
 }
@@ -400,7 +432,6 @@ defineExpose({
   background-color: #dc3545;
 }
 
-/* Red */
 .actions button:nth-child(2):disabled {
   background-color: #f08080;
 }

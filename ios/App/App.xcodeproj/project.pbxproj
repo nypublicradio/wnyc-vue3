@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BF33A31F753D42894823139 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		0BF33A31F753D42894823139 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		15F88FB02EB3C85000B7B7BB /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 15F88FA92EB3C85000B7B7BB /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		15F88FC02EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 15F88FB92EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		15F88FD02EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 15F88FC92EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -50,7 +50,7 @@
 		986A281B192E980102A971D0 /* Pods_AppLocal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861A0D7F8906D3A7713D0031 /* Pods_AppLocal.framework */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		AECADD2DE06FFF23631F8112 /* Pods_OneSignalNotificationServiceExtensionAlpha.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23CF48C469A0A3B45A4BD348 /* Pods_OneSignalNotificationServiceExtensionAlpha.framework */; };
-		B03A384C7D7DE74F77AA718E /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		B03A384C7D7DE74F77AA718E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		ED00331229F07F69001B53A0 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00331129F07F69001B53A0 /* NotificationService.swift */; };
 		ED00331629F07F69001B53A0 /* ImageNotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ED00330F29F07F69001B53A0 /* ImageNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ED4757F229D3595D00668579 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED4757F129D3595D00668579 /* GoogleService-Info.plist */; };
@@ -199,21 +199,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		15F88FB12EB3C85000B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		15F88FB12EB3C85000B7B7BB /* Exceptions for "OneSignalNotificationServiceExtension" folder in "OneSignalNotificationServiceExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 15F88FA82EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */;
 		};
-		15F88FC12EB3CB0A00B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		15F88FC12EB3CB0A00B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionAlpha" folder in "OneSignalNotificationServiceExtensionAlpha" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 15F88FB82EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */;
 		};
-		15F88FD12EB3CB3600B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		15F88FD12EB3CB3600B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionLocal" folder in "OneSignalNotificationServiceExtensionLocal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -223,9 +223,42 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		15F88FAA2EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FB12EB3C85000B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtension; sourceTree = "<group>"; };
-		15F88FBA2EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FC12EB3CB0A00B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtensionAlpha; sourceTree = "<group>"; };
-		15F88FCA2EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FD12EB3CB3600B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtensionLocal; sourceTree = "<group>"; };
+		15F88FAA2EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				15F88FB12EB3C85000B7B7BB /* Exceptions for "OneSignalNotificationServiceExtension" folder in "OneSignalNotificationServiceExtension" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		15F88FBA2EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				15F88FC12EB3CB0A00B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionAlpha" folder in "OneSignalNotificationServiceExtensionAlpha" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = OneSignalNotificationServiceExtensionAlpha;
+			sourceTree = "<group>";
+		};
+		15F88FCA2EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				15F88FD12EB3CB3600B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionLocal" folder in "OneSignalNotificationServiceExtensionLocal" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = OneSignalNotificationServiceExtensionLocal;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,7 +291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				284C6C5B2BBDD5A300B5406E /* Pods_AppAlpha.framework in Frameworks */,
-				0BF33A31F753D42894823139 /* (null) in Frameworks */,
+				0BF33A31F753D42894823139 /* BuildFile in Frameworks */,
 				723BBEEEA217CFC9EB00D917 /* Pods_AppAlpha.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -298,7 +331,7 @@
 			files = (
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
 				60C1FAF911C16D6F5189F573 /* Pods_App.framework in Frameworks */,
-				B03A384C7D7DE74F77AA718E /* (null) in Frameworks */,
+				B03A384C7D7DE74F77AA718E /* BuildFile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,6 +534,7 @@
 				282EE5E92BBDAABB0023D302 /* Resources */,
 				3FC388D79C374CA600BA1474 /* [CP] Embed Pods Frameworks */,
 				282EE5F22BBDAABB0023D302 /* Embed Foundation Extensions */,
+				5F4204C1E3324600B55EEB9B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -540,6 +574,7 @@
 				2844BE662C3C2F2C0087D458 /* Resources */,
 				C21D70A0625842341E2B4CDF /* [CP] Embed Pods Frameworks */,
 				2844BE702C3C2F2C0087D458 /* Embed Foundation Extensions */,
+				93BF4E9BC3ECB790CA837A73 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -597,6 +632,7 @@
 				504EC3021FED79650016851F /* Resources */,
 				9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */,
 				ED00331729F07F69001B53A0 /* Embed Foundation Extensions */,
+				3B3FBBBE7C7D171514EDE665 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -811,6 +847,21 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 		};
+		3B3FBBBE7C7D171514EDE665 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3F10F202610F8967ACA18829 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -870,6 +921,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		5F4204C1E3324600B55EEB9B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AppAlpha/Pods-AppAlpha-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -908,6 +974,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		93BF4E9BC3ECB790CA837A73 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AppLocal/Pods-AppLocal-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */ = {

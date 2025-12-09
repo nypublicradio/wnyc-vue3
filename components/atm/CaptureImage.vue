@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import useGallery from "~/composables/atm/useGallery";
+import useCaptureMedia from "~/composables/atm/useCaptureMedia";
 
 const props = defineProps({
   bucket: {
@@ -23,27 +23,50 @@ const props = defineProps({
 
 const emit = defineEmits(["capture-complete", "capture-error"]);
 
+const { isNative, captureImage: captureImageNative, error: nativeError } = useCaptureMedia();
+
+// Web API refs (only used in browser)
 const videoRef = ref(null);
 const canvasRef = ref(null);
 const devices = ref([]);
 const selectedDeviceId = ref(null);
 const stream = ref(null);
 const error = ref(null);
-const isProcessing = ref(null); // Changed to null initially, will be set by captureImage
+const isProcessing = ref(null);
 
-const processImageFile = (file) => {
-  if (!file || !(file instanceof File) || !file.type.startsWith("image/")) {
-    return file;
+// Native capture handler
+const handleNativeCapture = async () => {
+  try {
+    isProcessing.value = true;
+    error.value = null;
+
+    const imageFile = await captureImageNative();
+
+    const captureMetadata = {
+      captureMethod: "native_camera",
+      captureTimestamp: Date.now(),
+      captureDate: new Date().toISOString(),
+      originalProps: {
+        bucket: props.bucket,
+        subfolder: props.subfolder,
+        patientId: props.patientId,
+        metadata: props.metadata,
+      },
+    };
+
+    emit("capture-complete", {
+      file: imageFile,
+      metadata: captureMetadata,
+    });
+  } catch (err) {
+    error.value = err.message || "Native image capture failed";
+    emit("capture-error", error.value);
+  } finally {
+    isProcessing.value = false;
   }
-  // Skip resizing for now to simplify; focus on capture & EXIF.
-  // User can add this back if needed, or it can be a separate step.
-  // The main goal is to get it to FilePond for preview and editing.
-  console.log(
-    "Skipping processImageFile (resize/WebP) for captured image, will be handled by FilePond."
-  );
-  return file;
 };
 
+// Web API handlers (browser only)
 const captureImage = () => {
   if (!videoRef.value || !canvasRef.value || !stream.value) {
     error.value = "Camera stream not available for capture.";
@@ -74,7 +97,6 @@ const captureImage = () => {
       });
 
       try {
-        // Instead of uploading, emit the captured file with metadata
         const captureMetadata = {
           captureMethod: "browser_camera",
           captureTimestamp: timestamp,
@@ -91,9 +113,6 @@ const captureImage = () => {
           file: imageFile,
           metadata: captureMetadata,
         });
-
-        // Optionally, stop camera after capture or keep it running for multiple captures
-        // stopCamera(); // Uncomment if you want to stop after one capture
       } catch (error) {
         const errorMessage = error.message || "Image capture failed";
         console.error("Capture failed:", errorMessage);
@@ -110,8 +129,24 @@ const captureImage = () => {
 
 const getDevices = async () => {
   try {
-    await navigator.mediaDevices.getUserMedia({ video: true }); // Request permission first
-    const allDevices = await navigator.mediaDevices.enumerateDevices();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      error.value = "Media devices API not available. Please use a supported browser.";
+      console.error("navigator.mediaDevices.getUserMedia is not available");
+      return;
+    }
+
+    let allDevices = await navigator.mediaDevices.enumerateDevices();
+    const hasLabels = allDevices.some(device => device.label !== '');
+    
+    if (!hasLabels) {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        allDevices = await navigator.mediaDevices.enumerateDevices();
+      } catch (permErr) {
+        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
+      }
+    }
+
     devices.value = allDevices.filter((device) => device.kind === "videoinput");
     if (devices.value.length > 0 && !selectedDeviceId.value) {
       selectedDeviceId.value = devices.value[0].deviceId;
@@ -119,15 +154,6 @@ const getDevices = async () => {
   } catch (err) {
     console.error("Error enumerating devices:", err);
     error.value = `Error accessing media devices: ${err.name}. Please ensure permissions are granted.`;
-    if (err.name === "NotAllowedError") {
-      error.value =
-        "Camera access was denied. Please enable camera permissions in your browser settings.";
-    } else if (err.name === "NotFoundError") {
-      error.value =
-        "No camera found. Please ensure a camera is connected and enabled.";
-    } else {
-      error.value = `Could not access camera: ${err.message}.`;
-    }
   }
 };
 
@@ -143,10 +169,10 @@ const stopCamera = () => {
 
 const startCamera = async () => {
   if (stream.value) {
-    stopCamera(); // Stop existing stream before starting a new one
+    stopCamera();
   }
   if (!selectedDeviceId.value && devices.value.length > 0) {
-    selectedDeviceId.value = devices.value[0].deviceId; // Default to first camera if none selected
+    selectedDeviceId.value = devices.value[0].deviceId;
   }
   if (!selectedDeviceId.value) {
     error.value = "No camera selected or available.";
@@ -163,12 +189,11 @@ const startCamera = async () => {
   };
 
   try {
-    error.value = null; // Clear previous errors
+    error.value = null;
     stream.value = await navigator.mediaDevices.getUserMedia(constraints);
     if (videoRef.value) {
       videoRef.value.srcObject = stream.value;
       videoRef.value.onloadedmetadata = () => {
-        // Ensure the video dimensions are set for the canvas
         if (canvasRef.value) {
           canvasRef.value.width = videoRef.value.videoWidth;
           canvasRef.value.height = videoRef.value.videoHeight;
@@ -178,41 +203,20 @@ const startCamera = async () => {
   } catch (err) {
     console.error("Error starting camera:", err);
     error.value = `Error starting camera: ${err.name}. Check permissions and device availability.`;
-    if (err.name === "NotAllowedError") {
-      error.value =
-        "Camera access was denied. Please enable camera permissions in your browser settings.";
-    } else if (
-      err.name === "OverconstrainedError" ||
-      err.name === "ConstraintNotSatisfiedError"
-    ) {
-      error.value =
-        "Selected camera does not support the requested resolution. Trying default.";
-      // Fallback to default constraints if specific device fails (e.g. resolution)
-      try {
-        stream.value = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        if (videoRef.value) videoRef.value.srcObject = stream.value;
-      } catch (fallbackErr) {
-        error.value = `Fallback camera access failed: ${fallbackErr.message}`;
-      }
-    } else {
-      error.value = `Could not access camera: ${err.message}.`;
-    }
   }
 };
 
-// Lifecycle hooks
 onMounted(async () => {
-  await getDevices();
-  if (selectedDeviceId.value) {
-    await startCamera();
-  } else if (devices.value.length > 0) {
-    // If no device was pre-selected but devices are available, start the first one.
-    selectedDeviceId.value = devices.value[0].deviceId;
-    // startCamera will be called by the watcher now
-  } else {
-    error.value = "No video input devices found. Please connect a camera.";
+  // Only initialize web APIs if in browser
+  if (!isNative) {
+    await getDevices();
+    if (selectedDeviceId.value) {
+      await startCamera();
+    } else if (devices.value.length > 0) {
+      selectedDeviceId.value = devices.value[0].deviceId;
+    } else {
+      error.value = "No video input devices found. Please connect a camera.";
+    }
   }
 });
 
@@ -220,59 +224,66 @@ onBeforeUnmount(() => {
   stopCamera();
 });
 
-// Watch for changes in selectedDeviceId to restart the camera
 watch(selectedDeviceId, async (newVal, oldVal) => {
-  if (newVal && newVal !== oldVal) {
+  if (newVal && newVal !== oldVal && !isNative) {
     await startCamera();
   }
 });
 
-// Watch for changes in devices list to auto-select if initially empty
 watch(devices, (newDevices) => {
-  if (newDevices.length > 0 && !selectedDeviceId.value) {
+  if (newDevices.length > 0 && !selectedDeviceId.value && !isNative) {
     selectedDeviceId.value = newDevices[0].deviceId;
-    // startCamera will be called by the selectedDeviceId watcher
   }
 });
 </script>
 
 <template>
   <div class="capture-image">
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
 
-    <div class="controls">
-      <!-- <label for="camera-select">Select Camera:</label> -->
-      <select
-        id="camera-select"
-        v-model="selectedDeviceId"
-        @change="startCamera"
-        class="w-full"
-      >
-        <option
-          v-for="device in devices"
-          :key="device.deviceId"
-          :value="device.deviceId"
+    <!-- Native platform: Simple button to open native camera -->
+    <div v-if="isNative">
+      <div class="actions">
+        <button @click="handleNativeCapture" :disabled="isProcessing">
+          {{ isProcessing ? 'Processing...' : 'Take Photo' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Browser platform: Full web API controls -->
+    <div v-else>
+      <div class="controls">
+        <select
+          id="camera-select"
+          v-model="selectedDeviceId"
+          @change="startCamera"
           class="w-full"
         >
-          {{ device.label ? device.label : device.deviceId }}
-          {{ device.label || `Camera ${devices.indexOf(device) + 1}` }}
-        </option>
-      </select>
-    </div>
+          <option
+            v-for="device in devices"
+            :key="device.deviceId"
+            :value="device.deviceId"
+            class="w-full"
+          >
+            {{ device.label || `Camera ${devices.indexOf(device) + 1}` }}
+          </option>
+        </select>
+      </div>
 
-    <div class="preview-container">
-      <video
-        ref="videoRef"
-        autoplay
-        playsinline
-        muted
-        class="camera-preview"
-      ></video>
-      <canvas ref="canvasRef" style="display: none"></canvas>
-    </div>
+      <div class="preview-container">
+        <video
+          ref="videoRef"
+          autoplay
+          playsinline
+          muted
+          class="camera-preview"
+        ></video>
+        <canvas ref="canvasRef" style="display: none"></canvas>
+      </div>
 
-    <div class="actions">
-      <button @click="captureImage" :disabled="!stream">Capture Image</button>
+      <div class="actions">
+        <button @click="captureImage" :disabled="!stream">Capture Image</button>
+      </div>
     </div>
 
     <div v-if="isProcessing" class="loading-indicator">
@@ -313,9 +324,7 @@ watch(devices, (newDevices) => {
   position: relative;
   width: 100%;
   max-width: 640px;
-  /* Max width for the preview */
   margin: 0 auto;
-  /* Center the preview */
 }
 
 .camera-preview {
@@ -323,9 +332,7 @@ watch(devices, (newDevices) => {
   height: auto;
   border-radius: 4px;
   background-color: #333;
-  /* Placeholder background */
   display: block;
-  /* Remove extra space below video */
 }
 
 .actions {

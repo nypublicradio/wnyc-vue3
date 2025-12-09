@@ -28,6 +28,7 @@ dependencies {
     implementation project(':nypublicradio-capacitor-remote-streamer')
     implementation project(':bp-capacitor-background-mode')
     implementation project(':capacitor-native-settings')
+    implementation "androidx.webkit:webkit:1.4.0"
     implementation "com.onesignal:OneSignal:5.1.35"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10"
 }

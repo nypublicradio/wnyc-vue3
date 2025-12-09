@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import useCaptureMedia from "~/composables/atm/useCaptureMedia";
 
 const props = defineProps({
   bucket: {
@@ -26,6 +27,9 @@ const props = defineProps({
 
 const emit = defineEmits(["capture-complete", "capture-error"]);
 
+const { isNative, captureVideo: captureVideoNative, error: nativeError } = useCaptureMedia();
+
+// Web API refs (only used in browser)
 const videoRef = ref(null);
 const videoDevices = ref([]);
 const audioDevices = ref([]);
@@ -37,12 +41,46 @@ const recordedChunks = ref([]);
 const isRecording = ref(false);
 const isProcessing = ref(false);
 const error = ref(null);
+const remainingTime = ref(props.recordTimeLimit);
 
 const supabase = useSupabaseClient();
 
-// New captureVideo function (renamed from uploadVideo)
+// Native capture handler
+const handleNativeCapture = async () => {
+  try {
+    isProcessing.value = true;
+    error.value = null;
+
+    const videoFile = await captureVideoNative({
+      duration: props.recordTimeLimit
+    });
+
+    const captureMetadata = {
+      originalFileName: videoFile.name,
+      fileSize: videoFile.size,
+      fileType: videoFile.type,
+      captureTimestamp: Date.now(),
+      captureDate: new Date().toISOString(),
+      captureMethod: "native_video_recorder",
+      originalProps: {
+        bucket: props.bucket,
+        subfolder: props.subfolder,
+        patientId: props.patientId,
+        metadata: props.metadata,
+      },
+    };
+
+    emit("capture-complete", { file: videoFile, metadata: captureMetadata });
+  } catch (err) {
+    error.value = err.message || "Native video capture failed";
+    emit("capture-error", error.value);
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
+// Web API handlers (browser only)
 const captureVideo = async (videoFile) => {
-  // Instead of uploading, we'll emit the captured video file
   const captureMetadata = {
     originalFileName: videoFile.name,
     fileSize: videoFile.size,
@@ -63,9 +101,24 @@ const captureVideo = async (videoFile) => {
 
 const getDevices = async () => {
   try {
-    const permissionStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); // Request permissions
-    permissionStream.getTracks().forEach(track => track.stop()); // Stop stream immediately to release resources and avoid conflict on Android
-    const allDevices = await navigator.mediaDevices.enumerateDevices();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      error.value = "Media devices API not available. Please use a supported browser.";
+      console.error("navigator.mediaDevices.getUserMedia is not available");
+      return;
+    }
+
+    let allDevices = await navigator.mediaDevices.enumerateDevices();
+    const hasLabels = allDevices.some(device => device.label !== '');
+    
+    if (!hasLabels) {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        allDevices = await navigator.mediaDevices.enumerateDevices();
+      } catch (permErr) {
+        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
+      }
+    }
+
     videoDevices.value = allDevices.filter(
       (device) => device.kind === "videoinput"
     );
@@ -82,15 +135,6 @@ const getDevices = async () => {
   } catch (err) {
     console.error("Error enumerating devices:", err);
     error.value = `Error accessing media devices: ${err.name}. Ensure permissions are granted.`;
-    if (err.name === "NotAllowedError") {
-      error.value =
-        "Camera/microphone access was denied. Please enable permissions in your browser settings.";
-    } else if (err.name === "NotFoundError") {
-      error.value =
-        "No camera/microphone found. Please ensure they are connected and enabled.";
-    } else {
-      error.value = `Could not access media devices: ${err.message}.`;
-    }
   }
 };
 
@@ -116,11 +160,8 @@ const startCamera = async () => {
   }
 
   if (!selectedVideoDeviceId.value && !selectedAudioDeviceId.value) {
-    // Adjusted condition
     error.value = "Camera or microphone not selected or available.";
-    // Do not return here if one is available, try to get at least that stream
-    // console.warn('Camera or microphone not selected/available.');
-    // return;
+    return;
   }
 
   const constraints = {
@@ -150,28 +191,6 @@ const startCamera = async () => {
   } catch (err) {
     console.error("Error starting camera/microphone:", err);
     error.value = `Error starting devices: ${err.name}. Check permissions and device availability.`;
-    if (err.name === "NotAllowedError") {
-      error.value =
-        "Access denied. Please enable camera/microphone permissions.";
-    } else if (
-      err.name === "OverconstrainedError" ||
-      err.name === "ConstraintNotSatisfiedError"
-    ) {
-      error.value =
-        "Selected device(s) do not support requested constraints. Trying defaults.";
-      try {
-        // Fallback
-        stream.value = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-        if (videoRef.value) videoRef.value.srcObject = stream.value;
-      } catch (fallbackErr) {
-        error.value = `Fallback device access failed: ${fallbackErr.message}`;
-      }
-    } else {
-      error.value = `Could not access devices: ${err.message}.`;
-    }
   }
 };
 
@@ -187,16 +206,15 @@ const startRecording = () => {
 
   recordTimeLimitCountdown();
 
-  // Determine preferred MIME type
   const options = { mimeType: "video/webm; codecs=vp9,opus" };
   if (!MediaRecorder.isTypeSupported(options.mimeType)) {
     console.warn(`${options.mimeType} is not supported, trying default.`);
-    options.mimeType = "video/webm"; // Fallback
+    options.mimeType = "video/webm";
     if (!MediaRecorder.isTypeSupported(options.mimeType)) {
       console.warn(
         `${options.mimeType} is not supported either. Using browser default.`
       );
-      delete options.mimeType; // Let browser decide
+      delete options.mimeType;
     }
   }
 
@@ -218,7 +236,7 @@ const startRecording = () => {
       const timestamp = new Date().getTime();
       const fileName = `video_${timestamp}.${
         blob.type.split("/")[1].split(";")[0] || "webm"
-      }`; // e.g. video_12345.webm
+      }`;
       const videoFile = new File([blob], fileName, { type: blob.type });
 
       try {
@@ -235,7 +253,7 @@ const startRecording = () => {
         emit("capture-error", errorMessage);
       } finally {
         isProcessing.value = false;
-        recordedChunks.value = []; // Clear chunks for next recording
+        recordedChunks.value = [];
       }
     };
 
@@ -258,11 +276,9 @@ const startRecording = () => {
 const stopRecording = () => {
   if (mediaRecorder.value && isRecording.value) {
     mediaRecorder.value.stop();
-    // onstop handler will manage isRecording = false and processing
   }
 };
 
-const remainingTime = ref(props.recordTimeLimit);
 const recordTimeLimitCountdown = () => {
   const interval = setInterval(() => {
     remainingTime.value--;
@@ -275,20 +291,19 @@ const recordTimeLimitCountdown = () => {
 };
 
 onMounted(async () => {
-  await getDevices();
-  if (selectedVideoDeviceId.value || selectedAudioDeviceId.value) {
-    // check if any device is selected
-    await startCamera();
-  } else if (videoDevices.value.length > 0 || audioDevices.value.length > 0) {
-    // Auto-select first available devices if none are pre-selected
-    if (videoDevices.value.length > 0 && !selectedVideoDeviceId.value)
-      selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
-    if (audioDevices.value.length > 0 && !selectedAudioDeviceId.value)
-      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
-    // startCamera will be called by watchers if values changed and component is mounted
-  } else if (!error.value) {
-    // Only set generic error if no specific error occurred during getDevices
-    error.value = "No video or audio input devices found.";
+  // Only initialize web APIs if in browser
+  if (!isNative) {
+    await getDevices();
+    if (selectedVideoDeviceId.value || selectedAudioDeviceId.value) {
+      await startCamera();
+    } else if (videoDevices.value.length > 0 || audioDevices.value.length > 0) {
+      if (videoDevices.value.length > 0 && !selectedVideoDeviceId.value)
+        selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
+      if (audioDevices.value.length > 0 && !selectedAudioDeviceId.value)
+        selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+    } else if (!error.value) {
+      error.value = "No video or audio input devices found.";
+    }
   }
 });
 
@@ -302,26 +317,23 @@ onBeforeUnmount(() => {
 watch(
   [selectedVideoDeviceId, selectedAudioDeviceId],
   async (newValues, oldValues) => {
-    // Check if either new video or audio device ID has actually changed and component is mounted
-    if (newValues[0] !== oldValues[0] || newValues[1] !== oldValues[1]) {
+    if (!isNative && (newValues[0] !== oldValues[0] || newValues[1] !== oldValues[1])) {
       console.log("Device selection changed, restarting camera.");
       await startCamera();
     }
   },
   { immediate: false }
-); // immediate: false to avoid double run on mount if getDevices sets it.
+);
 
-// Auto-start camera if devices become available after mount
-watch(videoDevices, (newVal /* , oldVal */) => {
-  // Ensure oldVal is defined for initial check if needed
-  if (newVal.length > 0 && !selectedVideoDeviceId.value) {
-    selectedVideoDeviceId.value = newVal[0].deviceId; // Triggers camera restart via selectedVideoDeviceId watcher
+watch(videoDevices, (newVal) => {
+  if (newVal.length > 0 && !selectedVideoDeviceId.value && !isNative) {
+    selectedVideoDeviceId.value = newVal[0].deviceId;
   }
 });
-watch(audioDevices, (newVal /* , oldVal */) => {
-  // Ensure oldVal is defined for initial check
-  if (newVal.length > 0 && !selectedAudioDeviceId.value) {
-    selectedAudioDeviceId.value = newVal[0].deviceId; // Triggers camera restart via selectedAudioDeviceId watcher
+
+watch(audioDevices, (newVal) => {
+  if (newVal.length > 0 && !selectedAudioDeviceId.value && !isNative) {
+    selectedAudioDeviceId.value = newVal[0].deviceId;
   }
 });
 
@@ -333,62 +345,74 @@ defineExpose({
 
 <template>
   <div class="capture-video-audio">
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
 
-    <div class="controls">
-      <div>
-        <label for="video-device-select">Select Camera:</label>
-        <select
-          id="video-device-select"
-          v-model="selectedVideoDeviceId"
-          @change="startCamera"
-        >
-          <option
-            v-for="device in videoDevices"
-            :key="device.deviceId"
-            :value="device.deviceId"
-          >
-            {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="audio-device-select">Select Microphone:</label>
-        <select
-          id="audio-device-select"
-          v-model="selectedAudioDeviceId"
-          @change="startCamera"
-        >
-          <option
-            v-for="device in audioDevices"
-            :key="device.deviceId"
-            :value="device.deviceId"
-          >
-            {{
-              device.label || `Microphone ${audioDevices.indexOf(device) + 1}`
-            }}
-          </option>
-        </select>
+    <!-- Native platform: Simple button to open native recorder -->
+    <div v-if="isNative">
+      <div class="actions">
+        <button @click="handleNativeCapture" :disabled="isProcessing">
+          {{ isProcessing ? 'Processing...' : 'Record Video' }}
+        </button>
       </div>
     </div>
 
-    <div class="preview-container">
-      <video
-        ref="videoRef"
-        autoplay
-        playsinline
-        muted
-        class="camera-preview"
-      ></video>
-    </div>
+    <!-- Browser platform: Full web API controls -->
+    <div v-else>
+      <div class="controls">
+        <div>
+          <label for="video-device-select">Select Camera:</label>
+          <select
+            id="video-device-select"
+            v-model="selectedVideoDeviceId"
+            @change="startCamera"
+          >
+            <option
+              v-for="device in videoDevices"
+              :key="device.deviceId"
+              :value="device.deviceId"
+            >
+              {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label for="audio-device-select">Select Microphone:</label>
+          <select
+            id="audio-device-select"
+            v-model="selectedAudioDeviceId"
+            @change="startCamera"
+          >
+            <option
+              v-for="device in audioDevices"
+              :key="device.deviceId"
+              :value="device.deviceId"
+            >
+              {{
+                device.label || `Microphone ${audioDevices.indexOf(device) + 1}`
+              }}
+            </option>
+          </select>
+        </div>
+      </div>
 
-    <div class="actions">
-      <button @click="startRecording" :disabled="isRecording || !stream">
-        Start Recording {{ remainingTime }}
-      </button>
-      <button @click="stopRecording" :disabled="!isRecording">
-        Stop Recording
-      </button>
+      <div class="preview-container">
+        <video
+          ref="videoRef"
+          autoplay
+          playsinline
+          muted
+          class="camera-preview"
+        ></video>
+      </div>
+
+      <div class="actions">
+        <button @click="startRecording" :disabled="isRecording || !stream">
+          Start Recording {{ remainingTime }}
+        </button>
+        <button @click="stopRecording" :disabled="!isRecording">
+          Stop Recording
+        </button>
+      </div>
     </div>
 
     <div v-if="isProcessing" class="loading-indicator">
@@ -462,9 +486,7 @@ defineExpose({
 }
 
 .actions button:nth-child(1) {
-  /* Start Recording */
   background-color: #28a745;
-  /* Green */
 }
 
 .actions button:nth-child(1):disabled {
@@ -472,9 +494,7 @@ defineExpose({
 }
 
 .actions button:nth-child(2) {
-  /* Stop Recording */
   background-color: #dc3545;
-  /* Red */
 }
 
 .actions button:nth-child(2):disabled {
