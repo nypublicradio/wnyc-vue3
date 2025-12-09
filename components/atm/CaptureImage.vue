@@ -110,30 +110,8 @@ const captureImage = () => {
 
 const getDevices = async () => {
   try {
-    // Check if mediaDevices API is available (especially important for iOS)
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      error.value = "Media devices API not available. Please ensure you're running on iOS 14.5+ or use a supported browser.";
-      console.error("navigator.mediaDevices.getUserMedia is not available");
-      return;
-    }
-
-    // Enumerate devices first
-    let allDevices = await navigator.mediaDevices.enumerateDevices();
-    
-    // Check if we have device labels (permission already granted)
-    const hasLabels = allDevices.some(device => device.label !== '');
-    
-    if (!hasLabels) {
-      // We need to request permission to get labels
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        // Re-enumerate after permission granted
-        allDevices = await navigator.mediaDevices.enumerateDevices();
-      } catch (permErr) {
-        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
-      }
-    }
-
+    await navigator.mediaDevices.getUserMedia({ video: true }); // Request permission first
+    const allDevices = await navigator.mediaDevices.enumerateDevices();
     devices.value = allDevices.filter((device) => device.kind === "videoinput");
     if (devices.value.length > 0 && !selectedDeviceId.value) {
       selectedDeviceId.value = devices.value[0].deviceId;

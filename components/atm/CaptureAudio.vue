@@ -40,30 +40,9 @@ const audioUrl = ref(null); // For playback after recording
 
 const getDevices = async () => {
   try {
-    // Check if mediaDevices API is available (especially important for iOS)
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      error.value = "Media devices API not available. Please ensure you're running on iOS 14.5+ or use a supported browser.";
-      console.error("navigator.mediaDevices.getUserMedia is not available");
-      return;
-    }
-
-    // Enumerate devices first without requesting permission
-    let allDevices = await navigator.mediaDevices.enumerateDevices();
-    
-    // Check if we have device labels (permission already granted)
-    const hasLabels = allDevices.some(device => device.label !== '');
-    
-    if (!hasLabels) {
-      // We need to request permission to get labels
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Re-enumerate after permission granted
-        allDevices = await navigator.mediaDevices.enumerateDevices();
-      } catch (permErr) {
-        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
-      }
-    }
-
+    const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true }); // Request audio permission
+    permissionStream.getTracks().forEach(track => track.stop()); // Stop stream immediately to release resources and avoid conflict on Android
+    const allDevices = await navigator.mediaDevices.enumerateDevices();
     audioDevices.value = allDevices.filter(
       (device) => device.kind === "audioinput"
     );

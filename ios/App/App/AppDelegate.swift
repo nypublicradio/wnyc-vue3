@@ -35,17 +35,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         webView = getWebView()
         
-        if let webView = webView {
-            // Enable media capture for camera and microphone
-            webView.configuration.allowsInlineMediaPlayback = true
-            webView.configuration.mediaTypesRequiringUserActionForPlayback = []
-            
-            if #available(iOS 17.0, *) {
-                let preferences = webView.configuration.preferences
-                preferences.inactiveSchedulingPolicy = .none
-            } else {
-                print("Sleep Timer is not supported on iOS 16 and below")
-            }
+        if let webView = webView, #available(iOS 17.0, *) {
+            let preferences = webView.configuration.preferences
+            preferences.inactiveSchedulingPolicy = .none
+        } else {
+            print("Sleep Timer is not supported on iOS 16 and below")
         }
     }
 
