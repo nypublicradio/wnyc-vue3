@@ -18,6 +18,7 @@ const config: CapacitorConfig = {
     allowsInlineMediaPlayback: true,
   },
   server: {
+    hostname: 'native-app.wnyc.org',
     iosScheme: 'https',
     androidScheme: 'https'
   },
