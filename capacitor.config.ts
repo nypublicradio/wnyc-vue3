@@ -17,6 +17,8 @@ const config: CapacitorConfig = {
     appendUserAgent: 'iOS-WNYC-App',
     handleApplicationNotifications: false,
     allowsInlineMediaPlayback: true,
+    limitsNavigationsToAppBoundDomains: false,
+    contentMode: 'mobile',
   },
   plugins: {
     BackgroundMode: {
