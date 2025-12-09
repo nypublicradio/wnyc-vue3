@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import useCaptureMedia from "~/composables/atm/useCaptureMedia";
 
 const props = defineProps({
@@ -27,10 +27,20 @@ const props = defineProps({
 
 const emit = defineEmits(["capture-complete", "capture-error"]);
 
-const { isNative, captureVideo: captureVideoNative, error: nativeError } = useCaptureMedia();
+const { 
+  isNative, 
+  initializeVideo, 
+  startVideoRecording, 
+  stopVideoRecording, 
+  destroyVideo,
+  error: nativeError 
+} = useCaptureMedia();
 
-// Web API refs (only used in browser)
-const videoRef = ref(null);
+// Refs
+const videoRef = ref(null); // Used for Web Video and Native Placeholder
+const videoContainerRef = ref(null);
+
+// Web API refs
 const videoDevices = ref([]);
 const audioDevices = ref([]);
 const selectedVideoDeviceId = ref(null);
@@ -38,386 +48,257 @@ const selectedAudioDeviceId = ref(null);
 const stream = ref(null);
 const mediaRecorder = ref(null);
 const recordedChunks = ref([]);
+
+// State
 const isRecording = ref(false);
 const isProcessing = ref(false);
 const error = ref(null);
 const remainingTime = ref(props.recordTimeLimit);
+let countdownInterval = null;
 
-const supabase = useSupabaseClient();
+// Helpers
+const getCaptureMetadata = (file, method) => ({
+  originalFileName: file.name,
+  fileSize: file.size,
+  fileType: file.type,
+  captureTimestamp: Date.now(),
+  captureDate: new Date().toISOString(),
+  captureMethod: method,
+  originalProps: {
+    bucket: props.bucket,
+    subfolder: props.subfolder,
+    patientId: props.patientId,
+    metadata: props.metadata,
+  },
+});
 
-// Native capture handler
-const handleNativeCapture = async () => {
+// --- Methods ---
+
+const initNativeCamera = async () => {
+  if (!isNative || !videoRef.value) return;
+
   try {
-    isProcessing.value = true;
-    error.value = null;
+    // Wait for layout
+    await nextTick();
+    
+    // Get position of the placeholder element
+    const rect = videoRef.value.getBoundingClientRect();
+    const pixelRatio = window.devicePixelRatio || 1;
 
-    const videoFile = await captureVideoNative({
-      duration: props.recordTimeLimit
+    console.log('Initializing native camera at:', rect);
+
+    await initializeVideo({
+      id: 'native-video-preview',
+      x: rect.x * pixelRatio,
+      y: rect.y * pixelRatio,
+      width: rect.width * pixelRatio,
+      height: rect.height * pixelRatio,
+      stackPosition: 'front' // Overlay on top of the generic placeholder
     });
-
-    const captureMetadata = {
-      originalFileName: videoFile.name,
-      fileSize: videoFile.size,
-      fileType: videoFile.type,
-      captureTimestamp: Date.now(),
-      captureDate: new Date().toISOString(),
-      captureMethod: "native_video_recorder",
-      originalProps: {
-        bucket: props.bucket,
-        subfolder: props.subfolder,
-        patientId: props.patientId,
-        metadata: props.metadata,
-      },
-    };
-
-    emit("capture-complete", { file: videoFile, metadata: captureMetadata });
   } catch (err) {
-    error.value = err.message || "Native video capture failed";
+    console.error("Failed to init native camera:", err);
+    error.value = nativeError.value || "Failed to initialize camera";
+  }
+};
+
+const startRecording = async () => {
+  if (isRecording.value) return;
+  error.value = null;
+
+  try {
+    if (isNative) {
+      await startVideoRecording();
+    } else {
+      startWebRecording();
+    }
+    
+    // UI Updates
+    isRecording.value = true;
+    startCountdown();
+  } catch (err) {
+    console.error("Start recording failed:", err);
+    error.value = err.message;
+  }
+};
+
+const stopRecording = async () => {
+  if (!isRecording.value) return;
+  
+  stopCountdown();
+  isProcessing.value = true;
+
+  try {
+    let videoFile;
+    if (isNative) {
+      videoFile = await stopVideoRecording();
+    } else {
+      videoFile = await stopWebRecording();
+    }
+
+    if (videoFile) {
+      const metadata = getCaptureMetadata(videoFile, isNative ? "native_recorder" : "web_recorder");
+      emit("capture-complete", { file: videoFile, metadata });
+    }
+  } catch (err) {
+    console.error("Stop recording failed:", err);
+    error.value = err.message || "Failed to stop recording";
     emit("capture-error", error.value);
   } finally {
+    isRecording.value = false;
     isProcessing.value = false;
   }
 };
 
-// Web API handlers (browser only)
-const captureVideo = async (videoFile) => {
-  const captureMetadata = {
-    originalFileName: videoFile.name,
-    fileSize: videoFile.size,
-    fileType: videoFile.type,
-    captureTimestamp: Date.now(),
-    captureDate: new Date().toISOString(),
-    captureMethod: "browser_video_audio_recorder",
-    originalProps: {
-      bucket: props.bucket,
-      subfolder: props.subfolder,
-      patientId: props.patientId,
-      metadata: props.metadata,
-    },
-  };
-
-  return { file: videoFile, metadata: captureMetadata };
-};
-
-const getDevices = async () => {
-  try {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      error.value = "Media devices API not available. Please use a supported browser.";
-      console.error("navigator.mediaDevices.getUserMedia is not available");
-      return;
-    }
-
-    let allDevices = await navigator.mediaDevices.enumerateDevices();
-    const hasLabels = allDevices.some(device => device.label !== '');
-    
-    if (!hasLabels) {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        allDevices = await navigator.mediaDevices.enumerateDevices();
-      } catch (permErr) {
-        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
-      }
-    }
-
-    videoDevices.value = allDevices.filter(
-      (device) => device.kind === "videoinput"
-    );
-    audioDevices.value = allDevices.filter(
-      (device) => device.kind === "audioinput"
-    );
-
-    if (videoDevices.value.length > 0 && !selectedVideoDeviceId.value) {
-      selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
-    }
-    if (audioDevices.value.length > 0 && !selectedAudioDeviceId.value) {
-      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
-    }
-  } catch (err) {
-    console.error("Error enumerating devices:", err);
-    error.value = `Error accessing media devices: ${err.name}. Ensure permissions are granted.`;
-  }
-};
-
-const stopCamera = () => {
-  if (stream.value) {
-    stream.value.getTracks().forEach((track) => track.stop());
-    stream.value = null;
-  }
-  if (videoRef.value?.srcObject) {
-    videoRef.value.srcObject = null;
-  }
-};
-
-const startCamera = async () => {
-  if (stream.value) {
-    stopCamera();
-  }
-  if (!selectedVideoDeviceId.value && videoDevices.value.length > 0) {
-    selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
-  }
-  if (!selectedAudioDeviceId.value && audioDevices.value.length > 0) {
-    selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
-  }
-
-  if (!selectedVideoDeviceId.value && !selectedAudioDeviceId.value) {
-    error.value = "Camera or microphone not selected or available.";
-    return;
-  }
-
-  const constraints = {
-    video: selectedVideoDeviceId.value
-      ? {
-          deviceId: { exact: selectedVideoDeviceId.value },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        }
-      : false,
-    audio: selectedAudioDeviceId.value
-      ? { deviceId: { exact: selectedAudioDeviceId.value } }
-      : false,
-  };
-
-  if (!constraints.video && !constraints.audio) {
-    error.value = "No video or audio device selected.";
-    return;
-  }
-
-  try {
-    error.value = null;
-    stream.value = await navigator.mediaDevices.getUserMedia(constraints);
-    if (videoRef.value) {
-      videoRef.value.srcObject = stream.value;
-    }
-  } catch (err) {
-    console.error("Error starting camera/microphone:", err);
-    error.value = `Error starting devices: ${err.name}. Check permissions and device availability.`;
-  }
-};
-
-const startRecording = () => {
-  if (!stream.value) {
-    error.value = "Media stream not available to start recording.";
-    return;
-  }
-  if (isRecording.value) return;
-
-  error.value = null;
-  recordedChunks.value = [];
-
-  recordTimeLimitCountdown();
-
-  const options = { mimeType: "video/webm; codecs=vp9,opus" };
-  if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-    console.warn(`${options.mimeType} is not supported, trying default.`);
-    options.mimeType = "video/webm";
-    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-      console.warn(
-        `${options.mimeType} is not supported either. Using browser default.`
-      );
-      delete options.mimeType;
-    }
-  }
-
-  try {
-    mediaRecorder.value = new MediaRecorder(stream.value, options);
-
-    mediaRecorder.value.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        recordedChunks.value.push(event.data);
-      }
-    };
-
-    mediaRecorder.value.onstop = async () => {
-      isRecording.value = false;
-      isProcessing.value = true;
-      const blob = new Blob(recordedChunks.value, {
-        type: mediaRecorder.value.mimeType || "video/webm",
-      });
-      const timestamp = new Date().getTime();
-      const fileName = `video_${timestamp}.${
-        blob.type.split("/")[1].split(";")[0] || "webm"
-      }`;
-      const videoFile = new File([blob], fileName, { type: blob.type });
-
-      try {
-        const captureResult = await captureVideo(videoFile);
-        emit("capture-complete", captureResult);
-      } catch (captureErr) {
-        const errorMessage =
-          captureErr.message ||
-          (typeof captureErr === "string"
-            ? captureErr
-            : "Video capture failed");
-        console.error("Capture failed in onstop:", errorMessage);
-        error.value = `Video capture failed: ${errorMessage}`;
-        emit("capture-error", errorMessage);
-      } finally {
-        isProcessing.value = false;
-        recordedChunks.value = [];
-      }
-    };
-
-    mediaRecorder.value.onerror = (event) => {
-      console.error("MediaRecorder error:", event.error);
-      error.value = `Recording error: ${event.error.name} - ${event.error.message}`;
-      isRecording.value = false;
-      isProcessing.value = false;
-    };
-
-    mediaRecorder.value.start();
-    isRecording.value = true;
-  } catch (e) {
-    console.error("Failed to create MediaRecorder:", e);
-    error.value = `Failed to start recording: ${e.message}. Check console for details. Ensure selected devices are working.`;
-    isRecording.value = false;
-  }
-};
-
-const stopRecording = () => {
-  if (mediaRecorder.value && isRecording.value) {
-    mediaRecorder.value.stop();
-  }
-};
-
-const recordTimeLimitCountdown = () => {
-  const interval = setInterval(() => {
+const startCountdown = () => {
+  remainingTime.value = props.recordTimeLimit;
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
     remainingTime.value--;
     if (remainingTime.value < 0) {
-      clearInterval(interval);
       stopRecording();
-      remainingTime.value = props.recordTimeLimit;
     }
   }, 1000);
 };
 
+const stopCountdown = () => {
+  clearInterval(countdownInterval);
+  remainingTime.value = props.recordTimeLimit;
+};
+
+// --- Web Specific Methods ---
+
+const getWebDevices = async () => {
+  if (!navigator.mediaDevices?.enumerateDevices) return;
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    videoDevices.value = devices.filter(d => d.kind === 'videoinput');
+    audioDevices.value = devices.filter(d => d.kind === 'audioinput');
+    
+    if (videoDevices.value.length && !selectedVideoDeviceId.value) 
+      selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
+    if (audioDevices.value.length && !selectedAudioDeviceId.value) 
+      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+  } catch (err) {
+    console.warn("Device enumeration failed:", err);
+  }
+};
+
+const startWebCamera = async () => {
+  if (stream.value) {
+    stream.value.getTracks().forEach(t => t.stop());
+  }
+  
+  const constraints = {
+    video: selectedVideoDeviceId.value ? { deviceId: { exact: selectedVideoDeviceId.value } } : true,
+    audio: selectedAudioDeviceId.value ? { deviceId: { exact: selectedAudioDeviceId.value } } : true
+  };
+
+  try {
+    stream.value = await navigator.mediaDevices.getUserMedia(constraints);
+    if (videoRef.value) videoRef.value.srcObject = stream.value;
+  } catch (err) {
+    error.value = `Camera access failed: ${err.message}`;
+  }
+};
+
+const startWebRecording = () => {
+  if (!stream.value) throw new Error("No stream available");
+  
+  recordedChunks.value = [];
+  const options = { mimeType: 'video/webm' }; 
+  // Add codec fallback logic if needed
+  
+  mediaRecorder.value = new MediaRecorder(stream.value, options);
+  mediaRecorder.value.ondataavailable = (e) => {
+    if (e.data.size > 0) recordedChunks.value.push(e.data);
+  };
+  mediaRecorder.value.start();
+};
+
+const stopWebRecording = () => {
+  return new Promise((resolve, reject) => {
+    if (!mediaRecorder.value) return reject("No recorder");
+    
+    mediaRecorder.value.onstop = () => {
+      const blob = new Blob(recordedChunks.value, { type: 'video/webm' });
+      const file = new File([blob], `video_${Date.now()}.webm`, { type: 'video/webm' });
+      resolve(file);
+    };
+    mediaRecorder.value.onerror = (e) => reject(e.error);
+    
+    mediaRecorder.value.stop();
+  });
+};
+
+// --- Watchers & Lifecycle ---
+
+watch([selectedVideoDeviceId, selectedAudioDeviceId], () => {
+  if (!isNative) startWebCamera();
+});
+
 onMounted(async () => {
-  // Only initialize web APIs if in browser
-  if (!isNative) {
-    await getDevices();
-    if (selectedVideoDeviceId.value || selectedAudioDeviceId.value) {
-      await startCamera();
-    } else if (videoDevices.value.length > 0 || audioDevices.value.length > 0) {
-      if (videoDevices.value.length > 0 && !selectedVideoDeviceId.value)
-        selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
-      if (audioDevices.value.length > 0 && !selectedAudioDeviceId.value)
-        selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
-    } else if (!error.value) {
-      error.value = "No video or audio input devices found.";
-    }
+  if (isNative) {
+    // Native Init
+    setTimeout(initNativeCamera, 500); // Small delay for layout to settle
+  } else {
+    // Web Init
+    await getWebDevices();
+    await startWebCamera();
   }
 });
 
 onBeforeUnmount(() => {
-  if (isRecording.value) {
-    stopRecording();
-  }
-  stopCamera();
-});
-
-watch(
-  [selectedVideoDeviceId, selectedAudioDeviceId],
-  async (newValues, oldValues) => {
-    if (!isNative && (newValues[0] !== oldValues[0] || newValues[1] !== oldValues[1])) {
-      console.log("Device selection changed, restarting camera.");
-      await startCamera();
-    }
-  },
-  { immediate: false }
-);
-
-watch(videoDevices, (newVal) => {
-  if (newVal.length > 0 && !selectedVideoDeviceId.value && !isNative) {
-    selectedVideoDeviceId.value = newVal[0].deviceId;
+  stopCountdown();
+  if (isNative) {
+    destroyVideo();
+  } else {
+    if (stream.value) stream.value.getTracks().forEach(t => t.stop());
   }
 });
 
-watch(audioDevices, (newVal) => {
-  if (newVal.length > 0 && !selectedAudioDeviceId.value && !isNative) {
-    selectedAudioDeviceId.value = newVal[0].deviceId;
-  }
-});
-
-defineExpose({
-  startRecording,
-  stopRecording,
-});
+defineExpose({ startRecording, stopRecording });
 </script>
 
 <template>
   <div class="capture-video-audio">
     <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
 
-    <!-- Native platform: Simple button to open native recorder -->
-    <div v-if="isNative">
-      <div class="actions">
-        <button @click="handleNativeCapture" :disabled="isProcessing">
-          {{ isProcessing ? 'Processing...' : 'Record Video' }}
-        </button>
-      </div>
+    <!-- Web Controls: Only show dropdowns if not native -->
+    <div v-if="!isNative" class="controls">
+      <select v-model="selectedVideoDeviceId">
+        <option v-for="d in videoDevices" :key="d.deviceId" :value="d.deviceId">{{ d.label || 'Camera' }}</option>
+      </select>
+       <select v-model="selectedAudioDeviceId">
+        <option v-for="d in audioDevices" :key="d.deviceId" :value="d.deviceId">{{ d.label || 'Microphone' }}</option>
+      </select>
     </div>
 
-    <!-- Browser platform: Full web API controls -->
-    <div v-else>
-      <div class="controls">
-        <div>
-          <label for="video-device-select">Select Camera:</label>
-          <select
-            id="video-device-select"
-            v-model="selectedVideoDeviceId"
-            @change="startCamera"
-          >
-            <option
-              v-for="device in videoDevices"
-              :key="device.deviceId"
-              :value="device.deviceId"
-            >
-              {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label for="audio-device-select">Select Microphone:</label>
-          <select
-            id="audio-device-select"
-            v-model="selectedAudioDeviceId"
-            @change="startCamera"
-          >
-            <option
-              v-for="device in audioDevices"
-              :key="device.deviceId"
-              :value="device.deviceId"
-            >
-              {{
-                device.label || `Microphone ${audioDevices.indexOf(device) + 1}`
-              }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="preview-container">
-        <video
-          ref="videoRef"
-          autoplay
-          playsinline
-          muted
-          class="camera-preview"
-        ></video>
-      </div>
-
-      <div class="actions">
-        <button @click="startRecording" :disabled="isRecording || !stream">
-          Start Recording {{ remainingTime }}
-        </button>
-        <button @click="stopRecording" :disabled="!isRecording">
-          Stop Recording
-        </button>
-      </div>
+    <!-- Preview Area: Shared for both Native and Web -->
+    <div ref="videoContainerRef" class="preview-container">
+      <!-- On Native: This element gives us the rect for the native layer using 'front' stack position -->
+      <!-- On Web: This plays the stream -->
+      <video
+        ref="videoRef"
+        autoplay
+        playsinline
+        muted
+        class="camera-preview"
+      ></video>
     </div>
 
-    <div v-if="isProcessing" class="loading-indicator">
-      Processing video capture...
+    <!-- Unified Actions -->
+    <div class="actions">
+      <button 
+        @click="isRecording ? stopRecording() : startRecording()" 
+        :disabled="isProcessing"
+        class="record-btn"
+        :class="{ recording: isRecording }"
+      >
+        {{ isRecording ? `Stop Recording (${remainingTime}s)` : 'Start Recording' }}
+      </button>
     </div>
+
+    <div v-if="isProcessing" class="loading-indicator">Processing...</div>
   </div>
 </template>
 
@@ -427,92 +308,58 @@ defineExpose({
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid #ccc;
+  background: #f0f0f0;
   border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.controls > div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.controls label {
-  font-weight: bold;
-  font-size: 0.9em;
-}
-
-.controls select {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ddd;
 }
 
 .preview-container {
-  position: relative;
   width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
+  aspect-ratio: 16/9; /* Force a standard ratio */
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
 }
 
 .camera-preview {
   width: 100%;
-  height: auto;
-  border-radius: 4px;
-  background-color: #333;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
   display: block;
 }
 
 .actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
 }
 
-.actions button {
-  padding: 0.75rem 1.5rem;
-  color: white;
+.record-btn {
+  padding: 12px 24px;
+  border-radius: 50px;
   border: none;
-  border-radius: 4px;
+  background: #e01e3f;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 1rem;
+  transition: all 0.2s;
 }
 
-.actions button:nth-child(1) {
-  background-color: #28a745;
+.record-btn.recording {
+  background: #333;
+  animation: pulse 2s infinite;
 }
 
-.actions button:nth-child(1):disabled {
-  background-color: #8fbc8f;
-}
-
-.actions button:nth-child(2) {
-  background-color: #dc3545;
-}
-
-.actions button:nth-child(2):disabled {
-  background-color: #f08080;
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
 }
 
 .error-message {
   color: red;
-  background-color: #ffe0e0;
-  border: 1px solid red;
-  padding: 0.75rem;
+  background: #ffe0e0;
+  padding: 0.5rem;
   border-radius: 4px;
-  margin-bottom: 1rem;
-}
-
-.loading-indicator {
-  text-align: center;
-  padding: 1rem;
-  font-style: italic;
 }
 </style>
