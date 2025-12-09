@@ -16,7 +16,7 @@ const UploadMediaREF = ref(null);
 const questionLimitReached = ref(false);
 const hasFiles = ref(false);
 const submitProgress = ref(null);
-const recordTimeLimit = 30;
+const recordTimeLimit = 3;
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -150,9 +150,9 @@ onMounted(() => {
           header="Capture/Upload Video"
           :uploadButton="false"
           :videoButton="true"
-          :cameraButton="true"
+          :cameraButton="false"
           :fileButton="false"
-          :audioButton="true"
+          :audioButton="false"
           :browseButton="false"
           :maxFiles="1"
           @upload-complete="onUploadComplete"
@@ -169,6 +169,50 @@ onMounted(() => {
       <div v-else class="flex flex-column gap-2 my-4">
         <p>Question limit reached. Please try again tomorrow.</p>
       </div>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <p>End of Page</p>
     </section>
   </div>
 </template>

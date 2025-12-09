@@ -5,6 +5,7 @@ import { ref } from 'vue'
 export default function useCaptureMedia () {
     const isNative = Capacitor.isNativePlatform()
     const error = ref<string | null>(null)
+    const isInitialized = ref(false)
 
     /**
      * Convert a file URI to a File object using native fetch
@@ -73,6 +74,7 @@ export default function useCaptureMedia () {
                     }],
                     autoShow: true
                 })
+                isInitialized.value = true
             } catch (err) {
                 console.error('Error initializing video:', err)
                 error.value = `Failed to initialize camera: ${err.message}`
@@ -130,8 +132,11 @@ export default function useCaptureMedia () {
     const destroyVideo = async () => {
         if (isNative) {
             try {
-                console.log('Destroying native camera')
-                await VideoRecorder.destroy()
+                if (isInitialized.value) {
+                    console.log('Destroying native camera')
+                    await VideoRecorder.destroy()
+                    isInitialized.value = false
+                }
             } catch (err) {
                 console.error('Error destroying camera:', err)
                 // Don't set error state on destroy as it's often called on unmount

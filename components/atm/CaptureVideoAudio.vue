@@ -27,13 +27,13 @@ const props = defineProps({
 
 const emit = defineEmits(["capture-complete", "capture-error"]);
 
-const { 
-  isNative, 
-  initializeVideo, 
-  startVideoRecording, 
-  stopVideoRecording, 
+const {
+  isNative,
+  initializeVideo,
+  startVideoRecording,
+  stopVideoRecording,
   destroyVideo,
-  error: nativeError 
+  error: nativeError,
 } = useCaptureMedia();
 
 // Refs
@@ -80,20 +80,31 @@ const initNativeCamera = async () => {
   try {
     // Wait for layout
     await nextTick();
-    
+
+    // Scroll into view to ensure visibility
+    if (videoContainerRef.value) {
+      videoContainerRef.value.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      // Give it a moment to scroll
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+
+    // Lock scroll to prevent "floating" feel
+    document.body.style.overflow = "hidden";
+
     // Get position of the placeholder element
     const rect = videoRef.value.getBoundingClientRect();
-    const pixelRatio = window.devicePixelRatio || 1;
-
-    console.log('Initializing native camera at:', rect);
+    console.log("Initializing native camera at:", rect);
 
     await initializeVideo({
-      id: 'native-video-preview',
-      x: rect.x * pixelRatio,
-      y: rect.y * pixelRatio,
-      width: rect.width * pixelRatio,
-      height: rect.height * pixelRatio,
-      stackPosition: 'front' // Overlay on top of the generic placeholder
+      id: "native-video-preview",
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      stackPosition: "front", // Overlay on top of the generic placeholder
     });
   } catch (err) {
     console.error("Failed to init native camera:", err);
@@ -111,7 +122,7 @@ const startRecording = async () => {
     } else {
       startWebRecording();
     }
-    
+
     // UI Updates
     isRecording.value = true;
     startCountdown();
@@ -123,7 +134,7 @@ const startRecording = async () => {
 
 const stopRecording = async () => {
   if (!isRecording.value) return;
-  
+
   stopCountdown();
   isProcessing.value = true;
 
@@ -136,7 +147,13 @@ const stopRecording = async () => {
     }
 
     if (videoFile) {
-      const metadata = getCaptureMetadata(videoFile, isNative ? "native_recorder" : "web_recorder");
+      // Small delay to ensure native view is fully detached/stopped before we potentially unmount
+      if (isNative) await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const metadata = getCaptureMetadata(
+        videoFile,
+        isNative ? "native_recorder" : "web_recorder"
+      );
       emit("capture-complete", { file: videoFile, metadata });
     }
   } catch (err) {
@@ -171,12 +188,12 @@ const getWebDevices = async () => {
   if (!navigator.mediaDevices?.enumerateDevices) return;
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    videoDevices.value = devices.filter(d => d.kind === 'videoinput');
-    audioDevices.value = devices.filter(d => d.kind === 'audioinput');
-    
-    if (videoDevices.value.length && !selectedVideoDeviceId.value) 
+    videoDevices.value = devices.filter((d) => d.kind === "videoinput");
+    audioDevices.value = devices.filter((d) => d.kind === "audioinput");
+
+    if (videoDevices.value.length && !selectedVideoDeviceId.value)
       selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
-    if (audioDevices.value.length && !selectedAudioDeviceId.value) 
+    if (audioDevices.value.length && !selectedAudioDeviceId.value)
       selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
   } catch (err) {
     console.warn("Device enumeration failed:", err);
@@ -185,12 +202,16 @@ const getWebDevices = async () => {
 
 const startWebCamera = async () => {
   if (stream.value) {
-    stream.value.getTracks().forEach(t => t.stop());
+    stream.value.getTracks().forEach((t) => t.stop());
   }
-  
+
   const constraints = {
-    video: selectedVideoDeviceId.value ? { deviceId: { exact: selectedVideoDeviceId.value } } : true,
-    audio: selectedAudioDeviceId.value ? { deviceId: { exact: selectedAudioDeviceId.value } } : true
+    video: selectedVideoDeviceId.value
+      ? { deviceId: { exact: selectedVideoDeviceId.value } }
+      : true,
+    audio: selectedAudioDeviceId.value
+      ? { deviceId: { exact: selectedAudioDeviceId.value } }
+      : true,
   };
 
   try {
@@ -203,11 +224,11 @@ const startWebCamera = async () => {
 
 const startWebRecording = () => {
   if (!stream.value) throw new Error("No stream available");
-  
+
   recordedChunks.value = [];
-  const options = { mimeType: 'video/webm' }; 
+  const options = { mimeType: "video/webm" };
   // Add codec fallback logic if needed
-  
+
   mediaRecorder.value = new MediaRecorder(stream.value, options);
   mediaRecorder.value.ondataavailable = (e) => {
     if (e.data.size > 0) recordedChunks.value.push(e.data);
@@ -218,14 +239,16 @@ const startWebRecording = () => {
 const stopWebRecording = () => {
   return new Promise((resolve, reject) => {
     if (!mediaRecorder.value) return reject("No recorder");
-    
+
     mediaRecorder.value.onstop = () => {
-      const blob = new Blob(recordedChunks.value, { type: 'video/webm' });
-      const file = new File([blob], `video_${Date.now()}.webm`, { type: 'video/webm' });
+      const blob = new Blob(recordedChunks.value, { type: "video/webm" });
+      const file = new File([blob], `video_${Date.now()}.webm`, {
+        type: "video/webm",
+      });
       resolve(file);
     };
     mediaRecorder.value.onerror = (e) => reject(e.error);
-    
+
     mediaRecorder.value.stop();
   });
 };
@@ -251,8 +274,9 @@ onBeforeUnmount(() => {
   stopCountdown();
   if (isNative) {
     destroyVideo();
+    document.body.style.overflow = ""; // Restore scroll
   } else {
-    if (stream.value) stream.value.getTracks().forEach(t => t.stop());
+    if (stream.value) stream.value.getTracks().forEach((t) => t.stop());
   }
 });
 
@@ -261,20 +285,30 @@ defineExpose({ startRecording, stopRecording });
 
 <template>
   <div class="capture-video-audio">
-    <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
+    <div v-if="error || nativeError" class="error-message">
+      {{ error || nativeError }}
+    </div>
 
     <!-- Web Controls: Only show dropdowns if not native -->
     <div v-if="!isNative" class="controls">
       <select v-model="selectedVideoDeviceId">
-        <option v-for="d in videoDevices" :key="d.deviceId" :value="d.deviceId">{{ d.label || 'Camera' }}</option>
+        <option v-for="d in videoDevices" :key="d.deviceId" :value="d.deviceId">
+          {{ d.label || "Camera" }}
+        </option>
       </select>
-       <select v-model="selectedAudioDeviceId">
-        <option v-for="d in audioDevices" :key="d.deviceId" :value="d.deviceId">{{ d.label || 'Microphone' }}</option>
+      <select v-model="selectedAudioDeviceId">
+        <option v-for="d in audioDevices" :key="d.deviceId" :value="d.deviceId">
+          {{ d.label || "Microphone" }}
+        </option>
       </select>
     </div>
 
     <!-- Preview Area: Shared for both Native and Web -->
-    <div ref="videoContainerRef" class="preview-container">
+    <div
+      ref="videoContainerRef"
+      class="preview-container"
+      :style="{ aspectRatio: isNative ? '9/16' : '16/9' }"
+    >
       <!-- On Native: This element gives us the rect for the native layer using 'front' stack position -->
       <!-- On Web: This plays the stream -->
       <video
@@ -288,13 +322,15 @@ defineExpose({ startRecording, stopRecording });
 
     <!-- Unified Actions -->
     <div class="actions">
-      <button 
-        @click="isRecording ? stopRecording() : startRecording()" 
+      <button
+        @click="isRecording ? stopRecording() : startRecording()"
         :disabled="isProcessing"
         class="record-btn"
         :class="{ recording: isRecording }"
       >
-        {{ isRecording ? `Stop Recording (${remainingTime}s)` : 'Start Recording' }}
+        {{
+          isRecording ? `Stop Recording (${remainingTime}s)` : "Start Recording"
+        }}
       </button>
     </div>
 
@@ -314,11 +350,12 @@ defineExpose({ startRecording, stopRecording });
 
 .preview-container {
   width: 100%;
-  aspect-ratio: 16/9; /* Force a standard ratio */
+  /* aspect-ratio handled dynamically in template */
   background: #000;
   border-radius: 8px;
   overflow: hidden;
   position: relative;
+  max-height: 40vh; /* Ensure controls fit on screen */
 }
 
 .camera-preview {
@@ -351,9 +388,15 @@ defineExpose({ startRecording, stopRecording });
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.8; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .error-message {
