@@ -63,9 +63,34 @@ const captureVideo = async (videoFile) => {
 
 const getDevices = async () => {
   try {
-    const permissionStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); // Request permissions
-    permissionStream.getTracks().forEach(track => track.stop()); // Stop stream immediately to release resources and avoid conflict on Android
-    const allDevices = await navigator.mediaDevices.enumerateDevices();
+    // Check if mediaDevices API is available (especially important for iOS)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      error.value = "Media devices API not available. Please ensure you're running on iOS 14.5+ or use a supported browser.";
+      console.error("navigator.mediaDevices.getUserMedia is not available");
+      return;
+    }
+
+    // On first call, we need to request permission to get device labels
+    // However, we should NOT stop this stream immediately as it causes conflicts on Android
+    // Instead, we'll enumerate devices first, and if labels are empty, then request permission
+    let allDevices = await navigator.mediaDevices.enumerateDevices();
+    
+    // Check if we have device labels (permission already granted)
+    const hasLabels = allDevices.some(device => device.label !== '');
+    
+    if (!hasLabels) {
+      // We need to request permission to get labels
+      // DO NOT store or immediately stop this stream - just let it request permission
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // Re-enumerate after permission granted
+        allDevices = await navigator.mediaDevices.enumerateDevices();
+      } catch (permErr) {
+        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
+        // Continue anyway - devices will just have generic labels
+      }
+    }
+
     videoDevices.value = allDevices.filter(
       (device) => device.kind === "videoinput"
     );
