@@ -13,14 +13,10 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: true,
   },
   ios: {
+    overrideUserAgent: `${process.env.USER_AGENT}`,
     appendUserAgent: 'iOS-WNYC-App',
     handleApplicationNotifications: false,
     allowsInlineMediaPlayback: true,
-  },
-  server: {
-    hostname: 'native-app.wnyc.org',
-    iosScheme: 'https',
-    androidScheme: 'https'
   },
   plugins: {
     BackgroundMode: {
