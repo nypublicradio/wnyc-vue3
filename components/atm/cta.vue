@@ -29,13 +29,7 @@ const routeToPage = () => {
     class="atm-cta flex items-center w-full cursor-pointer"
     @click="routeToPage"
   >
-    <nuxt-img
-      src="/atm/mayor.png"
-      loading="eager"
-      :quality="100"
-      :width="90"
-      :height="90"
-    />
+    <img src="/atm/mayor.png" loading="eager" :width="90" :height="90" />
     <div
       class="flex flex gap-2 p-2 justify-content-between align-items-center w-full"
     >

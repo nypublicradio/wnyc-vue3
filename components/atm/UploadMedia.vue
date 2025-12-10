@@ -1,6 +1,6 @@
 <script setup>
 import { ref, nextTick, computed, onMounted } from "vue";
-import { useIsApp } from "~/composables/states";
+import { Capacitor } from "@capacitor/core";
 import useGallery from "~/composables/atm/useGallery";
 // Import FilePond and its plugins
 import vueFilePond from "vue-filepond";
@@ -128,7 +128,6 @@ const emit = defineEmits([
 
 const { embedMetadataInImage } = useGallery();
 const { transcribeMedia } = useTranscribe();
-const isApp = useIsApp();
 
 // Supabase client
 const supabase = useSupabaseClient();
@@ -1123,7 +1122,7 @@ onMounted(async () => {
     <div v-if="lastCapturedVideoUrl" class="manual-preview mb-4">
       <h3>Review Recording</h3>
       <video
-        v-if="isApp"
+        v-if="Capacitor.getPlatform() === 'ios'"
         :src="lastCapturedVideoUrl"
         controls
         playsinline
