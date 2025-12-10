@@ -85,15 +85,35 @@ export default function useCaptureMedia () {
                     path: path
                 })
 
+                // Detect mime type via signature (magic bytes) because the plugin often returns .mp4 extension for .mov files
+                // We need to peek at the first few bytes.
+                // fileData.data is base64. Let's look at the first chunk.
+                const dataString = typeof fileData.data === 'string' ? fileData.data : ''
+                const headerB64 = dataString.substring(0, 20) // First 15 chars roughly cover first 10-12 bytes
+                const headerStr = atob(headerB64)
+
+                // Default to mp4
+                let mimeType = 'video/mp4'
+                let extension = path.split('.').pop()?.toLowerCase() || 'mp4'
+
+                // QuickTime signature is usually 'ftypqt' near the start
+                if (headerStr.includes('ftypqt')) {
+                    mimeType = 'video/quicktime'
+                    extension = 'mov'
+                    console.log('Detected QuickTime signature (ftypqt), forcing video/quicktime')
+                } else if (extension === 'mov') {
+                    mimeType = 'video/quicktime'
+                }
+
                 // fileData.data is base64 string
-                const blob = b64toBlob(fileData.data, 'video/mp4') // Assume mp4 for video recorder
-                console.log('Blob created via Filesystem:', blob.size)
+                const blob = b64toBlob(dataString, mimeType)
+                console.log('Blob created via Filesystem:', blob.size, mimeType)
 
                 const date = new Date()
-                const name = fileName || `video_${date.getTime()}.mp4`
+                const name = fileName || `video_${date.getTime()}.${extension}`
 
                 return new File([blob], name, {
-                    type: 'video/mp4',
+                    type: mimeType,
                     lastModified: date.getTime()
                 })
             }

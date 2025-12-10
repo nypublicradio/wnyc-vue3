@@ -140,8 +140,14 @@ const hasFiles = ref(false);
 // Store edited files mapped by file item ID
 const editedFiles = ref(new Map());
 
+// Store last captured video URL for manual preview
+const lastCapturedVideoUrl = ref(null);
+
 // Track if images are being processed
 const isProcessing = ref(false);
+
+// Ref for the component root to enable scrolling
+const uploadMediaPanel = ref(null);
 
 // Track if images are being captured
 const isCapturing = ref(false);
@@ -604,6 +610,20 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
 const handleFilesReady = async () => {
   if (!pond.value) return;
 
+  // Clear the video preview when user submits
+  if (lastCapturedVideoUrl.value) {
+    URL.revokeObjectURL(lastCapturedVideoUrl.value);
+    lastCapturedVideoUrl.value = null;
+  }
+
+  // Scroll the component into view to show progress
+  if (uploadMediaPanel.value?.$el) {
+    uploadMediaPanel.value.$el.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }
+
   isProcessing.value = true;
   const files = pond.value.getFiles();
 
@@ -668,6 +688,17 @@ const handleCaptureComplete = (captureData) => {
     // Add file to FilePond
     pond.value.addFile(captureData.file);
 
+    // Create manual preview for iOS verification
+    // Revoke previous URL if exists to avoid leaks
+    if (lastCapturedVideoUrl.value) {
+      URL.revokeObjectURL(lastCapturedVideoUrl.value);
+    }
+    try {
+        lastCapturedVideoUrl.value = URL.createObjectURL(captureData.file);
+    } catch (e) {
+        console.error("Failed to create object URL for preview:", e);
+    }
+
     // Store the capture metadata for later use during upload
     // We'll store it keyed by file name since we don't have file item ID yet
     const fileKey = `${captureData.file.name}_${captureData.file.lastModified}`;
@@ -692,6 +723,12 @@ const reset = () => {
     editedFiles.value.clear();
     captureMetadataMap.value.clear();
     isProcessing.value = false;
+
+    // Clear manual video preview
+    if (lastCapturedVideoUrl.value) {
+        URL.revokeObjectURL(lastCapturedVideoUrl.value);
+        lastCapturedVideoUrl.value = null;
+    }
 
     // In autosave mode, clear all autosaved files
     if (isAutosaveMode.value && props.autosaveComposable) {
@@ -897,7 +934,14 @@ const onRemoveFile = async (error, file) => {
 
   // Check if there are still files after removal
   nextTick(() => {
-    hasFiles.value = pond.value?.getFiles()?.length > 0;
+    const fileCount = pond.value?.getFiles()?.length || 0;
+    hasFiles.value = fileCount > 0;
+    
+    // If no files left, clear the manual video preview
+    if (fileCount === 0 && lastCapturedVideoUrl.value) {
+        URL.revokeObjectURL(lastCapturedVideoUrl.value);
+        lastCapturedVideoUrl.value = null;
+    }
   });
 };
 // Handle FilePond initialization
@@ -982,11 +1026,16 @@ onMounted(async () => {
   if (pond.value && pond.value.getFiles().length === 0) {
     await restoreAutosavedFiles();
   }
+
+  // Restore files if in autosave mode
+  await restoreAutosavedFiles();
 });
+
 </script>
 
 <template>
   <Panel
+    ref="uploadMediaPanel"
     class="upload-media"
     :class="props.invalid ? 'p-invalid !border-red-300' : ''"
     :header="props.header"
@@ -1069,6 +1118,19 @@ onMounted(async () => {
     </div>
 
     <!-- Existing FilePond uploader, conditionally hide if a capture mode is active -->
+    <!-- Manual Video Preview -->
+    <div v-if="lastCapturedVideoUrl" class="manual-preview mb-4">
+      <h3>Review Recording</h3>
+      <video
+        :src="lastCapturedVideoUrl"
+        controls
+        playsinline
+        webkit-playsinline
+        width="100%"
+        class="rounded border"
+      ></video>
+    </div>
+
     <ClientOnly>
       <FilePond
         v-show="
