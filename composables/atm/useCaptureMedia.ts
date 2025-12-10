@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core'
-import { VideoRecorder, VideoRecorderCamera } from '@capacitor-community/video-recorder'
+import { VideoRecorder, VideoRecorderCamera, VideoRecorderQuality } from '@capacitor-community/video-recorder'
 import { Filesystem } from '@capacitor/filesystem'
 import { ref } from 'vue'
 
@@ -150,7 +150,8 @@ export default function useCaptureMedia () {
                         height: options.height,
                         borderRadius: 0
                     }],
-                    autoShow: true
+                    autoShow: true,
+                    quality: VideoRecorderQuality.MAX_720P,
                 })
             } catch (err) {
                 console.error('Error initializing video:', err)
