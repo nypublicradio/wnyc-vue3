@@ -1,45 +1,103 @@
 import { Capacitor } from '@capacitor/core'
 import { VideoRecorder, VideoRecorderCamera } from '@capacitor-community/video-recorder'
+import { Filesystem } from '@capacitor/filesystem'
 import { ref } from 'vue'
 
 export default function useCaptureMedia () {
     const isNative = Capacitor.isNativePlatform()
     const error = ref<string | null>(null)
-    const isInitialized = ref(false)
+
+    // Helper to convert base64 to Blob
+    const b64toBlob = (b64Data: string, contentType = '', sliceSize = 512) => {
+        const byteCharacters = atob(b64Data)
+        const byteArrays = []
+
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            const slice = byteCharacters.slice(offset, offset + sliceSize)
+            const byteNumbers = new Array(slice.length)
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i)
+            }
+            const byteArray = new Uint8Array(byteNumbers)
+            byteArrays.push(byteArray)
+        }
+
+        const blob = new Blob(byteArrays, { type: contentType })
+        return blob
+    }
 
     /**
-     * Convert a file URI to a File object using native fetch
+     * Convert a file URI to a File object using native fetch, with Filesystem fallback
      */
     const uriToFile = async (fileUri: string, fileName?: string): Promise<File> => {
         try {
             console.log('Converting URI to File:', fileUri)
 
-            // Use Capacitor's convertFileSrc to get the proper webview URL
             const { Capacitor } = await import('@capacitor/core')
-            const webPath = Capacitor.convertFileSrc(fileUri)
-            console.log('Converted to webPath:', webPath)
 
-            // Fetch the file using the webview path
-            const response = await fetch(webPath)
-            if (!response.ok) {
-                throw new Error(`Failed to fetch file: ${response.statusText}`)
+            // Try fetch first
+            try {
+                const webPath = Capacitor.convertFileSrc(fileUri)
+                console.log('Converted to webPath:', webPath)
+
+                const response = await fetch(webPath)
+                if (!response.ok) {
+                    throw new Error(`Fetch failed: ${response.statusText}`)
+                }
+
+                const blob = await response.blob()
+                console.log('Blob created via fetch:', blob.type, blob.size)
+
+                const date = new Date()
+                const name = fileName || `video_${date.getTime()}.${blob.type.split('/')[1] || 'mp4'}`
+
+                return new File([blob], name, {
+                    type: blob.type,
+                    lastModified: date.getTime()
+                })
+            } catch (fetchErr) {
+                console.warn('Fetch failed, trying Filesystem fallback:', fetchErr)
+
+                let path = fileUri
+
+                // Parsing path from capacitor:// url
+                // Decode URI component if needed (do this before splitting to handle encoded slashes correctly if any, though unlikely in protocol)
+                path = decodeURIComponent(path)
+
+                // Generic handling for both iOS (capacitor://) and Android (http(s)://)
+                // We need to construct a file:// URL so Filesystem accepts it as absolute path
+                if (path.includes('_capacitor_file_')) {
+                    const internalPath = path.split('_capacitor_file_')[1]
+                    path = `file://${internalPath}`
+                } else if (path.startsWith('file://')) {
+                    // Already a file URL
+                } else {
+                    // Fallback for paths that might be absolute but missing protocol?
+                    // If it starts with /, prepend file://
+                    if (path.startsWith('/')) {
+                        path = `file://${path}`
+                    }
+                }
+
+                console.log('Reading file from path (Filesystem):', path)
+
+                const fileData = await Filesystem.readFile({
+                    path: path
+                })
+
+                // fileData.data is base64 string
+                const blob = b64toBlob(fileData.data, 'video/mp4') // Assume mp4 for video recorder
+                console.log('Blob created via Filesystem:', blob.size)
+
+                const date = new Date()
+                const name = fileName || `video_${date.getTime()}.mp4`
+
+                return new File([blob], name, {
+                    type: 'video/mp4',
+                    lastModified: date.getTime()
+                })
             }
 
-            const blob = await response.blob()
-            console.log('Blob created:', blob.type, blob.size)
-
-            // Generate a filename if not provided
-            const date = new Date()
-            const name = fileName || `video_${date.getTime()}.${blob.type.split('/')[1] || 'mp4'}`
-
-            // Create File object
-            const file = new File([blob], name, {
-                type: blob.type,
-                lastModified: date.getTime()
-            })
-
-            console.log('File object created:', file.name, file.type, file.size)
-            return file
         } catch (err) {
             console.error('Error converting URI to File:', err)
             throw new Error(`Failed to convert media file: ${err.message}`)
@@ -74,7 +132,6 @@ export default function useCaptureMedia () {
                     }],
                     autoShow: true
                 })
-                isInitialized.value = true
             } catch (err) {
                 console.error('Error initializing video:', err)
                 error.value = `Failed to initialize camera: ${err.message}`
@@ -132,14 +189,10 @@ export default function useCaptureMedia () {
     const destroyVideo = async () => {
         if (isNative) {
             try {
-                if (isInitialized.value) {
-                    console.log('Destroying native camera')
-                    await VideoRecorder.destroy()
-                    isInitialized.value = false
-                }
+                console.log('Destroying native camera')
+                await VideoRecorder.destroy()
             } catch (err) {
                 console.error('Error destroying camera:', err)
-                // Don't set error state on destroy as it's often called on unmount
             }
         }
     }
