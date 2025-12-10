@@ -1,6 +1,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
-
+import { useCurrentUser } from "~/composables/states.ts";
+import { useAtmDashboard } from "~/composables/atm/useAtmDashboard";
 const route = useRoute();
 const slug = route.params.slug;
 const supabase = useSupabaseClient();
@@ -66,8 +67,8 @@ onMounted(async () => {
   }
 });
 
-
-const { toggleApproved, shareSubmission, downloadSubmission } = useAtmDashboard();
+const { toggleApproved, shareSubmission, downloadSubmission } =
+  useAtmDashboard();
 </script>
 
 <template>
@@ -155,7 +156,12 @@ const { toggleApproved, shareSubmission, downloadSubmission } = useAtmDashboard(
             class="video-container surface-card p-4 border-round shadow-2"
             style="max-width: 800px"
           >
-            <video :src="videoUrl" controls class="w-full border-round" crossorigin="anonymous"></video>
+            <video
+              :src="videoUrl"
+              controls
+              class="w-full border-round"
+              crossorigin="anonymous"
+            ></video>
           </div>
 
           <Panel header="Transcript" toggleable>

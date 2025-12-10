@@ -164,7 +164,11 @@ onMounted(() => {
           :recordTimeLimit="recordTimeLimit"
         />
         <p v-if="submitProgress">{{ submitProgress }}</p>
-        <Button v-if="hasFiles" label="Submit video" @click="onFormSubmit" />
+        <Button
+          v-if="hasFiles && !submitProgress"
+          label="Submit video"
+          @click="onFormSubmit"
+        />
       </div>
       <div v-else class="flex flex-column gap-2 my-4">
         <p>Question limit reached. Please try again tomorrow.</p>

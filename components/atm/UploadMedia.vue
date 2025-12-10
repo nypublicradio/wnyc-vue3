@@ -1,5 +1,6 @@
 <script setup>
 import { ref, nextTick, computed, onMounted } from "vue";
+import { useIsApp } from "~/composables/states";
 import useGallery from "~/composables/atm/useGallery";
 // Import FilePond and its plugins
 import vueFilePond from "vue-filepond";
@@ -127,6 +128,7 @@ const emit = defineEmits([
 
 const { embedMetadataInImage } = useGallery();
 const { transcribeMedia } = useTranscribe();
+const isApp = useIsApp();
 
 // Supabase client
 const supabase = useSupabaseClient();
@@ -618,9 +620,9 @@ const handleFilesReady = async () => {
 
   // Scroll the component into view to show progress
   if (uploadMediaPanel.value?.$el) {
-    uploadMediaPanel.value.$el.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'start' 
+    uploadMediaPanel.value.$el.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
     });
   }
 
@@ -694,9 +696,9 @@ const handleCaptureComplete = (captureData) => {
       URL.revokeObjectURL(lastCapturedVideoUrl.value);
     }
     try {
-        lastCapturedVideoUrl.value = URL.createObjectURL(captureData.file);
+      lastCapturedVideoUrl.value = URL.createObjectURL(captureData.file);
     } catch (e) {
-        console.error("Failed to create object URL for preview:", e);
+      console.error("Failed to create object URL for preview:", e);
     }
 
     // Store the capture metadata for later use during upload
@@ -726,8 +728,8 @@ const reset = () => {
 
     // Clear manual video preview
     if (lastCapturedVideoUrl.value) {
-        URL.revokeObjectURL(lastCapturedVideoUrl.value);
-        lastCapturedVideoUrl.value = null;
+      URL.revokeObjectURL(lastCapturedVideoUrl.value);
+      lastCapturedVideoUrl.value = null;
     }
 
     // In autosave mode, clear all autosaved files
@@ -936,11 +938,11 @@ const onRemoveFile = async (error, file) => {
   nextTick(() => {
     const fileCount = pond.value?.getFiles()?.length || 0;
     hasFiles.value = fileCount > 0;
-    
+
     // If no files left, clear the manual video preview
     if (fileCount === 0 && lastCapturedVideoUrl.value) {
-        URL.revokeObjectURL(lastCapturedVideoUrl.value);
-        lastCapturedVideoUrl.value = null;
+      URL.revokeObjectURL(lastCapturedVideoUrl.value);
+      lastCapturedVideoUrl.value = null;
     }
   });
 };
@@ -1030,7 +1032,6 @@ onMounted(async () => {
   // Restore files if in autosave mode
   await restoreAutosavedFiles();
 });
-
 </script>
 
 <template>
@@ -1122,6 +1123,7 @@ onMounted(async () => {
     <div v-if="lastCapturedVideoUrl" class="manual-preview mb-4">
       <h3>Review Recording</h3>
       <video
+        v-if="isApp"
         :src="lastCapturedVideoUrl"
         controls
         playsinline

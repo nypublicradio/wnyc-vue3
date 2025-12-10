@@ -2,6 +2,8 @@
 import { trackClickEvent } from "~/utilities/helpers";
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from "@primevue/core/api";
+import { useCurrentUser } from "~/composables/states.ts";
+import { useAtmDashboard } from "~/composables/atm/useAtmDashboard";
 
 const toast = useToast();
 const user = useCurrentUser();
@@ -84,8 +86,8 @@ const fetchSubmissions = async () => {
   }
 };
 
-
-const { toggleApproved, shareSubmission, downloadSubmission } = useAtmDashboard();
+const { toggleApproved, shareSubmission, downloadSubmission } =
+  useAtmDashboard();
 
 const navigateToSlug = (event) => {
   const submission = event.data;
@@ -197,14 +199,18 @@ onMounted(() => {
                         text
                         rounded
                         aria-label="Download"
-                        @click="(event) => downloadSubmission(slotProps.data, event)"
+                        @click="
+                          (event) => downloadSubmission(slotProps.data, event)
+                        "
                       />
                       <Button
                         icon="pi pi-share-alt"
                         text
                         rounded
                         aria-label="Share"
-                        @click="(event) => shareSubmission(slotProps.data, event)"
+                        @click="
+                          (event) => shareSubmission(slotProps.data, event)
+                        "
                       />
                     </div>
                   </template>

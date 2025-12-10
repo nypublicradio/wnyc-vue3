@@ -15,49 +15,55 @@ export default function useTranscribe () {
         "Xenova/whisper-tiny"
       )
 
-      // Initialize FFmpeg
-      const ffmpeg = new FFmpeg()
+      let audioUrl: string
 
-      const origin = window.location.origin
-      // Use ESM version for single-threaded operation (no SharedArrayBuffer needed)
-      const corePath = `${origin}/ffmpeg/ffmpeg-core-st.js`
-      const wasmPath = `${origin}/ffmpeg/ffmpeg-core-st.wasm`
+      if (mediaFile.name.toLowerCase().endsWith('.mov')) {
+        // Initialize FFmpeg
+        const ffmpeg = new FFmpeg()
 
-      console.log(`[useTranscribe] Loading FFmpeg from: ${origin}`)
+        const origin = window.location.origin
+        // Use ESM version for single-threaded operation (no SharedArrayBuffer needed)
+        const corePath = `${origin}/ffmpeg/ffmpeg-core-st.js`
+        const wasmPath = `${origin}/ffmpeg/ffmpeg-core-st.wasm`
 
-      // Load ffmpeg.wasm in single-threaded mode
-      // Use toBlobURL for BOTH to avoid worker scheme issues
-      // Setting workerURL to undefined forces single-threaded mode
-      await ffmpeg.load({
-        coreURL: await toBlobURL(corePath, 'text/javascript'),
-        wasmURL: await toBlobURL(wasmPath, 'application/wasm'),
-        workerURL: undefined, // Force single-threaded mode
-      })
+        console.log(`[useTranscribe] Loading FFmpeg from: ${origin}`)
 
-      console.log("[useTranscribe] FFmpeg loaded")
+        // Load ffmpeg.wasm in single-threaded mode
+        // Use toBlobURL for BOTH to avoid worker scheme issues
+        // Setting workerURL to undefined forces single-threaded mode
+        await ffmpeg.load({
+          coreURL: await toBlobURL(corePath, 'text/javascript'),
+          wasmURL: await toBlobURL(wasmPath, 'application/wasm'),
+          workerURL: undefined, // Force single-threaded mode
+        })
 
-      // Write video file to FFmpeg memory filesystem
-      await ffmpeg.writeFile('input.mov', await fetchFile(mediaFile))
+        console.log("[useTranscribe] FFmpeg loaded")
 
-      // Convert to WAV (16kHz, mono) for Whisper
-      await ffmpeg.exec(['-i', 'input.mov', '-ac', '1', '-ar', '16000', 'output.wav'])
+        // Write video file to FFmpeg memory filesystem
+        await ffmpeg.writeFile('input.mov', await fetchFile(mediaFile))
 
-      // Read output and create blob URL
-      const fileData = await ffmpeg.readFile('output.wav')
-      const wavBlob = new Blob([fileData as any], { type: 'audio/wav' })
-      const wavUrl = URL.createObjectURL(wavBlob)
+        // Convert to WAV (16kHz, mono) for Whisper
+        await ffmpeg.exec(['-i', 'input.mov', '-ac', '1', '-ar', '16000', 'output.wav'])
 
-      console.log("[useTranscribe] Audio extracted, starting transcription...")
+        // Read output and create blob URL
+        const fileData = await ffmpeg.readFile('output.wav')
+        const wavBlob = new Blob([fileData as any], { type: 'audio/wav' })
+        audioUrl = URL.createObjectURL(wavBlob)
+        console.log("[useTranscribe] Audio extracted from MOV, starting transcription...")
+      } else {
+        audioUrl = URL.createObjectURL(mediaFile)
+        console.log("[useTranscribe] Using original file for transcription...")
+      }
 
       // Run transcription on the WAV file
-      const result = await transcriber(wavUrl, {
+      const result = await transcriber(audioUrl, {
         language: lang,
         chunk_length_s: 30,
         return_timestamps: true,
       })
 
       // Cleanup
-      URL.revokeObjectURL(wavUrl)
+      URL.revokeObjectURL(audioUrl)
       // Clean up ffmpeg memory if possible or rely on GC/destroy? 
       // ffmpeg.terminate() is available in some versions, but local instance will be GC'd.
 
