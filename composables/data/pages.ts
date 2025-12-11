@@ -4,21 +4,21 @@ import { normalizeArticlePage } from './articlePages'
 import { normalizeGalleryPage } from './galleryPages'
 import { normalizeTagPage } from './tagPages'
 
-export async function findPage(htmlPath: string) {
+export async function findPage (htmlPath: string) {
   const params = { html_path: htmlPath }
   return await useAviary('/pages/find/', { params })
 }
 
 // Get a page by it's cms id
-export async function usePageById(pageId: number) {
+export async function usePageById (pageId: number) {
   return await useAviary(`/pages/${pageId}/`)
 }
 
-export function normalizeInformationPage(page: Record<string, any>): InformationPage {
+export function normalizeInformationPage (page: Record<string, any>): InformationPage {
   return Object.assign({}, normalizePage(page), { body: page.body })
 }
 
-export function normalizeFindPageResponse(pageResponse: Record<string, any>): Page | ArticlePage | TagPage | InformationPage {
+export function normalizeFindPageResponse (pageResponse: Record<string, any>): Page | ArticlePage | TagPage | InformationPage {
   const pageType = pageResponse.value?.meta?.type
   switch (WAGTAIL_PAGE_TYPES[pageType]) {
     case 'article_page':

@@ -37,7 +37,10 @@ jobs:
       - name: Update Mock Schedule Data
         run: |
           chmod +x scripts/update-mock-schedule.sh
-          ./scripts/update-mock-schedule.sh wnyc
+          ./scripts/update-mock-schedule.sh wnyc-fm939
+          ./scripts/update-mock-schedule.sh wqxr
+          ./scripts/update-mock-schedule.sh wqxr-holiday-channel-on-wnyc
+          ./scripts/update-mock-schedule.sh q2
 
       - name: Set Review App URL
         id: set-url
