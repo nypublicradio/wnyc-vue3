@@ -54,7 +54,7 @@
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",
     "@nypublicradio/capacitor-ios-notification-settings": "^1.0.3",
-    "@nypublicradio/capacitor-remote-streamer": "^0.5.2",
+    "@nypublicradio/capacitor-remote-streamer": "^0.5.3",
     "@pqina/filepond-plugin-image-editor": "^9.2.4",
     "@pqina/pintura": "^8.95.3",
     "@primevue/themes": "^4.2.5",
