@@ -47,12 +47,7 @@ const routeToPage = () => {
         <h2>Zohran K. Mamdani</h2>
         <p class="text-xs">Mayor of New York City</p>
       </div>
-      <Button
-        label="Ask the Mayor"
-        icon="pi pi-video"
-        size="small"
-        @click.stop="routeToPage"
-      />
+      <Button label="Ask The Mayor" size="small" @click.stop="routeToPage" />
     </div>
   </div>
 </template>

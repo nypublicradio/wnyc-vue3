@@ -78,7 +78,7 @@ onMounted(() => {
     <section>
       <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
-      <atm-cta />
+      <atm-cta class="mb-3" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
         <story-htlAd
           layout="rectangle"

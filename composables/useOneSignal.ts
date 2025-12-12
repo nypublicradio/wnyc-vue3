@@ -123,7 +123,7 @@ export default function useOneSignal () {
         clearAuthReturnRoute()
         setTimeout(() => {
           window.location.reload()
-        }, 3000)
+        }, 200)
         return
       } catch (error) {
         console.error(error)

@@ -19,7 +19,7 @@ export const useAuthReturnRoute = () => {
     // set a timer to clear the route after 2 minutes
     returnRouteTimer = setTimeout(() => {
       clearAuthReturnRoute()
-    }, 120000)
+    }, 180000)
   }
 
   const getAuthReturnRoute = async () => {
