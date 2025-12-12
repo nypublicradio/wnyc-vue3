@@ -1,34 +1,38 @@
 <script setup>
-import { useLoginSideBar } from "~/composables/states";
-import { useToast } from "primevue/usetoast";
-import { useIsApp } from "~/composables/states";
+import { useLoginSideBar } from "~/composables/states"
+import { useToast } from "primevue/usetoast"
+import { useIsApp } from "~/composables/states"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
-const user = useCurrentUser();
+const user = useCurrentUser()
 
-const loginSideBar = useLoginSideBar();
-const toast = useToast();
-const isApp = useIsApp();
+const loginSideBar = useLoginSideBar()
+const toast = useToast()
+const isApp = useIsApp()
+const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 const routeToPage = () => {
   if (!user.value) {
     if (isApp.value) {
-      loginSideBar.value = true;
+      loginSideBar.value = true
     } else {
-      navigateTo({ path: "/login", query: { returnRoute: "ask-the-mayor" } });
+      navigateTo("/login")
     }
+    setAuthReturnRoute("/ask-the-mayor")
     setTimeout(() => {
       toast.add({
         severity: "error",
         summary: "You must be logged in to ask the mayor",
         closable: true,
         life: 6000,
-      });
-    }, 200);
-    return;
+      })
+    }, 200)
+    return
   } else {
-    navigateTo("/ask-the-mayor");
+    clearAuthReturnRoute()
+    navigateTo("/ask-the-mayor")
   }
-};
+}
 </script>
 <template>
   <div

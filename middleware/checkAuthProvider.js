@@ -35,7 +35,6 @@ export default defineNuxtRouteMiddleware(async () => {
   const routeToHome = () => {
     setTimeout(() => {
       navigateTo('/home')
-      alert('route to home')
     }, 500)
   }
 

@@ -10,13 +10,17 @@ import {
   useGlobalToast,
   useIsNetworkConnected,
 } from "~/composables/states"
-import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
+import {
+  useBrowserTopColor,
+  useBrowserTopColorDarkMode,
+} from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const { fetchSchedule } = useLiveStream()
 
@@ -34,7 +38,8 @@ const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } = useOneSignal()
+const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
+  useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -81,6 +86,10 @@ const addListeners = async () => {
 onMounted(async () => {
   // OneSignal
   if (isApp.value) initOneSignal()
+
+  // check for stale auth return route
+  const { checkStaleAuthRoute } = useAuthReturnRoute()
+  await checkStaleAuthRoute()
 
   await getAndSetUserProfile()
 
@@ -160,7 +169,9 @@ watch(globalError, (error) => {
     <Head>
       <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
       <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title> WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News </Title>
+      <Title>
+        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
+      </Title>
       <Meta
         name="description"
         content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
@@ -205,13 +216,17 @@ watch(globalError, (error) => {
       <Meta
         name="theme-color"
         :content="
-          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
         "
       />
       <Meta
         name="msapplication-TileColor"
         :content="
-          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
         "
       />
     </Head>
@@ -224,6 +239,6 @@ watch(globalError, (error) => {
   <NetworkBanner :connected="isNetworkConnected" />
   <AudioPlayer />
   <Drawers class="z-2" />
-  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn"/>
+  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
   <!-- <PullToRefresh v-if="isApp" /> -->
 </template>
