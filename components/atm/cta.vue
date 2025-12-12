@@ -11,27 +11,31 @@ const toast = useToast()
 const isApp = useIsApp()
 const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
+// const routeToPage = () => {
+//   if (!user.value) {
+//     if (isApp.value) {
+//       loginSideBar.value = true
+//     } else {
+//       navigateTo("/login")
+//     }
+//     setAuthReturnRoute("/ask-the-mayor")
+//     setTimeout(() => {
+//       toast.add({
+//         severity: "error",
+//         summary: "You must be logged in to ask the mayor",
+//         closable: true,
+//         life: 6000,
+//       })
+//     }, 200)
+//     return
+//   } else {
+//     clearAuthReturnRoute()
+//     navigateTo("/ask-the-mayor")
+//   }
+// }
 const routeToPage = () => {
-  if (!user.value) {
-    if (isApp.value) {
-      loginSideBar.value = true
-    } else {
-      navigateTo("/login")
-    }
-    setAuthReturnRoute("/ask-the-mayor")
-    setTimeout(() => {
-      toast.add({
-        severity: "error",
-        summary: "You must be logged in to ask the mayor",
-        closable: true,
-        life: 6000,
-      })
-    }, 200)
-    return
-  } else {
-    clearAuthReturnRoute()
-    navigateTo("/ask-the-mayor")
-  }
+  clearAuthReturnRoute()
+  navigateTo("/ask-the-mayor")
 }
 </script>
 <template>
