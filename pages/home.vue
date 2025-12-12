@@ -4,44 +4,44 @@ import {
   hasAudio,
   getEpisodeFallBackImage,
   goToNprPage,
-} from "~/utilities/helpers";
-import { useCurrentEpisode } from "~/composables/states";
-const config = useRuntimeConfig();
-const currentEpisode = useCurrentEpisode();
+} from "~/utilities/helpers"
+import { useCurrentEpisode } from "~/composables/states"
+const config = useRuntimeConfig()
+const currentEpisode = useCurrentEpisode()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-);
+)
 
 const { data: topStoriesData, error: error3 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
-);
+)
 
 const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
-);
+)
 
 definePageMeta({
   layout: "default",
   layoutTransition: {
     name: "login",
   },
-});
+})
 useHead({
   bodyAttrs: {
     class: "show-header",
   },
-});
+})
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp();
+  const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Home",
     page_type: "home_page",
     content_group: "home",
-  });
-});
+  })
+})
 </script>
 
 <template>
@@ -78,6 +78,7 @@ onMounted(() => {
     <section>
       <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
+      <atm-cta />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
         <story-htlAd
           layout="rectangle"
@@ -85,9 +86,6 @@ onMounted(() => {
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
-    </section>
-    <section>
-      <atm-cta />
     </section>
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">

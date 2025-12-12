@@ -43,6 +43,7 @@ export default function useOneSignal () {
   let oneSignalId: string = null
 
   const isApp = useIsApp()
+  const router = useRouter()
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
@@ -118,12 +119,11 @@ export default function useOneSignal () {
       try {
         await client.auth.exchangeCodeForSession(cleanCode)
 
+        await router.push(theReturnRoute || "/")
         clearAuthReturnRoute()
-        alert('navigate to ' + theReturnRoute)
-        navigateTo(theReturnRoute ?? "/")
         setTimeout(() => {
           window.location.reload()
-        }, 100)
+        }, 3000)
         return
       } catch (error) {
         console.error(error)
