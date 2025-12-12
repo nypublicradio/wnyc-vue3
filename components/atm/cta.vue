@@ -1,15 +1,21 @@
 <script setup>
 import { useLoginSideBar } from "~/composables/states";
 import { useToast } from "primevue/usetoast";
+import { useIsApp } from "~/composables/states";
 
 const user = useCurrentUser();
 
 const loginSideBar = useLoginSideBar();
 const toast = useToast();
+const isApp = useIsApp();
 
 const routeToPage = () => {
   if (!user.value) {
-    loginSideBar.value = true;
+    if (isApp.value) {
+      loginSideBar.value = true;
+    } else {
+      navigateTo({ path: "/login", query: { returnRoute: "ask-the-mayor" } });
+    }
     setTimeout(() => {
       toast.add({
         severity: "error",
@@ -29,13 +35,13 @@ const routeToPage = () => {
     class="atm-cta flex items-center w-full cursor-pointer"
     @click="routeToPage"
   >
-    <img src="/atm/mayor.png" loading="eager" :width="90" :height="90" />
+    <img src="/atm/mayor.png" loading="eager" :width="100" :height="100" />
     <div
-      class="flex flex gap-2 p-2 justify-content-between align-items-center w-full"
+      class="flex gap-1 sm:gap-2 p-2 sm:p-4 justify-content-center sm:justify-content-between align-items-center w-full flex-column sm:flex-row"
     >
       <div class="content flex flex-column justify-content-center">
         <h2>Zohran K. Mamdani</h2>
-        <p class="text-xs">Mayor-elect of New York City</p>
+        <p class="text-xs">Mayor of New York City</p>
       </div>
       <Button
         label="Ask the Mayor"

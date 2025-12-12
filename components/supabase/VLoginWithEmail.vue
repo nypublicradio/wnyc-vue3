@@ -1,12 +1,13 @@
 <script setup>
-import { useVuelidate } from "@vuelidate/core"
-import { email, helpers, minLength, required } from "@vuelidate/validators"
-import Button from "primevue/button"
-import InputText from "primevue/inputtext"
-import Message from "primevue/message"
-import Password from "primevue/password"
-import { computed, reactive, ref } from "vue"
-import { useRouter } from "vue-router"
+import { useVuelidate } from "@vuelidate/core";
+import { email, helpers, minLength, required } from "@vuelidate/validators";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import Message from "primevue/message";
+import Password from "primevue/password";
+import { computed, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { getAndSetUserProfile } from "~/utilities/helpers";
 
 const props = defineProps({
   client: {
@@ -29,29 +30,29 @@ const props = defineProps({
     default: "Log in with email",
     type: String,
   },
-  slug: {
+  returnRoute: {
     default: "/confirm",
     type: String,
   },
-})
-const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
+});
+const emit = defineEmits(["submit-click", "submit-error", "submit-success"]);
 
-const router = useRouter()
-const innerClient = ref(props.client)
-const innerConfig = ref(props.config)
+const router = useRouter();
+const innerClient = ref(props.client);
+const innerConfig = ref(props.config);
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
-  innerClient.value = useSupabaseClient()
-  innerConfig.value = useRuntimeConfig()
+  innerClient.value = useSupabaseClient();
+  innerConfig.value = useRuntimeConfig();
 }
 
 const formData = reactive({
   email: props.currentEmail ?? "",
   password: "",
-})
+});
 
-const sbErrorMsg = ref("")
+const sbErrorMsg = ref("");
 
 const rules = computed(() => {
   return {
@@ -63,37 +64,38 @@ const rules = computed(() => {
       minLength: minLength(8),
       required: helpers.withMessage("This field is required", required),
     },
-  }
-})
+  };
+});
 
-const v$ = useVuelidate(rules, formData)
+const v$ = useVuelidate(rules, formData);
 
 const submitForm = async () => {
   // clear the error message so the message re-animates on each submit
-  sbErrorMsg.value = ""
-  emit("submit-click")
-  v$.value.$validate()
+  sbErrorMsg.value = "";
+  emit("submit-click");
+  v$.value.$validate();
   if (!v$.value.$error) {
     //success with Vuelidate
     const sbError = await innerClient.value.auth.signInWithPassword(
       { email: formData.email, password: formData.password }
       //{ redirectTo: innerConfig.value.supabaseAuthSignInRedirectTo }
-    )
+    );
     if (!sbError.error) {
       //success with Supabase
-      emit("submit-success", props.slug)
-      router.push(`${props.slug}`)
+      await getAndSetUserProfile();
+      emit("submit-success", props.returnRoute);
+      router.push(`${props.returnRoute}`);
     } else {
       // error with Supabase
-      emit("submit-error", sbError?.error?.message)
+      emit("submit-error", sbError?.error?.message);
       if (sbError?.error?.message?.includes("Invalid login credentials")) {
-        sbErrorMsg.value = props.error
+        sbErrorMsg.value = props.error;
       } else {
-        sbErrorMsg.value = sbError?.error?.message
+        sbErrorMsg.value = sbError?.error?.message;
       }
     }
   }
-}
+};
 </script>
 
 <template>

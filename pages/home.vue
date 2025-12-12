@@ -4,51 +4,54 @@ import {
   hasAudio,
   getEpisodeFallBackImage,
   goToNprPage,
-} from "~/utilities/helpers"
-import { useCurrentEpisode } from "~/composables/states"
-const config = useRuntimeConfig()
-const currentEpisode = useCurrentEpisode()
+} from "~/utilities/helpers";
+import { useCurrentEpisode } from "~/composables/states";
+const config = useRuntimeConfig();
+const currentEpisode = useCurrentEpisode();
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
+);
 
 const { data: topStoriesData, error: error3 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagetopstories`
-)
+);
 
 const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
-)
+);
 
 definePageMeta({
   layout: "default",
   layoutTransition: {
     name: "login",
   },
-})
+});
 useHead({
   bodyAttrs: {
     class: "show-header",
   },
-})
+});
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp()
+  const { $analytics } = useNuxtApp();
   $analytics.sendPageView({
     page_title: "Home",
     page_type: "home_page",
     content_group: "home",
-  })
-})
+  });
+});
 </script>
 
 <template>
   <div>
     <Html lang="en">
       <Head>
-        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -70,10 +73,6 @@ onMounted(() => {
       />
     </section>
 
-    <section>
-      <atm-cta />
-    </section>
-
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
     <section>
@@ -86,6 +85,9 @@ onMounted(() => {
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
+    </section>
+    <section>
+      <atm-cta />
     </section>
     <div v-for="section in pagedata?.home_template" :key="section.title">
       <div v-if="section.data.length">

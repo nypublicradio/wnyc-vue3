@@ -1,9 +1,9 @@
 <script setup>
-import Button from "primevue/button"
-import Message from "primevue/message"
-import { ref } from "vue"
+import Button from "primevue/button";
+import Message from "primevue/message";
+import { ref } from "vue";
 
-const errorMessage = ref("")
+const errorMessage = ref("");
 
 const props = defineProps({
   client: {
@@ -27,37 +27,45 @@ const props = defineProps({
     default: "http://localhost:3000",
     type: String,
   },
-})
-const innerClient = ref(props.client)
-const innerConfig = ref(props.config)
+  returnRoute: {
+    type: String,
+    default: null,
+  },
+});
+const innerClient = ref(props.client);
+const innerConfig = ref(props.config);
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
-  innerClient.value = useSupabaseClient()
-  innerConfig.value = useRuntimeConfig()
+  innerClient.value = useSupabaseClient();
+  innerConfig.value = useRuntimeConfig();
 }
 
-const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
+const emit = defineEmits(["submit-click", "submit-error", "submit-success"]);
 // method triggered by the form submit to handle supabase login logic
 const login = async () => {
-  emit("submit-click")
+  emit("submit-click");
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
       redirectTo: props.redirectUrl,
     },
     provider: props.provider,
-  })
+  });
   if (res.error) {
-    emit("submit-error", res.error)
-    errorMessage.value = res.error
+    emit("submit-error", res.error);
+    errorMessage.value = res.error;
   } else {
-    emit("submit-success")
+    emit("submit-success");
+    await getAndSetUserProfile();
+    if (props.returnRoute) {
+      router.push(`${props.returnRoute}`);
+    }
   }
-}
+};
 // capitalise the first letter of a string
 const capFirstChar = (str) => {
-  return str[0].toUpperCase() + str.slice(1)
-}
+  return str[0].toUpperCase() + str.slice(1);
+};
 </script>
 
 <template>

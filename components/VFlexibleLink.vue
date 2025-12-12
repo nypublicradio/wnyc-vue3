@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue"
+import { computed } from "vue";
 
 const props = defineProps({
   /**
@@ -30,43 +30,53 @@ const props = defineProps({
     default: null,
     type: String,
   },
-})
+});
 
-const emit = defineEmits(["flexible-link-click"])
+const emit = defineEmits(["flexible-link-click"]);
 
 const isExternal = computed(() => {
-  const reg = /^https?:\/\/|mailto:|tel:/i
-  return typeof props.to === "string" && reg.test(props.to)
-})
+  const reg = /^https?:\/\/|mailto:|tel:/i;
+  return typeof props.to === "string" && reg.test(props.to);
+});
 const isAnchor = computed(() => {
-  return props.to.charAt(0) === "#"
-})
+  return props.to.charAt(0) === "#";
+});
 </script>
 
 <template>
-  <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
+  <!-- <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
+    <slot name="default"></slot>
+  </div> -->
+
+  <div
+    v-if="!props.to"
+    v-bind="{ ...$props, ...$attrs }"
+    class="flexible-link inline cursor-pointer underline"
+    :class="{ ['raw']: raw }"
+    @click="emit('flexible-link-click', props.to)"
+  >
     <slot name="default"></slot>
   </div>
   <a
     v-else-if="isExternal"
     v-bind="{ ...$props, ...$attrs }"
-    :href="to"
+    :href="props.to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
     class="flexible-link external"
     :class="{ ['raw']: raw }"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
   >
     <slot name="default"></slot>
   </a>
   <a
     v-else-if="isAnchor"
     v-bind="{ ...$props, ...$attrs }"
-    :href="to"
+    :href="props.to"
     target="_self"
     class="flexible-link anchor"
     :class="{ ['raw']: raw }"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
   >
     <slot name="default"></slot>
   </a>
@@ -74,9 +84,9 @@ const isAnchor = computed(() => {
     v-else
     class="flexible-link internal"
     :class="{ ['raw']: raw }"
-    :to="to"
+    :to="props.to"
     v-bind="{ ...$attrs }"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
   >
     <slot name="default"></slot>
   </nuxt-link>
