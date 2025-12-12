@@ -1,43 +1,43 @@
 
 <script setup>
-import { useLoginSideBar, useSignupSideBar } from "~/composables/states";
-import { useToast } from "primevue/usetoast";
+import { useLoginSideBar, useSignupSideBar } from "~/composables/states"
+import { useToast } from "primevue/usetoast"
 
-const toast = useToast();
-const loginSideBar = useLoginSideBar();
-const signinSideBar = useSignupSideBar();
+const toast = useToast()
+const loginSideBar = useLoginSideBar()
+const signinSideBar = useSignupSideBar()
 
-const user = useCurrentUser();
-const bucketName = "media";
-const subfolder = "atm";
-const submissionTable = "atm_submissions";
+const user = useCurrentUser()
+const bucketName = "media"
+const subfolder = "atm"
+const submissionTable = "atm_submissions"
 
-const UploadMediaREF = ref(null);
-const questionLimitReached = ref(false);
-const hasFiles = ref(false);
-const submitProgress = ref(null);
-const recordTimeLimit = 3;
+const UploadMediaREF = ref(null)
+const questionLimitReached = ref(false)
+const hasFiles = ref(false)
+const submitProgress = ref(null)
+const recordTimeLimit = 3
 
 // Submit Handler
 const onFormSubmit = async (e) => {
   // if (e.valid) {
   try {
     // Upload Avatar if changed
-    await UploadMediaREF.value?.uploadFiles();
+    await UploadMediaREF.value?.uploadFiles()
 
     toast.add({
       severity: "success",
       summary: "Video uploaded successfully",
       life: 3000,
-    });
+    })
   } catch (error) {
-    console.error("Update error:", error);
+    console.error("Update error:", error)
     toast.add({
       severity: "error",
       summary: "Upload Failed",
       detail: error.message,
       life: 3000,
-    });
+    })
   }
   // } else {
   //   toast.add({
@@ -47,9 +47,9 @@ const onFormSubmit = async (e) => {
   //     life: 3000,
   //   });
   // }
-};
+}
 
-const onUploadError = (event) => {};
+const onUploadError = (event) => {}
 const onUploadComplete = (event) => {
   // if (event.path) {
   //   // Construct the full public URL from the relative path
@@ -66,7 +66,7 @@ const onUploadComplete = (event) => {
   //     avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
   //   }
   // }
-};
+}
 
 const onFilesUpdated = (files) => {
   // This is called when files are selected but not yet uploaded
@@ -79,17 +79,17 @@ const onFilesUpdated = (files) => {
   //     avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
   //   }
   // }
-};
+}
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp();
+  const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Ask the Mayor",
     page_type: "ask_the_mayor",
     content_group: "ask_the_mayor",
-  });
-});
+  })
+})
 </script>
 
 <template>

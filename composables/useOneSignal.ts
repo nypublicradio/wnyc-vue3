@@ -119,8 +119,11 @@ export default function useOneSignal () {
         await client.auth.exchangeCodeForSession(cleanCode)
 
         clearAuthReturnRoute()
+        alert('navigate to ' + theReturnRoute)
         navigateTo(theReturnRoute ?? "/")
-        window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 100)
         return
       } catch (error) {
         console.error(error)
