@@ -17,6 +17,7 @@ const questionLimitReached = ref(false)
 const hasFiles = ref(false)
 const submitProgress = ref(null)
 const recordTimeLimit = 30
+const activeStep = ref(1)
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -134,15 +135,18 @@ onMounted(() => {
       <!-- <p>Information about this feature</p>
       <p>You can record up to {{ recordTimeLimit }} seconds</p> -->
 
-      <div class="card flex justify-center w-full">
-        <Stepper value="1" class="w-full flex flex-column-reverse gap-3">
+      <div class="card flex justify-center w-full mt-4">
+        <Stepper
+          v-model:value="activeStep"
+          class="w-full flex flex-column-reverse gap-4"
+        >
           <StepList class="px-5">
-            <Step value="1">{{ loginOrSignupStepLabel }}</Step>
-            <Step value="2">Create Video</Step>
-            <Step value="3">Review</Step>
+            <Step :value="1">{{ loginOrSignupStepLabel }}</Step>
+            <Step :value="2">Create Video</Step>
+            <Step :value="3">Review</Step>
           </StepList>
           <StepPanels>
-            <StepPanel v-slot="{ activateCallback }" value="1">
+            <StepPanel :value="1">
               <div class="flex flex-col">
                 <div class="step-content">
                   <div class="flex flex-column gap-1">
@@ -151,58 +155,59 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-              <!-- <div class="flex pt-6 justify-end">
-                <Button
-                  label="Next"
-                  icon="pi pi-arrow-right"
-                  iconPos="right"
-                  @click="activateCallback('2')"
-                />
-              </div> -->
             </StepPanel>
-            <StepPanel v-slot="{ activateCallback }" value="2">
+            <StepPanel :value="2">
               <div class="flex flex-col h-48">
-                <div
-                  class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-                >
-                  Content II
+                <div class="step-content">
+                  <div class="flex flex-column gap-1">
+                    <h2>Create Video</h2>
+                    <p>Record yourself asking the mayor a question.</p>
+                  </div>
                 </div>
               </div>
-              <!-- <div class="flex pt-6 justify-between">
-                <Button
-                  label="Back"
-                  severity="secondary"
-                  icon="pi pi-arrow-left"
-                  @click="activateCallback('1')"
-                />
-                <Button
-                  label="Next"
-                  icon="pi pi-arrow-right"
-                  iconPos="right"
-                  @click="activateCallback('3')"
-                />
-              </div> -->
             </StepPanel>
-            <StepPanel v-slot="{ activateCallback }" value="3">
+            <StepPanel :value="3">
               <div class="flex flex-col h-48">
-                <div
-                  class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-                >
-                  Content III
+                <div class="step-content">
+                  <div class="flex flex-column gap-1">
+                    <h2>Review & Submit</h2>
+                    <p>Tab submit when you're ready to send it.</p>
+                  </div>
                 </div>
               </div>
-              <!-- <div class="pt-6">
-                <Button
-                  label="Back"
-                  severity="secondary"
-                  icon="pi pi-arrow-left"
-                  @click="activateCallback('2')"
-                />
-              </div> -->
             </StepPanel>
           </StepPanels>
         </Stepper>
       </div>
+
+      <div class="card flex justify-center w-full">
+        <Stepper v-model:value="activeStep" class="w-full">
+          <StepPanels>
+            <StepPanel :value="1">
+              <div class="flex flex-col">
+                <div class="step-content">
+                  <div class="flex flex-column gap-1">
+                    <h2>Login component</h2>
+                  </div>
+                </div>
+              </div>
+            </StepPanel>
+            <StepPanel v-for="step in [2, 3]" :key="step" :value="step">
+              <div class="flex flex-col h-48">
+                <div class="step-content">
+                  <div class="flex flex-column gap-1">
+                    <h2>record component</h2>
+                  </div>
+                </div>
+              </div>
+            </StepPanel>
+          </StepPanels>
+        </Stepper>
+      </div>
+
+      <Button label="step 1" @click="activeStep = 1" />
+      <Button label="step 2" @click="activeStep = 2" />
+      <Button label="step 3" @click="activeStep = 3" />
 
       <div v-if="!user" class="flex flex-column gap-2 my-4">
         <p>Must login/create an account to use this feature</p>
@@ -213,6 +218,7 @@ onMounted(() => {
       <!-- will we have limits per user? once a day? -->
 
       <!-- :invalid="$form.avatar_url?.invalid" -->
+
       <div
         v-else-if="!questionLimitReached"
         class="flex flex-column gap-2 my-4"
@@ -312,16 +318,16 @@ onMounted(() => {
       .p-step {
         .p-step-header {
           flex-direction: column;
-          pointer-events: none;
+          //pointer-events: none;
           .p-step-number {
-            border-width: 3px;
+            border-width: 2px;
             min-width: 1.5rem;
             height: 1.5rem;
             font-size: 0;
             &:after {
               content: "";
-              width: 0.75rem;
-              height: 0.75rem;
+              width: 0.85rem;
+              height: 0.85rem;
               background-color: var(--p-stepper-step-number-active-background);
               box-shadow: none;
             }

@@ -1191,7 +1191,7 @@ const MyPreset = definePreset(Aura, {
         background: '{sky.500}',
         activeBackground: '{sky.500}',
         margin: '0 0 0 0rem',
-        size: '3px'
+        size: '2px'
       },
       step: {
         gap: '0',
