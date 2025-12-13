@@ -1191,11 +1191,17 @@ const MyPreset = definePreset(Aura, {
         background: '{sky.500}',
         activeBackground: '{sky.500}',
         margin: '0 0 0 0rem',
-        size: '2px'
+        size: '3px'
       },
       step: {
         gap: '0',
         padding: '0'
+      },
+      steppanels: {
+        padding: '0'
+      },
+      steppanel: {
+        background: '{sky.100}',
       }
     },
   },

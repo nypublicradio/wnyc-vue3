@@ -135,19 +135,20 @@ onMounted(() => {
       <p>You can record up to {{ recordTimeLimit }} seconds</p> -->
 
       <div class="card flex justify-center w-full">
-        <Stepper value="1" class="w-full">
-          <StepList>
+        <Stepper value="1" class="w-full flex flex-column-reverse gap-3">
+          <StepList class="px-5">
             <Step value="1">{{ loginOrSignupStepLabel }}</Step>
-            <Step value="2">Header II</Step>
-            <Step value="3">Header III</Step>
+            <Step value="2">Create Video</Step>
+            <Step value="3">Review</Step>
           </StepList>
           <StepPanels>
             <StepPanel v-slot="{ activateCallback }" value="1">
-              <div class="flex flex-col h-48">
-                <div
-                  class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-                >
-                  Content I
+              <div class="flex flex-col">
+                <div class="step-content">
+                  <div class="flex flex-column gap-1">
+                    <h2>Sign up for a WNYC account</h2>
+                    <p>Submit your question in the 3 easy steps</p>
+                  </div>
                 </div>
               </div>
               <!-- <div class="flex pt-6 justify-end">
@@ -298,6 +299,12 @@ onMounted(() => {
 <style lang="scss">
 .ask-the-mayor {
   .p-stepper {
+    .p-steppanels {
+      .p-steppanel {
+        border-radius: 8px;
+        padding: 1rem;
+      }
+    }
     .p-steplist {
       overflow: visible;
       height: 90px;
@@ -307,10 +314,14 @@ onMounted(() => {
           flex-direction: column;
           pointer-events: none;
           .p-step-number {
+            border-width: 3px;
+            min-width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0;
             &:after {
               content: "";
-              width: 1rem;
-              height: 1rem;
+              width: 0.75rem;
+              height: 0.75rem;
               background-color: var(--p-stepper-step-number-active-background);
               box-shadow: none;
             }
@@ -323,6 +334,7 @@ onMounted(() => {
             overflow: visible;
           }
         }
+        //ACTIVE
         &.p-step-active {
           .p-step-title {
             font-weight: 700;
