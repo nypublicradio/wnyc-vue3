@@ -303,18 +303,34 @@ onMounted(() => {
       height: 90px;
       align-items: flex-start;
       .p-step {
+        .p-step-header {
+          flex-direction: column;
+          pointer-events: none;
+          .p-step-number {
+            &:after {
+              content: "";
+              width: 1rem;
+              height: 1rem;
+              background-color: var(--p-stepper-step-number-active-background);
+              box-shadow: none;
+            }
+          }
+          .p-step-title {
+            position: absolute;
+            display: inline-table;
+            top: 38px;
+            z-index: 1;
+            overflow: visible;
+          }
+        }
         &.p-step-active {
           .p-step-title {
             font-weight: 700;
           }
-        }
-        .p-step-header {
-          flex-direction: column;
-          .p-step-title {
-            position: absolute;
-            top: 38px;
-            z-index: 1;
-            overflow: visible;
+          .p-step-number {
+            &:after {
+              background-color: var(--p-sky-500);
+            }
           }
         }
       }

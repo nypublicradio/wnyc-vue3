@@ -1185,6 +1185,7 @@ const MyPreset = definePreset(Aura, {
         color: '{neutral.500}',
         activeColor: '{text.color}',
         borderColor: '{sky.500}',
+        activeBorderColor: '{neutral.200}',
       },
       separator: {
         background: '{sky.500}',
