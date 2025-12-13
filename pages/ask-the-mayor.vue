@@ -1,11 +1,8 @@
 
 <script setup>
-import { useLoginSideBar, useSignupSideBar } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
-const loginSideBar = useLoginSideBar()
-const signinSideBar = useSignupSideBar()
 
 const user = useCurrentUser()
 const bucketName = "media"
@@ -95,6 +92,10 @@ onMounted(() => {
     page_type: "ask_the_mayor",
     content_group: "ask_the_mayor",
   })
+
+  if (user.value) {
+    activeStep.value = 2
+  }
 })
 </script>
 
@@ -167,7 +168,7 @@ onMounted(() => {
               </div>
             </StepPanel>
             <StepPanel :value="3">
-              <div class="flex flex-col h-48">
+              <div class="flex flex-col">
                 <div class="step-content">
                   <div class="flex flex-column gap-1">
                     <h2>Review & Submit</h2>
@@ -187,16 +188,46 @@ onMounted(() => {
               <div class="flex flex-col">
                 <div class="step-content">
                   <div class="flex flex-column gap-1">
-                    <h2>Login component</h2>
+                    <Signup v-if="isSignupForm" isRoute raw />
+                    <Login v-else isRoute raw />
                   </div>
                 </div>
               </div>
             </StepPanel>
             <StepPanel v-for="step in [2, 3]" :key="step" :value="step">
-              <div class="flex flex-col h-48">
-                <div class="step-content">
+              <div class="flex w-full">
+                <div class="step-content w-full">
                   <div class="flex flex-column gap-1">
-                    <h2>record component</h2>
+                    <div class="flex flex-column gap-2">
+                      <atm-upload-media
+                        ref="UploadMediaREF"
+                        :invalid="false"
+                        :bucket="bucketName"
+                        :subfolder="subfolder"
+                        :submissionTable="submissionTable"
+                        :header="null"
+                        :uploadButton="false"
+                        :videoButton="true"
+                        :cameraButton="false"
+                        :fileButton="false"
+                        :audioButton="false"
+                        :browseButton="false"
+                        :maxFiles="1"
+                        @upload-complete="onUploadComplete"
+                        @upload-error="onUploadError"
+                        @files-updated="onFilesUpdated"
+                        @has-files="hasFiles = $event"
+                        @upload-progress="submitProgress = $event"
+                        :user="user"
+                        :recordTimeLimit="recordTimeLimit"
+                      />
+                      <p v-if="submitProgress">{{ submitProgress }}</p>
+                      <Button
+                        v-if="hasFiles && !submitProgress"
+                        label="Submit video"
+                        @click="onFormSubmit"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -209,52 +240,9 @@ onMounted(() => {
       <Button label="step 2" @click="activeStep = 2" />
       <Button label="step 3" @click="activeStep = 3" />
 
-      <div v-if="!user" class="flex flex-column gap-2 my-4">
-        <p>Must login/create an account to use this feature</p>
-        <!-- <Button label="Login" @click="loginSideBar = true" />
-        <Button label="Create Account" @click="signinSideBar = true" /> -->
-      </div>
-      <!-- Have to return the user back to the ATM page after logging in / signing up -->
-      <!-- will we have limits per user? once a day? -->
-
-      <!-- :invalid="$form.avatar_url?.invalid" -->
-
-      <div
-        v-else-if="!questionLimitReached"
-        class="flex flex-column gap-2 my-4"
-      >
-        <atm-upload-media
-          ref="UploadMediaREF"
-          :invalid="false"
-          :bucket="bucketName"
-          :subfolder="subfolder"
-          :submissionTable="submissionTable"
-          header="Capture/Upload Video"
-          :uploadButton="false"
-          :videoButton="true"
-          :cameraButton="false"
-          :fileButton="false"
-          :audioButton="false"
-          :browseButton="false"
-          :maxFiles="1"
-          @upload-complete="onUploadComplete"
-          @upload-error="onUploadError"
-          @files-updated="onFilesUpdated"
-          @has-files="hasFiles = $event"
-          @upload-progress="submitProgress = $event"
-          :user="user"
-          :recordTimeLimit="recordTimeLimit"
-        />
-        <p v-if="submitProgress">{{ submitProgress }}</p>
-        <Button
-          v-if="hasFiles && !submitProgress"
-          label="Submit video"
-          @click="onFormSubmit"
-        />
-      </div>
-      <div v-else class="flex flex-column gap-2 my-4">
+      <!-- <div v-else class="flex flex-column gap-2 my-4">
         <p>Question limit reached. Please try again tomorrow.</p>
-      </div>
+      </div> -->
       <br />
       <br />
       <br />
@@ -318,7 +306,7 @@ onMounted(() => {
       .p-step {
         .p-step-header {
           flex-direction: column;
-          //pointer-events: none;
+          pointer-events: none;
           .p-step-number {
             border-width: 2px;
             min-width: 1.5rem;

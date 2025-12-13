@@ -1186,6 +1186,7 @@ const MyPreset = definePreset(Aura, {
         activeColor: '{text.color}',
         borderColor: '{sky.500}',
         activeBorderColor: '{neutral.200}',
+        activeBackground: '{surface.25}',
       },
       separator: {
         background: '{sky.500}',
@@ -1202,7 +1203,22 @@ const MyPreset = definePreset(Aura, {
       },
       steppanel: {
         background: '{sky.100}',
-      }
+      },
+      colorScheme: {
+        light: {
+          steppanel: {
+            //background: '{sky.100}',
+          }
+        },
+        dark: {
+          steppanel: {
+            background: '{surface.25}',
+          },
+          stepNumber: {
+            background: '{surface.25}',
+          },
+        },
+      },
     },
   },
 })
