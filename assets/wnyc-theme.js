@@ -1175,6 +1175,28 @@ const MyPreset = definePreset(Aura, {
         },
       },
     },
+    stepper: {
+      stepTitle: {
+        color: '{neutral.500}',
+        activeColor: '{text.color}',
+        fontWeight: '500'
+      },
+      stepNumber: {
+        color: '{neutral.500}',
+        activeColor: '{text.color}',
+        borderColor: '{sky.500}',
+      },
+      separator: {
+        background: '{sky.500}',
+        activeBackground: '{sky.500}',
+        margin: '0 0 0 0rem',
+        size: '2px'
+      },
+      step: {
+        gap: '0',
+        padding: '0'
+      }
+    },
   },
 })
 

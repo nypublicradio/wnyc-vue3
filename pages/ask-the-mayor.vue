@@ -80,6 +80,11 @@ const onFilesUpdated = (files) => {
   //   }
   // }
 }
+const isSignupForm = ref(true)
+
+const loginOrSignupStepLabel = computed(() => {
+  return isSignupForm.value ? "Sign Up" : "Login"
+})
 
 onMounted(() => {
   // send GA page view
@@ -132,7 +137,7 @@ onMounted(() => {
       <div class="card flex justify-center w-full">
         <Stepper value="1" class="w-full">
           <StepList>
-            <Step value="1">Header I</Step>
+            <Step value="1">{{ loginOrSignupStepLabel }}</Step>
             <Step value="2">Header II</Step>
             <Step value="3">Header III</Step>
           </StepList>
@@ -290,5 +295,30 @@ onMounted(() => {
     </section>
   </div>
 </template>
-<style>
+<style lang="scss">
+.ask-the-mayor {
+  .p-stepper {
+    .p-steplist {
+      overflow: visible;
+      height: 90px;
+      align-items: flex-start;
+      .p-step {
+        &.p-step-active {
+          .p-step-title {
+            font-weight: 700;
+          }
+        }
+        .p-step-header {
+          flex-direction: column;
+          .p-step-title {
+            position: absolute;
+            top: 38px;
+            z-index: 1;
+            overflow: visible;
+          }
+        }
+      }
+    }
+  }
+}
 </style>
