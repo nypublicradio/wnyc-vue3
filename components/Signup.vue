@@ -18,7 +18,7 @@ const props = defineProps({
   },
   returnRoute: {
     type: String,
-    default: "/",
+    default: "/confirm",
   },
   showHeader: {
     type: Boolean,

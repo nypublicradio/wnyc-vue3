@@ -188,7 +188,7 @@ watch(
                         </p>
                       </template>
                     </Signup>
-                    <Login v-else>
+                    <Login v-else :returnRoute="'/ask-the-mayor'">
                       <template #header>
                         <p>
                           Don't have an account yet?

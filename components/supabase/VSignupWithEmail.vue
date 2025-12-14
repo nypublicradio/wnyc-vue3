@@ -1,7 +1,13 @@
 <script setup>
 import VLoginWithEmail from "./VLoginWithEmail.vue"
 import { useVuelidate } from "@vuelidate/core"
-import { email, helpers, minLength, required, sameAs } from "@vuelidate/validators"
+import {
+  email,
+  helpers,
+  minLength,
+  required,
+  sameAs,
+} from "@vuelidate/validators"
 import Button from "primevue/button"
 import InputText from "primevue/inputtext"
 import Message from "primevue/message"
@@ -30,7 +36,7 @@ const props = defineProps({
     default: "Sign up with email",
     type: String,
   },
-  slug: {
+  returnRoute: {
     default: "/confirm",
     type: String,
   },
@@ -40,7 +46,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["submit-click", "submit-error", "submit-success", "login-success"])
+const emit = defineEmits([
+  "submit-click",
+  "submit-error",
+  "submit-success",
+  "login-success",
+])
 
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
@@ -60,13 +71,22 @@ const formData = reactive({
 const sbErrorMsg = ref("")
 const sbSuccessMsg = ref("")
 
-const hasAtleastOneNumber = helpers.withMessage("Must contain at least 1 number", (value) => /\d/.test(value))
+const hasAtleastOneNumber = helpers.withMessage(
+  "Must contain at least 1 number",
+  (value) => /\d/.test(value)
+)
 
 const rules = computed(() => {
   return {
     confirmEmail: {
-      required: helpers.withMessage("The email confirmation field is required ", required),
-      sameAs: helpers.withMessage("Email addresses don't match", sameAs(formData.email)),
+      required: helpers.withMessage(
+        "The email confirmation field is required ",
+        required
+      ),
+      sameAs: helpers.withMessage(
+        "Email addresses don't match",
+        sameAs(formData.email)
+      ),
     },
     email: {
       email: helpers.withMessage("Invalid email format", email),
@@ -78,7 +98,10 @@ const rules = computed(() => {
     password: {
       hasAtleastOneNumber,
       minLength: minLength(8),
-      required: helpers.withMessage("This password field is required", required),
+      required: helpers.withMessage(
+        "This password field is required",
+        required
+      ),
     },
   }
 })
@@ -128,7 +151,12 @@ const submitForm = async () => {
 <template>
   <div>
     <template v-if="sbErrorMsg && sbErrorMsg !== undefined">
-      <Message class="center mb-3" severity="warning" @close="clearMsg()" icons="ci-warn ">
+      <Message
+        class="center mb-3"
+        severity="warning"
+        @close="clearMsg()"
+        icons="ci-warn "
+      >
         <span v-html="sbErrorMsg"></span>
       </Message>
     </template>
@@ -141,7 +169,7 @@ const submitForm = async () => {
           </Message>
           <slot name="success">
             <VLoginWithEmail
-              :returnRoute="props.slug"
+              :returnRoute="props.returnRoute"
               :current-email="formData.email"
               :client="innerClient"
               :config="innerConfig"
@@ -168,7 +196,9 @@ const submitForm = async () => {
                 @update="v$.name.$touch"
               />
               <small class="p-error">
-                <span v-for="err of v$.name.$errors" :key="err.$uid"> {{ err.$message }} <br /> </span>
+                <span v-for="err of v$.name.$errors" :key="err.$uid">
+                  {{ err.$message }} <br />
+                </span>
               </small>
             </div>
           </div>
@@ -186,7 +216,9 @@ const submitForm = async () => {
                 @update="v$.email.$touch"
               />
               <small class="p-error">
-                <span v-for="err of v$.email.$errors" :key="err.$uid"> {{ err.$message }} <br /> </span>
+                <span v-for="err of v$.email.$errors" :key="err.$uid">
+                  {{ err.$message }} <br />
+                </span>
               </small>
             </div>
             <div class="flex flex-column gap-2 col-12 md:col-6">
@@ -197,13 +229,16 @@ const submitForm = async () => {
                 name="confirm_email"
                 class="w-full"
                 :class="{
-                  'p-invalid': v$.confirmEmail.$error && v$.confirmEmail.$invalid,
+                  'p-invalid':
+                    v$.confirmEmail.$error && v$.confirmEmail.$invalid,
                 }"
                 placeholder="Confirm your email"
                 required
               />
               <small class="p-error">
-                <span v-for="err of v$.confirmEmail.$errors" :key="err.$uid"> {{ err.$message }} <br /> </span>
+                <span v-for="err of v$.confirmEmail.$errors" :key="err.$uid">
+                  {{ err.$message }} <br />
+                </span>
               </small>
             </div>
           </div>
@@ -224,8 +259,12 @@ const submitForm = async () => {
                 @update="v$.password.$touch"
               />
               <small class="p-error">
-                <span v-for="err of v$.password.$errors" :key="err.$uid"> {{ err.$message }}<br /> </span>
-                <p v-if="!v$.password.$errors.length > 0">must be at least 8 characters and 1 number</p>
+                <span v-for="err of v$.password.$errors" :key="err.$uid">
+                  {{ err.$message }}<br />
+                </span>
+                <p v-if="!v$.password.$errors.length > 0">
+                  must be at least 8 characters and 1 number
+                </p>
               </small>
             </div>
           </div>

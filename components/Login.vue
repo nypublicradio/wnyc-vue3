@@ -10,7 +10,6 @@ import {
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
-import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   isRoute: {
@@ -19,7 +18,7 @@ const props = defineProps({
   },
   returnRoute: {
     type: String,
-    default: "/",
+    default: "/confirm",
   },
   showHeader: {
     type: Boolean,
@@ -31,7 +30,6 @@ const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
-const { clearAuthReturnRoute } = useAuthReturnRoute()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -80,7 +78,6 @@ const openForgotPassword = () => {
 
 const closeLogin = () => {
   props.isRoute ? navigateTo("/home") : (loginSideBar.value = false)
-  clearAuthReturnRoute()
 }
 </script>
 
@@ -130,6 +127,7 @@ const closeLogin = () => {
         label="Log in"
         :client="client"
         :config="config"
+        :returnRoute="props.returnRoute"
         @submit-success="closeAll"
       >
         <template #belowSubmit>

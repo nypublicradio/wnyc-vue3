@@ -8,7 +8,7 @@ import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { getAndSetUserProfile } from "~/utilities/helpers"
-import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
+//import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   client: {
@@ -39,17 +39,9 @@ const props = defineProps({
 const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 
 const router = useRouter()
-const { clearAuthReturnRoute, getAuthReturnRoute } = useAuthReturnRoute()
-const theReturnRoute = ref(props.returnRoute)
+//const { clearAuthReturnRoute } = useAuthReturnRoute()
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
-
-onMounted(async () => {
-  const route = await getAuthReturnRoute()
-  if (route) {
-    theReturnRoute.value = route
-  }
-})
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
@@ -93,9 +85,9 @@ const submitForm = async () => {
     if (!sbError.error) {
       //success with Supabase
       await getAndSetUserProfile()
-      emit("submit-success", theReturnRoute.value)
-      router.push(`${theReturnRoute.value}`)
-      clearAuthReturnRoute()
+      emit("submit-success", props.returnRoute)
+      router.push(`${props.returnRoute}`)
+      //clearAuthReturnRoute()
     } else {
       // error with Supabase
       emit("submit-error", sbError?.error?.message)
@@ -104,6 +96,7 @@ const submitForm = async () => {
       } else {
         sbErrorMsg.value = sbError?.error?.message
       }
+      //clearAuthReturnRoute()
     }
   }
 }
