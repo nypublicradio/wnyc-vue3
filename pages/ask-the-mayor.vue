@@ -18,9 +18,7 @@ const activeStep = ref(1)
 
 // Submit Handler
 const onFormSubmit = async (e) => {
-  // if (e.valid) {
   try {
-    // Upload Avatar if changed
     await UploadMediaREF.value?.uploadFiles()
 
     toast.add({
@@ -37,52 +35,25 @@ const onFormSubmit = async (e) => {
       life: 3000,
     })
   }
-  // } else {
-  //   toast.add({
-  //     severity: "error",
-  //     summary: "Validation Failed",
-  //     detail: "Please check the highlighted fields.",
-  //     life: 3000,
-  //   });
-  // }
 }
 
 const onUploadError = (event) => {}
-const onUploadComplete = (event) => {
-  // if (event.path) {
-  //   // Construct the full public URL from the relative path
-  //   const supabaseUrl = supabase.storage
-  //     .from(bucketName)
-  //     .getPublicUrl(event.path).data.publicUrl;
-  //   initialValues.value.avatar_url = supabaseUrl;
-  //   console.log("Avatar uploaded - relative path:", event.path);
-  //   console.log("Avatar uploaded - full URL:", supabaseUrl);
-  //   // Trigger validation
-  //   const avatarInput = avatarREF.value?.$el;
-  //   if (avatarInput) {
-  //     avatarInput.value = supabaseUrl;
-  //     avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
-  //   }
-  // }
-}
+const onUploadComplete = (event) => {}
 
-const onFilesUpdated = (files) => {
-  // This is called when files are selected but not yet uploaded
-  // We just use this to clear validation errors, actual path comes from onUpload
-  // if (files && files.length > 0) {
-  //   const avatarInput = avatarREF.value?.$el;
-  //   if (avatarInput) {
-  //     // Set a temporary value to pass validation
-  //     avatarInput.value = "uploading";
-  //     avatarInput.dispatchEvent(new Event("input", { bubbles: true }));
-  //   }
-  // }
-}
+const onFilesUpdated = (files) => {}
 const isSignupForm = ref(true)
 
 const loginOrSignupStepLabel = computed(() => {
   return isSignupForm.value ? "Sign Up" : "Login"
 })
+
+const onLoginClick = () => {
+  isSignupForm.value = false
+}
+
+const onSignupClick = () => {
+  isSignupForm.value = true
+}
 
 onMounted(() => {
   // send GA page view
@@ -201,11 +172,35 @@ watch(
         <Stepper v-model:value="activeStep" class="w-full">
           <StepPanels>
             <StepPanel :value="1" class="step-1">
-              <div class="flex flex-col">
+              <div class="">
                 <div class="step-content">
-                  <div class="flex flex-column gap-1">
-                    <Signup v-if="isSignupForm" isRoute raw />
-                    <Login v-else isRoute raw />
+                  <div>
+                    <Signup v-if="isSignupForm">
+                      <template #header>
+                        <p>
+                          Already have an account?
+                          <VFlexibleLink
+                            aria-label="log in"
+                            @flexible-link-click="onLoginClick"
+                          >
+                            Log in
+                          </VFlexibleLink>
+                        </p>
+                      </template>
+                    </Signup>
+                    <Login v-else>
+                      <template #header>
+                        <p>
+                          Don't have an account yet?
+                          <VFlexibleLink
+                            aria-label="sign up"
+                            @flexible-link-click="onSignupClick"
+                          >
+                            Sign up
+                          </VFlexibleLink>
+                        </p>
+                      </template>
+                    </Login>
                   </div>
                 </div>
               </div>

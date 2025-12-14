@@ -17,6 +17,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  returnRoute: {
+    type: String,
+    default: "/",
+  },
+  showHeader: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const settingsSideBar = useSettingSideBar()
@@ -78,20 +86,21 @@ const closeLogin = () => {
 
 <template>
   <div class="login">
-    <section>
-      <SHeader label="Log in" @close-sidebar="closeLogin" />
+    <section v-if="props.showHeader">
+      <slot name="header">
+        <SHeader class="pb-4" label="Log in" @close-sidebar="closeLogin" />
+        <p>
+          Don't have an account yet?
+          <VFlexibleLink
+            aria-label="sign up"
+            @flexible-link-click="onSignupClick"
+          >
+            Sign up
+          </VFlexibleLink>
+        </p>
+      </slot>
     </section>
-    <section>
-      <p>
-        Don't have an account yet?
-        <VFlexibleLink
-          aria-label="sign up"
-          @flexible-link-click="onSignupClick"
-        >
-          Sign up
-        </VFlexibleLink>
-      </p>
-
+    <section class="pt-0">
       <VLoginWithProvider
         :client="client"
         :config="config"
