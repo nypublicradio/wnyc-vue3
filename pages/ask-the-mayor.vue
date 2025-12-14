@@ -92,11 +92,17 @@ onMounted(() => {
     page_type: "ask_the_mayor",
     content_group: "ask_the_mayor",
   })
-
-  if (user.value) {
-    activeStep.value = 2
-  }
 })
+
+watch(
+  user,
+  () => {
+    if (user.value) {
+      activeStep.value = 2
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -142,9 +148,15 @@ onMounted(() => {
           class="w-full flex flex-column-reverse gap-4"
         >
           <StepList class="px-5">
-            <Step :value="1">{{ loginOrSignupStepLabel }}</Step>
-            <Step :value="2">Create Video</Step>
-            <Step :value="3">Review</Step>
+            <Step :value="1" :class="{ completed: activeStep > 1 }">
+              {{ loginOrSignupStepLabel }}
+            </Step>
+            <Step :value="2" :class="{ completed: activeStep > 2 }"
+              >Create Video</Step
+            >
+            <Step :value="3" :class="{ completed: activeStep > 3 }"
+              >Review</Step
+            >
           </StepList>
           <StepPanels>
             <StepPanel :value="1">
@@ -334,6 +346,22 @@ onMounted(() => {
             font-weight: 700;
           }
           .p-step-number {
+            &:after {
+              background-color: var(--p-sky-500);
+            }
+          }
+        }
+        &.completed {
+          .p-step-number {
+            background-color: var(--p-sky-500);
+            &:before {
+              content: "\e909";
+              color: var(--p-surface-0);
+              font-family: "primeicons";
+              font-size: 0.8rem;
+              font-weight: 900;
+              z-index: 1;
+            }
             &:after {
               background-color: var(--p-sky-500);
             }
