@@ -139,6 +139,10 @@ watch(
       </div>
       <h1>Ask the Mayor</h1>
 
+      <Button label="step 1" @click="activeStep = 1" />
+      <Button label="step 2" @click="activeStep = 2" />
+      <Button label="step 3" @click="activeStep = 3" />
+
       <!-- <p>Information about this feature</p>
       <p>You can record up to {{ recordTimeLimit }} seconds</p> -->
 
@@ -196,7 +200,7 @@ watch(
       <div class="card flex justify-center w-full">
         <Stepper v-model:value="activeStep" class="w-full">
           <StepPanels>
-            <StepPanel :value="1">
+            <StepPanel :value="1" class="step-1">
               <div class="flex flex-col">
                 <div class="step-content">
                   <div class="flex flex-column gap-1">
@@ -206,7 +210,12 @@ watch(
                 </div>
               </div>
             </StepPanel>
-            <StepPanel v-for="step in [2, 3]" :key="step" :value="step">
+            <StepPanel
+              v-for="step in [2, 3]"
+              :key="step"
+              :value="step"
+              :class="`step-${step}`"
+            >
               <div class="flex w-full">
                 <div class="step-content w-full">
                   <div class="flex flex-column gap-1">
@@ -247,10 +256,6 @@ watch(
           </StepPanels>
         </Stepper>
       </div>
-
-      <Button label="step 1" @click="activeStep = 1" />
-      <Button label="step 2" @click="activeStep = 2" />
-      <Button label="step 3" @click="activeStep = 3" />
 
       <!-- <div v-else class="flex flex-column gap-2 my-4">
         <p>Question limit reached. Please try again tomorrow.</p>
@@ -309,6 +314,20 @@ watch(
       .p-steppanel {
         border-radius: 8px;
         padding: 1rem;
+        &.step-1 {
+          padding: 0;
+          background-color: transparent;
+          section {
+            padding-left: 0;
+            padding-right: 0;
+          }
+        }
+        &.step-2 {
+          background-color: var(--p-sky-50);
+        }
+        &.step-3 {
+          background-color: var(--p-sky-50);
+        }
       }
     }
     .p-steplist {
