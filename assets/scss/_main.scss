@@ -331,3 +331,9 @@ html:not(.style-mode-dark) {
 .p-ripple-dark .p-ink {
   background: $p-ripple-background-dark !important;
 }
+
+.p-button {
+  .p-button-label {
+    font-variant-numeric: lining-nums;
+  }
+}

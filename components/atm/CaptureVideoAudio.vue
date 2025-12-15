@@ -199,6 +199,7 @@ const stopCountdown = () => {
 // --- Web Specific Methods ---
 
 const getWebDevices = async () => {
+  console.log("getWebDevices")
   if (!navigator.mediaDevices?.enumerateDevices) return
   try {
     const devices = await navigator.mediaDevices.enumerateDevices()
@@ -302,6 +303,23 @@ const toggleRecording = () => {
   }
 }
 
+const getPermissions = async () => {
+  error.value = null
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    })
+    // effective permissions granted
+    stream.getTracks().forEach((track) => track.stop())
+    await getWebDevices()
+    await startWebCamera()
+  } catch (err) {
+    console.error("Permission request failed:", err)
+    error.value = `${err.message}. Please reset permissions in your browser settings.`
+  }
+}
+
 defineExpose({ startRecording, stopRecording, toggleRecording })
 </script>
 
@@ -310,7 +328,11 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     <div v-if="error || nativeError" class="error-message">
       {{ error || nativeError }}
     </div>
-
+    <div class="actions">
+      <Button v-if="error" @click="getPermissions" class="record-btn">
+        Get Camera permission
+      </Button>
+    </div>
     <!-- Web Controls: Only show dropdowns if not native -->
     <div v-if="!isNative" class="controls flex flex-wrap grid-nogutter">
       <Select
@@ -372,16 +394,14 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     <div class="actions">
       <Button
         @click="toggleRecording"
-        :disabled="isProcessing"
+        :disabled="isProcessing || error"
         class="record-btn"
         :class="{ recording: isRecording }"
-      >
-        {{
-          isRecording ? `Stop Recording (${remainingTime}s)` : "Start Recording"
-        }}
-      </Button>
+        :label="
+          isRecording ? `Stop Recording (${remainingTime}s)` : 'Start Recording'
+        "
+      />
     </div>
-
     <div v-if="isProcessing" class="loading-indicator">Processing...</div>
   </div>
 </template>

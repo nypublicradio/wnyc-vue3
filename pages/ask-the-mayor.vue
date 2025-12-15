@@ -117,7 +117,7 @@ watch(
     </Html>
 
     <section>
-      <div class="flex align-items-center">
+      <!--       <div class="flex align-items-center">
         <Button
           class="back-btn text-color -ml-4"
           icon="pi pi-chevron-left"
@@ -128,7 +128,7 @@ watch(
           @click="navigateTo('/home')"
           label="Back"
         />
-      </div>
+      </div> -->
       <h1>Ask the Mayor</h1>
 
       <!-- <Button label="step 1" @click="activeStep = 1" />
