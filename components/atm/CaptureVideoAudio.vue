@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
-import useCaptureMedia from "~/composables/atm/useCaptureMedia";
+import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
+import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 
 const props = defineProps({
   bucket: {
@@ -23,9 +23,9 @@ const props = defineProps({
     type: Number,
     default: null,
   },
-});
+})
 
-const emit = defineEmits(["capture-complete", "capture-error"]);
+const emit = defineEmits(["capture-complete", "capture-error"])
 
 const {
   isNative,
@@ -34,27 +34,41 @@ const {
   stopVideoRecording,
   destroyVideo,
   error: nativeError,
-} = useCaptureMedia();
+} = useCaptureMedia()
 
 // Refs
-const videoRef = ref(null); // Used for Web Video and Native Placeholder
-const videoContainerRef = ref(null);
+const videoRef = ref(null) // Used for Web Video and Native Placeholder
+const videoContainerRef = ref(null)
 
 // Web API refs
-const videoDevices = ref([]);
-const audioDevices = ref([]);
-const selectedVideoDeviceId = ref(null);
-const selectedAudioDeviceId = ref(null);
-const stream = ref(null);
-const mediaRecorder = ref(null);
-const recordedChunks = ref([]);
+const videoDevices = ref([])
+const audioDevices = ref([])
+const selectedVideoDeviceId = ref(null)
+const selectedAudioDeviceId = ref(null)
+const stream = ref(null)
+const mediaRecorder = ref(null)
+const recordedChunks = ref([])
 
 // State
-const isRecording = ref(false);
-const isProcessing = ref(false);
-const error = ref(null);
-const remainingTime = ref(props.recordTimeLimit);
-let countdownInterval = null;
+const isRecording = ref(false)
+const isProcessing = ref(false)
+const error = ref(null)
+const remainingTime = ref(props.recordTimeLimit)
+let countdownInterval = null
+
+const videoInputOptions = computed(() =>
+  videoDevices.value.map((d) => ({
+    label: d.label || "Camera",
+    value: d.deviceId,
+  }))
+)
+
+const audioInputOptions = computed(() =>
+  audioDevices.value.map((d) => ({
+    label: d.label || "Microphone",
+    value: d.deviceId,
+  }))
+)
 
 // Helpers
 const getCaptureMetadata = (file, method) => ({
@@ -70,33 +84,33 @@ const getCaptureMetadata = (file, method) => ({
     patientId: props.patientId,
     metadata: props.metadata,
   },
-});
+})
 
 // --- Methods ---
 
 const initNativeCamera = async () => {
-  if (!isNative || !videoRef.value) return;
+  if (!isNative || !videoRef.value) return
 
   try {
     // Wait for layout
-    await nextTick();
+    await nextTick()
 
     // Scroll into view to ensure visibility
     if (videoContainerRef.value) {
       videoContainerRef.value.scrollIntoView({
         behavior: "smooth",
         block: "center",
-      });
+      })
       // Give it a moment to scroll
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300))
     }
 
     // Lock scroll to prevent "floating" feel
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden"
 
     // Get position of the placeholder element
-    const rect = videoRef.value.getBoundingClientRect();
-    console.log("Initializing native camera at:", rect);
+    const rect = videoRef.value.getBoundingClientRect()
+    console.log("Initializing native camera at:", rect)
 
     await initializeVideo({
       id: "native-video-preview",
@@ -105,104 +119,104 @@ const initNativeCamera = async () => {
       width: rect.width,
       height: rect.height,
       stackPosition: "front", // Overlay on top of the generic placeholder
-    });
+    })
   } catch (err) {
-    console.error("Failed to init native camera:", err);
-    error.value = nativeError.value || "Failed to initialize camera";
+    console.error("Failed to init native camera:", err)
+    error.value = nativeError.value || "Failed to initialize camera"
   }
-};
+}
 
 const startRecording = async () => {
-  if (isRecording.value) return;
-  error.value = null;
+  if (isRecording.value) return
+  error.value = null
 
   try {
     if (isNative) {
-      await startVideoRecording();
+      await startVideoRecording()
     } else {
-      startWebRecording();
+      startWebRecording()
     }
 
     // UI Updates
-    isRecording.value = true;
-    startCountdown();
+    isRecording.value = true
+    startCountdown()
   } catch (err) {
-    console.error("Start recording failed:", err);
-    error.value = err.message;
+    console.error("Start recording failed:", err)
+    error.value = err.message
   }
-};
+}
 
 const stopRecording = async () => {
-  if (!isRecording.value) return;
+  if (!isRecording.value) return
 
-  stopCountdown();
-  isProcessing.value = true;
+  stopCountdown()
+  isProcessing.value = true
 
   try {
-    let videoFile;
+    let videoFile
     if (isNative) {
-      videoFile = await stopVideoRecording();
+      videoFile = await stopVideoRecording()
     } else {
-      videoFile = await stopWebRecording();
+      videoFile = await stopWebRecording()
     }
 
     if (videoFile) {
       // Small delay to ensure native view is fully detached/stopped before we potentially unmount
-      if (isNative) await new Promise((resolve) => setTimeout(resolve, 100));
+      if (isNative) await new Promise((resolve) => setTimeout(resolve, 100))
 
       const metadata = getCaptureMetadata(
         videoFile,
         isNative ? "native_recorder" : "web_recorder"
-      );
-      emit("capture-complete", { file: videoFile, metadata });
+      )
+      emit("capture-complete", { file: videoFile, metadata })
     }
   } catch (err) {
-    console.error("Stop recording failed:", err);
-    error.value = err.message || "Failed to stop recording";
-    emit("capture-error", error.value);
+    console.error("Stop recording failed:", err)
+    error.value = err.message || "Failed to stop recording"
+    emit("capture-error", error.value)
   } finally {
-    isRecording.value = false;
-    isProcessing.value = false;
+    isRecording.value = false
+    isProcessing.value = false
   }
-};
+}
 
 const startCountdown = () => {
-  remainingTime.value = props.recordTimeLimit;
-  clearInterval(countdownInterval);
+  remainingTime.value = props.recordTimeLimit
+  clearInterval(countdownInterval)
   countdownInterval = setInterval(() => {
-    remainingTime.value--;
+    remainingTime.value--
     if (remainingTime.value < 0) {
-      stopRecording();
+      stopRecording()
     }
-  }, 1000);
-};
+  }, 1000)
+}
 
 const stopCountdown = () => {
-  clearInterval(countdownInterval);
-  remainingTime.value = props.recordTimeLimit;
-};
+  clearInterval(countdownInterval)
+  remainingTime.value = props.recordTimeLimit
+}
 
 // --- Web Specific Methods ---
 
 const getWebDevices = async () => {
-  if (!navigator.mediaDevices?.enumerateDevices) return;
+  if (!navigator.mediaDevices?.enumerateDevices) return
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    videoDevices.value = devices.filter((d) => d.kind === "videoinput");
-    audioDevices.value = devices.filter((d) => d.kind === "audioinput");
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    videoDevices.value = devices.filter((d) => d.kind === "videoinput")
+    audioDevices.value = devices.filter((d) => d.kind === "audioinput")
 
     if (videoDevices.value.length && !selectedVideoDeviceId.value)
-      selectedVideoDeviceId.value = videoDevices.value[0].deviceId;
+      selectedVideoDeviceId.value = videoDevices.value[0].deviceId
     if (audioDevices.value.length && !selectedAudioDeviceId.value)
-      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+      selectedAudioDeviceId.value = audioDevices.value[0].deviceId
   } catch (err) {
-    console.warn("Device enumeration failed:", err);
+    console.warn("Device enumeration failed:", err)
   }
-};
+}
 
 const startWebCamera = async () => {
   if (stream.value) {
-    stream.value.getTracks().forEach((t) => t.stop());
+    stream.value.getTracks().forEach((t) => t.stop())
   }
 
   const constraints = {
@@ -212,75 +226,75 @@ const startWebCamera = async () => {
     audio: selectedAudioDeviceId.value
       ? { deviceId: { exact: selectedAudioDeviceId.value } }
       : true,
-  };
+  }
 
   try {
-    stream.value = await navigator.mediaDevices.getUserMedia(constraints);
-    if (videoRef.value) videoRef.value.srcObject = stream.value;
+    stream.value = await navigator.mediaDevices.getUserMedia(constraints)
+    if (videoRef.value) videoRef.value.srcObject = stream.value
   } catch (err) {
-    error.value = `Camera access failed: ${err.message}`;
+    error.value = `Camera access failed: ${err.message}`
   }
-};
+}
 
 const startWebRecording = () => {
-  if (!stream.value) throw new Error("No stream available");
+  if (!stream.value) throw new Error("No stream available")
 
-  recordedChunks.value = [];
-  const options = { mimeType: "video/webm" };
+  recordedChunks.value = []
+  const options = { mimeType: "video/webm" }
   // Add codec fallback logic if needed
 
-  mediaRecorder.value = new MediaRecorder(stream.value, options);
+  mediaRecorder.value = new MediaRecorder(stream.value, options)
   mediaRecorder.value.ondataavailable = (e) => {
-    if (e.data.size > 0) recordedChunks.value.push(e.data);
-  };
-  mediaRecorder.value.start();
-};
+    if (e.data.size > 0) recordedChunks.value.push(e.data)
+  }
+  mediaRecorder.value.start()
+}
 
 const stopWebRecording = () => {
   return new Promise((resolve, reject) => {
-    if (!mediaRecorder.value) return reject("No recorder");
+    if (!mediaRecorder.value) return reject("No recorder")
 
     mediaRecorder.value.onstop = () => {
-      const blob = new Blob(recordedChunks.value, { type: "video/webm" });
+      const blob = new Blob(recordedChunks.value, { type: "video/webm" })
       const file = new File([blob], `video_${Date.now()}.webm`, {
         type: "video/webm",
-      });
-      resolve(file);
-    };
-    mediaRecorder.value.onerror = (e) => reject(e.error);
+      })
+      resolve(file)
+    }
+    mediaRecorder.value.onerror = (e) => reject(e.error)
 
-    mediaRecorder.value.stop();
-  });
-};
+    mediaRecorder.value.stop()
+  })
+}
 
 // --- Watchers & Lifecycle ---
 
 watch([selectedVideoDeviceId, selectedAudioDeviceId], () => {
-  if (!isNative) startWebCamera();
-});
+  if (!isNative) startWebCamera()
+})
 
 onMounted(async () => {
   if (isNative) {
     // Native Init
-    setTimeout(initNativeCamera, 500); // Small delay for layout to settle
+    setTimeout(initNativeCamera, 500) // Small delay for layout to settle
   } else {
     // Web Init
-    await getWebDevices();
-    await startWebCamera();
+    await getWebDevices()
+    await startWebCamera()
   }
-});
+})
 
 onBeforeUnmount(() => {
-  stopCountdown();
+  stopCountdown()
   if (isNative) {
-    destroyVideo();
-    document.body.style.overflow = ""; // Restore scroll
+    destroyVideo()
+    document.body.style.overflow = "" // Restore scroll
   } else {
-    if (stream.value) stream.value.getTracks().forEach((t) => t.stop());
+    if (stream.value) stream.value.getTracks().forEach((t) => t.stop())
   }
-});
+})
 
-defineExpose({ startRecording, stopRecording });
+defineExpose({ startRecording, stopRecording })
 </script>
 
 <template>
@@ -290,17 +304,43 @@ defineExpose({ startRecording, stopRecording });
     </div>
 
     <!-- Web Controls: Only show dropdowns if not native -->
-    <div v-if="!isNative" class="controls">
-      <select v-model="selectedVideoDeviceId">
-        <option v-for="d in videoDevices" :key="d.deviceId" :value="d.deviceId">
-          {{ d.label || "Camera" }}
-        </option>
-      </select>
-      <select v-model="selectedAudioDeviceId">
-        <option v-for="d in audioDevices" :key="d.deviceId" :value="d.deviceId">
-          {{ d.label || "Microphone" }}
-        </option>
-      </select>
+    <div v-if="!isNative" class="controls grid grid-nogutter">
+      <Select
+        v-model="selectedVideoDeviceId"
+        :options="videoInputOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select Camera"
+        class="col-12 md:col-6 text-xs"
+      >
+        <template #value="{ value, placeholder }">
+          <span v-if="value">
+            Camera:
+            {{ videoInputOptions.find((opt) => opt.value === value)?.label }}
+          </span>
+          <span v-else>
+            {{ placeholder }}
+          </span>
+        </template>
+      </Select>
+      <Select
+        v-model="selectedAudioDeviceId"
+        :options="audioInputOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select Microphone"
+        class="col-12 md:col-6 text-xs"
+      >
+        <template #value="{ value, placeholder }">
+          <span v-if="value">
+            Microphone:
+            {{ audioInputOptions.find((opt) => opt.value === value)?.label }}
+          </span>
+          <span v-else>
+            {{ placeholder }}
+          </span>
+        </template>
+      </Select>
     </div>
 
     <!-- Preview Area: Shared for both Native and Web -->
@@ -322,7 +362,7 @@ defineExpose({ startRecording, stopRecording });
 
     <!-- Unified Actions -->
     <div class="actions">
-      <button
+      <Button
         @click="isRecording ? stopRecording() : startRecording()"
         :disabled="isProcessing"
         class="record-btn"
@@ -331,7 +371,7 @@ defineExpose({ startRecording, stopRecording });
         {{
           isRecording ? `Stop Recording (${remainingTime}s)` : "Start Recording"
         }}
-      </button>
+      </Button>
     </div>
 
     <div v-if="isProcessing" class="loading-indicator">Processing...</div>
@@ -372,14 +412,10 @@ defineExpose({ startRecording, stopRecording });
 }
 
 .record-btn {
-  padding: 12px 24px;
-  border-radius: 50px;
-  border: none;
-  background: #e01e3f;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
   transition: all 0.2s;
+  font-family: var(--font-family-header);
+  font-weight: 700;
+  width: 264px;
 }
 
 .record-btn.recording {

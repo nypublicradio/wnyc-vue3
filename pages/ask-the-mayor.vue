@@ -310,6 +310,10 @@ watch(
       border: none;
       margin-bottom: 0;
       padding: 0;
+      .capture-video-audio {
+        padding: 0;
+        background-color: transparent;
+      }
     }
   }
 
@@ -333,6 +337,12 @@ watch(
           .p-panel {
             background: transparent;
             border: 2px dotted var(--p-sky-500);
+            .p-panel-header {
+              display: none;
+            }
+            .p-panel-content {
+              padding: 1rem;
+            }
           }
           @include upload-media-styles;
         }

@@ -1111,9 +1111,9 @@ onMounted(async () => {
         @capture-complete="handleCaptureComplete"
         @capture-error="handleCaptureError"
       />
-      <button @click="openCaptureMode(null)" class="close-capture-btn">
+      <!-- <button @click="openCaptureMode(null)" class="close-capture-btn">
         Close Capture
-      </button>
+      </button> -->
     </div>
 
     <div v-if="showAudioCapture" class="capture-component-container">
