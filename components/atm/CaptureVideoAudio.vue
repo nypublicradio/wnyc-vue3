@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
+import { App } from "@capacitor/app"
 import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 
 const props = defineProps({
@@ -55,6 +56,7 @@ const isProcessing = ref(false)
 const error = ref(null)
 const remainingTime = ref(props.recordTimeLimit)
 let countdownInterval = null
+let resumeListener = null
 
 const videoInputOptions = computed(() =>
   videoDevices.value.map((d) => ({
@@ -199,7 +201,6 @@ const stopCountdown = () => {
 // --- Web Specific Methods ---
 
 const getWebDevices = async () => {
-  console.log("getWebDevices")
   if (!navigator.mediaDevices?.enumerateDevices) return
   try {
     const devices = await navigator.mediaDevices.enumerateDevices()
@@ -278,6 +279,13 @@ onMounted(async () => {
   if (isNative) {
     // Native Init
     setTimeout(initNativeCamera, 500) // Small delay for layout to settle
+
+    // Listen for app resume (e.g. returning from permission dialog)
+    resumeListener = await App.addListener("resume", async () => {
+      console.log("App resumed, re-initializing camera...")
+      // Give the app a moment to settle
+      setTimeout(initNativeCamera, 500)
+    })
   } else {
     // Web Init
     await getWebDevices()
@@ -290,6 +298,9 @@ onBeforeUnmount(() => {
   if (isNative) {
     destroyVideo()
     document.body.style.overflow = "" // Restore scroll
+    if (resumeListener) {
+      resumeListener.remove()
+    }
   } else {
     if (stream.value) stream.value.getTracks().forEach((t) => t.stop())
   }
@@ -312,8 +323,13 @@ const getPermissions = async () => {
     })
     // effective permissions granted
     stream.getTracks().forEach((track) => track.stop())
-    await getWebDevices()
-    await startWebCamera()
+
+    if (isNative) {
+      await initNativeCamera()
+    } else {
+      await getWebDevices()
+      await startWebCamera()
+    }
   } catch (err) {
     console.error("Permission request failed:", err)
     error.value = `${err.message}. Please reset permissions in your browser settings.`
