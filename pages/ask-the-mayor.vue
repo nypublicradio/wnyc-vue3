@@ -229,6 +229,7 @@ watch(
                         :audioButton="false"
                         :browseButton="false"
                         :maxFiles="1"
+                        autoSelect="video"
                         @upload-complete="onUploadComplete"
                         @upload-error="onUploadError"
                         @files-updated="onFilesUpdated"
@@ -304,6 +305,14 @@ watch(
 </template>
 <style lang="scss">
 .ask-the-mayor {
+  @mixin upload-media-styles {
+    .capture-component-container {
+      border: none;
+      margin-bottom: 0;
+      padding: 0;
+    }
+  }
+
   .p-stepper {
     .p-steppanels {
       .p-steppanel {
@@ -317,11 +326,15 @@ watch(
             padding-right: 0;
           }
         }
-        &.step-2 {
-          background-color: var(--p-sky-50);
-        }
+        &.step-2,
         &.step-3 {
-          background-color: var(--p-sky-50);
+          background-color: var(--p-sky-100);
+          padding: 0;
+          .p-panel {
+            background: transparent;
+            border: 2px dotted var(--p-sky-500);
+          }
+          @include upload-media-styles;
         }
       }
     }

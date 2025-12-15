@@ -1,18 +1,18 @@
 <script setup>
-import { ref, nextTick, computed, onMounted } from "vue";
-import { Capacitor } from "@capacitor/core";
-import useGallery from "~/composables/atm/useGallery";
+import { ref, nextTick, computed, onMounted } from "vue"
+import { Capacitor } from "@capacitor/core"
+import useGallery from "~/composables/atm/useGallery"
 // Import FilePond and its plugins
-import vueFilePond from "vue-filepond";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor";
-import FilePondPluginFilePoster from "filepond-plugin-file-poster";
-import FilePondPluginMediaPreview from "filepond-plugin-media-preview";
+import vueFilePond from "vue-filepond"
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
+import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor"
+import FilePondPluginFilePoster from "filepond-plugin-file-poster"
+import FilePondPluginMediaPreview from "filepond-plugin-media-preview"
 
 // Import new capture components
-import CaptureImage from "./CaptureImage.vue";
-import CaptureVideoAudio from "./CaptureVideoAudio.vue";
-import CaptureAudio from "./CaptureAudio.vue";
+import CaptureImage from "./CaptureImage.vue"
+import CaptureVideoAudio from "./CaptureVideoAudio.vue"
+import CaptureAudio from "./CaptureAudio.vue"
 
 // Import Pintura for image editing and its necessary factory functions
 import {
@@ -22,15 +22,21 @@ import {
   createDefaultImageWriter as pinturaCreateDefaultImageWriter,
   getEditorDefaults as pinturaGetEditorDefaults,
   // legacyDataToImageState as pinturaLegacyDataToImageState, // Only if needed for v6 data
-} from "@pqina/pintura";
+} from "@pqina/pintura"
 
 // Import required styles
-import "filepond/dist/filepond.min.css";
-import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css";
-import "filepond-plugin-media-preview/dist/filepond-plugin-media-preview.min.css";
-import "@pqina/pintura/pintura.css";
+import "filepond/dist/filepond.min.css"
+import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css"
+import "filepond-plugin-media-preview/dist/filepond-plugin-media-preview.min.css"
+import "@pqina/pintura/pintura.css"
 
-import useTranscribe from "~/composables/atm/useTranscribe";
+import useTranscribe from "~/composables/atm/useTranscribe"
+
+const mediaType = {
+  IMAGE: "image",
+  VIDEO: "video",
+  AUDIO: "audio",
+}
 
 // Component props with defaults
 const props = defineProps({
@@ -102,6 +108,11 @@ const props = defineProps({
     type: String,
     default: "Record Audio",
   },
+  autoSelect: {
+    type: String,
+    default: null,
+    // audio, video, image
+  },
   browseButton: {
     type: Boolean,
     default: true,
@@ -115,7 +126,7 @@ const props = defineProps({
     type: Number,
     default: null,
   },
-});
+})
 
 // Component emits
 const emit = defineEmits([
@@ -124,48 +135,48 @@ const emit = defineEmits([
   "upload-progress",
   "files-updated",
   "has-files",
-]);
+])
 
-const { embedMetadataInImage } = useGallery();
-const { transcribeMedia } = useTranscribe();
+const { embedMetadataInImage } = useGallery()
+const { transcribeMedia } = useTranscribe()
 
 // Supabase client
-const supabase = useSupabaseClient();
+const supabase = useSupabaseClient()
 
 // FilePond instance reference
-const pond = ref(null);
+const pond = ref(null)
 
 // Track if files are present (including during editing)
-const hasFiles = ref(false);
+const hasFiles = ref(false)
 
 // Store edited files mapped by file item ID
-const editedFiles = ref(new Map());
+const editedFiles = ref(new Map())
 
 // Store last captured video URL for manual preview
-const lastCapturedVideoUrl = ref(null);
+const lastCapturedVideoUrl = ref(null)
 
 // Track if images are being processed
-const isProcessing = ref(false);
+const isProcessing = ref(false)
 
 // Ref for the component root to enable scrolling
-const uploadMediaPanel = ref(null);
+const uploadMediaPanel = ref(null)
 
 // Track if images are being captured
-const isCapturing = ref(false);
+const isCapturing = ref(false)
 
 // Track autosave mode
-const isAutosaveMode = computed(() => !!props.autosaveComposable);
+const isAutosaveMode = computed(() => !!props.autosaveComposable)
 
 // Server configuration for FilePond (used for restoring autosaved files)
 const serverConfig = computed(() => {
-  if (!isAutosaveMode.value) return null;
+  if (!isAutosaveMode.value) return null
 
   return {
     process: (fieldName, file, metadata, load, error, progress, abort) => {
       // In autosave mode, files are already handled by onAddFile
       // Just immediately signal success to FilePond
-      progress(1);
-      load(Date.now().toString()); // Return a unique ID
+      progress(1)
+      load(Date.now().toString()) // Return a unique ID
     },
     restore: async (
       uniqueFileId,
@@ -174,18 +185,18 @@ const serverConfig = computed(() => {
       progress /* , abort, headers */
     ) => {
       try {
-        progress(true, 0, 1);
+        progress(true, 0, 1)
 
         // Find the file reference by ID
         const mediaFiles =
-          props.autosaveComposable.autosaveMediaFiles?.value || [];
-        const fileRef = mediaFiles.find((f) => f.id === uniqueFileId);
+          props.autosaveComposable.autosaveMediaFiles?.value || []
+        const fileRef = mediaFiles.find((f) => f.id === uniqueFileId)
         if (!fileRef) {
-          error("File not found");
-          return;
+          error("File not found")
+          return
         }
 
-        console.log(`[UploadMedia] Restoring file with ID: ${uniqueFileId}`);
+        console.log(`[UploadMedia] Restoring file with ID: ${uniqueFileId}`)
 
         // Use the API endpoint to restore the file with proper MIME type
         const response = await fetch("/api/autosave-restore", {
@@ -199,65 +210,65 @@ const serverConfig = computed(() => {
             formId: props.autosaveComposable.formId,
             patientId: props.autosaveComposable.patient_id,
           }),
-        });
+        })
 
         if (!response.ok) {
           console.error(
             `[UploadMedia] Error restoring file: ${response.status} ${response.statusText}`
-          );
-          error("Could not restore file");
-          return;
+          )
+          error("Could not restore file")
+          return
         }
 
         // Get the blob from response
-        const blob = await response.blob();
+        const blob = await response.blob()
 
         // Create a File object with the original name and type
         const file = new File([blob], fileRef.original_name, {
           type: fileRef.file_type, // Use the stored MIME type from fileRef
-        });
+        })
 
-        progress(true, 1, 1);
-        load(file);
+        progress(true, 1, 1)
+        load(file)
       } catch (err) {
-        console.error("Error restoring autosave file:", err);
-        error("Error restoring file");
+        console.error("Error restoring autosave file:", err)
+        error("Error restoring file")
       }
     },
     revert: async (uniqueFileId, load, error) => {
       try {
         // Remove the autosaved file when reverted
-        await props.autosaveComposable.removeAutosaveMediaFile(uniqueFileId);
-        load();
+        await props.autosaveComposable.removeAutosaveMediaFile(uniqueFileId)
+        load()
       } catch (err) {
-        console.error("Error reverting autosave file:", err);
-        error("Error removing file");
+        console.error("Error reverting autosave file:", err)
+        error("Error removing file")
       }
     },
-  };
-});
+  }
+})
 
 // Initial files for FilePond (disabled in autosave mode to prevent restore cycle)
 const initialFiles = computed(() => {
   // In autosave mode, don't set initial files to prevent FilePond from trying to restore them
   // We'll populate them manually after component mounts
   if (isAutosaveMode.value) {
-    return [];
+    return []
   }
 
-  return [];
-});
+  return []
+})
 
 // Computed metadata object that combines all information from props.metadata
 const fileMetadata = computed(() => {
   // Convert the metadata array [user, patient] into a flat object for FilePond
-  const metadataObject = {};
+  const metadataObject = {}
 
   props.metadata.forEach((item, index) => {
     if (typeof item === "object" && item !== null) {
       // Add a prefix to distinguish between user and patient data and 3rd item
       const prefix =
-        index === 0 ? "user__" : index === 1 ? "patient__" : "item__";
+        index === 0 ? "user__" : index === 1 ? "patient__" : "item__"
 
       Object.keys(item).forEach((key) => {
         // Skip unwanted user metadata fields
@@ -273,24 +284,24 @@ const fileMetadata = computed(() => {
           "role",
           "updated_at",
           "user_metadata",
-        ];
+        ]
 
         if (index === 0 && unwantedFields.includes(key)) {
-          return; // Skip this field
+          return // Skip this field
         }
 
-        metadataObject[`${prefix}${key}`] = item[key];
-      });
+        metadataObject[`${prefix}${key}`] = item[key]
+      })
     }
-  });
+  })
 
   // Add system information
-  metadataObject.uploadTimestamp = Date.now();
-  metadataObject.uploadDate = new Date().toISOString();
-  metadataObject.bucket = props.bucket;
+  metadataObject.uploadTimestamp = Date.now()
+  metadataObject.uploadDate = new Date().toISOString()
+  metadataObject.bucket = props.bucket
 
-  return metadataObject;
-});
+  return metadataObject
+})
 
 // Pintura editor configuration using the new structure for FilePondPluginImageEditor
 const imageEditorPinturaOptions = {
@@ -351,7 +362,7 @@ const imageEditorPinturaOptions = {
     ],
     // Example: imageCropAspectRatio: 1, // to default to square
   },
-};
+}
 
 // Create FilePond component with plugins and the new imageEditor options
 const FilePond = vueFilePond(
@@ -359,123 +370,123 @@ const FilePond = vueFilePond(
   FilePondPluginImageEditor,
   FilePondPluginFilePoster,
   FilePondPluginMediaPreview
-);
+)
 
 // Function to resize and convert image to WebP if not already processed
 const processImageFile = (file) => {
   // Validate file input
   if (!file || !(file instanceof File)) {
-    console.warn("Invalid file provided to processImageFile:", file);
-    return file;
+    console.warn("Invalid file provided to processImageFile:", file)
+    return file
   }
 
   return new Promise((resolve /* , reject */) => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+    const img = new Image()
 
     img.onerror = (error) => {
-      console.error("Error loading image for processing:", error);
-      resolve(file); // Return original file if processing fails
-    };
+      console.error("Error loading image for processing:", error)
+      resolve(file) // Return original file if processing fails
+    }
 
     img.onload = () => {
       try {
         // Calculate new dimensions maintaining aspect ratio
-        let { width, height } = img;
-        const maxWidth = 1920;
-        const maxHeight = 1080;
+        let { width, height } = img
+        const maxWidth = 1920
+        const maxHeight = 1080
 
         if (width > maxWidth || height > maxHeight) {
-          const aspectRatio = width / height;
+          const aspectRatio = width / height
           if (width > height) {
-            width = maxWidth;
-            height = width / aspectRatio;
+            width = maxWidth
+            height = width / aspectRatio
             if (height > maxHeight) {
-              height = maxHeight;
-              width = height * aspectRatio;
+              height = maxHeight
+              width = height * aspectRatio
             }
           } else {
-            height = maxHeight;
-            width = height * aspectRatio;
+            height = maxHeight
+            width = height * aspectRatio
             if (width > maxWidth) {
-              width = maxWidth;
-              height = width / aspectRatio;
+              width = maxWidth
+              height = width / aspectRatio
             }
           }
         }
 
         // Set canvas dimensions
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = width
+        canvas.height = height
 
         // Draw resized image
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height)
 
         // Convert to WebP blob with error handling
         canvas.toBlob(
           (blob) => {
             if (!blob) {
-              console.error("Failed to create blob from canvas");
-              resolve(file); // Return original file if blob creation fails
-              return;
+              console.error("Failed to create blob from canvas")
+              resolve(file) // Return original file if blob creation fails
+              return
             }
 
             try {
               // Create new file with WebP extension
-              const originalName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+              const originalName = file.name.replace(/\.[^/.]+$/, "") // Remove extension
               const webpFile = new File([blob], `${originalName}.webp`, {
                 type: "image/webp",
                 lastModified: Date.now(),
-              });
-              resolve(webpFile);
+              })
+              resolve(webpFile)
             } catch (error) {
-              console.error("Error creating WebP file:", error);
-              resolve(file); // Return original file if File creation fails
+              console.error("Error creating WebP file:", error)
+              resolve(file) // Return original file if File creation fails
             }
           },
           "image/webp",
           0.7
-        ); // 70% quality
+        ) // 70% quality
 
         // Clean up object URL
-        URL.revokeObjectURL(img.src);
+        URL.revokeObjectURL(img.src)
       } catch (error) {
-        console.error("Error processing image:", error);
-        resolve(file); // Return original file if processing fails
+        console.error("Error processing image:", error)
+        resolve(file) // Return original file if processing fails
       }
-    };
+    }
 
     try {
-      img.src = URL.createObjectURL(file);
+      img.src = URL.createObjectURL(file)
     } catch (error) {
-      console.error("Error creating object URL for image processing:", error);
-      resolve(file); // Return original file if URL creation fails
+      console.error("Error creating object URL for image processing:", error)
+      resolve(file) // Return original file if URL creation fails
     }
-  });
-};
+  })
+}
 
 // Function to actually upload the file after editing
 const uploadEditedFile = async (file, fileMetadataArg) => {
   // Check if this file has capture metadata
-  const fileKey = `${file.name}_${file.lastModified}`;
-  const captureMetadata = captureMetadataMap.value.get(fileKey);
+  const fileKey = `${file.name}_${file.lastModified}`
+  const captureMetadata = captureMetadataMap.value.get(fileKey)
 
   // Process ALL image files (both edited and non-edited) for consistency
-  let processedFile = file;
-  if (file.type.startsWith("image/")) {
-    processedFile = await processImageFile(file);
+  let processedFile = file
+  if (file.type.startsWith(`${mediaType.IMAGE}/`)) {
+    processedFile = await processImageFile(file)
 
     // For captured images, we need to build the metadata object from capture metadata
-    let metadataForEmbedding = fileMetadataArg;
+    let metadataForEmbedding = fileMetadataArg
     if (captureMetadata) {
       // Build metadata object similar to how it was done in CaptureImage
-      const fileMetadataObject = {};
+      const fileMetadataObject = {}
       if (captureMetadata.originalProps?.metadata) {
         captureMetadata.originalProps.metadata.forEach((item, index) => {
           if (typeof item === "object" && item !== null) {
             const prefix =
-              index === 0 ? "user__" : index === 1 ? "patient__" : "item__";
+              index === 0 ? "user__" : index === 1 ? "patient__" : "item__"
             Object.keys(item).forEach((key) => {
               const unwantedFields = [
                 "app_metadata",
@@ -489,22 +500,22 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
                 "role",
                 "updated_at",
                 "user_metadata",
-              ];
-              if (index === 0 && unwantedFields.includes(key)) return;
-              fileMetadataObject[`${prefix}${key}`] = item[key];
-            });
+              ]
+              if (index === 0 && unwantedFields.includes(key)) return
+              fileMetadataObject[`${prefix}${key}`] = item[key]
+            })
           }
-        });
+        })
       }
-      fileMetadataObject.uploadTimestamp = Date.now();
-      fileMetadataObject.uploadDate = new Date().toISOString();
+      fileMetadataObject.uploadTimestamp = Date.now()
+      fileMetadataObject.uploadDate = new Date().toISOString()
       fileMetadataObject.bucket =
-        captureMetadata.originalProps?.bucket || props.bucket;
-      fileMetadataObject.captureMethod = captureMetadata.captureMethod;
-      fileMetadataObject.captureTimestamp = captureMetadata.captureTimestamp;
-      fileMetadataObject.captureDate = captureMetadata.captureDate;
+        captureMetadata.originalProps?.bucket || props.bucket
+      fileMetadataObject.captureMethod = captureMetadata.captureMethod
+      fileMetadataObject.captureTimestamp = captureMetadata.captureTimestamp
+      fileMetadataObject.captureDate = captureMetadata.captureDate
 
-      metadataForEmbedding = fileMetadataObject;
+      metadataForEmbedding = fileMetadataObject
     }
 
     // Embed metadata into the processed image
@@ -512,63 +523,62 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       processedFile,
       metadataForEmbedding,
       captureMetadata?.originalProps?.metadata || props.metadata
-    );
+    )
   }
 
   const timeStampToDate = (timestamp) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp)
     // format date to YYYY_MM_DD
-    return date.toISOString().split("T")[0];
-  };
+    return date.toISOString().split("T")[0]
+  }
 
   // Generate unique filename with timestamp
-  const timestamp = new Date().getTime();
-  const sanitizedName = processedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const timestamp = new Date().getTime()
+  const sanitizedName = processedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")
   const userName =
-    props.user?.user_metadata?.name.replace(" ", "_") || "unknown-user";
-  const userId = `--${props.user?.id}--` || "";
-  const subfolder =
-    captureMetadata?.originalProps?.subfolder || props.subfolder;
+    props.user?.user_metadata?.name.replace(" ", "_") || "unknown-user"
+  const userId = `--${props.user?.id}--` || ""
+  const subfolder = captureMetadata?.originalProps?.subfolder || props.subfolder
   const fileName = `${userName}${userId}${timeStampToDate(timestamp)}_${
     captureMetadata ? "capture" : "upload"
-  }_${sanitizedName}`;
+  }_${sanitizedName}`
   const fileNamePath = `${`/${subfolder}`}/${timeStampToDate(
     timestamp
-  )}/${fileName}`;
+  )}/${fileName}`
 
-  emit("upload-progress", "Video uploading...");
+  emit("upload-progress", "Video uploading...")
   try {
     // Upload the file to Supabase Storage
-    const bucket = captureMetadata?.originalProps?.bucket || props.bucket;
+    const bucket = captureMetadata?.originalProps?.bucket || props.bucket
     const { data, error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(fileNamePath, processedFile, {
         cacheControl: "3600",
         upsert: false,
-      });
+      })
 
     if (uploadError) {
-      console.error("Upload error:", uploadError);
-      emit("upload-error", uploadError);
-      return null;
+      console.error("Upload error:", uploadError)
+      emit("upload-error", uploadError)
+      return null
     }
-    emit("upload-progress", "Video transcribing...");
+    emit("upload-progress", "Video transcribing...")
 
     // Use the original metadata or capture metadata
     const finalMetadata = captureMetadata
       ? { ...captureMetadata, path: data.path }
-      : { ...fileMetadataArg, path: data.path };
+      : { ...fileMetadataArg, path: data.path }
 
     //if the file is audio or video, we need to transcribe it
-    let transcription = null;
+    let transcription = null
     if (
-      processedFile.type.startsWith("audio/") ||
-      processedFile.type.startsWith("video/")
+      processedFile.type.startsWith(`${mediaType.AUDIO}/`) ||
+      processedFile.type.startsWith(`${mediaType.VIDEO}/`)
     ) {
-      transcription = await transcribeMedia(processedFile);
+      transcription = await transcribeMedia(processedFile)
     }
 
-    emit("upload-progress", "Data processing...");
+    emit("upload-progress", "Data processing...")
 
     // Save everything to Supabase in the submission table
     const { data: submissionData, error: submissionError } = await supabase
@@ -582,39 +592,39 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
           transcript: transcription,
         },
       ])
-      .select();
+      .select()
 
     if (submissionError) {
-      console.error("Submission error:", submissionError);
-      emit("upload-error", submissionError);
-      return null;
+      console.error("Submission error:", submissionError)
+      emit("upload-error", submissionError)
+      return null
     }
 
-    emit("upload-progress", "Upload complete");
+    emit("upload-progress", "Upload complete")
 
     //reset progress
     setTimeout(() => {
-      emit("upload-progress", null);
-    }, 3000);
+      emit("upload-progress", null)
+    }, 3000)
 
-    emit("upload-complete", { path: data.path, metadata: finalMetadata });
-    return { path: data.path, metadata: finalMetadata };
+    emit("upload-complete", { path: data.path, metadata: finalMetadata })
+    return { path: data.path, metadata: finalMetadata }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : "Upload failed";
-    console.error("Upload error:", err);
-    emit("upload-error", errorMessage);
-    return null;
+    const errorMessage = err instanceof Error ? err.message : "Upload failed"
+    console.error("Upload error:", err)
+    emit("upload-error", errorMessage)
+    return null
   }
-};
+}
 
 // Handle when files are added/edited and ready to upload
 const handleFilesReady = async () => {
-  if (!pond.value) return;
+  if (!pond.value) return
 
   // Clear the video preview when user submits
   if (lastCapturedVideoUrl.value) {
-    URL.revokeObjectURL(lastCapturedVideoUrl.value);
-    lastCapturedVideoUrl.value = null;
+    URL.revokeObjectURL(lastCapturedVideoUrl.value)
+    lastCapturedVideoUrl.value = null
   }
 
   // Scroll the component into view to show progress
@@ -622,132 +632,132 @@ const handleFilesReady = async () => {
     uploadMediaPanel.value.$el.scrollIntoView({
       behavior: "smooth",
       block: "start",
-    });
+    })
   }
 
-  isProcessing.value = true;
-  const files = pond.value.getFiles();
+  isProcessing.value = true
+  const files = pond.value.getFiles()
 
   try {
     if (isAutosaveMode.value) {
       // In autosave mode, files are automatically saved as they're added
       // Just emit the current state
-      emit("files-updated", files);
+      emit("files-updated", files)
     } else {
       // Normal mode: upload files to final destination
       for (const fileItem of files) {
-        let fileToUpload = fileItem.file;
+        let fileToUpload = fileItem.file
 
         // Check if this file has edited content
         if (
           editedFiles.value.has(fileItem.id) &&
           editedFiles.value.get(fileItem.id)
         ) {
-          fileToUpload = editedFiles.value.get(fileItem.id);
+          fileToUpload = editedFiles.value.get(fileItem.id)
         }
 
-        await uploadEditedFile(fileToUpload, fileMetadata.value);
+        await uploadEditedFile(fileToUpload, fileMetadata.value)
       }
 
       // Clear all files from FilePond and reset the component
-      pond.value.removeFiles();
+      pond.value.removeFiles()
 
       // Clear the edited files map
-      editedFiles.value.clear();
+      editedFiles.value.clear()
 
       // Clear the capture metadata map
-      captureMetadataMap.value.clear();
+      captureMetadataMap.value.clear()
 
       // Reset the hasFiles state after upload
-      hasFiles.value = false;
+      hasFiles.value = false
     }
   } catch (error) {
-    isProcessing.value = false;
-    console.error("Upload error:", error);
+    isProcessing.value = false
+    console.error("Upload error:", error)
   } finally {
-    isProcessing.value = false;
+    isProcessing.value = false
   }
-};
+}
 
 // Reactive states for showing capture components
-const showImageCapture = ref(false);
-const showVideoAudioCapture = ref(false);
-const showAudioCapture = ref(false);
+const showImageCapture = ref(false)
+const showVideoAudioCapture = ref(false)
+const showAudioCapture = ref(false)
 
 // Method to open a specific capture component and hide others
 const openCaptureMode = (mode) => {
-  showImageCapture.value = mode === "image";
-  showVideoAudioCapture.value = mode === "videoaudio";
-  showAudioCapture.value = mode === "audio";
-  isCapturing.value = !!mode;
-};
+  showImageCapture.value = mode === mediaType.IMAGE
+  showVideoAudioCapture.value = mode === mediaType.VIDEO
+  showAudioCapture.value = mode === mediaType.AUDIO
+  isCapturing.value = !!mode
+}
 
 // Event handlers for capture components
 const handleCaptureComplete = (captureData) => {
   // Add the captured file to FilePond
   if (pond.value && captureData.file) {
     // Add file to FilePond
-    pond.value.addFile(captureData.file);
+    pond.value.addFile(captureData.file)
 
     // Create manual preview for iOS verification
     // Revoke previous URL if exists to avoid leaks
     if (lastCapturedVideoUrl.value) {
-      URL.revokeObjectURL(lastCapturedVideoUrl.value);
+      URL.revokeObjectURL(lastCapturedVideoUrl.value)
     }
     try {
-      lastCapturedVideoUrl.value = URL.createObjectURL(captureData.file);
+      lastCapturedVideoUrl.value = URL.createObjectURL(captureData.file)
     } catch (e) {
-      console.error("Failed to create object URL for preview:", e);
+      console.error("Failed to create object URL for preview:", e)
     }
 
     // Store the capture metadata for later use during upload
     // We'll store it keyed by file name since we don't have file item ID yet
-    const fileKey = `${captureData.file.name}_${captureData.file.lastModified}`;
-    captureMetadataMap.value.set(fileKey, captureData.metadata);
+    const fileKey = `${captureData.file.name}_${captureData.file.lastModified}`
+    captureMetadataMap.value.set(fileKey, captureData.metadata)
   }
 
   // Close the capture mode and show FilePond
-  openCaptureMode(null);
-  hasFiles.value = true;
-};
+  openCaptureMode(null)
+  hasFiles.value = true
+}
 
 const handleCaptureError = (errorData) => {
-  console.error("Capture error:", errorData);
-  emit("upload-error", errorData); // Propagate event upwards
+  console.error("Capture error:", errorData)
+  emit("upload-error", errorData) // Propagate event upwards
   // Keep the capture component open so user can retry
-};
+}
 
 const reset = () => {
   if (pond.value) {
-    pond.value.removeFiles();
-    hasFiles.value = false;
-    editedFiles.value.clear();
-    captureMetadataMap.value.clear();
-    isProcessing.value = false;
+    pond.value.removeFiles()
+    hasFiles.value = false
+    editedFiles.value.clear()
+    captureMetadataMap.value.clear()
+    isProcessing.value = false
 
     // Clear manual video preview
     if (lastCapturedVideoUrl.value) {
-      URL.revokeObjectURL(lastCapturedVideoUrl.value);
-      lastCapturedVideoUrl.value = null;
+      URL.revokeObjectURL(lastCapturedVideoUrl.value)
+      lastCapturedVideoUrl.value = null
     }
 
     // In autosave mode, clear all autosaved files
     if (isAutosaveMode.value && props.autosaveComposable) {
       // Note: We don't automatically clear autosaved files on reset
       // They should only be cleared on form submission or explicit user action
-      console.log("[UploadMedia] Reset in autosave mode - files preserved");
+      console.log("[UploadMedia] Reset in autosave mode - files preserved")
     }
   }
-};
+}
 
 // Expose method for parent component to trigger upload
 defineExpose({
   uploadFiles: handleFilesReady,
   getFiles: () => pond.value?.getFiles() || [],
   reset: () => {
-    reset();
+    reset()
   },
-});
+})
 
 // Manually restore autosaved files (called on mount)
 const restoreAutosavedFiles = async () => {
@@ -760,8 +770,8 @@ const restoreAutosavedFiles = async () => {
       mediaFilesExists: !!props.autosaveComposable?.autosaveMediaFiles?.value,
       fileCount:
         props.autosaveComposable?.autosaveMediaFiles?.value?.length || 0,
-    });
-    return;
+    })
+    return
   }
 
   // Wait for user to be loaded
@@ -771,27 +781,27 @@ const restoreAutosavedFiles = async () => {
       userValue: props.autosaveComposable.user?.value,
       userId: props.autosaveComposable.user?.value?.id,
       autosaveComposable: !!props.autosaveComposable,
-    });
+    })
 
     // Add a retry counter to prevent infinite loops
-    const retryCount = (restoreAutosavedFiles._retryCount || 0) + 1;
+    const retryCount = (restoreAutosavedFiles._retryCount || 0) + 1
     if (retryCount > 10) {
       // Max 10 retries (5 seconds)
       console.error(
         `[UploadMedia] Failed to load user after ${retryCount} attempts, giving up`
-      );
-      return;
+      )
+      return
     }
-    restoreAutosavedFiles._retryCount = retryCount;
+    restoreAutosavedFiles._retryCount = retryCount
 
-    setTimeout(restoreAutosavedFiles, 500);
-    return;
+    setTimeout(restoreAutosavedFiles, 500)
+    return
   }
 
   // Reset retry counter on success
-  restoreAutosavedFiles._retryCount = 0;
+  restoreAutosavedFiles._retryCount = 0
 
-  const mediaFiles = props.autosaveComposable.autosaveMediaFiles.value;
+  const mediaFiles = props.autosaveComposable.autosaveMediaFiles.value
   for (const fileRef of mediaFiles) {
     try {
       const apiParams = {
@@ -799,9 +809,9 @@ const restoreAutosavedFiles = async () => {
         userId: props.autosaveComposable.user?.value?.id,
         formId: props.autosaveComposable.formId,
         patientId: props.autosaveComposable.patient_id,
-      };
+      }
 
-      console.log(`[UploadMedia] API parameters:`, apiParams);
+      console.log(`[UploadMedia] API parameters:`, apiParams)
 
       // Validate required parameters
       if (!apiParams.fileId || !apiParams.userId) {
@@ -811,8 +821,8 @@ const restoreAutosavedFiles = async () => {
           formId: !!apiParams.formId,
           patientId: !!apiParams.patientId,
           userObject: props.autosaveComposable.user?.value,
-        });
-        continue;
+        })
+        continue
       }
 
       // Use the API endpoint to restore the file with proper MIME type
@@ -822,35 +832,35 @@ const restoreAutosavedFiles = async () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(apiParams),
-      });
+      })
 
       console.log(
         `[UploadMedia] API response status:`,
         response.status,
         response.statusText
-      );
+      )
 
       if (!response.ok) {
-        const errorText = await response.text();
+        const errorText = await response.text()
         console.error(
           `[UploadMedia] Error restoring file: ${response.status} ${response.statusText}`,
           errorText
-        );
-        continue;
+        )
+        continue
       }
 
       // Get the blob from response
-      const blob = await response.blob();
+      const blob = await response.blob()
       console.log(`[UploadMedia] Received blob:`, {
         size: blob.size,
         type: blob.type,
         expectedType: fileRef.file_type,
-      });
+      })
 
       // Create a File object with the original name and type
       const file = new File([blob], fileRef.original_name, {
         type: fileRef.file_type, // Use the stored MIME type from fileRef
-      });
+      })
 
       // Add the file to FilePond manually
       if (pond.value) {
@@ -859,25 +869,25 @@ const restoreAutosavedFiles = async () => {
             autosaveId: fileRef.id,
             ...fileRef.metadata,
           },
-        });
+        })
         console.log(
           `[UploadMedia] Added file to FilePond: ${fileRef.original_name}`
-        );
+        )
       }
     } catch (err) {
       console.error(
         `[UploadMedia] Error restoring autosaved file ${fileRef.id}:`,
         err
-      );
+      )
     }
   }
-};
+}
 
 // FilePond event handlers
 const onAddFile = async (error, file) => {
-  if (error) return;
+  if (error) return
 
-  hasFiles.value = true;
+  hasFiles.value = true
 
   // In autosave mode, save the file immediately
   if (isAutosaveMode.value && file && file.file) {
@@ -885,12 +895,12 @@ const onAddFile = async (error, file) => {
     // Restored files should not be re-uploaded
     if (typeof file.source === "string" && file.origin === 4) {
       // origin === 4 means FilePond.FileOrigin.LIMBO (restored file)
-      return;
+      return
     }
 
     // Also check if file has an autosaveId metadata (already processed)
     if (file.getMetadata("autosaveId")) {
-      return;
+      return
     }
 
     try {
@@ -901,72 +911,72 @@ const onAddFile = async (error, file) => {
           subfolder: props.subfolder,
           patientId: props.user?.id,
         },
-      };
+      }
 
       const fileRef = await props.autosaveComposable.saveAutosaveMediaFile(
         file.file,
         metadata
-      );
+      )
 
       if (fileRef) {
         // Update the FilePond file item with the autosave ID for later reference
-        file.setMetadata("autosaveId", fileRef.id);
+        file.setMetadata("autosaveId", fileRef.id)
       }
     } catch (error) {
-      console.error("[UploadMedia] Error autosaving file:", error);
+      console.error("[UploadMedia] Error autosaving file:", error)
     }
   }
-};
+}
 
 const onRemoveFile = async (error, file) => {
-  if (error) return;
+  if (error) return
 
   // In autosave mode, remove the file from autosave storage
   if (isAutosaveMode.value && file) {
-    const autosaveId = file.getMetadata("autosaveId") || file.source;
+    const autosaveId = file.getMetadata("autosaveId") || file.source
     if (autosaveId) {
       try {
-        await props.autosaveComposable.removeAutosaveMediaFile(autosaveId);
+        await props.autosaveComposable.removeAutosaveMediaFile(autosaveId)
       } catch (error) {
-        console.error("[UploadMedia] Error removing autosaved file:", error);
+        console.error("[UploadMedia] Error removing autosaved file:", error)
       }
     }
   }
 
   // Check if there are still files after removal
   nextTick(() => {
-    const fileCount = pond.value?.getFiles()?.length || 0;
-    hasFiles.value = fileCount > 0;
+    const fileCount = pond.value?.getFiles()?.length || 0
+    hasFiles.value = fileCount > 0
 
     // If no files left, clear the manual video preview
     if (fileCount === 0 && lastCapturedVideoUrl.value) {
-      URL.revokeObjectURL(lastCapturedVideoUrl.value);
-      lastCapturedVideoUrl.value = null;
+      URL.revokeObjectURL(lastCapturedVideoUrl.value)
+      lastCapturedVideoUrl.value = null
     }
-  });
-};
+  })
+}
 // Handle FilePond initialization
 const handleFilePondInit = () => {
-  console.log("FilePond has initialized");
-};
+  console.log("FilePond has initialized")
+}
 
 // Handle FilePond errors
 const onError = (error) => {
-  console.error("FilePond error:", error);
-  emit("upload-error", error);
-};
+  console.error("FilePond error:", error)
+  emit("upload-error", error)
+}
 
 // Add handler for when image is edited
 const onProcessFile = (error /* , file */) => {
   if (error) {
-    console.error("Process file error:", error);
+    console.error("Process file error:", error)
   }
-};
+}
 
 // Add handler for when file is updated (including after editing)
 const onUpdateFiles = (files) => {
-  emit("files-updated", files);
-};
+  emit("files-updated", files)
+}
 
 // Add handler for prepare file (this is where edited data might be available)
 const onPrepareFile = (fileItem, output) => {
@@ -974,20 +984,20 @@ const onPrepareFile = (fileItem, output) => {
   if (fileItem && output) {
     // Check if output is a File, Blob, or has the necessary properties
     if (output instanceof File) {
-      editedFiles.value.set(fileItem.id, output);
-      return output;
+      editedFiles.value.set(fileItem.id, output)
+      return output
     } else if (output instanceof Blob) {
       // Convert Blob to File with proper name
-      const originalFile = fileItem.file;
+      const originalFile = fileItem.file
       const editedFile = new File([output], originalFile.name, {
         type: output.type || originalFile.type,
         lastModified: Date.now(),
-      });
-      editedFiles.value.set(fileItem.id, editedFile);
-      return editedFile;
+      })
+      editedFiles.value.set(fileItem.id, editedFile)
+      return editedFile
     } else if (output && typeof output === "object" && output.dest) {
       // Handle cases where output has a dest property (some editor configurations)
-      const destFile = output.dest;
+      const destFile = output.dest
       if (destFile instanceof File || destFile instanceof Blob) {
         const finalFile =
           destFile instanceof File
@@ -995,42 +1005,46 @@ const onPrepareFile = (fileItem, output) => {
             : new File([destFile], fileItem.file.name, {
                 type: destFile.type || fileItem.file.type,
                 lastModified: Date.now(),
-              });
-        editedFiles.value.set(fileItem.id, finalFile);
-        return finalFile;
+              })
+        editedFiles.value.set(fileItem.id, finalFile)
+        return finalFile
       }
     }
   }
 
   // Return the output as-is if we can't process it, or return undefined to let FilePond handle it
-  return output;
-};
+  return output
+}
 
 watch(hasFiles, (newVal) => {
-  emit("has-files", newVal);
-});
+  emit("has-files", newVal)
+})
 
 // Map to store capture metadata for files
-const captureMetadataMap = ref(new Map());
+const captureMetadataMap = ref(new Map())
 
 const tryAgain = () => {
-  reset();
-  openCaptureMode("videoaudio");
-};
+  reset()
+  openCaptureMode(mediaType.VIDEO)
+}
 
 // Restore autosaved files when component mounts
 onMounted(async () => {
   // Wait a bit for FilePond to initialize
-  await nextTick();
+  await nextTick()
 
   // Only restore if FilePond is empty (to avoid duplicates during user interaction)
   if (pond.value && pond.value.getFiles().length === 0) {
-    await restoreAutosavedFiles();
+    await restoreAutosavedFiles()
   }
 
   // Restore files if in autosave mode
-  await restoreAutosavedFiles();
-});
+  await restoreAutosavedFiles()
+
+  if (props.autoSelect) {
+    openCaptureMode(props.autoSelect)
+  }
+})
 </script>
 
 <template>
@@ -1046,7 +1060,7 @@ onMounted(async () => {
     >
       <Button
         v-if="props.cameraButton"
-        @click="openCaptureMode('image')"
+        @click="openCaptureMode(mediaType.IMAGE)"
         class="grow"
         :class="props.invalid ? '!border-red-300' : ''"
         icon="pi pi-camera"
@@ -1055,7 +1069,7 @@ onMounted(async () => {
       />
       <Button
         v-if="props.videoButton"
-        @click="openCaptureMode('videoaudio')"
+        @click="openCaptureMode(mediaType.VIDEO)"
         class="grow"
         :class="props.invalid ? '!border-red-300' : ''"
         icon="pi pi-video"
@@ -1064,7 +1078,7 @@ onMounted(async () => {
       />
       <Button
         v-if="props.audioButton"
-        @click="openCaptureMode('audio')"
+        @click="openCaptureMode(mediaType.AUDIO)"
         class="grow"
         :class="props.invalid ? '!border-red-300' : ''"
         icon="pi pi-microphone"
