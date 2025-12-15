@@ -10,6 +10,7 @@ import {
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   isRoute: {
@@ -29,6 +30,7 @@ const props = defineProps({
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
+const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -100,6 +102,8 @@ const closeAll = () => {
         label="Sign up with Google"
         severity="secondary"
         class="center my-3"
+        @submit-click="setAuthReturnRoute(props.returnRoute)"
+        @submit-error="clearAuthReturnRoute()"
         @login-success="onSignup('google')"
       />
       <VLoginWithProvider
@@ -109,6 +113,8 @@ const closeAll = () => {
         severity="secondary"
         class="center"
         label="Sign up with Apple"
+        @submit-click="setAuthReturnRoute(props.returnRoute)"
+        @submit-error="clearAuthReturnRoute()"
         @login-success="onSignup('apple')"
       />
       <Divider
@@ -122,7 +128,7 @@ const closeAll = () => {
         :client="client"
         :config="config"
         label="Sign up"
-        :slug="props.returnRoute"
+        :returnRoute="props.returnRoute"
         @login-success="closeAll"
         redirectUrl="https://demo.native-app.wnyc.org"
       >

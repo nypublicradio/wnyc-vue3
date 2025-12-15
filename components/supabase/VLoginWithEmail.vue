@@ -8,7 +8,6 @@ import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { getAndSetUserProfile } from "~/utilities/helpers"
-//import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   client: {
@@ -39,7 +38,6 @@ const props = defineProps({
 const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 
 const router = useRouter()
-//const { clearAuthReturnRoute } = useAuthReturnRoute()
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
 
@@ -87,7 +85,6 @@ const submitForm = async () => {
       await getAndSetUserProfile()
       emit("submit-success", props.returnRoute)
       router.push(`${props.returnRoute}`)
-      //clearAuthReturnRoute()
     } else {
       // error with Supabase
       emit("submit-error", sbError?.error?.message)
@@ -96,7 +93,6 @@ const submitForm = async () => {
       } else {
         sbErrorMsg.value = sbError?.error?.message
       }
-      //clearAuthReturnRoute()
     }
   }
 }

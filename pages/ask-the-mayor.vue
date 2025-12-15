@@ -175,7 +175,7 @@ watch(
               <div class="">
                 <div class="step-content">
                   <div>
-                    <Signup v-if="isSignupForm">
+                    <Signup v-if="isSignupForm" :returnRoute="'/ask-the-mayor'">
                       <template #header>
                         <p>
                           Already have an account?

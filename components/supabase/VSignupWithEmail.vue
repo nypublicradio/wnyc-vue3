@@ -169,10 +169,10 @@ const submitForm = async () => {
           </Message>
           <slot name="success">
             <VLoginWithEmail
-              :returnRoute="props.returnRoute"
               :current-email="formData.email"
               :client="innerClient"
               :config="innerConfig"
+              :returnRoute="props.returnRoute"
               @submit-success="emit('login-success', $event)"
             />
           </slot>
