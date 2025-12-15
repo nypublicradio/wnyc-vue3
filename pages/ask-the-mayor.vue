@@ -134,7 +134,7 @@ watch(
       <!-- <Button label="step 1" @click="activeStep = 1" />
       <Button label="step 2" @click="activeStep = 2" />
       <Button label="step 3" @click="activeStep = 3" /> -->
-      <div v-if="!uploadCompleted" class="mt-4 text-center">
+      <div v-if="uploadCompleted" class="mt-4 text-center">
         <i
           class="pi pi-check-circle mr-2 text-4xl"
           style="color: var(--p-sky-500)"
@@ -142,7 +142,7 @@ watch(
         <h2>Thank you for your submission</h2>
       </div>
       <div
-        v-if="!questionLimitReached"
+        v-if="questionLimitReached"
         class="mt-4 text-center max-w-22rem mx-auto"
       >
         <p>You are limited to 1 submission per day.</p>
