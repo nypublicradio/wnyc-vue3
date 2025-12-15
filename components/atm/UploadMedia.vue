@@ -1221,7 +1221,7 @@ onMounted(async () => {
     >
       <span v-if="isProcessing" class="processing">
         <i class="pi pi-spin pi-spinner mr-2" style="font-size: 1rem"></i>
-        Processing and uploading images...
+        Processing and uploading your video...
       </span>
       <span v-else-if="hasFiles" class="flex flex-column gap-4">
         <p class="font-bold ready">
