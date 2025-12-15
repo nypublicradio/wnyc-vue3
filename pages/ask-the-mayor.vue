@@ -74,6 +74,16 @@ watch(
   },
   { immediate: true }
 )
+
+watch(
+  hasFiles,
+  () => {
+    if (hasFiles.value) {
+      activeStep.value = 3
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
