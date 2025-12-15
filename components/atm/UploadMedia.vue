@@ -1048,138 +1048,139 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Panel
-    ref="uploadMediaPanel"
-    class="upload-media"
-    :class="props.invalid ? 'p-invalid !border-red-300' : ''"
-    :header="props.header"
-  >
-    <div
-      v-if="!isCapturing && !hasFiles"
-      class="flex items-center justify-center gap-4 mb-4"
+  <div>
+    <Panel
+      ref="uploadMediaPanel"
+      class="upload-media"
+      :class="props.invalid ? 'p-invalid !border-red-300' : ''"
+      :header="props.header"
     >
-      <Button
-        v-if="props.cameraButton"
-        @click="openCaptureMode(mediaType.IMAGE)"
-        class="grow"
-        :class="props.invalid ? '!border-red-300' : ''"
-        icon="pi pi-camera"
-        :label="props.cameraButtonLabel"
-        severity="secondary"
-      />
-      <Button
-        v-if="props.videoButton"
-        @click="openCaptureMode(mediaType.VIDEO)"
-        class="grow"
-        :class="props.invalid ? '!border-red-300' : ''"
-        icon="pi pi-video"
-        :label="props.videoButtonLabel"
-        severity="secondary"
-      />
-      <Button
-        v-if="props.audioButton"
-        @click="openCaptureMode(mediaType.AUDIO)"
-        class="grow"
-        :class="props.invalid ? '!border-red-300' : ''"
-        icon="pi pi-microphone"
-        :label="props.audioButtonLabel"
-        severity="secondary"
-      />
-    </div>
+      <div
+        v-if="!isCapturing && !hasFiles"
+        class="flex items-center justify-center gap-4 mb-4"
+      >
+        <Button
+          v-if="props.cameraButton"
+          @click="openCaptureMode(mediaType.IMAGE)"
+          class="grow"
+          :class="props.invalid ? '!border-red-300' : ''"
+          icon="pi pi-camera"
+          :label="props.cameraButtonLabel"
+          severity="secondary"
+        />
+        <Button
+          v-if="props.videoButton"
+          @click="openCaptureMode(mediaType.VIDEO)"
+          class="grow"
+          :class="props.invalid ? '!border-red-300' : ''"
+          icon="pi pi-video"
+          :label="props.videoButtonLabel"
+          severity="secondary"
+        />
+        <Button
+          v-if="props.audioButton"
+          @click="openCaptureMode(mediaType.AUDIO)"
+          class="grow"
+          :class="props.invalid ? '!border-red-300' : ''"
+          icon="pi pi-microphone"
+          :label="props.audioButtonLabel"
+          severity="secondary"
+        />
+      </div>
 
-    <div v-if="showImageCapture" class="capture-component-container">
-      <CaptureImage
-        :bucket="props.bucket"
-        :subfolder="props.subfolder"
-        :patient-id="props.user?.id"
-        :metadata="props.metadata"
-        @capture-complete="handleCaptureComplete"
-        @capture-error="handleCaptureError"
-      />
-      <button @click="openCaptureMode(null)" class="close-capture-btn">
-        Close Capture
-      </button>
-    </div>
+      <div v-if="showImageCapture" class="capture-component-container">
+        <CaptureImage
+          :bucket="props.bucket"
+          :subfolder="props.subfolder"
+          :patient-id="props.user?.id"
+          :metadata="props.metadata"
+          @capture-complete="handleCaptureComplete"
+          @capture-error="handleCaptureError"
+        />
+        <button @click="openCaptureMode(null)" class="close-capture-btn">
+          Close Capture
+        </button>
+      </div>
 
-    <div v-if="showVideoAudioCapture" class="capture-component-container">
-      <CaptureVideoAudio
-        :bucket="props.bucket"
-        :subfolder="props.subfolder"
-        :patient-id="props.user?.id"
-        :metadata="props.metadata"
-        :record-time-limit="props.recordTimeLimit"
-        @capture-complete="handleCaptureComplete"
-        @capture-error="handleCaptureError"
-      />
-      <!-- <button @click="openCaptureMode(null)" class="close-capture-btn">
+      <div v-if="showVideoAudioCapture" class="capture-component-container">
+        <CaptureVideoAudio
+          :bucket="props.bucket"
+          :subfolder="props.subfolder"
+          :patient-id="props.user?.id"
+          :metadata="props.metadata"
+          :record-time-limit="props.recordTimeLimit"
+          @capture-complete="handleCaptureComplete"
+          @capture-error="handleCaptureError"
+        />
+        <!-- <button @click="openCaptureMode(null)" class="close-capture-btn">
         Close Capture
       </button> -->
-    </div>
+      </div>
 
-    <div v-if="showAudioCapture" class="capture-component-container">
-      <CaptureAudio
-        :bucket="props.bucket"
-        :subfolder="props.subfolder"
-        :patient-id="props.user?.id"
-        :metadata="props.metadata"
-        :record-time-limit="props.recordTimeLimit"
-        @capture-complete="handleCaptureComplete"
-        @capture-error="handleCaptureError"
-      />
-      <button @click="openCaptureMode(null)" class="close-capture-btn">
-        Close Capture
-      </button>
-    </div>
+      <div v-if="showAudioCapture" class="capture-component-container">
+        <CaptureAudio
+          :bucket="props.bucket"
+          :subfolder="props.subfolder"
+          :patient-id="props.user?.id"
+          :metadata="props.metadata"
+          :record-time-limit="props.recordTimeLimit"
+          @capture-complete="handleCaptureComplete"
+          @capture-error="handleCaptureError"
+        />
+        <button @click="openCaptureMode(null)" class="close-capture-btn">
+          Close Capture
+        </button>
+      </div>
 
-    <!-- Existing FilePond uploader, conditionally hide if a capture mode is active -->
-    <!-- Manual Video Preview -->
-    <div v-if="lastCapturedVideoUrl" class="manual-preview mb-4">
-      <h3>Review Recording</h3>
-      <video
-        v-if="Capacitor.getPlatform() === 'ios'"
-        :src="lastCapturedVideoUrl"
-        controls
-        playsinline
-        webkit-playsinline
-        width="100%"
-        class="rounded border"
-      ></video>
-    </div>
+      <!-- Existing FilePond uploader, conditionally hide if a capture mode is active -->
+      <!-- Manual Video Preview -->
+      <div v-if="lastCapturedVideoUrl" class="manual-preview">
+        <!-- <h3>Review Recording</h3> -->
+        <video
+          v-if="Capacitor.getPlatform() === 'ios'"
+          :src="lastCapturedVideoUrl"
+          controls
+          playsinline
+          webkit-playsinline
+          width="100%"
+          class="rounded border"
+        ></video>
+      </div>
 
-    <ClientOnly>
-      <FilePond
-        v-show="
-          !isProcessing &&
-          !showImageCapture &&
-          !showVideoAudioCapture &&
-          !showAudioCapture &&
-          (props.browseButton || hasFiles)
-        "
-        ref="pond"
-        name="media-upload"
-        class-name="my-pond"
-        label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
-        :allow-multiple="true"
-        :allow-browse="props.browseButton"
-        :allow-drop="props.browseButton"
-        :accepted-file-types="acceptedFileTypes"
-        :max-files="maxFiles"
-        :max-file-size="maxFileSize"
-        :server="serverConfig"
-        :files="initialFiles"
-        :image-editor="imageEditorPinturaOptions"
-        :capture-method="null"
-        credits="false"
-        @init="handleFilePondInit"
-        @addfile="onAddFile"
-        @removefile="onRemoveFile"
-        @processfile="onProcessFile"
-        @error="onError"
-        :class="props.invalid ? '!border-red-300' : ''"
-      />
-    </ClientOnly>
+      <ClientOnly>
+        <FilePond
+          v-show="
+            !isProcessing &&
+            !showImageCapture &&
+            !showVideoAudioCapture &&
+            !showAudioCapture &&
+            (props.browseButton || hasFiles)
+          "
+          ref="pond"
+          name="media-upload"
+          class-name="my-pond"
+          label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
+          :allow-multiple="true"
+          :allow-browse="props.browseButton"
+          :allow-drop="props.browseButton"
+          :accepted-file-types="acceptedFileTypes"
+          :max-files="maxFiles"
+          :max-file-size="maxFileSize"
+          :server="serverConfig"
+          :files="initialFiles"
+          :image-editor="imageEditorPinturaOptions"
+          :capture-method="null"
+          credits="false"
+          @init="handleFilePondInit"
+          @addfile="onAddFile"
+          @removefile="onRemoveFile"
+          @processfile="onProcessFile"
+          @error="onError"
+          :class="props.invalid ? '!border-red-300' : ''"
+        />
+      </ClientOnly>
 
-    <!--
+      <!--
         Note:
         - `allow-image-preview` might now be controlled by FilePondPluginFilePoster's presence.
         - `allow-image-edit` is a new prop for FilePondPluginImageEditor (default true).
@@ -1190,7 +1191,22 @@ onMounted(async () => {
         - Added `:image-editor="imageEditorPinturaOptions"` which is the standard prop for the new plugin.
         - Added `file-poster-max-height` as it's relevant for the new poster plugin.
       -->
-
+      <div
+        v-if="
+          hasFiles &&
+          !isProcessing &&
+          !showImageCapture &&
+          !showVideoAudioCapture &&
+          !showAudioCapture &&
+          props.uploadButton
+        "
+        class="upload-actions"
+      >
+        <button @click="handleFilesReady" class="upload-btn" type="button">
+          Upload Files
+        </button>
+      </div>
+    </Panel>
     <!-- Upload button appears after files are ready -->
     <!-- Conditionally hide FilePond related status/actions if capture mode is active -->
     <div
@@ -1207,44 +1223,28 @@ onMounted(async () => {
         <i class="pi pi-spin pi-spinner mr-2" style="font-size: 1rem"></i>
         Processing and uploading images...
       </span>
-      <span v-else-if="hasFiles" class="ready flex flex-column gap-4">
-        ✅ Your video is ready for submission
+      <span v-else-if="hasFiles" class="flex flex-column gap-4">
+        <p class="font-bold ready">
+          <i class="pi pi-check-circle mr-1 font-bold"></i> Your video is ready
+          for submission
+        </p>
         <Button
           label="Not happy? Try again."
           severity="secondary"
           @click="tryAgain()"
-          class="w-13rem m-auto"
+          icon="pi pi-refresh"
+          class="w-16rem m-auto"
         />
-        <Button
+        <!-- <Button
           label="Cancel"
           severity="danger"
           @click="reset()"
           class="w-13rem m-auto"
-        />
+        /> -->
       </span>
       <span v-else class="empty"> 📁 No files selected </span>
     </div>
-
-    <div
-      v-if="
-        hasFiles &&
-        !isProcessing &&
-        !showImageCapture &&
-        !showVideoAudioCapture &&
-        !showAudioCapture
-      "
-      class="upload-actions"
-    >
-      <button
-        v-if="props.uploadButton"
-        @click="handleFilesReady"
-        class="upload-btn"
-        type="button"
-      >
-        Upload Files
-      </button>
-    </div>
-  </Panel>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -1299,10 +1299,8 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-.upload-status .ready {
-  color: var(--green-600, #059669);
-  font-size: 0.8rem;
-  line-height: 1.4;
+.upload-status .ready .pi {
+  color: var(--p-green-500);
 }
 
 .upload-status .empty {

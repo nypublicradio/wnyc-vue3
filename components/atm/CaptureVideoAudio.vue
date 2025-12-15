@@ -294,7 +294,15 @@ onBeforeUnmount(() => {
   }
 })
 
-defineExpose({ startRecording, stopRecording })
+const toggleRecording = () => {
+  if (isRecording.value) {
+    stopRecording()
+  } else {
+    startRecording()
+  }
+}
+
+defineExpose({ startRecording, stopRecording, toggleRecording })
 </script>
 
 <template>
@@ -304,14 +312,14 @@ defineExpose({ startRecording, stopRecording })
     </div>
 
     <!-- Web Controls: Only show dropdowns if not native -->
-    <div v-if="!isNative" class="controls grid grid-nogutter">
+    <div v-if="!isNative" class="controls flex flex-wrap grid-nogutter">
       <Select
         v-model="selectedVideoDeviceId"
         :options="videoInputOptions"
         optionLabel="label"
         optionValue="value"
         placeholder="Select Camera"
-        class="col-12 md:col-6 text-xs"
+        class="text-xs w-full md:w-6"
       >
         <template #value="{ value, placeholder }">
           <span v-if="value">
@@ -329,7 +337,7 @@ defineExpose({ startRecording, stopRecording })
         optionLabel="label"
         optionValue="value"
         placeholder="Select Microphone"
-        class="col-12 md:col-6 text-xs"
+        class="text-xs w-full md:w-6"
       >
         <template #value="{ value, placeholder }">
           <span v-if="value">
@@ -363,7 +371,7 @@ defineExpose({ startRecording, stopRecording })
     <!-- Unified Actions -->
     <div class="actions">
       <Button
-        @click="isRecording ? stopRecording() : startRecording()"
+        @click="toggleRecording"
         :disabled="isProcessing"
         class="record-btn"
         :class="{ recording: isRecording }"
@@ -416,11 +424,23 @@ defineExpose({ startRecording, stopRecording })
   font-family: var(--font-family-header);
   font-weight: 700;
   width: 264px;
+  position: relative;
 }
 
 .record-btn.recording {
-  background: #333;
-  animation: pulse 2s infinite;
+  background: var(--p-surface-950);
+  border-color: var(--p-surface-950);
+  /* animation: pulse 2s infinite; */
+  &:after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--p-primary-color);
+    animation: pulse 0.5s infinite;
+  }
 }
 
 @keyframes pulse {

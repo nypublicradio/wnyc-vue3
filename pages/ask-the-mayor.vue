@@ -241,7 +241,8 @@ watch(
                       <p v-if="submitProgress">{{ submitProgress }}</p>
                       <Button
                         v-if="hasFiles && !submitProgress"
-                        label="Submit video"
+                        label="Submit"
+                        class="w-16rem m-auto"
                         @click="onFormSubmit"
                       />
                     </div>
@@ -332,16 +333,25 @@ watch(
         }
         &.step-2,
         &.step-3 {
-          background-color: var(--p-sky-100);
+          background-color: transparent;
           padding: 0;
           .p-panel {
-            background: transparent;
+            background: var(--p-sky-100);
             border: 2px dotted var(--p-sky-500);
             .p-panel-header {
               display: none;
             }
             .p-panel-content {
               padding: 1rem;
+              .filepond--root {
+                margin-bottom: 0;
+                .filepond--file {
+                  .filepond--file-action-button,
+                  .filepond--file-info {
+                    display: none;
+                  }
+                }
+              }
             }
           }
           @include upload-media-styles;
