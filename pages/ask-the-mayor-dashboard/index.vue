@@ -1,36 +1,36 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers";
-import { useToast } from "primevue/usetoast";
-import { FilterMatchMode } from "@primevue/core/api";
-import { useCurrentUser } from "~/composables/states.ts";
-import { useAtmDashboard } from "~/composables/atm/useAtmDashboard";
+import { trackClickEvent } from "~/utilities/helpers"
+import { useToast } from "primevue/usetoast"
+import { FilterMatchMode } from "@primevue/core/api"
+import { useCurrentUser } from "~/composables/states.ts"
+import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
 
-const toast = useToast();
-const user = useCurrentUser();
-const supabase = useSupabaseClient();
+const toast = useToast()
+const user = useCurrentUser()
+const supabase = useSupabaseClient()
 
-const submissions = ref([]);
-const expandedRows = ref({});
+const submissions = ref([])
+const expandedRows = ref({})
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
+})
 
 const groupedSubmissions = computed(() => {
-  const groups = {};
+  const groups = {}
   submissions.value.forEach((submission) => {
-    const date = new Date(submission.created_at).toLocaleDateString();
+    const date = new Date(submission.created_at).toLocaleDateString()
     if (!groups[date]) {
       groups[date] = {
         date,
         submissions: [],
-      };
+      }
     }
-    groups[date].submissions.push(submission);
-  });
+    groups[date].submissions.push(submission)
+  })
   return Object.values(groups).sort(
     (a, b) => new Date(b.date) - new Date(a.date)
-  );
-});
+  )
+})
 
 const fetchSubmissions = async () => {
   try {
@@ -38,29 +38,29 @@ const fetchSubmissions = async () => {
     const { data: submissionsData, error: submissionsError } = await supabase
       .from("atm_submissions")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
 
-    if (submissionsError) throw submissionsError;
+    if (submissionsError) throw submissionsError
 
     // Extract unique user IDs
     const userIds = [
       ...new Set(submissionsData.map((s) => s.user_id).filter(Boolean)),
-    ];
+    ]
 
     // Fetch profiles for these users
-    let profilesMap = {};
+    let profilesMap = {}
     if (userIds.length > 0) {
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
-        .in("id", userIds);
+        .in("id", userIds)
 
       if (profilesError) {
-        console.error("Error fetching profiles:", profilesError);
+        console.error("Error fetching profiles:", profilesError)
       } else {
         profilesData.forEach((p) => {
-          profilesMap[p.id] = p;
-        });
+          profilesMap[p.id] = p
+        })
       }
     }
 
@@ -68,42 +68,42 @@ const fetchSubmissions = async () => {
     submissions.value = submissionsData.map((s) => ({
       ...s,
       profiles: profilesMap[s.user_id] || null,
-    }));
+    }))
 
     // Auto-expand first date
     if (groupedSubmissions.value.length > 0) {
-      const firstDate = groupedSubmissions.value[0].date;
-      expandedRows.value = { [firstDate]: true };
+      const firstDate = groupedSubmissions.value[0].date
+      expandedRows.value = { [firstDate]: true }
     }
   } catch (error) {
-    console.error("Error fetching submissions:", error);
+    console.error("Error fetching submissions:", error)
     toast.add({
       severity: "error",
       summary: "Error",
       detail: "Failed to fetch submissions",
       life: 3000,
-    });
+    })
   }
-};
+}
 
 const { toggleApproved, shareSubmission, downloadSubmission } =
-  useAtmDashboard();
+  useAtmDashboard()
 
 const navigateToSlug = (event) => {
-  const submission = event.data;
-  navigateTo(`/ask-the-mayor-dashboard/${submission.video_filename}`);
-};
+  const submission = event.data
+  navigateTo(`/ask-the-mayor-dashboard/${submission.video_filename}`)
+}
 
 onMounted(() => {
-  fetchSubmissions();
+  fetchSubmissions()
   // send GA page view
-  const { $analytics } = useNuxtApp();
+  const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Ask the Mayor Dashboard",
     page_type: "ask_the_mayor_dashboard",
     content_group: "ask_the_mayor_dashboard",
-  });
-});
+  })
+})
 </script>
 
 <template>
@@ -125,7 +125,7 @@ onMounted(() => {
       </Head>
     </Html>
 
-    <div>
+    <section class="full-width">
       <div class="flex align-items-center mb-4">
         <Button
           class="back-btn text-color -ml-4"
@@ -224,7 +224,7 @@ onMounted(() => {
         <p>You are not authorized to view this page. Please log in.</p>
         <Login />
       </div>
-    </div>
+    </section>
   </div>
 </template>
 <style>
