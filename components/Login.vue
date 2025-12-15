@@ -10,6 +10,7 @@ import {
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const props = defineProps({
   isRoute: {
@@ -33,6 +34,7 @@ const forgotPasswordSideBar = useForgotPasswordSideBar()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
+const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 // handle the login and signup sidebars when the user clicks on the sign up link
 const onSignupClick = () => {
@@ -105,6 +107,8 @@ const closeLogin = () => {
         label="Log in with Google"
         severity="secondary"
         class="center my-3"
+        @submit-click="setAuthReturnRoute(props.returnRoute)"
+        @submit-error="clearAuthReturnRoute()"
         @submit-success="onLogin('google')"
       />
       <VLoginWithProvider
@@ -114,6 +118,8 @@ const closeLogin = () => {
         label="Log in with Apple"
         severity="secondary"
         class="center"
+        @submit-click="setAuthReturnRoute(props.returnRoute)"
+        @submit-error="clearAuthReturnRoute()"
         @submit-success="onLogin('apple')"
       />
       <Divider
