@@ -61,6 +61,7 @@ const fetchSubmissions = async () => {
         console.error("Error fetching profiles:", profilesError)
       } else {
         profilesData.forEach((p) => {
+          console.log("profile: ", p)
           profilesMap[p.id] = p
         })
       }
@@ -110,9 +111,8 @@ onMounted(() => {
 watch(
   () => currentUserProfile.value,
   () => {
-    console.log("checking: ", currentUserProfile.value)
-    if (!currentUserProfile.value.is_admin) {
-      alert("you are not autherized")
+    if (!currentUserProfile.value?.is_admin) {
+      isAdmin.value = false
     } else {
       isAdmin.value = true
       fetchSubmissions()

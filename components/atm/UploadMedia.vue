@@ -572,10 +572,15 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
     //if the file is audio or video, we need to transcribe it
     let transcription = null
     if (
-      processedFile.type.startsWith(`${mediaType.AUDIO}/`) ||
-      processedFile.type.startsWith(`${mediaType.VIDEO}/`)
+      processedFile.type.startsWith("audio/") ||
+      processedFile.type.startsWith("video/")
     ) {
-      transcription = await transcribeMedia(processedFile)
+      try {
+        transcription = await transcribeMedia(processedFile)
+      } catch (error) {
+        console.error("Transcription failed:", error)
+        transcription = "transcribe failed"
+      }
     }
 
     emit("upload-progress", "Data processing...")
