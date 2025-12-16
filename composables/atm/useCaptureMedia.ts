@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { VideoRecorder, VideoRecorderCamera, VideoRecorderQuality } from '@capacitor-community/video-recorder'
 import { Filesystem } from '@capacitor/filesystem'
 import { ref } from 'vue'
+import { decode } from 'base64-arraybuffer'
 
 export default function useCaptureMedia () {
     const isNative = Capacitor.isNativePlatform()
@@ -35,88 +36,101 @@ export default function useCaptureMedia () {
 
             const { Capacitor } = await import('@capacitor/core')
 
-            // Try fetch first
-            try {
-                const webPath = Capacitor.convertFileSrc(fileUri)
-                console.log('Converted to webPath:', webPath)
+            // Try fetch first (skip on iOS as it can be unreliable for local large video files)
+            const platform = Capacitor.getPlatform()
+            const isIOS = platform === 'ios'
 
-                const response = await fetch(webPath)
-                if (!response.ok) {
-                    throw new Error(`Fetch failed: ${response.statusText}`)
-                }
-
-                const blob = await response.blob()
-                console.log('Blob created via fetch:', blob.type, blob.size)
-
-                const date = new Date()
-                const name = fileName || `video_${date.getTime()}.${blob.type.split('/')[1] || 'mp4'}`
-
-                return new File([blob], name, {
-                    type: blob.type,
-                    lastModified: date.getTime()
-                })
-            } catch (fetchErr) {
-                console.warn('Fetch failed, trying Filesystem fallback:', fetchErr)
-
-                let path = fileUri
-
-                // Parsing path from capacitor:// url
-                // Decode URI component if needed (do this before splitting to handle encoded slashes correctly if any, though unlikely in protocol)
-                path = decodeURIComponent(path)
-
-                // Generic handling for both iOS (capacitor://) and Android (http(s)://)
-                // We need to construct a file:// URL so Filesystem accepts it as absolute path
-                if (path.includes('_capacitor_file_')) {
-                    const internalPath = path.split('_capacitor_file_')[1]
-                    path = `file://${internalPath}`
-                } else if (path.startsWith('file://')) {
-                    // Already a file URL
-                } else {
-                    // Fallback for paths that might be absolute but missing protocol?
-                    // If it starts with /, prepend file://
-                    if (path.startsWith('/')) {
-                        path = `file://${path}`
+            if (!isIOS) {
+                try {
+                    const webPath = Capacitor.convertFileSrc(fileUri)
+                    const response = await fetch(webPath)
+                    if (!response.ok) {
+                        throw new Error(`Fetch failed: ${response.statusText}`)
                     }
+
+                    const blob = await response.blob()
+                    const date = new Date()
+                    const name = fileName || `video_${date.getTime()}.${blob.type.split('/')[1] || 'mp4'}`
+
+                    return new File([blob], name, {
+                        type: blob.type,
+                        lastModified: date.getTime()
+                    })
+                } catch (fetchErr) {
+                    console.warn('Fetch failed, trying Filesystem fallback:', fetchErr)
                 }
-
-                console.log('Reading file from path (Filesystem):', path)
-
-                const fileData = await Filesystem.readFile({
-                    path: path
-                })
-
-                // Detect mime type via signature (magic bytes) because the plugin often returns .mp4 extension for .mov files
-                // We need to peek at the first few bytes.
-                // fileData.data is base64. Let's look at the first chunk.
-                const dataString = typeof fileData.data === 'string' ? fileData.data : ''
-                const headerB64 = dataString.substring(0, 20) // First 15 chars roughly cover first 10-12 bytes
-                const headerStr = atob(headerB64)
-
-                // Default to mp4
-                let mimeType = 'video/mp4'
-                let extension = path.split('.').pop()?.toLowerCase() || 'mp4'
-
-                // QuickTime signature is usually 'ftypqt' near the start
-                if (headerStr.includes('ftypqt')) {
-                    mimeType = 'video/quicktime'
-                    extension = 'mov'
-                    console.log('Detected QuickTime signature (ftypqt), forcing video/quicktime')
-                } else if (extension === 'mov') {
-                    mimeType = 'video/quicktime'
-                }
-
-                // fileData.data is base64 string
-                const blob = b64toBlob(dataString, mimeType)
-                console.log('Blob created via Filesystem:', blob.size, mimeType)
-
-                const date = new Date()
-                const name = fileName || `video_${date.getTime()}.${extension}`
-
-                return new File([blob], name, {
-                    type: mimeType,
-                    lastModified: date.getTime()
-                })
+            } else {
+                // Skipping fetch on iOS, using Filesystem directly
             }
+
+            // Filesystem Fallback (or primary for iOS)
+            let path = fileUri
+
+            // Parsing path from capacitor:// url
+            // Decode URI component if needed
+            path = decodeURIComponent(path)
+
+            // Generic handling for both iOS (capacitor://) and Android (http(s)://)
+            // We need to construct a file:// URL so Filesystem accepts it as absolute path
+            if (path.includes('_capacitor_file_')) {
+                const internalPath = path.split('_capacitor_file_')[1]
+                path = `file://${internalPath}`
+            } else if (path.startsWith('file://')) {
+                // Already a file URL
+            } else {
+                // Fallback for paths that might be absolute but missing protocol?
+                if (path.startsWith('/')) {
+                    path = `file://${path}`
+                }
+            }
+
+            console.log('Reading file from path (Filesystem):', path)
+
+            const fileData = await Filesystem.readFile({
+                path: path
+            })
+
+            // Detect mime type via signature (magic bytes) because the plugin often returns .mp4 extension for .mov files
+            // fileData.data is base64
+            const dataString = typeof fileData.data === 'string' ? fileData.data : ''
+
+            // Peak at signature
+            const headerB64 = dataString.substring(0, 20)
+            const headerStr = atob(headerB64)
+
+            // Default to mp4
+            let mimeType = 'video/mp4'
+            let extension = path.split('.').pop()?.toLowerCase() || 'mp4'
+
+            // QuickTime signature is usually 'ftypqt' near the start
+            if (headerStr.includes('ftypqt')) {
+                mimeType = 'video/quicktime'
+                extension = 'mov'
+                console.log('Detected QuickTime signature (ftypqt), forcing video/quicktime')
+            } else if (extension === 'mov') {
+                mimeType = 'video/quicktime'
+            }
+
+            console.log('Decoding base64 to ArrayBuffer...')
+            const arrayBuffer = decode(dataString)
+
+            const date = new Date()
+            const name = fileName || `video_${date.getTime()}.${extension}`
+
+            const file = new File([arrayBuffer], name, {
+                type: mimeType,
+                lastModified: date.getTime()
+            })
+
+            // Attach raw ArrayBuffer for direct upload (to bypass iOS Fetch/Blob issues)
+            // We use defineProperty to avoid enumeration if possible, or just direct assignment
+            Object.defineProperty(file, 'arrayBufferData', {
+                value: arrayBuffer,
+                writable: false,
+                enumerable: false // Hide it from standard iterations
+            })
+
+            return file
 
         } catch (err) {
             console.error('Error converting URI to File:', err)

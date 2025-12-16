@@ -152,6 +152,9 @@ const hasFiles = ref(false)
 // Store edited files mapped by file item ID
 const editedFiles = ref(new Map())
 
+// Map to store raw ArrayBuffers for upload (iOS bypass)
+const arrayBufferMap = ref(new Map())
+
 // Store last captured video URL for manual preview
 const lastCapturedVideoUrl = ref(null)
 
@@ -467,7 +470,11 @@ const processImageFile = (file) => {
 }
 
 // Function to actually upload the file after editing
-const uploadEditedFile = async (file, fileMetadataArg) => {
+const uploadEditedFile = async (
+  file,
+  fileMetadataArg,
+  rawArrayBuffer = null
+) => {
   // Check if this file has capture metadata
   const fileKey = `${file.name}_${file.lastModified}`
   const captureMetadata = captureMetadataMap.value.get(fileKey)
@@ -535,10 +542,14 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
   // Generate unique filename with timestamp
   const timestamp = new Date().getTime()
   const sanitizedName = processedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")
-  const userName =
-    props.user?.user_metadata?.name.replace(" ", "_") || "unknown-user"
+
+  // Safeguard against missing user/metadata/name which causes crash
+  const rawName = props.user?.user_metadata?.name
+  const userName = rawName ? rawName.replace(" ", "_") : "unknown-user"
+
   const userId = `--${props.user?.id}--` || ""
   const subfolder = captureMetadata?.originalProps?.subfolder || props.subfolder
+
   const fileName = `${userName}${userId}${timeStampToDate(timestamp)}_${
     captureMetadata ? "capture" : "upload"
   }_${sanitizedName}`
@@ -550,16 +561,35 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
   try {
     // Upload the file to Supabase Storage
     const bucket = captureMetadata?.originalProps?.bucket || props.bucket
+
+    // Use raw ArrayBuffer if available (iOS fix), otherwise use processed file
+    // Convert ArrayBuffer to Blob for better compatibility if needed
+    let fileBody = processedFile
+
+    if (rawArrayBuffer) {
+      try {
+        fileBody = new Blob([rawArrayBuffer], {
+          type: file.type || "video/quicktime",
+        })
+      } catch (e) {
+        console.error("Failed to create Blob from ArrayBuffer", e)
+        fileBody = rawArrayBuffer
+      }
+    }
+
+    const uploadOptions = {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: fileBody.type || file.type || "video/quicktime", // Ensure content type is set
+    }
+
     const { data, error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(fileNamePath, processedFile, {
-        cacheControl: "3600",
-        upsert: false,
-      })
+      .upload(fileNamePath, fileBody, uploadOptions)
 
     if (uploadError) {
       console.error("Upload error:", uploadError)
-      emit("upload-error", uploadError)
+      emit("upload-error", uploadError.message || JSON.stringify(uploadError))
       return null
     }
     emit("upload-progress", "Video processing...")
@@ -661,7 +691,10 @@ const handleFilesReady = async () => {
           fileToUpload = editedFiles.value.get(fileItem.id)
         }
 
-        await uploadEditedFile(fileToUpload, fileMetadata.value)
+        // Retrieve raw ArrayBuffer using FilePond ID if available
+        const rawBuffer = arrayBufferMap.value.get(fileItem.id)
+
+        await uploadEditedFile(fileToUpload, fileMetadata.value, rawBuffer)
       }
 
       // Clear all files from FilePond and reset the component
@@ -672,6 +705,7 @@ const handleFilesReady = async () => {
 
       // Clear the capture metadata map
       captureMetadataMap.value.clear()
+      arrayBufferMap.value.clear()
 
       // Reset the hasFiles state after upload
       hasFiles.value = false
@@ -679,6 +713,7 @@ const handleFilesReady = async () => {
   } catch (error) {
     isProcessing.value = false
     console.error("Upload error:", error)
+    console.error("Upload error json:", JSON.stringify(error))
   } finally {
     isProcessing.value = false
   }
@@ -698,11 +733,31 @@ const openCaptureMode = (mode) => {
 }
 
 // Event handlers for capture components
-const handleCaptureComplete = (captureData) => {
+const handleCaptureComplete = async (captureData) => {
   // Add the captured file to FilePond
   if (pond.value && captureData.file) {
-    // Add file to FilePond
-    pond.value.addFile(captureData.file)
+    // Add file to FilePond and wait for the item to be created
+    try {
+      const fileItem = await pond.value.addFile(captureData.file)
+
+      if (fileItem) {
+        console.log("File added to FilePond, ID:", fileItem.id)
+
+        // Store ArrayBuffer if present (iOS fix) using the reliable FilePond ID
+        if (captureData.file.arrayBufferData) {
+          console.log(
+            "Storing ArrayBuffer for upload bypass with ID:",
+            fileItem.id
+          )
+          arrayBufferMap.value.set(
+            fileItem.id,
+            captureData.file.arrayBufferData
+          )
+        }
+      }
+    } catch (err) {
+      console.error("Error adding file to FilePond:", err)
+    }
 
     // Create manual preview for iOS verification
     // Revoke previous URL if exists to avoid leaks
@@ -716,7 +771,8 @@ const handleCaptureComplete = (captureData) => {
     }
 
     // Store the capture metadata for later use during upload
-    // We'll store it keyed by file name since we don't have file item ID yet
+    // We'll store it keyed by file name since we don't have file item ID yet (or mixed strategy)
+    // Keeping name key for metadata for now to avoid breaking other logic.
     const fileKey = `${captureData.file.name}_${captureData.file.lastModified}`
     captureMetadataMap.value.set(fileKey, captureData.metadata)
   }
@@ -738,6 +794,7 @@ const reset = () => {
     hasFiles.value = false
     editedFiles.value.clear()
     captureMetadataMap.value.clear()
+    arrayBufferMap.value.clear()
     isProcessing.value = false
 
     // Clear manual video preview
