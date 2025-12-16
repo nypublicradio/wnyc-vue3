@@ -126,7 +126,7 @@ onMounted(() => {
     </Html>
 
     <section class="full-width">
-      <div class="flex align-items-center mb-4">
+      <!-- <div class="flex align-items-center mb-4">
         <Button
           class="back-btn text-color -ml-4"
           icon="pi pi-chevron-left"
@@ -137,7 +137,7 @@ onMounted(() => {
           @click="navigateTo('/home')"
           label="Back"
         />
-      </div>
+      </div> -->
       <h1 class="mb-4">Ask the Mayor Dashboard</h1>
       <div v-if="user">
         <DataTable
