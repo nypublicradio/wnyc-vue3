@@ -562,7 +562,7 @@ const uploadEditedFile = async (file, fileMetadataArg) => {
       emit("upload-error", uploadError)
       return null
     }
-    emit("upload-progress", "Video transcribing...")
+    emit("upload-progress", "Video processing...")
 
     // Use the original metadata or capture metadata
     const finalMetadata = captureMetadata
