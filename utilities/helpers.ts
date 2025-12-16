@@ -51,7 +51,7 @@ import {
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
-import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings';
+import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 // function to check if a URL returns a 404
@@ -92,7 +92,7 @@ export const whenTime = (data) => {
 }
 
 // format ISO timestamp to return only the time
-export function formatTime(date: any) {
+export function formatTime (date: any) {
   if (date) {
     const dateObject = new Date(date)
     return format(dateObject, "h:mm a")
@@ -117,7 +117,7 @@ export const formatPublisherImage = (attributes) => {
 }
 
 // Function to strip HTML tags and return text content
-function stripHtmlTags(str) {
+function stripHtmlTags (str) {
   const parser = new DOMParser()
   const dom = parser.parseFromString(str, "text/html")
   return dom.body.textContent ?? ""
@@ -296,7 +296,7 @@ export const trackClickEvent = (category, component, label) => {
 /**
  * to get how long ago a date was
  */
-export function howLongAgo(date) {
+export function howLongAgo (date) {
   if (date) {
     // check if unix tiumestamp
     if (Number.isInteger(date)) {
@@ -315,7 +315,7 @@ export function howLongAgo(date) {
 /**
  * to get the desired date format for the header
  */
-export function getDate(data = null, formatString = "EEE, MMM do") {
+export function getDate (data = null, formatString = "EEE, MMM do") {
   const date = data?.updatedDate || data?.publicationDate
   if (date) {
     const currentYear = new Date().getFullYear()
@@ -339,7 +339,7 @@ export function getDate(data = null, formatString = "EEE, MMM do") {
 /**
  * to get the desired date format for the header
  */
-export function formatDate(date = null, formatString = "EEE, MMM do") {
+export function formatDate (date = null, formatString = "EEE, MMM do") {
   if (date) {
     const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
@@ -356,28 +356,28 @@ export function formatDate(date = null, formatString = "EEE, MMM do") {
 /**
  * to get the yaer for the footer in the settings
  */
-export function getYear() {
+export function getYear () {
   return new Date().getFullYear()
 }
 
 /**
  * helper function to capitalize the first letter of a string
  */
-export function capitalizeFirstLetter(str) {
+export function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**
  * helper function to change the global font size
  */
-export function setFontSize(size: string) {
+export function setFontSize (size: string) {
   document.documentElement.style.fontSize = size
 }
 
 /**
  * helper function to toggle darkmode of the status bar
  */
-export async function setStatusDarkMode(bool: boolean) {
+export async function setStatusDarkMode (bool: boolean) {
   if (useIsApp().value) {
     bool
       ? await StatusBar.setStyle({ style: Style.Dark })
@@ -387,7 +387,7 @@ export async function setStatusDarkMode(bool: boolean) {
 /**
  * helper function to toggle darkmode
  */
-export async function setDarkMode(bool: boolean) {
+export async function setDarkMode (bool: boolean) {
   bool
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
@@ -451,12 +451,12 @@ export const toSystemSettings = () => {
     })
   } else {
     // for iOS, we are using a custom plugin
-    capacitorIosNotificationSettings.openNotificationSettings();
+    capacitorIosNotificationSettings.openNotificationSettings()
   }
 }
 
 // helper function to open a link in the browser IN the app
-export async function openLinkInAppBrowser(url: string) {
+export async function openLinkInAppBrowser (url: string) {
   await Browser.open({ url })
 }
 
@@ -614,10 +614,10 @@ export const getAndSetUserProfile = async () => {
 
         // some odd timing hack to fix the text_size and default station if they come over as an object
         if (typeof ls.text_size === 'object') {
-          ls.text_size = ls.text_size.label;
+          ls.text_size = ls.text_size.label
         }
         if (typeof ls.default_live_stream === 'object') {
-          ls.default_live_stream = ls.default_live_stream.station;
+          ls.default_live_stream = ls.default_live_stream.station
         }
 
         // get the system's notification permission and apply it to the ls
@@ -1070,49 +1070,49 @@ export const getWagtailRawBody = (bodyArr) => {
 
 // Define the interface for the function parameters
 interface AddToFavoritesParams {
-  item: any; // Replace 'any' with the actual type of bucketItem
-  isFavorited: boolean;
-  message?: string;
-  callback?: () => void;
+  item: any // Replace 'any' with the actual type of bucketItem
+  isFavorited: boolean
+  message?: string
+  callback?: () => void
 }
 // function to add to the favorites
 export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited ? "Removed from Favorites." : "Added to Favorites.", callback }: AddToFavoritesParams) => {
-  const user = useCurrentUser();
-  const accountPromptSideBar = useAccountPromptSideBar();
+  const user = useCurrentUser()
+  const accountPromptSideBar = useAccountPromptSideBar()
   if (user.value) {
-    const globalToast = useGlobalToast();
+    const globalToast = useGlobalToast()
     const episode = {
       ...item,
       slug: item.meta?.slug ?? item.slug,
       estimatedDuration: item.estimatedDuration || item.duration,
-    };
+    }
     if (isFavorited) {
-      await deleteFavorite(episode);
-      getFavoritedItems();
+      await deleteFavorite(episode)
+      getFavoritedItems()
       if (callback) {
-        callback();
+        callback()
       }
     } else {
-      await saveFavorite(episode, episode.type);
-      getFavoritedItems();
+      await saveFavorite(episode, episode.type)
+      getFavoritedItems()
       if (callback) {
-        callback();
+        callback()
       }
     }
     globalToast.value = {
       severity: "info",
       summary: message,
       life: 3000,
-    };
+    }
     trackClickEvent(
       `Click Tracking - ${message}`,
       "Episode Item",
       item.title
-    );
+    )
   } else {
-    accountPromptSideBar.value = true;
+    accountPromptSideBar.value = true
   }
-};
+}
 
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
@@ -1153,8 +1153,8 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
 
 // handles the permissions for push & local notifications
 export const askNotificationPermissions = () => {
-  const oneSignal = useOneSignal();
-  oneSignal.requestNotificationPermission();
+  const oneSignal = useOneSignal()
+  oneSignal.requestNotificationPermission()
 }
 
 // handles iOS asking permission for tracking
@@ -1224,7 +1224,7 @@ export const requestAccountDeletion = async () => {
     await $fetch('https://hooks.zapier.com/hooks/catch/1135793/23fbxa5/', {
       method: 'POST',
       body: { "email": currentUserProfile.value?.email, "id": currentUserProfile.value?.id }
-    });
+    })
   }
 
   logOutUser()
@@ -1247,33 +1247,33 @@ export const requestAccountDeletion = async () => {
 export const customAlphabeticalSort = (key = 'title') => {
   return (a, b) => {
     // get the value from the key
-    const getValue = (obj, key) => obj[key];
+    const getValue = (obj, key) => obj[key]
 
     // get the title without "A " or "The " at the beginning
     const getTitle = (title) => {
-      const prefixes = ["A ", "The "];
+      const prefixes = ["A ", "The "]
       for (const prefix of prefixes) {
         if (title.startsWith(prefix)) {
-          return title.substring(prefix.length);
+          return title.substring(prefix.length)
         }
       }
-      return title;
-    };
-
-    const aValue = getTitle(getValue(a, key));
-    const bValue = getTitle(getValue(b, key));
-
-    if (aValue !== bValue) {
-      return aValue.localeCompare(bValue);
+      return title
     }
 
-    return a.localeCompare(b);
-  };
-};
+    const aValue = getTitle(getValue(a, key))
+    const bValue = getTitle(getValue(b, key))
+
+    if (aValue !== bValue) {
+      return aValue.localeCompare(bValue)
+    }
+
+    return a.localeCompare(b)
+  }
+}
 
 // function that converts and array to a set to remove the dups
 export const deduplicateArray = (array) => {
-  return [...new Set(array)];
+  return [...new Set(array)]
 }
 
 // a func to refresh all data
@@ -1318,12 +1318,12 @@ export const refreshData = async (refreshUser = false) => {
 }
 
 // function that gets a URL and returns the path and query only
-export function getPathAndQuery(urlString) {
+export function getPathAndQuery (urlString) {
   try {
-    const url = new URL(urlString);
-    return `${url.pathname}${url.search}`;
+    const url = new URL(urlString)
+    return `${url.pathname}${url.search}`
   } catch (error) {
-    console.error("Invalid URL:", error);
-    return null;
+    console.error("Invalid URL:", error)
+    return null
   }
 }

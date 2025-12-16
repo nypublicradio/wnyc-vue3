@@ -2,12 +2,14 @@
 import { trackClickEvent } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 import { FilterMatchMode } from "@primevue/core/api"
-import { useCurrentUser } from "~/composables/states.ts"
+import { useCurrentUser, useCurrentUserProfile } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
 
 const toast = useToast()
 const user = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
 const supabase = useSupabaseClient()
+const isAdmin = ref(false)
 
 const submissions = ref([])
 const expandedRows = ref({})
@@ -95,7 +97,6 @@ const navigateToSlug = (event) => {
 }
 
 onMounted(() => {
-  fetchSubmissions()
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -104,6 +105,21 @@ onMounted(() => {
     content_group: "ask_the_mayor_dashboard",
   })
 })
+
+// check if th euser is an admin
+watch(
+  () => currentUserProfile.value,
+  () => {
+    console.log("checking: ", currentUserProfile.value)
+    if (!currentUserProfile.value.is_admin) {
+      alert("you are not autherized")
+    } else {
+      isAdmin.value = true
+      fetchSubmissions()
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -139,90 +155,98 @@ onMounted(() => {
         />
       </div> -->
       <h1 class="mb-4">Ask the Mayor Dashboard</h1>
-      <div v-if="user">
-        <DataTable
-          v-model:expandedRows="expandedRows"
-          :value="groupedSubmissions"
-          dataKey="date"
-          tableStyle="min-width: 60rem"
-        >
-          <Column expander style="width: 5rem" />
-          <Column field="date" header="Date"></Column>
-          <template #expansion="slotProps">
-            <div class="p-4">
-              <h5>Submissions for {{ slotProps.data.date }}</h5>
-              <DataTable
-                :value="slotProps.data.submissions"
-                selectionMode="single"
-                @rowSelect="navigateToSlug"
-              >
-                <Column field="profiles.name" header="Submitter" sortable>
-                  <template #body="slotProps">
-                    {{
-                      slotProps.data.profiles?.name ||
-                      slotProps.data.profiles?.first_name ||
-                      "N/A"
-                    }}
-                  </template>
-                </Column>
-                <Column field="profiles.email" header="Email" sortable>
-                  <template #body="slotProps">
-                    <a
-                      v-if="slotProps.data.profiles?.email"
-                      :href="`mailto:${slotProps.data.profiles.email}`"
-                      @click.stop
-                      >{{ slotProps.data.profiles.email }}</a
-                    >
-                    <span v-else>N/A</span>
-                  </template>
-                </Column>
-                <Column
-                  field="transcript"
-                  header="Transcript"
-                  sortable
-                ></Column>
-                <Column field="approved_for_use" header="Approved" sortable>
-                  <template #body="slotProps">
-                    <Checkbox
-                      v-model="slotProps.data.approved_for_use"
-                      :binary="true"
-                      @change="toggleApproved(slotProps.data)"
-                      @click.stop
-                    />
-                  </template>
-                </Column>
-                <Column header="Actions">
-                  <template #body="slotProps">
-                    <div class="flex gap-2">
-                      <Button
-                        icon="pi pi-download"
-                        text
-                        rounded
-                        aria-label="Download"
-                        @click="
-                          (event) => downloadSubmission(slotProps.data, event)
-                        "
+      <div v-if="isAdmin">
+        <div v-if="user">
+          <DataTable
+            v-model:expandedRows="expandedRows"
+            :value="groupedSubmissions"
+            dataKey="date"
+            tableStyle="min-width: 60rem"
+          >
+            <Column expander style="width: 5rem" />
+            <Column field="date" header="Date"></Column>
+            <template #expansion="slotProps">
+              <div class="p-4">
+                <h5>Submissions for {{ slotProps.data.date }}</h5>
+                <DataTable
+                  :value="slotProps.data.submissions"
+                  selectionMode="single"
+                  @rowSelect="navigateToSlug"
+                >
+                  <Column field="profiles.name" header="Submitter" sortable>
+                    <template #body="slotProps">
+                      {{
+                        slotProps.data.profiles?.name ||
+                        slotProps.data.profiles?.first_name ||
+                        "N/A"
+                      }}
+                    </template>
+                  </Column>
+                  <Column field="profiles.email" header="Email" sortable>
+                    <template #body="slotProps">
+                      <a
+                        v-if="slotProps.data.profiles?.email"
+                        :href="`mailto:${slotProps.data.profiles.email}`"
+                        @click.stop
+                        >{{ slotProps.data.profiles.email }}</a
+                      >
+                      <span v-else>N/A</span>
+                    </template>
+                  </Column>
+                  <Column
+                    field="transcript"
+                    header="Transcript"
+                    sortable
+                  ></Column>
+                  <Column field="approved_for_use" header="Approved" sortable>
+                    <template #body="slotProps">
+                      <Checkbox
+                        v-model="slotProps.data.approved_for_use"
+                        :binary="true"
+                        @change="toggleApproved(slotProps.data)"
+                        @click.stop
                       />
-                      <Button
-                        icon="pi pi-share-alt"
-                        text
-                        rounded
-                        aria-label="Share"
-                        @click="
-                          (event) => shareSubmission(slotProps.data, event)
-                        "
-                      />
-                    </div>
-                  </template>
-                </Column>
-              </DataTable>
-            </div>
-          </template>
-        </DataTable>
+                    </template>
+                  </Column>
+                  <Column header="Actions">
+                    <template #body="slotProps">
+                      <div class="flex gap-2">
+                        <Button
+                          icon="pi pi-download"
+                          text
+                          rounded
+                          aria-label="Download"
+                          @click="
+                            (event) => downloadSubmission(slotProps.data, event)
+                          "
+                        />
+                        <Button
+                          icon="pi pi-share-alt"
+                          text
+                          rounded
+                          aria-label="Share"
+                          @click="
+                            (event) => shareSubmission(slotProps.data, event)
+                          "
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                </DataTable>
+              </div>
+            </template>
+          </DataTable>
+        </div>
+        <div v-else>
+          <p>You are not authorized to view this page. Please log in.</p>
+          <Login />
+        </div>
       </div>
       <div v-else>
-        <p>You are not authorized to view this page. Please log in.</p>
-        <Login />
+        <p>
+          You are not authorized to view this page. Contact an administrator to
+          provide access.
+        </p>
       </div>
     </section>
   </div>
