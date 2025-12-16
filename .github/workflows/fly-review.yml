@@ -34,6 +34,14 @@ jobs:
           echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.PAT }}" >> .npmrc
 
+      - name: Update Mock Schedule Data
+        run: |
+          chmod +x scripts/update-mock-schedule.sh
+          ./scripts/update-mock-schedule.sh wnyc-fm939
+          ./scripts/update-mock-schedule.sh wqxr
+          ./scripts/update-mock-schedule.sh wqxr-holiday-channel-on-wnyc
+          ./scripts/update-mock-schedule.sh q2
+
       - name: Set Review App URL
         id: set-url
         run: |
@@ -47,8 +55,7 @@ jobs:
         with:
           secrets: |
             ENV=review
-            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
-            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
+            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}            
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
             PUBLISHER_BASE_API=${{ vars.PUBLISHER_BASE_API }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -59,12 +66,17 @@ jobs:
             PAT=${{ secrets.PAT }}
             SUPABASE_URL=${{ vars.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}
+            SPRINGBOARD_KEY=${{ secrets.SPRINGBOARD_KEY }}
+            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           build_args: |
             ENV=review
             SENTRY_DSN=${{ vars.SENTRY_DSN }}
             SENTRY_ENV=${{ vars.SENTRY_ENV }}
             LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
             NAVIGATION_API=${{ vars.NAVIGATION_API }}
+            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
             SYSTEM_MESSAGES_API=${{ vars.SYSTEM_MESSAGES_API }}
             STORIES_API=${{ vars.STORIES_API }}
             IMAGE_BASE_URL=${{ vars.IMAGE_BASE_URL }}
@@ -93,6 +105,9 @@ jobs:
             SETTINGS_MENU_DONATION_URL=${{ vars.SETTINGS_MENU_DONATION_URL }}
             USER_AGENT=${{ vars.USER_AGENT }}
             APP_VERSION=${{ vars.APP_VERSION }}
+            SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
+            NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
+            RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
 
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
@@ -109,19 +124,18 @@ jobs:
             } catch (error) {
               console.log('Environment not found or already deleted:', error.message);
             }
-            
+
       - name: Send Slack notification
         if: ${{ github.event.action != 'closed' }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: '#audience-pr-review'
-          SLACK_COLOR: 'good'
-          SLACK_ICON_EMOJI: ':rocket:'
-          SLACK_TITLE: 'Review App Deployed'
+          SLACK_CHANNEL: "#audience-pr-review"
+          SLACK_COLOR: "good"
+          SLACK_ICON_EMOJI: ":rocket:"
+          SLACK_TITLE: "Review App Deployed"
           SLACK_MESSAGE: |
             **Pull Request:** <${{ github.event.pull_request.html_url }}|#${{ github.event.number }}: ${{ github.event.pull_request.title }}>
             **Review App URL:** <${{ steps.set-url.outputs.url }}|${{ steps.set-url.outputs.url }}>
             **Branch:** ${{ github.head_ref }}
             **Author:** ${{ github.event.pull_request.user.login }}
-
