@@ -25,9 +25,13 @@ const groupedSubmissions = computed(() => {
       groups[date] = {
         date,
         submissions: [],
+        approvedCount: 0,
       }
     }
     groups[date].submissions.push(submission)
+    if (submission.approved_for_use) {
+      groups[date].approvedCount++
+    }
   })
   return Object.values(groups).sort(
     (a, b) => new Date(b.date) - new Date(a.date)
@@ -165,6 +169,8 @@ watch(
           >
             <Column expander style="width: 5rem" />
             <Column field="date" header="Date"></Column>
+            <Column field="submissions.length" header="Submissions"></Column>
+            <Column field="approvedCount" header="Approvals"></Column>
             <template #expansion="slotProps">
               <div class="p-4">
                 <h5>Submissions for {{ slotProps.data.date }}</h5>
