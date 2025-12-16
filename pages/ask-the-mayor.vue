@@ -20,6 +20,12 @@ const activeStep = ref(1)
 // Submit Handler
 const onFormSubmit = async (e) => {
   try {
+    // scroll the user to the top
+    setTimeout(() => {
+      console.log("scrolling to top")
+      window.scrollTo(0, 0)
+    }, 500)
+
     await UploadMediaREF.value?.uploadFiles()
 
     toast.add({
