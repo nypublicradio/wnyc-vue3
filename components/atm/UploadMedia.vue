@@ -126,6 +126,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  miscData: {
+    type: Object,
+    default: null,
+  },
 })
 
 // Component emits
@@ -169,6 +173,9 @@ const isCapturing = ref(false)
 
 // Track autosave mode
 const isAutosaveMode = computed(() => !!props.autosaveComposable)
+
+// Track number of retakes
+const numOfRetakes = ref(0)
 
 // Server configuration for FilePond (used for restoring autosaved files)
 const serverConfig = computed(() => {
@@ -625,6 +632,8 @@ const uploadEditedFile = async (
           metadata: finalMetadata,
           subfolder_date: timeStampToDate(timestamp),
           transcript: transcription,
+          retakes: numOfRetakes.value,
+          instagram_handle: props.miscData?.instagramHandle,
         },
       ])
       .select()
@@ -636,6 +645,9 @@ const uploadEditedFile = async (
     }
 
     emit("upload-progress", "Upload complete")
+
+    //reset retakes
+    numOfRetakes.value = 0
 
     //reset progress
     setTimeout(() => {
@@ -1086,6 +1098,7 @@ watch(hasFiles, (newVal) => {
 const captureMetadataMap = ref(new Map())
 
 const tryAgain = () => {
+  numOfRetakes.value++
   reset()
   openCaptureMode(mediaType.VIDEO)
 }

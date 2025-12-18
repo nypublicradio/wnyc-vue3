@@ -1,16 +1,16 @@
 <script setup>
-import { useToast } from "primevue/usetoast";
-import { useCurrentUser } from "~/composables/states.ts";
-import { useAtmDashboard } from "~/composables/atm/useAtmDashboard";
-const route = useRoute();
-const slug = route.params.slug;
-const supabase = useSupabaseClient();
-const toast = useToast();
-const user = useCurrentUser();
+import { useToast } from "primevue/usetoast"
+import { useCurrentUser } from "~/composables/states.ts"
+import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
+const route = useRoute()
+const slug = route.params.slug
+const supabase = useSupabaseClient()
+const toast = useToast()
+const user = useCurrentUser()
 
-const submission = ref(null);
-const videoUrl = ref(null);
-const loading = ref(true);
+const submission = ref(null)
+const videoUrl = ref(null)
+const loading = ref(true)
 
 onMounted(async () => {
   try {
@@ -18,9 +18,9 @@ onMounted(async () => {
       .from("atm_submissions")
       .select("*")
       .eq("video_filename", slug)
-      .single();
+      .single()
 
-    if (submissionError) throw submissionError;
+    if (submissionError) throw submissionError
 
     // Fetch profile manually
     if (submissionData && submissionData.user_id) {
@@ -28,47 +28,47 @@ onMounted(async () => {
         .from("profiles")
         .select("*")
         .eq("id", submissionData.user_id)
-        .single();
+        .single()
 
-      submissionData.profiles = profileData || null;
+      submissionData.profiles = profileData || null
     }
 
-    submission.value = submissionData;
-    const data = submissionData; // Keep reference for videoUrl logic below
+    submission.value = submissionData
+    const data = submissionData // Keep reference for videoUrl logic below
 
     if (data && data.video_filename) {
       const path = data.subfolder_date
         ? `atm/${data.subfolder_date}/${data.video_filename}`
-        : `atm/${data.video_filename}`;
+        : `atm/${data.video_filename}`
 
       const { data: urlData } = supabase.storage
         .from("media")
-        .getPublicUrl(path);
-      videoUrl.value = urlData.publicUrl;
-      console.log("Video URL:", videoUrl.value);
+        .getPublicUrl(path)
+      videoUrl.value = urlData.publicUrl
+      console.log("Video URL:", videoUrl.value)
     }
 
-    const { $analytics } = useNuxtApp();
+    const { $analytics } = useNuxtApp()
     $analytics.sendPageView({
       page_title: "Ask the Mayor Submission",
       page_type: "ask_the_mayor_submission",
       content_group: "ask_the_mayor",
-    });
+    })
   } catch (e) {
-    console.error("Error fetching submission", e);
+    console.error("Error fetching submission", e)
     toast.add({
       severity: "error",
       summary: "Error",
       detail: "Could not load submission",
       life: 3000,
-    });
+    })
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
 
 const { toggleApproved, shareSubmission, downloadSubmission } =
-  useAtmDashboard();
+  useAtmDashboard()
 </script>
 
 <template>
@@ -115,11 +115,25 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
               "Unknown"
             }}
           </h1>
-          <p v-if="submission.profiles?.email">
-            <a :href="`mailto:${submission.profiles.email}`">{{
-              submission.profiles.email
-            }}</a>
-          </p>
+          <div class="flex flex-wrap row-gap-2 column-gap-4">
+            <p v-if="submission.profiles?.email">
+              Email:
+              <a
+                :href="`mailto:${submission.profiles.email}`"
+                target="_blank"
+                >{{ submission.profiles.email }}</a
+              >
+            </p>
+
+            <p v-if="submission.instagram_handle">
+              Instagram:
+              <a
+                :href="`https://instagram.com/${submission.instagram_handle}`"
+                target="_blank"
+                >@{{ submission.instagram_handle }}</a
+              >
+            </p>
+          </div>
           <p class="text-sm text-500">
             {{ new Date(submission.created_at).toLocaleDateString() }} -
             {{ new Date(submission.created_at).toLocaleTimeString() }}
@@ -151,6 +165,9 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
             />
           </div>
 
+          <p class="flex align-items-center gap-1">
+            <i class="pi pi-refresh"></i>{{ submission.retakes }} Retakes
+          </p>
           <div
             v-if="videoUrl"
             class="video-container surface-card p-4 border-round shadow-2"

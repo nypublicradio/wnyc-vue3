@@ -17,6 +17,10 @@ const uploadCompleted = ref(false)
 const recordTimeLimit = 30
 const activeStep = ref(1)
 
+const miscData = ref({
+  instagramHandle: "",
+})
+
 // Submit Handler
 const onFormSubmit = async (e) => {
   try {
@@ -24,7 +28,7 @@ const onFormSubmit = async (e) => {
     setTimeout(() => {
       console.log("scrolling to top")
       window.scrollTo(0, 0)
-    }, 500)
+    }, 250)
 
     await UploadMediaREF.value?.uploadFiles()
 
@@ -276,16 +280,27 @@ watch(
                       @upload-progress="submitProgress = $event"
                       :user="user"
                       :recordTimeLimit="recordTimeLimit"
+                      :miscData="miscData"
                     />
                     <p v-if="submitProgress" class="text-center w-full">
                       {{ submitProgress }}
                     </p>
-                    <Button
+                    <div
                       v-if="hasFiles && !submitProgress"
-                      label="Submit"
-                      class="w-16rem m-auto"
-                      @click="onFormSubmit"
-                    />
+                      class="flex flex-column gap-2 mt-4"
+                    >
+                      <InputText
+                        class="w-16rem m-auto"
+                        type="text"
+                        v-model="miscData.instagramHandle"
+                        placeholder="Instagram Handle (optional)"
+                      />
+                      <Button
+                        label="Submit"
+                        class="w-16rem m-auto"
+                        @click="onFormSubmit"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

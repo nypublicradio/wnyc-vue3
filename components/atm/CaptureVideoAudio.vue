@@ -344,8 +344,8 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     <div v-if="error || nativeError" class="error-message">
       {{ error || nativeError }}
     </div>
-    <div class="actions">
-      <Button v-if="error" @click="getPermissions" class="record-btn">
+    <div v-if="error" class="actions">
+      <Button @click="getPermissions" class="record-btn">
         Get Camera permission
       </Button>
     </div>

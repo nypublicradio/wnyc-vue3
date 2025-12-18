@@ -188,15 +188,27 @@ watch(
                       }}
                     </template>
                   </Column>
-                  <Column field="profiles.email" header="Email" sortable>
+                  <Column field="profiles.email" header="Contact" sortable>
                     <template #body="slotProps">
-                      <a
-                        v-if="slotProps.data.profiles?.email"
-                        :href="`mailto:${slotProps.data.profiles.email}`"
-                        @click.stop
-                        >{{ slotProps.data.profiles.email }}</a
-                      >
-                      <span v-else>N/A</span>
+                      <div>
+                        <a
+                          v-if="slotProps.data.profiles?.email"
+                          :href="`mailto:${slotProps.data.profiles.email}`"
+                          target="_blank"
+                          @click.stop
+                          >{{ slotProps.data.profiles.email }}</a
+                        >
+                        <span v-else>N/A </span>
+                      </div>
+                      <div>
+                        <a
+                          v-if="slotProps.data.instagram_handle"
+                          :href="`https://instagram.com/${slotProps.data.instagram_handle}`"
+                          target="_blank"
+                          @click.stop
+                          >@{{ slotProps.data.instagram_handle }}</a
+                        >
+                      </div>
                     </template>
                   </Column>
                   <Column
@@ -214,6 +226,7 @@ watch(
                       />
                     </template>
                   </Column>
+                  <Column field="retakes" header="Retakes" sortable> </Column>
                   <Column header="Actions">
                     <template #body="slotProps">
                       <div class="flex gap-2">
