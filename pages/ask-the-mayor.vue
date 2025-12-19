@@ -155,6 +155,7 @@ watch(
 
     <section>
       <h1>Ask the Mayor</h1>
+      <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink>
       <div v-if="isLoading">
         <WnycLoader class="mt-8 w-8rem mx-auto" />
       </div>
