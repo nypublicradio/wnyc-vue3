@@ -8,44 +8,40 @@ const supabase = useSupabaseClient()
 const toast = useToast()
 const user = useCurrentUser()
 
+const authToken = ref("")
 const submission = ref(null)
 const videoUrl = ref(null)
-const loading = ref(true)
+const isLoading = ref(true)
+
+const {
+  data: fetchedSubmission,
+  error,
+  execute: executeFetchSubmission,
+} = await useFetch(`/api/atm/submission/${slug}`, {
+  immediate: false,
+  headers: computed(() => {
+    return {
+      Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
+    }
+  }),
+})
 
 onMounted(async () => {
   try {
-    const { data: submissionData, error: submissionError } = await supabase
-      .from("atm_submissions")
-      .select("*")
-      .eq("video_filename", slug)
-      .single()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    authToken.value = session?.access_token || ""
 
-    if (submissionError) throw submissionError
+    await executeFetchSubmission()
 
-    // Fetch profile manually
-    if (submissionData && submissionData.user_id) {
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", submissionData.user_id)
-        .single()
-
-      submissionData.profiles = profileData || null
+    if (error.value) {
+      throw error.value
     }
 
-    submission.value = submissionData
-    const data = submissionData // Keep reference for videoUrl logic below
-
-    if (data && data.video_filename) {
-      const path = data.subfolder_date
-        ? `atm/${data.subfolder_date}/${data.video_filename}`
-        : `atm/${data.video_filename}`
-
-      const { data: urlData } = supabase.storage
-        .from("media")
-        .getPublicUrl(path)
-      videoUrl.value = urlData.publicUrl
-      console.log("Video URL:", videoUrl.value)
+    submission.value = fetchedSubmission.value
+    if (submission.value?.videoUrl) {
+      videoUrl.value = submission.value.videoUrl
     }
 
     const { $analytics } = useNuxtApp()
@@ -56,14 +52,24 @@ onMounted(async () => {
     })
   } catch (e) {
     console.error("Error fetching submission", e)
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Could not load submission",
-      life: 3000,
-    })
+    // Handle specific error codes if needed
+    if (e.statusCode === 403 || e.response?.status === 403) {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "You are not authorized to view this submission.",
+        life: 3000,
+      })
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Could not load submission",
+        life: 3000,
+      })
+    }
   } finally {
-    loading.value = false
+    isLoading.value = false
   }
 })
 
@@ -104,9 +110,19 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
         />
       </div>
 
-      <div v-if="user">
-        <div v-if="loading">Loading...</div>
-        <div v-else-if="submission" class="flex flex-column gap-4">
+      <div v-if="isLoading">
+        <WnycLoader class="mt-8 w-8rem mx-auto" />
+      </div>
+
+      <div v-else-if="!user">
+        <div>
+          <p>You are not authorized to view this page. Please log in.</p>
+          <Login />
+        </div>
+      </div>
+
+      <div v-else-if="submission">
+        <div class="flex flex-column gap-4">
           <h1>
             Submission from
             {{
@@ -187,13 +203,9 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
             </p>
           </Panel>
         </div>
-        <div v-else>
-          <p>Submission not found.</p>
-        </div>
       </div>
       <div v-else>
-        <p>You are not authorized to view this page. Please log in.</p>
-        <Login />
+        <p>Submission not found.</p>
       </div>
     </section>
   </div>

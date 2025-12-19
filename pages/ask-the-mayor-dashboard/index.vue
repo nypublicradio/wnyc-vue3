@@ -2,12 +2,11 @@
 import { trackClickEvent } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 import { FilterMatchMode } from "@primevue/core/api"
-import { useCurrentUser, useCurrentUserProfile } from "~/composables/states.ts"
+import { useCurrentUser } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
 
 const toast = useToast()
 const user = useCurrentUser()
-const currentUserProfile = useCurrentUserProfile()
 const supabase = useSupabaseClient()
 const isAdmin = ref(false)
 const isLoading = ref(true)
