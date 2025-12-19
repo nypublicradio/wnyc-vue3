@@ -10,8 +10,25 @@ const user = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const supabase = useSupabaseClient()
 const isAdmin = ref(false)
+const isLoading = ref(true)
 
-const submissions = ref([])
+const {
+  data: submissions,
+  status,
+  error,
+  execute: executeFetchSubmissions,
+} = await useFetch("/api/atm/submissions", {
+  immediate: false,
+  headers: computed(() => {
+    return {
+      Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
+    }
+  }),
+  watch: false, // We manually trigger
+})
+
+const authToken = ref("")
+
 const expandedRows = ref({})
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -19,6 +36,9 @@ const filters = ref({
 
 const groupedSubmissions = computed(() => {
   const groups = {}
+  // Ensure submissions.value is an array before iterating
+  if (!submissions.value) return []
+
   submissions.value.forEach((submission) => {
     const date = new Date(submission.created_at).toLocaleDateString()
     if (!groups[date]) {
@@ -39,57 +59,45 @@ const groupedSubmissions = computed(() => {
 })
 
 const fetchSubmissions = async () => {
+  isLoading.value = true
   try {
-    // Fetch submissions
-    const { data: submissionsData, error: submissionsError } = await supabase
-      .from("atm_submissions")
-      .select("*")
-      .order("created_at", { ascending: false })
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    authToken.value = session?.access_token || ""
 
-    if (submissionsError) throw submissionsError
+    // execute the fetch
+    await executeFetchSubmissions()
 
-    // Extract unique user IDs
-    const userIds = [
-      ...new Set(submissionsData.map((s) => s.user_id).filter(Boolean)),
-    ]
+    if (error.value) {
+      throw error.value
+    }
 
-    // Fetch profiles for these users
-    let profilesMap = {}
-    if (userIds.length > 0) {
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("id", userIds)
+    isAdmin.value = true
 
-      if (profilesError) {
-        console.error("Error fetching profiles:", profilesError)
-      } else {
-        profilesData.forEach((p) => {
-          console.log("profile: ", p)
-          profilesMap[p.id] = p
-        })
+    if (submissions.value && submissions.value.length > 0) {
+      await nextTick()
+      if (groupedSubmissions.value.length > 0) {
+        const firstDate = groupedSubmissions.value[0].date
+        expandedRows.value = { [firstDate]: true }
       }
     }
-
-    // Attach profile data to submissions
-    submissions.value = submissionsData.map((s) => ({
-      ...s,
-      profiles: profilesMap[s.user_id] || null,
-    }))
-
-    // Auto-expand first date
-    if (groupedSubmissions.value.length > 0) {
-      const firstDate = groupedSubmissions.value[0].date
-      expandedRows.value = { [firstDate]: true }
+  } catch (err) {
+    console.error("Error fetching submissions:", err)
+    isAdmin.value = false
+    // useFetch error object might be wrapped
+    if (err.statusCode === 403 || err.response?.status === 403) {
+      // expected for non-admins
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to fetch submissions",
+        life: 3000,
+      })
     }
-  } catch (error) {
-    console.error("Error fetching submissions:", error)
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Failed to fetch submissions",
-      life: 3000,
-    })
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -101,7 +109,7 @@ const navigateToSlug = (event) => {
   navigateTo(`/ask-the-mayor-dashboard/${submission.video_filename}`)
 }
 
-onMounted(() => {
+onMounted(async () => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -109,20 +117,29 @@ onMounted(() => {
     page_type: "ask_the_mayor_dashboard",
     content_group: "ask_the_mayor_dashboard",
   })
+
+  // Initial Check
+  const { data } = await supabase.auth.getSession()
+  if (data.session) {
+    await fetchSubmissions()
+  } else {
+    isLoading.value = false
+  }
 })
 
 // check if th euser is an admin
+// check if the user is an admin by fetching submissions
 watch(
-  () => currentUserProfile.value,
+  () => user.value,
   () => {
-    if (!currentUserProfile.value?.is_admin) {
-      isAdmin.value = false
-    } else {
-      isAdmin.value = true
+    if (user.value) {
       fetchSubmissions()
+    } else {
+      isAdmin.value = false
+      submissions.value = []
+      isLoading.value = false
     }
-  },
-  { immediate: true }
+  }
 )
 </script>
 
@@ -146,126 +163,128 @@ watch(
     </Html>
 
     <section class="full-width">
-      <!-- <div class="flex align-items-center mb-4">
-        <Button
-          class="back-btn text-color -ml-4"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="navigateTo('/home')"
-          label="Back"
-        />
-      </div> -->
       <h1 class="mb-4">Ask the Mayor Dashboard</h1>
-      <div v-if="isAdmin">
-        <div v-if="user">
-          <DataTable
-            v-model:expandedRows="expandedRows"
-            :value="groupedSubmissions"
-            dataKey="date"
-            tableStyle="min-width: 60rem"
-          >
-            <Column expander style="width: 5rem" />
-            <Column field="date" header="Date"></Column>
-            <Column field="submissions.length" header="Submissions"></Column>
-            <Column field="approvedCount" header="Approvals"></Column>
-            <template #expansion="slotProps">
-              <div class="p-4">
-                <h5>Submissions for {{ slotProps.data.date }}</h5>
-                <DataTable
-                  :value="slotProps.data.submissions"
-                  selectionMode="single"
-                  @rowSelect="navigateToSlug"
-                >
-                  <Column field="profiles.name" header="Submitter" sortable>
-                    <template #body="slotProps">
-                      {{
-                        slotProps.data.profiles?.name ||
-                        slotProps.data.profiles?.first_name ||
-                        "N/A"
-                      }}
-                    </template>
-                  </Column>
-                  <Column field="profiles.email" header="Contact" sortable>
-                    <template #body="slotProps">
-                      <div>
-                        <a
-                          v-if="slotProps.data.profiles?.email"
-                          :href="`mailto:${slotProps.data.profiles.email}`"
-                          target="_blank"
-                          @click.stop
-                          >{{ slotProps.data.profiles.email }}</a
-                        >
-                        <span v-else>N/A </span>
-                      </div>
-                      <div>
-                        <a
-                          v-if="slotProps.data.instagram_handle"
-                          :href="`https://instagram.com/${slotProps.data.instagram_handle}`"
-                          target="_blank"
-                          @click.stop
-                          >@{{ slotProps.data.instagram_handle }}</a
-                        >
-                      </div>
-                    </template>
-                  </Column>
-                  <Column
-                    field="transcript"
-                    header="Transcript"
-                    sortable
-                  ></Column>
-                  <Column field="approved_for_use" header="Approved" sortable>
-                    <template #body="slotProps">
-                      <Checkbox
-                        v-model="slotProps.data.approved_for_use"
-                        :binary="true"
-                        @change="toggleApproved(slotProps.data)"
-                        @click.stop
-                      />
-                    </template>
-                  </Column>
-                  <Column field="retakes" header="Retakes" sortable> </Column>
-                  <Column header="Actions">
-                    <template #body="slotProps">
-                      <div class="flex gap-2">
-                        <Button
-                          icon="pi pi-download"
-                          text
-                          rounded
-                          aria-label="Download"
-                          @click="
-                            (event) => downloadSubmission(slotProps.data, event)
-                          "
-                        />
-                        <Button
-                          icon="pi pi-share-alt"
-                          text
-                          rounded
-                          aria-label="Share"
-                          @click="
-                            (event) => shareSubmission(slotProps.data, event)
-                          "
-                        />
-                      </div>
-                    </template>
-                  </Column>
-                </DataTable>
-              </div>
-            </template>
-          </DataTable>
-        </div>
-        <div v-else>
+
+      <!-- 1. Always show loader initially or when loading -->
+      <div v-if="isLoading">
+        <WnycLoader class="mt-8 w-8rem mx-auto" />
+      </div>
+
+      <!-- 2. If done loading and NO user -->
+      <div v-else-if="!user">
+        <div>
           <p>You are not authorized to view this page. Please log in.</p>
           <Login />
         </div>
       </div>
+
+      <!-- 3. If done loading, user exists, but NOT admin -->
+      <div v-else-if="!isAdmin">
+        <div>
+          <p>
+            You are not authorized to view this page. Contact an administrator
+            to provide access.
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. If done loading, user exists, IS admin -->
       <div v-else>
-        <p>
-          You are not authorized to view this page. Contact an administrator to
-          provide access.
-        </p>
+        <DataTable
+          v-model:expandedRows="expandedRows"
+          :value="groupedSubmissions"
+          dataKey="date"
+          tableStyle="min-width: 60rem"
+          :loading="status === 'pending'"
+        >
+          <Column expander style="width: 5rem" />
+          <Column field="date" header="Date"></Column>
+          <Column field="submissions.length" header="Submissions"></Column>
+          <Column field="approvedCount" header="Approvals"></Column>
+          <template #expansion="slotProps">
+            <div class="p-4">
+              <h5>Submissions for {{ slotProps.data.date }}</h5>
+              <DataTable
+                :value="slotProps.data.submissions"
+                selectionMode="single"
+                @rowSelect="navigateToSlug"
+              >
+                <Column field="profiles.name" header="Submitter" sortable>
+                  <template #body="slotProps">
+                    {{
+                      slotProps.data.profiles?.name ||
+                      slotProps.data.profiles?.first_name ||
+                      "N/A"
+                    }}
+                  </template>
+                </Column>
+                <Column field="profiles.email" header="Contact" sortable>
+                  <template #body="slotProps">
+                    <div>
+                      <a
+                        v-if="slotProps.data.profiles?.email"
+                        :href="`mailto:${slotProps.data.profiles.email}`"
+                        target="_blank"
+                        @click.stop
+                        >{{ slotProps.data.profiles.email }}</a
+                      >
+                      <span v-else>N/A </span>
+                    </div>
+                    <div>
+                      <a
+                        v-if="slotProps.data.instagram_handle"
+                        :href="`https://instagram.com/${slotProps.data.instagram_handle}`"
+                        target="_blank"
+                        @click.stop
+                        >@{{ slotProps.data.instagram_handle }}</a
+                      >
+                    </div>
+                  </template>
+                </Column>
+                <Column
+                  field="transcript"
+                  header="Transcript"
+                  sortable
+                ></Column>
+                <Column field="approved_for_use" header="Approved" sortable>
+                  <template #body="slotProps">
+                    <Checkbox
+                      v-model="slotProps.data.approved_for_use"
+                      :binary="true"
+                      @change="toggleApproved(slotProps.data)"
+                      @click.stop
+                    />
+                  </template>
+                </Column>
+                <Column field="retakes" header="Retakes" sortable> </Column>
+                <Column header="Actions">
+                  <template #body="slotProps">
+                    <div class="flex gap-2">
+                      <Button
+                        icon="pi pi-download"
+                        text
+                        rounded
+                        aria-label="Download"
+                        @click="
+                          (event) => downloadSubmission(slotProps.data, event)
+                        "
+                      />
+                      <Button
+                        icon="pi pi-share-alt"
+                        text
+                        rounded
+                        aria-label="Share"
+                        @click="
+                          (event) => shareSubmission(slotProps.data, event)
+                        "
+                      />
+                    </div>
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
+          </template>
+        </DataTable>
       </div>
     </section>
   </div>
