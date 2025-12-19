@@ -193,10 +193,10 @@ export default defineNuxtConfig({
         process.env.LIVESTREAM_URL ?? "https://api.prod.nypr.digital/api/v4/whats_on/",
       NAVIGATION_API:
         process.env.NAVIGATION_API ??
-        "https://cms.prod.nypr.digital/api/v2/navigation/3/",
+        "https://cms.prod.nypr.digital/api/v2/navigation/4/",
       SYSTEM_MESSAGES_API:
         process.env.SYSTEM_MESSAGES_API ??
-        "https://cms.prod.nypr.digital/api/v2/system_messages/3/",
+        "https://cms.prod.nypr.digital/api/v2/system_messages/4/",
       STORIES_API:
         process.env.STORIES_API ??
         "https://cms.prod.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false",

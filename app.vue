@@ -9,6 +9,7 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
+  useIsActive,
 } from "~/composables/states"
 import {
   useBrowserTopColor,
@@ -37,6 +38,7 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
+const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
 const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
   useOneSignal()
@@ -108,6 +110,8 @@ onMounted(async () => {
   // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
+    // set global active state
+    isActiveGlobal.value = isActive
     if (isActive) {
       // refresh data
       refreshData()

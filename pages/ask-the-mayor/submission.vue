@@ -1,6 +1,7 @@
 
 <script setup>
 import { useToast } from "primevue/usetoast"
+import { useIsActive } from "~/composables/states"
 
 const toast = useToast()
 
@@ -17,7 +18,7 @@ const recordTimeLimit = 30
 const activeStep = ref(1)
 const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
-
+const isActiveGlobal = useIsActive()
 const miscData = ref({
   instagramHandle: "",
 })
@@ -135,7 +136,7 @@ watch(
 </script>
 
 <template>
-  <div>
+  <div class="ask-the-mayor submission">
     <Html lang="en">
       <Head>
         <Title
@@ -246,7 +247,10 @@ watch(
             <div class="">
               <div class="step-content">
                 <div class="w-full">
-                  <Signup v-if="isSignupForm" :returnRoute="'/ask-the-mayor'">
+                  <Signup
+                    v-if="isSignupForm"
+                    :returnRoute="'/ask-the-mayor/submission'"
+                  >
                     <template #header>
                       <p>
                         Already have an account?
@@ -259,7 +263,7 @@ watch(
                       </p>
                     </template>
                   </Signup>
-                  <Login v-else :returnRoute="'/ask-the-mayor'">
+                  <Login v-else :returnRoute="'/ask-the-mayor/submission'">
                     <template #header>
                       <p>
                         Don't have an account yet?
@@ -280,7 +284,7 @@ watch(
             <div class="flex w-full">
               <div class="step-content w-full">
                 <div class="flex flex-column gap-1">
-                  <div class="flex flex-column gap-2">
+                  <div v-if="isActiveGlobal" class="flex flex-column gap-2">
                     <atm-upload-media
                       ref="UploadMediaREF"
                       :invalid="false"
@@ -383,7 +387,7 @@ watch(
   </div>
 </template>
 <style lang="scss">
-.ask-the-mayor {
+.ask-the-mayor.submission {
   @mixin upload-media-styles {
     .capture-component-container {
       border: none;
