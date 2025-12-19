@@ -8,14 +8,15 @@ const user = useCurrentUser()
 const bucketName = "media"
 const subfolder = "atm"
 const submissionTable = "atm_submissions"
-
+const isLoading = ref(true)
 const UploadMediaREF = ref(null)
-const questionLimitReached = ref(false)
 const hasFiles = ref(false)
 const submitProgress = ref(null)
 const uploadCompleted = ref(false)
 const recordTimeLimit = 30
 const activeStep = ref(1)
+const questionLimitReached = ref(false)
+const questionLimitDays = ref(1) // only submit a question once per day
 
 const miscData = ref({
   instagramHandle: "",
@@ -82,6 +83,32 @@ onMounted(() => {
   //questionLimitReached
 })
 
+const { data: limitData } = await useFetch("/api/atm/check-limit", {
+  watch: [user],
+}) // user is watched, so it will re-fetch on change
+
+const getNextSubmissionDate = computed(() => {
+  if (!limitData.value) return null
+  const lastSubmissionDate = limitData.value.lastSubmissionDate
+  if (!lastSubmissionDate) return null
+  const lastDate = new Date(lastSubmissionDate)
+  const nextDate = new Date(
+    lastDate.getTime() + questionLimitDays.value * 24 * 60 * 60 * 1000
+  )
+  return nextDate.toLocaleString()
+})
+
+watch(
+  limitData,
+  (val) => {
+    if (val) {
+      questionLimitReached.value = val.questionLimitReached
+      isLoading.value = false
+    }
+  },
+  { immediate: true }
+)
+
 watch(
   user,
   () => {
@@ -127,19 +154,10 @@ watch(
     </Html>
 
     <section>
-      <!--       <div class="flex align-items-center">
-        <Button
-          class="back-btn text-color -ml-4"
-          icon="pi pi-chevron-left"
-          rounded
-          text
-          severity="secondary"
-          aria-label="back to previous page"
-          @click="navigateTo('/home')"
-          label="Back"
-        />
-      </div> -->
       <h1>Ask the Mayor</h1>
+      <div v-if="isLoading">
+        <WnycLoader class="mt-8 w-8rem mx-auto" />
+      </div>
 
       <!-- <Button label="step 1" @click="activeStep = 1" />
       <Button label="step 2" @click="activeStep = 2" />
@@ -155,10 +173,14 @@ watch(
         v-if="questionLimitReached"
         class="mt-4 text-center max-w-22rem mx-auto"
       >
-        <p>You are limited to 1 submission per day.</p>
         <p>
-          Your video will be reviewed and you will be contacted if your question
-          is selected for the mayor's response.
+          You are limited to a submission every {{ questionLimitDays }} days.
+          You will be able to submit another question after
+          {{ getNextSubmissionDate }}.
+        </p>
+        <p>
+          Your video(s) will be reviewed and you will be contacted if your
+          question is selected for the mayor's response.
         </p>
         <Button
           class="mt-4 w-16rem mx-auto block"
