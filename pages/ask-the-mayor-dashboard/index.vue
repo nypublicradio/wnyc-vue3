@@ -11,12 +11,14 @@ const supabase = useSupabaseClient()
 const isAdmin = ref(false)
 const isLoading = ref(true)
 
+const config = useRuntimeConfig()
 const {
   data: submissions,
   status,
   error,
   execute: executeFetchSubmissions,
 } = await useFetch("/api/atm/submissions", {
+  baseURL: config.public.BFF_URL,
   immediate: false,
   headers: computed(() => {
     return {

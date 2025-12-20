@@ -13,11 +13,13 @@ const submission = ref(null)
 const videoUrl = ref(null)
 const isLoading = ref(true)
 
+const config = useRuntimeConfig()
 const {
   data: fetchedSubmission,
   error,
   execute: executeFetchSubmission,
 } = await useFetch(`/api/atm/submission/${slug}`, {
+  baseURL: config.public.BFF_URL,
   immediate: false,
   headers: computed(() => {
     return {
