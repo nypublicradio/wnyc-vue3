@@ -706,7 +706,16 @@ const handleFilesReady = async () => {
         // Retrieve raw ArrayBuffer using FilePond ID if available
         const rawBuffer = arrayBufferMap.value.get(fileItem.id)
 
-        await uploadEditedFile(fileToUpload, fileMetadata.value, rawBuffer)
+        const result = await uploadEditedFile(
+          fileToUpload,
+          fileMetadata.value,
+          rawBuffer
+        )
+
+        // Throw error if upload failed
+        if (!result) {
+          throw new Error("Upload failed")
+        }
       }
 
       // Clear all files from FilePond and reset the component
@@ -726,6 +735,7 @@ const handleFilesReady = async () => {
     isProcessing.value = false
     console.error("Upload error:", error)
     console.error("Upload error json:", JSON.stringify(error))
+    throw error // Re-throw error so parent can catch it
   } finally {
     isProcessing.value = false
   }

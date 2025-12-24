@@ -1,8 +1,9 @@
 
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { useIsActive } from "~/composables/states"
-
+import { useIsActive, useIsApp } from "~/composables/states"
+import OneSignal from "onesignal-cordova-plugin"
+import { formatDate } from "~/utilities/helpers"
 const toast = useToast()
 
 const user = useCurrentUser()
@@ -19,6 +20,7 @@ const activeStep = ref(1)
 const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
 const isActiveGlobal = useIsActive()
+const isApp = useIsApp()
 const miscData = ref({
   instagramHandle: "",
 })
@@ -33,6 +35,14 @@ const onFormSubmit = async (e) => {
     }, 250)
 
     await UploadMediaREF.value?.uploadFiles()
+
+    // update OneSignal tags for App env only
+    if (isApp.value) {
+      await OneSignal.User.addTags({
+        "ask-the-mayor": "true",
+        "ask-the-mayor-date": formatDate(null, "MM/dd/yyyy h:mm a"),
+      })
+    }
 
     toast.add({
       severity: "success",
