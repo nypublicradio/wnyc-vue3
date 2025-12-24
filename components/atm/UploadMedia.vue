@@ -706,20 +706,13 @@ const handleFilesReady = async () => {
         // Retrieve raw ArrayBuffer using FilePond ID if available
         const rawBuffer = arrayBufferMap.value.get(fileItem.id)
 
-        const result = await uploadEditedFile(
-          fileToUpload,
-          fileMetadata.value,
-          rawBuffer
-        )
-
-        // Throw error if upload failed
-        if (!result) {
-          throw new Error("Upload failed")
-        }
+        await uploadEditedFile(fileToUpload, fileMetadata.value, rawBuffer)
       }
 
       // Clear all files from FilePond and reset the component
-      pond.value.removeFiles()
+      if (pond.value) {
+        pond.value.removeFiles()
+      }
 
       // Clear the edited files map
       editedFiles.value.clear()
