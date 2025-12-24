@@ -38,10 +38,14 @@ const onFormSubmit = async (e) => {
 
     // update OneSignal tags for App env only
     if (isApp.value) {
-      await OneSignal.User.addTags({
-        "ask-the-mayor": "true",
-        "ask-the-mayor-date": formatDate(null, "MM/dd/yyyy h:mm a"),
-      })
+      try {
+        await OneSignal.User.addTags({
+          "ask-the-mayor": "true",
+          "ask-the-mayor-date": formatDate(null, "MM/dd/yyyy h:mm a"),
+        })
+      } catch (osError) {
+        console.error("OneSignal Tag Error:", osError)
+      }
     }
 
     toast.add({
