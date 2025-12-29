@@ -74,7 +74,7 @@ const closeAll = () => {
 
 <template>
   <div class="signup">
-    <section v-if="props.showHeader">
+    <div v-if="props.showHeader">
       <slot name="header">
         <SHeader
           class="pb-4"
@@ -93,8 +93,8 @@ const closeAll = () => {
           </VFlexibleLink>
         </p>
       </slot>
-    </section>
-    <section class="pt-0">
+    </div>
+    <div class="pt-0">
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -147,7 +147,7 @@ const closeAll = () => {
           />
         </template> -->
       </VSignupWithEmail>
-    </section>
+    </div>
   </div>
 </template>
 

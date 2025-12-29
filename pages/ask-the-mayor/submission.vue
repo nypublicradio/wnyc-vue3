@@ -4,6 +4,11 @@ import { useToast } from "primevue/usetoast"
 import { useIsActive, useIsApp } from "~/composables/states"
 import OneSignal from "onesignal-cordova-plugin"
 import { formatDate } from "~/utilities/helpers"
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding hide-bottom-menu",
+  },
+})
 const toast = useToast()
 
 const user = useCurrentUser()
@@ -19,6 +24,7 @@ const recordTimeLimit = 30
 const activeStep = ref(1)
 const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
+const isSignupForm = ref(true)
 const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
 const miscData = ref({
@@ -71,7 +77,6 @@ const onUploadComplete = (event) => {
 }
 
 const onFilesUpdated = (files) => {}
-const isSignupForm = ref(true)
 
 const loginOrSignupStepLabel = computed(() => {
   return isSignupForm.value ? "Sign Up" : "Login"
@@ -169,7 +174,11 @@ watch(
     </Html>
 
     <section>
-      <h1>Ask the Mayor</h1>
+      <SHeader
+        class="pb-4"
+        label="Ask the Mayor"
+        @close-sidebar="() => navigateTo('/home')"
+      />
       <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink>
       <div v-if="isLoading">
         <WnycLoader class="mt-8 w-8rem mx-auto" />
@@ -227,7 +236,10 @@ watch(
                 <div class="flex flex-col">
                   <div class="step-content">
                     <div class="flex flex-column gap-1">
-                      <h2>Sign up for a WNYC account</h2>
+                      <h2>
+                        {{ isSignupForm ? "Sign up" : "Log in" }} for a WNYC
+                        account
+                      </h2>
                       <p>Submit your question in the 3 easy steps</p>
                     </div>
                   </div>
@@ -330,15 +342,28 @@ watch(
                       v-if="hasFiles && !submitProgress"
                       class="flex flex-column gap-2 mt-4"
                     >
-                      <InputText
+                      <!-- <InputText
                         class="w-16rem m-auto"
                         type="text"
                         v-model="miscData.instagramHandle"
-                        placeholder="Instagram Handle (optional)"
-                      />
+                        placeholder="@username"
+                      /> -->
+
+                      <div class="flex flex-column gap-2">
+                        <label for="insta-username" class="text-xs font-bold"
+                          >Instagram handle (optional)</label
+                        >
+                        <InputText
+                          id="insta-username"
+                          type="text"
+                          v-model="miscData.instagramHandle"
+                          placeholder="@username"
+                        />
+                      </div>
+
                       <Button
                         label="Submit"
-                        class="w-16rem m-auto"
+                        class="w-16rem m-auto my-3"
                         @click="onFormSubmit"
                       />
                     </div>
@@ -414,87 +439,13 @@ watch(
     }
   }
 
-  .p-stepper {
-    .p-steppanels {
-      .p-steppanel {
-        border-radius: 8px;
-        padding: 1rem;
-        &.step-1 {
-          padding: 0;
-          background-color: transparent;
-          section {
-            padding-left: 0;
-            padding-right: 0;
-          }
-        }
-      }
-    }
-    .p-steplist {
-      overflow: visible;
-      height: 90px;
-      align-items: flex-start;
-      .p-step {
-        .p-step-header {
-          flex-direction: column;
-          pointer-events: none;
-          .p-step-number {
-            border-width: 2px;
-            min-width: 1.5rem;
-            height: 1.5rem;
-            font-size: 0;
-            &:after {
-              content: "";
-              width: 0.85rem;
-              height: 0.85rem;
-              background-color: var(--p-stepper-step-number-active-background);
-              box-shadow: none;
-            }
-          }
-          .p-step-title {
-            position: absolute;
-            display: inline-table;
-            top: 38px;
-            z-index: 1;
-            overflow: visible;
-          }
-        }
-        //ACTIVE
-        &.p-step-active {
-          .p-step-title {
-            font-weight: 700;
-          }
-          .p-step-number {
-            &:after {
-              background-color: var(--p-sky-500);
-            }
-          }
-        }
-        &.completed {
-          .p-step-number {
-            background-color: var(--p-sky-500);
-            &:before {
-              content: "\e909";
-              color: var(--p-surface-0);
-              font-family: "primeicons";
-              font-size: 0.8rem;
-              font-weight: 900;
-              z-index: 1;
-            }
-            &:after {
-              background-color: var(--p-sky-500);
-            }
-          }
-        }
-      }
-    }
-  }
   .stepper {
     .step-2,
     .step-3 {
       background-color: transparent;
       padding: 0;
       .p-panel {
-        background: var(--p-sky-100);
+        background: var(--p-sky-50);
         border: 2px dotted var(--p-sky-500);
         .p-panel-header {
           display: none;

@@ -4,7 +4,11 @@ import { useToast } from "primevue/usetoast"
 import { FilterMatchMode } from "@primevue/core/api"
 import { useCurrentUser } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
-
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding hide-bottom-menu",
+  },
+})
 const toast = useToast()
 const user = useCurrentUser()
 const supabase = useSupabaseClient()
@@ -164,7 +168,11 @@ watch(
     </Html>
 
     <section class="full-width">
-      <h1 class="mb-4">Ask the Mayor Dashboard</h1>
+      <SHeader
+        class="pb-4"
+        label="Ask the Mayor Dashboard"
+        @close-sidebar="() => navigateTo('/home')"
+      />
 
       <!-- 1. Always show loader initially or when loading -->
       <div v-if="isLoading">

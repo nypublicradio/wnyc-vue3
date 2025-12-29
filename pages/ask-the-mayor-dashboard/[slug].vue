@@ -2,6 +2,11 @@
 import { useToast } from "primevue/usetoast"
 import { useCurrentUser } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding hide-bottom-menu",
+  },
+})
 const route = useRoute()
 const slug = route.params.slug
 const supabase = useSupabaseClient()

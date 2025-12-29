@@ -85,7 +85,7 @@ const closeLogin = () => {
 
 <template>
   <div class="login">
-    <section v-if="props.showHeader">
+    <div v-if="props.showHeader">
       <slot name="header">
         <SHeader class="pb-4" label="Log in" @close-sidebar="closeLogin" />
         <p>
@@ -98,8 +98,8 @@ const closeLogin = () => {
           </VFlexibleLink>
         </p>
       </slot>
-    </section>
-    <section class="pt-0">
+    </div>
+    <div class="pt-0">
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -151,6 +151,6 @@ const closeLogin = () => {
           </div>
         </template>
       </VLoginWithEmail>
-    </section>
+    </div>
   </div>
 </template>

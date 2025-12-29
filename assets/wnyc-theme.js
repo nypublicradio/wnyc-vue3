@@ -132,7 +132,7 @@ const MyPreset = definePreset(Aura, {
       950: "#083344",
     },
     sky: {
-      50: "#f6f7fc",
+      50: "#ECEFF9",
       100: "#d2d9f1",
       200: "#afbbe6",
       300: "#8c9ddb",
@@ -1202,7 +1202,7 @@ const MyPreset = definePreset(Aura, {
         padding: '0'
       },
       steppanel: {
-        background: '{sky.100}',
+        background: '{sky.50}',
       },
       colorScheme: {
         light: {

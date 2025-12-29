@@ -2,6 +2,12 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding hide-bottom-menu",
+  },
+})
+
 const toast = useToast()
 
 const user = useCurrentUser()
@@ -41,19 +47,52 @@ const startRecording = () => {
     </Html>
 
     <section>
-      <h1>Ask the Mayor</h1>
-      <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink>
+      <SHeader
+        class="pb-4"
+        label="Ask the Mayor"
+        @close-sidebar="() => navigateTo('/home')"
+      />
+      <!-- <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink> -->
 
-      <p class="my-6">
-        Mayor Zohran Mamdani will be joining The Brian Lehrer Show every week
-        for Ask the Mayor. Do you have a question for the mayor? Upload a video
-        of yourself asking it. We’ll review all the submissions and may use some
-        on the air. We’ll also take questions live by phone or text. Be sure to
-        start your video by saying your first name and where you live. Keep your
-        question brief — no more than 30 seconds.
+      <Stepper>
+        <StepPanels>
+          <StepPanel>
+            <div class="flex flex-col">
+              <div class="step-content">
+                <div class="flex flex-column gap-1">
+                  <h2>Have a question for the Mayor?</h2>
+                  <p>
+                    Mayor Mamdani will be joining The Brian Lehrer Show every
+                    week to answer your questions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </StepPanel>
+        </StepPanels>
+      </Stepper>
+
+      <img
+        src="/atm/banner.png"
+        loading="eager"
+        width="100%"
+        height="auto"
+        class="my-3"
+      />
+
+      <h2>How it works</h2>
+      <p class="my-3 line-height-3">
+        Create a WNYC account to upload a video of yourself asking a question.
+        Be sure to start your video by saying your first name and where you
+        live. Keep your question brief — no more than 30 seconds. We’ll review
+        all the submissions and may use some on the air during the show!
       </p>
 
-      <Button label="Start recording" @click="startRecording" />
+      <v-flexible-link to="/ask-the-mayor/guidelines" class="text-sm"
+        >Read full submission guidelines</v-flexible-link
+      >
+
+      <Button label="Get Started" @click="startRecording" class="w-full mt-4" />
     </section>
   </div>
 </template>
