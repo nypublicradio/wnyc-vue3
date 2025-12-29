@@ -118,7 +118,10 @@ const {
   refresh: refreshLimitData,
   status,
 } = await useFetch("/api/atm/check-limit", {
-  watch: [user, authToken],
+  params: {
+    days: questionLimitDays,
+  },
+  watch: [user, authToken, questionLimitDays],
   headers: computed(() => {
     return {
       Authorization: authToken.value ? `Bearer ${authToken.value}` : "",

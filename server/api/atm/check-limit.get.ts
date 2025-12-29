@@ -67,14 +67,17 @@ export default defineEventHandler(async (event) => {
     let questionLimitReached = false
     let lastSubmissionDate = null
 
+    const query = getQuery(event)
+    const limitDays = parseInt(query.days as string) || 1
+
     if (latestSubmission) {
         lastSubmissionDate = latestSubmission.created_at
         const lastDate = new Date(lastSubmissionDate)
         const now = new Date()
-        const oneDayInMs = 24 * 60 * 60 * 1000
+        const limitInMs = limitDays * 24 * 60 * 60 * 1000
 
-        // Check if less than 24 hours have passed
-        if (now.getTime() - lastDate.getTime() < oneDayInMs) {
+        // Check if less than the limit duration has passed
+        if (now.getTime() - lastDate.getTime() < limitInMs) {
             questionLimitReached = true
         }
     }
