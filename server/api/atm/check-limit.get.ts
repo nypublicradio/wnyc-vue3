@@ -47,21 +47,22 @@ export default defineEventHandler(async (event) => {
     })
 
     // Query for the specific user's latest submission
-    const { data: latestSubmission, error } = await serviceRole
+    const { data: submissions, error } = await serviceRole
         .from('atm_submissions')
         .select('created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 is "The result contains 0 rows"
+    if (error) {
         console.error('[ATM Check Limit] Error querying submissions:', error)
         throw createError({
             statusCode: 500,
             statusMessage: 'Database Error',
         })
     }
+
+    const latestSubmission = submissions?.[0]
 
     let questionLimitReached = false
     let lastSubmissionDate = null

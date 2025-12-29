@@ -30,6 +30,8 @@ const isApp = useIsApp()
 const miscData = ref({
   instagramHandle: "",
 })
+const supabase = useSupabaseClient()
+const authToken = ref("")
 
 // Submit Handler
 const onFormSubmit = async (e) => {
@@ -71,7 +73,8 @@ const onFormSubmit = async (e) => {
 }
 
 const onUploadError = (event) => {}
-const onUploadComplete = (event) => {
+const onUploadComplete = async (event) => {
+  await refreshLimitData()
   questionLimitReached.value = true
   uploadCompleted.value = true
 }
@@ -103,20 +106,39 @@ onMounted(() => {
   //questionLimitReached
 })
 
-const { data: limitData } = await useFetch("/api/atm/check-limit", {
-  watch: [user],
+onMounted(async () => {
+  const { data } = await supabase.auth.getSession()
+  if (data.session) {
+    authToken.value = data.session.access_token
+  }
+})
+
+const {
+  data: limitData,
+  refresh: refreshLimitData,
+  status,
+} = await useFetch("/api/atm/check-limit", {
+  watch: [user, authToken],
+  headers: computed(() => {
+    return {
+      Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
+    }
+  }),
 }) // user is watched, so it will re-fetch on change
 
-const getNextSubmissionDate = computed(() => {
-  if (!limitData.value) return null
-  const lastSubmissionDate = limitData.value.lastSubmissionDate
-  if (!lastSubmissionDate) return null
-  const lastDate = new Date(lastSubmissionDate)
-  const nextDate = new Date(
-    lastDate.getTime() + questionLimitDays.value * 24 * 60 * 60 * 1000
-  )
-  return nextDate.toLocaleString()
-})
+// const getNextSubmissionDate = computed(() => {
+//   if (!limitData.value?.lastSubmissionDate) return null
+//   const lastSubmissionDate = limitData.value.lastSubmissionDate
+//   const lastDate = new Date(lastSubmissionDate)
+
+//   // Use the date object directly for math
+//   const nextDate = new Date(
+//     lastDate.getTime() + questionLimitDays.value * 24 * 60 * 60 * 1000
+//   )
+
+//   // format the date for display
+//   return formatDate(nextDate, "MM/dd/yyyy h:mm a")
+// })
 
 watch(
   limitData,
@@ -180,192 +202,199 @@ watch(
         @close-sidebar="() => navigateTo('/home')"
       />
       <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink>
-      <div v-if="isLoading">
+      <div v-if="isLoading || status !== 'success'">
         <WnycLoader class="mt-8 w-8rem mx-auto" />
       </div>
-
-      <!-- <Button label="step 1" @click="activeStep = 1" />
+      <div v-else>
+        <!-- <Button label="step 1" @click="activeStep = 1" />
       <Button label="step 2" @click="activeStep = 2" />
       <Button label="step 3" @click="activeStep = 3" /> -->
-      <div v-if="uploadCompleted" class="mt-4 text-center">
-        <i
-          class="pi pi-check-circle mr-2 text-4xl"
-          style="color: var(--p-sky-500)"
-        ></i>
-        <h2>Thank you for your submission</h2>
-      </div>
-      <div
-        v-if="questionLimitReached"
-        class="mt-4 text-center max-w-22rem mx-auto"
-      >
-        <p>
+        <div v-if="uploadCompleted" class="my-2 text-center">
+          <i
+            class="pi pi-check-circle text-5xl my-4"
+            style="color: var(--p-sky-500)"
+          ></i>
+          <h2>Thank you!</h2>
+        </div>
+        <div
+          v-if="questionLimitReached"
+          class="mt-4 max-w-22rem mx-auto flex flex-column gap-3"
+        >
+          <p class="line-height-3">
+            We have received your video. You are limited to one submission per
+            day. You will be able to submit another question soon.
+          </p>
+          <!-- <p class="line-height-3">
           You are limited to a submission every {{ questionLimitDays }} days.
           You will be able to submit another question after
           {{ getNextSubmissionDate }}.
-        </p>
-        <p>
-          Your video(s) will be reviewed and you will be contacted if your
-          question is selected for the mayor's response.
-        </p>
-        <Button
-          class="mt-4 w-16rem mx-auto block"
-          label="Back to home"
-          @click="navigateTo('/home')"
-        />
-      </div>
-      <div v-else>
-        <div class="card flex justify-center w-full mt-4">
-          <Stepper
-            v-if="submitProgress === null"
-            v-model:value="activeStep"
-            class="w-full flex flex-column-reverse gap-4"
-          >
-            <StepList class="px-5">
-              <Step :value="1" :class="{ completed: activeStep > 1 }">
-                {{ loginOrSignupStepLabel }}
-              </Step>
-              <Step :value="2" :class="{ completed: activeStep > 2 }"
-                >Create Video</Step
-              >
-              <Step :value="3" :class="{ completed: activeStep > 3 }"
-                >Review</Step
-              >
-            </StepList>
-            <StepPanels>
-              <StepPanel :value="1">
-                <div class="flex flex-col">
-                  <div class="step-content">
-                    <div class="flex flex-column gap-1">
-                      <h2>
-                        {{ isSignupForm ? "Sign up" : "Log in" }} for a WNYC
-                        account
-                      </h2>
-                      <p>Submit your question in the 3 easy steps</p>
-                    </div>
-                  </div>
-                </div>
-              </StepPanel>
-              <StepPanel :value="2">
-                <div class="flex flex-col h-48">
-                  <div class="step-content">
-                    <div class="flex flex-column gap-1">
-                      <h2>Create Video</h2>
-                      <p>Record yourself asking the mayor a question.</p>
-                    </div>
-                  </div>
-                </div>
-              </StepPanel>
-              <StepPanel :value="3">
-                <div class="flex flex-col">
-                  <div class="step-content">
-                    <div class="flex flex-column gap-1">
-                      <h2>Review & Submit</h2>
-                      <p>Tab submit when you're ready to send it.</p>
-                    </div>
-                  </div>
-                </div>
-              </StepPanel>
-            </StepPanels>
-          </Stepper>
+        </p> -->
+          <p class="line-height-3">
+            In the meantime, your video will be reviewed and you will be
+            contacted if your question is selected for the mayor's response.
+          </p>
+          <Button
+            class="mt-4 w-16rem mx-auto block"
+            label="Back to home"
+            @click="navigateTo('/home')"
+          />
         </div>
-        <div class="stepper flex justify-center w-full">
-          <div v-if="activeStep === 1" class="step-1 w-full">
-            <div class="">
-              <div class="step-content">
-                <div class="w-full">
-                  <Signup
-                    v-if="isSignupForm"
-                    :returnRoute="'/ask-the-mayor/submission'"
-                  >
-                    <template #header>
-                      <p>
-                        Already have an account?
-                        <VFlexibleLink
-                          aria-label="log in"
-                          @flexible-link-click="onLoginClick"
-                        >
-                          Log in
-                        </VFlexibleLink>
-                      </p>
-                    </template>
-                  </Signup>
-                  <Login v-else :returnRoute="'/ask-the-mayor/submission'">
-                    <template #header>
-                      <p>
-                        Don't have an account yet?
-                        <VFlexibleLink
-                          aria-label="sign up"
-                          @flexible-link-click="onSignupClick"
-                        >
-                          Sign up
-                        </VFlexibleLink>
-                      </p>
-                    </template>
-                  </Login>
+        <div v-else>
+          <div class="card flex justify-center w-full mt-4">
+            <Stepper
+              v-if="submitProgress === null"
+              v-model:value="activeStep"
+              class="w-full flex flex-column-reverse gap-4"
+            >
+              <StepList class="px-5">
+                <Step :value="1" :class="{ completed: activeStep > 1 }">
+                  {{ loginOrSignupStepLabel }}
+                </Step>
+                <Step :value="2" :class="{ completed: activeStep > 2 }"
+                  >Create Video</Step
+                >
+                <Step :value="3" :class="{ completed: activeStep > 3 }"
+                  >Review</Step
+                >
+              </StepList>
+              <StepPanels>
+                <StepPanel :value="1">
+                  <div class="flex flex-col">
+                    <div class="step-content">
+                      <div class="flex flex-column gap-1">
+                        <h2>
+                          {{ isSignupForm ? "Sign up" : "Log in" }} for a WNYC
+                          account
+                        </h2>
+                        <p>Submit your question in the 3 easy steps</p>
+                      </div>
+                    </div>
+                  </div>
+                </StepPanel>
+                <StepPanel :value="2">
+                  <div class="flex flex-col h-48">
+                    <div class="step-content">
+                      <div class="flex flex-column gap-1">
+                        <h2>Create Video</h2>
+                        <p>Record yourself asking the mayor a question.</p>
+                      </div>
+                    </div>
+                  </div>
+                </StepPanel>
+                <StepPanel :value="3">
+                  <div class="flex flex-col">
+                    <div class="step-content">
+                      <div class="flex flex-column gap-1">
+                        <h2>Review & Submit</h2>
+                        <p>Tab submit when you're ready to send it.</p>
+                      </div>
+                    </div>
+                  </div>
+                </StepPanel>
+              </StepPanels>
+            </Stepper>
+          </div>
+          <div class="stepper flex justify-center w-full">
+            <div v-if="activeStep === 1" class="step-1 w-full">
+              <div class="">
+                <div class="step-content">
+                  <div class="w-full">
+                    <Signup
+                      v-if="isSignupForm"
+                      :returnRoute="'/ask-the-mayor/submission'"
+                    >
+                      <template #header>
+                        <p>
+                          Already have an account?
+                          <VFlexibleLink
+                            aria-label="log in"
+                            @flexible-link-click="onLoginClick"
+                          >
+                            Log in
+                          </VFlexibleLink>
+                        </p>
+                      </template>
+                    </Signup>
+                    <Login v-else :returnRoute="'/ask-the-mayor/submission'">
+                      <template #header>
+                        <p>
+                          Don't have an account yet?
+                          <VFlexibleLink
+                            aria-label="sign up"
+                            @flexible-link-click="onSignupClick"
+                          >
+                            Sign up
+                          </VFlexibleLink>
+                        </p>
+                      </template>
+                    </Login>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-else class="step-2 step-3 w-full">
-            <div class="flex w-full">
-              <div class="step-content w-full">
-                <div class="flex flex-column gap-1">
-                  <div v-if="isActiveGlobal" class="flex flex-column gap-2">
-                    <atm-upload-media
-                      ref="UploadMediaREF"
-                      :invalid="false"
-                      :bucket="bucketName"
-                      :subfolder="subfolder"
-                      :submissionTable="submissionTable"
-                      :header="null"
-                      :uploadButton="false"
-                      :videoButton="true"
-                      :cameraButton="false"
-                      :fileButton="false"
-                      :audioButton="false"
-                      :browseButton="false"
-                      :maxFiles="1"
-                      autoSelect="video"
-                      @upload-complete="onUploadComplete"
-                      @upload-error="onUploadError"
-                      @files-updated="onFilesUpdated"
-                      @has-files="hasFiles = $event"
-                      @upload-progress="submitProgress = $event"
-                      :user="user"
-                      :recordTimeLimit="recordTimeLimit"
-                      :miscData="miscData"
-                    />
-                    <p v-if="submitProgress" class="text-center w-full">
-                      {{ submitProgress }}
-                    </p>
-                    <div
-                      v-if="hasFiles && !submitProgress"
-                      class="flex flex-column gap-2 mt-4"
-                    >
-                      <!-- <InputText
+            <div v-else class="step-2 step-3 w-full">
+              <div class="flex w-full">
+                <div class="step-content w-full">
+                  <div class="flex flex-column gap-1">
+                    <div v-if="isActiveGlobal" class="flex flex-column gap-2">
+                      <atm-upload-media
+                        ref="UploadMediaREF"
+                        :invalid="false"
+                        :bucket="bucketName"
+                        :subfolder="subfolder"
+                        :submissionTable="submissionTable"
+                        :header="null"
+                        :uploadButton="false"
+                        :videoButton="true"
+                        :cameraButton="false"
+                        :fileButton="false"
+                        :audioButton="false"
+                        :browseButton="false"
+                        :maxFiles="1"
+                        autoSelect="video"
+                        @upload-complete="onUploadComplete"
+                        @upload-error="onUploadError"
+                        @files-updated="onFilesUpdated"
+                        @has-files="hasFiles = $event"
+                        @upload-progress="submitProgress = $event"
+                        :user="user"
+                        :recordTimeLimit="recordTimeLimit"
+                        :miscData="miscData"
+                      />
+                      <p v-if="submitProgress" class="text-center w-full">
+                        {{ submitProgress }}
+                      </p>
+                      <div
+                        v-if="hasFiles && !submitProgress"
+                        class="flex flex-column gap-2 mt-4"
+                      >
+                        <!-- <InputText
                         class="w-16rem m-auto"
                         type="text"
                         v-model="miscData.instagramHandle"
                         placeholder="@username"
                       /> -->
 
-                      <div class="flex flex-column gap-2">
-                        <label for="insta-username" class="text-xs font-bold"
-                          >Instagram handle (optional)</label
+                        <div
+                          class="flex flex-column gap-2 max-w-21rem w-full m-auto"
                         >
-                        <InputText
-                          id="insta-username"
-                          type="text"
-                          v-model="miscData.instagramHandle"
-                          placeholder="@username"
+                          <label for="insta-username" class="text-xs font-bold"
+                            >Instagram handle (optional)</label
+                          >
+                          <InputText
+                            id="insta-username"
+                            type="text"
+                            v-model="miscData.instagramHandle"
+                            placeholder="username"
+                          />
+                        </div>
+
+                        <Button
+                          label="Submit"
+                          class="w-16rem m-auto my-3"
+                          @click="onFormSubmit"
                         />
                       </div>
-
-                      <Button
-                        label="Submit"
-                        class="w-16rem m-auto my-3"
-                        @click="onFormSubmit"
-                      />
                     </div>
                   </div>
                 </div>
