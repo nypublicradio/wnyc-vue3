@@ -1,5 +1,6 @@
 
 <script setup>
+import { trackClickEvent } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 import { useIsActive, useIsApp } from "~/composables/states"
 import OneSignal from "onesignal-cordova-plugin"
@@ -61,6 +62,11 @@ const onFormSubmit = async (e) => {
       summary: "Video uploaded successfully",
       life: 3000,
     })
+    trackClickEvent(
+      "Click Tracking - Submit Success",
+      "Ask the Mayor",
+      "Submit"
+    )
   } catch (error) {
     console.error("Update error:", error)
     toast.add({
@@ -69,6 +75,7 @@ const onFormSubmit = async (e) => {
       detail: error.message,
       life: 3000,
     })
+    trackClickEvent("Click Tracking - Submit Error", "Ask the Mayor", "Submit")
   }
 }
 
@@ -97,8 +104,8 @@ onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
-    page_title: "Ask the Mayor",
-    page_type: "ask_the_mayor",
+    page_title: "Ask the Mayor Submission Page",
+    page_type: "ask_the_mayor_page",
     content_group: "ask_the_mayor",
   })
 
@@ -360,6 +367,7 @@ watch(
                         @files-updated="onFilesUpdated"
                         @has-files="hasFiles = $event"
                         @upload-progress="submitProgress = $event"
+                        @close-capture="navigateTo('/home')"
                         :user="user"
                         :recordTimeLimit="recordTimeLimit"
                         :miscData="miscData"

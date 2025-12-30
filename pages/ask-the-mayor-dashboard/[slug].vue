@@ -53,8 +53,8 @@ onMounted(async () => {
 
     const { $analytics } = useNuxtApp()
     $analytics.sendPageView({
-      page_title: "Ask the Mayor Submission",
-      page_type: "ask_the_mayor_submission",
+      page_title: "Ask the Mayor Submission Slug",
+      page_type: "ask_the_mayor_page",
       content_group: "ask_the_mayor",
     })
   } catch (e) {

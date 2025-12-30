@@ -1,5 +1,6 @@
 <script setup>
 import { ref, nextTick, computed, onMounted } from "vue"
+import { trackClickEvent } from "~/utilities/helpers"
 import { Capacitor } from "@capacitor/core"
 import useGallery from "~/composables/atm/useGallery"
 // Import FilePond and its plugins
@@ -139,6 +140,7 @@ const emit = defineEmits([
   "upload-progress",
   "files-updated",
   "has-files",
+  "close-capture",
 ])
 
 const { embedMetadataInImage } = useGallery()
@@ -1101,6 +1103,7 @@ watch(hasFiles, (newVal) => {
 const captureMetadataMap = ref(new Map())
 
 const tryAgain = () => {
+  trackClickEvent("Click Tracking - Try Again", "Video Capture", "Try Again")
   numOfRetakes.value++
   reset()
   openCaptureMode(mediaType.VIDEO)
@@ -1189,10 +1192,11 @@ onMounted(async () => {
           :record-time-limit="props.recordTimeLimit"
           @capture-complete="handleCaptureComplete"
           @capture-error="handleCaptureError"
+          @close-capture="emit('close-capture')"
         />
         <!-- <button @click="openCaptureMode(null)" class="close-capture-btn">
-        Close Capture
-      </button> -->
+          Close Capture
+        </button> -->
       </div>
 
       <div v-if="showAudioCapture" class="capture-component-container">

@@ -119,8 +119,8 @@ onMounted(async () => {
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Ask the Mayor Dashboard",
-    page_type: "ask_the_mayor_dashboard",
-    content_group: "ask_the_mayor_dashboard",
+    page_type: "ask_the_mayor_page",
+    content_group: "ask_the_mayor",
   })
 
   // Initial Check

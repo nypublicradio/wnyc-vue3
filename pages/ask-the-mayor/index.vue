@@ -1,5 +1,6 @@
 
 <script setup>
+import { trackClickEvent } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 
 useHead({
@@ -16,14 +17,28 @@ onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
-    page_title: "Ask the Mayor",
-    page_type: "ask_the_mayor",
+    page_title: "Ask the Mayor Landing Page",
+    page_type: "ask_the_mayor_page",
     content_group: "ask_the_mayor",
   })
 })
 
-const startRecording = () => {
+const getStarted = () => {
+  trackClickEvent(
+    "Click Tracking - Get Started",
+    "CTA on the Home Landing Page",
+    "Ask The Mayor Get Started"
+  )
   navigateTo("/ask-the-mayor/submission")
+}
+
+const readGuidelines = () => {
+  trackClickEvent(
+    "Click Tracking - Read Guidelines",
+    "CTA on the Home Landing Page",
+    "Ask The Mayor Guidelines"
+  )
+  //navigateTo("/ask-the-mayor/guidelines")
 }
 </script>
 
@@ -88,11 +103,14 @@ const startRecording = () => {
         all the submissions and may use some on the air during the show!
       </p>
 
-      <v-flexible-link to="/ask-the-mayor/guidelines" class="text-sm"
+      <v-flexible-link
+        @click="readGuidelines"
+        to="/ask-the-mayor/guidelines"
+        class="text-sm"
         >Read full submission guidelines</v-flexible-link
       >
 
-      <Button label="Get Started" @click="startRecording" class="w-full mt-4" />
+      <Button label="Get Started" @click="getStarted" class="w-full mt-4" />
     </section>
   </div>
 </template>

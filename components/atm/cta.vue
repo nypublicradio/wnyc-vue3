@@ -1,5 +1,12 @@
 <script setup>
+import { trackClickEvent } from "~/utilities/helpers"
 const routeToPage = () => {
+  trackClickEvent(
+    "Click Tracking - Ask The Mayor CTA",
+    "CTA on the Home Page",
+    "Ask The Mayor CTA"
+  )
+
   navigateTo("/ask-the-mayor")
 }
 </script>

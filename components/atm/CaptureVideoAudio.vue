@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
 import { App } from "@capacitor/app"
 import useCaptureMedia from "~/composables/atm/useCaptureMedia"
-
+import { trackClickEvent } from "~/utilities/helpers"
 const props = defineProps({
   bucket: {
     type: String,
@@ -26,7 +26,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["capture-complete", "capture-error"])
+const emit = defineEmits(["capture-complete", "capture-error", "close-capture"])
 
 const {
   isNative,
@@ -308,8 +308,18 @@ onBeforeUnmount(() => {
 
 const toggleRecording = () => {
   if (isRecording.value) {
+    trackClickEvent(
+      "Click Tracking - Stop Recording",
+      "Video Capture",
+      "Stop Recording"
+    )
     stopRecording()
   } else {
+    trackClickEvent(
+      "Click Tracking - Start Recording",
+      "Video Capture",
+      "Start Recording"
+    )
     startRecording()
   }
 }
@@ -407,7 +417,7 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     </div>
 
     <!-- Unified Actions -->
-    <div class="actions">
+    <div class="actions flex flex-column gap-3 w-full align-items-center">
       <Button
         @click="toggleRecording"
         :disabled="isProcessing || error"
@@ -416,6 +426,12 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
         :label="
           isRecording ? `Stop Recording (${remainingTime}s)` : 'Start Recording'
         "
+      />
+      <Button
+        @click="emit('close-capture')"
+        class="record-btn close-btn"
+        label="Close Capture"
+        severity="secondary"
       />
     </div>
     <div v-if="isProcessing" class="loading-indicator">Processing...</div>
