@@ -1,10 +1,9 @@
 
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 import { useIsActive, useIsApp } from "~/composables/states"
 import OneSignal from "onesignal-cordova-plugin"
-import { formatDate } from "~/utilities/helpers"
+import { formatDate, trackClickEvent } from "~/utilities/helpers"
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu",

@@ -12,9 +12,16 @@ export default defineEventHandler(async (event) => {
             const token = authHeader.split(' ')[1]
             // We use the regular client to verify the token signature and get the user
             const { data: { user: authUser }, error } = await client.auth.getUser(token)
+            if (error) {
+                throw createError({
+                    statusCode: 401,
+                    statusMessage: error.message,
+                })
+            }
             if (authUser) {
                 user = authUser
             }
+
         }
     }
 

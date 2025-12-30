@@ -11,6 +11,12 @@ export default defineEventHandler(async (event) => {
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.split(' ')[1]
             const { data: { user: authUser }, error } = await client.auth.getUser(token)
+            if (error) {
+                throw createError({
+                    statusCode: 401,
+                    statusMessage: error.message,
+                })
+            }
             if (authUser) {
                 user = authUser
             }
