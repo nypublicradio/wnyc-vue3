@@ -40,6 +40,8 @@ const {
 // Refs
 const videoRef = ref(null) // Used for Web Video and Native Placeholder
 const videoContainerRef = ref(null)
+const initTimer = ref(null)
+const isCameraInitialized = ref(false)
 
 // Web API refs
 const videoDevices = ref([])
@@ -61,13 +63,6 @@ let resumeListener = null
 const videoInputOptions = computed(() =>
   videoDevices.value.map((d) => ({
     label: d.label || "Camera",
-    value: d.deviceId,
-  }))
-)
-
-const audioInputOptions = computed(() =>
-  audioDevices.value.map((d) => ({
-    label: d.label || "Microphone",
     value: d.deviceId,
   }))
 )
@@ -111,6 +106,7 @@ const initNativeCamera = async () => {
     document.body.style.overflow = "hidden"
 
     // Get position of the placeholder element
+    if (!videoRef.value) return
     const rect = videoRef.value.getBoundingClientRect()
     console.log("Initializing native camera at:", rect)
 
@@ -122,6 +118,7 @@ const initNativeCamera = async () => {
       height: rect.height,
       stackPosition: "front", // Overlay on top of the generic placeholder
     })
+    isCameraInitialized.value = true
   } catch (err) {
     console.error("Failed to init native camera:", err)
     error.value = nativeError.value || "Failed to initialize camera"
@@ -278,7 +275,7 @@ watch([selectedVideoDeviceId, selectedAudioDeviceId], () => {
 onMounted(async () => {
   if (isNative) {
     // Native Init
-    setTimeout(initNativeCamera, 500) // Small delay for layout to settle
+    initTimer.value = setTimeout(initNativeCamera, 500) // Small delay for layout to settle
 
     // Listen for app resume (e.g. returning from permission dialog)
     resumeListener = await App.addListener("resume", async () => {
@@ -296,7 +293,12 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   stopCountdown()
   if (isNative) {
-    destroyVideo()
+    if (initTimer.value) clearTimeout(initTimer.value)
+
+    // Only destroy if we actually initialized (prevents NPE crash in plugin)
+    if (isCameraInitialized.value) {
+      destroyVideo()
+    }
     document.body.style.overflow = "" // Restore scroll
     if (resumeListener) {
       resumeListener.remove()
