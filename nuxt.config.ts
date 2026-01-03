@@ -12,6 +12,10 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
   ],
 
+  vue: {
+    runtimeCompiler: true,
+  },
+
 
 
   primevue: {

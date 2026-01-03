@@ -1,6 +1,4 @@
 <script setup>
-const route = useRoute()
-
 definePageMeta({
   middleware: ["check-logged-in"],
   pageTransition: false, // Disable page transition

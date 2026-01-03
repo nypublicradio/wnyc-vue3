@@ -32,8 +32,6 @@ export default function useCaptureMedia () {
      */
     const uriToFile = async (fileUri: string, fileName?: string): Promise<File> => {
         try {
-            console.log('Converting URI to File:', fileUri)
-
             const { Capacitor } = await import('@capacitor/core')
 
             // Try fetch first (skip on iOS as it can be unreliable for local large video files)
@@ -83,11 +81,8 @@ export default function useCaptureMedia () {
                     path = `file://${path}`
                 }
             }
-
-            console.log('Reading file from path (Filesystem):', path)
-
             const fileData = await Filesystem.readFile({
-                path: path
+                path
             })
 
             // Detect mime type via signature (magic bytes) because the plugin often returns .mp4 extension for .mov files
@@ -106,12 +101,9 @@ export default function useCaptureMedia () {
             if (headerStr.includes('ftypqt')) {
                 mimeType = 'video/quicktime'
                 extension = 'mov'
-                console.log('Detected QuickTime signature (ftypqt), forcing video/quicktime')
             } else if (extension === 'mov') {
                 mimeType = 'video/quicktime'
             }
-
-            console.log('Decoding base64 to ArrayBuffer...')
             const arrayBuffer = decode(dataString)
 
             const date = new Date()
@@ -152,7 +144,6 @@ export default function useCaptureMedia () {
         error.value = null
         if (isNative) {
             try {
-                console.log('Initializing native video preview:', options)
                 await VideoRecorder.initialize({
                     camera: VideoRecorderCamera.FRONT,
                     previewFrames: [{
@@ -182,7 +173,6 @@ export default function useCaptureMedia () {
         error.value = null
         if (isNative) {
             try {
-                console.log('Starting native recording')
                 await VideoRecorder.startRecording()
             } catch (err) {
                 console.error('Error starting recording:', err)
@@ -199,11 +189,7 @@ export default function useCaptureMedia () {
         error.value = null
         if (isNative) {
             try {
-                console.log('Stopping native recording')
                 const result = await VideoRecorder.stopRecording()
-
-                console.log('Native recording stopped, result:', result)
-
                 if (result && result.videoUrl) {
                     return await uriToFile(result.videoUrl)
                 } else {
@@ -224,7 +210,6 @@ export default function useCaptureMedia () {
     const destroyVideo = async () => {
         if (isNative) {
             try {
-                console.log('Destroying native camera')
                 await VideoRecorder.destroy()
             } catch (err) {
                 console.error('Error destroying camera:', err)

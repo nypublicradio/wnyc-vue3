@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
 
     // Manual Join: Fetch profiles
     const userIds = [...new Set(submissions.map((s) => s.user_id).filter(Boolean))]
-    let profilesMap = {}
+    const profilesMap = {}
 
     if (userIds.length > 0) {
         const { data: profilesData, error: profilesError } = await serviceRole

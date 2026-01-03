@@ -24,7 +24,7 @@ const recordTimeLimit = 30
 const activeStep = ref(1)
 const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
-const isSignupForm = ref(true)
+const isSignupForm = ref(false)
 const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
 const miscData = ref({
@@ -33,8 +33,31 @@ const miscData = ref({
 const supabase = useSupabaseClient()
 const authToken = ref("")
 
+const {
+  data: limitData,
+  execute: executeLimitData,
+  refresh: refreshLimitData,
+} = await useFetch("/api/atm/check-limit", {
+  params: {
+    days: questionLimitDays,
+  },
+  watch: [user, authToken, questionLimitDays],
+  headers: computed(() => {
+    return {
+      Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
+    }
+  }),
+  immediate: false,
+}) // user is watched, so it will re-fetch on change
+
+const { data } = await supabase.auth.getSession()
+if (data.session) {
+  authToken.value = data.session.access_token
+}
+executeLimitData()
+
 // Submit Handler
-const onFormSubmit = async (e) => {
+const onFormSubmit = async () => {
   try {
     // scroll the user to the top
     setTimeout(() => {
@@ -78,14 +101,14 @@ const onFormSubmit = async (e) => {
   }
 }
 
-const onUploadError = (event) => {}
-const onUploadComplete = async (event) => {
+const onUploadError = (/* event*/) => {}
+const onUploadComplete = async (/*event*/) => {
   await refreshLimitData()
   questionLimitReached.value = true
   uploadCompleted.value = true
 }
 
-const onFilesUpdated = (files) => {}
+const onFilesUpdated = (/*files*/) => {}
 
 const loginOrSignupStepLabel = computed(() => {
   return isSignupForm.value ? "Sign Up" : "Login"
@@ -112,29 +135,6 @@ onMounted(() => {
   //questionLimitReached
 })
 
-onMounted(async () => {
-  const { data } = await supabase.auth.getSession()
-  if (data.session) {
-    authToken.value = data.session.access_token
-  }
-})
-
-const {
-  data: limitData,
-  refresh: refreshLimitData,
-  status,
-} = await useFetch("/api/atm/check-limit", {
-  params: {
-    days: questionLimitDays,
-  },
-  watch: [user, authToken, questionLimitDays],
-  headers: computed(() => {
-    return {
-      Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
-    }
-  }),
-}) // user is watched, so it will re-fetch on change
-
 // const getNextSubmissionDate = computed(() => {
 //   if (!limitData.value?.lastSubmissionDate) return null
 //   const lastSubmissionDate = limitData.value.lastSubmissionDate
@@ -149,16 +149,12 @@ const {
 //   return formatDate(nextDate, "MM/dd/yyyy h:mm a")
 // })
 
-watch(
-  limitData,
-  (val) => {
-    if (val) {
-      questionLimitReached.value = val.questionLimitReached
-      isLoading.value = false
-    }
-  },
-  { immediate: true }
-)
+watch(limitData, (val) => {
+  if (val) {
+    questionLimitReached.value = val.questionLimitReached
+    isLoading.value = false
+  }
+})
 
 watch(
   user,
@@ -211,13 +207,13 @@ watch(
         @close-sidebar="() => navigateTo('/home')"
       />
       <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink>
-      <div v-if="isLoading || status !== 'success'">
+      <div v-if="isLoading">
         <WnycLoader class="mt-8 w-8rem mx-auto" />
       </div>
       <div v-else>
         <!-- <Button label="step 1" @click="activeStep = 1" />
-      <Button label="step 2" @click="activeStep = 2" />
-      <Button label="step 3" @click="activeStep = 3" /> -->
+        <Button label="step 2" @click="activeStep = 2" />
+        <Button label="step 3" @click="activeStep = 3" /> -->
         <div v-if="uploadCompleted" class="my-2 text-center">
           <i
             class="pi pi-check-circle text-5xl my-4"
@@ -237,7 +233,7 @@ watch(
           You are limited to a submission every {{ questionLimitDays }} days.
           You will be able to submit another question after
           {{ getNextSubmissionDate }}.
-        </p> -->
+          </p> -->
           <p class="line-height-3">
             In the meantime, your video will be reviewed and you will be
             contacted if your question is selected for the mayor's response.

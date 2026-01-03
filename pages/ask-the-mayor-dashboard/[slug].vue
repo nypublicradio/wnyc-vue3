@@ -141,20 +141,22 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
           <div class="flex flex-wrap row-gap-2 column-gap-4">
             <p v-if="submission.profiles?.email">
               Email:
-              <a
-                :href="`mailto:${submission.profiles.email}`"
+              <VFlexibleLink
+                :to="`mailto:${submission.profiles.email}`"
                 target="_blank"
-                >{{ submission.profiles.email }}</a
               >
+                {{ submission.profiles.email }}
+              </VFlexibleLink>
             </p>
 
             <p v-if="submission.instagram_handle">
               Instagram:
-              <a
-                :href="`https://instagram.com/${submission.instagram_handle}`"
+              <VFlexibleLink
+                :to="`https://instagram.com/${submission.instagram_handle}`"
                 target="_blank"
-                >@{{ submission.instagram_handle }}</a
               >
+                @{{ submission.instagram_handle }}
+              </VFlexibleLink>
             </p>
           </div>
           <p class="text-sm text-500">

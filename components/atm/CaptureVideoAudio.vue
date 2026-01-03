@@ -67,6 +67,13 @@ const videoInputOptions = computed(() =>
   }))
 )
 
+const audioInputOptions = computed(() =>
+  audioDevices.value.map((d) => ({
+    label: d.label || "Microphone",
+    value: d.deviceId,
+  }))
+)
+
 // Helpers
 const getCaptureMetadata = (file, method) => ({
   originalFileName: file.name,
@@ -108,7 +115,6 @@ const initNativeCamera = async () => {
     // Get position of the placeholder element
     if (!videoRef.value) return
     const rect = videoRef.value.getBoundingClientRect()
-    console.log("Initializing native camera at:", rect)
 
     await initializeVideo({
       id: "native-video-preview",
@@ -122,60 +128,6 @@ const initNativeCamera = async () => {
   } catch (err) {
     console.error("Failed to init native camera:", err)
     error.value = nativeError.value || "Failed to initialize camera"
-  }
-}
-
-const startRecording = async () => {
-  if (isRecording.value) return
-  error.value = null
-
-  try {
-    if (isNative) {
-      await startVideoRecording()
-    } else {
-      startWebRecording()
-    }
-
-    // UI Updates
-    isRecording.value = true
-    startCountdown()
-  } catch (err) {
-    console.error("Start recording failed:", err)
-    error.value = err.message
-  }
-}
-
-const stopRecording = async () => {
-  if (!isRecording.value) return
-
-  stopCountdown()
-  isProcessing.value = true
-
-  try {
-    let videoFile
-    if (isNative) {
-      videoFile = await stopVideoRecording()
-    } else {
-      videoFile = await stopWebRecording()
-    }
-
-    if (videoFile) {
-      // Small delay to ensure native view is fully detached/stopped before we potentially unmount
-      if (isNative) await new Promise((resolve) => setTimeout(resolve, 100))
-
-      const metadata = getCaptureMetadata(
-        videoFile,
-        isNative ? "native_recorder" : "web_recorder"
-      )
-      emit("capture-complete", { file: videoFile, metadata })
-    }
-  } catch (err) {
-    console.error("Stop recording failed:", err)
-    error.value = err.message || "Failed to stop recording"
-    emit("capture-error", error.value)
-  } finally {
-    isRecording.value = false
-    isProcessing.value = false
   }
 }
 
@@ -195,21 +147,23 @@ const stopCountdown = () => {
   remainingTime.value = props.recordTimeLimit
 }
 
-// --- Web Specific Methods ---
+const startRecording = async () => {
+  if (isRecording.value) return
+  error.value = null
 
-const getWebDevices = async () => {
-  if (!navigator.mediaDevices?.enumerateDevices) return
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices()
-    videoDevices.value = devices.filter((d) => d.kind === "videoinput")
-    audioDevices.value = devices.filter((d) => d.kind === "audioinput")
+    if (isNative) {
+      await startVideoRecording()
+    } else {
+      startWebRecording()
+    }
 
-    if (videoDevices.value.length && !selectedVideoDeviceId.value)
-      selectedVideoDeviceId.value = videoDevices.value[0].deviceId
-    if (audioDevices.value.length && !selectedAudioDeviceId.value)
-      selectedAudioDeviceId.value = audioDevices.value[0].deviceId
+    // UI Updates
+    isRecording.value = true
+    startCountdown()
   } catch (err) {
-    console.warn("Device enumeration failed:", err)
+    console.error("Start recording failed:", err)
+    error.value = err.message
   }
 }
 
@@ -266,6 +220,57 @@ const stopWebRecording = () => {
   })
 }
 
+const stopRecording = async () => {
+  if (!isRecording.value) return
+
+  stopCountdown()
+  isProcessing.value = true
+  let videoFile
+  try {
+    if (isNative) {
+      videoFile = await stopVideoRecording()
+    } else {
+      videoFile = await stopWebRecording()
+    }
+
+    if (videoFile) {
+      // Small delay to ensure native view is fully detached/stopped before we potentially unmount
+      if (isNative) await new Promise((resolve) => setTimeout(resolve, 100))
+
+      const metadata = getCaptureMetadata(
+        videoFile,
+        isNative ? "native_recorder" : "web_recorder"
+      )
+      emit("capture-complete", { file: videoFile, metadata })
+    }
+  } catch (err) {
+    console.error("Stop recording failed:", err)
+    error.value = err.message || "Failed to stop recording"
+    emit("capture-error", error.value)
+  } finally {
+    isRecording.value = false
+    isProcessing.value = false
+  }
+}
+
+// --- Web Specific Methods ---
+
+const getWebDevices = async () => {
+  if (!navigator.mediaDevices?.enumerateDevices) return
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    videoDevices.value = devices.filter((d) => d.kind === "videoinput")
+    audioDevices.value = devices.filter((d) => d.kind === "audioinput")
+
+    if (videoDevices.value.length && !selectedVideoDeviceId.value)
+      selectedVideoDeviceId.value = videoDevices.value[0].deviceId
+    if (audioDevices.value.length && !selectedAudioDeviceId.value)
+      selectedAudioDeviceId.value = audioDevices.value[0].deviceId
+  } catch (err) {
+    console.warn("Device enumeration failed:", err)
+  }
+}
+
 // --- Watchers & Lifecycle ---
 
 watch([selectedVideoDeviceId, selectedAudioDeviceId], () => {
@@ -279,7 +284,6 @@ onMounted(async () => {
 
     // Listen for app resume (e.g. returning from permission dialog)
     resumeListener = await App.addListener("resume", async () => {
-      console.log("App resumed, re-initializing camera...")
       // Give the app a moment to settle
       setTimeout(initNativeCamera, 500)
     })
@@ -364,6 +368,7 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     <!-- Web Controls: Only show dropdowns if not native -->
     <div v-if="!isNative" class="controls flex flex-wrap grid-nogutter">
       <Select
+        v-if="videoInputOptions"
         v-model="selectedVideoDeviceId"
         :options="videoInputOptions"
         optionLabel="label"
@@ -381,7 +386,9 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
           </span>
         </template>
       </Select>
+
       <Select
+        v-if="audioInputOptions"
         v-model="selectedAudioDeviceId"
         :options="audioInputOptions"
         optionLabel="label"

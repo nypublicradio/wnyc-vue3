@@ -179,6 +179,9 @@ const isAutosaveMode = computed(() => !!props.autosaveComposable)
 // Track number of retakes
 const numOfRetakes = ref(0)
 
+// Map to store capture metadata for files
+const captureMetadataMap = ref(new Map())
+
 // Server configuration for FilePond (used for restoring autosaved files)
 const serverConfig = computed(() => {
   if (!isAutosaveMode.value) return null
@@ -207,8 +210,6 @@ const serverConfig = computed(() => {
           error("File not found")
           return
         }
-
-        console.log(`[UploadMedia] Restoring file with ID: ${uniqueFileId}`)
 
         // Use the API endpoint to restore the file with proper MIME type
         const response = await fetch("/api/autosave-restore", {
@@ -625,7 +626,7 @@ const uploadEditedFile = async (
     emit("upload-progress", "Data processing...")
 
     // Save everything to Supabase in the submission table
-    const { data: submissionData, error: submissionError } = await supabase
+    const { error: submissionError } = await supabase
       .from(props.submissionTable)
       .insert([
         {
@@ -758,14 +759,8 @@ const handleCaptureComplete = async (captureData) => {
       const fileItem = await pond.value.addFile(captureData.file)
 
       if (fileItem) {
-        console.log("File added to FilePond, ID:", fileItem.id)
-
         // Store ArrayBuffer if present (iOS fix) using the reliable FilePond ID
         if (captureData.file.arrayBufferData) {
-          console.log(
-            "Storing ArrayBuffer for upload bypass with ID:",
-            fileItem.id
-          )
           arrayBufferMap.value.set(
             fileItem.id,
             captureData.file.arrayBufferData
@@ -824,7 +819,7 @@ const reset = () => {
     if (isAutosaveMode.value && props.autosaveComposable) {
       // Note: We don't automatically clear autosaved files on reset
       // They should only be cleared on form submission or explicit user action
-      console.log("[UploadMedia] Reset in autosave mode - files preserved")
+      //console.log("[UploadMedia] Reset in autosave mode - files preserved")
     }
   }
 }
@@ -844,24 +839,17 @@ const restoreAutosavedFiles = async () => {
     !isAutosaveMode.value ||
     !props.autosaveComposable?.autosaveMediaFiles?.value?.length
   ) {
-    console.log(`[UploadMedia] No files to restore:`, {
-      autosaveMode: isAutosaveMode.value,
-      mediaFilesExists: !!props.autosaveComposable?.autosaveMediaFiles?.value,
-      fileCount:
-        props.autosaveComposable?.autosaveMediaFiles?.value?.length || 0,
-    })
+    // console.log(`[UploadMedia] No files to restore:`, {
+    //   autosaveMode: isAutosaveMode.value,
+    //   mediaFilesExists: !!props.autosaveComposable?.autosaveMediaFiles?.value,
+    //   fileCount:
+    //     props.autosaveComposable?.autosaveMediaFiles?.value?.length || 0,
+    // })
     return
   }
 
   // Wait for user to be loaded
   if (!props.autosaveComposable.user?.value?.id) {
-    console.log(`[UploadMedia] User not loaded yet, retrying in 500ms...`, {
-      userExists: !!props.autosaveComposable.user,
-      userValue: props.autosaveComposable.user?.value,
-      userId: props.autosaveComposable.user?.value?.id,
-      autosaveComposable: !!props.autosaveComposable,
-    })
-
     // Add a retry counter to prevent infinite loops
     const retryCount = (restoreAutosavedFiles._retryCount || 0) + 1
     if (retryCount > 10) {
@@ -890,8 +878,6 @@ const restoreAutosavedFiles = async () => {
         patientId: props.autosaveComposable.patient_id,
       }
 
-      console.log(`[UploadMedia] API parameters:`, apiParams)
-
       // Validate required parameters
       if (!apiParams.fileId || !apiParams.userId) {
         console.error(`[UploadMedia] Missing required parameters:`, {
@@ -913,12 +899,6 @@ const restoreAutosavedFiles = async () => {
         body: JSON.stringify(apiParams),
       })
 
-      console.log(
-        `[UploadMedia] API response status:`,
-        response.status,
-        response.statusText
-      )
-
       if (!response.ok) {
         const errorText = await response.text()
         console.error(
@@ -930,11 +910,6 @@ const restoreAutosavedFiles = async () => {
 
       // Get the blob from response
       const blob = await response.blob()
-      console.log(`[UploadMedia] Received blob:`, {
-        size: blob.size,
-        type: blob.type,
-        expectedType: fileRef.file_type,
-      })
 
       // Create a File object with the original name and type
       const file = new File([blob], fileRef.original_name, {
@@ -949,9 +924,6 @@ const restoreAutosavedFiles = async () => {
             ...fileRef.metadata,
           },
         })
-        console.log(
-          `[UploadMedia] Added file to FilePond: ${fileRef.original_name}`
-        )
       }
     } catch (err) {
       console.error(
@@ -1036,7 +1008,7 @@ const onRemoveFile = async (error, file) => {
 }
 // Handle FilePond initialization
 const handleFilePondInit = () => {
-  console.log("FilePond has initialized")
+  //console.log("FilePond has initialized")
 }
 
 // Handle FilePond errors
@@ -1053,54 +1025,51 @@ const onProcessFile = (error /* , file */) => {
 }
 
 // Add handler for when file is updated (including after editing)
-const onUpdateFiles = (files) => {
-  emit("files-updated", files)
-}
+// const onUpdateFiles = (files) => {
+//   emit("files-updated", files)
+// }
 
 // Add handler for prepare file (this is where edited data might be available)
-const onPrepareFile = (fileItem, output) => {
-  // Validate that output is a proper File or Blob before processing
-  if (fileItem && output) {
-    // Check if output is a File, Blob, or has the necessary properties
-    if (output instanceof File) {
-      editedFiles.value.set(fileItem.id, output)
-      return output
-    } else if (output instanceof Blob) {
-      // Convert Blob to File with proper name
-      const originalFile = fileItem.file
-      const editedFile = new File([output], originalFile.name, {
-        type: output.type || originalFile.type,
-        lastModified: Date.now(),
-      })
-      editedFiles.value.set(fileItem.id, editedFile)
-      return editedFile
-    } else if (output && typeof output === "object" && output.dest) {
-      // Handle cases where output has a dest property (some editor configurations)
-      const destFile = output.dest
-      if (destFile instanceof File || destFile instanceof Blob) {
-        const finalFile =
-          destFile instanceof File
-            ? destFile
-            : new File([destFile], fileItem.file.name, {
-                type: destFile.type || fileItem.file.type,
-                lastModified: Date.now(),
-              })
-        editedFiles.value.set(fileItem.id, finalFile)
-        return finalFile
-      }
-    }
-  }
+// const onPrepareFile = (fileItem, output) => {
+//   // Validate that output is a proper File or Blob before processing
+//   if (fileItem && output) {
+//     // Check if output is a File, Blob, or has the necessary properties
+//     if (output instanceof File) {
+//       editedFiles.value.set(fileItem.id, output)
+//       return output
+//     } else if (output instanceof Blob) {
+//       // Convert Blob to File with proper name
+//       const originalFile = fileItem.file
+//       const editedFile = new File([output], originalFile.name, {
+//         type: output.type || originalFile.type,
+//         lastModified: Date.now(),
+//       })
+//       editedFiles.value.set(fileItem.id, editedFile)
+//       return editedFile
+//     } else if (output && typeof output === "object" && output.dest) {
+//       // Handle cases where output has a dest property (some editor configurations)
+//       const destFile = output.dest
+//       if (destFile instanceof File || destFile instanceof Blob) {
+//         const finalFile =
+//           destFile instanceof File
+//             ? destFile
+//             : new File([destFile], fileItem.file.name, {
+//                 type: destFile.type || fileItem.file.type,
+//                 lastModified: Date.now(),
+//               })
+//         editedFiles.value.set(fileItem.id, finalFile)
+//         return finalFile
+//       }
+//     }
+//   }
 
-  // Return the output as-is if we can't process it, or return undefined to let FilePond handle it
-  return output
-}
+//   // Return the output as-is if we can't process it, or return undefined to let FilePond handle it
+//   return output
+// }
 
 watch(hasFiles, (newVal) => {
   emit("has-files", newVal)
 })
-
-// Map to store capture metadata for files
-const captureMetadataMap = ref(new Map())
 
 const tryAgain = () => {
   trackClickEvent("Click Tracking - Try Again", "Video Capture", "Try Again")

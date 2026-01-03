@@ -1,7 +1,6 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
-import { FilterMatchMode } from "@primevue/core/api"
+//import { FilterMatchMode } from "@primevue/core/api"
 import { useCurrentUser } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
 useHead({
@@ -35,9 +34,9 @@ const {
 const authToken = ref("")
 
 const expandedRows = ref({})
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-})
+// const filters = ref({
+//   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+// })
 
 const groupedSubmissions = computed(() => {
   const groups = {}
@@ -230,23 +229,25 @@ watch(
                 <Column field="profiles.email" header="Contact" sortable>
                   <template #body="slotProps">
                     <div>
-                      <a
+                      <VFlexibleLink
                         v-if="slotProps.data.profiles?.email"
-                        :href="`mailto:${slotProps.data.profiles.email}`"
+                        :to="`mailto:${slotProps.data.profiles.email}`"
                         target="_blank"
                         @click.stop
-                        >{{ slotProps.data.profiles.email }}</a
                       >
+                        {{ slotProps.data.profiles.email }}
+                      </VFlexibleLink>
                       <span v-else>N/A </span>
                     </div>
                     <div>
-                      <a
+                      <VFlexibleLink
                         v-if="slotProps.data.instagram_handle"
-                        :href="`https://instagram.com/${slotProps.data.instagram_handle}`"
+                        :to="`https://instagram.com/${slotProps.data.instagram_handle}`"
                         target="_blank"
                         @click.stop
-                        >@{{ slotProps.data.instagram_handle }}</a
                       >
+                        @{{ slotProps.data.instagram_handle }}
+                      </VFlexibleLink>
                     </div>
                   </template>
                 </Column>

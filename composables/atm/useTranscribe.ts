@@ -26,8 +26,6 @@ export default function useTranscribe () {
         const corePath = `${origin}/ffmpeg/ffmpeg-core-st.js`
         const wasmPath = `${origin}/ffmpeg/ffmpeg-core-st.wasm`
 
-        console.log(`[useTranscribe] Loading FFmpeg from: ${origin}`)
-
         // Load ffmpeg.wasm in single-threaded mode
         // Use toBlobURL for BOTH to avoid worker scheme issues
         // Setting workerURL to undefined forces single-threaded mode
@@ -36,8 +34,6 @@ export default function useTranscribe () {
           wasmURL: await toBlobURL(wasmPath, 'application/wasm'),
           workerURL: undefined, // Force single-threaded mode
         })
-
-        console.log("[useTranscribe] FFmpeg loaded")
 
         // Write video file to FFmpeg memory filesystem
         await ffmpeg.writeFile('input.mov', await fetchFile(mediaFile))
@@ -49,10 +45,10 @@ export default function useTranscribe () {
         const fileData = await ffmpeg.readFile('output.wav')
         const wavBlob = new Blob([fileData as any], { type: 'audio/wav' })
         audioUrl = URL.createObjectURL(wavBlob)
-        console.log("[useTranscribe] Audio extracted from MOV, starting transcription...")
+        // Audio extracted from MOV, starting transcription...
       } else {
         audioUrl = URL.createObjectURL(mediaFile)
-        console.log("[useTranscribe] Using original file for transcription...")
+        // Using original file for transcription...
       }
 
       // Run transcription on the WAV file

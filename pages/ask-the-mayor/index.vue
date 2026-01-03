@@ -1,17 +1,12 @@
 
 <script setup>
 import { trackClickEvent } from "~/utilities/helpers"
-import { useToast } from "primevue/usetoast"
 
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu",
   },
 })
-
-const toast = useToast()
-
-const user = useCurrentUser()
 
 onMounted(() => {
   // send GA page view

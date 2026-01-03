@@ -75,7 +75,7 @@ export default function useUseGallery () {
     return !storageResult.error
   }
 
-  const onMediaMenuOptionSelected = async (event: any, image: string | string[], props: any, onSuccessCallback: Function, onFailCallback: Function) => {
+  const onMediaMenuOptionSelected = async (event: any, image: string | string[], props: any, onSuccessCallback: () => void, onFailCallback: () => void) => {
     //console.log('Selected option:', event, image, props);
 
     // Determine if we're handling single or multiple images

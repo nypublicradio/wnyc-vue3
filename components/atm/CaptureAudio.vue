@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import useCaptureMedia from "~/composables/atm/useCaptureMedia";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue"
+import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 
 const props = defineProps({
   bucket: {
@@ -23,34 +23,36 @@ const props = defineProps({
     type: Number,
     default: null,
   },
-});
+})
 
-const emit = defineEmits(["capture-complete", "capture-error"]);
+const emit = defineEmits(["capture-complete", "capture-error"])
 
-const { isNative, captureAudio: captureAudioNative, error: nativeError } = useCaptureMedia();
+const {
+  isNative,
+  captureAudio: captureAudioNative,
+  error: nativeError,
+} = useCaptureMedia()
 
 // Web API refs (only used in browser)
-const audioDevices = ref([]);
-const selectedAudioDeviceId = ref(null);
-const stream = ref(null);
-const mediaRecorder = ref(null);
-const recordedChunks = ref([]);
-const isRecording = ref(false);
-const isProcessing = ref(false);
-const error = ref(null);
-const audioUrl = ref(null);
-
-const supabase = useSupabaseClient();
+const audioDevices = ref([])
+const selectedAudioDeviceId = ref(null)
+const stream = ref(null)
+const mediaRecorder = ref(null)
+const recordedChunks = ref([])
+const isRecording = ref(false)
+const isProcessing = ref(false)
+const error = ref(null)
+const audioUrl = ref(null)
 
 // Native capture handler
 const handleNativeCapture = async () => {
   try {
-    isProcessing.value = true;
-    error.value = null;
+    isProcessing.value = true
+    error.value = null
 
     const audioFile = await captureAudioNative({
-      duration: props.recordTimeLimit
-    });
+      duration: props.recordTimeLimit,
+    })
 
     const captureMetadata = {
       originalFileName: audioFile.name,
@@ -65,73 +67,77 @@ const handleNativeCapture = async () => {
         patientId: props.patientId,
         metadata: props.metadata,
       },
-    };
+    }
 
-    emit("capture-complete", { file: audioFile, metadata: captureMetadata });
+    emit("capture-complete", { file: audioFile, metadata: captureMetadata })
   } catch (err) {
-    error.value = err.message || "Native audio capture failed";
-    emit("capture-error", error.value);
+    error.value = err.message || "Native audio capture failed"
+    emit("capture-error", error.value)
   } finally {
-    isProcessing.value = false;
+    isProcessing.value = false
   }
-};
+}
 
 // Web API handlers (browser only)
 const getDevices = async () => {
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      error.value = "Media devices API not available. Please use a supported browser.";
-      console.error("navigator.mediaDevices.getUserMedia is not available");
-      return;
+      error.value =
+        "Media devices API not available. Please use a supported browser."
+      console.error("navigator.mediaDevices.getUserMedia is not available")
+      return
     }
 
-    let allDevices = await navigator.mediaDevices.enumerateDevices();
-    const hasLabels = allDevices.some(device => device.label !== '');
-    
+    let allDevices = await navigator.mediaDevices.enumerateDevices()
+    const hasLabels = allDevices.some((device) => device.label !== "")
+
     if (!hasLabels) {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        allDevices = await navigator.mediaDevices.enumerateDevices();
+        await navigator.mediaDevices.getUserMedia({ audio: true })
+        allDevices = await navigator.mediaDevices.enumerateDevices()
       } catch (permErr) {
-        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
+        console.warn(
+          "Permission request failed, continuing with unlabeled devices:",
+          permErr
+        )
       }
     }
 
     audioDevices.value = allDevices.filter(
       (device) => device.kind === "audioinput"
-    );
+    )
 
     if (audioDevices.value.length > 0 && !selectedAudioDeviceId.value) {
-      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+      selectedAudioDeviceId.value = audioDevices.value[0].deviceId
     }
   } catch (err) {
-    console.error("Error enumerating audio devices:", err);
-    error.value = `Error accessing audio devices: ${err.name}. Ensure permissions are granted.`;
+    console.error("Error enumerating audio devices:", err)
+    error.value = `Error accessing audio devices: ${err.name}. Ensure permissions are granted.`
   }
-};
+}
 
 const stopMedia = () => {
   if (stream.value) {
-    stream.value.getTracks().forEach((track) => track.stop());
-    stream.value = null;
+    stream.value.getTracks().forEach((track) => track.stop())
+    stream.value = null
   }
   if (audioUrl.value) {
-    URL.revokeObjectURL(audioUrl.value);
-    audioUrl.value = null;
+    URL.revokeObjectURL(audioUrl.value)
+    audioUrl.value = null
   }
-};
+}
 
 const initializeMedia = async () => {
   if (stream.value) {
-    stopMedia();
+    stopMedia()
   }
   if (!selectedAudioDeviceId.value && audioDevices.value.length > 0) {
-    selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+    selectedAudioDeviceId.value = audioDevices.value[0].deviceId
   }
 
   if (!selectedAudioDeviceId.value) {
-    error.value = "Microphone not selected or available.";
-    return;
+    error.value = "Microphone not selected or available."
+    return
   }
 
   const constraints = {
@@ -139,16 +145,16 @@ const initializeMedia = async () => {
       ? { deviceId: { exact: selectedAudioDeviceId.value } }
       : true,
     video: false,
-  };
+  }
 
   try {
-    error.value = null;
-    stream.value = await navigator.mediaDevices.getUserMedia(constraints);
+    error.value = null
+    stream.value = await navigator.mediaDevices.getUserMedia(constraints)
   } catch (err) {
-    console.error("Error starting microphone:", err);
-    error.value = `Error starting microphone: ${err.name}. Check permissions and device availability.`;
+    console.error("Error starting microphone:", err)
+    error.value = `Error starting microphone: ${err.name}. Check permissions and device availability.`
   }
-};
+}
 
 const uploadAudio = async (audioFile) => {
   const captureMetadata = {
@@ -164,161 +170,161 @@ const uploadAudio = async (audioFile) => {
       patientId: props.patientId,
       metadata: props.metadata,
     },
-  };
+  }
 
-  return { file: audioFile, metadata: captureMetadata };
-};
+  return { file: audioFile, metadata: captureMetadata }
+}
 
 const startRecording = () => {
   if (!stream.value) {
-    error.value = "Audio stream not available to start recording.";
-    return;
+    error.value = "Audio stream not available to start recording."
+    return
   }
-  if (isRecording.value) return;
+  if (isRecording.value) return
 
   if (audioUrl.value) {
-    URL.revokeObjectURL(audioUrl.value);
-    audioUrl.value = null;
+    URL.revokeObjectURL(audioUrl.value)
+    audioUrl.value = null
   }
-  recordedChunks.value = [];
+  recordedChunks.value = []
 
-  let selectedMimeType = "";
+  let selectedMimeType = ""
   const mimeTypesToTry = [
     "audio/webm; codecs=opus",
     "audio/webm",
     "audio/ogg; codecs=opus",
     "audio/ogg",
-  ];
+  ]
 
   for (const mime of mimeTypesToTry) {
     if (MediaRecorder.isTypeSupported(mime)) {
-      selectedMimeType = mime;
-      break;
+      selectedMimeType = mime
+      break
     }
   }
 
   if (!selectedMimeType) {
     error.value =
-      "Your browser does not support common WebM/Ogg Opus audio recording. Using browser default, which may fail to upload.";
+      "Your browser does not support common WebM/Ogg Opus audio recording. Using browser default, which may fail to upload."
     console.warn(
       "Preferred WebM/Ogg Opus mime types not supported. MediaRecorder will use browser default."
-    );
+    )
   } else {
-    error.value = null;
+    error.value = null
   }
 
-  const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
+  const options = selectedMimeType ? { mimeType: selectedMimeType } : {}
 
   try {
-    mediaRecorder.value = new MediaRecorder(stream.value, options);
+    mediaRecorder.value = new MediaRecorder(stream.value, options)
 
     mediaRecorder.value.ondataavailable = (event) => {
-      if (event.data.size > 0) recordedChunks.value.push(event.data);
-    };
+      if (event.data.size > 0) recordedChunks.value.push(event.data)
+    }
 
     mediaRecorder.value.onstop = async () => {
-      isRecording.value = false;
-      isProcessing.value = true;
+      isRecording.value = false
+      isProcessing.value = true
 
-      const blobMimeType = mediaRecorder.value.mimeType || "audio/webm";
-      const blob = new Blob(recordedChunks.value, { type: blobMimeType });
-      const timestamp = new Date().getTime();
+      const blobMimeType = mediaRecorder.value.mimeType || "audio/webm"
+      const blob = new Blob(recordedChunks.value, { type: blobMimeType })
+      const timestamp = new Date().getTime()
 
-      let fileExtension = "webm";
-      if (blobMimeType.includes("ogg")) fileExtension = "ogg";
-      else if (blobMimeType.includes("mp4")) fileExtension = "mp4";
+      let fileExtension = "webm"
+      if (blobMimeType.includes("ogg")) fileExtension = "ogg"
+      else if (blobMimeType.includes("mp4")) fileExtension = "mp4"
 
-      const fileName = `audio_${timestamp}.${fileExtension}`;
-      const audioFile = new File([blob], fileName, { type: blobMimeType });
+      const fileName = `audio_${timestamp}.${fileExtension}`
+      const audioFile = new File([blob], fileName, { type: blobMimeType })
 
-      audioUrl.value = URL.createObjectURL(blob);
+      audioUrl.value = URL.createObjectURL(blob)
 
       try {
-        const captureResult = await uploadAudio(audioFile);
-        emit("capture-complete", captureResult);
+        const captureResult = await uploadAudio(audioFile)
+        emit("capture-complete", captureResult)
       } catch (captureErr) {
         const errorMessage =
           captureErr.message ||
-          (typeof captureErr === "string"
-            ? captureErr
-            : "Audio capture failed");
-        error.value = `Audio capture failed: ${errorMessage} (Format: ${blobMimeType})`;
-        emit("capture-error", errorMessage);
+          (typeof captureErr === "string" ? captureErr : "Audio capture failed")
+        error.value = `Audio capture failed: ${errorMessage} (Format: ${blobMimeType})`
+        emit("capture-error", errorMessage)
       } finally {
-        isProcessing.value = false;
-        recordedChunks.value = [];
+        isProcessing.value = false
+        recordedChunks.value = []
       }
-    };
+    }
 
     mediaRecorder.value.onerror = (event) => {
-      console.error("MediaRecorder error:", event.error);
-      error.value = `Recording error: ${event.error.name} - ${event.error.message}`;
-      isRecording.value = false;
-      isProcessing.value = false;
-    };
+      console.error("MediaRecorder error:", event.error)
+      error.value = `Recording error: ${event.error.name} - ${event.error.message}`
+      isRecording.value = false
+      isProcessing.value = false
+    }
 
-    mediaRecorder.value.start();
-    isRecording.value = true;
+    mediaRecorder.value.start()
+    isRecording.value = true
   } catch (e) {
-    console.error("Failed to create MediaRecorder for audio:", e);
-    error.value = `Failed to start audio recording: ${e.message}. Your browser might not support the selected audio format.`;
-    isRecording.value = false;
-    return;
+    console.error("Failed to create MediaRecorder for audio:", e)
+    error.value = `Failed to start audio recording: ${e.message}. Your browser might not support the selected audio format.`
+    isRecording.value = false
+    return
   }
-};
+}
 
 const stopRecording = () => {
   if (mediaRecorder.value && isRecording.value) {
-    mediaRecorder.value.stop();
+    mediaRecorder.value.stop()
   }
-};
+}
 
 onMounted(async () => {
   // Only initialize web APIs if in browser
   if (!isNative) {
-    await getDevices();
+    await getDevices()
     if (selectedAudioDeviceId.value) {
-      await initializeMedia();
+      await initializeMedia()
     } else if (audioDevices.value.length > 0) {
-      selectedAudioDeviceId.value = audioDevices.value[0].deviceId;
+      selectedAudioDeviceId.value = audioDevices.value[0].deviceId
     } else if (!error.value) {
-      error.value = "No audio input devices found.";
+      error.value = "No audio input devices found."
     }
   }
-});
+})
 
 onBeforeUnmount(() => {
-  if (isRecording.value) stopRecording();
-  stopMedia();
-});
+  if (isRecording.value) stopRecording()
+  stopMedia()
+})
 
 watch(selectedAudioDeviceId, async (newVal, oldVal) => {
   if (newVal && newVal !== oldVal && !isNative) {
-    await initializeMedia();
+    await initializeMedia()
   }
-});
+})
 
 watch(audioDevices, (newVal) => {
   if (newVal.length > 0 && !selectedAudioDeviceId.value && !isNative) {
-    selectedAudioDeviceId.value = newVal[0].deviceId;
+    selectedAudioDeviceId.value = newVal[0].deviceId
   }
-});
+})
 
 defineExpose({
   startRecording,
   stopRecording,
-});
+})
 </script>
 
 <template>
   <div class="capture-audio">
-    <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
+    <div v-if="error || nativeError" class="error-message">
+      {{ error || nativeError }}
+    </div>
 
     <!-- Native platform: Simple button to open native recorder -->
     <div v-if="isNative">
       <div class="actions">
         <button @click="handleNativeCapture" :disabled="isProcessing">
-          {{ isProcessing ? 'Processing...' : 'Record Audio' }}
+          {{ isProcessing ? "Processing..." : "Record Audio" }}
         </button>
       </div>
     </div>
