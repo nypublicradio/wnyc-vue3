@@ -20,11 +20,17 @@ const getWagtailStoryData = async (id: string) => {
     return null
 };
 
-const getPublisherStoryData = async (id: string) => {
+const getPublisherStoryData = async (idOrSlug: string) => {
     try {
+        // Determine if the identifier is numeric (ID) or a slug
+        const isNumericId = /^\d+$/.test(idOrSlug);
+        const endpoint = isNumericId 
+            ? `v3/story-pk/${idOrSlug}/`
+            : `v3/story/${idOrSlug}/`;
+        
         const option = {
             method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v3/story-pk/${id}/`,
+            url: `${config.public.PUBLISHER_BASE_API}${endpoint}`,
         };
         const res = await axios(option);
         return normalizePublisherPage(humps.camelizeKeys(res.data).data);

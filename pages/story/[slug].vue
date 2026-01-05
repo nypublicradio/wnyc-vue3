@@ -6,13 +6,12 @@ const { topStories } = useTopStories()
 const route = useRoute()
 const config = useRuntimeConfig()
 
-const isWagtail = route.query.src === cmsSources.WAGTAIL
-const storySource = isWagtail ? "Gothamist" : "WNYC"
+const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const { data: storyData, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/story/${route.query.src}/${route.params.slug}`,
+  `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
     onResponse({ response }) {
       const res = response._data
