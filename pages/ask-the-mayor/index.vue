@@ -4,7 +4,7 @@ import { trackClickEvent } from "~/utilities/helpers"
 
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu",
+    //class: "no-bottom-padding hide-bottom-menu",
   },
 })
 

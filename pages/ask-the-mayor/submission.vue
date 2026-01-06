@@ -204,7 +204,7 @@ watch(
       <SHeader
         class="pb-4"
         label="Ask the Mayor"
-        @close-sidebar="() => navigateTo('/home')"
+        @close-sidebar="() => navigateTo('/ask-the-mayor')"
       />
       <!-- <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink> -->
       <div v-if="isLoading">
@@ -360,7 +360,7 @@ watch(
                         @upload-complete="onUploadComplete"
                         @has-files="hasFiles = $event"
                         @upload-progress="submitProgress = $event"
-                        @close-capture="navigateTo('/home')"
+                        @close-capture="navigateTo('/ask-the-mayor')"
                         :user="user"
                         :recordTimeLimit="recordTimeLimit"
                         :miscData="miscData"

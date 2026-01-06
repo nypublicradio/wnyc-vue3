@@ -1403,6 +1403,9 @@ onMounted(async () => {
   }
 
   .filepond--drop-label {
+    // temp hide
+    display: none;
+    // temp hide
     border-radius: 6px;
     background: var(--p-button-secondary-background);
     border: 2px dashed var(--p-button-secondary-color);
@@ -1416,6 +1419,9 @@ onMounted(async () => {
       pointer-events: none;
       color: var(--p-button-secondary-color);
     }
+  }
+  .filepond--panel-root {
+    background-color: transparent !important;
   }
 }
 </style>

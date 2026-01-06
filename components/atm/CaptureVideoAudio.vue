@@ -436,17 +436,22 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
         class="record-btn"
         :class="{ recording: isRecording }"
         :label="
-          isRecording ? `Stop Recording (${remainingTime}s)` : 'Start Recording'
+          isProcessing
+            ? 'Processing...'
+            : isRecording
+            ? `Stop Recording (${remainingTime}s)`
+            : 'Start Recording'
         "
       />
       <Button
+        :disabled="isRecording"
         @click="emit('close-capture')"
         class="record-btn close-btn"
         label="Close Capture"
         severity="secondary"
       />
     </div>
-    <div v-if="isProcessing" class="loading-indicator">Processing...</div>
+    <!-- <div v-if="isProcessing" class="loading-indicator">Processing...</div> -->
   </div>
 </template>
 
