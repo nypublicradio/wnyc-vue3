@@ -341,7 +341,10 @@ watch(
               <div class="flex w-full">
                 <div class="step-content w-full">
                   <div class="flex flex-column gap-1">
-                    <div v-if="isActiveGlobal" class="flex flex-column gap-2">
+                    <div
+                      v-if="isActiveGlobal || activeStep === 3"
+                      class="flex flex-column gap-2"
+                    >
                       <atm-upload-media
                         ref="UploadMediaREF"
                         :invalid="false"
