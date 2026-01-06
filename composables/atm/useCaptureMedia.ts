@@ -190,7 +190,7 @@ export default function useCaptureMedia () {
         if (isNative) {
             try {
                 const result = await VideoRecorder.stopRecording()
-                if (result && result.videoUrl) {
+                if (result?.videoUrl) {
                     return await uriToFile(result.videoUrl)
                 } else {
                     throw new Error('No video URL returned from plugin')
@@ -230,7 +230,7 @@ export default function useCaptureMedia () {
         if (isNative) {
             return true
         }
-        return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+        return Boolean(navigator.mediaDevices?.getUserMedia)
     }
 
     return {

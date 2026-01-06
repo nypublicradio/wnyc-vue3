@@ -100,24 +100,25 @@ const onFormSubmit = async () => {
     trackClickEvent("Click Tracking - Submit Error", "Ask the Mayor", "Submit")
   }
 }
-
+// handle upload error
 const onUploadError = (/* event*/) => {}
+// handle upload complete
 const onUploadComplete = async (/*event*/) => {
   await refreshLimitData()
   questionLimitReached.value = true
   uploadCompleted.value = true
 }
-
+// handle files updated, not used for now
 const onFilesUpdated = (/*files*/) => {}
 
 const loginOrSignupStepLabel = computed(() => {
   return isSignupForm.value ? "Sign Up" : "Login"
 })
-
+// handle login click
 const onLoginClick = () => {
   isSignupForm.value = false
 }
-
+// handle signup click
 const onSignupClick = () => {
   isSignupForm.value = true
 }
@@ -206,7 +207,7 @@ watch(
         label="Ask the Mayor"
         @close-sidebar="() => navigateTo('/home')"
       />
-      <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink>
+      <!-- <NuxtLink to="/ask-the-mayor-dashboard">Temp Dashboard Link</NuxtLink> -->
       <div v-if="isLoading">
         <WnycLoader class="mt-8 w-8rem mx-auto" />
       </div>
@@ -245,7 +246,7 @@ watch(
           />
         </div>
         <div v-else>
-          <div class="card flex justify-center w-full mt-4">
+          <div class="card flex justify-center w-full">
             <Stepper
               v-if="submitProgress === null"
               v-model:value="activeStep"
@@ -306,7 +307,7 @@ watch(
                   <div class="w-full">
                     <Signup
                       v-if="isSignupForm"
-                      :returnRoute="'/ask-the-mayor/submission'"
+                      returnRoute="/ask-the-mayor/submission"
                     >
                       <template #header>
                         <p>
@@ -320,7 +321,7 @@ watch(
                         </p>
                       </template>
                     </Signup>
-                    <Login v-else :returnRoute="'/ask-the-mayor/submission'">
+                    <Login v-else returnRoute="/ask-the-mayor/submission">
                       <template #header>
                         <p>
                           Don't have an account yet?
@@ -409,54 +410,6 @@ watch(
           </div>
         </div>
       </div>
-
-      <!-- <div v-else class="flex flex-column gap-2 my-4">
-        <p>Question limit reached. Please try again tomorrow.</p>
-      </div> -->
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <p>End of Page</p>
     </section>
   </div>
 </template>

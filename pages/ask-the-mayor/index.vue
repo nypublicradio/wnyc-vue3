@@ -17,7 +17,7 @@ onMounted(() => {
     content_group: "ask_the_mayor",
   })
 })
-
+// handle get started click
 const getStarted = () => {
   trackClickEvent(
     "Click Tracking - Get Started",
@@ -26,14 +26,14 @@ const getStarted = () => {
   )
   navigateTo("/ask-the-mayor/submission")
 }
-
+// handle read guidelines click
 const readGuidelines = () => {
   trackClickEvent(
     "Click Tracking - Read Guidelines",
     "CTA on the Home Landing Page",
     "Ask The Mayor Guidelines"
   )
-  //navigateTo("/ask-the-mayor/guidelines")
+  navigateTo("/ask-the-mayor/guidelines")
 }
 </script>
 
@@ -109,5 +109,3 @@ const readGuidelines = () => {
     </section>
   </div>
 </template>
-<style lang="scss">
-</style>

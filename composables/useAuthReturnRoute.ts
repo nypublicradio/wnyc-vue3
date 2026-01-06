@@ -1,14 +1,14 @@
 import { Preferences } from "@capacitor/preferences"
 
 export const useAuthReturnRoute = () => {
-
+  // handle set auth return route
   const setAuthReturnRoute = async (route: string) => {
     await Preferences.set({
       key: "authReturnRoute",
       value: route
     })
   }
-
+  // handle get auth return route
   const getAuthReturnRoute = async () => {
     const { value } = await Preferences.get({
       key: "authReturnRoute"
@@ -16,7 +16,7 @@ export const useAuthReturnRoute = () => {
     return value
   }
 
-
+  // handle check stale auth route
   const checkStaleAuthRoute = async () => {
     // only clear if we aren't in the middle of an auth flow
     // check if the current route has auth params (code, access_token, etc)
@@ -30,6 +30,7 @@ export const useAuthReturnRoute = () => {
     }
   }
 
+  // handle clear auth return route
   const clearAuthReturnRoute = async () => {
     await Preferences.remove({
       key: "authReturnRoute"

@@ -62,6 +62,7 @@ const groupedSubmissions = computed(() => {
   )
 })
 
+// handle fetch submissions
 const fetchSubmissions = async () => {
   isLoading.value = true
   try {
@@ -108,6 +109,7 @@ const fetchSubmissions = async () => {
 const { toggleApproved, shareSubmission, downloadSubmission } =
   useAtmDashboard()
 
+// handle navigate to slug page
 const navigateToSlug = (event) => {
   const submission = event.data
   navigateTo(`/ask-the-mayor-dashboard/${submission.video_filename}`)
@@ -299,5 +301,3 @@ watch(
     </section>
   </div>
 </template>
-<style>
-</style>

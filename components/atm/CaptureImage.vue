@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import useCaptureMedia from "~/composables/atm/useCaptureMedia";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue"
+import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 
 const props = defineProps({
   bucket: {
@@ -19,28 +19,32 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-});
+})
 
-const emit = defineEmits(["capture-complete", "capture-error"]);
+const emit = defineEmits(["capture-complete", "capture-error"])
 
-const { isNative, captureImage: captureImageNative, error: nativeError } = useCaptureMedia();
+const {
+  isNative,
+  captureImage: captureImageNative,
+  error: nativeError,
+} = useCaptureMedia()
 
 // Web API refs (only used in browser)
-const videoRef = ref(null);
-const canvasRef = ref(null);
-const devices = ref([]);
-const selectedDeviceId = ref(null);
-const stream = ref(null);
-const error = ref(null);
-const isProcessing = ref(null);
+const videoRef = ref(null)
+const canvasRef = ref(null)
+const devices = ref([])
+const selectedDeviceId = ref(null)
+const stream = ref(null)
+const error = ref(null)
+const isProcessing = ref(null)
 
 // Native capture handler
 const handleNativeCapture = async () => {
   try {
-    isProcessing.value = true;
-    error.value = null;
+    isProcessing.value = true
+    error.value = null
 
-    const imageFile = await captureImageNative();
+    const imageFile = await captureImageNative()
 
     const captureMetadata = {
       captureMethod: "native_camera",
@@ -52,49 +56,49 @@ const handleNativeCapture = async () => {
         patientId: props.patientId,
         metadata: props.metadata,
       },
-    };
+    }
 
     emit("capture-complete", {
       file: imageFile,
       metadata: captureMetadata,
-    });
+    })
   } catch (err) {
-    error.value = err.message || "Native image capture failed";
-    emit("capture-error", error.value);
+    error.value = err.message || "Native image capture failed"
+    emit("capture-error", error.value)
   } finally {
-    isProcessing.value = false;
+    isProcessing.value = false
   }
-};
+}
 
 // Web API handlers (browser only)
 const captureImage = () => {
   if (!videoRef.value || !canvasRef.value || !stream.value) {
-    error.value = "Camera stream not available for capture.";
-    return;
+    error.value = "Camera stream not available for capture."
+    return
   }
-  isProcessing.value = true;
-  error.value = null;
+  isProcessing.value = true
+  error.value = null
 
-  const video = videoRef.value;
-  const canvas = canvasRef.value;
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const video = videoRef.value
+  const canvas = canvasRef.value
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+  const context = canvas.getContext("2d")
+  context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
   canvas.toBlob(
-    async (blob) => {
+    (blob) => {
       if (!blob) {
-        error.value = "Failed to create image blob.";
-        isProcessing.value = false;
-        return;
+        error.value = "Failed to create image blob."
+        isProcessing.value = false
+        return
       }
-      const timestamp = new Date().getTime();
-      const fileName = `capture_${timestamp}.jpg`;
+      const timestamp = new Date().getTime()
+      const fileName = `capture_${timestamp}.jpg`
       const imageFile = new File([blob], fileName, {
         type: "image/jpeg",
         lastModified: Date.now(),
-      });
+      })
 
       try {
         const captureMetadata = {
@@ -107,77 +111,81 @@ const captureImage = () => {
             patientId: props.patientId,
             metadata: props.metadata,
           },
-        };
+        }
 
         emit("capture-complete", {
           file: imageFile,
           metadata: captureMetadata,
-        });
+        })
       } catch (error) {
-        const errorMessage = error.message || "Image capture failed";
-        console.error("Capture failed:", errorMessage);
-        error.value = `Capture failed: ${errorMessage}`;
-        emit("capture-error", errorMessage);
+        const errorMessage = error.message || "Image capture failed"
+        console.error("Capture failed:", errorMessage)
+        error.value = `Capture failed: ${errorMessage}`
+        emit("capture-error", errorMessage)
       } finally {
-        isProcessing.value = false;
+        isProcessing.value = false
       }
     },
     "image/jpeg",
     0.9
-  );
-};
+  )
+}
 
 const getDevices = async () => {
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      error.value = "Media devices API not available. Please use a supported browser.";
-      console.error("navigator.mediaDevices.getUserMedia is not available");
-      return;
+      error.value =
+        "Media devices API not available. Please use a supported browser."
+      console.error("navigator.mediaDevices.getUserMedia is not available")
+      return
     }
 
-    let allDevices = await navigator.mediaDevices.enumerateDevices();
-    const hasLabels = allDevices.some(device => device.label !== '');
-    
+    let allDevices = await navigator.mediaDevices.enumerateDevices()
+    const hasLabels = allDevices.some((device) => device.label !== "")
+
     if (!hasLabels) {
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        allDevices = await navigator.mediaDevices.enumerateDevices();
+        await navigator.mediaDevices.getUserMedia({ video: true })
+        allDevices = await navigator.mediaDevices.enumerateDevices()
       } catch (permErr) {
-        console.warn("Permission request failed, continuing with unlabeled devices:", permErr);
+        console.warn(
+          "Permission request failed, continuing with unlabeled devices:",
+          permErr
+        )
       }
     }
 
-    devices.value = allDevices.filter((device) => device.kind === "videoinput");
+    devices.value = allDevices.filter((device) => device.kind === "videoinput")
     if (devices.value.length > 0 && !selectedDeviceId.value) {
-      selectedDeviceId.value = devices.value[0].deviceId;
+      selectedDeviceId.value = devices.value[0].deviceId
     }
   } catch (err) {
-    console.error("Error enumerating devices:", err);
-    error.value = `Error accessing media devices: ${err.name}. Please ensure permissions are granted.`;
+    console.error("Error enumerating devices:", err)
+    error.value = `Error accessing media devices: ${err.name}. Please ensure permissions are granted.`
   }
-};
+}
 
 const stopCamera = () => {
   if (stream.value) {
-    stream.value.getTracks().forEach((track) => track.stop());
-    stream.value = null;
+    stream.value.getTracks().forEach((track) => track.stop())
+    stream.value = null
   }
   if (videoRef.value?.srcObject) {
-    videoRef.value.srcObject = null;
+    videoRef.value.srcObject = null
   }
-};
+}
 
 const startCamera = async () => {
   if (stream.value) {
-    stopCamera();
+    stopCamera()
   }
   if (!selectedDeviceId.value && devices.value.length > 0) {
-    selectedDeviceId.value = devices.value[0].deviceId;
+    selectedDeviceId.value = devices.value[0].deviceId
   }
   if (!selectedDeviceId.value) {
-    error.value = "No camera selected or available.";
-    console.warn("No camera selected or available to start.");
-    return;
+    error.value = "No camera selected or available."
+    console.warn("No camera selected or available to start.")
+    return
   }
 
   const constraints = {
@@ -186,66 +194,68 @@ const startCamera = async () => {
       width: { ideal: 1920 },
       height: { ideal: 1080 },
     },
-  };
+  }
 
   try {
-    error.value = null;
-    stream.value = await navigator.mediaDevices.getUserMedia(constraints);
+    error.value = null
+    stream.value = await navigator.mediaDevices.getUserMedia(constraints)
     if (videoRef.value) {
-      videoRef.value.srcObject = stream.value;
+      videoRef.value.srcObject = stream.value
       videoRef.value.onloadedmetadata = () => {
         if (canvasRef.value) {
-          canvasRef.value.width = videoRef.value.videoWidth;
-          canvasRef.value.height = videoRef.value.videoHeight;
+          canvasRef.value.width = videoRef.value.videoWidth
+          canvasRef.value.height = videoRef.value.videoHeight
         }
-      };
+      }
     }
   } catch (err) {
-    console.error("Error starting camera:", err);
-    error.value = `Error starting camera: ${err.name}. Check permissions and device availability.`;
+    console.error("Error starting camera:", err)
+    error.value = `Error starting camera: ${err.name}. Check permissions and device availability.`
   }
-};
+}
 
 onMounted(async () => {
   // Only initialize web APIs if in browser
   if (!isNative) {
-    await getDevices();
+    await getDevices()
     if (selectedDeviceId.value) {
-      await startCamera();
+      await startCamera()
     } else if (devices.value.length > 0) {
-      selectedDeviceId.value = devices.value[0].deviceId;
+      selectedDeviceId.value = devices.value[0].deviceId
     } else {
-      error.value = "No video input devices found. Please connect a camera.";
+      error.value = "No video input devices found. Please connect a camera."
     }
   }
-});
+})
 
 onBeforeUnmount(() => {
-  stopCamera();
-});
+  stopCamera()
+})
 
 watch(selectedDeviceId, async (newVal, oldVal) => {
   if (newVal && newVal !== oldVal && !isNative) {
-    await startCamera();
+    await startCamera()
   }
-});
+})
 
 watch(devices, (newDevices) => {
   if (newDevices.length > 0 && !selectedDeviceId.value && !isNative) {
-    selectedDeviceId.value = newDevices[0].deviceId;
+    selectedDeviceId.value = newDevices[0].deviceId
   }
-});
+})
 </script>
 
 <template>
   <div class="capture-image">
-    <div v-if="error || nativeError" class="error-message">{{ error || nativeError }}</div>
+    <div v-if="error || nativeError" class="error-message">
+      {{ error || nativeError }}
+    </div>
 
     <!-- Native platform: Simple button to open native camera -->
     <div v-if="isNative">
       <div class="actions">
         <button @click="handleNativeCapture" :disabled="isProcessing">
-          {{ isProcessing ? 'Processing...' : 'Take Photo' }}
+          {{ isProcessing ? "Processing..." : "Take Photo" }}
         </button>
       </div>
     </div>

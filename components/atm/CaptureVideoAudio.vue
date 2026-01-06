@@ -283,7 +283,7 @@ onMounted(async () => {
     initTimer.value = setTimeout(initNativeCamera, 500) // Small delay for layout to settle
 
     // Listen for app resume (e.g. returning from permission dialog)
-    resumeListener = await App.addListener("resume", async () => {
+    resumeListener = await App.addListener("resume", () => {
       // Give the app a moment to settle
       setTimeout(initNativeCamera, 500)
     })

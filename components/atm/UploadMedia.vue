@@ -174,7 +174,7 @@ const uploadMediaPanel = ref(null)
 const isCapturing = ref(false)
 
 // Track autosave mode
-const isAutosaveMode = computed(() => !!props.autosaveComposable)
+const isAutosaveMode = computed(() => Boolean(props.autosaveComposable))
 
 // Track number of retakes
 const numOfRetakes = ref(0)
@@ -557,7 +557,7 @@ const uploadEditedFile = async (
   const rawName = props.user?.user_metadata?.name
   const userName = rawName ? rawName.replace(" ", "_") : "unknown-user"
 
-  const userId = `--${props.user?.id}--` || ""
+  const userId = props.user?.id ? `--${props.user?.id}--` : ""
   const subfolder = captureMetadata?.originalProps?.subfolder || props.subfolder
 
   const fileName = `${userName}${userId}${timeStampToDate(timestamp)}_${
@@ -747,7 +747,7 @@ const openCaptureMode = (mode) => {
   showImageCapture.value = mode === mediaType.IMAGE
   showVideoAudioCapture.value = mode === mediaType.VIDEO
   showAudioCapture.value = mode === mediaType.AUDIO
-  isCapturing.value = !!mode
+  isCapturing.value = Boolean(mode)
 }
 
 // Event handlers for capture components
@@ -841,7 +841,7 @@ const restoreAutosavedFiles = async () => {
   ) {
     // console.log(`[UploadMedia] No files to restore:`, {
     //   autosaveMode: isAutosaveMode.value,
-    //   mediaFilesExists: !!props.autosaveComposable?.autosaveMediaFiles?.value,
+    //   mediaFilesExists: Boolean(props.autosaveComposable?.autosaveMediaFiles?.value),
     //   fileCount:
     //     props.autosaveComposable?.autosaveMediaFiles?.value?.length || 0,
     // })
@@ -881,10 +881,10 @@ const restoreAutosavedFiles = async () => {
       // Validate required parameters
       if (!apiParams.fileId || !apiParams.userId) {
         console.error(`[UploadMedia] Missing required parameters:`, {
-          fileId: !!apiParams.fileId,
-          userId: !!apiParams.userId,
-          formId: !!apiParams.formId,
-          patientId: !!apiParams.patientId,
+          fileId: Boolean(apiParams.fileId),
+          userId: Boolean(apiParams.userId),
+          formId: Boolean(apiParams.formId),
+          patientId: Boolean(apiParams.patientId),
           userObject: props.autosaveComposable.user?.value,
         })
         continue

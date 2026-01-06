@@ -7,6 +7,7 @@ env.allowLocalModels = false
 env.useBrowserCache = true
 
 export default function useTranscribe () {
+  // handle transcribe media
   const transcribeMedia = async (mediaFile: File, lang = "en") => {
     try {
       // Initialize the pipeline

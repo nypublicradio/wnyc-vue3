@@ -156,7 +156,7 @@ const initializeMedia = async () => {
   }
 }
 
-const uploadAudio = async (audioFile) => {
+const uploadAudio = (audioFile) => {
   const captureMetadata = {
     originalFileName: audioFile.name,
     fileSize: audioFile.size,
