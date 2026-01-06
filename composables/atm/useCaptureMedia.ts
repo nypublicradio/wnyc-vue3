@@ -3,7 +3,7 @@ import { VideoRecorder, VideoRecorderCamera, VideoRecorderQuality } from '@capac
 import { Filesystem } from '@capacitor/filesystem'
 import { ref } from 'vue'
 import { decode } from 'base64-arraybuffer'
-
+// root composable for media capture
 export default function useCaptureMedia () {
     const isNative = Capacitor.isNativePlatform()
     const error = ref<string | null>(null)
@@ -221,11 +221,11 @@ export default function useCaptureMedia () {
     const captureAudio = async (): Promise<File> => {
         throw new Error('Native audio capture temporarily disabled.')
     }
-
+    // capture image stub
     const captureImage = async (): Promise<File> => {
         throw new Error('Native image capture temporarily disabled.')
     }
-
+    // check if media capture is available
     const isMediaCaptureAvailable = (): boolean => {
         if (isNative) {
             return true

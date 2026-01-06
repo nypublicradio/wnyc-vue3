@@ -1,5 +1,6 @@
 <script setup>
 import { trackClickEvent } from "~/utilities/helpers"
+// route to ask the mayor page and track it
 const routeToPage = () => {
   trackClickEvent(
     "Click Tracking - Ask The Mayor CTA",

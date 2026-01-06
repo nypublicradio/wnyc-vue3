@@ -92,6 +92,12 @@ const getCaptureMetadata = (file, method) => ({
 
 // --- Methods ---
 
+// stop time limit countdown handler
+const stopCountdown = () => {
+  clearInterval(countdownInterval)
+  remainingTime.value = props.recordTimeLimit
+}
+
 const initNativeCamera = async () => {
   if (!isNative || !videoRef.value) return
 
@@ -130,82 +136,10 @@ const initNativeCamera = async () => {
     error.value = nativeError.value || "Failed to initialize camera"
   }
 }
-
-const startCountdown = () => {
-  remainingTime.value = props.recordTimeLimit
-  clearInterval(countdownInterval)
-  countdownInterval = setInterval(() => {
-    remainingTime.value--
-    if (remainingTime.value < 0) {
-      stopRecording()
-    }
-  }, 1000)
-}
-
-const stopCountdown = () => {
-  clearInterval(countdownInterval)
-  remainingTime.value = props.recordTimeLimit
-}
-
-const startRecording = async () => {
-  if (isRecording.value) return
-  error.value = null
-
-  try {
-    if (isNative) {
-      await startVideoRecording()
-    } else {
-      startWebRecording()
-    }
-
-    // UI Updates
-    isRecording.value = true
-    startCountdown()
-  } catch (err) {
-    console.error("Start recording failed:", err)
-    error.value = err.message
-  }
-}
-
-const startWebCamera = async () => {
-  if (stream.value) {
-    stream.value.getTracks().forEach((t) => t.stop())
-  }
-
-  const constraints = {
-    video: selectedVideoDeviceId.value
-      ? { deviceId: { exact: selectedVideoDeviceId.value } }
-      : true,
-    audio: selectedAudioDeviceId.value
-      ? { deviceId: { exact: selectedAudioDeviceId.value } }
-      : true,
-  }
-
-  try {
-    stream.value = await navigator.mediaDevices.getUserMedia(constraints)
-    if (videoRef.value) videoRef.value.srcObject = stream.value
-  } catch (err) {
-    error.value = `Camera access failed: ${err.message}`
-  }
-}
-
-const startWebRecording = () => {
-  if (!stream.value) throw new Error("No stream available")
-
-  recordedChunks.value = []
-  const options = { mimeType: "video/webm" }
-  // Add codec fallback logic if needed
-
-  mediaRecorder.value = new MediaRecorder(stream.value, options)
-  mediaRecorder.value.ondataavailable = (e) => {
-    if (e.data.size > 0) recordedChunks.value.push(e.data)
-  }
-  mediaRecorder.value.start()
-}
-
+// stop web recording handler
 const stopWebRecording = () => {
   return new Promise((resolve, reject) => {
-    if (!mediaRecorder.value) return reject("No recorder")
+    if (!mediaRecorder.value) return reject(new Error("No recorder"))
 
     mediaRecorder.value.onstop = () => {
       const blob = new Blob(recordedChunks.value, { type: "video/webm" })
@@ -217,15 +151,16 @@ const stopWebRecording = () => {
     mediaRecorder.value.onerror = (e) => reject(e.error)
 
     mediaRecorder.value.stop()
+    return null
   })
 }
-
+// stop recording handler
 const stopRecording = async () => {
   if (!isRecording.value) return
 
   stopCountdown()
   isProcessing.value = true
-  let videoFile
+  let videoFile = null
   try {
     if (isNative) {
       videoFile = await stopVideoRecording()
@@ -250,6 +185,73 @@ const stopRecording = async () => {
   } finally {
     isRecording.value = false
     isProcessing.value = false
+  }
+}
+// start time limit countdown handler
+const startCountdown = () => {
+  remainingTime.value = props.recordTimeLimit
+  clearInterval(countdownInterval)
+  countdownInterval = setInterval(() => {
+    remainingTime.value--
+    if (remainingTime.value < 0) {
+      stopRecording()
+    }
+  }, 1000)
+}
+// start web recording handler
+const startWebRecording = () => {
+  if (!stream.value) throw new Error("No stream available")
+
+  recordedChunks.value = []
+  const options = { mimeType: "video/webm" }
+  // Add codec fallback logic if needed
+
+  mediaRecorder.value = new MediaRecorder(stream.value, options)
+  mediaRecorder.value.ondataavailable = (e) => {
+    if (e.data.size > 0) recordedChunks.value.push(e.data)
+  }
+  mediaRecorder.value.start()
+}
+// start recording handler
+const startRecording = async () => {
+  if (isRecording.value) return
+  error.value = null
+
+  try {
+    if (isNative) {
+      await startVideoRecording()
+    } else {
+      startWebRecording()
+    }
+
+    // UI Updates
+    isRecording.value = true
+    startCountdown()
+  } catch (err) {
+    console.error("Start recording failed:", err)
+    error.value = err.message
+  }
+}
+// start web camera handler
+const startWebCamera = async () => {
+  if (stream.value) {
+    stream.value.getTracks().forEach((t) => t.stop())
+  }
+
+  const constraints = {
+    video: selectedVideoDeviceId.value
+      ? { deviceId: { exact: selectedVideoDeviceId.value } }
+      : true,
+    audio: selectedAudioDeviceId.value
+      ? { deviceId: { exact: selectedAudioDeviceId.value } }
+      : true,
+  }
+
+  try {
+    stream.value = await navigator.mediaDevices.getUserMedia(constraints)
+    if (videoRef.value) videoRef.value.srcObject = stream.value
+  } catch (err) {
+    error.value = `Camera access failed: ${err.message}`
   }
 }
 
@@ -311,7 +313,7 @@ onBeforeUnmount(() => {
     if (stream.value) stream.value.getTracks().forEach((t) => t.stop())
   }
 })
-
+// toggle recording handler and track events
 const toggleRecording = () => {
   if (isRecording.value) {
     trackClickEvent(
@@ -329,16 +331,16 @@ const toggleRecording = () => {
     startRecording()
   }
 }
-
+// get permissions handler and start the camera
 const getPermissions = async () => {
   error.value = null
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
     })
     // effective permissions granted
-    stream.getTracks().forEach((track) => track.stop())
+    mediaStream.getTracks().forEach((track) => track.stop())
 
     if (isNative) {
       await initNativeCamera()

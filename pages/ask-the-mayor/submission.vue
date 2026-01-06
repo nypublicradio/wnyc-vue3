@@ -61,7 +61,6 @@ const onFormSubmit = async () => {
   try {
     // scroll the user to the top
     setTimeout(() => {
-      console.log("scrolling to top")
       window.scrollTo(0, 0)
     }, 250)
 
@@ -100,8 +99,8 @@ const onFormSubmit = async () => {
     trackClickEvent("Click Tracking - Submit Error", "Ask the Mayor", "Submit")
   }
 }
-// handle upload error
-const onUploadError = (/* event*/) => {}
+// handle upload error, not used for now
+//const onUploadError = (/* event*/) => {}
 // handle upload complete
 const onUploadComplete = async (/*event*/) => {
   await refreshLimitData()
@@ -109,7 +108,7 @@ const onUploadComplete = async (/*event*/) => {
   uploadCompleted.value = true
 }
 // handle files updated, not used for now
-const onFilesUpdated = (/*files*/) => {}
+//const onFilesUpdated = (/*files*/) => {}
 
 const loginOrSignupStepLabel = computed(() => {
   return isSignupForm.value ? "Sign Up" : "Login"
@@ -359,8 +358,6 @@ watch(
                         :maxFiles="1"
                         autoSelect="video"
                         @upload-complete="onUploadComplete"
-                        @upload-error="onUploadError"
-                        @files-updated="onFilesUpdated"
                         @has-files="hasFiles = $event"
                         @upload-progress="submitProgress = $event"
                         @close-capture="navigateTo('/home')"
@@ -368,6 +365,8 @@ watch(
                         :recordTimeLimit="recordTimeLimit"
                         :miscData="miscData"
                       />
+                      <!-- @upload-error="onUploadError" -->
+                      <!-- @files-updated="onFilesUpdated" -->
                       <p v-if="submitProgress" class="text-center w-full">
                         {{ submitProgress }}
                       </p>

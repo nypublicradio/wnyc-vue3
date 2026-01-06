@@ -116,6 +116,7 @@ const getDevices = async () => {
   }
 }
 
+// stop media handler
 const stopMedia = () => {
   if (stream.value) {
     stream.value.getTracks().forEach((track) => track.stop())
@@ -127,6 +128,7 @@ const stopMedia = () => {
   }
 }
 
+// initialize media handler
 const initializeMedia = async () => {
   if (stream.value) {
     stopMedia()
@@ -156,6 +158,7 @@ const initializeMedia = async () => {
   }
 }
 
+// upload audio handler
 const uploadAudio = (audioFile) => {
   const captureMetadata = {
     originalFileName: audioFile.name,
@@ -175,6 +178,7 @@ const uploadAudio = (audioFile) => {
   return { file: audioFile, metadata: captureMetadata }
 }
 
+// start recording handler
 const startRecording = () => {
   if (!stream.value) {
     error.value = "Audio stream not available to start recording."
@@ -271,6 +275,7 @@ const startRecording = () => {
   }
 }
 
+// stop recording handler
 const stopRecording = () => {
   if (mediaRecorder.value && isRecording.value) {
     mediaRecorder.value.stop()

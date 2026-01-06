@@ -542,7 +542,7 @@ const uploadEditedFile = async (
       captureMetadata?.originalProps?.metadata || props.metadata
     )
   }
-
+  // convert timestamp to date
   const timeStampToDate = (timestamp) => {
     const date = new Date(timestamp)
     // format date to YYYY_MM_DD
@@ -794,12 +794,13 @@ const handleCaptureComplete = async (captureData) => {
   hasFiles.value = true
 }
 
+// capture error handler
 const handleCaptureError = (errorData) => {
   console.error("Capture error:", errorData)
   emit("upload-error", errorData) // Propagate event upwards
   // Keep the capture component open so user can retry
 }
-
+// reset function
 const reset = () => {
   if (pond.value) {
     pond.value.removeFiles()
@@ -880,7 +881,7 @@ const restoreAutosavedFiles = async () => {
 
       // Validate required parameters
       if (!apiParams.fileId || !apiParams.userId) {
-        console.error(`[UploadMedia] Missing required parameters:`, {
+        console.error("[UploadMedia] Missing required parameters:", {
           fileId: Boolean(apiParams.fileId),
           userId: Boolean(apiParams.userId),
           formId: Boolean(apiParams.formId),
@@ -973,12 +974,12 @@ const onAddFile = async (error, file) => {
         // Update the FilePond file item with the autosave ID for later reference
         file.setMetadata("autosaveId", fileRef.id)
       }
-    } catch (error) {
-      console.error("[UploadMedia] Error autosaving file:", error)
+    } catch (err) {
+      console.error("[UploadMedia] Error autosaving file:", err)
     }
   }
 }
-
+// remove file handler
 const onRemoveFile = async (error, file) => {
   if (error) return
 
@@ -988,8 +989,8 @@ const onRemoveFile = async (error, file) => {
     if (autosaveId) {
       try {
         await props.autosaveComposable.removeAutosaveMediaFile(autosaveId)
-      } catch (error) {
-        console.error("[UploadMedia] Error removing autosaved file:", error)
+      } catch (err) {
+        console.error("[UploadMedia] Error removing autosaved file:", err)
       }
     }
   }
@@ -1071,6 +1072,7 @@ watch(hasFiles, (newVal) => {
   emit("has-files", newVal)
 })
 
+// try again button handler
 const tryAgain = () => {
   trackClickEvent("Click Tracking - Try Again", "Video Capture", "Try Again")
   numOfRetakes.value++

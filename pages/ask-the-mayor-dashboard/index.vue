@@ -13,6 +13,7 @@ const user = useCurrentUser()
 const supabase = useSupabaseClient()
 const isAdmin = ref(false)
 const isLoading = ref(true)
+const authToken = ref("")
 
 const config = useRuntimeConfig()
 const {
@@ -30,8 +31,6 @@ const {
   }),
   watch: false, // We manually trigger
 })
-
-const authToken = ref("")
 
 const expandedRows = ref({})
 // const filters = ref({
@@ -211,11 +210,11 @@ watch(
           <Column field="date" header="Date"></Column>
           <Column field="submissions.length" header="Submissions"></Column>
           <Column field="approvedCount" header="Approvals"></Column>
-          <template #expansion="slotProps">
+          <template #expansion="expandedRow">
             <div class="p-4">
-              <h5>Submissions for {{ slotProps.data.date }}</h5>
+              <h5>Submissions for {{ expandedRow.data.date }}</h5>
               <DataTable
-                :value="slotProps.data.submissions"
+                :value="expandedRow.data.submissions"
                 selectionMode="single"
                 @rowSelect="navigateToSlug"
               >

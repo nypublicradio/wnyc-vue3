@@ -1,6 +1,6 @@
 // import { setGallery } from "vue-preview-imgs" // Moved to dynamic import
 import piexif from 'piexifjs'
-
+// root composable for gallery
 export default function useUseGallery () {
 
   const toast = useToast()
@@ -35,7 +35,7 @@ export default function useUseGallery () {
     return path
   }
 
-
+  // delete media from storage and database
   const deleteMedia = async (storage: { imageUrl: string, bucket: 'media' }, reference: { table: string, id: number, column: string }) => {
     isDeletingMedia.value = true
     const supabase = useSupabaseClient()
@@ -513,7 +513,7 @@ export default function useUseGallery () {
       return { success: false, metadata: {}, error: errorMessage }
     }
   }
-
+  // generate gallery list from items
   const generateGalleryList = async (items: any[]) => {
     const galleryItems = await Promise.all(
       items.map(async (item, i) => {
@@ -535,7 +535,7 @@ export default function useUseGallery () {
     )
     return galleryItems
   }
-
+  // launch gallery
   const launchGallery = async (images = [], index = 0) => {
     const imageList = await generateGalleryList(images)
 

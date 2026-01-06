@@ -1,5 +1,5 @@
 import { useToast } from "primevue/usetoast"
-
+// root composable for atm dashboard
 export const useAtmDashboard = () => {
     const supabase = useSupabaseClient()
     const toast = useToast()

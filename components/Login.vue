@@ -77,7 +77,7 @@ const openForgotPassword = () => {
   loginSideBar.value = false
   forgotPasswordSideBar.value = true
 }
-
+// handle the close login if on a route or not
 const closeLogin = () => {
   props.isRoute ? navigateTo("/home") : (loginSideBar.value = false)
 }

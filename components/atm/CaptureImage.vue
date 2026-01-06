@@ -117,8 +117,8 @@ const captureImage = () => {
           file: imageFile,
           metadata: captureMetadata,
         })
-      } catch (error) {
-        const errorMessage = error.message || "Image capture failed"
+      } catch (err) {
+        const errorMessage = err.message || "Image capture failed"
         console.error("Capture failed:", errorMessage)
         error.value = `Capture failed: ${errorMessage}`
         emit("capture-error", errorMessage)
@@ -130,7 +130,7 @@ const captureImage = () => {
     0.9
   )
 }
-
+// get devices handler
 const getDevices = async () => {
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -164,7 +164,7 @@ const getDevices = async () => {
     error.value = `Error accessing media devices: ${err.name}. Please ensure permissions are granted.`
   }
 }
-
+// stop camera handler
 const stopCamera = () => {
   if (stream.value) {
     stream.value.getTracks().forEach((track) => track.stop())
@@ -174,7 +174,7 @@ const stopCamera = () => {
     videoRef.value.srcObject = null
   }
 }
-
+// start camera handler
 const startCamera = async () => {
   if (stream.value) {
     stopCamera()
