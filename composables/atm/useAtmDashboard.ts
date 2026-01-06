@@ -3,7 +3,7 @@ import { useToast } from "primevue/usetoast"
 export const useAtmDashboard = () => {
     const supabase = useSupabaseClient()
     const toast = useToast()
-
+    // toggle approved status
     const toggleApproved = async (submission: any) => {
         try {
             const { error } = await supabase
@@ -29,7 +29,7 @@ export const useAtmDashboard = () => {
             })
         }
     }
-
+    // share submission
     const shareSubmission = async (submission: any, event?: Event) => {
         // Stop propagation to prevent row click navigation
         if (event) event.stopPropagation()
@@ -70,7 +70,7 @@ export const useAtmDashboard = () => {
             }
         }
     }
-
+    // download submission
     const downloadSubmission = async (submission: any, event?: Event) => {
         if (event) event.stopPropagation()
 

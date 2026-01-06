@@ -98,6 +98,7 @@ const stopCountdown = () => {
   remainingTime.value = props.recordTimeLimit
 }
 
+// init native camera handler & scroll into view & lock scroll
 const initNativeCamera = async () => {
   if (!isNative || !videoRef.value) return
 
