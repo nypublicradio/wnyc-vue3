@@ -461,7 +461,7 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  background: #f0f0f0;
+  background: var(--p-sky-50);
   border-radius: 8px;
 }
 

@@ -33,6 +33,8 @@ const miscData = ref({
 const supabase = useSupabaseClient()
 const authToken = ref("")
 
+const config = useRuntimeConfig()
+
 const {
   data: limitData,
   execute: executeLimitData,
@@ -47,14 +49,15 @@ const {
       Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
     }
   }),
+  baseURL: config.public.BFF_URL,
   immediate: false,
 }) // user is watched, so it will re-fetch on change
 
 const { data } = await supabase.auth.getSession()
 if (data.session) {
   authToken.value = data.session.access_token
+  executeLimitData()
 }
-executeLimitData()
 
 // Submit Handler
 const onFormSubmit = async () => {
@@ -130,24 +133,7 @@ onMounted(() => {
     page_type: "ask_the_mayor_page",
     content_group: "ask_the_mayor",
   })
-
-  // check for question limit
-  //questionLimitReached
 })
-
-// const getNextSubmissionDate = computed(() => {
-//   if (!limitData.value?.lastSubmissionDate) return null
-//   const lastSubmissionDate = limitData.value.lastSubmissionDate
-//   const lastDate = new Date(lastSubmissionDate)
-
-//   // Use the date object directly for math
-//   const nextDate = new Date(
-//     lastDate.getTime() + questionLimitDays.value * 24 * 60 * 60 * 1000
-//   )
-
-//   // format the date for display
-//   return formatDate(nextDate, "MM/dd/yyyy h:mm a")
-// })
 
 watch(limitData, (val) => {
   if (val) {
@@ -370,20 +356,20 @@ watch(
                       />
                       <!-- @upload-error="onUploadError" -->
                       <!-- @files-updated="onFilesUpdated" -->
-                      <p v-if="submitProgress" class="text-center w-full">
-                        {{ submitProgress }}
+                      <p
+                        v-if="submitProgress"
+                        class="text-center w-full flex items-items-center justify-content-center"
+                      >
+                        <i
+                          class="pi pi-spinner pi-spin"
+                          style="color: var(--p-sky-500)"
+                        ></i>
+                        <span class="ml-2">{{ submitProgress }}</span>
                       </p>
                       <div
                         v-if="hasFiles && !submitProgress"
                         class="flex flex-column gap-2 mt-4"
                       >
-                        <!-- <InputText
-                        class="w-16rem m-auto"
-                        type="text"
-                        v-model="miscData.instagramHandle"
-                        placeholder="@username"
-                      /> -->
-
                         <div
                           class="flex flex-column gap-2 max-w-21rem w-full m-auto"
                         >
