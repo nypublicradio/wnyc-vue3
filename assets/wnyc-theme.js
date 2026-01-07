@@ -1211,11 +1211,31 @@ const MyPreset = definePreset(Aura, {
           }
         },
         dark: {
+          stepTitle: {
+            color: '{neutral.300}',
+          },
           steppanel: {
             background: '{surface.25}',
           },
           stepNumber: {
             background: '{surface.25}',
+          },
+        },
+      },
+    },
+    divider: {
+      content: {
+        background: "transparent"
+      },
+      colorScheme: {
+        light: {
+          root: {
+            borderColor: '{content.border.color}'
+          },
+        },
+        dark: {
+          root: {
+            borderColor: "#ffffffE6"
           },
         },
       },

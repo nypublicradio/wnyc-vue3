@@ -351,7 +351,8 @@ const getPermissions = async () => {
     }
   } catch (err) {
     console.error("Permission request failed:", err)
-    error.value = `${err.message}. Please reset permissions in your browser settings.`
+    error.value =
+      "We can't access your camera or microphone. Please reset permissions in your device settings."
   }
 }
 
@@ -361,7 +362,8 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
 <template>
   <div class="capture-video-audio">
     <div v-if="error || nativeError" class="error-message">
-      {{ error || nativeError }}
+      We can't access your camera or microphone. Please reset permissions in
+      your device settings.
     </div>
     <div v-if="error" class="actions">
       <Button @click="getPermissions" class="record-btn">
