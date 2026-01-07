@@ -56,8 +56,8 @@ const {
 const { data } = await supabase.auth.getSession()
 if (data.session) {
   authToken.value = data.session.access_token
-  executeLimitData()
 }
+executeLimitData()
 
 // Submit Handler
 const onFormSubmit = async () => {
