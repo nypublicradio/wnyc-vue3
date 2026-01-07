@@ -122,11 +122,7 @@ const closeLogin = () => {
         @submit-error="clearAuthReturnRoute()"
         @submit-success="onLogin('apple')"
       />
-      <Divider
-        class="my-4"
-        align="center"
-        pt:content:style="background:var(--p-surface-25)"
-      >
+      <Divider class="my-4 mask" align="center">
         <b>or</b>
       </Divider>
       <VLoginWithEmail

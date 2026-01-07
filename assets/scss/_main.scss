@@ -412,3 +412,74 @@ html:not(.style-mode-dark) {
       }
     }
   }
+
+  .p-divider {
+  &.mask {
+    &.p-divider-center {
+      &:before {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 40%,
+          rgba(0, 0, 0, 0) 45%,
+          rgba(0, 0, 0, 0) 55%,
+          rgba(0, 0, 0) 60%,
+          rgb(0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 40%,
+          rgba(0, 0, 0, 0) 45%,
+          rgba(0, 0, 0, 0) 55%,
+          rgba(0, 0, 0) 60%,
+          rgb(0, 0, 0) 100%
+        );
+      }
+    }
+    &.p-divider-left {
+      &:before {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 1%,
+          rgba(0, 0, 0, 0) 4%,
+          rgba(0, 0, 0, 0) 10%,
+          rgba(0, 0, 0) 14%,
+          rgb(0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 1%,
+          rgba(0, 0, 0, 0) 4%,
+          rgba(0, 0, 0, 0) 10%,
+          rgba(0, 0, 0) 14%,
+          rgb(0, 0, 0) 100%
+        );
+      }
+    }
+    &.p-divider-right {
+      &:before {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 86%,
+          rgba(0, 0, 0, 0) 90%,
+          rgba(0, 0, 0, 0) 96%,
+          rgba(0, 0, 0) 99%,
+          rgb(0, 0, 0) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          rgb(0, 0, 0) 0%,
+          rgb(0, 0, 0) 86%,
+          rgba(0, 0, 0, 0) 90%,
+          rgba(0, 0, 0, 0) 96%,
+          rgba(0, 0, 0) 99%,
+          rgb(0, 0, 0) 100%
+        );
+      }
+    }
+  }
+}

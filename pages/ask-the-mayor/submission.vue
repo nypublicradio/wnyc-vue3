@@ -24,7 +24,7 @@ const recordTimeLimit = 30
 const activeStep = ref(1)
 const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
-const isSignupForm = ref(false)
+const isSignupForm = ref(true)
 const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
 const miscData = ref({
@@ -254,8 +254,10 @@ watch(
                     <div class="step-content">
                       <div class="flex flex-column gap-1">
                         <h2>
-                          {{ isSignupForm ? "Sign up" : "Log in" }} for a WNYC
-                          account
+                          {{
+                            isSignupForm ? "Sign up for a" : "Log in with your"
+                          }}
+                          WNYC account
                         </h2>
                         <p>Submit your question in the 3 easy steps</p>
                       </div>
