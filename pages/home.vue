@@ -1,54 +1,59 @@
 <script setup>
-import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useCurrentEpisode, useIsApp } from "~/composables/states";
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
-import { brandCards } from "~/composables/globals.ts"
-const config = useRuntimeConfig()
-const currentEpisode = useCurrentEpisode()
-const isApp = useIsApp()
+import { brandCards } from "~/composables/globals.ts";
+const config = useRuntimeConfig();
+const currentEpisode = useCurrentEpisode();
+const isApp = useIsApp();
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
+);
 
-const { data: pagedata, error, status } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepagecuration`
-)
+const {
+  data: pagedata,
+  error,
+  status,
+} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`);
 
-const layoutComponents = {}
+const layoutComponents = {};
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
   if (!layoutComponents[layout]) {
     layoutComponents[layout] = defineAsyncComponent(() =>
       import(`~/components/layouts/${layout}.vue`)
-    )
+    );
   }
-  return layoutComponents[layout]
-}
+  return layoutComponents[layout];
+};
 
 definePageMeta({
   layout: "default",
   layoutTransition: {
     name: "login",
   },
-})
+});
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp()
+  const { $analytics } = useNuxtApp();
   $analytics.sendPageView({
     page_title: "Home",
     page_type: "home_page",
     content_group: "home",
-  })
-})
+  });
+});
 </script>
 
 <template>
   <div>
     <Html lang="en">
       <Head>
-        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -66,7 +71,9 @@ onMounted(() => {
 
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2" />
-          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
+            Latest News Updates
+          </h2>
           <LatestNewsUpdates
             :localNewscast="latestNewsUpdatesData?.local_newscast"
             :nationalNewscast="latestNewsUpdatesData?.national_newscast"
@@ -85,6 +92,7 @@ onMounted(() => {
           <component
             :is="getLayoutComponent(section?.value?.layout)"
             :list="section?.value?.list"
+            square
           />
         </section>
       </div>
@@ -134,7 +142,10 @@ onMounted(() => {
 
     <!-- TEXT ONLY EXAMPLE -->
     <section
-      v-if="pagedata?.new_home_template.curatedContent[2]?.value?.list?.listItems?.length"
+      v-if="
+        pagedata?.new_home_template.curatedContent[2]?.value?.list?.listItems
+          ?.length
+      "
     >
       <layouts-text-only
         :list="pagedata?.new_home_template.curatedContent[2].value?.list"

@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation } from "~/utilities/helpers";
 const props = defineProps({
   list: {
     type: Object,
@@ -25,9 +25,28 @@ const props = defineProps({
     type: String,
     default: null,
   },
-})
+  square: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const reactiveItems = toRef(props.list, "listItems")
+const reactiveItems = toRef(props.list, "listItems");
+
+const imgRatio = props.square ? [1, 1] : [3, 2];
+
+const getImgSize = (width) => {
+  const [w, h] = imgRatio;
+  return [width, Math.round(width * (h / w))];
+};
+
+const imgSizes = {
+  xs: getImgSize(112),
+  md: getImgSize(423),
+  lg: getImgSize(261),
+  xl: getImgSize(324),
+};
+const imgSizeHorz = { xs: getImgSize(248) };
 </script>
 
 <template>
@@ -42,12 +61,8 @@ const reactiveItems = toRef(props.list, "listItems")
           showTease
           :class="props.cardClass"
           :data="item"
-          :size="{
-            xs: [112, 112],
-            md: [423, 290],
-            lg: [261, 174],
-            xl: [324, 216],
-          }"
+          :size="imgSizes"
+          :ratio="imgRatio"
           @on-click="dynamicNavigation(item)"
         />
       </template>
@@ -56,12 +71,8 @@ const reactiveItems = toRef(props.list, "listItems")
         v-for="index in 4"
         :key="`skeleton-1-${index}`"
         :class="props.cardClass"
-        :size="{
-          xs: [112, 112],
-          md: [423, 290],
-          lg: [261, 174],
-          xl: [324, 216],
-        }"
+        :size="imgSizes"
+        :ratio="imgRatio"
       />
     </div>
 
@@ -80,7 +91,8 @@ const reactiveItems = toRef(props.list, "listItems")
           :data="item"
           :key="`horzScroll-${index}-}${item.label}`"
           is-vertical
-          :size="{ xs: [248, 166] }"
+          :size="imgSizeHorz"
+          :ratio="imgRatio"
           showTease
           showBg
           showBgMobile
