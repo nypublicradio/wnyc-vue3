@@ -3,6 +3,7 @@ import { getAndSetUserProfile, refreshData } from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
+import { ScreenOrientation } from "@capacitor/screen-orientation"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
@@ -96,6 +97,7 @@ onMounted(async () => {
   await getAndSetUserProfile()
 
   if (isApp.value) {
+    await ScreenOrientation.lock({ orientation: "portrait" })
     await initFileSystem()
     await addListeners()
     await initLocalNotifications()
