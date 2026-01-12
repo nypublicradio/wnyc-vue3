@@ -249,32 +249,6 @@ export default function useCaptureMedia () {
         return Boolean(navigator.mediaDevices?.getUserMedia)
     }
 
-    const getCameraPermissionInstructions = async (): Promise<string> => {
-        const userAgent = navigator.userAgent
-        let instructions = 'Please check your browser settings to allow camera and microphone access.'
-
-        if (userAgent.includes('Firefox')) {
-            instructions = 'Click the camera or lock icon in the address bar, then click the "X" next to "Blocked" or "Allowed Temporarily" to clear the permission. Refresh the page and try again.'
-        } else if (userAgent.includes('Edg')) {
-            instructions = 'Click the lock icon in the address bar, select "Permissions" and ensure Camera and Microphone are set to "Allow". Refresh the page.'
-        } else if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
-            // Chrome on Mobile vs Desktop?
-            if (/Android|iPhone|iPad|iPod/i.test(userAgent)) {
-                instructions = 'Tap the lock or camera icon in the address bar and select "Permissions" or "Site Settings" to allow camera and microphone access.'
-            } else {
-                instructions = 'Click the lock icon in the address bar, then toggle the Camera and Microphone permissions to "On" or "Allow". Refresh the page.'
-            }
-        } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
-            if (/iPhone|iPad|iPod/i.test(userAgent)) {
-                instructions = 'Go to Settings > Safari > Camera/Microphone and choose "Allow" or "Ask". If already set, try refreshing the page.'
-            } else {
-                instructions = 'Go to Safari > Settings > Websites > Camera/Microphone and choose "Allow" or "Ask" for this website.'
-            }
-        }
-
-        return instructions
-    }
-
     return {
         isNative,
         error,
@@ -285,6 +259,5 @@ export default function useCaptureMedia () {
         captureAudio,
         captureImage,
         isMediaCaptureAvailable,
-        getCameraPermissionInstructions
     }
 }

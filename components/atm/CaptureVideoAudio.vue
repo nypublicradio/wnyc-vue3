@@ -35,7 +35,6 @@ const {
   stopVideoRecording,
   destroyVideo,
   error: nativeError,
-  getCameraPermissionInstructions,
 } = useCaptureMedia()
 
 // Refs
@@ -338,19 +337,6 @@ const toggleRecording = () => {
     startRecording()
   }
 }
-const instructions = ref("")
-const updateInstructions = async () => {
-  if (error.value || nativeError.value) {
-    instructions.value = await getCameraPermissionInstructions()
-  }
-}
-
-watch([error, nativeError], updateInstructions)
-
-// Also check initially if error is already present (e.g. from fast init)
-onMounted(() => {
-  updateInstructions()
-})
 
 defineExpose({ startRecording, stopRecording, toggleRecording })
 </script>
@@ -365,11 +351,6 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
       <Button @click="() => toSystemSettings('base')" class="record-btn">
         Application Settings
       </Button>
-    </div>
-    <div v-if="error && !isNative" class="actions">
-      <div class="error-message">
-        {{ instructions }}
-      </div>
     </div>
     <!-- Web Controls: Only show dropdowns if not native -->
     <div v-if="!isNative" class="controls flex flex-wrap grid-nogutter">
