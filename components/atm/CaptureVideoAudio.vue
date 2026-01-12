@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
 import { App } from "@capacitor/app"
 import useCaptureMedia from "~/composables/atm/useCaptureMedia"
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, toSystemSettings } from "~/utilities/helpers"
 const props = defineProps({
   bucket: {
     type: String,
@@ -35,6 +35,7 @@ const {
   stopVideoRecording,
   destroyVideo,
   error: nativeError,
+  getCameraPermissionInstructions,
 } = useCaptureMedia()
 
 // Refs
@@ -100,7 +101,9 @@ const stopCountdown = () => {
 
 // init native camera handler & scroll into view & lock scroll
 const initNativeCamera = async () => {
-  if (!isNative || !videoRef.value) return
+  if (!isNative || !videoRef.value) {
+    return
+  }
 
   try {
     // Wait for layout
@@ -133,8 +136,11 @@ const initNativeCamera = async () => {
     })
     isCameraInitialized.value = true
   } catch (err) {
-    console.error("Failed to init native camera:", err)
-    error.value = nativeError.value || "Failed to initialize camera"
+    console.error("CaptureVideoAudio: Failed to init native camera:", err)
+    error.value =
+      nativeError.value ||
+      (err instanceof Error ? err.message : String(err)) ||
+      "Failed to initialize camera"
   }
 }
 // stop web recording handler
@@ -332,29 +338,19 @@ const toggleRecording = () => {
     startRecording()
   }
 }
-// get permissions handler and start the camera
-const getPermissions = async () => {
-  error.value = null
-  try {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    })
-    // effective permissions granted
-    mediaStream.getTracks().forEach((track) => track.stop())
-
-    if (isNative) {
-      await initNativeCamera()
-    } else {
-      await getWebDevices()
-      await startWebCamera()
-    }
-  } catch (err) {
-    console.error("Permission request failed:", err)
-    error.value =
-      "We can't access your camera or microphone. Please reset permissions in your device settings."
+const instructions = ref("")
+const updateInstructions = async () => {
+  if (error.value || nativeError.value) {
+    instructions.value = await getCameraPermissionInstructions()
   }
 }
+
+watch([error, nativeError], updateInstructions)
+
+// Also check initially if error is already present (e.g. from fast init)
+onMounted(() => {
+  updateInstructions()
+})
 
 defineExpose({ startRecording, stopRecording, toggleRecording })
 </script>
@@ -365,10 +361,15 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
       We can't access your camera or microphone. Please reset permissions in
       your device settings.
     </div>
-    <div v-if="error" class="actions">
-      <Button @click="getPermissions" class="record-btn">
-        Get Camera permission
+    <div v-if="nativeError && isNative" class="actions">
+      <Button @click="() => toSystemSettings('base')" class="record-btn">
+        Application Settings
       </Button>
+    </div>
+    <div v-if="error && !isNative" class="actions">
+      <div class="error-message">
+        {{ instructions }}
+      </div>
     </div>
     <!-- Web Controls: Only show dropdowns if not native -->
     <div v-if="!isNative" class="controls flex flex-wrap grid-nogutter">
@@ -434,7 +435,7 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     <div class="actions flex flex-column gap-3 w-full align-items-center">
       <Button
         @click="toggleRecording"
-        :disabled="isProcessing || error"
+        :disabled="isProcessing || error || nativeError"
         class="record-btn"
         :class="{ recording: isRecording }"
         :label="

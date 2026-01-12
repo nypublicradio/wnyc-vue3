@@ -130,9 +130,6 @@ export default function useCaptureMedia () {
         }
     }
 
-    /**
-     * Initialize the camera preview
-     */
     const initializeVideo = async (options: {
         id: string,
         x: number,
@@ -141,10 +138,22 @@ export default function useCaptureMedia () {
         height: number,
         stackPosition?: 'front' | 'back'
     }) => {
+        if (error.value) {
+            return
+        }
         error.value = null
         if (isNative) {
             try {
-                await VideoRecorder.initialize({
+                // Probe permissions using getUserMedia
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                    stream.getTracks().forEach(track => track.stop())
+                } catch (probeErr) {
+                    throw new Error('Camera/Microphone permissions denied. Please check your settings.')
+                }
+
+                // Add a shorter timeout to catch hangs
+                const initPromise = VideoRecorder.initialize({
                     camera: VideoRecorderCamera.FRONT,
                     previewFrames: [{
                         id: options.id,
@@ -158,6 +167,13 @@ export default function useCaptureMedia () {
                     autoShow: true,
                     quality: VideoRecorderQuality.MAX_720P,
                 })
+
+                // 2 second timeout should be enough if permissions are granted
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Initialization timed out.')), 2000)
+                )
+
+                await Promise.race([initPromise, timeoutPromise])
             } catch (err) {
                 console.error('Error initializing video:', err)
                 error.value = `Failed to initialize camera: ${err.message}`
@@ -233,6 +249,32 @@ export default function useCaptureMedia () {
         return Boolean(navigator.mediaDevices?.getUserMedia)
     }
 
+    const getCameraPermissionInstructions = async (): Promise<string> => {
+        const userAgent = navigator.userAgent
+        let instructions = 'Please check your browser settings to allow camera and microphone access.'
+
+        if (userAgent.includes('Firefox')) {
+            instructions = 'Click the camera or lock icon in the address bar, then click the "X" next to "Blocked" or "Allowed Temporarily" to clear the permission. Refresh the page and try again.'
+        } else if (userAgent.includes('Edg')) {
+            instructions = 'Click the lock icon in the address bar, select "Permissions" and ensure Camera and Microphone are set to "Allow". Refresh the page.'
+        } else if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+            // Chrome on Mobile vs Desktop?
+            if (/Android|iPhone|iPad|iPod/i.test(userAgent)) {
+                instructions = 'Tap the lock or camera icon in the address bar and select "Permissions" or "Site Settings" to allow camera and microphone access.'
+            } else {
+                instructions = 'Click the lock icon in the address bar, then toggle the Camera and Microphone permissions to "On" or "Allow". Refresh the page.'
+            }
+        } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+            if (/iPhone|iPad|iPod/i.test(userAgent)) {
+                instructions = 'Go to Settings > Safari > Camera/Microphone and choose "Allow" or "Ask". If already set, try refreshing the page.'
+            } else {
+                instructions = 'Go to Safari > Settings > Websites > Camera/Microphone and choose "Allow" or "Ask" for this website.'
+            }
+        }
+
+        return instructions
+    }
+
     return {
         isNative,
         error,
@@ -242,6 +284,7 @@ export default function useCaptureMedia () {
         destroyVideo,
         captureAudio,
         captureImage,
-        isMediaCaptureAvailable
+        isMediaCaptureAvailable,
+        getCameraPermissionInstructions
     }
 }

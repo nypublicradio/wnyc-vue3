@@ -444,14 +444,24 @@ export const getRandomNumber = (min, max) => {
 }
 
 // will take the user to their native os system settings
-export const toSystemSettings = () => {
+export const toSystemSettings = (type = 'notification') => {
   if (Capacitor.getPlatform() === "android") {
-    NativeSettings.openAndroid({
-      option: AndroidSettings.AppNotification,
-    })
+    if (type === 'notification') {
+      NativeSettings.openAndroid({
+        option: AndroidSettings.AppNotification,
+      })
+    } else if (type === 'base') {
+      NativeSettings.openAndroid({
+        option: AndroidSettings.ApplicationDetails,
+      })
+    }
   } else {
     // for iOS, we are using a custom plugin
-    capacitorIosNotificationSettings.openNotificationSettings()
+    if (type === 'notification') {
+      capacitorIosNotificationSettings.openNotificationSettings()
+    } else if (type === 'base') {
+      capacitorIosNotificationSettings.openBaseSettings()
+    }
   }
 }
 
