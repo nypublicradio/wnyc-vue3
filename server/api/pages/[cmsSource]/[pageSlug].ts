@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
+import { processCuratedNprItems } from '~/composables/data/curatedContent'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -21,6 +22,7 @@ const getWagtailPageData = async (pageSlug: string) => {
     const config = __getConfig();
     const res = await axios(`${config.public.AVIARY_BASE_API}pages/${pageSlug}`);
     const resData = humps.camelizeKeys(res.data);
+
     return resData
 };
 
@@ -37,13 +39,19 @@ const getPageData = async (pageSlug: string, cmsSource: string) => {
 };
 
 // get page data from CMS
-export default async function (event) {
+export default defineEventHandler(async (event) => {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource);
+        if (PageData?.curatedContent && PageData.curatedContent.length > 0) {
+            const processedContent = await processCuratedNprItems(PageData.curatedContent);
+            if (processedContent && processedContent.length > 0 && processedContent[0].articles.length > 0) {
+                PageData.processedContent = processedContent;
+            }
+        }
         return PageData;
     } else {
         return null
     }
-}
+})
