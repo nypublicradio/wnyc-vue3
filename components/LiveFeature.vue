@@ -236,6 +236,9 @@ const togglePlayHere = async () => {
       @include media("<xl") {
         @include t2lines();
       }
+       @include media("<lg") {
+        font-size: 0.875rem;
+      }
     }
   }
 }
