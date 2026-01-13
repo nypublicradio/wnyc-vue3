@@ -8,7 +8,10 @@ import {
   useAppDownloadLink,
 } from "~/composables/states"
 import { togglePlayEpisode } from "~/utilities/helpers"
-import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
+import {
+  updateLiveStream,
+  updateAllLiveStreams,
+} from "~/composables/data/liveStream"
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -55,7 +58,13 @@ const togglePlayHere = async () => {
               :key="currentEpisodeHolder?.id"
               loading="eager"
             />
-            <WnycLoader v-else class="image-loader-anim" size="1rem" bg spinner />
+            <WnycLoader
+              v-else
+              class="image-loader-anim"
+              size="1rem"
+              bg
+              spinner
+            />
           </Transition>
         </div>
         <div class="content w-full relative">
@@ -66,14 +75,18 @@ const togglePlayHere = async () => {
             <div class="hidden md:flex align-items-center gap-2">
               <LiveBadge fontSize="0.9rem" />
               <p
-                v-if="currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd"
+                v-if="
+                  currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd
+                "
                 class="font-bold"
               >
                 {{ currentEpisodeHolder.timeStart }} -
                 {{ currentEpisodeHolder.timeEnd }}
               </p>
             </div>
-            <h2 class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t3lines">
+            <h2
+              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t3lines"
+            >
               {{ currentEpisodeHolder?.title }}
             </h2>
             <div
@@ -90,7 +103,9 @@ const togglePlayHere = async () => {
             <div class="flex align-items-start justify-content-between">
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
-                  :label="isEpisodePlaying ? listeningButtonLabel : defaultButtonLabel"
+                  :label="
+                    isEpisodePlaying ? listeningButtonLabel : defaultButtonLabel
+                  "
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                   severity="primary"
@@ -105,7 +120,9 @@ const togglePlayHere = async () => {
                   class="hidden sm:flex p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
                   @click="
                     navigateTo(appDownloadLink, {
-                      external: appDownloadLink.startsWith('http') ? true : false,
+                      external: appDownloadLink.startsWith('http')
+                        ? true
+                        : false,
                     })
                   "
                 >
@@ -156,7 +173,11 @@ const togglePlayHere = async () => {
                 borderRadius="16px"
               />
             </div>
-            <Skeleton class="mt-1 w-9rem lg:w-14rem" height="28px" borderRadius="16px" />
+            <Skeleton
+              class="mt-1 w-9rem lg:w-14rem"
+              height="28px"
+              borderRadius="16px"
+            />
             <Skeleton
               class="mt-2 w-14rem hidden xl:block"
               height="28px"
@@ -236,7 +257,7 @@ const togglePlayHere = async () => {
       @include media("<xl") {
         @include t2lines();
       }
-       @include media("<lg") {
+      @include media("<lg") {
         font-size: 0.875rem;
       }
     }
