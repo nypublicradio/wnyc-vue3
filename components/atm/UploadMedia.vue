@@ -319,10 +319,12 @@ defineExpose({
 }
 
 .preview-video {
-  max-width: 100%;
-  max-height: 50vh;
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
   border-radius: 8px;
   background: #000;
+  object-fit: contain;
 }
 
 .video-preview-box {

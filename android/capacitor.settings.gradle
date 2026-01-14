@@ -54,7 +54,7 @@ include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
 include ':nypublicradio-capacitor-ios-notification-settings'
-project(':nypublicradio-capacitor-ios-notification-settings').projectDir = new File('../node_modules/@nypublicradio/capacitor-ios-notification-settings/android')
+project(':nypublicradio-capacitor-ios-notification-settings').projectDir = new File('../../capacitor-ios-notification-settings/android')
 
 include ':nypublicradio-capacitor-remote-streamer'
 project(':nypublicradio-capacitor-remote-streamer').projectDir = new File('../node_modules/@nypublicradio/capacitor-remote-streamer/android')

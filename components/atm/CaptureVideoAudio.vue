@@ -175,8 +175,14 @@ const stopRecording = async () => {
     }
 
     if (videoFile) {
-      // Small delay to ensure native view is fully detached/stopped before we potentially unmount
-      if (isNative) await new Promise((resolve) => setTimeout(resolve, 100))
+      if (isNative) {
+        // Explicitly destroy the native view to remove the overlay
+        await destroyVideo()
+        isCameraInitialized.value = false
+
+        // Small delay to ensure native view is fully detached/stopped
+        await new Promise((resolve) => setTimeout(resolve, 100))
+      }
 
       const metadata = getCaptureMetadata(
         videoFile,
