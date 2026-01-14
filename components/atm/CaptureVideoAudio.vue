@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
 import { App } from "@capacitor/app"
-import { Capacitor } from "@capacitor/core"
 import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 import { trackClickEvent, toSystemSettings } from "~/utilities/helpers"
 const props = defineProps({
@@ -177,14 +176,8 @@ const stopRecording = async () => {
 
     if (videoFile) {
       if (isNative) {
-        // Explicitly destroy the native view to remove the overlay (only on iOS to avoid Android crash)
-        if (Capacitor.getPlatform() === "ios") {
-          await destroyVideo()
-          isCameraInitialized.value = false
-
-          // Small delay to ensure native view is fully detached/stopped
-          await new Promise((resolve) => setTimeout(resolve, 100))
-        }
+        // Small delay to ensure native view is fully detached/stopped
+        await new Promise((resolve) => setTimeout(resolve, 100))
       }
 
       const metadata = getCaptureMetadata(
