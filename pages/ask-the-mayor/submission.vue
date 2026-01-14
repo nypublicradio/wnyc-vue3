@@ -43,7 +43,7 @@ const {
   params: {
     days: questionLimitDays,
   },
-  watch: [user, authToken, questionLimitDays],
+  watch: [authToken],
   headers: computed(() => {
     return {
       Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
@@ -51,13 +51,21 @@ const {
   }),
   baseURL: config.public.BFF_URL,
   immediate: false,
-}) // user is watched, so it will re-fetch on change
+  onResponse: (res) => {
+    questionLimitReached.value = res.response._data.questionLimitReached
+    isLoading.value = false
+  },
+})
 
-const { data } = await supabase.auth.getSession()
-if (data.session) {
-  authToken.value = data.session.access_token
+const getSession = async () => {
+  const { data } = await supabase.auth.getSession()
+  if (data.session) {
+    // authToken update will trigger the useFetch to run because the useFetch is watching the authToken
+    authToken.value = data.session.access_token
+  } else {
+    isLoading.value = false
+  }
 }
-executeLimitData()
 
 // Submit Handler
 const onFormSubmit = async () => {
@@ -126,6 +134,7 @@ const onSignupClick = () => {
 }
 
 onMounted(() => {
+  getSession()
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -135,22 +144,17 @@ onMounted(() => {
   })
 })
 
-watch(limitData, (val) => {
-  if (val) {
-    questionLimitReached.value = val.questionLimitReached
+watch(user, async () => {
+  isLoading.value = true
+  if (user.value) {
+    await getSession()
+    await executeLimitData()
+    activeStep.value = 2
+    isLoading.value = false
+  } else {
     isLoading.value = false
   }
 })
-
-watch(
-  user,
-  () => {
-    if (user.value) {
-      activeStep.value = 2
-    }
-  },
-  { immediate: true }
-)
 
 watch(
   hasFiles,
@@ -209,7 +213,7 @@ watch(
         </div>
         <div
           v-if="questionLimitReached"
-          class="mt-4 max-w-22rem mx-auto flex flex-column gap-3"
+          class="mt-4 mx-auto flex flex-column gap-3"
         >
           <p class="line-height-3">
             We have received your video. You are limited to one submission per
@@ -225,7 +229,7 @@ watch(
             contacted if your question is selected for the mayor's response.
           </p>
           <Button
-            class="mt-4 w-16rem mx-auto block"
+            class="mt-4 w-12 xs:w-16rem mx-auto block"
             label="Back to home"
             @click="navigateTo('/home')"
           />
