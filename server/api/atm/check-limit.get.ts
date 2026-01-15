@@ -2,6 +2,11 @@ import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {
+    // Prevent caching
+    setResponseHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate')
+    setResponseHeader(event, 'Pragma', 'no-cache')
+    setResponseHeader(event, 'Expires', '0')
+
     let user = await serverSupabaseUser(event)
     const client = await serverSupabaseClient(event)
 
