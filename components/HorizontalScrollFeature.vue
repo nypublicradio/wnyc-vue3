@@ -8,13 +8,21 @@ const props = defineProps({
     type: String,
     default: "3",
   },
+  edgeNegativeMargin: {
+    type: String,
+    default: "0",
+  },
+  itemSize: {
+    type: String,
+    default: "",
+  },
 })
 const { isMobile } = useDevice()
 const reactiveData = toRef(props, "data")
 </script>
 
 <template>
-  <div class="horizontal-scroll-feature">
+  <div class="horizontal-scroll-feature" :class="`-mx-${props.edgeNegativeMargin}`">
     <div
       class="scroll flex align-items-stretch"
       :class="[{ hideScrollBar: isMobile }, `gap-${props.gap}`]"
@@ -72,18 +80,18 @@ const reactiveData = toRef(props, "data")
 .horizontal-scroll-feature {
   .scroll {
     .item {
-      &:first-child .btn-holder {
+      &:first-child {
         margin-left: 3rem;
         @include media("<md") {
           margin-left: 1.5rem;
         }
       }
-      &:not(.large-card):last-child .btn-holder {
+      &:not(.large-card):last-child {
         @include media("<md") {
           margin-right: 1.5rem;
         }
       }
-      &.large-card:last-child .btn-holder {
+      &.large-card:last-child {
         @include media("<md") {
           margin-right: 1.5rem;
         }
@@ -92,6 +100,8 @@ const reactiveData = toRef(props, "data")
       .btn {
         //margin-left: 1.5rem;
       }
+      min-width: v-bind(itemSize);
+      max-width: v-bind(itemSize);
     }
   }
 }

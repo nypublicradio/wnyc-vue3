@@ -110,8 +110,14 @@ function stripHtmlTags (str) {
 }
 
 // Computed property to calculate reading time
-export const getReadingTime = (htmlContent) => {
-  const textContent = stripHtmlTags(htmlContent)
+export const getReadingTime = (content: string | number): string => {
+  // If content is a number (seconds), convert directly to minutes
+  if (typeof content === 'number') {
+    return `${content} min read`
+  }
+
+  // If content is a string (HTML), calculate based on word count
+  const textContent = stripHtmlTags(content)
   const wordsPerMinute = 200 // Average reading speed
   const estimatedWordCount = textContent.split(/\s+/).length
   return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`
@@ -1005,6 +1011,18 @@ export const goToNprPage = (story, log = true) => {
     saveRecentlyPlayed(story)
   }
 }
+
+/* centralized function to route to a event page */
+export const goToEventPage = (story, log = true) => {
+
+  navigateTo({
+    path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
+  })
+  //}
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
+}
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
   navigateTo({
@@ -1032,6 +1050,10 @@ export const hasAudio = (audio) => {
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
+  if (!Array.isArray(bodyArr)) {
+    return bodyArr
+  }
+
   return bodyArr
     .filter((item) => item.type === "paragraph")
     .map((item) => item.value.replace(/<\/?[^>]+(>|$)/g, "")) // Strip HTML tags
@@ -1109,6 +1131,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
       case mediaTypes.NPR_EPISODE:
       case mediaTypes.NPR_ARTICLE:
         goToNprPage(item)
+        break
+      case mediaTypes.EVENT:
+        goToEventPage(item)
         break
       default:
         goToEpisodePage(item, null, isSaveHistory)

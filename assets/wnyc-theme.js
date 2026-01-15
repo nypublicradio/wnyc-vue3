@@ -1319,6 +1319,11 @@ const MyPreset = definePreset(Aura, {
         },
       },
     },
+    avatar: {
+      root: {
+        background: "transparent",
+      },
+    },
   },
 })
 

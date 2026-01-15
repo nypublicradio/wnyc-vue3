@@ -12,7 +12,7 @@ interface ImageAttributes {
     }
 }
 
-export function useVImage() {
+export function useVImage () {
 
     /*
     formats the url of a publisher image so it works with our design system image components
@@ -159,6 +159,12 @@ export function useVImage() {
     const isWagtailImage = (srcImg) => {
         return (typeof srcImg === "object" && "fileHash" in srcImg) || /^\d+$/.test(srcImg)
     }
+
+    // checks if the image URL is from Wagtail
+    const isSimplecastImage = (url) => {
+        return (typeof url === "string" && url.includes("simplecastcdn.com"))
+    }
+
     // checks if the image is from Publisher
     const isPublisherImage = (srcImg) => {
         return (typeof srcImg === "object" && srcImg?.template?.includes("media.wnyc.org"))
@@ -171,6 +177,10 @@ export function useVImage() {
     const isWagtailImageUrl = (url) => {
         return (typeof url === "string" && url.includes("nypr.digital/images"))
     }
+    // checks if the image URL is from Simplecast
+    // const isSimplecastImageUrl = (url) => {
+    //     return (typeof url === "string" && url.includes("simplecastcdn.com"))
+    // }
     // checks if the image URL is from Publisher
     const isPublisherImageUrl = (url) => {
         return (typeof url === "string" && url.includes("media.wnyc.org"))
@@ -204,6 +214,8 @@ export function useVImage() {
                 return { cmsSource: cmsSources.PUBLISHER, imageTemplate: srcImg.template }
             } else if (isNPRImage(srcImg)) {
                 return { cmsSource: cmsSources.NPR, imageTemplate: srcImg?.template || srcImg }
+            } else if (isSimplecastImage(srcImg)) {
+                return { cmsSource: cmsSources.SIMPLECAST, imageTemplate: srcImg }
             } else {
                 // fallback
                 return fallBackObject

@@ -6,6 +6,37 @@ export const WAGTAIL_PAGE_TYPES = {
   'standardpages.IndexPage': 'section_page',
   'standardpages.InformationPage': 'information_page',
   'tagpages.TagPage': 'tag_page',
+  'event_page': 'event',
+  'episode': 'episode',
+}
+
+/**
+ * Convert a string (like UUID) to a safe integer by hashing
+ * @param str 
+ * @returns 
+ */
+function stringToSafeNumber (str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32-bit integer
+  }
+  return Math.abs(hash)
+}
+
+/**
+ * Convert an id to a number - handles both numeric strings and UUIDs
+ * @param id 
+ * @returns 
+ */
+function idToNumber (id: any): number {
+  const num = Number(id)
+  if (!isNaN(num) && isFinite(num)) {
+    return num
+  }
+  // If it's not a valid number, hash the string
+  return stringToSafeNumber(String(id))
 }
 
 /**
@@ -13,14 +44,15 @@ export const WAGTAIL_PAGE_TYPES = {
  * @param page 
  * @returns 
  */
-export function normalizePage(page: Record<string, any>): Page {
+export function normalizePage (page: Record<string, any>): Page {
   return {
-    id: Number(page.id),
+    id: idToNumber(page.id),
     title: page.title,
     uuid: page.uuid,
-    type: WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
+    type: WAGTAIL_PAGE_TYPES[page.contentType] ?? WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
 
     listingTitle: page.listingTitle || page.title,
+    tease: page.tease || page.listingSummary || page.description,
     listingDescription: page.listingSummary || page.description,
     listingImage: page.listingImage,
     preventSearchIndexing: page.preventSearchIndexing,

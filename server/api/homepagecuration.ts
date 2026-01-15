@@ -1,50 +1,49 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { normalizePublisherListItem, normalizeNprPage } from '~/composables/data/articlePages'
+import { normalizePublisherListItem, normalizeNprPage, normalizeWagtailListItem, normalizeSimplecastListItem } from '~/composables/data/articlePages'
 import { hasAudio } from '~/utilities/helpers'
-
 
 // Get curated SHOW content from the WNYC Puplisher API
 const getSectionData = async (slug: string) => {
 	const options = {
 		method: 'GET',
 		url: `${config.public.PUBLISHER_BASE_API}v3/channel/shows/wnyc-app/${slug}`,
-	};
+	}
 
 	let res = null
 	try {
-		res = await axios(options);
+		res = await axios(options)
 
 		const resData = await Promise.all(res.data.included.map((item: any) => {
-			return normalizePublisherListItem(humps.camelizeKeys(item));
-		}));
-		return resData;
+			return normalizePublisherListItem(humps.camelizeKeys(item))
+		}))
+		return resData
 	} catch (e) {
-		console.error('getSectionData = ', e);
-		return null;
+		console.error('getSectionData = ', e)
+		return null
 	}
-};
+}
 
 // get curated content from the WNYC Puplisher API from the navigation-shows-wnyc-app link-roll
 const getHomeTemplate = async () => {
 	const options = {
 		method: 'GET',
 		url: `${config.public.PUBLISHER_BASE_API}v3/link-roll/navigation-shows-wnyc-app/`,
-	};
+	}
 
 	let res = null
 	try {
-		res = await axios(options);
-		const resData = humps.camelizeKeys(res.data).data;
+		res = await axios(options)
+		const resData = humps.camelizeKeys(res.data).data
 		const homeLayout = await Promise.all(resData.attributes?.linkroll?.map(async (layout: any) => {
 			// Regex navSlug to extract if it's horizontal or vertical.
 			// This is used to determine the layout of the home page.
-			const componentType = layout.navSlug.match(/(horizontal)/g);
-			const rawData = await getSectionData(layout.navSlug);
+			const componentType = layout.navSlug.match(/(horizontal)/g)
+			const rawData = await getSectionData(layout.navSlug)
 
 			// filter out episodes with no audio (we want to keep the null results because that seems to allow news stories with no audio to skipthe filter, so we specifically look for FALSE)
-			const data = rawData.filter((item) => hasAudio(item.audio) !== false);
+			const data = rawData.filter((item) => hasAudio(item.audio) !== false)
 
 			return {
 				title: layout.title,
@@ -52,17 +51,75 @@ const getHomeTemplate = async () => {
 				componentType: componentType ? componentType[0] : 'default',
 				data,
 			}
-		}));
-		return homeLayout;
+		}))
+		return homeLayout
 	} catch (e) {
-		console.error('getHomeTemplate = ', e);
-		return null;
+		console.error('getHomeTemplate = ', e)
+		return null
+	}
+}
+
+// get curated content from the WNYC Wagtail CMS API
+const getNewHomeTemplate = async () => {
+	let res = null
+	const options = {
+		method: 'GET',
+		url: 'https://cms.demo.nypr.digital/api/v2/pages/151286/?a=b',
+		headers: {
+			'X-CMS-Site': 'demo.wnyc.org:443'
+		}
+	}
+	try {
+		// Call the internal server API endpoint
+		res = await $fetch(options.url, {
+			method: options.method,
+			headers: options.headers
+		})
+
+		const resData = humps.camelizeKeys(res)
+
+		const transformedCuratedContent = await Promise.all(
+			resData.curatedContent.map(async (item) => {
+				const transformedListItems = await Promise.all(
+					item.value.list.listItems.map(async (listItem) => {
+						// Move content properties to root level, keeping existing root properties
+						const mergedItem = { ...listItem.content, ...listItem }
+						delete mergedItem.content
+
+						return mergedItem.contentType === 'episode'
+							? await normalizeSimplecastListItem(mergedItem)
+							: await normalizeWagtailListItem(mergedItem)
+					})
+				)
+
+				return {
+					...item,
+					value: {
+						...item.value,
+						list: {
+							...item.value.list,
+							listItems: transformedListItems
+						}
+					}
+				}
+			})
+		)
+
+		return {
+			...res,
+			curatedContent: transformedCuratedContent
+		}
+
+
+	} catch (e) {
+		console.error('getHomeTemplate = ', e)
+		return null
 	}
 }
 
 // Get NPR stories from the NPR API in the 1002 collection
 const getNprStories = async () => {
-	const componentType = "default";
+	const componentType = "default"
 	const options = {
 		method: 'GET',
 		url: `${config.public.NPR_CDS_API}/v1/documents`,
@@ -74,46 +131,46 @@ const getNprStories = async () => {
 		headers: {
 			Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
 		},
-	};
+	}
 	let response = null
 	try {
-		response = await axios(options);
+		response = await axios(options)
 		const normalizeArticles = await Promise.all(response.data.resources.map((article) => {
 			for (const asset of Object.values(article.assets)) {
 				if (asset?.isRestrictedToAuthorizedOrgServiceIds === true) {
-					article.isRestrictedToAuthorizedOrgServiceIds = true;
-					break;
+					article.isRestrictedToAuthorizedOrgServiceIds = true
+					break
 				}
 			}
 			//remove article if it contains restricted content
 			if (article?.isRestrictedToAuthorizedOrgServiceIds) {
-				return null;
+				return null
 			} else {
-				return normalizeNprPage(article, componentType);
+				return normalizeNprPage(article, componentType)
 			}
-		}));
+		}))
 
 		// Remove null and undefined articles
-		const cleanedArticles = normalizeArticles.filter((article) => article !== undefined && article !== null);
+		const cleanedArticles = normalizeArticles.filter((article) => article !== undefined && article !== null)
 		// remove articles with no body content or empty body content
-		const filteredArticles = cleanedArticles.filter((article) => article.body !== null && article.body !== '');
+		const filteredArticles = cleanedArticles.filter((article) => article.body !== null && article.body !== '')
 
 		// Sort articles by "updatedDate" if it exists, otherwise by "publicationDate" in reverse cronological order
 		const articles = filteredArticles
 			.sort((a, b) => {
-				const dateA = new Date(a.updatedDate ?? a.publicationDate);
-				const dateB = new Date(b.updatedDate ?? b.publicationDate);
-				return dateB - dateA; // Descending order
+				const dateA = new Date(a.updatedDate ?? a.publicationDate)
+				const dateB = new Date(b.updatedDate ?? b.publicationDate)
+				return dateB - dateA // Descending order
 			})
-			.slice(0, 5); // Return only 5 articles
+			.slice(0, 5) // Return only 5 articles
 
 		return [{
 			componentType,
 			articles,
-		}];
+		}]
 	} catch (e) {
-		console.error('getNprStories = ', e);
-	} return null;
+		console.error('getNprStories = ', e)
+	} return null
 }
 
 /**
@@ -122,14 +179,16 @@ const getNprStories = async () => {
  */
 export default defineEventHandler(async (event) => {
 	//console.log('getting home page CURATION data')
-	const res = event?.node?.res;
-	const homeTemplate = await getHomeTemplate();
-	const nprStories = await getNprStories();
+	const res = event?.node?.res
+	//const homeTemplate = await getHomeTemplate()
+	const newHomeTemplate = await getNewHomeTemplate()
+	//const nprStories = await getNprStories()
 
-	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate');
+	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
 
 	return {
-		home_template: homeTemplate,
-		npr_stories: nprStories,
+		//home_template: homeTemplate,
+		new_home_template: newHomeTemplate,
+		//npr_stories: nprStories,
 	}
 })

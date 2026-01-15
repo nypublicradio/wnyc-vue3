@@ -7,9 +7,9 @@ import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
-import memoize from 'memoize';
+import memoize from 'memoize'
 // Get a list of article pages using the Aviary /pages api
-export function findArticlePages(queryParams: any) {
+export function findArticlePages (queryParams: any) {
   const defaultParams = {
     type: 'news.ArticlePage',
     fields: ['ancestry', 'description', 'lead_asset', 'legacy_id', 'listing_image', 'publication_date', 'show_as_feature', 'sponsored_content', 'tags', 'updated_date', 'url', 'uuid', 'listing_title', 'listing_summary', 'related_authors'].join(','),
@@ -21,13 +21,13 @@ export function findArticlePages(queryParams: any) {
 }
 
 // Get a list of article pages using the Aviary /search api
-export function searchArticlePages(queryParams: any) {
+export function searchArticlePages (queryParams: any) {
   const params = Object.assign({}, queryParams)
   return useAviary('/search/', { params })
 }
 
 // Get a relative link to an article
-function getWagtailArticleLink(articleData): string {
+function getWagtailArticleLink (articleData): string {
   if (articleData.ancestry)
     return `/story/${articleData.meta.slug}`
 
@@ -38,12 +38,12 @@ function getWagtailArticleLink(articleData): string {
 }
 
 //Get a relative link to an article in publisher
-function getPublisherArticleLink(articleData): string {
+function getPublisherArticleLink (articleData): string {
   return `/story/${articleData.attributes.slug}`
 }
 
 // Transform author data from the API into a simpler and typed format
-export function normalizeAuthor(author: Record<string, any>): Author {
+export function normalizeAuthor (author: Record<string, any>): Author {
   return {
     id: author.id,
     firstName: author.firstName,
@@ -68,7 +68,7 @@ export function normalizeAuthor(author: Record<string, any>): Author {
  * @param article 
  * @returns 
  */
-export async function normalizeArticlePage(article: Record<string, any | undefined>): Promise<ArticlePage> {
+export async function normalizeArticlePage (article: Record<string, any | undefined>): Promise<ArticlePage> {
 
   if (article.cmsSource === cmsSources.WAGTAIL)
     return await normalizeWagtailPage(article)
@@ -83,7 +83,7 @@ export async function normalizeArticlePage(article: Record<string, any | undefin
  * @param article 
  * @returns 
  */
-export async function normalizeArticleListItem(article: Record<string, any | undefined>): Promise<ArticlePage> {
+export async function normalizeArticleListItem (article: Record<string, any | undefined>): Promise<ArticlePage> {
 
   if (article.cmsSource === cmsSources.WAGTAIL)
     return await normalizeWagtailListItem(article)
@@ -94,7 +94,7 @@ export async function normalizeArticleListItem(article: Record<string, any | und
 }
 
 // normalize person social media data
-function normalizePersonSocial(social: Record<string, any>): ISocial {
+function normalizePersonSocial (social: Record<string, any>): ISocial {
   return {
     id: social.contactString,
     service: social.service,
@@ -103,7 +103,7 @@ function normalizePersonSocial(social: Record<string, any>): ISocial {
 }
 
 // Transform person data from the API into a simpler and typed format
-export function normalizePerson(person: Record<string, any>): Person {
+export function normalizePerson (person: Record<string, any>): Person {
   const pa = person.attributes
   return {
     id: person.id,
@@ -123,7 +123,7 @@ export function normalizePerson(person: Record<string, any>): Person {
 
 
 // Wagtail: Transform page data from the API into a simpler and typed format
-export async function normalizeWagtailPage(article: Record<string, any | undefined>): ArticlePage {
+export async function normalizeWagtailPage (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
   //console.log("normalizeWagtailPage", article)
@@ -177,7 +177,7 @@ export async function normalizeWagtailPage(article: Record<string, any | undefin
 
 
 // Wagtail: Transform page data from the API into a simpler and typed format
-export async function normalizeWagtailListItem(article: Record<string, any | undefined>): ArticlePage {
+export async function normalizeWagtailListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
 
@@ -204,8 +204,61 @@ export async function normalizeWagtailListItem(article: Record<string, any | und
     hasAudio: article.audio ? true : false,
     // for comments
     estimatedDuration: undefined,
+    readingTime: article.readingTime,
     sortDate: article.sortDate,
     meta: article.meta,
+    showTitle: article.showTitle,
+    tease: article.body,
+
+    // Event-specific fields
+    contentType: article.contentType,
+    subtitle: article.subtitle,
+    body: article.body,
+    eventDate: article.eventDate,
+    endDate: article.endDate,
+    startTime: article.startTime,
+    endTime: article.endTime,
+    duration: article.duration,
+    ticketUrl: article.ticketUrl,
+    price: article.price,
+    eventLocation: article.eventLocation,
+    venueName: article.venueName,
+    eventUrl: article.eventUrl,
+    startDatetime: article.startDatetime,
+    endDatetime: article.endDatetime,
+  })
+}
+
+// SimpleCast: Transform page data from the SimpleCast API into a simpler and typed format
+export async function normalizeSimplecastListItem (article: Record<string, any | undefined>): ArticlePage {
+  if (typeof article === 'undefined')
+    return null
+
+  return Object.assign({}, await normalizePage(article), {
+    image: article.image,
+    imageFullWidth: undefined,
+    imageFullHeight: undefined,
+    cmsSource: cmsSources.SIMPLECAST,
+    authors: undefined,
+    contributingOrganizations: undefined,
+    sponsors: undefined,
+    publicationDate: (article.publishedAt && new Date(article.publishedAt)),
+    updatedDate: undefined,
+    showAsFeature: undefined,
+    sensitiveContent: undefined,
+    provocativeContent: undefined,
+    sponsoredContent: undefined,
+    relatedLinks: undefined,
+    url: article.url,
+    section: undefined,
+    //rawBody: getWagtailRawBody(article.body),
+    body: article.body,
+    audio: article.enclosureUrl,
+    hasAudio: article.enclosureUrl ? true : false,
+    // for comments
+    estimatedDuration: article.duration,
+    sortDate: article.publishedAt,
+    meta: { slug: article.slug, type: article.contentType },
     showTitle: article.showTitle,
   })
 }
@@ -215,29 +268,29 @@ export async function normalizeWagtailListItem(article: Record<string, any | und
  * @param article 
  * @returns 
  */
-export async function normalizePublisherPage(article: Record<string, any | undefined>): Promise<ArticlePage> {
+export async function normalizePublisherPage (article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-  let duration = article.attributes.estimatedDuration;
+  let duration = article.attributes.estimatedDuration
   if (!duration || typeof duration !== 'number' || duration === 0) {
-    duration = await estimateMp3Duration(article.attributes.audio);
+    duration = await estimateMp3Duration(article.attributes.audio)
   }
 
   //segment audio duration
-  const segments = article.attributes.segments;
+  const segments = article.attributes.segments
   if (segments && segments.length > 0) {
     segments.forEach(async (segment, index) => {
       if (!segment.audioDurationReadable) {
-        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]);
+        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index])
       }
-    });
+    })
   }
-  const authors = article.attributes.appearances?.authors.map(normalizeAuthor);
+  const authors = article.attributes.appearances?.authors.map(normalizeAuthor)
   // Remove publisher author fields because we don't haven't built out the author pages for publisher
   authors.forEach((author) => {
-    delete author.slug;
-    delete author.url;
-  });
+    delete author.slug
+    delete author.url
+  })
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     description: article?.attributes?.tease,
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
@@ -301,22 +354,22 @@ export async function normalizePublisherPage(article: Record<string, any | undef
  * @param article 
  * @returns 
  */
-export async function normalizePublisherListItem(article: Record<string, any | undefined>): Promise<ArticlePage> {
+export async function normalizePublisherListItem (article: Record<string, any | undefined>): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-  let duration = article.attributes.estimatedDuration;
+  let duration = article.attributes.estimatedDuration
   if (!duration || typeof duration !== 'number' || duration === 0) {
-    duration = await estimateMp3Duration(article.attributes.audio);
+    duration = await estimateMp3Duration(article.attributes.audio)
   }
 
   //segment audio duration
-  const segments = article.attributes.segments;
+  const segments = article.attributes.segments
   if (segments && segments.length > 0) {
     segments.forEach(async (segment, index) => {
       if (!segment.audioDurationReadable) {
-        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]);
+        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index])
       }
-    });
+    })
   }
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
@@ -347,10 +400,10 @@ export async function normalizePublisherListItem(article: Record<string, any | u
 
 // fetch tweet/X content from tweetId
 const fetchTweetEmbed = async (tweetId) => {
-  const response = await fetch(`https://publish.twitter.com/oembed?url=https://twitter.com/web/status/${tweetId}`);
-  const data = await response.json();
-  return data.html;
-};
+  const response = await fetch(`https://publish.twitter.com/oembed?url=https://twitter.com/web/status/${tweetId}`)
+  const data = await response.json()
+  return data.html
+}
 
 // get authors
 const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => {
@@ -361,34 +414,34 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
     headers: {
       Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
     },
-  };
+  }
   let response = null
   try {
-    response = await axios(options);
+    response = await axios(options)
   } catch (e) {
     if (e.response && e.response.status === 404) {
       console.error('404 = ', e)
     } else {
-      console.error(e);
+      console.error(e)
     }
   }
-  let image;
-  let biography = '';
-  const res = response.data?.resources[0];
+  let image
+  let biography = ''
+  const res = response.data?.resources[0]
   if (res.assets !== undefined && res.assets !== null) {
     for (const asset of Object.values(res.assets)) {
       if (asset.profiles[0]?.href === '/v1/profiles/image') {
         image = asset.enclosures.filter((enclosure) => {
-          return enclosure.rels.includes('primary');
-        })[0]?.hrefTemplate;
+          return enclosure.rels.includes('primary')
+        })[0]?.hrefTemplate
       }
     }
   }
   if (res.layout !== undefined && res.layout !== null) {
     for (const layoutItem of Object.values(res.layout)) {
-      const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+      const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
       if (res?.profiles[0]?.href === '/v1/profiles/text') {
-        biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : '';
+        biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : ''
       }
     }
   }
@@ -407,107 +460,107 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
     slug: res?.nprWebsitePath,
     url: '',
     socialMediaProfile: null,
-  };
-  return author;
+  }
+  return author
 })
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
-export async function normalizeNprPage(article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
+export async function normalizeNprPage (article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
   const id = article.id
-  const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1);
-  const firstImage = article.assets?.[firstImageId];
-  const firstImageCaption = article.assets?.[firstImageId]?.caption;
+  const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1)
+  const firstImage = article.assets?.[firstImageId]
+  const firstImageCaption = article.assets?.[firstImageId]?.caption
 
   const squareHref = firstImage?.enclosures?.filter((enclosure) => {
-    return enclosure.rels?.includes('image-square');
-  });
+    return enclosure.rels?.includes('image-square')
+  })
   const wideHref = firstImage?.enclosures?.filter((enclosure) => {
-    return enclosure.rels?.includes('image-wide');
-  });
+    return enclosure.rels?.includes('image-wide')
+  })
 
-  let textBody = '';
-  let audioURL;
-  let audioDuration;
-  let index = 0;
+  let textBody = ''
+  let audioURL
+  let audioDuration
+  let index = 0
   for (const layoutItem of Object.values(article.layout)) {
-    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1);
+    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
 
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
-      textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : '';
+      textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : ''
     }
     //html blocks
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
-      textBody += article.assets[layoutId]?.html;
+      textBody += article.assets[layoutId]?.html
     }
     //youtube
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
-      const videoID = article.assets?.[layoutId].videoId;
+      const videoID = article.assets?.[layoutId].videoId
       textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
 `
     }
     //twitter X
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
-      const tweetInfo = article.assets?.[layoutId];
-      const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId);
-      textBody += tweetHTML ? tweetHTML : '';
+      const tweetInfo = article.assets?.[layoutId]
+      const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId)
+      textBody += tweetHTML ? tweetHTML : ''
     }
     //images
     //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
     if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
-      const imageInfo = article.assets?.[layoutId];
+      const imageInfo = article.assets?.[layoutId]
       // Get image credits
       const imageCredits = () => {
         if (imageInfo.producer && imageInfo.provider) {
-          return `${imageInfo.producer}/${imageInfo.provider}`;
+          return `${imageInfo.producer}/${imageInfo.provider}`
         } else if (imageInfo.producer && !imageInfo.provider) {
-          return imageInfo.producer;
+          return imageInfo.producer
         } else if (!imageInfo.producer && imageInfo.provider) {
-          return imageInfo.provider;
+          return imageInfo.provider
         }
         return 'NPR'
       }
 
-      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 html-img"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : "";
-      textBody += imageHTML ? imageHTML : '';
+      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 html-img"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : ""
+      textBody += imageHTML ? imageHTML : ''
 
       const imageHTMLCaption = imageInfo.caption
-        ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : "";
-      textBody += imageHTMLCaption ? imageHTMLCaption : '';
+        ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : ""
+      textBody += imageHTMLCaption ? imageHTMLCaption : ''
     }
-    index++;
+    index++
   }
   //audio
   for (const asset of Object.values(article.assets)) {
     if (asset.profiles[0]?.href === '/v1/profiles/audio') {
-      audioDuration = asset?.duration;
-      const audioID = asset?.id;
-      const audioInfo = article.assets?.[audioID];
+      audioDuration = asset?.duration
+      const audioID = asset?.id
+      const audioInfo = article.assets?.[audioID]
       audioURL = audioInfo.enclosures.filter((enclosure) => {
-        return enclosure.type.includes('audio/mpeg');
-      })[0]?.href;
+        return enclosure.type.includes('audio/mpeg')
+      })[0]?.href
     }
   }
   // Get Byline 
   const bylineUrl = article.collections.filter((collection) => {
-    return collection?.rels?.includes('byline');
-  })[0]?.href ?? null;
+    return collection?.rels?.includes('byline')
+  })[0]?.href ?? null
 
-  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null;
+  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
 
-  const image = componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate;
+  const image = componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate
 
   // extract full image width and height from NPR image URL
   const getFullHeightAndWidth = (image: string) => {
-    if (!image) return { w: 0, h: 0 };
+    if (!image) return { w: 0, h: 0 }
 
-    const cropMatch = image.match(/crop\/(\d+)x(\d+)/);
+    const cropMatch = image.match(/crop\/(\d+)x(\d+)/)
     if (cropMatch) {
-      const fullWidth = parseInt(cropMatch[1], 10);
-      const fullHeight = parseInt(cropMatch[2], 10);
-      return { w: fullWidth, h: fullHeight };
+      const fullWidth = parseInt(cropMatch[1], 10)
+      const fullHeight = parseInt(cropMatch[2], 10)
+      return { w: fullWidth, h: fullHeight }
     }
 
-    return { w: 0, h: 0 };
+    return { w: 0, h: 0 }
   }
 
   return {
@@ -537,7 +590,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
     rawBody: textBody,
     link: article.webPages[0].href,
     authors,
-  };
+  }
 }
 
 
@@ -545,7 +598,7 @@ export async function normalizeNprPage(article: Record<string, any | undefined>,
 
 
 // Transform page data from the API into a simpler and typed format
-export function normalizeSearchResults(results: Record<string, any | undefined>): ArticlePage {
+export function normalizeSearchResults (results: Record<string, any | undefined>): ArticlePage {
   return {
     id: results.result.id,
     type: results.result.type,
@@ -603,11 +656,11 @@ export function normalizeSearchResults(results: Record<string, any | undefined>)
 }
 
 // Transform a list of article page data from the /pages API into a simpler and typed format
-export function normalizeFindArticlePagesResponse(articlesResponse: any): ArticlePage[] {
+export function normalizeFindArticlePagesResponse (articlesResponse: any): ArticlePage[] {
   return articlesResponse.value?.items?.map(normalizeArticlePage)
 }
 
 // Transform a list of article page data from the /search API into a simpler and typed format
-export function normalizeSearchArticlePagesResponse(articlesResponse: any): ArticlePage[] {
+export function normalizeSearchArticlePagesResponse (articlesResponse: any): ArticlePage[] {
   return articlesResponse.value?.items?.map(normalizeSearchResults)
 }

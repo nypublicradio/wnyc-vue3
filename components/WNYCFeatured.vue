@@ -11,7 +11,7 @@ const props = defineProps({
 <template>
   <div>
     <div class="wnyc-featured">
-      <HorizontalScrollFeature :data="props.articles">
+      <HorizontalScrollFeature :data="props.articles" itemSize="248px">
         <template #default>
           <MediaCard
             v-for="(item, index) in props.articles"
@@ -48,8 +48,8 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.item {
-  min-width: 248px;
-  max-width: 248px;
-}
+// .item {
+//   min-width: 248px;
+//   max-width: 248px;
+// }
 </style>

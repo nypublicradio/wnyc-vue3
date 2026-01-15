@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, logOutUser } from "~/utilities/helpers"
 
 import {
   useSettingsSideBarBrowser,
@@ -25,6 +25,47 @@ const appDownloadLink = useAppDownloadLink()
 // handle when the logo is clicked
 const handleLogoClick = () => {
   trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
+}
+const client = useSupabaseClient()
+const user = await client.auth.getSession()
+const avatarUrl = computed(() => {
+  return (
+    user.value?.data?.user?.user_metadata?.avatar_url ||
+    currentUser.value?.user_metadata?.avatar_url ||
+    currentUserProfile.value?.avatar_image_url ||
+    null
+  )
+})
+
+// handle view profile button is clicked
+const goToProfile = () => {
+  trackClickEvent(
+    "Click Tracking - Header View My Profile button",
+    "Header",
+    "View My Profile"
+  )
+  navigateTo("/dashboard")
+}
+
+// handle log out button is clicked
+const onLogOut = async () => {
+  await logOutUser()
+
+  navigateTo("/home")
+
+  //GTM
+  trackClickEvent(
+    "Click Tracking - logout button",
+    "Settings Sidebar - user section",
+    "logout button"
+  )
+
+  // show toast
+  toast.add({
+    severity: "success",
+    summary: "You have logged out.",
+    life: 3000,
+  })
 }
 </script>
 
@@ -59,7 +100,9 @@ const handleLogoClick = () => {
               </NavButton>
               <NavButton
                 class="hidden md:block"
-                :label="`${currentUser ? currentUserProfile?.name : 'Log in/Sign up'}`"
+                :label="`${
+                  currentUser ? currentUserProfile?.name : 'Log in/Sign up'
+                }`"
                 size="small"
                 trackingLocation="header utility nav"
                 route="/login"
@@ -69,8 +112,8 @@ const handleLogoClick = () => {
                   <UserIcon />
                 </template>
                 <template #menu>
-                  <NavSubMenu v-if="!currentUser" class="login-signup">
-                    <div class="flex flex-column p-4 gap-3">
+                  <NavSubMenu class="login-signup">
+                    <div v-if="!currentUser" class="flex flex-column p-4 gap-3">
                       <h2>Sign up for a free account, or log in</h2>
                       <p>See your listening history, favorites, and more.</p>
                       <Button
@@ -104,6 +147,34 @@ const handleLogoClick = () => {
                             )
                           }
                         "
+                      />
+                    </div>
+                    <div v-else class="flex flex-column p-4 gap-3">
+                      <div class="flex align-items-center gap-2">
+                        <Avatar
+                          :image="avatarUrl"
+                          shape="circle"
+                          class="flex-none"
+                        >
+                          <template #icon v-if="!avatarUrl">
+                            <UserIcon />
+                          </template>
+                        </Avatar>
+                        <h2>Hi, {{ currentUserProfile?.name }}</h2>
+                      </div>
+                      <Button
+                        label="View My Account"
+                        severity="secondary"
+                        rounded
+                        aria-label="View My Account"
+                        @click="goToProfile"
+                      />
+                      <Button
+                        label="Log Out"
+                        severity="secondary"
+                        rounded
+                        aria-label="Log Out"
+                        @click="onLogOut"
                       />
                     </div>
                   </NavSubMenu>
