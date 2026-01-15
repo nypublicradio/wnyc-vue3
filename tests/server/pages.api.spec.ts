@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ref } from 'vue'
 
 // Mock axios to return our fixture without making network calls
 let mockResponse: any
@@ -9,13 +8,6 @@ vi.mock('axios', () => ({ default: axiosMock }))
 // Keep server import tree minimal by mocking globals composable to avoid UI imports
 vi.mock('~/composables/globals', () => ({
   cmsSources: { PUBLISHER: 'publisher', WAGTAIL: 'wagtail', NPR: 'npr', SIMPLECAST: 'simplecast' },
-}))
-
-// Mock Vue composables used in imported modules to avoid ref/reactive errors
-vi.mock('vue', () => ({
-  ref: vi.fn((val) => ({ value: val })),
-  reactive: vi.fn((val) => val),
-  computed: vi.fn((fn) => ({ value: fn() })),
 }))
 
 // Provide a test-only runtime config so the server file doesn't rely on Nuxt auto-imports
@@ -82,7 +74,7 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
   })
 
   it('returns body with curated_list and listItems intact (camelized)', async () => {
-    const handler = (await import('../../server/api/pages/[cmsSource]/[pageSlug].ts')).default
+    const handler = (await import('../../server/api/pages/[cmsSource]/[pageSlug]')).default
     const event: any = {
       context: { params: { cmsSource: 'wagtail', pageSlug: 'new-sounds' } },
     }
