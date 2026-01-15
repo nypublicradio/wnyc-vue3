@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
 import { App } from "@capacitor/app"
+import { Capacitor } from "@capacitor/core"
 import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 import { trackClickEvent, toSystemSettings } from "~/utilities/helpers"
 const props = defineProps({
@@ -35,6 +36,7 @@ const {
   stopVideoRecording,
   destroyVideo,
   error: nativeError,
+  requestPermissions,
 } = useCaptureMedia()
 
 // Refs
@@ -58,7 +60,6 @@ const isProcessing = ref(false)
 const error = ref(null)
 const remainingTime = ref(props.recordTimeLimit)
 let countdownInterval = null
-let resumeListener = null
 
 const videoInputOptions = computed(() =>
   videoDevices.value.map((d) => ({
@@ -99,16 +100,28 @@ const stopCountdown = () => {
 }
 
 // init native camera handler & scroll into view & lock scroll
+// init native camera handler & scroll into view & lock scroll
+const isInitializing = ref(false)
 const initNativeCamera = async () => {
-  if (!isNative || !videoRef.value) {
+  if (
+    !isNative ||
+    !videoRef.value ||
+    isInitializing.value ||
+    isCameraInitialized.value
+  ) {
     return
   }
 
+  isInitializing.value = true
   try {
-    // Wait for layout
-    await nextTick()
+    // 1. Request Permissions FIRST (This will block/pause if dialog appears)
+    await requestPermissions()
 
-    // Scroll into view to ensure visibility
+    // 2. Wait for layout to settle/restore after any potential app switching/dialogs
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 300)) // Small breathing room for UI restoration
+
+    // 3. Scroll into view to ensure visibility (now that we hold permissions)
     if (videoContainerRef.value) {
       videoContainerRef.value.scrollIntoView({
         behavior: "smooth",
@@ -121,10 +134,11 @@ const initNativeCamera = async () => {
     // Lock scroll to prevent "floating" feel
     document.body.style.overflow = "hidden"
 
-    // Get position of the placeholder element
+    // 4. NOW measure the DOM element. The layout should be stable.
     if (!videoRef.value) return
     const rect = videoRef.value.getBoundingClientRect()
 
+    // 5. Initialize the video recorder with the correct coordinates
     await initializeVideo({
       id: "native-video-preview",
       x: rect.x,
@@ -135,11 +149,12 @@ const initNativeCamera = async () => {
     })
     isCameraInitialized.value = true
   } catch (err) {
-    console.error("CaptureVideoAudio: Failed to init native camera:", err)
     error.value =
       nativeError.value ||
       (err instanceof Error ? err.message : String(err)) ||
       "Failed to initialize camera"
+  } finally {
+    isInitializing.value = false
   }
 }
 // stop web recording handler
@@ -176,6 +191,11 @@ const stopRecording = async () => {
 
     if (videoFile) {
       if (isNative) {
+        // ios only - explicit destroy to clean up native view immediately
+        if (Capacitor.getPlatform() === "ios") {
+          await destroyVideo()
+          isCameraInitialized.value = false
+        }
         // Small delay to ensure native view is fully detached/stopped
         await new Promise((resolve) => setTimeout(resolve, 100))
       }
@@ -193,6 +213,10 @@ const stopRecording = async () => {
   } finally {
     isRecording.value = false
     isProcessing.value = false
+    // Restore scroll if we destroyed the camera
+    if (isNative && !isCameraInitialized.value) {
+      document.body.style.overflow = ""
+    }
   }
 }
 // start time limit countdown handler
@@ -290,13 +314,8 @@ watch([selectedVideoDeviceId, selectedAudioDeviceId], () => {
 onMounted(async () => {
   if (isNative) {
     // Native Init
-    initTimer.value = setTimeout(initNativeCamera, 500) // Small delay for layout to settle
-
-    // Listen for app resume (e.g. returning from permission dialog)
-    resumeListener = await App.addListener("resume", () => {
-      // Give the app a moment to settle
-      setTimeout(initNativeCamera, 500)
-    })
+    // No need for resume listener logic anymore since we explicitly await permissions inside initNativeCamera
+    initTimer.value = setTimeout(initNativeCamera, 500)
   } else {
     // Web Init
     await getWebDevices()
@@ -314,9 +333,6 @@ onBeforeUnmount(() => {
       destroyVideo()
     }
     document.body.style.overflow = "" // Restore scroll
-    if (resumeListener) {
-      resumeListener.remove()
-    }
   } else {
     if (stream.value) stream.value.getTracks().forEach((t) => t.stop())
   }

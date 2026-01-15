@@ -144,14 +144,6 @@ export default function useCaptureMedia () {
         error.value = null
         if (isNative) {
             try {
-                // Probe permissions using getUserMedia
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                    stream.getTracks().forEach(track => track.stop())
-                } catch (probeErr) {
-                    throw new Error('Camera/Microphone permissions denied. Please check your settings.')
-                }
-
                 // Add a shorter timeout to catch hangs
                 const initPromise = VideoRecorder.initialize({
                     camera: VideoRecorderCamera.FRONT,
@@ -170,7 +162,7 @@ export default function useCaptureMedia () {
 
                 // 2 second timeout should be enough if permissions are granted
                 const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Initialization timed out.')), 2000)
+                    setTimeout(() => reject(new Error('Initialization timed out.')), 5000)
                 )
 
                 await Promise.race([initPromise, timeoutPromise])
@@ -249,6 +241,25 @@ export default function useCaptureMedia () {
         return Boolean(navigator.mediaDevices?.getUserMedia)
     }
 
+    // check permissions wrapper
+    const requestPermissions = async () => {
+        if (isNative) {
+            try {
+                const { Camera } = await import('@capacitor/camera')
+                const permissionStatus = await Camera.requestPermissions({ permissions: ['camera'] })
+
+                if (permissionStatus.camera !== 'granted' && permissionStatus.camera !== 'limited') {
+                    throw new Error('Camera permission denied')
+                }
+                return true
+            } catch (err) {
+                console.error('Permission request failed:', err)
+                throw err
+            }
+        }
+        return true
+    }
+
     return {
         isNative,
         error,
@@ -259,5 +270,6 @@ export default function useCaptureMedia () {
         captureAudio,
         captureImage,
         isMediaCaptureAvailable,
+        requestPermissions
     }
 }
