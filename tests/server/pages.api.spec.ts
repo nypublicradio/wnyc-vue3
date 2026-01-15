@@ -10,6 +10,10 @@ vi.mock('~/composables/globals', () => ({
   cmsSources: { PUBLISHER: 'publisher', WAGTAIL: 'wagtail', NPR: 'npr', SIMPLECAST: 'simplecast' },
 }))
 
+// Mock Nuxt's defineEventHandler to work in test environment
+// @ts-ignore
+globalThis.defineEventHandler = (handler: any) => handler
+
 // Provide a test-only runtime config so the server file doesn't rely on Nuxt auto-imports
 // @ts-ignore
 globalThis.__testRuntimeConfig = {
