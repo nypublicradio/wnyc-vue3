@@ -134,7 +134,10 @@ const onSignupClick = () => {
 }
 
 onMounted(() => {
+  // get the session that will trigger the useFetch to run
   getSession()
+  // tell OneSignal to pause in-app notifications
+  OneSignal.InAppMessages.paused = true
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -142,6 +145,11 @@ onMounted(() => {
     page_type: "ask_the_mayor_page",
     content_group: "ask_the_mayor",
   })
+})
+
+onUnmounted(() => {
+  // tell OneSignal to resume in-app notifications
+  OneSignal.InAppMessages.paused = false
 })
 
 watch(user, async () => {
