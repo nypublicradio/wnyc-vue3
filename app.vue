@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { getAndSetUserProfile, refreshData } from "~/utilities/helpers"
+import {
+  getAndSetUserProfile,
+  refreshData,
+  setStatusDarkMode,
+} from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
@@ -122,6 +126,9 @@ onMounted(async () => {
       if (isApp.value) {
         await notificationPermissionSync(undefined)
       }
+
+      // set the system status bar to dark mode again
+      await setStatusDarkMode(currentUserProfile.value?.dark_mode)
     }
   })
 

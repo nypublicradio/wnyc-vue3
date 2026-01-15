@@ -133,11 +133,11 @@ const onSignupClick = () => {
   isSignupForm.value = true
 }
 
-onMounted(() => {
-  // get the session that will trigger the useFetch to run
-  getSession()
+onMounted(async () => {
   // tell OneSignal to pause in-app notifications
-  OneSignal.InAppMessages.paused = true
+  await OneSignal.InAppMessages.setPaused(true)
+  // get the session that will trigger the useFetch to run
+  await getSession()
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -147,9 +147,9 @@ onMounted(() => {
   })
 })
 
-onUnmounted(() => {
+onUnmounted(async () => {
   // tell OneSignal to resume in-app notifications
-  OneSignal.InAppMessages.paused = false
+  await OneSignal.InAppMessages.setPaused(false)
 })
 
 watch(user, async () => {
@@ -300,7 +300,7 @@ watch(
             </Stepper>
           </div>
           <div class="stepper flex justify-center w-full">
-            <div v-if="activeStep === 1" class="step-1 w-full">
+            <div v-if="activeStep === 1" class="step-1 w-full mb-8">
               <div class="">
                 <div class="step-content">
                   <div class="w-full">

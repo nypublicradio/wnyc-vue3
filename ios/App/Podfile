@@ -28,7 +28,7 @@ def capacitor_pods
   pod 'CapacitorShare', :path => '../../node_modules/@capacitor/share'
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
-  pod 'NypublicradioCapacitorIosNotificationSettings', :path => '../../../capacitor-ios-notification-settings'
+  pod 'NypublicradioCapacitorIosNotificationSettings', :path => '../../node_modules/@nypublicradio/capacitor-ios-notification-settings'
   pod 'NypublicradioCapacitorRemoteStreamer', :path => '../../node_modules/@nypublicradio/capacitor-remote-streamer'
   pod 'BpCapacitorBackgroundMode', :path => '../../node_modules/bp-capacitor-background-mode'
   pod 'CapacitorNativeSettings', :path => '../../node_modules/capacitor-native-settings'

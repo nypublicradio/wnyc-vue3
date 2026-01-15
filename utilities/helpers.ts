@@ -378,11 +378,14 @@ export function setFontSize (size: string) {
  * helper function to toggle darkmode of the status bar
  */
 export async function setStatusDarkMode (bool: boolean) {
-  if (useIsApp().value) {
-    bool
-      ? await StatusBar.setStyle({ style: Style.Dark })
-      : await StatusBar.setStyle({ style: Style.Light })
-  }
+  setTimeout(async () => {
+    const isApp = useIsApp()
+    if (isApp.value) {
+      bool
+        ? await StatusBar.setStyle({ style: Style.Dark })
+        : await StatusBar.setStyle({ style: Style.Light })
+    }
+  }, 1500)
 }
 /**
  * helper function to toggle darkmode
