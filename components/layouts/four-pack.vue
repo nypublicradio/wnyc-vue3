@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers";
+import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   list: {
     type: Object,
@@ -29,24 +29,24 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
+})
 
-const reactiveItems = toRef(props.list, "listItems");
+const reactiveItems = toRef(props.list, "listItems")
 
-const imgRatio = props.square ? [1, 1] : [3, 2];
-
+const imgRatio = props.square ? [1, 1] : [3, 2]
+// sets the height based on the imgRatio
 const getImgSize = (width) => {
-  const [w, h] = imgRatio;
-  return [width, Math.round(width * (h / w))];
-};
+  const [w, h] = imgRatio
+  return [width, Math.round(width * (h / w))]
+}
 
 const imgSizes = {
   xs: getImgSize(112),
   md: getImgSize(423),
   lg: getImgSize(261),
   xl: getImgSize(324),
-};
-const imgSizeHorz = { xs: getImgSize(248) };
+}
+const imgSizeHorz = { xs: getImgSize(248) }
 </script>
 
 <template>

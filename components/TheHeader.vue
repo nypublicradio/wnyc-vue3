@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent, logOutUser } from "~/utilities/helpers";
+import { trackClickEvent, logOutUser } from "~/utilities/helpers"
 
 import {
   useSettingsSideBarBrowser,
@@ -7,65 +7,66 @@ import {
   useCurrentUser,
   useCurrentUserProfile,
   useAppDownloadLink,
-} from "~/composables/states.ts";
+} from "~/composables/states.ts"
 
 const props = defineProps({
   showMenu: {
     type: Boolean,
     default: false,
   },
-});
+})
 
-const settingsSideBarBrowser = useSettingsSideBarBrowser();
-const isNetworkConnected = useIsNetworkConnected();
-const currentUser = useCurrentUser();
-const currentUserProfile = useCurrentUserProfile();
-const appDownloadLink = useAppDownloadLink();
+const settingsSideBarBrowser = useSettingsSideBarBrowser()
+const isNetworkConnected = useIsNetworkConnected()
+const currentUser = useCurrentUser()
+const currentUserProfile = useCurrentUserProfile()
+const appDownloadLink = useAppDownloadLink()
 
 // handle when the logo is clicked
 const handleLogoClick = () => {
-  trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo");
-};
-const client = useSupabaseClient();
-const user = await client.auth.getSession();
+  trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
+}
+const client = useSupabaseClient()
+const user = await client.auth.getSession()
 const avatarUrl = computed(() => {
   return (
     user.value?.data?.user?.user_metadata?.avatar_url ||
     currentUser.value?.user_metadata?.avatar_url ||
     currentUserProfile.value?.avatar_image_url ||
     null
-  );
-});
+  )
+})
 
+// handle view profile button is clicked
 const goToProfile = () => {
   trackClickEvent(
     "Click Tracking - Header View My Profile button",
     "Header",
     "View My Profile"
-  );
-  navigateTo("/dashboard");
-};
+  )
+  navigateTo("/dashboard")
+}
 
-// actions to be taken with the log out button is clicked
+// handle log out button is clicked
 const onLogOut = async () => {
-  await logOutUser();
+  await logOutUser()
 
-  navigateTo("/home");
+  navigateTo("/home")
 
   //GTM
   trackClickEvent(
     "Click Tracking - logout button",
     "Settings Sidebar - user section",
     "logout button"
-  );
+  )
 
   // show toast
   toast.add({
     severity: "success",
     summary: "You have logged out.",
     life: 3000,
-  });
-};
+  })
+}
 </script>
 
 <template>
@@ -121,12 +122,12 @@ const onLogOut = async () => {
                         aria-label="Create Free Account"
                         @click="
                           () => {
-                            navigateTo('/signup');
+                            navigateTo('/signup')
                             trackClickEvent(
                               'Click Tracking - Header Log In/Sign up dropdown Create Free Account Button',
                               'Header',
                               'Create Free Account'
-                            );
+                            )
                           }
                         "
                       />
@@ -138,12 +139,12 @@ const onLogOut = async () => {
                         aria-label="Log In"
                         @click="
                           () => {
-                            navigateTo('/login');
+                            navigateTo('/login')
                             trackClickEvent(
                               'Click Tracking - Header Log In/Sign up dropdown Log In Button',
                               'Header',
                               'Log In'
-                            );
+                            )
                           }
                         "
                       />
@@ -191,12 +192,12 @@ const onLogOut = async () => {
                 aria-label="settings menu"
                 @click="
                   () => {
-                    settingsSideBarBrowser = true;
+                    settingsSideBarBrowser = true
                     trackClickEvent(
                       'Click Tracking - Header Hamburger Menu Button',
                       'Header',
                       'Open Sidebar'
-                    );
+                    )
                   }
                 "
               >
