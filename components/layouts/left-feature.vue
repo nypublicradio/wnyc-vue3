@@ -10,7 +10,7 @@ const props = defineProps({
     default: 4,
   },
 })
-
+// TODO: use new smarter ratio calc
 const reactiveItems = toRef(props.list, "listItems")
 </script>
 
@@ -59,7 +59,12 @@ const reactiveItems = toRef(props.list, "listItems")
             is-horizontal
             is-event
             imgCol="w-7rem md:w-11rem lg:w-6"
-            :size="{ xs: [112, 112], md: [176, 176], lg: [217, 159], xl: [332, 184] }"
+            :size="{
+              xs: [112, 112],
+              md: [176, 176],
+              lg: [217, 159],
+              xl: [332, 184],
+            }"
             @on-click="dynamicNavigation(article)"
           />
         </template>
@@ -71,7 +76,12 @@ const reactiveItems = toRef(props.list, "listItems")
           is-horizontal
           is-event
           imgCol="w-7rem md:w-11rem lg:w-6"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [217, 159], xl: [332, 184] }"
+          :size="{
+            xs: [112, 112],
+            md: [176, 176],
+            lg: [217, 159],
+            xl: [332, 184],
+          }"
         />
       </div>
     </div>
