@@ -134,8 +134,10 @@ const onSignupClick = () => {
 }
 
 onMounted(async () => {
-  // tell OneSignal to pause in-app notifications
-  await OneSignal.InAppMessages.setPaused(true)
+  if (isApp.value) {
+    // tell OneSignal to pause in-app notifications
+    await OneSignal.InAppMessages.setPaused(true)
+  }
   // get the session that will trigger the useFetch to run
   await getSession()
   // send GA page view
@@ -148,8 +150,10 @@ onMounted(async () => {
 })
 
 onUnmounted(async () => {
-  // tell OneSignal to resume in-app notifications
-  await OneSignal.InAppMessages.setPaused(false)
+  if (isApp.value) {
+    // tell OneSignal to resume in-app notifications
+    await OneSignal.InAppMessages.setPaused(false)
+  }
 })
 
 watch(user, async () => {

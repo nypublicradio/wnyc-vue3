@@ -364,8 +364,11 @@ defineExpose({ startRecording, stopRecording, toggleRecording })
     <div v-if="error || nativeError" class="error-message">
       We can't access your camera or microphone. Please reset permissions in
       your device settings.
+      <!-- <pre>error: {{ error }}</pre>
+      <pre>nativeError: {{ nativeError }}</pre>
+      <pre>isNative: {{ isNative }}</pre> -->
     </div>
-    <div v-if="nativeError && isNative" class="actions">
+    <div v-if="(error || nativeError) && isNative" class="actions">
       <Button @click="() => toSystemSettings('base')" class="record-btn">
         Application Settings
       </Button>

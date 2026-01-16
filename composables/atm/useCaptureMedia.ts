@@ -160,7 +160,7 @@ export default function useCaptureMedia () {
                     quality: VideoRecorderQuality.MAX_720P,
                 })
 
-                // 2 second timeout should be enough if permissions are granted
+                // 5 second timeout should be enough if permissions are granted
                 const timeoutPromise = new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Initialization timed out.')), 5000)
                 )
@@ -254,6 +254,7 @@ export default function useCaptureMedia () {
                 return true
             } catch (err) {
                 console.error('Permission request failed:', err)
+                error.value = `Failed to request permissions: ${err.message}`
                 throw err
             }
         }
