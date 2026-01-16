@@ -21,7 +21,7 @@ const reactiveItems = toRef(props.list, "listItems")
     <div class="grid">
       <MediaCard
         v-if="reactiveItems.length > 0"
-        class="col-12 lg:col-6 mb-5"
+        class="col-12 lg:col-5 mb-5 lg:mb-0"
         :data="reactiveItems?.[0]"
         is-vertical
         is-feature
@@ -37,7 +37,7 @@ const reactiveItems = toRef(props.list, "listItems")
       />
       <skeleton-media-card
         v-else
-        class="col-12 lg:col-6 mb-5"
+        class="col-12 lg:col-5 mb-5 lg:mb-0"
         is-vertical
         is-feature
         :size="{
@@ -49,21 +49,20 @@ const reactiveItems = toRef(props.list, "listItems")
         }"
       />
 
-      <div class="col-12 lg:col-6 grid grid-nogutter">
+      <div class="col-12 lg:col-7 grid grid-nogutter gap-3">
         <template v-if="reactiveItems.length > 0">
           <MediaCard
             v-for="(article, index) in reactiveItems.slice(1, props.maxItems)"
             :key="`${article.id}-${index}`"
-            class="col-12 mb-5"
+            class="col-12"
             :data="article"
             is-horizontal
             is-event
-            imgCol="w-7rem md:w-11rem lg:w-6"
+            imgCol="w-7rem md:w-11rem lg:w-11rem"
+            :ratio="[1, 1]"
             :size="{
               xs: [112, 112],
               md: [176, 176],
-              lg: [217, 159],
-              xl: [332, 184],
             }"
             @on-click="dynamicNavigation(article)"
           />
@@ -75,12 +74,10 @@ const reactiveItems = toRef(props.list, "listItems")
           class="col-12 mb-5"
           is-horizontal
           is-event
-          imgCol="w-7rem md:w-11rem lg:w-6"
+          imgCol="w-7rem md:w-11rem lg:w-11rem"
           :size="{
             xs: [112, 112],
             md: [176, 176],
-            lg: [217, 159],
-            xl: [332, 184],
           }"
         />
       </div>
