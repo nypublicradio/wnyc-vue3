@@ -1,7 +1,8 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { processCuratedNprItems } from '~/composables/data/curatedContent'
+import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { transformCuratedContent } from '~/utilities/curatedContent'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -20,10 +21,26 @@ const getPublisherPageData = async (pageSlug: string) => {
 // getting page data from the wagtail api
 const getWagtailPageData = async (pageSlug: string) => {
     const config = __getConfig();
-    const res = await axios(`${config.public.AVIARY_BASE_API}pages/${pageSlug}`);
+    const options = {
+        method: 'GET',
+        url: `${config.public.AVIARY_BASE_API}pages/${pageSlug}`,
+        headers: {
+            'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+        }
+    };
+    const res = await axios(options);
     const resData = humps.camelizeKeys(res.data);
 
-    return resData
+    // Transform curated content if it exists
+    if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
+        const transformedCuratedContent = await transformCuratedContent(resData.curatedContent);
+        return {
+            ...resData,
+            curatedContent: transformedCuratedContent
+        };
+    }
+
+    return normalizeArticlePage(resData);
 };
 
 // get page data from the proper CMS
@@ -44,12 +61,6 @@ export default defineEventHandler(async (event) => {
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource);
-        if (PageData?.curatedContent && PageData.curatedContent.length > 0) {
-            const processedContent = await processCuratedNprItems(PageData.curatedContent);
-            if (processedContent && processedContent.length > 0 && processedContent[0].articles.length > 0) {
-                PageData.processedContent = processedContent;
-            }
-        }
         return PageData;
     } else {
         return null
