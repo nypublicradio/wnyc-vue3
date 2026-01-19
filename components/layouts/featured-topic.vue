@@ -20,8 +20,8 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
   // console.log("item =   ", item)
   const imgHeight = Number(item.image?.height)
   const imgWidth = Number(item.image?.width)
-  console.log("imgWidth =   ", imgWidth)
-  console.log("imgHeight =   ", imgHeight)
+  // console.log("imgWidth =   ", imgWidth)
+  // console.log("imgHeight =   ", imgHeight)
 
   // If dimensions are missing or invalid, default to square (1:1 ratio)
   // This effectively makes height = width (ratio = 1)
@@ -42,7 +42,7 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     lg: [obj.lg, Math.round(obj.lg * ratio)],
   }
 
-  console.log("sizeObj =   ", sizeObj)
+  //console.log("sizeObj =   ", sizeObj)
 
   return sizeObj
 }
@@ -117,48 +117,65 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
           :size="{ xs: [112, 112], md: [176, 176], lg: [438, 292] }"
         />
       </div>
-
-      <!-- <pre>{{ reactiveItems }}</pre> -->
-
-      <MaterialCarousel
-        :enableThrow="true"
-        :items-to-show="4"
-        :gap="16"
-        :min-item-width="0"
-        :min-item-height="248"
-        :max-item-height="600"
-        :enable-material-scaling="true"
-      >
-        <div
-          v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
-          :key="`carousel-${item.id}-${index}`"
-          class="item"
-        >
-          <MediaCard
-            showTease
-            :data="item"
-            :allowVerticalEffect="false"
-            imgCol="w-12 h-18rem"
-            :size="
-              getImgSizesBasedOnItemImgRatio(item, {
-                xs: 112,
-                md: 176,
-                lg: 320,
-              })
-            "
-            style="height: -webkit-fill-available"
-            @on-click="dynamicNavigation(item)"
-          />
-          <!-- :size="
-              getImgSizesBasedOnItemImgRatio(item, {
-                xs: 112,
-                md: 176,
-                lg: 320,
-              })
-            " -->
-        </div>
-      </MaterialCarousel>
     </div>
+    <!-- <pre>{{ reactiveItems }}</pre> -->
+    <MaterialCarouselAdvanced
+      :enableThrow="true"
+      :items-to-show="4"
+      :gap="16"
+      :min-item-width="0"
+      :enable-material-scaling="true"
+    >
+      <div
+        v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
+        :key="`carousel-${item.id}-${index}`"
+        class="item"
+      >
+        <MediaCard2
+          showTease
+          :data="item"
+          :allowVerticalEffect="false"
+          imgCol="h-20rem"
+          :size="
+            getImgSizesBasedOnItemImgRatio(item, {
+              xs: 112,
+              md: 176,
+              lg: 320,
+            })
+          "
+          style="height: -webkit-fill-available"
+          @on-click="dynamicNavigation(item)"
+        />
+      </div>
+    </MaterialCarouselAdvanced>
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <!-- <div>
+      <div
+        v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
+        :key="`temp-${item.id}-${index}`"
+        class="item"
+      >
+        <MediaCard2
+          showTease
+          :data="item"
+          :allowVerticalEffect="false"
+          imgCol="h-20rem"
+          :size="
+            getImgSizesBasedOnItemImgRatio(item, {
+              xs: 112,
+              md: 176,
+              lg: 320,
+            })
+          "
+          style="height: -webkit-fill-available"
+          @on-click="dynamicNavigation(item)"
+        />
+      </div>
+    </div> -->
   </div>
 </template>
 
