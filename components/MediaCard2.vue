@@ -667,12 +667,18 @@ const handleHasAudio = computed(() => {
       /* Or keep them for mobile behavior? User wants "Advanced" version. */
       /* Assuming strict height-based sizing for now. */
       flex: 0 0 auto;
+      display: flex; /* Center the image during scaling */
+      align-items: center;
+      justify-content: center;
+      overflow: hidden; /* Clip overflow during squish */
 
       /* Ensure img child behaves */
       :deep(img) {
         height: 100%;
         width: auto;
         max-width: none; /* Allow it to be its natural aspect width */
+        object-fit: cover;
+        object-position: center center; /* Keep image centered when cropped */
       }
 
       @include media("<md") {
