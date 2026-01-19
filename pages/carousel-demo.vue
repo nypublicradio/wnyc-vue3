@@ -20,7 +20,7 @@ const items = Array.from({ length: 12 }, (_, i) => {
 </script>
 
 <template>
-  <div class="p-0">
+  <div class="p-0 mb-8">
     <h1 class="text-3xl font-bold mb-6">Material Carousel Demo</h1>
 
     <div class="mb-12">
