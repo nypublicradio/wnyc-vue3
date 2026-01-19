@@ -161,6 +161,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  minContentWidth: {
+    type: Number,
+    default: 180,
+  },
 })
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
@@ -171,6 +175,8 @@ const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 const isDownloaded = ref(false)
 // check if item is already favorited
 const isFavorited = ref(false)
+// check if image is loaded
+const isImageLoaded = ref(false)
 
 // flag if the type is an event
 const isEvent = props.data?.type === mediaTypes.EVENT
@@ -367,7 +373,9 @@ const handleHasAudio = computed(() => {
 <template>
   <div
     class="media-card"
-    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+    :style="`cursor: ${
+      props.isSegment ? 'default !important' : ''
+    }; --min-content-width: ${props.minContentWidth}px`"
     :class="[
       {
         'show-image': props.showImage,
@@ -376,6 +384,7 @@ const handleHasAudio = computed(() => {
         'is-feature': props.isFeature,
         'is-horizontal': props.isHorizontal,
         'is-vertical': props.isVertical,
+        'is-image-loaded': isImageLoaded,
       },
       props.data?.type,
       props.data?.cmsSource,
@@ -393,6 +402,7 @@ const handleHasAudio = computed(() => {
       :aria-label="`${props.data?.showTitle} show details`"
       :title="props.data?.title"
     ></div>
+
     <div class="holder flex flex-nogutter">
       <div
         v-if="isEvent"
@@ -418,6 +428,7 @@ const handleHasAudio = computed(() => {
           :ratio="props.ratio"
           :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
+          @is-image-loaded="isImageLoaded = true"
         />
       </div>
       <div class="content col">
@@ -609,6 +620,9 @@ const handleHasAudio = computed(() => {
   width: min-content; /* Key change: Card shrinks to fit content (Image) */
   max-width: 100%; /* Prevent overflow */
   height: auto;
+  &.is-image-loaded {
+    min-width: var(--min-content-width);
+  }
 
   .holder {
     position: relative;
@@ -730,10 +744,6 @@ const handleHasAudio = computed(() => {
         }
       }
     }
-  }
-
-  .button-holder {
-    //margin-bottom: -6px;
   }
 
   &.is-feature {

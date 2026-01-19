@@ -122,15 +122,19 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     <MaterialCarouselAdvanced
       :enableThrow="true"
       :items-to-show="4"
+      :min-content-width="180"
       :gap="16"
-      :min-item-width="180"
+      :min-item-width="0"
       :enable-material-scaling="true"
     >
       <div
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
         :key="`carousel-${item.id}-${index}`"
         class="item"
-        style="height: -webkit-fill-available"
+        style="
+          height: -webkit-fill-available;
+          border-radius: var(--media-card-border-radius);
+        "
       >
         <MediaCard2
           showTease
@@ -144,6 +148,7 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
               lg: 320,
             })
           "
+          :minContentWidth="180"
           style="height: -webkit-fill-available"
           @on-click="dynamicNavigation(item)"
         />
