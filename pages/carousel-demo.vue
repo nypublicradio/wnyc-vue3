@@ -20,7 +20,7 @@ const items = Array.from({ length: 12 }, (_, i) => {
 </script>
 
 <template>
-  <div class="p-8">
+  <div class="p-0">
     <h1 class="text-3xl font-bold mb-6">Material Carousel Demo</h1>
 
     <div class="mb-12">
@@ -72,9 +72,11 @@ const items = Array.from({ length: 12 }, (_, i) => {
       </p>
       <MaterialCarousel
         :enableThrow="true"
-        :items-to-show="4"
+        :items-to-show="3"
         :gap="8"
-        :min-item-width="100"
+        :min-item-width="0"
+        :min-item-height="248"
+        :max-item-height="324"
         :enable-material-scaling="true"
       >
         <div

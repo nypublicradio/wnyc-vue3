@@ -49,10 +49,20 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  // Minimum width for scaled items
+  // Minimum width for scaled items (Material Scaling "squish" limit)
   minItemWidth: {
     type: Number,
     default: 50,
+  },
+  // Minimum height for items
+  minItemHeight: {
+    type: Number,
+    default: 0,
+  },
+  // Maximum height for items
+  maxItemHeight: {
+    type: Number,
+    default: Infinity,
   },
 })
 
@@ -63,24 +73,36 @@ const slideElements = ref([])
 const slideProgress = ref([])
 let draggableInstance = null
 
+// Helper to calculate standard dimensions based on container width
+const getStandardDimensions = (containerWidth) => {
+  if (!containerWidth) return { width: 0, height: 0 }
+
+  const totalGapWidth = props.gap * (props.itemsToShow - 1)
+  const availableWidth = containerWidth - totalGapWidth
+  const rawWidth = availableWidth / props.itemsToShow
+  const rawHeight = rawWidth / props.itemAspectRatio
+
+  // Apply height clamps
+  const height = Math.min(
+    Math.max(rawHeight, props.minItemHeight),
+    props.maxItemHeight
+  )
+  const width = height * props.itemAspectRatio
+
+  return { width, height }
+}
+
 // Calculate item width based on how many items should be visible
 const itemWidth = computed(() => {
   if (!carouselRef.value) return "100%"
-  const containerWidth = carouselRef.value.offsetWidth
-  const totalGapWidth = props.gap * (props.itemsToShow - 1)
-  const availableWidth = containerWidth - totalGapWidth
-  const width = availableWidth / props.itemsToShow
+  const { width } = getStandardDimensions(carouselRef.value.offsetWidth)
   return `${width}px`
 })
 
 // Calculate item height based on aspect ratio
 const itemHeight = computed(() => {
   if (!carouselRef.value) return "auto"
-  const containerWidth = carouselRef.value.offsetWidth
-  const totalGapWidth = props.gap * (props.itemsToShow - 1)
-  const availableWidth = containerWidth - totalGapWidth
-  const width = availableWidth / props.itemsToShow
-  const height = width / props.itemAspectRatio
+  const { height } = getStandardDimensions(carouselRef.value.offsetWidth)
   return `${height}px`
 })
 
@@ -111,20 +133,12 @@ const updateSlideProgress = () => {
   slideElements.value = Array.from(children)
 
   // Material Scaling Logic: Right-edge squish
-  const track = trackRef.value
-  // children is already defined above and assigned to slideElements.value
   const carouselWidth = carouselRef.value.offsetWidth
   const x = currentTranslate.value
 
-  // 1. Calculate Native dimensions
-  // We assume height is uniform, derived from the "standard" item set
-  // For mixed aspect ratios, we use the data-aspect-ratio attribute or fall back to prop
-
-  // Calculate standard item width just for height reference (N items fit in view)
-  const totalGapWidth = props.gap * (props.itemsToShow - 1)
-  const availableWidthForHeight = carouselWidth - totalGapWidth
-  const standardWidth = availableWidthForHeight / props.itemsToShow
-  const fixedHeight = standardWidth / props.itemAspectRatio
+  // 1. Calculate dimensions using helper
+  const { width: standardWidth, height: fixedHeight } =
+    getStandardDimensions(carouselWidth)
 
   let accumulatedWidth = 0
 
@@ -216,12 +230,9 @@ const initDraggable = () => {
 
   const containerWidth = carouselRef.value.offsetWidth
 
-  // Calculate standard metrics (reusing logic from updateSlideProgress)
-  // Note: Ideally these shared metrics would be computed properties/composables
-  const totalGapWidth = props.gap * (props.itemsToShow - 1)
-  const availableWidthForHeight = containerWidth - totalGapWidth
-  const standardWidth = availableWidthForHeight / props.itemsToShow
-  const fixedHeight = standardWidth / props.itemAspectRatio
+  // Calculate standard metrics using helper
+  const { width: standardWidth, height: fixedHeight } =
+    getStandardDimensions(containerWidth)
 
   let totalNativeWidth = 0
   items.forEach((slide, index) => {
