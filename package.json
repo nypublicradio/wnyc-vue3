@@ -46,7 +46,7 @@
     "@capacitor/share": "6.0.2",
     "@capacitor/splash-screen": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
-    "@hypernym/nuxt-gsap": "^2.4.2",
+    "@hypernym/nuxt-gsap": "^2.4.3",
     "@nuxt/image": "1.4.0",
     "@nuxtjs/supabase": "1.1.6",
     "@nypublicradio/capacitor-ios-notification-settings": "^1.0.3",
