@@ -36,7 +36,12 @@ const props = defineProps({
   // Minimum width for scaled items (Material Scaling "squish" limit)
   minItemWidth: {
     type: Number,
-    default: 50,
+    default: 0,
+  },
+  // Minimum width for content items (Material Scaling "squish" limit)
+  minContentWidth: {
+    type: Number,
+    default: 0,
   },
 })
 

@@ -29,6 +29,15 @@ const props = defineProps({
 // Loading state for the image
 const imageLoaded = ref(false)
 
+// emit image loaded event
+const emit = defineEmits(["is-image-loaded"])
+
+watch(imageLoaded, (newVal) => {
+  if (newVal) {
+    emit("is-image-loaded")
+  }
+})
+
 const shouldShowLoader = computed(() => {
   return !imageLoaded.value
 })
@@ -134,7 +143,11 @@ const dynamicComponent = computed(() => {
     </component>
 
     <!-- Loader container that holds space -->
-    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
+    <div
+      v-if="shouldShowLoader"
+      class="image-loader-container"
+      :style="loaderDimensions"
+    >
       <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
     </div>
   </div>
