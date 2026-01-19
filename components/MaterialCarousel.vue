@@ -73,12 +73,15 @@ const slideElements = ref([])
 const slideProgress = ref([])
 let draggableInstance = null
 
+const containerWidth = ref(0)
+let resizeObserver = null
+
 // Helper to calculate standard dimensions based on container width
-const getStandardDimensions = (containerWidth) => {
-  if (!containerWidth) return { width: 0, height: 0 }
+const getStandardDimensions = (width) => {
+  if (!width) return { width: 0, height: 0 }
 
   const totalGapWidth = props.gap * (props.itemsToShow - 1)
-  const availableWidth = containerWidth - totalGapWidth
+  const availableWidth = width - totalGapWidth
   const rawWidth = availableWidth / props.itemsToShow
   const rawHeight = rawWidth / props.itemAspectRatio
 
@@ -87,22 +90,20 @@ const getStandardDimensions = (containerWidth) => {
     Math.max(rawHeight, props.minItemHeight),
     props.maxItemHeight
   )
-  const width = height * props.itemAspectRatio
+  const finalWidth = height * props.itemAspectRatio
 
-  return { width, height }
+  return { width: finalWidth, height }
 }
 
 // Calculate item width based on how many items should be visible
 const itemWidth = computed(() => {
-  if (!carouselRef.value) return "100%"
-  const { width } = getStandardDimensions(carouselRef.value.offsetWidth)
+  const { width } = getStandardDimensions(containerWidth.value)
   return `${width}px`
 })
 
 // Calculate item height based on aspect ratio
 const itemHeight = computed(() => {
-  if (!carouselRef.value) return "auto"
-  const { height } = getStandardDimensions(carouselRef.value.offsetWidth)
+  const { height } = getStandardDimensions(containerWidth.value)
   return `${height}px`
 })
 
@@ -132,13 +133,15 @@ const updateSlideProgress = () => {
   const children = trackRef.value.children
   slideElements.value = Array.from(children)
 
-  // Material Scaling Logic: Right-edge squish
-  const carouselWidth = carouselRef.value.offsetWidth
+  // Use reactive container width
+  const currentWidth = containerWidth.value
+  if (!currentWidth) return
+
   const x = currentTranslate.value
 
   // 1. Calculate dimensions using helper
   const { width: standardWidth, height: fixedHeight } =
-    getStandardDimensions(carouselWidth)
+    getStandardDimensions(currentWidth)
 
   let accumulatedWidth = 0
 
@@ -151,40 +154,62 @@ const updateSlideProgress = () => {
 
     // 2. Algorithm: "Waterfill" from Left to Right
     // Determine position relative to viewport
-    // Since we are applying widths dynamically, Flexbox/Layout will shift valid starting positions
-    // We must track the 'virtual' position based on accumulated dynamic widths
-
-    // Position of this item in the 'track' (relative to track start)
     const leftPos = accumulatedWidth
-
-    // Position relative to Viewport Left
     const visualLeft = leftPos + x
 
-    // Calculate Available Space from this item's start to the Viewport Right Edge
-    const availableSpace = carouselWidth - visualLeft
+    // Calculate space from Left and Right of viewport
+    const availableSpaceRight = currentWidth - visualLeft
+    const availableSpaceLeft = visualLeft + nativeWidth // How much of the item is past the left edge (0) to its own right edge?
 
     // Target Width: Native, but capped by Available Space (and Min Width)
-    // - If item is fully comfortably inside, availableSpace >> nativeWidth -> Width = Native.
-    // - If item is near right edge, availableSpace < nativeWidth -> Width = availableSpace.
-    // - If availableSpace is very small (or negative), clamp to minItemWidth.
+    // - Right side: availableSpaceRight < nativeWidth -> scale down.
+    // - Left side: availableSpaceLeft < nativeWidth -> scale down.
 
-    let targetWidth = Math.min(nativeWidth, availableSpace)
+    let targetWidth = nativeWidth
+
+    // Check constraints
+    if (visualLeft > 0) {
+      // Normal or Right side
+      targetWidth = Math.min(targetWidth, availableSpaceRight)
+    } else {
+      // Left side interaction (visualLeft <= 0)
+      targetWidth = Math.min(targetWidth, availableSpaceLeft)
+    }
+
     targetWidth = Math.max(targetWidth, props.minItemWidth)
 
-    // Edge case: If item is far right (offscreen), it stays minWidth (or 0?)
-    // User wants "scale down the last item(s) to fit".
-    // This logic creates a "Right Wall".
+    // Calculate Padding/Margin Compensation for Left Side
+    // If we are on the left side, AND we are squished (width < native),
+    // we must push the element right (via margin-left) by the amount "lost".
+    // This keeps the visually rendered left edge pinned to 0 (or wherever it settled).
 
-    // Apply Width
+    let marginLeft = 0
+    if (visualLeft <= 0) {
+      // We are potentially squishing on the left.
+      // The amount we ideally wanted was nativeWidth.
+      // The amount we got is targetWidth.
+      // The difference is what we chopped off the left.
+      const lostWidth = nativeWidth - targetWidth
+      // Apply only if valid positive number
+      if (lostWidth > 0) {
+        marginLeft = lostWidth
+      }
+    }
+
+    // Apply Styles
     slide.style.width = `${targetWidth}px`
-    slide.style.height = `${fixedHeight}px` // Ensure height is explicit
-    slide.style.flex = `0 0 ${targetWidth}px` // Update flex-basis to be sure
+    slide.style.height = `${fixedHeight}px`
+    slide.style.flex = `0 0 ${targetWidth}px`
+    slide.style.marginLeft = `${marginLeft}px`
 
-    // Removed CSS transition to ensure 1:1 sync with scroll physics
     slide.style.transition = "none"
 
-    // Accumulate actual used width for the next item
-    accumulatedWidth += targetWidth + props.gap
+    // Accumulate for next item
+    // IMPORTANT: The flow position should assume the item took up its full NATIVE space.
+    // If we reduced width by 50 but added margin 50, the total footprint is 100% native.
+    // This ensures subsequent items don't jump around.
+
+    accumulatedWidth += targetWidth + marginLeft + props.gap
   })
 
   // Update track width explicitly?
@@ -228,11 +253,12 @@ const initDraggable = () => {
   // This is required because offscreen items are currently "squished" to minWidth,
   // making track.scrollWidth inaccurately small for the full scroll range.
 
-  const containerWidth = carouselRef.value.offsetWidth
+  const currentWidth = containerWidth.value
+  if (!currentWidth) return
 
   // Calculate standard metrics using helper
   const { width: standardWidth, height: fixedHeight } =
-    getStandardDimensions(containerWidth)
+    getStandardDimensions(currentWidth)
 
   let totalNativeWidth = 0
   items.forEach((slide, index) => {
@@ -249,7 +275,7 @@ const initDraggable = () => {
   })
 
   // Calculate scroll bounds based on FULL theoretical width
-  const maxScroll = -(totalNativeWidth - containerWidth)
+  const maxScroll = -(totalNativeWidth - currentWidth)
   // Safety check: if content fits in container, maxScroll might be positive -> clamp to 0
   const actualMaxScroll = Math.min(maxScroll, 0)
 
@@ -322,21 +348,49 @@ watch(
   }
 )
 
+let observer = null
+
 onMounted(() => {
+  // Setup ResizeObserver for container
+  if (carouselRef.value) {
+    // Initialize width immediately if possible
+    containerWidth.value = carouselRef.value.offsetWidth
+
+    resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Use contentRect.width
+        containerWidth.value = entry.contentRect.width
+        onResize()
+      }
+    })
+    resizeObserver.observe(carouselRef.value)
+  }
+
+  // Observe track for added/removed items (async content)
+  if (trackRef.value) {
+    observer = new MutationObserver(() => {
+      onResize()
+    })
+    observer.observe(trackRef.value, { childList: true })
+  }
+
+  // Initial init
   initDraggable()
-  // Initial calculation
   requestAnimationFrame(() => {
     updateSlideProgress()
   })
-
-  window.addEventListener("resize", onResize)
 })
 
 onUnmounted(() => {
   if (draggableInstance) {
     draggableInstance[0].kill()
   }
-  window.removeEventListener("resize", onResize)
+  if (observer) {
+    observer.disconnect()
+  }
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+  }
   clearTimeout(resizeTimeout)
 })
 </script>

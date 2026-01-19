@@ -143,7 +143,12 @@ const props = defineProps({
     type: [String, RegExp],
   },
 })
-const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
+const emit = defineEmits([
+  "image-click",
+  "keypress",
+  "image-load",
+  "image-enlarge-click",
+])
 
 const { formatPublisherImageUrl, formatRawPublisherImageUrl } = useVImage()
 
@@ -208,7 +213,8 @@ const srcset = computed(() => {
     // If this is just a plain string with no tokens,
     // we don't need to generate a srcset
     if (
-      template === template.replace(props.widthToken, "").replace(props.heightToken, "")
+      template ===
+      template.replace(props.widthToken, "").replace(props.heightToken, "")
     ) {
       return ""
     }
@@ -322,7 +328,9 @@ onMounted(async () => {
                   icon="pi pi-clone"
                   class="p-button-sm enlarge-button"
                   aria-label="Enlarge Image"
-                  @click.prevent="emit('image-enlarge-click', $event.target.value)"
+                  @click.prevent="
+                    emit('image-enlarge-click', $event.target.value)
+                  "
                 ></Button>
               </ClientOnly>
             </template>
@@ -375,6 +383,7 @@ onMounted(async () => {
     line-height: 0;
     position: relative;
     overflow: hidden;
+    width: -webkit-fill-available;
     .p-image-preview-container > img {
       cursor: default !important;
     }

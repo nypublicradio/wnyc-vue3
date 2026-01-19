@@ -157,6 +157,10 @@ const props = defineProps({
     type: Array,
     default: [2],
   },
+  allowVerticalEffect: {
+    type: Boolean,
+    default: true,
+  },
 })
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
@@ -412,7 +416,7 @@ const handleHasAudio = computed(() => {
           :maxWidth="nativeImageWidth"
           :srcset="props.imgSrcset"
           :ratio="props.ratio"
-          allowVerticalEffect
+          :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
         />
       </div>

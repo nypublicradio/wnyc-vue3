@@ -246,7 +246,10 @@ const handleProvider = computed(() => {
       style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
+      <div
+        class="v-image-holder"
+        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+      >
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -359,6 +362,7 @@ const handleProvider = computed(() => {
     position: relative;
     overflow: hidden;
     height: inherit;
+    width: -webkit-fill-available;
     .image {
       position: relative;
       width: 100%;

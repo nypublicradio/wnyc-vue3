@@ -15,44 +15,11 @@ const props = defineProps({
 const reactiveItems = toRef(props.list, "listItems")
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
-
-const getImgSizesBasedOnItemImgRatio = (item, obj) => {
-  // console.log("item =   ", item)
-  const imgHeight = Number(item.image?.height)
-  const imgWidth = Number(item.image?.width)
-  console.log("imgWidth =   ", imgWidth)
-  console.log("imgHeight =   ", imgHeight)
-
-  // If dimensions are missing or invalid, default to square (1:1 ratio)
-  // This effectively makes height = width (ratio = 1)
-  let ratio = 1
-  if (
-    imgHeight &&
-    imgWidth &&
-    !isNaN(imgHeight) &&
-    !isNaN(imgWidth) &&
-    imgWidth !== 0
-  ) {
-    ratio = imgHeight / imgWidth
-  }
-
-  const sizeObj = {
-    xs: [obj.xs, Math.round(obj.xs * ratio)],
-    md: [obj.md, Math.round(obj.md * ratio)],
-    lg: [obj.lg, Math.round(obj.lg * ratio)],
-  }
-
-  console.log("sizeObj =   ", sizeObj)
-
-  return sizeObj
-}
 </script>
 
 <template>
   <div class="layout layout-featured-topic">
-    <div
-      class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
-    >
+    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -117,47 +84,6 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
           :size="{ xs: [112, 112], md: [176, 176], lg: [438, 292] }"
         />
       </div>
-
-      <!-- <pre>{{ reactiveItems }}</pre> -->
-
-      <MaterialCarousel
-        :enableThrow="true"
-        :items-to-show="4"
-        :gap="16"
-        :min-item-width="0"
-        :min-item-height="248"
-        :max-item-height="600"
-        :enable-material-scaling="true"
-      >
-        <div
-          v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
-          :key="`carousel-${item.id}-${index}`"
-          class="item"
-        >
-          <MediaCard
-            showTease
-            :data="item"
-            :allowVerticalEffect="false"
-            imgCol="w-12 h-18rem"
-            :size="
-              getImgSizesBasedOnItemImgRatio(item, {
-                xs: 112,
-                md: 176,
-                lg: 320,
-              })
-            "
-            style="height: -webkit-fill-available"
-            @on-click="dynamicNavigation(item)"
-          />
-          <!-- :size="
-              getImgSizesBasedOnItemImgRatio(item, {
-                xs: 112,
-                md: 176,
-                lg: 320,
-              })
-            " -->
-        </div>
-      </MaterialCarousel>
     </div>
   </div>
 </template>

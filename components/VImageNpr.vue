@@ -163,7 +163,10 @@ const theSrc = computed(() => {
 
 const theSrcFull = computed(() => {
   return props.src
-    .replace("s={width}", props.maxWidth !== Infinity ? `s=${props.maxWidth}` : "")
+    .replace(
+      "s={width}",
+      props.maxWidth !== Infinity ? `s=${props.maxWidth}` : ""
+    )
     .replace("{quality}", props.quality)
     .replace("{format}", props.format)
 })
@@ -289,7 +292,10 @@ onMounted(async () => {
       style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
+      <div
+        class="v-image-holder"
+        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+      >
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -391,6 +397,7 @@ onMounted(async () => {
     position: relative;
     overflow: hidden;
     height: inherit;
+    width: -webkit-fill-available;
     .image {
       position: relative;
       width: 100%;
