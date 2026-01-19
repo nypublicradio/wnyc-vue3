@@ -80,7 +80,7 @@ const items = Array.from({ length: 12 }, (_, i) => {
         <div
           v-for="item in items"
           :key="item.id"
-          class="bg-gray-100 rounded-xl overflow-hidden shadow-sm"
+          class="item"
           :data-aspect-ratio="item.aspectRatio"
         >
           <img
@@ -93,3 +93,10 @@ const items = Array.from({ length: 12 }, (_, i) => {
     </div>
   </div>
 </template>
+ <style lang="scss">
+.item {
+  background-color: #f1f1f1;
+  border-radius: 16px;
+  overflow: hidden;
+}
+</style>
