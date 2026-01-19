@@ -207,38 +207,69 @@ const initDraggable = () => {
 
   // Get track and item dimensions
   const track = trackRef.value
-  const items = track.children
+  const items = Array.from(track.children)
   if (!items.length) return
 
-  // Calculate scroll bounds
-  const trackWidth = track.scrollWidth
+  // Calculate Theoretical Total Width (All items at Native Width)
+  // This is required because offscreen items are currently "squished" to minWidth,
+  // making track.scrollWidth inaccurately small for the full scroll range.
+
   const containerWidth = carouselRef.value.offsetWidth
-  const maxScroll = -(trackWidth - containerWidth)
+
+  // Calculate standard metrics (reusing logic from updateSlideProgress)
+  // Note: Ideally these shared metrics would be computed properties/composables
+  const totalGapWidth = props.gap * (props.itemsToShow - 1)
+  const availableWidthForHeight = containerWidth - totalGapWidth
+  const standardWidth = availableWidthForHeight / props.itemsToShow
+  const fixedHeight = standardWidth / props.itemAspectRatio
+
+  let totalNativeWidth = 0
+  items.forEach((slide, index) => {
+    let nativeWidth = standardWidth
+    if (slide.dataset.aspectRatio) {
+      nativeWidth = fixedHeight * parseFloat(slide.dataset.aspectRatio)
+    }
+    totalNativeWidth += nativeWidth
+
+    // Add gap for all except last
+    if (index < items.length - 1) {
+      totalNativeWidth += props.gap
+    }
+  })
+
+  // Calculate scroll bounds based on FULL theoretical width
+  const maxScroll = -(totalNativeWidth - containerWidth)
+  // Safety check: if content fits in container, maxScroll might be positive -> clamp to 0
+  const actualMaxScroll = Math.min(maxScroll, 0)
 
   draggableInstance = Draggable.create(track, {
     type: "x",
     bounds: {
-      minX: maxScroll,
+      minX: actualMaxScroll,
       maxX: 0,
     },
     inertia: true,
     throwProps: true,
     edgeResistance: 0.65,
-    // Snap to item positions
-    snap: (value) => {
-      const itemWidthNum = parseFloat(itemWidth.value)
-      const snapInterval = itemWidthNum + props.gap
-      return Math.round(value / snapInterval) * snapInterval
-    },
+    // Snap to item positions?
+    // Variable width snapping is complex.
+    // For now, removing snap or using a generic approach might be safer with mixed widths.
+    // The previous snap logic assumed fixed widths:
+    // snap: (value) => ...
+    // With mixed widths, we'd need to calculate closest snap point dynamically.
+    // Let's Dsiable snap for now to prevent erratic jumping, or we can implement smart snap later.
+    // snap: ... (removed for mixed width support)
+
     onDrag: function () {
       currentTranslate.value = this.x
       updateSlideProgress()
-      gsap.set(track, { x: this.x })
+      // GSAP Draggable auto-applies transform to target (track)
+      // BUT updateSlideProgress ALSO affects layout.
+      // We rely on Draggable to handle the 'x'.
     },
     onThrowUpdate: function () {
       currentTranslate.value = this.x
       updateSlideProgress()
-      gsap.set(track, { x: this.x })
     },
   })
 }
@@ -259,25 +290,21 @@ watch(
 )
 
 onMounted(() => {
-  if (props.enableThrow) {
-    // Small delay to ensure DOM is ready
-    setTimeout(() => {
-      initDraggable()
-    }, 100)
-  }
+  initDraggable()
+  // Initial calculation
+  requestAnimationFrame(() => {
+    updateSlideProgress()
+  })
 
-  // Initialize slide progress for Material scaling
-  if (props.enableMaterialScaling) {
-    setTimeout(() => {
-      updateSlideProgress()
-    }, 100)
-  }
+  window.addEventListener("resize", onResize)
 })
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   if (draggableInstance) {
     draggableInstance[0].kill()
   }
+  window.removeEventListener("resize", onResize)
+  clearTimeout(resizeTimeout)
 })
 </script>
 
