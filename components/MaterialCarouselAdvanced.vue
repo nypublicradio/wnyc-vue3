@@ -74,14 +74,13 @@ const maskStyle = computed(() => {
 })
 
 const contentResizeObserver = ref(null)
-const isDragging = ref(false)
-const isThrowing = ref(false)
+const isInteracting = ref(false) // True during entire drag + throw sequence
 let throwUpdateRAF = null
 
 // Measure natural dimensions of items
 const measureItems = () => {
   if (!trackRef.value) return
-  if (isDragging.value) return // Don't re-measure during drag
+  if (isInteracting.value) return // Don't re-measure during drag/throw
 
   const children = Array.from(trackRef.value.children)
   if (!children.length) return
@@ -128,8 +127,8 @@ const setupContentObserver = () => {
   // Create observer if not exists
   if (!contentResizeObserver.value) {
     contentResizeObserver.value = new ResizeObserver((entries) => {
-      // Don't interfere with active drag operations
-      if (isDragging.value) return
+      // Don't interfere with active drag/throw operations
+      if (isInteracting.value) return
 
       // Check if any significant change?
       // For now, just re-measure all
@@ -237,8 +236,8 @@ const updateSlideProgress = () => {
     slide.style.height = `${nativeHeight}px`
     slide.style.flex = `0 0 ${targetWidth}px`
     slide.style.marginLeft = `${marginLeft}px`
-    // Only disable transitions when not throwing (preserve inertia smoothness)
-    if (!isThrowing.value) {
+    // Only disable transitions when not interacting (preserve throw smoothness)
+    if (!isInteracting.value) {
       slide.style.transition = "none"
     }
 
@@ -321,25 +320,21 @@ const initDraggable = () => {
     // Let's Dsiable snap for now to prevent erratic jumping, or we can implement smart snap later.
     // snap: ... (removed for mixed width support)
 
+    // Interaction starts when drag begins
     onDragStart: function () {
-      isDragging.value = true
+      isInteracting.value = true
     },
     onDrag: function () {
       currentTranslate.value = this.x
       updateSlideProgress()
-      // GSAP Draggable auto-applies transform to target (track)
-      // BUT updateSlideProgress ALSO affects layout.
-      // We rely on Draggable to handle the 'x'.
     },
+    // Drag ends but throw might be starting
     onDragEnd: function () {
-      // Don't set isDragging to false yet if we're throwing
-      // Keep it true to prevent ResizeObserver interference during inertia
-      if (this.isThrowing) {
-        isThrowing.value = true
-      } else {
-        // Only release if no throw (e.g., slow release)
-        isDragging.value = false
+      // If no throw is happening, interaction is done
+      if (!this.isThrowing) {
+        isInteracting.value = false
       }
+      // Otherwise keep isInteracting true through the throw
     },
     onThrowUpdate: function () {
       currentTranslate.value = this.x
@@ -351,15 +346,14 @@ const initDraggable = () => {
         })
       }
     },
+    // Interaction ends when throw completes
     onThrowComplete: function () {
-      // Now we can safely release both flags
-      isDragging.value = false
-      isThrowing.value = false
+      isInteracting.value = false
       if (throwUpdateRAF) {
         cancelAnimationFrame(throwUpdateRAF)
         throwUpdateRAF = null
       }
-      // Final update
+      // Final update to ensure correct state
       updateSlideProgress()
     },
   })
