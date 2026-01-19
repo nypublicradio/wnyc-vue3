@@ -123,13 +123,14 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
       :enableThrow="true"
       :items-to-show="4"
       :gap="16"
-      :min-item-width="0"
+      :min-item-width="180"
       :enable-material-scaling="true"
     >
       <div
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
         :key="`carousel-${item.id}-${index}`"
         class="item"
+        style="height: -webkit-fill-available"
       >
         <MediaCard2
           showTease
