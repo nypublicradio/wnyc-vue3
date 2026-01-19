@@ -274,6 +274,28 @@ const initDraggable = () => {
   })
 }
 
+// Handle resize
+let resizeTimeout
+const onResize = () => {
+  // Simple debounce
+  clearTimeout(resizeTimeout)
+  resizeTimeout = setTimeout(() => {
+    // Re-run logic
+    updateSlideProgress()
+
+    // Re-init Draggable to update bounds
+    // We need to ensure we keep the current position if valid, or clamp if out of bounds
+    initDraggable()
+
+    // Explicitly apply bounds enforcement?
+    // Draggable.create doesn't auto-snap to bounds immediately if we just created it.
+    // We might need to check if current x is out of bounds.
+    if (draggableInstance && draggableInstance[0]) {
+      draggableInstance[0].applyBounds()
+    }
+  }, 100)
+}
+
 // Watch for changes that require re-initialization
 watch(
   () => props.enableThrow,
