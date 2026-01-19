@@ -397,7 +397,7 @@ onMounted(async () => {
     position: relative;
     overflow: hidden;
     height: inherit;
-    width: -webkit-fill-available;
+    //width: -webkit-fill-available;
     .image {
       position: relative;
       width: 100%;

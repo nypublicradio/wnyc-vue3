@@ -383,7 +383,7 @@ onMounted(async () => {
     line-height: 0;
     position: relative;
     overflow: hidden;
-    width: -webkit-fill-available;
+    //width: -webkit-fill-available;
     .p-image-preview-container > img {
       cursor: default !important;
     }

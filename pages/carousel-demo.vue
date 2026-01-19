@@ -23,7 +23,7 @@ const items = Array.from({ length: 12 }, (_, i) => {
   <div class="p-0 mb-8">
     <h1 class="text-3xl font-bold mb-6">Material Carousel Demo</h1>
 
-    <div class="mb-12">
+    <!-- <div class="mb-12">
       <h2 class="text-xl mb-4">
         Throw Physics Enabled (Draggable) - Default Settings
       </h2>
@@ -61,15 +61,9 @@ const items = Array.from({ length: 12 }, (_, i) => {
           />
         </div>
       </MaterialCarousel>
-    </div>
+    </div> -->
 
     <div class="mb-12">
-      <h2 class="text-xl mb-4">
-        Material Scaling (4 Items, Dynamic Widths, 1:1 Ratio)
-      </h2>
-      <p class="text-sm text-gray-600 mb-2">
-        Try dragging - items smoothly scale based on their position!
-      </p>
       <MaterialCarousel
         :enableThrow="true"
         :items-to-show="3"
