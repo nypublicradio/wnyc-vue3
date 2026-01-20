@@ -384,21 +384,11 @@ const initDraggable = () => {
     },
     onThrowUpdate: function () {
       currentTranslate.value = this.x
-      // Use RAF to batch updates during throw - prevents layout thrashing
-      if (!throwUpdateRAF) {
-        throwUpdateRAF = requestAnimationFrame(() => {
-          updateSlideProgress()
-          throwUpdateRAF = null
-        })
-      }
+      updateSlideProgress()
     },
     // Interaction ends when throw completes
     onThrowComplete: function () {
       isInteracting.value = false
-      if (throwUpdateRAF) {
-        cancelAnimationFrame(throwUpdateRAF)
-        throwUpdateRAF = null
-      }
       // Final update to ensure correct state
       updateSlideProgress()
     },
