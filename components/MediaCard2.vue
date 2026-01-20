@@ -813,7 +813,7 @@ const handleHasAudio = computed(() => {
   &.is-vertical {
     .image {
       width: 100% !important;
-      height: auto !important;
+      //height: auto !important;
 
       .v-image {
         left: 0;

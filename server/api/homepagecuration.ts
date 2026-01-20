@@ -62,11 +62,24 @@ const getHomeTemplate = async () => {
 // get curated content from the WNYC Wagtail CMS API
 const getNewHomeTemplate = async () => {
 	let res = null
+	const options = {
+		method: 'GET',
+		url: `${config.public.AVIARY_BASE_API}pages/151286/?a=b`,
+		headers: {
+			'X-CMS-Site': 'demo.wnyc.org:443'
+		}
+	}
 	try {
 		// Call the internal server API endpoint
-		res = await $fetch('https://demo.native-app.wnyc.org/api/pages/wagtail/151286')
+		res = await $fetch(options.url, {
+			method: options.method,
+			headers: options.headers
+		})
+
+		const resData = humps.camelizeKeys(res)
+
 		const transformedCuratedContent = await Promise.all(
-			res.curatedContent.map(async (item) => {
+			resData.curatedContent.map(async (item) => {
 				const transformedListItems = await Promise.all(
 					item.value.list.listItems.map(async (listItem) => {
 						// Move content properties to root level, keeping existing root properties
