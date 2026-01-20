@@ -64,13 +64,12 @@ const items = Array.from({ length: 12 }, (_, i) => {
     </div> -->
 
     <div class="mb-12">
-      <MaterialCarousel
+      <MaterialCarouselAdvanced
         :enableThrow="true"
         :items-to-show="3"
         :gap="8"
         :min-item-width="0"
-        :min-item-height="248"
-        :max-item-height="324"
+        :min-content-width="248"
         :enable-material-scaling="true"
       >
         <div
@@ -82,10 +81,10 @@ const items = Array.from({ length: 12 }, (_, i) => {
           <img
             :src="item.image"
             :alt="item.title"
-            class="w-full h-full object-cover"
+            class="h-20rem object-cover"
           />
         </div>
-      </MaterialCarousel>
+      </MaterialCarouselAdvanced>
     </div>
   </div>
 </template>
