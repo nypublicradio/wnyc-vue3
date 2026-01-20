@@ -484,30 +484,36 @@ export async function normalizeNprPage (article: Record<string, any | undefined>
   let index = 0
   for (const layoutItem of Object.values(article.layout)) {
     const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
+    const asset = article.assets?.[layoutId]
 
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
-      textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : ''
+    // Skip if asset doesn't exist
+    if (!asset || !asset.profiles || !asset.profiles[0]) {
+      continue
+    }
+
+    if (asset.profiles[0]?.href === '/v1/profiles/text') {
+      textBody += asset.text ? `<p>${asset.text}</p>` : ''
     }
     //html blocks
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
-      textBody += article.assets[layoutId]?.html
+    if (asset.profiles[0]?.href === '/v1/profiles/html-block') {
+      textBody += asset?.html
     }
     //youtube
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
-      const videoID = article.assets?.[layoutId].videoId
+    if (asset.profiles[0]?.href === '/v1/profiles/youtube-video') {
+      const videoID = asset.videoId
       textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
 `
     }
     //twitter X
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
-      const tweetInfo = article.assets?.[layoutId]
+    if (asset.profiles[0]?.href === '/v1/profiles/tweet') {
+      const tweetInfo = asset
       const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId)
       textBody += tweetHTML ? tweetHTML : ''
     }
     //images
     //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
-      const imageInfo = article.assets?.[layoutId]
+    if (asset.profiles[0]?.href === '/v1/profiles/image' && index > 0) {
+      const imageInfo = asset
       // Get image credits
       const imageCredits = () => {
         if (imageInfo.producer && imageInfo.provider) {
@@ -531,11 +537,14 @@ export async function normalizeNprPage (article: Record<string, any | undefined>
   }
   //audio
   for (const asset of Object.values(article.assets)) {
+    if (!asset || !asset.profiles || !asset.profiles[0]) {
+      continue
+    }
     if (asset.profiles[0]?.href === '/v1/profiles/audio') {
       audioDuration = asset?.duration
       const audioID = asset?.id
       const audioInfo = article.assets?.[audioID]
-      audioURL = audioInfo.enclosures.filter((enclosure) => {
+      audioURL = audioInfo?.enclosures?.filter((enclosure) => {
         return enclosure.type.includes('audio/mpeg')
       })[0]?.href
     }
