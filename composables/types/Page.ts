@@ -7,6 +7,32 @@ import type Sponsor from './Sponsor'
 import type Tag from './Tag'
 import type NavigationLink from './NavigationLink'
 
+export interface CuratedListItem {
+  content: any[]
+  contentType: string
+  title: string
+  subtitle: string
+  url: string | null
+  image: Image | null
+  body: string
+}
+
+export interface CuratedList {
+  title: string
+  listItems: CuratedListItem[]
+}
+
+export interface CuratedContent {
+  id: string
+  type: string
+  value: {
+    label: string
+    layout: string
+    list: CuratedList
+    seeMoreLink: string | null
+  }
+}
+
 export interface Page {
   id: number
   title: string
@@ -72,7 +98,7 @@ export interface ArticlePage extends Page {
   relatedAuthors?: Author[]
   contributingOrganizations?: ContributingOrganization[]
   sponsors?: Sponsor[]
-
+  curatedContent?: CuratedContent[]
   disableComments?: string
   commentId?: string
   headers?: any

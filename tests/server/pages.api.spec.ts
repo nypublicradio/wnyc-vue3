@@ -10,9 +10,13 @@ vi.mock('~/composables/globals', () => ({
   cmsSources: { PUBLISHER: 'publisher', WAGTAIL: 'wagtail', NPR: 'npr', SIMPLECAST: 'simplecast' },
 }))
 
+// Mock Nuxt's defineEventHandler to work in test environment
+// @ts-expect-error - globalThis augmentation for test environment
+globalThis.defineEventHandler = (handler: unknown) => handler
+
 // Provide a test-only runtime config so the server file doesn't rely on Nuxt auto-imports
-// @ts-ignore
 globalThis.__testRuntimeConfig = {
+  cmsSite: 'demo.wnyc.org:443',
   public: {
     AVIARY_BASE_API: 'https://example.test/api/v2/',
     PUBLISHER_BASE_API: 'https://publisher.test/api/',
@@ -29,6 +33,7 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
         type: 'shows.ShowPage',
         slug: 'new-sounds',
       },
+      cms_source: 'wagtail',
       title: 'New Sounds',
       body: [
         {
@@ -74,12 +79,12 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
   })
 
   it('returns body with curated_list and listItems intact (camelized)', async () => {
-    const handler = (await import('../../server/api/pages/[cmsSource]/[pageSlug].ts')).default
+    const handler = (await import('../../server/api/pages/[cmsSource]/[pageSlug]')).default
     const event: any = {
       context: { params: { cmsSource: 'wagtail', pageSlug: 'new-sounds' } },
     }
 
-    const result = await handler(event)
+    const result = await handler(event) as any
 
     // Ensure our axios mock was called to fetch from Aviary
     expect(axiosMock).toHaveBeenCalledTimes(1)
