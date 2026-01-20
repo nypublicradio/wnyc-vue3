@@ -64,7 +64,7 @@ const getNewHomeTemplate = async () => {
 	let res = null
 	const options = {
 		method: 'GET',
-		url: 'https://cms.demo.nypr.digital/api/v2/pages/151286/?a=b',
+		url: `${config.public.AVIARY_BASE_API}pages/151286/?a=b`,
 		headers: {
 			'X-CMS-Site': 'demo.wnyc.org:443'
 		}
