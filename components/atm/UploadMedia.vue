@@ -1,6 +1,5 @@
 <script setup>
-import { ref, computed } from "vue"
-import { trackClickEvent } from "~/utilities/helpers"
+import { ref } from "vue"
 import CaptureVideoAudio from "./CaptureVideoAudio.vue"
 import useTranscribe from "~/composables/atm/useTranscribe"
 
@@ -156,7 +155,7 @@ const uploadFiles = async () => {
       : {
           uploadTimestamp: Date.now(),
           uploadDate: new Date().toISOString(),
-          bucket: bucket,
+          bucket,
           path: data.path,
         }
 
@@ -239,7 +238,7 @@ const handleCaptureComplete = (captureData) => {
     emit("files-updated", [captureData.file])
   }
 }
-
+// on handle retake
 const handleRetake = () => {
   capturedFile.value = null
   captureMetadata.value = null
@@ -252,6 +251,7 @@ const handleRetake = () => {
   emit("has-files", false)
 }
 
+// on handle close capture
 const handleCloseCapture = () => {
   emit("close-capture")
 }

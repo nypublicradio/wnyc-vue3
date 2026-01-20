@@ -35,28 +35,27 @@ const authToken = ref("")
 
 const config = useRuntimeConfig()
 
-const {
-  data: limitData,
-  execute: executeLimitData,
-  refresh: refreshLimitData,
-} = await useFetch("/api/atm/check-limit", {
-  params: {
-    days: questionLimitDays,
-  },
-  watch: [authToken],
-  headers: computed(() => {
-    return {
-      Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
-    }
-  }),
-  baseURL: config.public.BFF_URL,
-  immediate: false,
-  onResponse: (res) => {
-    questionLimitReached.value = res.response._data.questionLimitReached
-    isLoading.value = false
-  },
-})
-
+const { execute: executeLimitData, refresh: refreshLimitData } = await useFetch(
+  "/api/atm/check-limit",
+  {
+    params: {
+      days: questionLimitDays,
+    },
+    watch: [authToken],
+    headers: computed(() => {
+      return {
+        Authorization: authToken.value ? `Bearer ${authToken.value}` : "",
+      }
+    }),
+    baseURL: config.public.BFF_URL,
+    immediate: false,
+    onResponse: (res) => {
+      questionLimitReached.value = res.response._data.questionLimitReached
+      isLoading.value = false
+    },
+  }
+)
+// get the supabase user auth session
 const getSession = async () => {
   const { data } = await supabase.auth.getSession()
   if (data.session) {

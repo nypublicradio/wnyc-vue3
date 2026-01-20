@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from "vue"
-import { App } from "@capacitor/app"
 import { Capacitor } from "@capacitor/core"
 import useCaptureMedia from "~/composables/atm/useCaptureMedia"
 import { trackClickEvent, toSystemSettings } from "~/utilities/helpers"
@@ -99,9 +98,8 @@ const stopCountdown = () => {
   remainingTime.value = props.recordTimeLimit
 }
 
-// init native camera handler & scroll into view & lock scroll
-// init native camera handler & scroll into view & lock scroll
 const isInitializing = ref(false)
+// init native camera handler & scroll into view & lock scroll
 const initNativeCamera = async () => {
   if (
     !isNative ||

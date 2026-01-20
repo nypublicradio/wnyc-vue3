@@ -129,7 +129,7 @@ export default function useCaptureMedia () {
             throw new Error(`Failed to convert media file: ${err.message}`)
         }
     }
-
+    // on initialize video 
     const initializeVideo = async (options: {
         id: string,
         x: number,
