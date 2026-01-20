@@ -17,6 +17,7 @@ globalThis.defineEventHandler = (handler: any) => handler
 // Provide a test-only runtime config so the server file doesn't rely on Nuxt auto-imports
 // @ts-ignore
 globalThis.__testRuntimeConfig = {
+  cmsSite: 'demo.wnyc.org:443',
   public: {
     AVIARY_BASE_API: 'https://example.test/api/v2/',
     PUBLISHER_BASE_API: 'https://publisher.test/api/',
@@ -33,6 +34,7 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
         type: 'shows.ShowPage',
         slug: 'new-sounds',
       },
+      cms_source: 'wagtail',
       title: 'New Sounds',
       body: [
         {
