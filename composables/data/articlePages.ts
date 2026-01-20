@@ -464,8 +464,65 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
   return author
 })
 
+// NPR Article Type Definitions
+interface NprEnclosure {
+  href?: string
+  hrefTemplate?: string
+  type?: string
+  rels?: string[]
+}
+
+interface NprProfile {
+  href: string
+}
+
+interface NprAsset {
+  id?: string
+  profiles?: NprProfile[]
+  text?: string
+  html?: string
+  videoId?: string
+  tweetId?: string
+  caption?: string
+  producer?: string
+  provider?: string
+  enclosures?: NprEnclosure[]
+  duration?: number
+}
+
+interface NprLayoutItem {
+  href?: string
+}
+
+interface NprImage {
+  href: string
+}
+
+interface NprCollection {
+  rels?: string[]
+  href?: string
+}
+
+interface NprWebPage {
+  href: string
+}
+
+interface NprArticle {
+  id: string
+  title?: string
+  publishDateTime?: string
+  editorialLastModifiedDateTime?: string
+  teaser?: string
+  showTitle?: string
+  webPages?: NprWebPage[]
+  images?: NprImage[]
+  assets?: Record<string, NprAsset>
+  layout?: NprLayoutItem[]
+  collections?: NprCollection[]
+}
+
 // Normalize an article page object from NPR into a generic ArticlePage object.
-export async function normalizeNprPage (article: Record<string, any | undefined>, componentType = "default"): Promise<ArticlePage> {
+export async function normalizeNprPage (article: NprArticle, componentType = "default"): Promise<ArticlePage> {
   const id = article.id
   const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1)
   const firstImage = article.assets?.[firstImageId]
