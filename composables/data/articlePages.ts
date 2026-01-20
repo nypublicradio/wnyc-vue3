@@ -698,7 +698,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
     audio: audioURL ?? null,
-    hasAudio: !!audioURL,
+    hasAudio: Boolean(audioURL),
     type: audioURL ? mediaTypes.NPR_EPISODE : mediaTypes.NPR_ARTICLE,
     estimatedDuration: audioDuration ?? null,
     meta: {
