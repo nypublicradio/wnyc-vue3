@@ -161,6 +161,18 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  inCarousel: {
+    type: Boolean,
+    default: false,
+  },
+  minContentWidth: {
+    type: Number,
+    default: 0,
+  },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
@@ -171,6 +183,8 @@ const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 const isDownloaded = ref(false)
 // check if item is already favorited
 const isFavorited = ref(false)
+// check if image is loaded (for carousel sizing)
+const isImageLoaded = ref(false)
 
 // flag if the type is an event
 const isEvent = props.data?.type === mediaTypes.EVENT
@@ -367,7 +381,9 @@ const handleHasAudio = computed(() => {
 <template>
   <div
     class="media-card"
-    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}; ${
+      props.inCarousel ? `--min-content-width: ${props.minContentWidth}px` : ''
+    }`"
     :class="[
       {
         'show-image': props.showImage,
@@ -376,6 +392,8 @@ const handleHasAudio = computed(() => {
         'is-feature': props.isFeature,
         'is-horizontal': props.isHorizontal,
         'is-vertical': props.isVertical,
+        'in-carousel': props.inCarousel,
+        'is-image-loaded': isImageLoaded,
       },
       props.data?.type,
       props.data?.cmsSource,
@@ -418,6 +436,8 @@ const handleHasAudio = computed(() => {
           :ratio="props.ratio"
           :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
+          :loading="props.inCarousel ? 'eager' : props.loading"
+          @is-image-loaded="isImageLoaded = true"
         />
       </div>
       <div class="content col">
@@ -609,6 +629,37 @@ const handleHasAudio = computed(() => {
   cursor: pointer;
   height: auto;
 
+  /* Carousel Specific: Shrink to fit content */
+  &.in-carousel {
+    width: min-content;
+    max-width: 100%;
+    min-width: var(--min-content-width);
+
+    /* Force override of any other layout mode when in carousel */
+    &.is-vertical .image,
+    &.is-horizontal .image,
+    .holder .image {
+      /* Force strict image sizing behavior when in carousel */
+      flex: 0 0 auto !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      /* Override fixed dimensions from media queries */
+      max-width: none !important;
+
+      /* Ensure img child behaves */
+      :deep(img) {
+        height: 100%;
+        width: auto;
+        max-width: none;
+        object-fit: cover;
+        object-position: center center;
+      }
+    }
+  }
+
   .holder {
     position: relative;
     overflow: hidden;
@@ -781,11 +832,15 @@ const handleHasAudio = computed(() => {
   &.is-vertical {
     .image {
       width: 100% !important;
-      height: auto !important;
 
       .v-image {
         left: 0;
       }
+    }
+
+    /* Only force height auto when NOT in carousel */
+    &:not(.in-carousel) .image {
+      height: auto !important;
     }
 
     .holder {

@@ -152,7 +152,7 @@ const setupContentObserver = () => {
   // Observe all children's content
   // Observe all children's CONTENT (Images)
   // We avoid observing the slide/card wrapper itself because it resizes during the drag effect (feedback loop).
-  // The image inside MediaCard2 has 'width: auto', so it should maintain natural size.
+  // The image inside MediaCard has 'width: auto', so it should maintain natural size.
   const children = Array.from(trackRef.value.children)
   children.forEach((slide) => {
     // Look for image inside

@@ -136,7 +136,8 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
           border-radius: var(--media-card-border-radius);
         "
       >
-        <MediaCard2
+        <MediaCard
+          inCarousel
           showTease
           isVertical
           :data="item"
@@ -144,7 +145,6 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
           imgCol="h-12rem md:h-20rem"
           :size="
             getImgSizesBasedOnItemImgRatio(item, {
-              xs: 112,
               md: 176,
               lg: 320,
             })
@@ -155,34 +155,6 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
         />
       </div>
     </MaterialCarouselAdvanced>
-
-    <br />
-    <br />
-    <br />
-    <br />
-    <!-- <div>
-      <div
-        v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
-        :key="`temp-${item.id}-${index}`"
-        class="item"
-      >
-        <MediaCard2
-          showTease
-          :data="item"
-          :allowVerticalEffect="false"
-          imgCol="h-20rem"
-          :size="
-            getImgSizesBasedOnItemImgRatio(item, {
-              xs: 112,
-              md: 176,
-              lg: 320,
-            })
-          "
-          style="height: -webkit-fill-available"
-          @on-click="dynamicNavigation(item)"
-        />
-      </div>
-    </div> -->
   </div>
 </template>
 
