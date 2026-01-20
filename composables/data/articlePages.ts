@@ -521,6 +521,14 @@ interface NprArticle {
   collections?: NprCollection[]
 }
 
+// Helper: Convert NPR image ID from href format to asset key format
+// Converts 'g-s1-106569' to 'gS1106569' (remove hyphens, camelCase)
+const convertNprImageId = (id: string): string => {
+  if (!id) return id
+  // Convert from kebab-case to camelCase: g-s1-106569 -> gS1106569
+  return id.replace(/-([a-z0-9])/g, (_, letter) => letter.toUpperCase())
+}
+
 // Helper: Get image credits for NPR content
 const getNprImageCredits = (imageInfo: NprAsset): string => {
   if (imageInfo.producer && imageInfo.provider) {
@@ -668,14 +676,6 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
   }
 
   return { w: 0, h: 0 }
-}
-
-// Helper: Convert NPR image ID from href format to asset key format
-// Converts 'g-s1-106569' to 'gS1106569' (remove hyphens, camelCase)
-const convertNprImageId = (id: string): string => {
-  if (!id) return id
-  // Convert from kebab-case to camelCase: g-s1-106569 -> gS1106569
-  return id.replace(/-([a-z0-9])/g, (_, letter) => letter.toUpperCase())
 }
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
