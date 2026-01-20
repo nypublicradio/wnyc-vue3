@@ -580,8 +580,13 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
   }
 
   for (const layoutItem of article.layout) {
-    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
-    const asset = article.assets?.[layoutId]
+    const rawLayoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
+    
+    // Try both camelCase and kebab-case formats since NPR API is inconsistent
+    const camelCaseId = rawLayoutId ? convertNprImageId(rawLayoutId) : undefined
+    const asset = rawLayoutId 
+      ? (article.assets?.[camelCaseId] || article.assets?.[rawLayoutId])
+      : undefined
 
     if (!asset?.profiles?.[0]) {
       continue
@@ -665,15 +670,45 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
   return { w: 0, h: 0 }
 }
 
+// Helper: Convert NPR image ID from href format to asset key format
+// Converts 'g-s1-106569' to 'gS1106569' (remove hyphens, camelCase)
+const convertNprImageId = (id: string): string => {
+  if (!id) return id
+  // Convert from kebab-case to camelCase: g-s1-106569 -> gS1106569
+  return id.replace(/-([a-z0-9])/g, (_, letter) => letter.toUpperCase())
+}
+
 // Normalize an article page object from NPR into a generic ArticlePage object.
 export async function normalizeNprPage (article: NprArticle, componentType = "default"): Promise<ArticlePage> {
   const id = article.id
-  const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1)
-  const firstImage = article.assets?.[firstImageId]
+  const firstImageHref = article.images?.[0]?.href
+  const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
+  
+  // Try both camelCase and kebab-case formats since NPR API is inconsistent
+  const camelCaseId = rawImageId ? convertNprImageId(rawImageId) : undefined
+  const firstImage = rawImageId 
+    ? (article.assets?.[camelCaseId] || article.assets?.[rawImageId])
+    : undefined
+  
+/*   console.log('NPR Image Debug:', {
+    articleId: id,
+    hasImages: !!article.images,
+    imageCount: article.images?.length,
+    firstImageHref,
+    rawImageId,
+    camelCaseId,
+    hasFirstImage: !!firstImage,
+    hasAssets: !!article.assets,
+    assetKeys: article.assets ? Object.keys(article.assets).slice(0, 10) : [],
+    firstImageAsset: firstImage ? 'FOUND!' : 'not found'
+  }) */
+  
   const firstImageCaption = firstImage?.caption
 
   const { square, wide } = getNprImageUrls(firstImage)
   const image = componentType === 'default' ? (square ?? wide) : (wide ?? square)
+  
+  //console.log('NPR Image URLs:', { square, wide, selected: image })
   
   const textBody = await processNprLayout(article)
   const { url: audioURL, duration: audioDuration } = extractNprAudio(article)

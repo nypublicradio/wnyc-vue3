@@ -40,7 +40,7 @@ const getWagtailPageData = async (pageSlug: string) => {
         };
     }
 
-    return normalizeArticlePage(resData);
+    return await normalizeArticlePage(resData);
 };
 
 // get page data from the proper CMS
