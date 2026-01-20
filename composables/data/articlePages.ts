@@ -465,7 +465,7 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
 })
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
-export async function normalizeNprPage (article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
+export async function normalizeNprPage (article: Record<string, any | undefined>, componentType = "default"): Promise<ArticlePage> {
   const id = article.id
   const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1)
   const firstImage = article.assets?.[firstImageId]
@@ -572,7 +572,7 @@ export async function normalizeNprPage (article: Record<string, any | undefined>
     return { w: 0, h: 0 }
   }
 
-  return {
+  return Promise.resolve({
     id,
     uuid: article.id,
     title: article.title,
@@ -599,7 +599,7 @@ export async function normalizeNprPage (article: Record<string, any | undefined>
     rawBody: textBody,
     link: article.webPages[0].href,
     authors,
-  }
+  })
 }
 
 
