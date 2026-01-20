@@ -7,8 +7,16 @@ async function getNavigationData () {
     try {
         // Fetch all data concurrently with individual error handling
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
-            axios.get(config.public.HEADER_NAVIGATION_API),
-            axios.get(config.public.SYSTEM_MESSAGES_API),
+            axios.get(config.public.HEADER_NAVIGATION_API as string, {
+                headers: {
+                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                }
+            }),
+            axios.get(config.public.SYSTEM_MESSAGES_API as string, {
+                headers: {
+                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                }
+            }),
             axios.get(`${config.public.BFF_URL}/api/streams`),
             axios.get(`${config.public.BFF_URL}/api/v2/showsmenu`),
         ])

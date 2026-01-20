@@ -91,8 +91,6 @@ export async function updateAllLiveStreams(init = true) {
   }
 }
 
-const liveScheduleData = ref(null)
-const allLiveScheduleData = ref([])
 let timeout = null
 let scheduleAbortController = null
 
@@ -109,6 +107,8 @@ export default function useLiveStream() {
   const isStreamLoading = useIsStreamLoading()
   const globalToast = useGlobalToast()
 
+  const liveScheduleData = ref(null)
+  const allLiveScheduleData = ref([])
   const currentScheduleDate = ref(new Date())
   const isToday = ref(true)
 

@@ -175,6 +175,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
+    cmsSite: process.env.CMS_SITE || 'demo.wnyc.org:443',
     aviaryBaseApi:
       ((process.env.ENV === 'demo' || process.env.environment === 'demo')
         ? (process.env.DEMO_AVIARY_BASE_API || process.env.AVIARY_BASE_API)

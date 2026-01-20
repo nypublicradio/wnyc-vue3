@@ -26,3 +26,7 @@ README.md
 *.key
 *.pem
 *.crt
+
+export-aws-credentials.py
+
+start-local.sh

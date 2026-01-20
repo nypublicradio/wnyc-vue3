@@ -464,106 +464,261 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
   return author
 })
 
-// Normalize an article page object from NPR into a generic ArticlePage object.
-export async function normalizeNprPage (article: Record<string, any | undefined>, componentType = "defualt"): Promise<ArticlePage> {
-  const id = article.id
-  const firstImageId = article.images?.[0]?.href?.substring(article.images[0].href.lastIndexOf("/") + 1)
-  const firstImage = article.assets?.[firstImageId]
-  const firstImageCaption = article.assets?.[firstImageId]?.caption
+// NPR Article Type Definitions
+interface NprEnclosure {
+  href?: string
+  hrefTemplate?: string
+  type?: string
+  rels?: string[]
+}
 
-  const squareHref = firstImage?.enclosures?.filter((enclosure) => {
-    return enclosure.rels?.includes('image-square')
-  })
-  const wideHref = firstImage?.enclosures?.filter((enclosure) => {
-    return enclosure.rels?.includes('image-wide')
-  })
+interface NprProfile {
+  href: string
+}
 
+interface NprAsset {
+  id?: string
+  profiles?: NprProfile[]
+  text?: string
+  html?: string
+  videoId?: string
+  tweetId?: string
+  caption?: string
+  producer?: string
+  provider?: string
+  enclosures?: NprEnclosure[]
+  duration?: number
+}
+
+interface NprLayoutItem {
+  href?: string
+}
+
+interface NprImage {
+  href: string
+}
+
+interface NprCollection {
+  rels?: string[]
+  href?: string
+}
+
+interface NprWebPage {
+  href: string
+}
+
+interface NprArticle {
+  id: string
+  title?: string
+  publishDateTime?: string
+  editorialLastModifiedDateTime?: string
+  teaser?: string
+  showTitle?: string
+  webPages?: NprWebPage[]
+  images?: NprImage[]
+  assets?: Record<string, NprAsset>
+  layout?: NprLayoutItem[]
+  collections?: NprCollection[]
+}
+
+// Helper: Convert NPR image ID from href format to asset key format
+// Converts 'g-s1-106569' to 'gS1106569' (remove hyphens, camelCase)
+const convertNprImageId = (id: string): string => {
+  if (!id) return id
+  // Convert from kebab-case to camelCase: g-s1-106569 -> gS1106569
+  return id.replace(/-([a-z0-9])/g, (_, letter) => letter.toUpperCase())
+}
+
+// Helper: Get image credits for NPR content
+const getNprImageCredits = (imageInfo: NprAsset): string => {
+  if (imageInfo.producer && imageInfo.provider) {
+    return `${imageInfo.producer}/${imageInfo.provider}`
+  }
+  if (imageInfo.producer) {
+    return imageInfo.producer
+  }
+  if (imageInfo.provider) {
+    return imageInfo.provider
+  }
+  return 'NPR'
+}
+
+// Helper: Process text asset
+const processTextAsset = (asset: NprAsset): string => {
+  return asset.text ? `<p>${asset.text}</p>` : ''
+}
+
+// Helper: Process HTML block asset
+const processHtmlAsset = (asset: NprAsset): string => {
+  return asset?.html || ''
+}
+
+// Helper: Process YouTube video asset
+const processYoutubeAsset = (asset: NprAsset): string => {
+  const videoID = asset.videoId
+  return `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>\n`
+}
+
+// Helper: Process tweet asset
+const processTweetAsset = async (asset: NprAsset): Promise<string> => {
+  const tweetHTML = await fetchTweetEmbed(asset.tweetId)
+  return tweetHTML || ''
+}
+
+// Helper: Process image asset
+const processImageAsset = (asset: NprAsset): string => {
+  const imageHTML = asset.enclosures?.[0]?.hrefTemplate 
+    ? `<div class="mt-4 html-img"><img src="${asset.enclosures[0].hrefTemplate}" alt="${asset.caption}"/></div>` 
+    : ""
+  
+  const imageHTMLCaption = asset.caption
+    ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${asset.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${getNprImageCredits(asset)}</p></div>` 
+    : ""
+  
+  return imageHTML + imageHTMLCaption
+}
+
+// Helper: Process NPR article layout to generate body content
+const processNprLayout = async (article: NprArticle): Promise<string> => {
   let textBody = ''
-  let audioURL
-  let audioDuration
   let index = 0
-  for (const layoutItem of Object.values(article.layout)) {
-    const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
 
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/text') {
-      textBody += article.assets[layoutId].text ? `<p>${article.assets[layoutId].text}</p>` : ''
-    }
-    //html blocks
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/html-block') {
-      textBody += article.assets[layoutId]?.html
-    }
-    //youtube
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/youtube-video') {
-      const videoID = article.assets?.[layoutId].videoId
-      textBody += `<div class="user-embedded-video"><div><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
-`
-    }
-    //twitter X
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/tweet') {
-      const tweetInfo = article.assets?.[layoutId]
-      const tweetHTML = await fetchTweetEmbed(tweetInfo.tweetId)
-      textBody += tweetHTML ? tweetHTML : ''
-    }
-    //images
-    //we ar checking for the FIRST image in index 0 because its the same as the header image and we dont want to repeat it
-    if (article.assets[layoutId].profiles[0]?.href === '/v1/profiles/image' && index > 0) {
-      const imageInfo = article.assets?.[layoutId]
-      // Get image credits
-      const imageCredits = () => {
-        if (imageInfo.producer && imageInfo.provider) {
-          return `${imageInfo.producer}/${imageInfo.provider}`
-        } else if (imageInfo.producer && !imageInfo.provider) {
-          return imageInfo.producer
-        } else if (!imageInfo.producer && imageInfo.provider) {
-          return imageInfo.provider
-        }
-        return 'NPR'
-      }
+  if (!article.layout) {
+    return textBody
+  }
 
-      const imageHTML = imageInfo.enclosures[0].hrefTemplate ? `<div class="mt-4 html-img"><img src="${imageInfo.enclosures[0].hrefTemplate}" alt="${imageInfo.caption}"/></div>` : ""
-      textBody += imageHTML ? imageHTML : ''
+  for (const layoutItem of article.layout) {
+    const rawLayoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
+    
+    // Try both camelCase and kebab-case formats since NPR API is inconsistent
+    const camelCaseId = rawLayoutId ? convertNprImageId(rawLayoutId) : undefined
+    const asset = rawLayoutId 
+      ? (article.assets?.[camelCaseId] || article.assets?.[rawLayoutId])
+      : undefined
 
-      const imageHTMLCaption = imageInfo.caption
-        ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${imageInfo.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${imageCredits()}</p></div>` : ""
-      textBody += imageHTMLCaption ? imageHTMLCaption : ''
+    if (!asset?.profiles?.[0]) {
+      continue
     }
+
+    const profileHref = asset.profiles[0].href
+
+    if (profileHref === '/v1/profiles/text') {
+      textBody += processTextAsset(asset)
+    } else if (profileHref === '/v1/profiles/html-block') {
+      textBody += processHtmlAsset(asset)
+    } else if (profileHref === '/v1/profiles/youtube-video') {
+      textBody += processYoutubeAsset(asset)
+    } else if (profileHref === '/v1/profiles/tweet') {
+      textBody += await processTweetAsset(asset)
+    } else if (profileHref === '/v1/profiles/image' && index > 0) {
+      textBody += processImageAsset(asset)
+    }
+
     index++
   }
-  //audio
+
+  return textBody
+}
+
+// Helper: Extract audio information from NPR assets
+const extractNprAudio = (article: NprArticle): { url?: string; duration?: number } => {
+  if (!article.assets) {
+    return {}
+  }
+
   for (const asset of Object.values(article.assets)) {
-    if (asset.profiles[0]?.href === '/v1/profiles/audio') {
-      audioDuration = asset?.duration
-      const audioID = asset?.id
-      const audioInfo = article.assets?.[audioID]
-      audioURL = audioInfo.enclosures.filter((enclosure) => {
-        return enclosure.type.includes('audio/mpeg')
-      })[0]?.href
+    if (!asset?.profiles?.[0]) {
+      continue
+    }
+
+    if (asset.profiles[0].href === '/v1/profiles/audio') {
+      const audioURL = asset.enclosures?.find(enclosure => 
+        enclosure.type?.includes('audio/mpeg')
+      )?.href
+
+      return {
+        url: audioURL,
+        duration: asset.duration
+      }
     }
   }
-  // Get Byline 
-  const bylineUrl = article.collections.filter((collection) => {
-    return collection?.rels?.includes('byline')
-  })[0]?.href ?? null
 
-  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
+  return {}
+}
 
-  const image = componentType === 'default' ? squareHref?.[0]?.hrefTemplate ?? wideHref?.[0]?.hrefTemplate : wideHref?.[0]?.hrefTemplate ?? squareHref?.[0]?.hrefTemplate
+// Helper: Get NPR image URLs
+const getNprImageUrls = (firstImage?: NprAsset) => {
+  if (!firstImage?.enclosures) {
+    return { square: undefined, wide: undefined }
+  }
 
-  // extract full image width and height from NPR image URL
-  const getFullHeightAndWidth = (image: string) => {
-    if (!image) return { w: 0, h: 0 }
+  const squareHref = firstImage.enclosures.find(e => e.rels?.includes('image-square'))
+  const wideHref = firstImage.enclosures.find(e => e.rels?.includes('image-wide'))
 
-    const cropMatch = image.match(/crop\/(\d+)x(\d+)/)
-    if (cropMatch) {
-      const fullWidth = parseInt(cropMatch[1], 10)
-      const fullHeight = parseInt(cropMatch[2], 10)
-      return { w: fullWidth, h: fullHeight }
-    }
+  return {
+    square: squareHref?.hrefTemplate,
+    wide: wideHref?.hrefTemplate
+  }
+}
 
+// Helper: Extract dimensions from NPR image URL
+const extractImageDimensions = (image?: string): { w: number; h: number } => {
+  if (!image) {
     return { w: 0, h: 0 }
   }
 
-  return {
+  const cropMatch = image.match(/crop\/(\d+)x(\d+)/)
+  if (cropMatch) {
+    return {
+      w: parseInt(cropMatch[1], 10),
+      h: parseInt(cropMatch[2], 10)
+    }
+  }
+
+  return { w: 0, h: 0 }
+}
+
+// Normalize an article page object from NPR into a generic ArticlePage object.
+export async function normalizeNprPage (article: NprArticle, componentType = "default"): Promise<ArticlePage> {
+  const id = article.id
+  const firstImageHref = article.images?.[0]?.href
+  const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
+  
+  // Try both camelCase and kebab-case formats since NPR API is inconsistent
+  const camelCaseId = rawImageId ? convertNprImageId(rawImageId) : undefined
+  const firstImage = rawImageId 
+    ? (article.assets?.[camelCaseId] || article.assets?.[rawImageId])
+    : undefined
+  
+/*   console.log('NPR Image Debug:', {
+    articleId: id,
+    hasImages: !!article.images,
+    imageCount: article.images?.length,
+    firstImageHref,
+    rawImageId,
+    camelCaseId,
+    hasFirstImage: !!firstImage,
+    hasAssets: !!article.assets,
+    assetKeys: article.assets ? Object.keys(article.assets).slice(0, 10) : [],
+    firstImageAsset: firstImage ? 'FOUND!' : 'not found'
+  }) */
+  
+  const firstImageCaption = firstImage?.caption
+
+  const { square, wide } = getNprImageUrls(firstImage)
+  const image = componentType === 'default' ? (square ?? wide) : (wide ?? square)
+  
+  //console.log('NPR Image URLs:', { square, wide, selected: image })
+  
+  const textBody = await processNprLayout(article)
+  const { url: audioURL, duration: audioDuration } = extractNprAudio(article)
+  
+  const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
+  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
+
+  const dimensions = extractImageDimensions(image)
+
+  return Promise.resolve({
     id,
     uuid: article.id,
     title: article.title,
@@ -573,14 +728,14 @@ export async function normalizeNprPage (article: Record<string, any | undefined>
     tease: article.teaser,
     description: article.teaser,
     image,
-    imageFullWidth: getFullHeightAndWidth(image).w,
-    imageFullHeight: getFullHeightAndWidth(image).h,
+    imageFullWidth: dimensions.w,
+    imageFullHeight: dimensions.h,
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
-    audio: audioURL ? audioURL : null,
-    hasAudio: audioURL ? true : false,
+    audio: audioURL ?? null,
+    hasAudio: Boolean(audioURL),
     type: audioURL ? mediaTypes.NPR_EPISODE : mediaTypes.NPR_ARTICLE,
-    estimatedDuration: audioDuration ? audioDuration : null,
+    estimatedDuration: audioDuration ?? null,
     meta: {
       firstPublishedAt: article.publishDateTime,
       slug: id,
@@ -588,9 +743,9 @@ export async function normalizeNprPage (article: Record<string, any | undefined>
     showTitle: article.showTitle ?? 'NPR',
     body: textBody,
     rawBody: textBody,
-    link: article.webPages[0].href,
+    link: article.webPages?.[0]?.href ?? '/',
     authors,
-  }
+  })
 }
 
 
