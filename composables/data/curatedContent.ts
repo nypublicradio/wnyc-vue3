@@ -12,7 +12,7 @@ import { normalizeNprPage } from './articlePages'
  */
 export async function processCuratedNprItems(
 	curatedContent: any[],
-	componentType: string = "default"
+	componentType = "default"
 ): Promise<{ componentType: string; articles: ArticlePage[] }[] | null> {
 	try {
 		// Extract all NPR CDS items from curated content
@@ -61,10 +61,10 @@ export async function processCuratedNprItems(
 		}))
 
 		// Remove null and undefined articles
-		const cleanedArticles = normalizeArticles.filter((article) => article !== undefined && article !== null)
+		const cleanedArticles = normalizeArticles.filter((article) => article != null)
 		
 		// Remove articles with no body content or empty body content
-		const filteredArticles = cleanedArticles.filter((article) => article!.body !== null && article!.body !== '')
+		const filteredArticles = cleanedArticles.filter((article) => article.body != null && article.body !== '')
 
 		// Return in the same structure as getNprStories
 		return [{
