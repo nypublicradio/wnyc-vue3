@@ -1,6 +1,8 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
+import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { transformCuratedContent } from '~/utilities/curatedContent'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -19,9 +21,26 @@ const getPublisherPageData = async (pageSlug: string) => {
 // getting page data from the wagtail api
 const getWagtailPageData = async (pageSlug: string) => {
     const config = __getConfig();
-    const res = await axios(`${config.public.AVIARY_BASE_API}pages/${pageSlug}`);
+    const options = {
+        method: 'GET',
+        url: `${config.public.AVIARY_BASE_API}pages/${pageSlug}`,
+        headers: {
+            'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+        }
+    };
+    const res = await axios(options);
     const resData = humps.camelizeKeys(res.data);
-    return resData
+
+    // Transform curated content if it exists
+    if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
+        const transformedCuratedContent = await transformCuratedContent(resData.curatedContent);
+        return {
+            ...resData,
+            curatedContent: transformedCuratedContent
+        };
+    }
+
+    return await normalizeArticlePage(resData);
 };
 
 // get page data from the proper CMS
@@ -37,7 +56,7 @@ const getPageData = async (pageSlug: string, cmsSource: string) => {
 };
 
 // get page data from CMS
-export default async function (event) {
+export default defineEventHandler(async (event) => {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (pageSlug && cmsSource) {
@@ -46,4 +65,4 @@ export default async function (event) {
     } else {
         return null
     }
-}
+})

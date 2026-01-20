@@ -1,8 +1,9 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { normalizePublisherListItem, normalizeNprPage, normalizeWagtailListItem, normalizeSimplecastListItem } from '~/composables/data/articlePages'
+import { normalizePublisherListItem, normalizeNprPage } from '~/composables/data/articlePages'
 import { hasAudio } from '~/utilities/helpers'
+import { transformCuratedContent } from '~/utilities/curatedContent'
 
 // Get curated SHOW content from the WNYC Puplisher API
 const getSectionData = async (slug: string) => {
@@ -62,12 +63,13 @@ const getHomeTemplate = async () => {
 // get curated content from the WNYC Wagtail CMS API
 const getNewHomeTemplate = async () => {
 	let res = null
+	const config = useRuntimeConfig()
 	const options = {
 		method: 'GET',
 		//url: `${config.public.AVIARY_BASE_API}pages/151286/?a=b`,
 		url: 'https://cms.demo.nypr.digital/api/v2/pages/151286/?a=b',
 		headers: {
-			'X-CMS-Site': 'demo.wnyc.org:443'
+			'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
 		}
 	}
 	try {
@@ -79,35 +81,10 @@ const getNewHomeTemplate = async () => {
 
 		const resData = humps.camelizeKeys(res)
 
-		const transformedCuratedContent = await Promise.all(
-			resData.curatedContent.map(async (item) => {
-				const transformedListItems = await Promise.all(
-					item.value.list.listItems.map(async (listItem) => {
-						// Move content properties to root level, keeping existing root properties
-						const mergedItem = { ...listItem.content, ...listItem }
-						delete mergedItem.content
-
-						return mergedItem.contentType === 'episode'
-							? await normalizeSimplecastListItem(mergedItem)
-							: await normalizeWagtailListItem(mergedItem)
-					})
-				)
-
-				return {
-					...item,
-					value: {
-						...item.value,
-						list: {
-							...item.value.list,
-							listItems: transformedListItems
-						}
-					}
-				}
-			})
-		)
+		const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
 
 		return {
-			...res,
+			...resData,
 			curatedContent: transformedCuratedContent
 		}
 
@@ -138,7 +115,7 @@ const getNprStories = async () => {
 		response = await axios(options)
 		const normalizeArticles = await Promise.all(response.data.resources.map((article) => {
 			for (const asset of Object.values(article.assets)) {
-				if (asset?.isRestrictedToAuthorizedOrgServiceIds === true) {
+				if ((asset as any)?.isRestrictedToAuthorizedOrgServiceIds === true) {
 					article.isRestrictedToAuthorizedOrgServiceIds = true
 					break
 				}
@@ -161,7 +138,7 @@ const getNprStories = async () => {
 			.sort((a, b) => {
 				const dateA = new Date(a.updatedDate ?? a.publicationDate)
 				const dateB = new Date(b.updatedDate ?? b.publicationDate)
-				return dateB - dateA // Descending order
+				return dateB.getTime() - dateA.getTime() // Descending order
 			})
 			.slice(0, 5) // Return only 5 articles
 
