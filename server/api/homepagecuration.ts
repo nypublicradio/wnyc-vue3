@@ -66,7 +66,7 @@ const getNewHomeTemplate = async () => {
 	const config = useRuntimeConfig()
 	const options = {
 		method: 'GET',
-		url: 'https://cms.demo.nypr.digital/api/v2/pages/151286/?a=b',
+		url: `${config.public.AVIARY_BASE_API}pages/151286`,
 		headers: {
 			'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
 		}
@@ -83,7 +83,7 @@ const getNewHomeTemplate = async () => {
 		const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
 
 		return {
-			...res,
+			...resData,
 			curatedContent: transformedCuratedContent
 		}
 
