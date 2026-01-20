@@ -1,6 +1,4 @@
 <script setup>
-import MaterialCarousel from "~/components/MaterialCarousel.vue"
-
 const items = Array.from({ length: 12 }, (_, i) => {
   // Cycle through aspect ratios: 1:1, 16:9, 3:2
   const ratios = [
@@ -22,46 +20,6 @@ const items = Array.from({ length: 12 }, (_, i) => {
 <template>
   <div class="p-0 mb-8">
     <h1 class="text-3xl font-bold mb-6">Material Carousel Demo</h1>
-
-    <!-- <div class="mb-12">
-      <h2 class="text-xl mb-4">
-        Throw Physics Enabled (Draggable) - Default Settings
-      </h2>
-      <MaterialCarousel :enableThrow="true">
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="bg-gray-100 rounded-xl overflow-hidden shadow-sm"
-        >
-          <img
-            :src="item.image"
-            :alt="item.title"
-            class="w-full h-full object-cover"
-          />
-        </div>
-      </MaterialCarousel>
-    </div>
-
-    <div class="mb-12">
-      <h2 class="text-xl mb-4">Throw + Edge Fade (Distance 64px)</h2>
-      <MaterialCarousel
-        :enableThrow="true"
-        :edge-fade="true"
-        :edge-fade-distance="64"
-      >
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="bg-gray-100 rounded-xl overflow-hidden shadow-sm"
-        >
-          <img
-            :src="item.image"
-            :alt="item.title"
-            class="w-full h-full object-cover"
-          />
-        </div>
-      </MaterialCarousel>
-    </div> -->
 
     <div class="mb-12">
       <MaterialCarouselAdvanced
