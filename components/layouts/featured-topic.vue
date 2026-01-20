@@ -8,7 +8,7 @@ const props = defineProps({
   },
   maxItems: {
     type: Number,
-    default: 4,
+    default: 15,
   },
 })
 
@@ -121,7 +121,7 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     <!-- <pre>{{ reactiveItems }}</pre> -->
     <MaterialCarouselAdvanced
       :enableThrow="true"
-      :items-to-show="4"
+      :items-to-show="2"
       :min-content-width="180"
       :gap="16"
       :min-item-width="0"
@@ -138,9 +138,10 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
       >
         <MediaCard2
           showTease
+          isVertical
           :data="item"
           :allowVerticalEffect="false"
-          imgCol="h-20rem"
+          imgCol="h-12rem md:h-20rem"
           :size="
             getImgSizesBasedOnItemImgRatio(item, {
               xs: 112,

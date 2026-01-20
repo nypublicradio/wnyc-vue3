@@ -120,6 +120,9 @@ const measureItems = () => {
     }
   })
 
+  // Refresh cache since children might have changed
+  updateCachedSlides()
+
   // After measurement, we must re-run the layout logic
   updateSlideProgress()
   initDraggable() // Re-calculate bounds and draggable instance
@@ -131,15 +134,18 @@ const setupContentObserver = () => {
 
   // Create observer if not exists
   if (!contentResizeObserver.value) {
+    let debounceTimer
     contentResizeObserver.value = new ResizeObserver((entries) => {
       // Don't interfere with active drag/throw operations
       if (isInteracting.value) return
 
-      // Check if any significant change?
-      // For now, just re-measure all
-      measureItems()
-      updateSlideProgress()
-      initDraggable() // Re-calc bounds
+      // Debounce the measurement
+      clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        measureItems()
+        updateSlideProgress()
+        initDraggable()
+      }, 50)
     })
   }
 
@@ -163,6 +169,32 @@ const setupContentObserver = () => {
   })
 }
 
+// Optimization: Cache slide elements to avoid querySelector/children access every frame
+const cachedSlides = ref([])
+
+// Optimization: Dirty check map to avoid unnecessary style writes
+// Map<Element, { width, maxWidth, height, flex, marginLeft, transition }>
+const styleCache = new WeakMap()
+
+const updateCachedSlides = () => {
+  if (!trackRef.value) return
+  cachedSlides.value = Array.from(trackRef.value.children)
+}
+
+// Helper to apply style only if changed
+const setStyle = (element, property, value) => {
+  let cache = styleCache.get(element)
+  if (!cache) {
+    cache = {}
+    styleCache.set(element, cache)
+  }
+
+  if (cache[property] !== value) {
+    element.style[property] = value
+    cache[property] = value
+  }
+}
+
 // Calculate slide progress for Material scaling
 const updateSlideProgress = () => {
   if (
@@ -172,8 +204,10 @@ const updateSlideProgress = () => {
   )
     return
 
-  const children = trackRef.value.children
-  slideElements.value = Array.from(children)
+  // Use cached slides if available, otherwise update cache
+  if (!cachedSlides.value.length) {
+    updateCachedSlides()
+  }
 
   // Use reactive container width
   const currentWidth = containerWidth.value
@@ -183,7 +217,7 @@ const updateSlideProgress = () => {
 
   let accumulatedWidth = 0
 
-  slideElements.value.forEach((slide, index) => {
+  cachedSlides.value.forEach((slide, index) => {
     // Determine Native Width from measurements
     const dims = itemNativeDimensions.value[index]
     if (!dims) return
@@ -236,14 +270,21 @@ const updateSlideProgress = () => {
     }
 
     // Apply Styles - Use max-width to allow squishing
-    slide.style.width = "100%"
-    slide.style.maxWidth = `${targetWidth}px`
-    slide.style.height = `${nativeHeight}px`
-    slide.style.flex = `0 0 ${targetWidth}px`
-    slide.style.marginLeft = `${marginLeft}px`
+    // OPTIMIZATION: Use dirty checking 'setStyle'
+    setStyle(slide, "width", "100%")
+    setStyle(slide, "maxWidth", `${targetWidth}px`)
+    setStyle(slide, "height", `${nativeHeight}px`)
+    setStyle(slide, "flex", `0 0 ${targetWidth}px`)
+    setStyle(slide, "marginLeft", `${marginLeft}px`)
+
     // Only disable transitions when not interacting (preserve throw smoothness)
     if (!isInteracting.value) {
-      slide.style.transition = "none"
+      setStyle(slide, "transition", "none")
+    } else {
+      // Re-enable if needed, or let CSS handle it?
+      // If we forced "none" previously, we might need to clear it.
+      // For now, assuming CSS handles default transition if we don't override.
+      setStyle(slide, "transition", "")
     }
 
     // No need for translateX anymore - content scales naturally via max-width: 100%
@@ -534,6 +575,10 @@ onUnmounted(() => {
   scroll-snap-align: start;
   box-sizing: border-box;
   overflow: hidden; /* Needed for cropping/squish effect */
+
+  // Performance optimizations
+  contain: layout style;
+  will-change: transform, max-width, margin-left;
 
   // Ensure content fills the item
   img,
