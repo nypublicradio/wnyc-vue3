@@ -1,7 +1,13 @@
 <script setup>
 import VLoginWithEmail from "./VLoginWithEmail.vue"
 import { useVuelidate } from "@vuelidate/core"
-import { email, helpers, minLength, required, sameAs } from "@vuelidate/validators"
+import {
+  email,
+  helpers,
+  minLength,
+  required,
+  sameAs,
+} from "@vuelidate/validators"
 import Button from "primevue/button"
 import InputText from "primevue/inputtext"
 import Message from "primevue/message"
@@ -30,8 +36,8 @@ const props = defineProps({
     default: "Sign up with email",
     type: String,
   },
-  slug: {
-    default: "/dashboard",
+  returnRoute: {
+    default: "/confirm",
     type: String,
   },
   success: {
@@ -77,7 +83,10 @@ const rules = computed(() => {
         "The email confirmation field is required ",
         required
       ),
-      sameAs: helpers.withMessage("Email addresses don't match", sameAs(formData.email)),
+      sameAs: helpers.withMessage(
+        "Email addresses don't match",
+        sameAs(formData.email)
+      ),
     },
     email: {
       email: helpers.withMessage("Invalid email format", email),
@@ -89,7 +98,10 @@ const rules = computed(() => {
     password: {
       hasAtleastOneNumber,
       minLength: minLength(8),
-      required: helpers.withMessage("This password field is required", required),
+      required: helpers.withMessage(
+        "This password field is required",
+        required
+      ),
     },
   }
 })
@@ -157,10 +169,10 @@ const submitForm = async () => {
           </Message>
           <slot name="success">
             <VLoginWithEmail
-              :slug="props.slug"
               :current-email="formData.email"
               :client="innerClient"
               :config="innerConfig"
+              :returnRoute="props.returnRoute"
               @submit-success="emit('login-success', $event)"
             />
           </slot>
@@ -217,7 +229,8 @@ const submitForm = async () => {
                 name="confirm_email"
                 class="w-full"
                 :class="{
-                  'p-invalid': v$.confirmEmail.$error && v$.confirmEmail.$invalid,
+                  'p-invalid':
+                    v$.confirmEmail.$error && v$.confirmEmail.$invalid,
                 }"
                 placeholder="Confirm your email"
                 required

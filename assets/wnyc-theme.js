@@ -132,7 +132,7 @@ const MyPreset = definePreset(Aura, {
       950: "#083344",
     },
     sky: {
-      50: "#f6f7fc",
+      50: "#ECEFF9",
       100: "#d2d9f1",
       200: "#afbbe6",
       300: "#8c9ddb",
@@ -1171,6 +1171,71 @@ const MyPreset = definePreset(Aura, {
             secondary: {
               color: "{surface.0}",
             },
+          },
+        },
+      },
+    },
+    stepper: {
+      stepTitle: {
+        color: '{neutral.500}',
+        activeColor: '{text.color}',
+        fontWeight: '500'
+      },
+      stepNumber: {
+        color: '{neutral.500}',
+        activeColor: '{text.color}',
+        borderColor: '{sky.500}',
+        activeBorderColor: '{neutral.200}',
+        activeBackground: '{surface.25}',
+      },
+      separator: {
+        background: '{sky.500}',
+        activeBackground: '{sky.500}',
+        margin: '0 0 0 0rem',
+        size: '2px'
+      },
+      step: {
+        gap: '0',
+        padding: '0'
+      },
+      steppanels: {
+        padding: '0'
+      },
+      steppanel: {
+        background: '{sky.50}',
+      },
+      colorScheme: {
+        light: {
+          steppanel: {
+            //background: '{sky.100}',
+          }
+        },
+        dark: {
+          stepTitle: {
+            color: '{neutral.300}',
+          },
+          steppanel: {
+            background: '{surface.25}',
+          },
+          stepNumber: {
+            background: '{surface.25}',
+          },
+        },
+      },
+    },
+    divider: {
+      content: {
+        background: "transparent"
+      },
+      colorScheme: {
+        light: {
+          root: {
+            borderColor: '{content.border.color}'
+          },
+        },
+        dark: {
+          root: {
+            borderColor: "#ffffffE6"
           },
         },
       },

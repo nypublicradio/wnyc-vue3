@@ -5,6 +5,7 @@ import {
   getEpisodeFallBackImage,
   goToNprPage,
 } from "~/utilities/helpers"
+import useAppSettings from "~/composables/useAppSettings"
 import { useCurrentEpisode } from "~/composables/states"
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
@@ -20,6 +21,10 @@ const { data: topStoriesData, error: error3 } = useLazyFetch(
 const { data: pagedata, error } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagecuration`
 )
+
+// get app settings
+const { getAppSettings, settings: appSettings } = useAppSettings()
+getAppSettings()
 
 definePageMeta({
   layout: "default",
@@ -48,7 +53,10 @@ onMounted(() => {
   <div>
     <Html lang="en">
       <Head>
-        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
+        <Title
+          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News</Title
+        >
         <Meta
           name="og:title"
           content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -75,6 +83,7 @@ onMounted(() => {
     <section>
       <h2 class="mb-3">WNYC Picks</h2>
       <TopStories :articles="topStoriesData?.top_stories" />
+      <atm-cta v-if="appSettings?.ask_the_mayor" class="mb-3" />
       <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
         <story-htlAd
           layout="rectangle"

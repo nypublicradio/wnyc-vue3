@@ -23,6 +23,9 @@ export const useLocalUserProfileDefault = () => useState('localUserProfileDefaul
 // keep track of dark mode
 export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
 
+// keep track if the app is int eh foreground and active
+export const useIsActive = () => useState('useIsActive', () => true)
+
 const currentUser = null
 // global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)
@@ -58,7 +61,7 @@ export const useSleepTimerCurrentTime = () =>
 
 // sleep timer selected state
 export const useSleepTimerSelectedTime = () =>
-    useState("useSleepTimerSelectedTime", () => ({ entry: { id: "30 minutes", label: "30 minutes", value: 1800 } }));
+    useState("useSleepTimerSelectedTime", () => ({ entry: { id: "30 minutes", label: "30 minutes", value: 1800 } }))
 
 // sleep timer running state
 export const useSleepTimerRunning = () => useState("useSleepTimerRunning", () => false)

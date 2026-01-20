@@ -7,6 +7,7 @@ import Message from "primevue/message"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
+import { getAndSetUserProfile } from "~/utilities/helpers"
 
 const props = defineProps({
   client: {
@@ -29,7 +30,7 @@ const props = defineProps({
     default: "Log in with email",
     type: String,
   },
-  slug: {
+  returnRoute: {
     default: "/confirm",
     type: String,
   },
@@ -81,8 +82,9 @@ const submitForm = async () => {
     )
     if (!sbError.error) {
       //success with Supabase
-      emit("submit-success", props.slug)
-      router.push(`${props.slug}`)
+      await getAndSetUserProfile()
+      emit("submit-success", props.returnRoute)
+      router.push(`${props.returnRoute}`)
     } else {
       // error with Supabase
       emit("submit-error", sbError?.error?.message)

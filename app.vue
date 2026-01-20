@@ -1,22 +1,32 @@
 <script setup lang="ts">
-import { getAndSetUserProfile, refreshData } from "~/utilities/helpers"
+import {
+  getAndSetUserProfile,
+  refreshData,
+  setStatusDarkMode,
+} from "~/utilities/helpers"
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
+import { ScreenOrientation } from "@capacitor/screen-orientation"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
+  useIsActive,
 } from "~/composables/states"
-import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
+import {
+  useBrowserTopColor,
+  useBrowserTopColorDarkMode,
+} from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const { fetchSchedule } = useLiveStream()
 
@@ -33,8 +43,10 @@ const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
+const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } = useOneSignal()
+const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
+  useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
 
@@ -82,9 +94,14 @@ onMounted(async () => {
   // OneSignal
   if (isApp.value) initOneSignal()
 
+  // check for stale auth return route
+  const { checkStaleAuthRoute } = useAuthReturnRoute()
+  await checkStaleAuthRoute()
+
   await getAndSetUserProfile()
 
   if (isApp.value) {
+    await ScreenOrientation.lock({ orientation: "portrait" })
     await initFileSystem()
     await addListeners()
     await initLocalNotifications()
@@ -99,6 +116,8 @@ onMounted(async () => {
   // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
+    // set global active state
+    isActiveGlobal.value = isActive
     if (isActive) {
       // refresh data
       refreshData()
@@ -107,6 +126,9 @@ onMounted(async () => {
       if (isApp.value) {
         await notificationPermissionSync(undefined)
       }
+
+      // set the system status bar to dark mode again
+      await setStatusDarkMode(currentUserProfile.value?.dark_mode)
     }
   })
 
@@ -160,7 +182,9 @@ watch(globalError, (error) => {
     <Head>
       <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
       <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title> WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News </Title>
+      <Title>
+        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
+      </Title>
       <Meta
         name="description"
         content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
@@ -205,13 +229,17 @@ watch(globalError, (error) => {
       <Meta
         name="theme-color"
         :content="
-          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
         "
       />
       <Meta
         name="msapplication-TileColor"
         :content="
-          currentUserProfile?.dark_mode ? browserTopColorDarkMode : browserTopColor
+          currentUserProfile?.dark_mode
+            ? browserTopColorDarkMode
+            : browserTopColor
         "
       />
     </Head>

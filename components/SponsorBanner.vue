@@ -24,7 +24,7 @@ const props = defineProps({
 .sponsor-banner {
   background-color: #000000;
   padding: 3rem;
-  color: var(--p-text-color);
+  color: #ffffff;
   .content {
     display: flex;
     flex-direction: column;
@@ -34,6 +34,7 @@ const props = defineProps({
     .msg {
       font-size: 1rem;
       text-align: center;
+      color: #ffffff;
     }
     .sponsor {
       width: 100%;
