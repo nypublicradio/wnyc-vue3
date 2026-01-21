@@ -22,6 +22,9 @@ const items = Array.from({ length: 12 }, (_, i) => {
     <h1 class="text-3xl font-bold mb-6">Material Carousel Demo</h1>
 
     <div class="mb-12">
+      <h2 class="text-xl font-bold mb-4">
+        MaterialCarouselAdvanced (Original)
+      </h2>
       <MaterialCarouselAdvanced
         :enableThrow="true"
         :items-to-show="3"
@@ -43,6 +46,19 @@ const items = Array.from({ length: 12 }, (_, i) => {
           />
         </div>
       </MaterialCarouselAdvanced>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-xl font-bold mb-4">MaterialCarouselBasic (New)</h2>
+      <MaterialCarouselBasic :gap="8">
+        <div v-for="item in items" :key="'basic-' + item.id" class="item">
+          <img
+            :src="item.image"
+            :alt="item.title"
+            class="h-20rem object-cover"
+          />
+        </div>
+      </MaterialCarouselBasic>
     </div>
   </div>
 </template>

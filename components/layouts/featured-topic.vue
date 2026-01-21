@@ -23,24 +23,40 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
   // console.log("imgWidth =   ", imgWidth)
   // console.log("imgHeight =   ", imgHeight)
 
-  // If dimensions are missing or invalid, default to square (1:1 ratio)
-  // This effectively makes height = width (ratio = 1)
+  // Calcluate Aspect Ratio (Width / Height)
   let ratio = 1
   if (
     imgHeight &&
     imgWidth &&
     !isNaN(imgHeight) &&
     !isNaN(imgWidth) &&
-    imgWidth !== 0
+    imgHeight !== 0
   ) {
-    ratio = imgHeight / imgWidth
+    ratio = imgWidth / imgHeight
   }
 
+  // Treat obj values as HEIGHT (user request), calculate WIDTH
   const sizeObj = {
-    xs: [obj.xs, Math.round(obj.xs * ratio)],
-    md: [obj.md, Math.round(obj.md * ratio)],
-    lg: [obj.lg, Math.round(obj.lg * ratio)],
+    xs: obj.xs ? [Math.round(obj.xs * ratio), obj.xs] : undefined,
+    md: obj.md ? [Math.round(obj.md * ratio), obj.md] : undefined,
+    lg: obj.lg ? [Math.round(obj.lg * ratio), obj.lg] : undefined,
   }
+
+  // Filter undefined keys if needed, but template usually passes valid ones or specific ones.
+  // The original returned partial object if keys existed?
+  // Original code:
+  // xs: [obj.xs, Math.round(obj.xs * ratio)]  <-- implies obj.xs exists or is undefined loops
+  // If obj.xs is undefined, math is NaN.
+
+  // Let's keep it safe.
+  // Also note: The template usage passes: { md: 176, lg: 320 }. xs is missing.
+  // Original code would result in xs: [undefined, NaN] which might be bad.
+  // Current refactor handles it by check.
+
+  // Clean up undefined
+  Object.keys(sizeObj).forEach(
+    (key) => sizeObj[key] === undefined && delete sizeObj[key]
+  )
 
   //console.log("sizeObj =   ", sizeObj)
 
@@ -119,13 +135,11 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
       </div>
     </div>
     <!-- <pre>{{ reactiveItems }}</pre> -->
-    <MaterialCarouselAdvanced
+    <MaterialCarouselBasic
       :enableThrow="true"
       :items-to-show="2"
       :min-content-width="180"
       :gap="16"
-      :min-item-width="0"
-      :enable-material-scaling="true"
     >
       <div
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
@@ -142,10 +156,11 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
           isVertical
           :data="item"
           :allowVerticalEffect="false"
-          imgCol="h-12rem md:h-20rem"
+          imgCol="h-12rem md:h-14rem lg:h-20rem"
           :size="
             getImgSizesBasedOnItemImgRatio(item, {
-              md: 176,
+              xs: 192,
+              md: 224,
               lg: 320,
             })
           "
@@ -154,7 +169,7 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
           @on-click="dynamicNavigation(item)"
         />
       </div>
-    </MaterialCarouselAdvanced>
+    </MaterialCarouselBasic>
   </div>
 </template>
 
