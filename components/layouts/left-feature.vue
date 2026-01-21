@@ -49,7 +49,7 @@ const reactiveItems = toRef(props.list, "listItems")
         }"
       />
 
-      <div class="col-12 lg:col-7 grid grid-nogutter gap-3">
+      <div class="col-12 lg:col-7 grid grid-nogutter gap-3 h-full">
         <template v-if="reactiveItems.length > 0">
           <MediaCard
             v-for="(article, index) in reactiveItems.slice(1, props.maxItems)"
@@ -84,3 +84,31 @@ const reactiveItems = toRef(props.list, "listItems")
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.layout-left-feature {
+  .media-card.is-feature {
+    .holder {
+      background-color: transparent !important;
+      .content {
+        text-align: center !important;
+        h2 {
+          font-size: var(--font-size-12);
+          line-height: var(--font-size-13);
+        }
+        .content-flex {
+          gap: 1.25rem !important;
+          .top,
+          .text {
+            gap: 1.25rem !important;
+          }
+        }
+        .button-holder .temp {
+          display: block !important;
+        }
+      }
+    }
+  }
+}
+</style>
+

@@ -442,10 +442,10 @@ const handleHasAudio = computed(() => {
       </div>
       <div class="content col">
         <div
-          class="flex gap-2 flex-column justify-content-between w-full h-full"
+          class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
-          <div class="flex gap-2 flex-column w-full">
-            <div class="flex gap-1 flex-column align-items-start">
+          <div class="top flex gap-2 flex-column w-full">
+            <div class="text flex gap-1 flex-column align-items-start">
               <LiveBadge
                 v-if="props.showLive && !props.saved"
                 class="align-self-start"
@@ -498,6 +498,7 @@ const handleHasAudio = computed(() => {
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
           >
+            <div class="temp hidden"></div>
             <template v-if="!isEvent">
               <template v-if="!isLive && !props.hasSegments">
                 <PlayButton
