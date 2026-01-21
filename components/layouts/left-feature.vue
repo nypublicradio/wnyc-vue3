@@ -21,7 +21,7 @@ const reactiveItems = toRef(props.list, "listItems")
     <div class="grid">
       <MediaCard
         v-if="reactiveItems.length > 0"
-        class="col-12 lg:col-5 mb-5 lg:mb-0"
+        class="col-12 lg:col-5 mb-2 lg:mb-0"
         :data="reactiveItems?.[0]"
         is-vertical
         is-feature
@@ -37,7 +37,7 @@ const reactiveItems = toRef(props.list, "listItems")
       />
       <skeleton-media-card
         v-else
-        class="col-12 lg:col-5 mb-5 lg:mb-0"
+        class="col-12 lg:col-5 mb-2 lg:mb-0"
         is-vertical
         is-feature
         :size="{

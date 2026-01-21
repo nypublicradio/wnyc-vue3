@@ -631,6 +631,7 @@ const handleHasAudio = computed(() => {
 
   /* Carousel Specific: Shrink to fit content */
   &.in-carousel {
+    height: -webkit-fill-available;
     width: min-content;
     max-width: 100%;
     min-width: var(--min-content-width);
