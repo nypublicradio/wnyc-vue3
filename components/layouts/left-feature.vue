@@ -21,7 +21,7 @@ const reactiveItems = toRef(props.list, "listItems")
     <div class="grid">
       <MediaCard
         v-if="reactiveItems.length > 0"
-        class="col-12 lg:col-5 mb-2 lg:mb-0"
+        class="col-12 lg:col-6 mb-2 lg:mb-0"
         :data="reactiveItems?.[0]"
         is-vertical
         is-feature
@@ -37,7 +37,7 @@ const reactiveItems = toRef(props.list, "listItems")
       />
       <skeleton-media-card
         v-else
-        class="col-12 lg:col-5 mb-2 lg:mb-0"
+        class="col-12 lg:col-6 mb-2 lg:mb-0"
         is-vertical
         is-feature
         :size="{
@@ -49,7 +49,7 @@ const reactiveItems = toRef(props.list, "listItems")
         }"
       />
 
-      <div class="col-12 lg:col-7 grid grid-nogutter gap-3 h-full">
+      <div class="col-12 lg:col-6 grid grid-nogutter gap-3 h-full">
         <template v-if="reactiveItems.length > 0">
           <MediaCard
             v-for="(article, index) in reactiveItems.slice(1, props.maxItems)"
@@ -90,6 +90,10 @@ const reactiveItems = toRef(props.list, "listItems")
   .media-card.is-feature {
     .holder {
       background-color: transparent !important;
+      .image {
+        border-radius: var(--media-card-border-radius) !important;
+        overflow: hidden;
+      }
       .content {
         text-align: center !important;
         h2 {
