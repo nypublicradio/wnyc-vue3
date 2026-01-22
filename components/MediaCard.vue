@@ -453,41 +453,48 @@ const handleHasAudio = computed(() => {
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
-              <h2 class="no-hyphens" :class="props.titleClasses">
+              <h2 class="no-hyphens w-full" :class="props.titleClasses">
                 {{ props.data?.title }}
               </h2>
 
-              <HtmlConvert
-                v-if="props.data.tease && props.showTease && !isEvent"
-                :htmlContent="props.data.tease"
-                class="tease"
-                :class="props.teaseClasses"
-                htmlClasses="text-sm"
-                :key="`tease-${props.data.id || props.data.slug || 'default'}`"
-              />
-            </div>
-            <div class="article-metadata" v-if="!isEvent">
-              <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
-                <template #left>
-                  {{
-                    props.isSegment
-                      ? props.data?.category
-                      : props.data?.showTitle ||
-                        props.data?.headers?.brand?.title ||
-                        getOrg(props.data?.cmsSource)
-                  }}
-                </template>
-                <template #right v-if="!props.hideDate">
-                  {{ getDate(props.data) }}
-                </template>
-              </PipeData>
-
-              <div class="mt-1 opacity-70" :class="props.bylineClasses">
-                <VByline
-                  v-if="props.data?.byline?.length > 0 && props.isSegment"
-                  :authors="props.data?.byline"
-                  prefix="by "
+              <div class="tease-metadata-holder flex flex-column gap-2 w-full">
+                <HtmlConvert
+                  v-if="props.data.tease && props.showTease && !isEvent"
+                  :htmlContent="props.data.tease"
+                  class="tease"
+                  :class="props.teaseClasses"
+                  htmlClasses="text-sm"
+                  :key="`tease-${
+                    props.data.id || props.data.slug || 'default'
+                  }`"
                 />
+                <div class="article-metadata w-full" v-if="!isEvent">
+                  <PipeData
+                    :hidePipe="props.hideDate"
+                    :class="props.pipeClasses"
+                  >
+                    <template #left>
+                      {{
+                        props.isSegment
+                          ? props.data?.category
+                          : props.data?.showTitle ||
+                            props.data?.headers?.brand?.title ||
+                            getOrg(props.data?.cmsSource)
+                      }}
+                    </template>
+                    <template #right v-if="!props.hideDate">
+                      {{ getDate(props.data) }}
+                    </template>
+                  </PipeData>
+
+                  <div class="mt-1 opacity-70" :class="props.bylineClasses">
+                    <VByline
+                      v-if="props.data?.byline?.length > 0 && props.isSegment"
+                      :authors="props.data?.byline"
+                      prefix="by "
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div v-if="isEvent" class="flex flex-column gap-2">

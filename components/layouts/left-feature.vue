@@ -99,16 +99,38 @@ const reactiveItems = toRef(props.list, "listItems")
         h2 {
           font-size: var(--font-size-12);
           line-height: var(--font-size-13);
+          text-align: center !important;
         }
         .content-flex {
           gap: 1.25rem !important;
           .top,
-          .text {
+          .text,
+          .tease-metadata-holder {
             gap: 1.25rem !important;
+          }
+          .tease-metadata-holder {
+            flex-direction: column-reverse !important;
           }
         }
         .button-holder .temp {
           display: block !important;
+        }
+        @include media("<md") {
+          h2 {
+            font-size: var(--font-size-9);
+            line-height: var(--font-size-8);
+          }
+          .content-flex {
+            gap: 0.75rem !important;
+            .top,
+            .text,
+            .tease-metadata-holder {
+              gap: 0.75rem !important;
+            }
+          }
+          .button-holder {
+            margin: 0 -1rem;
+          }
         }
       }
     }
