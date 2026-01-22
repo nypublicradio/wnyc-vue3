@@ -1,6 +1,6 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
-import { useBreakpoints } from "~/composables/useBreakpoints"
+import { dynamicNavigation } from "~/utilities/helpers";
+import { useBreakpoints } from "~/composables/useBreakpoints";
 const props = defineProps({
   list: {
     type: Object,
@@ -10,18 +10,18 @@ const props = defineProps({
     type: Number,
     default: 15,
   },
-})
+});
 
-const reactiveItems = toRef(props.list, "listItems")
-const { breakpoint } = useBreakpoints()
-const isLgBreakpoint = computed(() => breakpoint("<lg"))
+const reactiveItems = toRef(props.list, "listItems");
+const { breakpoint } = useBreakpoints();
+const isLgBreakpoint = computed(() => breakpoint("<lg"));
 
 const getImgSizesBasedOnItemImgRatio = (item, obj) => {
-  const imgHeight = Number(item.image?.height)
-  const imgWidth = Number(item.image?.width)
+  const imgHeight = Number(item.image?.height);
+  const imgWidth = Number(item.image?.width);
 
   // Calcluate Aspect Ratio (Width / Height)
-  let ratio = 1
+  let ratio = 1;
   if (
     imgHeight &&
     imgWidth &&
@@ -29,7 +29,7 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     !isNaN(imgWidth) &&
     imgHeight !== 0
   ) {
-    ratio = imgWidth / imgHeight
+    ratio = imgWidth / imgHeight;
   }
 
   // Treat obj values as HEIGHT (user request), calculate WIDTH
@@ -37,30 +37,47 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     xs: obj.xs ? [Math.round(obj.xs * ratio), obj.xs] : undefined,
     md: obj.md ? [Math.round(obj.md * ratio), obj.md] : undefined,
     lg: obj.lg ? [Math.round(obj.lg * ratio), obj.lg] : undefined,
-  }
+  };
 
   // Clean up undefined
   Object.keys(sizeObj).forEach(
     (key) => sizeObj[key] === undefined && delete sizeObj[key]
-  )
+  );
 
-  return sizeObj
-}
+  return sizeObj;
+};
 </script>
 
 <template>
   <div class="layout layout-featured-topic">
-    <p v-if="reactiveItems.length === 0">
-      <skeleton-media-card
-        class="col-12 lg:col-8 mb-3 hidden md:block"
-        is-horizontal
-        is-feature
-        imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 395] }"
-      />
-    </p>
+    <div class="layout-tile mb-8">
+      <div class="flex flex-wrap gap-3">
+        <div
+          v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
+          :key="`carousel-${item.id}-${index}`"
+          class="item"
+          style="height: -webkit-fill-available"
+        >
+          <MediaCard
+            inCarousel
+            showTease
+            isVertical
+            :data="item"
+            :allowVerticalEffect="false"
+            imgCol="h-12rem md:h-14rem lg:h-20rem"
+            :size="
+              getImgSizesBasedOnItemImgRatio(item, {
+                xs: 192,
+                md: 224,
+                lg: 320,
+              })
+            "
+            @on-click="dynamicNavigation(item)"
+          />
+        </div>
+      </div>
+    </div>
     <MaterialCarouselBasic
-      v-else
       :enableThrow="true"
       :items-to-show="2"
       :min-content-width="180"
