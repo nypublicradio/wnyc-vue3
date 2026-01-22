@@ -139,7 +139,7 @@ const props = defineProps({
   },
   teaseClasses: {
     type: String,
-    default: "",
+    default: "text-sm",
   },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
@@ -463,7 +463,7 @@ const handleHasAudio = computed(() => {
                   :htmlContent="props.data.tease"
                   class="tease"
                   :class="props.teaseClasses"
-                  htmlClasses="text-sm"
+                  :htmlClasses="props.teaseClasses"
                   :key="`tease-${
                     props.data.id || props.data.slug || 'default'
                   }`"

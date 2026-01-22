@@ -12,6 +12,54 @@ const props = defineProps({
 })
 // TODO: use new smarter ratio calc
 const reactiveItems = toRef(props.list, "listItems")
+
+const squareSizes = {
+  xs: [317, 317],
+  sm: [709, 709],
+  md: [885, 885],
+  lg: [446, 446],
+  xl: [550, 550],
+}
+
+const rectSizes = {
+  xs: [317, 211],
+  sm: [518, 345],
+  md: [622, 441],
+  lg: [885, 590],
+  xl: [664, 443],
+}
+const leftCol = ref("lg:col-6")
+const rightCol = ref("lg:col-6")
+const isSquare = ref(false)
+
+onBeforeMount(() => {
+  const featureItem = reactiveItems.value[0]
+  const imgHeight = Number(featureItem.image?.height)
+  const imgWidth = Number(featureItem.image?.width)
+  if (featureItem.cmsSource === "simplecast") {
+    isSquare.value = true
+  } else if (
+    featureItem &&
+    imgHeight &&
+    imgWidth &&
+    !isNaN(imgHeight) &&
+    !isNaN(imgWidth) &&
+    imgHeight !== 0
+  ) {
+    isSquare.value = imgHeight === imgWidth
+  } else {
+    isSquare.value = false
+  }
+})
+
+watch(isSquare, (newVal) => {
+  leftCol.value = newVal ? "lg:col-5" : "lg:col-5 xl:col-6"
+  rightCol.value = newVal ? "lg:col-7" : "lg:col-7 xl:col-6"
+})
+
+const featureSizes = computed(() => {
+  return isSquare.value ? squareSizes : rectSizes
+})
 </script>
 
 <template>
@@ -21,35 +69,28 @@ const reactiveItems = toRef(props.list, "listItems")
     <div class="grid">
       <MediaCard
         v-if="reactiveItems.length > 0"
-        class="col-12 lg:col-6 mb-2 lg:mb-0"
+        class="xs:col-12 sm:col-7 md:col-6 mx-auto mb-2 lg:mb-0"
+        :class="leftCol"
         :data="reactiveItems?.[0]"
         is-vertical
         is-feature
         showTease
-        :size="{
-          xs: [317, 211],
-          sm: [518, 345],
-          md: [622, 441],
-          lg: [885, 590],
-          xl: [664, 443],
-        }"
+        teaseClasses="text-sm lg:text-base"
+        pipeClasses="text-sm lg:text-base"
+        showTitleClasses="text-sm lg:text-base"
+        :size="featureSizes"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
         v-else
-        class="col-12 lg:col-6 mb-2 lg:mb-0"
+        class="col-12 mb-2 lg:mb-0"
+        :class="leftCol"
         is-vertical
         is-feature
-        :size="{
-          xs: [317, 211],
-          sm: [518, 345],
-          md: [622, 441],
-          lg: [885, 590],
-          xl: [664, 443],
-        }"
+        :size="featureSizes"
       />
 
-      <div class="col-12 lg:col-6 grid grid-nogutter gap-3 h-full">
+      <div class="col-12 grid grid-nogutter gap-3 h-full" :class="rightCol">
         <template v-if="reactiveItems.length > 0">
           <MediaCard
             v-for="(article, index) in reactiveItems.slice(1, props.maxItems)"
@@ -58,7 +99,11 @@ const reactiveItems = toRef(props.list, "listItems")
             :data="article"
             is-horizontal
             is-event
-            imgCol="w-7rem md:w-11rem lg:w-11rem"
+            imgCol="w-7rem md:w-11rem lg:w-13rem xl:w-13rem"
+            titleClasses="text-base lg:text-lg"
+            teaseClasses="text-sm lg:text-base"
+            pipeClasses="text-sm lg:text-base"
+            showTitleClasses="text-sm lg:text-base"
             :ratio="[1, 1]"
             :size="{
               xs: [112, 112],
@@ -74,7 +119,7 @@ const reactiveItems = toRef(props.list, "listItems")
           class="col-12 mb-5"
           is-horizontal
           is-event
-          imgCol="w-7rem md:w-11rem lg:w-11rem"
+          imgCol="w-7rem md:w-11rem lg:w-13rem xl:w-13rem"
           :size="{
             xs: [112, 112],
             md: [176, 176],
@@ -115,10 +160,12 @@ const reactiveItems = toRef(props.list, "listItems")
         .button-holder .temp {
           display: block !important;
         }
-        @include media("<md") {
+        @include media("<lg") {
+          padding-left: 0.5rem !important;
+          padding-right: 0.5rem !important;
           h2 {
             font-size: var(--font-size-9);
-            line-height: var(--font-size-8);
+            line-height: var(--font-size-10);
           }
           .content-flex {
             gap: 0.75rem !important;
@@ -127,9 +174,6 @@ const reactiveItems = toRef(props.list, "listItems")
             .tease-metadata-holder {
               gap: 0.75rem !important;
             }
-          }
-          .button-holder {
-            margin: 0 -1rem;
           }
         }
       }
