@@ -164,14 +164,6 @@ const updateMetrics = () => {
   onScroll();
 };
 
-let resizeTimeout;
-const onResize = () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    updateMetrics();
-  }, 100);
-};
-
 let mutationObserver = null;
 
 onMounted(() => {
@@ -215,7 +207,6 @@ onBeforeUnmount(() => {
   }
   if (mutationObserver) mutationObserver.disconnect();
   if (resizeObserver) resizeObserver.disconnect();
-  clearTimeout(resizeTimeout);
 });
 </script>
 
