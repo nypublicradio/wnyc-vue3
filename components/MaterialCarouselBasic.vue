@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useBreakpoints } from "~/composables/useBreakpoints";
+import scssVariables from "~/assets/scss/export.module.scss";
 
 const props = defineProps({
   // Gap between items in pixels (M3 default: 8dp)
@@ -17,11 +19,6 @@ const props = defineProps({
     type: Number,
     default: 40,
   },
-  // Buffer to maintain visually on the left when snapping
-  marginBuffer: {
-    type: Number,
-    default: 48,
-  },
 });
 
 const carouselRef = ref(null);
@@ -34,6 +31,33 @@ const showRightArrow = ref(true);
 
 // Resize observing
 let resizeObserver = null;
+
+// Breakpoint logic for snap buffer
+const { breakpoint } = useBreakpoints();
+
+const marginBuffer = computed(() => {
+  // Parse SCSS values (e.g. "1.5rem" -> pixels)
+  const getPx = (val) => {
+    if (!val) return 0;
+    if (val.endsWith("px")) return parseFloat(val);
+    if (val.endsWith("rem")) {
+      // Approximate or assume root 16px
+      return parseFloat(val) * 16;
+    }
+    return parseFloat(val);
+  };
+
+  const mobilePadding = getPx(scssVariables.padding);
+  const desktopPadding = getPx(scssVariables.paddingDesktop);
+
+  // Match SCSS logic:
+  // >= xxl -> 0
+  // >= md -> desktopPadding
+  // else -> mobilePadding
+  if (breakpoint(">=xxl")) return 0;
+  if (breakpoint(">=md")) return desktopPadding;
+  return mobilePadding;
+});
 
 // Edge fade gradient mask style - Dynamic based on scroll position
 const maskStyle = computed(() => {
@@ -97,7 +121,7 @@ const getSnapPosition = (targetPos, direction) => {
   // Safety buffer
   const current = currentScrollLeft.value;
   const buffer = 10;
-  const bufferOffset = props.marginBuffer;
+  const bufferOffset = marginBuffer.value;
 
   for (const child of children) {
     // Adjust pos to account for the visual buffer we want to maintain
@@ -287,13 +311,62 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .material-carousel-basic {
-  width: 100%;
   overflow: hidden;
   position: relative;
 
   // To allow arrows to float over
   display: flex;
   align-items: center;
+
+  $arrow-distance: 20px;
+
+  @mixin arrow-spacing($paddingVal) {
+    @if $paddingVal == 0 {
+      margin-left: 0;
+      margin-right: 0;
+
+      .carousel-track :deep(> *:first-child) {
+        margin-left: 0;
+      }
+      .carousel-track :deep(> *:last-child) {
+        margin-right: 0;
+      }
+      .nav-arrow-left {
+        left: #{$arrow-distance} !important;
+      }
+      .nav-arrow-right {
+        right: #{$arrow-distance} !important;
+      }
+    } @else {
+      margin-left: calc(#{$paddingVal} * -1);
+      margin-right: calc(#{$paddingVal} * -1);
+
+      .carousel-track :deep(> *:first-child) {
+        margin-left: $paddingVal;
+      }
+      .carousel-track :deep(> *:last-child) {
+        margin-right: $paddingVal;
+      }
+      .nav-arrow-left {
+        left: calc(#{$arrow-distance} + #{$paddingVal}) !important;
+      }
+      .nav-arrow-right {
+        right: calc(#{$arrow-distance} + #{$paddingVal}) !important;
+      }
+    }
+  }
+
+  // Default (Mobile)
+  @include arrow-spacing($padding);
+
+  @include media(">=md") {
+    @include arrow-spacing($paddingDesktop);
+  }
+
+  @include media(">=xxl") {
+    // Reset to contained
+    @include arrow-spacing(0);
+  }
 }
 
 .carousel-track {
@@ -303,7 +376,6 @@ onBeforeUnmount(() => {
 
   overflow-x: auto;
   overflow-y: hidden;
-  /* scroll-snap-type: x mandatory;  <-- Disable global snap if we do custom logic or mixed widths */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 
@@ -321,7 +393,6 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
   width: auto;
   height: auto;
-  /* scroll-snap-align: start; */
   box-sizing: border-box;
   overflow: hidden;
 
@@ -359,14 +430,6 @@ onBeforeUnmount(() => {
 
   &:active {
     transform: translateY(-50%) scale(0.95);
-  }
-
-  &.nav-arrow-left {
-    left: calc(20px + v-bind("props.marginBuffer") * 1px);
-  }
-
-  &.nav-arrow-right {
-    right: calc(20px + v-bind("props.marginBuffer") * 1px);
   }
 }
 </style>
