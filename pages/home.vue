@@ -81,7 +81,7 @@ onMounted(() => {
         </div>
       </div>
     </section>
-
+    <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
     <div v-if="status === 'success'">
       <div
