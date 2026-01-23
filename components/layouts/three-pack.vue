@@ -8,7 +8,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "md:col-12 lg:col-4 mb-3",
+    default: "col-12 md:col-12 lg:col-4 mb-3",
   },
   maxItems: {
     type: Number,
