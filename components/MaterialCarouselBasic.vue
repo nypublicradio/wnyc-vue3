@@ -15,7 +15,12 @@ const props = defineProps({
   // Width of edge fade gradient in pixels
   edgeFadeDistance: {
     type: Number,
-    default: 32,
+    default: 40,
+  },
+  // Buffer to maintain visually on the left when snapping
+  marginBuffer: {
+    type: Number,
+    default: 48,
   },
 });
 
@@ -92,9 +97,12 @@ const getSnapPosition = (targetPos, direction) => {
   // Safety buffer
   const current = currentScrollLeft.value;
   const buffer = 10;
+  const bufferOffset = props.marginBuffer;
 
   for (const child of children) {
-    const pos = child.offsetLeft;
+    // Adjust pos to account for the visual buffer we want to maintain
+    // So if child starts at 100, and buffer is 20, we want to snap to 80 (so child starts at 20 visual)
+    const pos = Math.max(0, child.offsetLeft - bufferOffset);
 
     // Direction constraint
     if (direction === "next" && pos <= current + buffer) continue;
@@ -354,11 +362,11 @@ onBeforeUnmount(() => {
   }
 
   &.nav-arrow-left {
-    left: 16px;
+    left: calc(20px + v-bind("props.marginBuffer") * 1px);
   }
 
   &.nav-arrow-right {
-    right: 16px;
+    right: calc(20px + v-bind("props.marginBuffer") * 1px);
   }
 }
 </style>

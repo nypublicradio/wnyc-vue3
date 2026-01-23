@@ -10,11 +10,26 @@ const props = defineProps({
     type: Number,
     default: 15,
   },
+  marginBuffer: {
+    type: Number,
+    default: 48,
+  },
+  marginBufferBreakpoint: {
+    type: String,
+    default: "<xxl",
+  },
 });
 
 const reactiveItems = toRef(props.list, "listItems");
 const { breakpoint } = useBreakpoints();
-const isLgBreakpoint = computed(() => breakpoint("<lg"));
+
+const shouldApplyBuffer = computed(() => {
+  return breakpoint(props.marginBufferBreakpoint);
+});
+
+const effectiveMarginBuffer = computed(() => {
+  return shouldApplyBuffer.value ? props.marginBuffer : 0;
+});
 
 const getImgSizesBasedOnItemImgRatio = (item, obj) => {
   const imgHeight = Number(item.image?.height);
@@ -49,12 +64,16 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
 </script>
 
 <template>
-  <div class="layout layout-carousel">
+  <div
+    class="layout layout-carousel"
+    :class="{ 'has-buffer': shouldApplyBuffer }"
+  >
     <MaterialCarouselBasic
       :enableThrow="true"
       :items-to-show="2"
       :min-content-width="180"
       :gap="16"
+      :marginBuffer="effectiveMarginBuffer"
     >
       <div
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
@@ -82,3 +101,21 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     </MaterialCarouselBasic>
   </div>
 </template>
+
+<style lang="scss">
+.layout-carousel {
+  &.has-buffer {
+    margin: 0 calc(v-bind("effectiveMarginBuffer") * -1px) 0
+      calc(v-bind("effectiveMarginBuffer") * -1px);
+    //
+    .item {
+      &:first-child {
+        margin-left: calc(v-bind("effectiveMarginBuffer") * 1px);
+      }
+      &:last-child {
+        margin-right: calc(v-bind("effectiveMarginBuffer") * 1px);
+      }
+    }
+  }
+}
+</style>
