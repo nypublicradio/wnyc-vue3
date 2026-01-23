@@ -1,6 +1,6 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers";
-import { useBreakpoints } from "~/composables/useBreakpoints";
+import { dynamicNavigation } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   list: {
     type: Object,
@@ -10,11 +10,11 @@ const props = defineProps({
     type: Number,
     default: 4,
   },
-});
+})
 
-const reactiveItems = toRef(props.list, "listItems");
-const { breakpoint } = useBreakpoints();
-const isLgBreakpoint = computed(() => breakpoint("<lg"));
+const reactiveItems = toRef(props.list, "listItems")
+const { breakpoint } = useBreakpoints()
+const isLgBreakpoint = computed(() => breakpoint("<lg"))
 </script>
 
 <template>
@@ -38,8 +38,8 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"));
         is-horizontal
         is-feature
         showTease
-        imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 380], lg: [592, 480] }"
+        imgCol="w-6"
+        :size="{ xs: [369, 246], sm: [592, 380], lg: [412, 412] }"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card

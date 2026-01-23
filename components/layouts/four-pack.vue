@@ -1,5 +1,6 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   list: {
     type: Object,
@@ -7,7 +8,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "col-12 md:col-6 lg:col-3 mb-3",
+    default: "col-12 md:col-12 lg:col-3 mb-3",
   },
   maxItems: {
     type: Number,
@@ -46,14 +47,15 @@ const imgSizes = {
   lg: getImgSize(261),
   xl: getImgSize(324),
 }
-const imgSizeHorz = { xs: getImgSize(248) }
+const { breakpoint } = useBreakpoints()
+const isLgBreakpoint = computed(() => breakpoint("<lg"))
 </script>
 
 <template>
   <div class="layout layout-four-pack">
     <h2 class="mb-4">{{ props.list.title }}</h2>
 
-    <div class="grid hidden lg:flex">
+    <div class="grid">
       <template v-if="reactiveItems?.length > 0">
         <MediaCard
           v-for="(item, index) in reactiveItems.slice(0, props.maxItems)"
@@ -63,6 +65,8 @@ const imgSizeHorz = { xs: getImgSize(248) }
           :data="item"
           :size="imgSizes"
           :ratio="imgRatio"
+          :isHorizontal="isLgBreakpoint"
+          imgCol="w-7rem md:w-11rem lg:w-full"
           @on-click="dynamicNavigation(item)"
         />
       </template>
@@ -75,45 +79,5 @@ const imgSizeHorz = { xs: getImgSize(248) }
         :ratio="imgRatio"
       />
     </div>
-
-    <HorizontalScrollFeature
-      :data="reactiveItems"
-      itemSize="248px"
-      edgeNegativeMargin="4"
-      class="block lg:hidden"
-    >
-      <template #default>
-        <MediaCard
-          v-for="(item, index) in reactiveItems.slice(
-            0,
-            props.scrollingMaxItems ?? props.maxItems
-          )"
-          :data="item"
-          :key="`horzScroll-${index}-}${item.label}`"
-          is-vertical
-          :size="imgSizeHorz"
-          :ratio="imgRatio"
-          showTease
-          showBg
-          showBgMobile
-          class="item btn"
-          @on-click="dynamicNavigation(item)"
-        />
-      </template>
-      <template #skeleton>
-        <div class="flex w-full">
-          <skeleton-media-card
-            v-for="i in 5"
-            :key="`${i}-skeleton`"
-            is-vertical
-            showBg
-            showBgMobile
-            :size="[3, 2]"
-            showTease
-            class="item btn"
-          />
-        </div>
-      </template>
-    </HorizontalScrollFeature>
   </div>
 </template>
