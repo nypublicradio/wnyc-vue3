@@ -28,7 +28,7 @@ const props = defineProps({
   },
   square: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 })
 
@@ -43,9 +43,9 @@ const getImgSize = (width) => {
 
 const imgSizes = {
   xs: getImgSize(112),
-  md: getImgSize(423),
+  md: getImgSize(176),
   lg: getImgSize(261),
-  xl: getImgSize(324),
+  xl: getImgSize(305),
 }
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
@@ -61,6 +61,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           v-for="(item, index) in reactiveItems.slice(0, props.maxItems)"
           :key="`${item.id}-${index}`"
           showTease
+          teaseClasses="text-sm t2lines"
           :class="props.cardClass"
           :data="item"
           :size="imgSizes"
