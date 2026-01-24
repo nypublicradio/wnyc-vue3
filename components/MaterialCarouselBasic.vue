@@ -372,7 +372,7 @@ onBeforeUnmount(() => {
 .carousel-track {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
 
   overflow-x: auto;
   overflow-y: hidden;
