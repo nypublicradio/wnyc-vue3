@@ -1,6 +1,7 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
+import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
   list: {
     type: Object,
@@ -15,6 +16,45 @@ const props = defineProps({
 const reactiveItems = toRef(props.list, "listItems")
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
+const isSquare = ref(false)
+
+onBeforeMount(() => {
+  const featureItem = reactiveItems.value[0]
+  const imgHeight = Number(
+    featureItem.imageFullHeight || featureItem.image?.height
+  )
+  const imgWidth = Number(
+    featureItem.imageFullWidth || featureItem.image?.width
+  )
+  console.log(imgHeight, imgWidth)
+  console.log(reactiveItems.value)
+  if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
+    isSquare.value = true
+  } else if (
+    featureItem &&
+    imgHeight &&
+    imgWidth &&
+    !isNaN(imgHeight) &&
+    !isNaN(imgWidth) &&
+    imgHeight !== 0
+  ) {
+    isSquare.value = imgHeight === imgWidth
+  } else {
+    isSquare.value = false
+  }
+})
+
+const squareSizes = {
+  md: [443, 443],
+}
+
+const rectSizes = {
+  md: [443, 295],
+}
+
+const featureSizes = computed(() => {
+  return isSquare.value ? squareSizes : rectSizes
+})
 </script>
 
 <template>
@@ -39,7 +79,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         is-feature
         showTease
         imgCol="w-6"
-        :size="{ xs: [369, 246], sm: [592, 380], lg: [412, 412] }"
+        :size="featureSizes"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -47,8 +87,10 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         class="col-12 lg:col-8 mb-3 hidden md:block"
         is-horizontal
         is-feature
-        imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 395] }"
+        imgCol="w-6"
+        :size="{
+          md: [443, 443],
+        }"
       />
 
       <div
@@ -66,12 +108,13 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           v-for="(article, index) in reactiveItems?.slice(0, props.maxItems)"
           :key="`${article.id}-${index}`"
           showTease
+          teaseClasses="text-sm t2lines"
           class="col-12 lg:col-4 mb-3 order-4"
           :class="{ 'md:hidden': index === 0 }"
           :data="article"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [438, 292] }"
+          :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
           @on-click="dynamicNavigation(article)"
         />
       </template>
@@ -83,7 +126,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
           :class="{ 'md:hidden': index === 1 }"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [438, 292] }"
+          :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
         />
       </div>
     </div>

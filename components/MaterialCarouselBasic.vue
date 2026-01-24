@@ -408,9 +408,8 @@ onBeforeUnmount(() => {
 .nav-arrow {
   position: absolute;
   z-index: 10;
-  top: 50%;
   transform: translateY(-50%);
-
+  top: 27%;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
@@ -430,6 +429,12 @@ onBeforeUnmount(() => {
 
   &:active {
     transform: translateY(-50%) scale(0.95);
+  }
+  @include media("<lg") {
+    top: 26%;
+  }
+  @include media("<md") {
+    top: 21%;
   }
 }
 </style>

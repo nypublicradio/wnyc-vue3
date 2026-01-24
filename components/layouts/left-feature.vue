@@ -1,6 +1,6 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers";
-import { mediaTypes } from "~/composables/globals";
+import { dynamicNavigation } from "~/utilities/helpers"
+import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
   list: {
     type: Object,
@@ -10,9 +10,9 @@ const props = defineProps({
     type: Number,
     default: 4,
   },
-});
+})
 // TODO: use new smarter ratio calc
-const reactiveItems = toRef(props.list, "listItems");
+const reactiveItems = toRef(props.list, "listItems")
 
 const squareSizes = {
   xs: [317, 317],
@@ -20,7 +20,7 @@ const squareSizes = {
   md: [885, 885],
   lg: [446, 446],
   xl: [550, 550],
-};
+}
 
 const rectSizes = {
   xs: [317, 211],
@@ -28,17 +28,21 @@ const rectSizes = {
   md: [622, 441],
   lg: [885, 590],
   xl: [664, 443],
-};
-const leftCol = ref("lg:col-6");
-const rightCol = ref("lg:col-6");
-const isSquare = ref(false);
+}
+const leftCol = ref("lg:col-6")
+const rightCol = ref("lg:col-6")
+const isSquare = ref(false)
 
 onBeforeMount(() => {
-  const featureItem = reactiveItems.value[0];
-  const imgHeight = Number(featureItem.image?.height);
-  const imgWidth = Number(featureItem.image?.width);
+  const featureItem = reactiveItems.value[0]
+  const imgHeight = Number(
+    featureItem.imageFullHeight || featureItem.image?.height
+  )
+  const imgWidth = Number(
+    featureItem.imageFullWidth || featureItem.image?.width
+  )
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
-    isSquare.value = true;
+    isSquare.value = true
   } else if (
     featureItem &&
     imgHeight &&
@@ -47,20 +51,20 @@ onBeforeMount(() => {
     !isNaN(imgWidth) &&
     imgHeight !== 0
   ) {
-    isSquare.value = imgHeight === imgWidth;
+    isSquare.value = imgHeight === imgWidth
   } else {
-    isSquare.value = false;
+    isSquare.value = false
   }
-});
+})
 
 watch(isSquare, (newVal) => {
-  leftCol.value = newVal ? "lg:col-5" : "lg:col-5 xl:col-6";
-  rightCol.value = newVal ? "lg:col-7" : "lg:col-7 xl:col-6";
-});
+  leftCol.value = newVal ? "lg:col-5" : "lg:col-5 xl:col-6"
+  rightCol.value = newVal ? "lg:col-7" : "lg:col-7 xl:col-6"
+})
 
 const featureSizes = computed(() => {
-  return isSquare.value ? squareSizes : rectSizes;
-});
+  return isSquare.value ? squareSizes : rectSizes
+})
 </script>
 
 <template>
