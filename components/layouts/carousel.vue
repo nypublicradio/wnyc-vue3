@@ -8,15 +8,14 @@ const props = defineProps({
   },
   maxItems: {
     type: Number,
-    default: 15,
+    default: undefined,
   },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
-
 const getImgSizesBasedOnItemImgRatio = (item, obj) => {
-  const imgHeight = Number(item.image?.height)
-  const imgWidth = Number(item.image?.width)
+  const imgHeight = Number(item.imageFullHeight || item.image?.height)
+  const imgWidth = Number(item.imageFullWidth || item.image?.width)
 
   // Calcluate Aspect Ratio (Width / Height)
   let ratio = 1
@@ -36,7 +35,6 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
     md: obj.md ? [Math.round(obj.md * ratio), obj.md] : undefined,
     lg: obj.lg ? [Math.round(obj.lg * ratio), obj.lg] : undefined,
   }
-
   // Clean up undefined
   Object.keys(sizeObj).forEach(
     (key) => sizeObj[key] === undefined && delete sizeObj[key]
@@ -58,11 +56,12 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
         isVertical
         :data="item"
         :allowVerticalEffect="false"
-        imgCol="h-12rem md:h-14rem lg:h-20rem"
+        imgCol="h-12rem md:h-16rem lg:h-18rem"
         :size="
           getImgSizesBasedOnItemImgRatio(item, {
-            md: 160,
-            lg: 292,
+            xs: 192,
+            md: 256,
+            lg: 288,
           })
         "
         @on-click="dynamicNavigation(item)"
