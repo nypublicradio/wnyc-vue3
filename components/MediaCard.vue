@@ -639,9 +639,17 @@ $contentPaddingY: 1.25rem;
   cursor: pointer;
   height: auto;
 
+  /* Fix for card-click overlay blocking rendering off-screen */
+  .card-click {
+    // Ensure overlay doesn't create a blocking paint layer
+    isolation: isolate;
+    // Force overlay onto its own GPU layer to prevent blocking content below
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
   /* Carousel Specific: Shrink to fit content */
   &.in-carousel {
-    height: -webkit-fill-available;
     width: min-content;
     max-width: 100%;
     min-width: var(--min-content-width);

@@ -49,28 +49,24 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
 <template>
   <div class="layout layout-carousel">
     <MaterialCarouselBasic :gap="16">
-      <div
+      <MediaCard
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
         :key="`carousel-${item.id}-${index}`"
         class="item"
-        style="height: -webkit-fill-available"
-      >
-        <MediaCard
-          inCarousel
-          showTease
-          isVertical
-          :data="item"
-          :allowVerticalEffect="false"
-          imgCol="h-12rem md:h-14rem lg:h-20rem"
-          :size="
-            getImgSizesBasedOnItemImgRatio(item, {
-              md: 160,
-              lg: 292,
-            })
-          "
-          @on-click="dynamicNavigation(item)"
-        />
-      </div>
+        inCarousel
+        showTease
+        isVertical
+        :data="item"
+        :allowVerticalEffect="false"
+        imgCol="h-12rem md:h-14rem lg:h-20rem"
+        :size="
+          getImgSizesBasedOnItemImgRatio(item, {
+            md: 160,
+            lg: 292,
+          })
+        "
+        @on-click="dynamicNavigation(item)"
+      />
     </MaterialCarouselBasic>
   </div>
 </template>
