@@ -149,7 +149,7 @@ const getSnapPosition = (targetPos, direction) => {
 }
 
 const scrollToPrev = () => {
-  if (!trackRef.value || isAnimating.value) return
+  if (!trackRef.value) return
   isAnimating.value = true
 
   const containerW = containerWidth.value
@@ -166,7 +166,7 @@ const scrollToPrev = () => {
 }
 
 const scrollToNext = () => {
-  if (!trackRef.value || isAnimating.value) return
+  if (!trackRef.value) return
   isAnimating.value = true
 
   const containerW = containerWidth.value
