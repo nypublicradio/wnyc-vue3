@@ -814,6 +814,9 @@ $contentPaddingY: 1.25rem;
           height: 112px !important;
           flex: 0 0 auto;
         }
+        .tease {
+          display: none;
+        }
       }
     }
   }
