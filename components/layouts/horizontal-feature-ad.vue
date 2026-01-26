@@ -26,8 +26,6 @@ onBeforeMount(() => {
   const imgWidth = Number(
     featureItem.imageFullWidth || featureItem.image?.width
   )
-  console.log(imgHeight, imgWidth)
-  console.log(reactiveItems.value)
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
@@ -58,7 +56,7 @@ const featureSizes = computed(() => {
 </script>
 
 <template>
-  <div class="layout layout-featured-topic">
+  <div class="layout layout-horizontal-feature-ad">
     <div
       class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
     >
@@ -136,7 +134,7 @@ const featureSizes = computed(() => {
 
 <style lang="scss" scoped>
 $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
-.layout-featured-topic {
+.layout-horizontal-feature-ad {
   .ad {
     min-width: 300px;
   }

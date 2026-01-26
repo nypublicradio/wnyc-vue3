@@ -8,7 +8,7 @@ const props = defineProps({
   },
   maxItems: {
     type: Number,
-    default: 4,
+    default: 5,
   },
 })
 // TODO: use new smarter ratio calc
@@ -68,13 +68,13 @@ const featureSizes = computed(() => {
 </script>
 
 <template>
-  <div class="layout layout-left-feature">
+  <div class="layout layout-vertical-feature">
     <h2 class="mb-4">{{ props.list.title }}</h2>
 
     <div class="grid">
       <MediaCard
         v-if="reactiveItems.length > 0"
-        class="xs:col-12 sm:col-7 md:col-6 mx-auto mb-2 lg:mb-0"
+        class="xs:col-12 sm:col-7 md:col-6 mx-auto mb-2 lg:mb-0 align-self-start"
         :class="leftCol"
         :data="reactiveItems?.[0]"
         is-vertical
@@ -136,7 +136,7 @@ const featureSizes = computed(() => {
 </template>
 
 <style lang="scss">
-.layout-left-feature {
+.layout-vertical-feature {
   .media-card.is-feature {
     .holder {
       background-color: transparent !important;
