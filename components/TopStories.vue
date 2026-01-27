@@ -14,13 +14,13 @@ const reactiveArticles = toRef(props, "articles")
   <div>
     <div
       v-if="reactiveArticles?.length > 0"
-      class="top-stories grid grid-nogutter gap-3"
+      class="top-stories flex flex-column gap-3"
     >
       <div
         v-for="(article, index) in reactiveArticles"
         :key="`${article?.id}-${index}`"
         :class="props.cardClass"
-        class="w-full"
+        class=""
       >
         <MediaCard
           showTease
@@ -32,15 +32,16 @@ const reactiveArticles = toRef(props, "articles")
         />
       </div>
     </div>
-    <div v-else class="grid">
+    <div v-else class="flex flex-column gap-3">
       <div
-        v-for="index in 4"
+        v-for="index in 5"
         :key="`skeleton-top-stories-${index}`"
         :class="props.cardClass"
+        class=""
       >
         <skeleton-media-card
-          :key="`skeleton-1-${index}`"
-          :class="props.cardClass"
+          isHorizontal
+          imgCol="w-7rem md:w-11rem"
           :size="{ xs: [112, 112], md: [176, 176] }"
         />
       </div>
