@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { PropType } from "vue"
+
 const props = defineProps({
   label: {
     type: String,
@@ -21,13 +23,17 @@ const props = defineProps({
     default: "",
     type: String,
   },
+  variant: {
+    type: String as PropType<"default" | "hero">,
+    default: "default",
+  },
 })
 
 const emit = defineEmits(["on-click"])
 </script>
 
 <template>
-  <div class="read-button" :class="[{ circle: props.label === '' }]">
+  <div class="event-button" :class="[{ circle: props.label === '' }, `variant-${props.variant}`]">
     <Button
       severity="secondary"
       @click="emit('on-click')"
@@ -49,21 +55,46 @@ const emit = defineEmits(["on-click"])
 </template>
 
 <style lang="scss" scoped>
-.read-button {
+.event-button {
   .p-button {
-    padding: 0.219rem 0.75rem;
-    min-height: 33px;
-    &.active {
-      //border: var(--bw-toggle) 1px solid;
-    }
+    border-radius: 999px;
+    border: none;
+    color: #ffffff;
+    box-shadow: none;
+    font-weight: var(--font-weight-700);
+    gap: 6px;
   }
   .content {
     font-size: 14px;
     font-weight: var(--font-weight-700);
-    line-height: normal;
+    line-height: 19px;
     align-items: center;
+    gap: 6px;
     * {
       line-height: 1;
+    }
+  }
+
+  /* Original ReadButton-style for MediaCard usage */
+  &.variant-default {
+    .p-button {
+      padding: 0.219rem 0.75rem;
+      min-height: 33px;
+      background: var(--wnyc-logo-color);
+    }
+  }
+
+  /* Hero pill button for event detail page */
+  &.variant-hero {
+    .p-button {
+      padding: 9px 20px;
+      min-height: 37px;
+      background: var(--wnyc-logo-color);
+      justify-content: center;
+      transition: background var(--p-transition-duration);
+      &:hover {
+        background: var(--wnyc-logo-color-hover);
+      }
     }
   }
 }
