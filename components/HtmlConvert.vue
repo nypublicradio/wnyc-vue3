@@ -8,7 +8,7 @@ const { getImageDimensions, templatizeImageUrl } = useVImage()
 
 const props = defineProps({
   htmlContent: {
-    type: String,
+    type: [String, Array],
     default: "",
   },
   htmlClasses: {
@@ -16,6 +16,10 @@ const props = defineProps({
     default: "",
   },
   noBlocks: {
+    type: Boolean,
+    default: false,
+  },
+  stringify: {
     type: Boolean,
     default: false,
   },
@@ -42,49 +46,55 @@ const isGif = (imageUrl) => {
   return extension === "gif"
 }
 
-const parseHtml = () => {
+const parseHtml = (newHtmlContent) => {
   // make it HTML by wrapping it in a div
-  const asHtml = `<div class="html-convert">${reactiveHtmlContent.value}</div>`
+  const asHtml = `<div class="html-convert">${newHtmlContent}</div>`
 
   // Reset the image props map
   imagePropsMap.value = {}
   let imageCounter = 0
 
   const updatedHTML = asHtml
-    .replace(/<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g, (match, href, text) => {
-      const isInternal = !href.startsWith("http")
-      return isInternal
-        ? `<NuxtLink to="${href}">${text}</NuxtLink>`
-        : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
-    })
-    .replace(/<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"[^>]*>/g, (match, src, alt) => {
-      const imgDimensions = getImageDimensions(src)
-      const imgHeight = Math.round(
-        (parentWidth.value * imgDimensions[1]) / imgDimensions[0]
-      )
-
-      if (isGif(src)) {
-        return `<img src="${src}" alt="${alt}" />`
-      } else {
-        // Create unique identifiers for this image's props
-        const sizePropsId = `imageSize${imageCounter}`
-        const srcsetPropsId = `imageSrcset${imageCounter}`
-        const widthPropsId = `imageWidth${imageCounter}`
-        const heightPropsId = `imageHeight${imageCounter}`
-        const srcPropsId = `imageSrc${imageCounter}`
-        imageCounter++
-
-        // Store the image props in the props map
-        imagePropsMap.value[sizePropsId] = imgDimensions
-        imagePropsMap.value[srcsetPropsId] = [1, 2]
-        imagePropsMap.value[widthPropsId] = parentWidth.value
-        imagePropsMap.value[heightPropsId] = imgHeight
-        const templatizedSrc = templatizeImageUrl(src)
-        imagePropsMap.value[srcPropsId] = { template: templatizedSrc }
-
-        return `<VImage :src="${srcPropsId}" alt="${alt}" :size="${sizePropsId}" :srcset="${srcsetPropsId}" :width="${widthPropsId}" :height="${heightPropsId}"/>`
+    .replace(
+      /<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g,
+      (match, href, text) => {
+        const isInternal = !href.startsWith("http")
+        return isInternal
+          ? `<NuxtLink to="${href}">${text}</NuxtLink>`
+          : `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
       }
-    })
+    )
+    .replace(
+      /<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"[^>]*>/g,
+      (match, src, alt) => {
+        const imgDimensions = getImageDimensions(src)
+        const imgHeight = Math.round(
+          (parentWidth.value * imgDimensions[1]) / imgDimensions[0]
+        )
+
+        if (isGif(src)) {
+          return `<img src="${src}" alt="${alt}" />`
+        } else {
+          // Create unique identifiers for this image's props
+          const sizePropsId = `imageSize${imageCounter}`
+          const srcsetPropsId = `imageSrcset${imageCounter}`
+          const widthPropsId = `imageWidth${imageCounter}`
+          const heightPropsId = `imageHeight${imageCounter}`
+          const srcPropsId = `imageSrc${imageCounter}`
+          imageCounter++
+
+          // Store the image props in the props map
+          imagePropsMap.value[sizePropsId] = imgDimensions
+          imagePropsMap.value[srcsetPropsId] = [1, 2]
+          imagePropsMap.value[widthPropsId] = parentWidth.value
+          imagePropsMap.value[heightPropsId] = imgHeight
+          const templatizedSrc = templatizeImageUrl(src)
+          imagePropsMap.value[srcPropsId] = { template: templatizedSrc }
+
+          return `<VImage :src="${srcPropsId}" alt="${alt}" :size="${sizePropsId}" :srcset="${srcsetPropsId}" :width="${widthPropsId}" :height="${heightPropsId}"/>`
+        }
+      }
+    )
     .replace("<p>&nbsp;</p>", "")
     // remove a p tag if it has a script
     .replace(/<p>(.*?)<\/p>/g, (match, content) => {
@@ -120,6 +130,16 @@ watch(
       return
     }
 
+    // if the content is an array, extract values
+    if (Array.isArray(newContent)) {
+      // extract the value out of the key "value" of each item in the array
+      newContent = newContent.map((item) => item.value).join("\n")
+    }
+    if (props.stringify) {
+      // convert all the html to a single string
+      newContent = newContent.replace(/<[^>]*>/g, "")
+    }
+
     // Check if HTML content contains images
     const hasImages = /<img[^>]*>/i.test(newContent)
 
@@ -131,11 +151,11 @@ watch(
       // Get actual width after DOM is rendered, then parse HTML
       nextTick(() => {
         updateParentWidth()
-        parseHtml()
+        parseHtml(newContent)
       })
     } else {
       // No images, just parse HTML without measuring width
-      parseHtml()
+      parseHtml(newContent)
     }
   },
   { immediate: true }

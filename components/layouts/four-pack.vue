@@ -74,7 +74,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
       <skeleton-media-card
         v-else
         v-for="index in 4"
-        :key="`skeleton-1-${index}`"
+        :key="`skeleton-four-pack-${index}`"
         :class="props.cardClass"
         :size="imgSizes"
         :ratio="imgRatio"

@@ -70,7 +70,7 @@ const featureSizes = computed(() => {
 <template>
   <div class="layout layout-vertical-feature">
     <h2 class="mb-4">{{ props.list.title }}</h2>
-
+    <!-- <pre class="text-xs">{{ reactiveItems }}</pre> -->
     <div class="grid">
       <MediaCard
         v-if="reactiveItems.length > 0"
@@ -120,7 +120,7 @@ const featureSizes = computed(() => {
         <skeleton-media-card
           v-else
           v-for="index in 5"
-          :key="`skeleton-2-${index}`"
+          :key="`skeleton-vertical-feature-${index}`"
           class="col-12 mb-5"
           is-horizontal
           is-event

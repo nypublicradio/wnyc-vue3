@@ -9,32 +9,36 @@ const { $analytics } = useNuxtApp()
 const storySource = "NPR"
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const { data: storyData, status, error } = useLazyFetch(
-  `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
-  {
-    onResponse({ response }) {
-      // send GA page view
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res?.title,
-        page_type: "article",
-        content_group: `${storySource}_article`,
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res?.publicationDate,
-        article_updated_date: res?.updatedDate ? res?.updatedDate : res?.publicationDate,
-        article_title: res?.title,
-      })
-    },
-    onResponseError() {
-      globalToast.value = {
-        severity: "error",
-        summary: "We are having a problem loading this article. Please try again later.",
-        life: 6000,
-        closable: true,
-      }
-    },
-  }
-)
+const {
+  data: storyData,
+  status,
+  error,
+} = useLazyFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
+  onResponse({ response }) {
+    // send GA page view
+    const res = response._data
+    $analytics.sendPageView({
+      page_title: res?.title,
+      page_type: "article",
+      content_group: `${storySource}_article`,
+      article_authors: res?.authors?.map((author) => author.name).join(","),
+      article_publish_date: res?.publicationDate,
+      article_updated_date: res?.updatedDate
+        ? res?.updatedDate
+        : res?.publicationDate,
+      article_title: res?.title,
+    })
+  },
+  onResponseError() {
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "We are having a problem loading this article. Please try again later.",
+      life: 6000,
+      closable: true,
+    }
+  },
+})
 </script>
 
 <template>
@@ -51,13 +55,14 @@ const { data: storyData, status, error } = useLazyFetch(
       <Breadcrumbs :items="breadcrumbs" />
     </section>
     <FetchError v-if="error" />
-    <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData" />
+    <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
+      <template #bottom>
+        <Divider class="mt-8 mb-5" />
+        <h2 class="mb-3">Top Stories From Gothamist</h2>
+        <TopStories :articles="topStories" />
+      </template>
+    </EpisodeTemplate>
 
-    <section v-if="topStories">
-      <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">Top Stories From Gothamist</h2>
-      <TopStories :articles="topStories" />
-    </section>
     <BackToTopButton />
   </div>
 </template>

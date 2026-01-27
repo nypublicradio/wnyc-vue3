@@ -10,7 +10,11 @@ const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const { data: storyData, status, error } = useFetch(
+const {
+  data: storyData,
+  status,
+  error,
+} = useFetch(
   `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
     onResponse({ response }) {
@@ -23,14 +27,17 @@ const { data: storyData, status, error } = useFetch(
         content_group: `${storySource}_article`,
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res?.publicationDate,
-        article_updated_date: res?.updatedDate ? res?.updatedDate : res?.publicationDate,
+        article_updated_date: res?.updatedDate
+          ? res?.updatedDate
+          : res?.publicationDate,
         article_title: res?.title,
       })
     },
     onResponseError() {
       globalToast.value = {
         severity: "error",
-        summary: "We are having a problem loading this story. Please try again later.",
+        summary:
+          "We are having a problem loading this story. Please try again later.",
         life: 6000,
         closable: true,
       }
@@ -49,17 +56,19 @@ const { data: storyData, status, error } = useFetch(
       </Head>
     </Html>
     <section>
-      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
+      <div class="flex align-items-center">
+        <Breadcrumbs :items="breadcrumbs" />
+      </div>
       <FetchError v-if="error" />
     </section>
 
-    <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData" />
-
-    <section v-if="topStories">
-      <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">WNYC Picks</h2>
-      <TopStories :articles="topStories" />
-    </section>
+    <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
+      <template #bottom>
+        <Divider class="mt-8 mb-5" />
+        <h2 class="mb-3">Top Stories From Gothamist</h2>
+        <TopStories :articles="topStories" />
+      </template>
+    </EpisodeTemplate>
     <BackToTopButton />
   </div>
 </template>

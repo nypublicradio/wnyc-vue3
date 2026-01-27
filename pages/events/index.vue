@@ -159,7 +159,7 @@ const breadcrumbs = computed(() => [
       <!-- <pre>{{ eventData?.events }}</pre> -->
     </section>
 
-    <section v-if="getFilteredTopStories">
+    <section v-if="getFilteredTopStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
       <h2 class="mb-3">Top Stories From Gothamist</h2>
       <TopStories :articles="topStories" />

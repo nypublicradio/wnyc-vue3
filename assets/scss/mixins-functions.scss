@@ -131,7 +131,7 @@
   line-height: 1.4em;
   font-weight: var(--font-weight-400);
   @include truncate();
-  @include t4lines();
+  @include t2lines();
 }
 
 // font config
