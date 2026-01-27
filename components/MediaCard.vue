@@ -611,6 +611,7 @@ const handleHasAudio = computed(() => {
                 class="z-2"
                 :file="props.data?.name"
                 @on-click="handleClick"
+                :show-icon="false"
               />
               <div class="flex gap-2 flex-wrap">
                 <VBadge
@@ -881,6 +882,19 @@ $contentPaddingY: 1.25rem;
       .content {
         padding: 0;
       }
+    }
+  }
+
+  &.event {
+    :deep(.event-button .p-button) {
+      background: #ffffff;
+      border: 1px solid #eaeaea;
+      color: #101012;
+      box-shadow: none;
+    }
+
+    :deep(.event-button .content) {
+      color: #101012;
     }
   }
 }

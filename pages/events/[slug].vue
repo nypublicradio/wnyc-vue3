@@ -1,9 +1,7 @@
 <script setup lang="js">
 import { useToast } from "primevue/usetoast"
-import { useTopStories } from "~/composables/useTopStories"
 import { formatTime, dynamicNavigation } from "~/utilities/helpers"
 
-const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -65,12 +63,12 @@ const eventBadges = computed(() => {
     ["in_person", "in-person", "in_studio"].some((needle) => tag.includes(needle))
   )
   return [
-    { label: "WNYC EVENTS", color: "var(--p-surface-900)", bg: "var(--p-surface-300)" },
+    { label: "WNYC EVENTS", color: "#101012", bg: "#e5e5e5" },
     ...(hasInPerson
-      ? [{ label: "IN-PERSON", color: "var(--p-surface-0)", bg: "var(--p-green-500)" }]
+      ? [{ label: "IN-PERSON", color: "#ffffff", bg: "#9747ff" }]
       : []),
     ...(hasLiveStream
-      ? [{ label: "LIVE STREAM", color: "var(--p-surface-0)", bg: "var(--p-blue-400)" }]
+      ? [{ label: "LIVE STREAM", color: "#101012", bg: "#71c171" }]
       : []),
   ]
 })
@@ -144,11 +142,6 @@ const otherEvents = computed(() => {
   return list.filter((item) => item?.id !== currentId).slice(0, 3)
 })
 
-const breadcrumbs = computed(() => [
-  { label: "Home", route: "/home" },
-  { label: "Events", route: "/events" },
-  { label: title.value, route: `/events/${theSlug.value}` },
-])
 </script>
 
 <template>
@@ -160,100 +153,99 @@ const breadcrumbs = computed(() => [
         <Meta name="twitter:title" :content="`${title} | WNYC`" />
       </Head>
     </Html>
-    <section>
-      <div class="flex align-items-center">
-        <Breadcrumbs :items="breadcrumbs" />
-      </div>
-    </section>
     <FetchError v-if="error" />
 
-    <section class="event-hero  py-6">
-      <template v-if="status === 'success'">
-        <div class="event-hero__header">
-          <div class="event-hero__datebox" v-if="eventDayNumber">
-            <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
-            <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
-          </div>
-          <div class="event-hero__titlegroup">
-            <h1 class="event-hero__title">{{ title }}</h1>
-            <div class="event-hero__meta">
-              <p class="event-hero__date" v-if="eventDateTimeLine">
-                {{ eventDateTimeLine }}
-              </p>
-              <div v-if="eventBadges.length" class="event-hero__badges">
-                <VBadge
-                  v-for="badge in eventBadges"
-                  :key="badge.label"
-                  :label="badge.label"
-                  :color="badge.color"
-                  :bg-color="badge.bg"
-                />
+    <section class="event-hero">
+      <div class="event-section">
+        <template v-if="status === 'success'">
+          <div class="event-hero__layout">
+            <div class="event-hero__header">
+              <div class="event-hero__datebox" v-if="eventDayNumber">
+                <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
+                <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
+              </div>
+              <div class="event-hero__titlegroup">
+                <h1 class="event-hero__title">{{ title }}</h1>
+                <div class="event-hero__meta">
+                  <p class="event-hero__date" v-if="eventDateTimeLine">
+                    {{ eventDateTimeLine }}
+                  </p>
+                  <div v-if="eventBadges.length" class="event-hero__badges">
+                    <VBadge
+                      v-for="badge in eventBadges"
+                      :key="badge.label"
+                      :label="badge.label"
+                      :color="badge.color"
+                      :bg-color="badge.bg"
+                    />
+                  </div>
+                </div>
+                <EventButton
+                  v-if="eventCtaUrl"
+                  variant="hero"
+                  class="event-hero__cta"
+                  @on-click="handleEventCta"
+                  :show-icon="false"
+                >
+                  <template #icon></template>
+                </EventButton>
               </div>
             </div>
-            <EventButton
-              v-if="eventCtaUrl"
-              variant="hero"
-              class="event-hero__cta"
-              @on-click="handleEventCta"
-            >
-              <template #icon></template>
-            </EventButton>
           </div>
-        </div>
-      </template>
-      <template v-else>
-        <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
-        <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
-        <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
-        <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
-      </template>
+        </template>
+        <template v-else>
+          <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
+          <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
+          <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
+          <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
+        </template>
+      </div>
     </section>
 
-    <section class="event-body ">
-      <div class="grid">
-        <div class="col-12 lg:col-8">
-          <div v-if="status === 'success'" class="event-body__image">
-            <VImage
-              v-if="eventData?.image"
-              :src="eventData?.image"
-              :size="{
-                xxs: [316, 210],
-                xs: [517, 344],
-                sm: [709, 472],
-                md: [885, 589],
-                lg: [757, 504],
-                xl: [923, 614],
-                xxl: [688, 458],
-              }"
-              :alt="eventData?.image?.title || eventData?.title"
-              class="event-body__image-frame mb-4"
+    <section class="event-body">
+      <div class="event-section">
+        <div class="event-body__layout">
+          <div class="event-body__content">
+            <div v-if="status === 'success'" class="event-body__image">
+              <VImage
+                v-if="eventData?.image"
+                :src="eventData?.image"
+                :size="{
+                  xxs: [316, 210],
+                  xs: [517, 344],
+                  sm: [709, 472],
+                  md: [885, 589],
+                  lg: [757, 504],
+                  xl: [923, 614],
+                  xxl: [688, 458],
+                }"
+                :alt="eventData?.image?.title || eventData?.title"
+                class="event-body__image-frame mb-4"
+              />
+              <p v-if="eventData?.image?.credit" class="event-body__credit">
+                {{ eventData?.image?.credit }}
+              </p>
+            </div>
+            <Skeleton
+              v-else
+              borderRadius="0px"
+              class="event-body__image-frame mb-4 opacity-60 w-full h-auto"
             />
-            <p v-if="eventData?.image?.credit" class="text-right type-fineprint">
-              {{ eventData?.image?.credit }}
-            </p>
-          </div>
-          <Skeleton
-            v-else
-            borderRadius="0px"
-            class="event-body__image-frame mb-4 opacity-60 w-full h-auto"
-          />
 
-          <HtmlConvert
-            v-if="eventData?.description && status === 'success'"
-            class="event-body__description mb-4"
-            :htmlContent="eventData?.description"
-          />
-
-          <VStreamfield
-            v-if="eventData?.body && status === 'success'"
-            class="event-body__streamfield mb-5"
-            :article="eventData"
-          />
-          <div v-else-if="status !== 'success'" class="mb-5">
-            <skeleton-text />
+            <VStreamfield
+              v-if="eventData?.body && status === 'success'"
+              class="event-body__streamfield mb-5"
+              :article="eventData"
+            />
+            <HtmlConvert
+              v-else-if="eventData?.description && status === 'success'"
+              class="event-body__description mb-4"
+              :htmlContent="eventData?.description"
+            />
+            <div v-else-if="status !== 'success'" class="mb-5">
+              <skeleton-text />
+            </div>
           </div>
-        </div>
-        <div class="col-12 lg:col-4">
           <aside class="event-rail">
             <div class="event-rail__section">
               <h3>Date &amp; Time</h3>
@@ -276,6 +268,14 @@ const breadcrumbs = computed(() => [
               <p class="event-rail__value event-rail__price">{{ formattedPrice }}</p>
             </div>
 
+            <div class="event-rail__ad">
+              <story-htlAd
+                layout="rectangle"
+                slotClass="htlad-wnyc_event_detail_rectangle"
+                fineprint="WNYC is funded by sponsors and member donations"
+              />
+            </div>
+
             <div v-if="eventData?.url" class="event-rail__section">
               <h3>Event URL</h3>
               <VFlexibleLink :to="eventData?.url" raw>
@@ -287,20 +287,18 @@ const breadcrumbs = computed(() => [
       </div>
     </section>
 
-    <section v-if="otherEvents.length" class="event-more ">
-      <Divider class="mt-6 mb-4" />
-      <h2 class="mb-3">Other Upcoming Events</h2>
-      <div class="grid grid-nogutter">
-        <MediaCard
-          v-for="(eventItem, index) in otherEvents"
-          :key="`${eventItem.id}-${index}`"
-          class="col-12 mb-5"
-          :data="eventItem"
-          is-horizontal
-          imgCol="md:w-7rem lg:w-6"
-          :size="{ xs: [112, 112], lg: [332, 184] }"
-          @on-click="dynamicNavigation(eventItem)"
-        />
+    <section v-if="otherEvents.length" class="event-more">
+      <div class="event-section">
+        <Divider class="event-more__divider" />
+        <h2 class="event-more__title">Other Upcoming Events</h2>
+        <div class="event-more__list">
+          <EventListCard
+            v-for="(eventItem, index) in otherEvents"
+            :key="`${eventItem.id}-${index}`"
+            :event="eventItem"
+            class="event-more__card"
+          />
+        </div>
       </div>
     </section>
 
@@ -315,20 +313,40 @@ const breadcrumbs = computed(() => [
 </template>
 
 <style lang="scss" scoped>
+.event-page {
+  .event-section {
+    max-width: 1023px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+}
+
 .event-hero {
+  padding: 32px 0 24px;
+
+  .event-hero__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
+    column-gap: 32px;
+    align-items: start;
+  }
+
   .event-hero__header {
+    grid-column: 1;
+    width: 100%;
+    max-width: 672px;
     display: grid;
     grid-template-columns: auto 1fr;
-    column-gap: 1rem;
-    row-gap: 0.5rem;
+    column-gap: 1.25rem;
+    row-gap: 0.75rem;
     align-items: start;
   }
 
   .event-hero__datebox {
     grid-column: 1;
     grid-row: 1;
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
     background: #101012;
     color: #ffffff;
     display: flex;
@@ -340,17 +358,17 @@ const breadcrumbs = computed(() => [
 
   .event-hero__datebox-day {
     font-family: 'Open Sans', sans-serif;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
-    line-height: 35px;
+    line-height: 1.1;
     text-align: center;
   }
 
   .event-hero__datebox-month {
     font-family: 'Open Sans', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    line-height: 15px;
+    line-height: 1.2;
     text-align: center;
     text-transform: uppercase;
   }
@@ -363,7 +381,7 @@ const breadcrumbs = computed(() => [
     grid-column: 2;
     grid-row: 1;
     font-family: var(--font-family-header);
-    font-size: 46px;
+    font-size: 36px;
     line-height: 1.2;
     letter-spacing: -0.02em;
     color: #000000;
@@ -374,16 +392,17 @@ const breadcrumbs = computed(() => [
     grid-column: 1 / -1;
     grid-row: 2;
     display: flex;
-    flex-wrap: wrap;
-    column-gap: 0.85rem;
-    row-gap: 0.35rem;
+    flex-wrap: nowrap;
+    column-gap: 0.5rem;
+    row-gap: 0;
     align-items: baseline;
+    justify-content: flex-start;
   }
 
   .event-hero__date {
     font-weight: var(--font-weight-400);
-    font-size: 18px;
-    line-height: 1.8;
+    font-size: 16px;
+    line-height: 1.5;
     margin: 0;
     white-space: nowrap;
     display: flex;
@@ -404,7 +423,7 @@ const breadcrumbs = computed(() => [
     padding: 1px 6px;
     letter-spacing: -0.02em;
     font-weight: var(--font-weight-600);
-    border-radius: 2px;
+    border-radius: 3px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -431,44 +450,61 @@ const breadcrumbs = computed(() => [
     display: none;
   }
 
-  @include media(">=md") {
-    .event-hero__meta {
-      flex-wrap: nowrap;
-    }
-  }
 }
 
 .event-body {
+  padding-bottom: 24px;
+
+  .event-body__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
+    column-gap: 32px;
+    align-items: start;
+  }
+
+  .event-body__content {
+    min-width: 0;
+  }
+
   .event-body__image-frame {
     width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
   }
 
   .event-body__description {
     font-size: 1rem;
     line-height: 1.6;
   }
+
+  .event-body__credit {
+    margin: 6px 0 0;
+    text-align: right;
+    font-size: 12px;
+    color: #6b6b6b;
+  }
 }
 
 .event-rail {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 
   h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: var(--font-weight-700);
     margin-bottom: 0.25rem;
   }
 
   .event-rail__value {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.4;
   }
 
   .event-rail__address {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.4;
     white-space: pre-line;
   }
@@ -484,6 +520,109 @@ const breadcrumbs = computed(() => [
 
   .event-rail__cta {
     align-self: flex-start;
+  }
+
+  .event-rail__ad {
+    max-width: 300px;
+  }
+}
+
+.event-more {
+  padding-bottom: 32px;
+
+  .event-more__divider {
+    margin: 32px 0 20px;
+  }
+
+  .event-more__title {
+    margin: 0 0 24px;
+    font-family: var(--font-family-header);
+    font-size: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .event-more__list {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 672px;
+  }
+
+  .event-more__card :deep(.event-list-card__footer) {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .event-more__card :deep(.event-list-card__cta) {
+    align-self: flex-start;
+  }
+}
+
+@include media("<lg") {
+  .event-body {
+    .event-body__layout {
+      grid-template-columns: 1fr;
+      row-gap: 28px;
+    }
+  }
+
+  .event-hero {
+    .event-hero__layout {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@include media("<md") {
+  .event-page {
+    .event-section {
+      padding: 0 20px;
+    }
+  }
+
+  .event-hero {
+    padding: 20px 0 16px;
+
+    .event-hero__title {
+      font-size: 24px;
+    }
+
+    .event-hero__date {
+      font-size: 13px;
+    }
+
+    .event-hero__meta {
+      flex-wrap: wrap;
+      row-gap: 0.35rem;
+    }
+  }
+
+  .event-body {
+    padding-bottom: 16px;
+  }
+
+  .event-rail {
+    gap: 1rem;
+
+    h3 {
+      font-size: 0.85rem;
+    }
+
+    .event-rail__value,
+    .event-rail__address {
+      font-size: 0.85rem;
+    }
+  }
+
+  .event-more {
+    .event-more__title {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    .event-more__list {
+      gap: 24px;
+    }
   }
 }
 </style>
