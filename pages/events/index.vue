@@ -12,7 +12,7 @@ const toast = useToast()
 const offset = ref(0)
 const limit = ref(5)
 const totalCount = ref(0)
-const eventList = ref(null)
+const eventList = ref([])
 
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
@@ -122,7 +122,7 @@ const breadcrumbs = computed(() => [
     <FetchError v-if="error" />
 
     <section class="py-6 thinContent">
-      <h2 class="mb-4">Events</h2>
+      <h1 class="mb-4">Events</h1>
       <div class="col-12 grid grid-nogutter">
         <template v-if="status === 'success'">
           <MediaCard
