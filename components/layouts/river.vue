@@ -41,7 +41,9 @@ const reactiveItems = toRef(props.list, "listItems")
         :class="props.cardClass"
       >
         <skeleton-media-card
-          :class="props.cardClass"
+          isHorizontal
+          imgCol="w-7rem md:w-11rem "
+          class="w-full"
           :size="{ xs: [112, 112], md: [176, 176] }"
         />
       </div>
