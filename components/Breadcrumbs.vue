@@ -38,7 +38,7 @@ const routeBack = () => {
     @click="routeBack"
     label="Back"
   />
-  <Breadcrumb v-else :model="items" class="hidden xs:block">
+  <Breadcrumb v-else :model="items">
     <template #item="{ item }">
       <NavButton
         v-if="item.route && item.label"
@@ -53,6 +53,9 @@ const routeBack = () => {
 </template>
 
 <style lang="scss">
+.p-breadcrumb {
+  overflow: visible;
+}
 .p-breadcrumb ol {
   padding-left: 0;
 }
