@@ -6,6 +6,10 @@ const props = defineProps({
     type: String,
     default: "Get Tickets",
   },
+  showIcon: {
+    type: Boolean,
+    default: true,
+  },
   live: {
     type: Boolean,
     default: false,
@@ -40,7 +44,7 @@ const emit = defineEmits(["on-click"])
       aria-label="read this article"
       class="flex align-items-center cursor-pointer"
     >
-      <slot name="icon">
+      <slot name="icon" v-if="props.showIcon">
         <div class="flex align-items-center icon">
           <i class="pi pi-ticket" />
         </div>
