@@ -37,11 +37,10 @@ const reactiveItems = toRef(props.list, "listItems")
     <div v-else class="grid">
       <div
         v-for="index in 4"
-        :key="`${article.id}-${index}`"
+        :key="`skeleton-river-${index}`"
         :class="props.cardClass"
       >
         <skeleton-media-card
-          :key="`skeleton-1-${index}`"
           :class="props.cardClass"
           :size="{ xs: [112, 112], md: [176, 176] }"
         />

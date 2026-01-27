@@ -119,7 +119,7 @@ const featureSizes = computed(() => {
       <div v-else class="w-full">
         <skeleton-media-card
           v-for="index in props.maxItems"
-          :key="`skeleton-${index}`"
+          :key="`skeleton-horizontal-feature-ad-${index}`"
           class="col-12 lg:col-4 mb-3 order-4"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"

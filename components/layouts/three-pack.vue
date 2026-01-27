@@ -47,7 +47,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
       <skeleton-media-card
         v-else
         v-for="index in props.maxItems"
-        :key="`skeleton-1-${index}`"
+        :key="`skeleton-three-pack-${index}`"
         :class="props.cardClass"
         :isHorizontal="isLgBreakpoint"
         imgCol="w-7rem md:w-11rem lg:w-full"
