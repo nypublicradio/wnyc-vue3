@@ -318,7 +318,7 @@ const getDotMenuItems = (bucketItem) => {
   <section class="episode-template">
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
-      <div v-if="!props.pending" class="col">
+      <div v-if="!props.pending" class="col pr-2 lg:pr-4">
         <div class="flex gap-2 md:gap-3 mb-6">
           <VImage
             v-if="theEpImage"
@@ -554,47 +554,6 @@ const getDotMenuItems = (bucketItem) => {
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col pr-2 lg:pr-4">
         <div ref="mainContentRef">
-          <!-- <div v-if="!props.pending" class="episode-page-image-holder relative">
-            <VImage
-              v-if="theEpImage"
-              :src="theEpImage"
-              :size="{
-                xxs: [316, 210],
-                xs: [517, 344],
-                sm: [709, 472],
-                md: [885, 589],
-                lg: [757, 504],
-                xl: [923, 614],
-                xxl: [688, 458],
-              }"
-              :maxHeight="props.episodeData?.imageFullHeight"
-              :maxWidth="props.episodeData?.imageFullWidth"
-              allowVerticalEffect
-              :alt="props.episodeData?.image?.altText"
-              class="episode-page-image mb-3 md:mb-5"
-            >
-              <template #caption>
-                <VImageCaption
-                  v-if="theEpImageCaption"
-                  :text="theEpImageCaption"
-                />
-              </template>
-              <template #gallery>
-                <VImageGallery
-                  v-if="gallery?.slides"
-                  :count="String(gallery?.slides.length)"
-                  :gallery-link="galleryLink"
-                />
-              </template>
-              <template #belowImage>
-                <div>
-                  <p class="text-right mt-1 type-fineprint">
-                    {{ props.episodeData?.image.credit }}
-                  </p>
-                </div>
-              </template>
-            </VImage>
-          </div> -->
           <div
             v-if="props.pending"
             class="episode-page-image-holder relative mb-5"

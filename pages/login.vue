@@ -20,7 +20,8 @@ onMounted(() => {
     <Html lang="en">
       <Head>
         <Title>
-          Login | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
+          Login | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
+          News
         </Title>
         <Meta
           name="og:title"
@@ -42,15 +43,11 @@ onMounted(() => {
 <style lang="scss">
 body {
   main {
-    @include media(">=lg") {
-      padding-bottom: 0;
+    .login-page {
+      @include media(">=lg") {
+        padding-bottom: 0;
+      }
     }
   }
-}
-</style>
-
-<style lang="scss" scoped>
-.login-page {
-  //background: var(--p-surface-25);
 }
 </style>

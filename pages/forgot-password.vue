@@ -20,8 +20,8 @@ onMounted(() => {
     <Html lang="en">
       <Head>
         <Title>
-          Forgot Password | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News
+          Forgot Password | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News
         </Title>
         <Meta
           name="og:title"
@@ -43,8 +43,10 @@ onMounted(() => {
 <style lang="scss">
 body {
   main {
-    @include media(">=lg") {
-      padding-bottom: 0;
+    .forgot-password-page {
+      @include media(">=lg") {
+        padding-bottom: 0;
+      }
     }
   }
 }
