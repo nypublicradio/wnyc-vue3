@@ -74,7 +74,10 @@ const storySource = computed(() =>
 const gallery = ref(null)
 const galleryLength = ref(null)
 const galleryLink = ref(null)
-const bottomHolderRef = ref(null)
+
+const mainContentRef = ref(null)
+const mainContentHeight = ref(null)
+const minMainContentHeight = 243
 
 const commentCounts = ref(null)
 watch(
@@ -95,13 +98,24 @@ watch(
       )
     }
   },
-  // get the height of the main content
-  async () => {
-    const mainContentHeight = mainContentRef.value?.offsetHeight
-    console.log("mainContentHeight", mainContentHeight)
-  },
   { once: true }
 )
+
+onMounted(() => {
+  //slight delay helps get the accurate height
+  setTimeout(() => {
+    // get height of main content
+    const contentHeight = mainContentRef.value?.offsetHeight
+    // if height is less than minMainContentHeight, set the content height to minMainContentHeight for desired spacing at bottom of page
+    if (contentHeight < minMainContentHeight) {
+      // set the content height to minMainContentHeight to trigger the bottom circulation to display
+      mainContentHeight.value = minMainContentHeight
+      mainContentRef.value.style.height = `${minMainContentHeight}px`
+    } else {
+      mainContentHeight.value = contentHeight
+    }
+  }, 100)
+})
 
 const commentCount = computed(() => {
   const result = commentCounts.value[props.episodeData?.commentId]
@@ -600,7 +614,7 @@ const getDotMenuItems = (bucketItem) => {
             :showAd="!props.show"
           />
         </div>
-        <div ref="bottomHolderRef" class="bottom-holder">
+        <div v-if="mainContentHeight" class="bottom-holder">
           <slot name="bottom" />
         </div>
       </div>
