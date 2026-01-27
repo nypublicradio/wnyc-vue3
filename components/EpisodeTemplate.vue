@@ -318,142 +318,185 @@ const getDotMenuItems = (bucketItem) => {
   <section class="episode-template">
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
-      <div v-if="!props.pending" class="col pr-2 lg:pr-4">
-        <h1 class="text-2xl md:text-6xl line-height-2 mb-3">
-          {{ props.episodeData?.title }}
-        </h1>
-        <div class="npr-story-page-author opacity-70 text-sm">
-          <VByline
-            v-if="props.episodeData?.authors?.length > 0"
-            :authors="props.episodeData?.authors"
-          />
-        </div>
-        <!-- :hide-pipe="!!!props.episodeData?.showTitle" -->
-        <PipeData class="text-sm mt-2">
-          <template #left>{{
-            props.episodeData?.showTitle || storySource
-          }}</template>
-          <template #right>
-            <span class="nobreak inline-flex gap-1"
-              >{{ getDate(props.episodeData, "LLL d, yyyy") }}
-            </span>
-          </template>
-        </PipeData>
-        <div
-          class="pt-4 pb-2 lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
-        >
-          <div
-            v-if="!hasSegments && hasAudio(props.episodeData?.audio)"
-            class="flex align-items-center gap-2"
+      <div v-if="!props.pending" class="col">
+        <div class="flex gap-2 md:gap-3 mb-6">
+          <VImage
+            v-if="theEpImage"
+            :src="theEpImage"
+            :size="{
+              xxs: [112, 112],
+              sm: [192, 192],
+            }"
+            :maxHeight="props.episodeData?.imageFullHeight"
+            :maxWidth="props.episodeData?.imageFullWidth"
+            allowVerticalEffect
+            :alt="props.episodeData?.image?.altText"
+            class="episode-page-image flex-none w-7rem md:w-12rem"
           >
-            <PlayButton
-              v-if="!hasSegments && hasAudio(props.episodeData?.audio)"
-              :label="getMinutes(props.episodeData?.estimatedDuration, 1)"
-              :data="props.episodeData"
-              severity="primary"
-              @onClick="togglePlayHere(props.episodeData)"
-            />
-
-            <DownloadProgress
-              v-if="
-                (progress && Object.keys(progress).length > 0) ||
-                isAlreadyDownloaded(props.episodeData)
-              "
-              :isDownloaded="isAlreadyDownloaded(props.episodeData)"
-              :progress="progress"
-            />
-          </div>
-          <div class="flex gap-3 align-items-center">
-            <Button
-              :text="false"
-              :label="isMobileBtn ? '' : 'Add to Favorites'"
-              :size="isMobileBtn ? '' : 'small'"
-              severity="secondary"
-              plain
-              rounded
-              aria-label="star"
-              @click="handleAddToFavorites(props.episodeData)"
+            <!-- <template #caption>
+              <VImageCaption
+                v-if="theEpImageCaption"
+                :text="theEpImageCaption"
+              />
+            </template> -->
+            <template #gallery>
+              <VImageGallery
+                v-if="gallery?.slides"
+                :count="String(gallery?.slides.length)"
+                :gallery-link="galleryLink"
+              />
+            </template>
+            <!-- <template #belowImage>
+              <div>
+                <p class="text-right mt-1 type-fineprint">
+                  {{ props.episodeData?.image.credit }}
+                </p>
+              </div>
+            </template> -->
+          </VImage>
+          <div class="flex flex-column gap-2 md:gap-3">
+            <h1
+              class="text-2xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
             >
-              <template #icon>
-                <StarIcon :active="isFavorited" class="w-1rem h-1rem"
-              /></template>
-            </Button>
-            <Button
-              v-if="hasAudio(props.episodeData?.audio)"
-              :text="false"
-              :label="isMobileBtn ? '' : 'Download'"
-              :size="isMobileBtn ? '' : 'small'"
-              severity="secondary"
-              plain
-              rounded
-              aria-label="download"
-              @click="handleDownload(props.episodeData)"
+              {{ props.episodeData?.title }}
+            </h1>
+            <div
+              v-if="props.episodeData?.authors?.length > 0"
+              class="npr-story-page-author opacity-70 text-sm"
             >
-              <template #icon> <DownloadIcon class="w-1rem h-1rem" /></template>
-            </Button>
-            <!-- <Button class="" text plain rounded aria-label="share" @click="handleShare">
-                <template #icon> <ShareIcon /></template>
-              </Button> -->
-            <Button
-              v-if="props.episodeData?.transcript"
-              :text="false"
-              :label="isMobileBtn ? '' : 'Transcript'"
-              :size="isMobileBtn ? '' : 'small'"
-              severity="secondary"
-              plain
-              rounded
-              aria-label="transcript"
-              @click="handleTranscript"
-            >
-              <template #icon>
-                <TranscriptIcon class="w-1rem h-1rem"
-              /></template>
-            </Button>
-            <Button
-              v-if="isWagtail && commentCount > 0"
-              plain
-              rounded
-              severity="secondary"
-              :label="` ${String(commentCount)} ${
-                commentCount === 1 ? 'comment' : 'comments'
-              }`"
-              class="comments-btn text-sm"
-              aria-label="comments"
-              @click="handleComments()"
-            >
-              <template #icon> <CommentsIcon class="w-1rem h-1rem" /></template>
-            </Button>
-
-            <DotMenu
-              :menuItems="getDotMenuItems(props.episodeData)"
-              label=""
-              @changeEmit="onMenuChange"
-              class="-mr-1"
-              :isText="false"
-              size="small"
-            >
-              <template #header-bottom>
-                <div>
-                  <div class="flex gap-3 align-items-center px-4">
-                    <VImage
-                      :src="theEpImage"
-                      :alt="`${props.episodeData?.title} show image`"
-                      :width="112"
-                      :height="112"
-                      class="show-image-in-menu flex-none"
-                      :ratio="[1, 1]"
-                      style="height: 60px; width: 60px"
-                    />
-
-                    <div class="info">
-                      <h2>{{ props.episodeData?.title }}</h2>
-                      <p>{{ props.episodeData?.showTitle }}</p>
-                    </div>
-                  </div>
-                  <hr class="mt-5 mb-2 dim" />
-                </div>
+              <VByline :authors="props.episodeData?.authors" />
+            </div>
+            <!-- :hide-pipe="!!!props.episodeData?.showTitle" -->
+            <PipeData class="text-sm">
+              <template #left>{{
+                props.episodeData?.showTitle || storySource
+              }}</template>
+              <template #right>
+                <span class="nobreak inline-flex gap-1"
+                  >{{ getDate(props.episodeData, "LLL d, yyyy") }}
+                </span>
               </template>
-            </DotMenu>
+            </PipeData>
+            <div
+              class="lg:pb-6 flex align-items-center justify-content-start flex-wrap gap-3"
+            >
+              <div
+                v-if="!hasSegments && hasAudio(props.episodeData?.audio)"
+                class="flex align-items-center gap-2"
+              >
+                <PlayButton
+                  v-if="!hasSegments && hasAudio(props.episodeData?.audio)"
+                  :label="getMinutes(props.episodeData?.estimatedDuration, 1)"
+                  :data="props.episodeData"
+                  severity="primary"
+                  @onClick="togglePlayHere(props.episodeData)"
+                />
+
+                <DownloadProgress
+                  v-if="
+                    (progress && Object.keys(progress).length > 0) ||
+                    isAlreadyDownloaded(props.episodeData)
+                  "
+                  :isDownloaded="isAlreadyDownloaded(props.episodeData)"
+                  :progress="progress"
+                />
+              </div>
+              <div class="flex gap-2 md:gap-3 align-items-center">
+                <!-- <Button
+                  :text="false"
+                  :label="isMobileBtn ? '' : 'Add to Favorites'"
+                  :size="isMobileBtn ? '' : 'small'"
+                  severity="secondary"
+                  plain
+                  rounded
+                  aria-label="star"
+                  @click="handleAddToFavorites(props.episodeData)"
+                >
+                  <template #icon>
+                    <StarIcon :active="isFavorited" class="w-1rem h-1rem"
+                  /></template>
+                </Button> -->
+                <Button
+                  v-if="props.episodeData?.transcript"
+                  :text="false"
+                  :label="isMobileBtn ? '' : 'Transcript'"
+                  :size="isMobileBtn ? '' : 'small'"
+                  severity="secondary"
+                  plain
+                  rounded
+                  aria-label="transcript"
+                  @click="handleTranscript"
+                >
+                  <template #icon>
+                    <TranscriptIcon class="w-1rem h-1rem"
+                  /></template>
+                </Button>
+
+                <Button
+                  v-if="hasAudio(props.episodeData?.audio)"
+                  :text="false"
+                  :label="isMobileBtn ? '' : 'Download'"
+                  :size="isMobileBtn ? '' : 'small'"
+                  severity="secondary"
+                  plain
+                  rounded
+                  aria-label="download"
+                  @click="handleDownload(props.episodeData)"
+                >
+                  <template #icon>
+                    <DownloadIcon class="w-1rem h-1rem"
+                  /></template>
+                </Button>
+
+                <Button
+                  v-if="isWagtail && commentCount > 0"
+                  plain
+                  rounded
+                  severity="secondary"
+                  :label="` ${String(commentCount)} ${
+                    commentCount === 1 ? 'comment' : 'comments'
+                  }`"
+                  class="comments-btn text-sm"
+                  aria-label="comments"
+                  @click="handleComments()"
+                >
+                  <template #icon>
+                    <CommentsIcon class="w-1rem h-1rem"
+                  /></template>
+                </Button>
+
+                <DotMenu
+                  :menuItems="getDotMenuItems(props.episodeData)"
+                  label=""
+                  @changeEmit="onMenuChange"
+                  class="-mr-1"
+                  :isText="false"
+                  size="small"
+                >
+                  <template #header-bottom>
+                    <div>
+                      <div class="flex gap-3 align-items-center px-4">
+                        <VImage
+                          :src="theEpImage"
+                          :alt="`${props.episodeData?.title} show image`"
+                          :width="112"
+                          :height="112"
+                          class="show-image-in-menu flex-none"
+                          :ratio="[1, 1]"
+                          style="height: 60px; width: 60px"
+                        />
+
+                        <div class="info">
+                          <h2>{{ props.episodeData?.title }}</h2>
+                          <p>{{ props.episodeData?.showTitle }}</p>
+                        </div>
+                      </div>
+                      <hr class="mt-5 mb-2 dim" />
+                    </div>
+                  </template>
+                </DotMenu>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -511,7 +554,7 @@ const getDotMenuItems = (bucketItem) => {
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col pr-2 lg:pr-4">
         <div ref="mainContentRef">
-          <div v-if="!props.pending" class="episode-page-image-holder relative">
+          <!-- <div v-if="!props.pending" class="episode-page-image-holder relative">
             <VImage
               v-if="theEpImage"
               :src="theEpImage"
@@ -551,7 +594,7 @@ const getDotMenuItems = (bucketItem) => {
                 </div>
               </template>
             </VImage>
-          </div>
+          </div> -->
           <div
             v-if="props.pending"
             class="episode-page-image-holder relative mb-5"
