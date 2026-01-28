@@ -11,13 +11,9 @@ defineProps<{
 </template>
 
 <style lang="scss">
-.streamfield-embed {
-  &.youtube {
-    iframe {
-      aspect-ratio: 16 / 9 !important;
-      width: 100% !important;
-      height: 100% !important;
-    }
-  }
+.streamfield .youtube iframe {
+  aspect-ratio: 16 / 9 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>
