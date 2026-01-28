@@ -578,16 +578,6 @@ const getDotMenuItems = (bucketItem) => {
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col pr-2 lg:pr-4">
         <div ref="mainContentRef">
-          <div
-            v-if="props.pending"
-            class="episode-page-image-holder relative mb-5"
-          >
-            <Skeleton
-              borderRadius="0px"
-              class="episode-page-image mb-2 opacity-60 w-full h-auto"
-            />
-          </div>
-
           <v-streamfield
             v-if="props.episodeData?.body && !props.pending"
             class="mb-5"
@@ -619,7 +609,7 @@ const getDotMenuItems = (bucketItem) => {
               />
             </li>
           </ol>
-          <div v-else-if="props.pending">
+          <div v-else-if="hasSegments && props.pending">
             <skeleton-media-card
               v-for="i in 10"
               :key="`sk1-${i}`"
