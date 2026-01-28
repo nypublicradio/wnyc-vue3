@@ -100,7 +100,7 @@ const featureSizes = computed(() => {
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>
-
+      <pre class="text-xs">{{ reactiveItems }}</pre>
       <template v-if="reactiveItems?.length > 0">
         <MediaCard
           v-for="(article, index) in reactiveItems?.slice(0, props.maxItems)"
