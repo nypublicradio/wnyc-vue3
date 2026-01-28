@@ -72,6 +72,7 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           build_args: |
             ENV=review
+            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
             SENTRY_DSN=${{ vars.SENTRY_DSN }}
             SENTRY_ENV=${{ vars.SENTRY_ENV }}
             LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
