@@ -112,11 +112,26 @@ const getConfiguredAudioUrl = computed(() => {
   const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
   const thisDevice = devicePlatform
+  const isActiveSustainer = currentUser?.isActiveSustainer
   // update restriction when we have the value from setting panel
   const restriction = "0"
-  return `${url}${
-    hasQuery ? "&" : "?"
-  }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
+  const additionalParams = {
+    listenerid: adID,
+    aw_0_1st_lmt: restriction,
+    aw_0_1st_userid: userID,
+    device: thisDevice,
+  }
+  if (userID !== "0") {
+    if (isActiveSustainer) {
+      additionalParams.aw_0_1st = "1" 
+    } else {
+      additionalParams.aw_0_1st = "0"
+    }
+  }
+  const additionalQueryString = Object.entries(additionalParams)
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&")
+  return `${url}${hasQuery ? "&" : "?"}${additionalQueryString}`
 })
 
 //player release utility function
