@@ -117,7 +117,7 @@ watch(
       :pending="status !== 'success'"
       :episodeData="episodeData"
       :show="show"
-      :showPending="showStatus === 'pending'"
+      :showPending="showStatus !== 'success'"
     >
       <template #bottom>
         <Divider class="mt-8 mb-5" />
