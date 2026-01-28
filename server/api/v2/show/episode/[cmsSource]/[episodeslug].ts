@@ -84,25 +84,7 @@ const getEpisode = async (slug: string) => {
     return {
         data: resData,
     }
-}
-// Get episode data
-const getSimplecastEpisode = async (slug: string) => {
 
-    const option = {
-        method: 'GET',
-        url: `${config.public.AVIARY_BASE_API}/pages/${slug}`
-    }
-    const res = await axios(option)
-    let resData = humps.camelizeKeys(res.data).data
-    // fallback image to show image when no image is available
-    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGELOCAL }
-    resData.cmsSource = cmsSources.PUBLISHER
-    resData = normalizeArticlePage(resData)
-
-    //Passing meta and data separately to the client. Meta is to used for pagination
-    return {
-        data: resData,
-    }
 }
 
 export default defineEventHandler(async (event) => {
@@ -116,10 +98,8 @@ export default defineEventHandler(async (event) => {
         if (cmsSource === cmsSources.NPR) {
             // Get show details
             episode = await getNPREpisode(slug)
-        } else if (cmsSource === cmsSources.SIMPLECAST || cmsSource === cmsSources.WAGTAIL) {
-            // Get show details
-            episode = await getSimplecastEpisode(slug)
         } else {
+            // Get show details
             episode = await getEpisode(slug)
         }
         return episode.data
