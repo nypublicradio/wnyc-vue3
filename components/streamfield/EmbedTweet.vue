@@ -102,9 +102,7 @@ onMounted(async () => {
 .streamfield-embed {
   .twitter-tweet {
     max-width: 100% !important;
-    @include media("<lg") {
-      justify-content: center;
-    }
+    justify-content: center;
     iframe {
       width: 550px !important;
       max-width: 100% !important;
