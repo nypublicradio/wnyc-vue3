@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onUpdated } from "vue"
-import Slider from "primevue/slider"
+import { ref, onUpdated } from "vue";
+import Slider from "primevue/slider";
 
 const props = defineProps({
   volume: {
@@ -19,16 +19,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
-const emit = defineEmits(["volume-toggle-mute", "volume-change"])
+const emit = defineEmits(["volume-toggle-mute", "volume-change"]);
 
-const previousVolume = ref(props.volume)
+const previousVolume = ref(props.volume);
 
 onUpdated(() => {
-  previousVolume.value = props.volume
+  previousVolume.value = props.volume;
   //emit("volume-change", props.volume)
-})
+});
 </script>
 
 <template>
@@ -89,7 +89,7 @@ onUpdated(() => {
     margin-right: 4px;
   }
   .volume-control-icon {
-    color: var(--text-color);
+    color: var(--p-button-text-secondary-color);
     flex: 1 0;
     appearance: none;
     border: none;
@@ -106,10 +106,12 @@ onUpdated(() => {
   .volume-control-slider {
     position: absolute;
     right: 45px;
-    transition: width var(--p-transition-duration), opacity var(--p-transition-duration),
+    transition: width var(--p-transition-duration),
+      opacity var(--p-transition-duration),
       margin-right var(--p-transition-duration);
     -webkit-transition: width var(--p-transition-duration),
-      opacity var(--p-transition-duration), margin-right var(--p-transition-duration);
+      opacity var(--p-transition-duration),
+      margin-right var(--p-transition-duration);
     margin-right: 0;
     width: 0px;
     opacity: 0;
