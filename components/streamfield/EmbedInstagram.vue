@@ -25,9 +25,7 @@ onMounted(() => {
 <style lang="scss">
 .streamfield-embed {
   .instagram-media {
-    @include media("<lg") {
-      margin: auto !important;
-    }
+    margin: auto !important;
   }
 }
 </style>
