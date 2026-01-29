@@ -40,9 +40,9 @@ export default defineEventHandler(async (event) => {
             const eventDate = new Date(normalizedEvent.startDatetime)
             const now = new Date()
             const cacheTime = eventDate < now ? 3600 : 1800 // 1 hour for past events, 30 min for future
-            res.setHeader('Cache-Control', `maxage=${cacheTime}, stale-while-revalidate`)
+            res.setHeader('Cache-Control', `max-age=${cacheTime}, stale-while-revalidate`)
         } else {
-            res.setHeader('Cache-Control', 'maxage=1800, stale-while-revalidate')
+            res.setHeader('Cache-Control', 'max-age=1800, stale-while-revalidate')
         }
 
         return normalizedEvent

@@ -37,9 +37,9 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             (options.params as any).venue_name = query.venue
         }
 
-        const res = await axios(options);
-        const data = humps.camelizeKeys(res.data);
-        const events = (data.items || []).map(normalizeWagtailEvent);
+        const res = await axios(options)
+        const data = humps.camelizeKeys(res.data)
+        const events = (data.items || []).map(normalizeWagtailEvent)
 
         // Transform the response to include both data and meta
         return {
@@ -68,8 +68,8 @@ export default defineEventHandler(async (event) => {
     const res = event?.node?.res
 
     // Set cache header - short cache for dynamic list
-    res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
+    res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate')
 
-    const eventsData = await getWagtailEvents(query);
-    return eventsData;
-});
+    const eventsData = await getWagtailEvents(query)
+    return eventsData
+})
