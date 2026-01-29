@@ -28,19 +28,28 @@ const getWagtailPageData = async (pageSlug: string) => {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }
     };
-    const res = await axios(options);
-    const resData = humps.camelizeKeys(res.data);
+    
+    try {
+        const res = await axios(options);
+        const resData = humps.camelizeKeys(res.data);
+        
+        // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
+        resData.cmsSource = cmsSources.WAGTAIL;
 
-    // Transform curated content if it exists
-    if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
-        const transformedCuratedContent = await transformCuratedContent(resData.curatedContent);
-        return {
-            ...resData,
-            curatedContent: transformedCuratedContent
-        };
+        // Transform curated content if it exists
+        if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
+            const transformedCuratedContent = await transformCuratedContent(resData.curatedContent);
+            return {
+                ...resData,
+                curatedContent: transformedCuratedContent
+            };
+        }
+        
+        return await normalizeArticlePage(resData);
+    } catch (error) {
+        console.error('Error in getWagtailPageData:', error);
+        throw error;
     }
-
-    return await normalizeArticlePage(resData);
 };
 
 // get page data from the proper CMS
