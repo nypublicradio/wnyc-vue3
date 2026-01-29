@@ -118,26 +118,6 @@ const props = defineProps({
     type: String,
   },
   /**
-   *  ammount of blur for the blured background image */
-  verticalBgBlur: {
-    default: "15px",
-    type: String,
-  },
-  /**
-   * tint the grey blured background image
-   * */
-  verticalBgColor: {
-    default: "#ffffff",
-    type: String,
-  },
-  /**
-   *  the opacity of the tint of the grey blured background image
-   */
-  verticalBgColorOpacity: {
-    default: "0.08",
-    type: String,
-  },
-  /**
    * The desired width for image
    */
   width: {
@@ -429,19 +409,9 @@ onMounted(async () => {
       top: 0;
       left: 0;
       overflow: hidden;
-      &:after {
-        content: "";
-        background-color: v-bind(verticalBgColor);
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: v-bind(verticalBgColorOpacity);
-      }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
+        @include v-image-bg-blur();
         object-fit: cover;
         height: inherit;
       }
