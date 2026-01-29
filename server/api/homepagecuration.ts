@@ -67,7 +67,6 @@ const getNewHomeTemplate = async () => {
 	const options = {
 		method: 'GET',
 		url: `${config.public.AVIARY_BASE_API}pages/151286`,
-		//url: 'https://cms.demo.nypr.digital/api/v2/pages/151286',
 		headers: {
 			'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
 		}
@@ -155,18 +154,20 @@ const getNprStories = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
 	//console.log('getting home page CURATION data')
-	const res = event?.node?.res
+
 	//const homeTemplate = await getHomeTemplate()
 	const newHomeTemplate = await getNewHomeTemplate()
 	//const nprStories = await getNprStories()
-
-	res.setHeader('Cache-Control', 'maxage=300, stale-while-revalidate')
 
 	return {
 		//home_template: homeTemplate,
 		new_home_template: newHomeTemplate,
 		//npr_stories: nprStories,
 	}
+}, {
+	maxAge: 600,
+	swr: true,
+	name: 'homepage-curation'
 })
