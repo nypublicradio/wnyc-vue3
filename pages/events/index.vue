@@ -220,6 +220,19 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     gap: 35px;
   }
 
+  :deep(.event-list-card__footer) {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  :deep(.event-list-card__cta) {
+    align-self: flex-start;
+  }
+
+  :deep(.event-list-card__badges) {
+    margin-left: auto;
+  }
+
   .events-card-skeleton {
     border-radius: 8px;
   }

@@ -556,6 +556,10 @@ const otherEvents = computed(() => {
   .event-more__card :deep(.event-list-card__cta) {
     align-self: flex-start;
   }
+
+  .event-more__card :deep(.event-list-card__badges) {
+    margin-left: auto;
+  }
 }
 
 @include media("<lg") {
