@@ -54,7 +54,7 @@ async function getNavigationData () {
 
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
-    res.setHeader('Cache-Control', 'maxage=120, stale-while-revalidate')
+    res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
     const data = await getNavigationData()
 
     return { data }
