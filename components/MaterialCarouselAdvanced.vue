@@ -49,7 +49,7 @@ const carouselRef = ref(null)
 const trackRef = ref(null)
 const currentTranslate = ref(0)
 let draggableInstance = null
-
+let resizeTimeout
 const containerWidth = ref(0)
 let resizeObserver = null
 
@@ -86,6 +86,7 @@ const cachedSlides = ref([])
 // Map<Element, { width, maxWidth, height, flex, marginLeft, transition }>
 const styleCache = new WeakMap()
 
+// Update cached slides
 const updateCachedSlides = () => {
   if (!trackRef.value) return
   cachedSlides.value = Array.from(trackRef.value.children)
@@ -132,8 +133,8 @@ const updateSlideProgress = () => {
     const dims = itemNativeDimensions.value[index]
     if (!dims) return
 
-    let nativeWidth = dims.width
-    let nativeHeight = dims.height
+    const nativeWidth = dims.width
+    const nativeHeight = dims.height
 
     // 2. Algorithm: "Waterfill" from Left to Right
     // Determine position relative to viewport
@@ -277,27 +278,27 @@ const initDraggable = () => {
     // snap: ... (removed for mixed width support)
 
     // Interaction starts when drag begins
-    onDragStart: function () {
+    onDragStart() {
       isInteracting.value = true
     },
-    onDrag: function () {
+    onDrag() {
       currentTranslate.value = this.x
       updateSlideProgress()
     },
     // Drag ends but throw might be starting
-    onDragEnd: function () {
+    onDragEnd() {
       // If no throw is happening, interaction is done
       if (!this.isThrowing) {
         isInteracting.value = false
       }
       // Otherwise keep isInteracting true through the throw
     },
-    onThrowUpdate: function () {
+    onThrowUpdate() {
       currentTranslate.value = this.x
       updateSlideProgress()
     },
     // Interaction ends when throw completes
-    onThrowComplete: function () {
+    onThrowComplete() {
       isInteracting.value = false
       // Final update to ensure correct state
       updateSlideProgress()
@@ -355,10 +356,10 @@ const measureItems = () => {
 const setupContentObserver = () => {
   if (!trackRef.value) return
 
+  let debounceTimer
   // Create observer if not exists
   if (!contentResizeObserver.value) {
-    let debounceTimer
-    contentResizeObserver.value = new ResizeObserver((entries) => {
+    contentResizeObserver.value = new ResizeObserver(() => {
       // Don't interfere with active drag/throw operations
       if (isInteracting.value) return
 
@@ -393,7 +394,6 @@ const setupContentObserver = () => {
 }
 
 // Handle resize
-let resizeTimeout
 const onResize = () => {
   // Simple debounce
   clearTimeout(resizeTimeout)

@@ -107,7 +107,7 @@ const isAnimating = ref(false)
 const unlockAnimation = () => {
   isAnimating.value = false
 }
-
+// Get snap position based on target position and direction
 const getSnapPosition = (targetPos, direction) => {
   if (!trackRef.value) return targetPos
   const children = Array.from(trackRef.value.children)
