@@ -223,14 +223,7 @@ const getEpisodeImage = () => {
 }
 
 const theEpImage = computed(() => getEpisodeImage())
-const theEpImageCaption = computed(() => {
-  return (
-    props.episodeData?.leadImageCaption ??
-    theEpImage?.caption ??
-    gallery.value?.slides?.[0]?.image.caption ??
-    null
-  )
-})
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [

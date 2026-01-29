@@ -147,7 +147,7 @@ const getSnapPosition = (targetPos, direction) => {
 
   return bestPos
 }
-
+// Scroll to previous item
 const scrollToPrev = () => {
   if (!trackRef.value) return
   isAnimating.value = true
@@ -164,7 +164,7 @@ const scrollToPrev = () => {
   // Safety timeout for unlock if scrollend doesn't fire
   setTimeout(unlockAnimation, 600)
 }
-
+// Scroll to next item
 const scrollToNext = () => {
   if (!trackRef.value) return
   isAnimating.value = true

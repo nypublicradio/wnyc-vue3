@@ -154,7 +154,7 @@ const getNprStories = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineCachedEventHandler(async (event) => {
+export default defineCachedEventHandler(async () => {
 	//console.log('getting home page CURATION data')
 
 	//const homeTemplate = await getHomeTemplate()
