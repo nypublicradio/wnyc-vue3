@@ -17,27 +17,45 @@ const reactiveItems = toRef(props.list, "listItems")
 <template>
   <div class="layout layout-text-only">
     <h2 class="mb-4 header">{{ props.list.title }}</h2>
-    <div class="grid grid-lggutter">
-      <template v-if="reactiveItems?.length > 0">
-        <Button
-          variant="link"
-          v-for="(article, index) in reactiveItems"
-          :key="`${article.id}-${index}`"
-          @click="dynamicNavigation(article)"
+    <div class="w-full lg:w-10 xl:w-9">
+      <div class="grid grid-lggutter">
+        <template v-if="reactiveItems?.length > 0">
+          <div
+            v-for="(article, index) in reactiveItems"
+            :key="`${article.id}-${index}`"
+            :class="props.cardClass"
+            class="py-0 my-0"
+          >
+            <div
+              class="h-full py-2 md:py-3"
+              style="border-radius: 0"
+              :style="{
+                'border-bottom':
+                  index === reactiveItems.length - 1
+                    ? 'none'
+                    : '1px solid var(--p-surface-25)',
+              }"
+            >
+              <Button
+                variant="link"
+                @click="dynamicNavigation(article)"
+                :label="article.title"
+                class="px-0 border-noround"
+              />
+            </div>
+            <!-- <divider /> -->
+          </div>
+        </template>
+        <div
+          v-else
+          v-for="index in 6"
+          :key="`skeleton-text-${index}`"
           :class="props.cardClass"
-          :label="article.title"
-        />
-      </template>
-
-      <div
-        v-else
-        v-for="index in 6"
-        :key="`skeleton-text-${index}`"
-        :class="props.cardClass"
-      >
-        <div class="flex flex-column gap-1">
-          <Skeleton height="13px" borderRadius="16px" />
-          <Skeleton height="13px" width="33%" borderRadius="16px" />
+        >
+          <div class="flex flex-column gap-1">
+            <Skeleton height="13px" borderRadius="16px" />
+            <Skeleton height="13px" width="33%" borderRadius="16px" />
+          </div>
         </div>
       </div>
     </div>

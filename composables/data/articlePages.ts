@@ -233,7 +233,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
 export async function normalizeSimplecastListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-
+  //console.log("normalizeSimplecastListItem", article)
   return Object.assign({}, await normalizePage(article), {
     image: article.image,
     imageFullWidth: undefined,
@@ -567,14 +567,14 @@ const processTweetAsset = async (asset: NprAsset): Promise<string> => {
 
 // Helper: Process image asset
 const processImageAsset = (asset: NprAsset): string => {
-  const imageHTML = asset.enclosures?.[0]?.hrefTemplate 
-    ? `<div class="mt-4 html-img"><img src="${asset.enclosures[0].hrefTemplate}" alt="${asset.caption}"/></div>` 
+  const imageHTML = asset.enclosures?.[0]?.hrefTemplate
+    ? `<div class="mt-4 html-img"><img src="${asset.enclosures[0].hrefTemplate}" alt="${asset.caption}"/></div>`
     : ""
-  
+
   const imageHTMLCaption = asset.caption
-    ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${asset.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${getNprImageCredits(asset)}</p></div>` 
+    ? `<div class="mt-1 mb-6"><p class=" my-0 text-xs opacity-70">${asset.caption}</p><p class="mt-0 text-xs opacity-70 font-italic">${getNprImageCredits(asset)}</p></div>`
     : ""
-  
+
   return imageHTML + imageHTMLCaption
 }
 
@@ -589,10 +589,10 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
 
   for (const layoutItem of article.layout) {
     const rawLayoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
-    
+
     // Try both camelCase and kebab-case formats since NPR API is inconsistent
     const camelCaseId = rawLayoutId ? convertNprImageId(rawLayoutId) : undefined
-    const asset = rawLayoutId 
+    const asset = rawLayoutId
       ? (article.assets?.[camelCaseId] || article.assets?.[rawLayoutId])
       : undefined
 
@@ -632,7 +632,7 @@ const extractNprAudio = (article: NprArticle): { url?: string; duration?: number
     }
 
     if (asset.profiles[0].href === '/v1/profiles/audio') {
-      const audioURL = asset.enclosures?.find(enclosure => 
+      const audioURL = asset.enclosures?.find(enclosure =>
         enclosure.type?.includes('audio/mpeg')
       )?.href
 
@@ -683,36 +683,36 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   const id = article.id
   const firstImageHref = article.images?.[0]?.href
   const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
-  
+
   // Try both camelCase and kebab-case formats since NPR API is inconsistent
   const camelCaseId = rawImageId ? convertNprImageId(rawImageId) : undefined
-  const firstImage = rawImageId 
+  const firstImage = rawImageId
     ? (article.assets?.[camelCaseId] || article.assets?.[rawImageId])
     : undefined
-  
-/*   console.log('NPR Image Debug:', {
-    articleId: id,
-    hasImages: !!article.images,
-    imageCount: article.images?.length,
-    firstImageHref,
-    rawImageId,
-    camelCaseId,
-    hasFirstImage: !!firstImage,
-    hasAssets: !!article.assets,
-    assetKeys: article.assets ? Object.keys(article.assets).slice(0, 10) : [],
-    firstImageAsset: firstImage ? 'FOUND!' : 'not found'
-  }) */
-  
+
+  /*   console.log('NPR Image Debug:', {
+      articleId: id,
+      hasImages: !!article.images,
+      imageCount: article.images?.length,
+      firstImageHref,
+      rawImageId,
+      camelCaseId,
+      hasFirstImage: !!firstImage,
+      hasAssets: !!article.assets,
+      assetKeys: article.assets ? Object.keys(article.assets).slice(0, 10) : [],
+      firstImageAsset: firstImage ? 'FOUND!' : 'not found'
+    }) */
+
   const firstImageCaption = firstImage?.caption
 
   const { square, wide } = getNprImageUrls(firstImage)
   const image = componentType === 'default' ? (square ?? wide) : (wide ?? square)
-  
+
   //console.log('NPR Image URLs:', { square, wide, selected: image })
-  
+
   const textBody = await processNprLayout(article)
   const { url: audioURL, duration: audioDuration } = extractNprAudio(article)
-  
+
   const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
   const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
 

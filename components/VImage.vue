@@ -29,6 +29,15 @@ const props = defineProps({
 // Loading state for the image
 const imageLoaded = ref(false)
 
+// emit image loaded event
+const emit = defineEmits(["is-image-loaded"])
+
+watch(imageLoaded, (newVal) => {
+  if (newVal) {
+    emit("is-image-loaded")
+  }
+})
+
 const shouldShowLoader = computed(() => {
   return !imageLoaded.value
 })
@@ -69,7 +78,7 @@ watch(
 // Computed style for loader dimensions to match image responsively
 const loaderDimensions = computed(() => {
   // Use aspect-ratio and width: 100% to make it responsive like the images
-  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width:100%`
+  return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width:100%; height:100%; max-width:${imageRatio.value[0]}px; max-height:${imageRatio.value[1]}px;`
 })
 
 // determines what component to load based on the item type
@@ -134,7 +143,11 @@ const dynamicComponent = computed(() => {
     </component>
 
     <!-- Loader container that holds space -->
-    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
+    <div
+      v-if="shouldShowLoader"
+      class="image-loader-container"
+      :style="loaderDimensions"
+    >
       <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
     </div>
   </div>
@@ -145,6 +158,7 @@ const dynamicComponent = computed(() => {
   position: relative;
   line-height: 0;
   height: inherit;
+  width: 100%;
 
   .image-loader-container {
     position: relative;

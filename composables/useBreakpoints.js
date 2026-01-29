@@ -6,7 +6,7 @@ import breakpoints from "~/assets/scss/breakpoints.module.scss"
  * @param {number} width - Current window width
  * @returns {string} - Current breakpoint name
  */
-function getCurrentBreakpoint(width) {
+function getCurrentBreakpoint (width) {
     // Handle case where width is not available or breakpoints not loaded
     if (!width || typeof breakpoints === 'undefined') {
         return 'md' // Default fallback
@@ -37,31 +37,61 @@ const breakpointOrder = {
 
 // Global shared state and resize handler
 const globalBreakpoint = ref('')
+const globalWindowWidth = ref(0)
 let listenerCount = 0
 let isInitialized = false
 
 /**
  * Compare current breakpoint with a given condition
- * @param {string} condition - Condition like '>md', '>=lg', '<xl', '<=sm', '=md'
+ * @param {string} condition - Condition like '>md', '>=lg', '<xl', '<=sm', '=md', or pixel values '<1440', '>=1024'
  * @returns {boolean} - Whether the condition is met
  */
-function breakpoint(condition) {
-    if (!condition || !globalBreakpoint.value) return false
+function breakpoint (condition) {
+    if (!condition) return false
 
     // Parse the condition
     const match = condition.match(/^(>=|<=|>|<|=)?(.+)$/)
     if (!match) return false
 
-    const [, operator = '=', targetBreakpoint] = match
+    const [, operator = '=', target] = match
+    const targetTrimmed = target.trim()
+
+    // Check if it's a pixel value (e.g. "1440", "1440px")
+    const pxMatch = targetTrimmed.match(/^(\d+)(px)?$/)
+    if (pxMatch) {
+        // If window width is not available yet, we can't determine. 
+        // Defaulting to false or handling SSR might be needed, but usually this runs on client.
+        if (!globalWindowWidth.value) return false
+
+        const targetWidth = parseInt(pxMatch[1], 10)
+        const currentWidth = globalWindowWidth.value
+
+        switch (operator) {
+            case '>':
+                return currentWidth > targetWidth
+            case '>=':
+                return currentWidth >= targetWidth
+            case '<':
+                return currentWidth < targetWidth
+            case '<=':
+                return currentWidth <= targetWidth
+            case '=':
+            default:
+                return currentWidth === targetWidth
+        }
+    }
+
+    // Existing named breakpoint logic
+    if (!globalBreakpoint.value) return false
 
     // Validate target breakpoint
-    if (!(targetBreakpoint in breakpointOrder)) {
-        console.warn(`Invalid breakpoint: ${targetBreakpoint}`)
+    if (!(targetTrimmed in breakpointOrder)) {
+        console.warn(`Invalid breakpoint: ${ targetTrimmed }`)
         return false
     }
 
     const currentOrder = breakpointOrder[globalBreakpoint.value]
-    const targetOrder = breakpointOrder[targetBreakpoint]
+    const targetOrder = breakpointOrder[targetTrimmed]
 
     switch (operator) {
         case '>':
@@ -80,6 +110,7 @@ function breakpoint(condition) {
 // function called on window resize to update the global breakpoint
 const handleResize = () => {
     if (typeof window !== 'undefined') {
+        globalWindowWidth.value = window.innerWidth
         const newBreakpoint = getCurrentBreakpoint(window.innerWidth)
         if (globalBreakpoint.value !== newBreakpoint) {
             globalBreakpoint.value = newBreakpoint
@@ -89,6 +120,7 @@ const handleResize = () => {
 // Initialize breakpoints on first mount and set up resize listener
 const initializeBreakpoints = () => {
     if (typeof window !== 'undefined' && !isInitialized) {
+        globalWindowWidth.value = window.innerWidth
         globalBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
         window.addEventListener("resize", handleResize)
         isInitialized = true
@@ -106,7 +138,7 @@ const cleanupBreakpoints = () => {
  * Composable for responsive breakpoint detection with shared resize listener
  * @returns {Object} - Reactive current breakpoint and breakpoint comparison function
  */
-export function useBreakpoints() {
+export function useBreakpoints () {
     const isMobileBreakpoint = computed(() => breakpoint("<md"))
     onMounted(() => {
         listenerCount++

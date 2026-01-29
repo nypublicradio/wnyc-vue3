@@ -8,7 +8,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "md:col-12 lg:col-4 mb-3",
+    default: "col-12 md:col-12 lg:col-4 mb-3",
   },
   maxItems: {
     type: Number,
@@ -34,6 +34,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :class="props.cardClass"
           :data="article"
           :isHorizontal="isLgBreakpoint"
+          :allowVerticalEffect="true"
           imgCol="w-7rem md:w-11rem lg:w-full"
           :size="{
             xs: [112, 112],
@@ -47,7 +48,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
       <skeleton-media-card
         v-else
         v-for="index in props.maxItems"
-        :key="`skeleton-1-${index}`"
+        :key="`skeleton-three-pack-${index}`"
         :class="props.cardClass"
         :isHorizontal="isLgBreakpoint"
         imgCol="w-7rem md:w-11rem lg:w-full"

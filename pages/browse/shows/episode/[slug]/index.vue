@@ -10,7 +10,11 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const { data: episode, status, error } = useFetch(
+const {
+  data: episode,
+  status,
+  error,
+} = useFetch(
   `${config.public.BFF_URL}/api/v2/show/episode/${route.query.src}/${route.params.slug}`,
   {
     onResponse({ response }) {
@@ -21,7 +25,9 @@ const { data: episode, status, error } = useFetch(
         content_group: "on_demand_episode",
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
+        article_updated_date: res.updatedDate
+          ? res.updatedDate
+          : res.publicationDate,
         article_title: res.title,
       })
 
@@ -35,7 +41,8 @@ const { data: episode, status, error } = useFetch(
     onResponseError() {
       toast.add({
         severity: "error",
-        summary: "We are having a problem loading this episode. Please try again later.",
+        summary:
+          "We are having a problem loading this episode. Please try again later.",
         life: 6000,
         closable: true,
       })
@@ -64,10 +71,13 @@ const {
   status: showStatus,
   error: showError,
   execute: executeShowFetch,
-} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
-  immediate: false,
-  server: false,
-})
+} = useLazyFetch(
+  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
+  {
+    immediate: false,
+    server: false,
+  }
+)
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -107,14 +117,14 @@ watch(
       :pending="status !== 'success'"
       :episodeData="episodeData"
       :show="show"
-      :showPending="showStatus === 'pending'"
-    />
-
-    <section v-if="getFilteredTopStories">
-      <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">Top Stories From Gothamist</h2>
-      <TopStories :articles="getFilteredTopStories(episodeData)" />
-    </section>
+      :showPending="showStatus !== 'success'"
+    >
+      <template #bottom>
+        <Divider class="mt-8 mb-5" />
+        <h2 class="mb-3">Top Stories From Gothamist</h2>
+        <TopStories :articles="getFilteredTopStories(episodeData)" />
+      </template>
+    </EpisodeTemplate>
 
     <BackToTopButton />
   </div>
@@ -128,9 +138,7 @@ watch(
     height: 0px;
   }
 }
-.episode-page .episode-page-image {
-  aspect-ratio: 3/2;
-}
+
 .episode-page .html-convert {
   p {
     line-height: 1.8em;

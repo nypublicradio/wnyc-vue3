@@ -12,8 +12,11 @@
   &.full-width {
     max-width: 100%;
   }
+  &.thinContent {
+    max-width: $thinContentWidth !important;
+  }
   @include media('>=md') {
-    padding: 0.75rem 3rem;
+    padding: 0.75rem $paddingDesktop;
   }
 }
 
@@ -131,7 +134,7 @@
   line-height: 1.4em;
   font-weight: var(--font-weight-400);
   @include truncate();
-  @include t4lines();
+  @include t2lines();
 }
 
 // font config
@@ -265,4 +268,11 @@ $spacing-base: 0.25; //  matches prime-flex
 }
 @mixin t7lines() {
   -webkit-line-clamp: 7;
+}
+
+@mixin vertical-effect() {
+}
+
+@mixin v-image-bg-blur($radius: 38) {
+  filter: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a' x='0' y='0' width='1' height='1'%3E%3CfeGaussianBlur stdDeviation='#{$radius}' result='b'/%3E%3CfeMorphology operator='dilate' radius='#{$radius}'/%3E %3CfeMerge%3E%3CfeMergeNode/%3E%3CfeMergeNode in='b'/%3E%3C/feMerge%3E%3C/filter%3E%3C/svg%3E#a");
 }

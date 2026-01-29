@@ -110,29 +110,6 @@ const props = defineProps({
     default: null,
     type: String,
   },
-  /**
-   *  ammount of blur for the blured background image */
-  verticalBgBlur: {
-    default: "15px",
-    type: String,
-  },
-  /**
-   * tint the grey blured background image
-   * */
-  verticalBgColor: {
-    default: "#ffffff",
-    type: String,
-  },
-  /**
-   *  the opacity of the tint of the grey blured background image
-   */
-  verticalBgColorOpacity: {
-    default: "0.08",
-    type: String,
-  },
-  /** * The desired width for the 1x sized image.
-   * * this will also be added as an attribute to the image tag
-   */
   width: {
     default: 0,
     type: Number,
@@ -143,7 +120,12 @@ const props = defineProps({
     type: [String, RegExp],
   },
 })
-const emit = defineEmits(["image-click", "keypress", "image-load", "image-enlarge-click"])
+const emit = defineEmits([
+  "image-click",
+  "keypress",
+  "image-load",
+  "image-enlarge-click",
+])
 
 const { formatPublisherImageUrl, formatRawPublisherImageUrl } = useVImage()
 
@@ -208,7 +190,8 @@ const srcset = computed(() => {
     // If this is just a plain string with no tokens,
     // we don't need to generate a srcset
     if (
-      template === template.replace(props.widthToken, "").replace(props.heightToken, "")
+      template ===
+      template.replace(props.widthToken, "").replace(props.heightToken, "")
     ) {
       return ""
     }
@@ -322,7 +305,9 @@ onMounted(async () => {
                   icon="pi pi-clone"
                   class="p-button-sm enlarge-button"
                   aria-label="Enlarge Image"
-                  @click.prevent="emit('image-enlarge-click', $event.target.value)"
+                  @click.prevent="
+                    emit('image-enlarge-click', $event.target.value)
+                  "
                 ></Button>
               </ClientOnly>
             </template>
@@ -375,6 +360,7 @@ onMounted(async () => {
     line-height: 0;
     position: relative;
     overflow: hidden;
+    //width: -webkit-fill-available;
     .p-image-preview-container > img {
       cursor: default !important;
     }
@@ -415,19 +401,9 @@ onMounted(async () => {
       top: 0;
       left: 0;
       overflow: hidden;
-      &:after {
-        content: "";
-        background-color: v-bind(verticalBgColor);
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: v-bind(verticalBgColorOpacity);
-      }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
+        @include v-image-bg-blur();
         object-fit: cover;
         height: inherit;
       }

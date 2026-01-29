@@ -36,6 +36,16 @@ const selectBrand = (brand) => {
 
 <style lang="scss" scoped>
 .brand-card {
+  @mixin greyEffect {
+    background-color: var(--p-surface-25) !important;
+    background-image: none !important;
+    .logo {
+      filter: brightness(0);
+      &.on-the-media {
+        filter: grayscale(1) brightness(1) contrast(1.25);
+      }
+    }
+  }
   .brand-btn {
     font-family: var(--font-family-header);
     width: 100%;
@@ -44,29 +54,20 @@ const selectBrand = (brand) => {
     border: none;
     background-size: cover;
     background-position: center;
-    transition: transform var(--p-transition-duration),
-      opacity var(--p-transition-duration);
-    -webkit-transition: transform var(--p-transition-duration),
-      opacity var(--p-transition-duration) // , box-shadow var(--p-transition-duration)
-;
+    transition: all var(--p-transition-duration);
+    -webkit-transition: all var(--p-transition-duration);
     &:hover {
       transform: scale(1.05);
-      // -webkit-box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.15);
-      // box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.15);
     }
     .logo {
+      transition: filter var(--p-transition-duration);
       &.gothamist {
         width: 66% !important;
       }
     }
     @include media(">=xl") {
-      background-color: var(--p-surface-25) !important;
-      background-image: none !important;
-      .logo {
-        filter: brightness(0);
-        &.on-the-media {
-          filter: grayscale(1) brightness(1) contrast(1.25);
-        }
+      &:not(:hover) {
+        @include greyEffect;
       }
     }
   }

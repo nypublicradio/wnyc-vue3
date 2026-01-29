@@ -12,108 +12,39 @@ const reactiveArticles = toRef(props, "articles")
 
 <template>
   <div>
-    <!-- <pre>{{ reactiveArticles[0] }}</pre> -->
-    <div class="top-stories grid">
-      <MediaCard
-        v-if="reactiveArticles.length > 0"
-        class="col-12 lg:col-8 mb-3"
-        titleClasses="t7lines"
-        :data="reactiveArticles[0]"
-        is-horizontal
-        is-feature
-        imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 280], lg: [592, 480] }"
-        @on-click="dynamicNavigation(reactiveArticles[0])"
-      />
-      <skeleton-media-card
-        v-else
-        class="col-12 lg:col-8 mb-3"
-        is-horizontal
-        is-feature
-        imgCol="w-8"
-        :size="{ xs: [369, 246], sm: [592, 395] }"
-      />
-
+    <div
+      v-if="reactiveArticles?.length > 0"
+      class="top-stories flex flex-column gap-3"
+    >
       <div
-        class="ad-holder col mb-3 hidden lg:flex align-items-center justify-content-center"
+        v-for="(article, index) in reactiveArticles"
+        :key="`${article?.id}-${index}`"
+        :class="props.cardClass"
+        class=""
       >
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
-      </div>
-      <template v-if="reactiveArticles.length > 0">
         <MediaCard
-          v-for="(article, index) in reactiveArticles?.slice(1)"
-          :key="`${article.id}-${index}`"
-          class="col-12 md:col-4 mb-3"
+          showTease
+          isHorizontal
+          imgCol="w-7rem md:w-11rem"
           :data="article"
-          :size="{ xs: [112, 112], md: [438, 292] }"
+          :size="{ xs: [112, 112], md: [176, 176] }"
           @on-click="dynamicNavigation(article)"
         />
-      </template>
-      <skeleton-media-card
-        v-else
-        v-for="index in 6"
-        :key="`skeleton-1-${index}`"
-        class="col-12 md:col-4 mb-3"
-        :size="{ xs: [112, 112], md: [438, 292] }"
-      />
+      </div>
     </div>
-
-    <div class="top-stories grid">
-      <MediaCard
-        v-if="reactiveArticles.length > 0"
-        class="col-12 lg:col-6 mb-5"
-        :data="reactiveArticles?.[0]"
-        is-vertical
-        is-feature
-        :size="{ xs: [369, 246], md: [664, 443] }"
-        @on-click="dynamicNavigation(reactiveArticles[0])"
-      />
-      <skeleton-media-card
-        v-else
-        class="col-12 lg:col-6 mb-5"
-        is-vertical
-        is-feature
-        :size="{ xs: [369, 246], md: [664, 443] }"
-      />
-
-      <div class="col-12 lg:col-6 grid grid-nogutter">
-        <template v-if="reactiveArticles.length > 0">
-          <MediaCard
-            v-for="(article, index) in reactiveArticles.slice(3)"
-            :key="`${article.id}-${index}`"
-            class="col-12 mb-5"
-            :data="article"
-            is-horizontal
-            is-event
-            imgCol="md:w-7rem lg:w-6"
-            :size="{ xs: [112, 112], lg: [220, 152], xl: [332, 184] }"
-            @on-click="dynamicNavigation(article)"
-          />
-        </template>
+    <div v-else class="flex flex-column gap-3">
+      <div
+        v-for="index in 5"
+        :key="`skeleton-top-stories-${index}`"
+        :class="props.cardClass"
+        class=""
+      >
         <skeleton-media-card
-          v-else
-          v-for="index in 5"
-          :key="`skeleton-2-${index}`"
-          class="col-12 mb-5"
-          is-horizontal
-          is-event
-          imgCol="w-6"
-          :size="{ xs: [112, 112], md: [300, 150] }"
+          isHorizontal
+          imgCol="w-7rem md:w-11rem"
+          :size="{ xs: [112, 112], md: [176, 176] }"
         />
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-$container-breakpoint-md: useBreakpointOrFallback("md", 768px);
-.top-stories {
-  .ad-holder {
-    min-width: 300px;
-  }
-}
-</style>

@@ -1,49 +1,49 @@
 <script setup>
-import { useCurrentEpisode, useIsApp } from "~/composables/states";
+import { useCurrentEpisode, useIsApp } from "~/composables/states"
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
-import { brandCards } from "~/composables/globals.ts";
-const config = useRuntimeConfig();
-const currentEpisode = useCurrentEpisode();
-const isApp = useIsApp();
+import { brandCards } from "~/composables/globals.ts"
+const config = useRuntimeConfig()
+const currentEpisode = useCurrentEpisode()
+const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-);
+)
 
 const {
   data: pagedata,
   error,
   status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`);
+} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
 
-const layoutComponents = {};
+const layoutComponents = {}
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
   if (!layoutComponents[layout]) {
     layoutComponents[layout] = defineAsyncComponent(() =>
       import(`~/components/layouts/${layout}.vue`)
-    );
+    )
   }
-  return layoutComponents[layout];
-};
+  return layoutComponents[layout]
+}
 
 definePageMeta({
   layout: "default",
   layoutTransition: {
     name: "login",
   },
-});
+})
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp();
+  const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Home",
     page_type: "home_page",
     content_group: "home",
-  });
-});
+  })
+})
 </script>
 
 <template>
@@ -81,7 +81,7 @@ onMounted(() => {
         </div>
       </div>
     </section>
-
+    <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
     <div v-if="status === 'success'">
       <div
@@ -164,87 +164,8 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- <pre class="text-xs overflow-hidden">{{ brandCards }}</pre> -->
-    <!-- <pre class="text-xs overflow-hidden">{{
-      pagedata?.new_home_template.curatedContent[2].value?.list
-    }}</pre> -->
-
-    <!-- <section>
-      <div
-        class="ad-holder col mb-6 flex lg:hidden align-items-center justify-content-center"
-      >
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
-      </div>
-      <h2 class="mb-3">WNYC Picks</h2>
-      <TopStories :articles="topStories" />
-      <div class="mx-auto sm:mb-6 md:mt-6" style="width: 300px">
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
-      </div>
-    </section> -->
-
     <DonateBanner class="my-6" />
 
-    <!-- <div v-for="section in pagedata?.home_template" :key="section.title">
-      <div v-if="section.data.length">
-        <section>
-          <h2>{{ section.title }}</h2>
-        </section>
-        <section v-if="section.componentType === 'default'">
-          <div class="grid">
-            <MediaCard
-              v-for="ep in section.data"
-              :data="ep"
-              :key="`home-${ep.id}`"
-              showPlayButton
-              :fallback-image="ep.headers.brand.logoImage.template"
-              is-horizontal
-              imgCol="w-7rem"
-              :showBg="false"
-              :showBgMobile="false"
-              class="col-12 lg:col-6 xl:col-4 mb-3"
-              @on-click="dynamicNavigation(ep)"
-            />
-          </div>
-        </section>
-        <WNYCFeatured v-else class="mt-2 mb-4" :articles="section.data" />
-      </div>
-    </div> -->
-
-    <!-- <div v-if="pagedata?.npr_stories?.length">
-      <section>
-        <h2 class="my-3">NPR Stories</h2>
-        <div
-          v-for="(section, index) in pagedata?.npr_stories"
-          :key="`NPR-content-${index}`"
-        >
-          <div v-if="section.componentType === 'default'">
-            <div class="grid">
-              <MediaCard
-                class="col-12 lg:col-6 xl:col-4 mb-3"
-                v-for="article in section.articles"
-                :key="article.id"
-                :data="article"
-                is-horizontal
-                imgCol="w-7rem"
-                :index="index"
-                :showBg="false"
-                :showBgMobile="false"
-                @on-click="dynamicNavigation(article)"
-              />
-            </div>
-          </div>
-          <WNYCFeatured v-else class="mt-2" :articles="section.articles" />
-        </div>
-      </section>
-    </div> -->
     <SponsorBanner
       v-if="isApp"
       class="mt-4"

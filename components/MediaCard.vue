@@ -1,15 +1,15 @@
 <script setup>
-import StarIcon from "~/components/icons/StarIcon.vue";
-import DownloadIcon from "~/components/icons/DownloadIcon.vue";
-import TrashIcon from "~/components/icons/TrashIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import SleepIcon from "~/components/icons/SleepIcon.vue";
+import StarIcon from "~/components/icons/StarIcon.vue"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import TrashIcon from "~/components/icons/TrashIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
 import {
   useIsNetworkConnected,
   useCurrentUser,
   useIsApp,
-} from "~/composables/states";
+} from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -23,18 +23,18 @@ import {
   getReadingTime,
   getOrg,
   formatTime,
-} from "~/utilities/helpers";
+} from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
   getDownloadedImageUri,
   playStoredMp3,
   isAlreadyDownloaded,
   /*   formatFileSize, */
-} from "~/utilities/file-system";
-import useSleepTimer from "~/composables/useSleepTimer";
-import { mediaTypes } from "~/composables/globals.ts";
+} from "~/utilities/file-system"
+import useSleepTimer from "~/composables/useSleepTimer"
+import { mediaTypes } from "~/composables/globals.ts"
 
-const emit = defineEmits(["on-click", "on-delete-favorite"]);
+const emit = defineEmits(["on-click", "on-delete-favorite"])
 
 const props = defineProps({
   data: {
@@ -139,7 +139,7 @@ const props = defineProps({
   },
   teaseClasses: {
     type: String,
-    default: "",
+    default: "text-sm",
   },
   // Responsive image size configuration
   // Object format: { xs: [112,112], md: [600,400] } - different sizes per breakpoint
@@ -157,52 +157,70 @@ const props = defineProps({
     type: Array,
     default: [2],
   },
-});
-const user = useCurrentUser();
-const isNetworkConnected = useIsNetworkConnected();
-const isApp = useIsApp();
-const { handleSleepTimer, sleepTimerRunning } = useSleepTimer();
+  allowVerticalEffect: {
+    type: Boolean,
+    default: true,
+  },
+  inCarousel: {
+    type: Boolean,
+    default: false,
+  },
+  minContentWidth: {
+    type: Number,
+    default: 0,
+  },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
+})
+const user = useCurrentUser()
+const isNetworkConnected = useIsNetworkConnected()
+const isApp = useIsApp()
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 //handle if it this is downloaded
-const isDownloaded = ref(false);
+const isDownloaded = ref(false)
 // check if item is already favorited
-const isFavorited = ref(false);
+const isFavorited = ref(false)
+// check if image is loaded (for carousel sizing)
+const isImageLoaded = ref(false)
 
 // flag if the type is an event
-const isEvent = props.data?.type === mediaTypes.EVENT;
+const isEvent = props.data?.type === mediaTypes.EVENT
 
 // check if this is a LIVE item
-const isLive = props.data?.type === mediaTypes.LIVE;
+const isLive = props.data?.type === mediaTypes.LIVE
 
 // this will change once we know how the event date will be passed
-const eventDate = ref(props.data?.startDatetime);
+const eventDate = ref(props.data?.startDatetime)
 
-const reactiveData = toRef(props, "data");
+const reactiveData = toRef(props, "data")
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
-  return reactiveData.value.imageFullHeight ?? 112;
-});
+  return reactiveData.value.imageFullHeight ?? 112
+})
 const nativeImageWidth = computed(() => {
-  return reactiveData.value.imageFullWidth ?? 112;
-});
+  return reactiveData.value.imageFullWidth ?? 112
+})
 
 const getImage = computed(() => {
   if (props.isInDownloads) {
-    return getDownloadedImageUri(reactiveData.value);
+    return getDownloadedImageUri(reactiveData.value)
   } else {
-    return reactiveData.value?.image;
+    return reactiveData.value?.image
   }
-});
+})
 
 watchEffect(async () => {
-  if (!props.data) return;
-  isDownloaded.value = isAlreadyDownloaded(props.data);
+  if (!props.data) return
+  isDownloaded.value = isAlreadyDownloaded(props.data)
   isFavorited.value = await checkIsFavorited(
     props.data?.meta?.slug || props.data?.slug
-  );
-  eventDate.value = props.data?.startDatetime;
-});
+  )
+  eventDate.value = props.data?.startDatetime
+})
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -211,24 +229,24 @@ const handleAddToFavorites = (bucketItem) => {
     item: bucketItem,
     isFavorited: isFavorited.value,
     callback: () => {
-      emit("on-delete-favorite");
+      emit("on-delete-favorite")
     },
-  });
+  })
   if (user.value) {
-    isFavorited.value = !isFavorited.value;
+    isFavorited.value = !isFavorited.value
   }
-};
+}
 
-const progress = ref({});
+const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
   trackClickEvent(
     "Click Tracking - Audio Download",
     "Episode Item",
     bucketItem.title
-  );
-  progress.value = await fetchAndStoreMp3(bucketItem);
-};
+  )
+  progress.value = await fetchAndStoreMp3(bucketItem)
+}
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -244,7 +262,7 @@ const getDotMenuItems = (bucketItem) => {
               active: isFavorited.value,
               title: bucketItem?.title,
               command: () => {
-                handleAddToFavorites(bucketItem);
+                handleAddToFavorites(bucketItem)
               },
             },
           ]
@@ -261,7 +279,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: DownloadIcon,
               title: bucketItem?.title,
               command: () => {
-                handleDownload(bucketItem);
+                handleDownload(bucketItem)
               },
             },
           ]
@@ -272,7 +290,7 @@ const getDotMenuItems = (bucketItem) => {
               label: "Remove from Download",
               customIcon: TrashIcon,
               command: () => {
-                handleDelete(bucketItem);
+                handleDelete(bucketItem)
               },
             },
           ]
@@ -284,7 +302,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem?.title,
               command: () => {
-                shareAPI(bucketItem, "Media Card");
+                shareAPI(bucketItem, "Media Card")
               },
             },
           ]
@@ -297,12 +315,12 @@ const getDotMenuItems = (bucketItem) => {
               active: sleepTimerRunning.value,
               title: "Sleep Timer",
               command: () => {
-                handleSleepTimer();
+                handleSleepTimer()
               },
             },
           ]
         : []),
-    ];
+    ]
   } else {
     return [
       {
@@ -311,7 +329,7 @@ const getDotMenuItems = (bucketItem) => {
         active: isFavorited.value,
         title: bucketItem?.title,
         command: () => {
-          handleAddToFavorites(bucketItem);
+          handleAddToFavorites(bucketItem)
         },
       },
       ...(props.showShare
@@ -321,49 +339,51 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem?.title,
               command: () => {
-                shareAPI(bucketItem, "Media Card");
+                shareAPI(bucketItem, "Media Card")
               },
             },
           ]
         : []),
-    ];
+    ]
   }
-};
+}
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e?.value?.command();
-};
+  e?.value?.command()
+}
 
 // handle the playing of the stored audio file and GA tracking
 const toggleDownloadedPlay = (file) => {
-  playStoredMp3(file);
+  playStoredMp3(file)
   // GA tracking
   trackClickEvent(
     "Click Tracking - Play download episode",
     "Episode Item",
     `playing = ${file.title}`
-  );
-};
+  )
+}
 
 // handle click event & emit
 const handleClick = () => {
-  emit("on-click");
-};
+  emit("on-click")
+}
 
 // handle the play button render
 const handleHasAudio = computed(() => {
   return (
     (props.showPlayButton && hasAudio(props.data?.audio)) ||
     (props.showPlayButton && props.isSegment && hasAudio(props.data.url))
-  );
-});
+  )
+})
 </script>
 
 <template>
   <div
     class="media-card"
-    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}; ${
+      props.inCarousel ? `--min-content-width: ${props.minContentWidth}px` : ''
+    }`"
     :class="[
       {
         'show-image': props.showImage,
@@ -372,6 +392,8 @@ const handleHasAudio = computed(() => {
         'is-feature': props.isFeature,
         'is-horizontal': props.isHorizontal,
         'is-vertical': props.isVertical,
+        'in-carousel': props.inCarousel,
+        'is-image-loaded': isImageLoaded,
       },
       props.data?.type,
       props.data?.cmsSource,
@@ -411,16 +433,19 @@ const handleHasAudio = computed(() => {
           :maxHeight="nativeImageHeight"
           :maxWidth="nativeImageWidth"
           :srcset="props.imgSrcset"
-          allowVerticalEffect
+          :ratio="props.ratio"
+          :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
+          :loading="props.inCarousel ? 'eager' : props.loading"
+          @is-image-loaded="isImageLoaded = true"
         />
       </div>
       <div class="content col">
         <div
-          class="flex gap-2 flex-column justify-content-between w-full h-full"
+          class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
-          <div class="flex gap-2 flex-column w-full">
-            <div class="flex gap-1 flex-column align-items-start">
+          <div class="top flex gap-2 flex-column w-full">
+            <div class="text flex gap-1 flex-column align-items-start">
               <LiveBadge
                 v-if="props.showLive && !props.saved"
                 class="align-self-start"
@@ -428,41 +453,49 @@ const handleHasAudio = computed(() => {
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
-              <h2 class="no-hyphens" :class="props.titleClasses">
+              <h2 class="no-hyphens w-full" :class="props.titleClasses">
                 {{ props.data?.title }}
               </h2>
 
-              <HtmlConvert
-                v-if="props.data.tease && props.showTease && !isEvent"
-                :htmlContent="props.data.tease"
-                class="tease"
-                :class="props.teaseClasses"
-                htmlClasses="text-sm"
-                :key="`tease-${props.data.id || props.data.slug || 'default'}`"
-              />
-            </div>
-            <div class="article-metadata" v-if="!isEvent">
-              <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
-                <template #left>
-                  {{
-                    props.isSegment
-                      ? props.data?.category
-                      : props.data?.showTitle ||
-                        props.data?.headers?.brand?.title ||
-                        getOrg(props.data?.cmsSource)
-                  }}
-                </template>
-                <template #right v-if="!props.hideDate">
-                  {{ getDate(props.data) }}
-                </template>
-              </PipeData>
-
-              <div class="mt-1 opacity-70" :class="props.bylineClasses">
-                <VByline
-                  v-if="props.data?.byline?.length > 0 && props.isSegment"
-                  :authors="props.data?.byline"
-                  prefix="by "
+              <div class="tease-metadata-holder flex flex-column gap-2 w-full">
+                <HtmlConvert
+                  v-if="props.data.tease && props.showTease && !isEvent"
+                  :htmlContent="props.data.tease"
+                  stringify
+                  class="tease"
+                  :class="props.teaseClasses"
+                  :htmlClasses="props.teaseClasses"
+                  :key="`tease-${
+                    props.data.id || props.data.slug || 'default'
+                  }`"
                 />
+                <div class="article-metadata w-full" v-if="!isEvent">
+                  <PipeData
+                    :hidePipe="props.hideDate"
+                    :class="props.pipeClasses"
+                  >
+                    <template #left>
+                      {{
+                        props.isSegment
+                          ? props.data?.category
+                          : props.data?.showTitle ||
+                            props.data?.headers?.brand?.title ||
+                            getOrg(props.data?.cmsSource)
+                      }}
+                    </template>
+                    <template #right v-if="!props.hideDate">
+                      {{ getDate(props.data) }}
+                    </template>
+                  </PipeData>
+
+                  <div class="mt-1 opacity-70" :class="props.bylineClasses">
+                    <VByline
+                      v-if="props.data?.byline?.length > 0 && props.isSegment"
+                      :authors="props.data?.byline"
+                      prefix="by "
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div v-if="isEvent" class="flex flex-column gap-2">
@@ -473,6 +506,7 @@ const handleHasAudio = computed(() => {
           <div
             class="button-holder flex justify-content-between align-items-center flex-wrap"
           >
+            <div class="temp hidden"></div>
             <template v-if="!isEvent">
               <template v-if="!isLive && !props.hasSegments">
                 <PlayButton
@@ -599,10 +633,52 @@ const handleHasAudio = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+$contentPaddingX: 1rem;
+$contentPaddingY: 1.25rem;
 .media-card {
   position: relative;
   cursor: pointer;
   height: auto;
+
+  /* Fix for card-click overlay blocking rendering off-screen */
+  .card-click {
+    // Ensure overlay doesn't create a blocking paint layer
+    isolation: isolate;
+    // Force overlay onto its own GPU layer to prevent blocking content below
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Carousel Specific: Shrink to fit content */
+  &.in-carousel {
+    width: min-content;
+    max-width: 100%;
+    min-width: var(--min-content-width);
+
+    /* Force override of any other layout mode when in carousel */
+    &.is-vertical .image,
+    &.is-horizontal .image,
+    .holder .image {
+      /* Force strict image sizing behavior when in carousel */
+      flex: 0 0 auto !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      /* Override fixed dimensions from media queries */
+      max-width: none !important;
+
+      /* Ensure img child behaves */
+      :deep(img) {
+        height: 100%;
+        width: auto;
+        max-width: none;
+        object-fit: cover;
+        object-position: center center;
+      }
+    }
+  }
 
   .holder {
     position: relative;
@@ -645,7 +721,7 @@ const handleHasAudio = computed(() => {
 
     .content {
       height: auto;
-      padding: 0 0 0 1rem;
+      padding: 0 0 0 $contentPaddingX;
 
       h2 {
         @include cardTitle();
@@ -676,7 +752,7 @@ const handleHasAudio = computed(() => {
       border-radius: var(--media-card-border-radius);
 
       .content {
-        padding: 0.7rem 1rem !important;
+        padding: $contentPaddingY $contentPaddingX !important;
       }
     }
 
@@ -686,7 +762,7 @@ const handleHasAudio = computed(() => {
         border-radius: 0;
 
         .content {
-          padding: 0 0 0 1rem !important;
+          padding: 0 0 0 $contentPaddingX !important;
         }
       }
     }
@@ -699,7 +775,7 @@ const handleHasAudio = computed(() => {
         border-radius: var(--media-card-border-radius);
 
         .content {
-          padding: 0.7rem 1rem !important;
+          padding: $contentPaddingY $contentPaddingX !important;
         }
       }
     }
@@ -739,6 +815,9 @@ const handleHasAudio = computed(() => {
           height: 112px !important;
           flex: 0 0 auto;
         }
+        .tease {
+          display: none;
+        }
       }
     }
   }
@@ -763,7 +842,7 @@ const handleHasAudio = computed(() => {
         }
 
         .content {
-          padding: 1rem !important;
+          padding: $contentPaddingY !important;
         }
       }
     }
@@ -776,11 +855,15 @@ const handleHasAudio = computed(() => {
   &.is-vertical {
     .image {
       width: 100% !important;
-      height: auto !important;
 
       .v-image {
         left: 0;
       }
+    }
+
+    /* Only force height auto when NOT in carousel */
+    &:not(.in-carousel) .image {
+      height: auto !important;
     }
 
     .holder {
@@ -788,7 +871,7 @@ const handleHasAudio = computed(() => {
       background-color: var(--p-content-background);
 
       .content {
-        padding: 1rem !important;
+        padding: $contentPaddingY !important;
       }
     }
   }

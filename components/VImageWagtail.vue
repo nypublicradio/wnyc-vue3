@@ -127,26 +127,6 @@ const props = defineProps({
     type: String,
   },
   /**
-   *  amount of blur for the background image */
-  verticalBgBlur: {
-    default: "15px",
-    type: String,
-  },
-  /**
-   * tint the grey background image
-   * */
-  verticalBgColor: {
-    default: "#ffffff",
-    type: String,
-  },
-  /**
-   *  the opacity of the tint of the background image
-   */
-  verticalBgColorOpacity: {
-    default: "0.08",
-    type: String,
-  },
-  /**
    *  the grayscale of the background image
    */
   verticalBgGrayscale: {
@@ -246,7 +226,10 @@ const handleProvider = computed(() => {
       style="width: auto; height: inherit"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
+      <div
+        class="v-image-holder"
+        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+      >
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -359,6 +342,7 @@ const handleProvider = computed(() => {
     position: relative;
     overflow: hidden;
     height: inherit;
+    //width: -webkit-fill-available;
     .image {
       position: relative;
       width: 100%;
@@ -390,19 +374,9 @@ const handleProvider = computed(() => {
       top: 0;
       left: 0;
       overflow: hidden;
-      &:after {
-        content: "";
-        background-color: v-bind(verticalBgColor);
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: v-bind(verticalBgColorOpacity);
-      }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(0%);
+        @include v-image-bg-blur();
         object-fit: cover;
         height: inherit;
       }
