@@ -13,11 +13,12 @@ const props = defineProps({
 })
 
 const reactiveItems = toRef(props.list, "listItems")
+// calculate the image sizes based on the item image ratio
 const getImgSizesBasedOnItemImgRatio = (item, obj) => {
   const imgHeight = Number(item.imageFullHeight || item.image?.height)
   const imgWidth = Number(item.imageFullWidth || item.image?.width)
 
-  // Calcluate Aspect Ratio (Width / Height)
+  // Calculate Aspect Ratio (Width / Height)
   let ratio = 1
   if (
     imgHeight &&

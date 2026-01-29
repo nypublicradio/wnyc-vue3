@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue"
+import { ref, computed, onMounted, watch } from "vue"
 import { gsap } from "gsap"
 import { Draggable } from "gsap/Draggable"
 import InertiaPlugin from "~/assets/gsap/InertiaPlugin.js"
@@ -48,8 +48,6 @@ const props = defineProps({
 const carouselRef = ref(null)
 const trackRef = ref(null)
 const currentTranslate = ref(0)
-const slideElements = ref([])
-const slideProgress = ref([])
 let draggableInstance = null
 
 const containerWidth = ref(0)
@@ -80,94 +78,6 @@ const maskStyle = computed(() => {
 
 const contentResizeObserver = ref(null)
 const isInteracting = ref(false) // True during entire drag + throw sequence
-let throwUpdateRAF = null
-
-// Measure natural dimensions of items
-const measureItems = () => {
-  if (!trackRef.value) return
-  if (isInteracting.value) return // Don't re-measure during drag/throw
-
-  const children = Array.from(trackRef.value.children)
-  if (!children.length) return
-
-  // 1. Reset Reset styles to get natural size
-  // CRITICAL: We must reset the parent slide constraints so the child (MediaCard)
-  // can expand to its natural 'min-content' width.
-  children.forEach((slide) => {
-    slide.style.width = ""
-    slide.style.maxWidth = "" // CRITICAL: Clear this so it doesn't constrain next measure
-    slide.style.flex = "0 0 auto"
-    slide.style.marginLeft = ""
-    // slide.style.height = "" // Height is usually consistent, but could reset too
-
-    // CRITICAL: Also clear the content constraints we applied (pinning)
-    const content = slide.firstElementChild
-    if (content) {
-      content.style.width = ""
-      content.style.minWidth = ""
-      content.style.transform = ""
-    }
-  })
-
-  // 2. Measure
-  itemNativeDimensions.value = children.map((slide) => {
-    // Measure the slide itself now that it's unconstrained (auto width)
-    // We prefer the first child's scrollWidth or offsetWidth to get the "Content" size
-    const content = slide.firstElementChild
-    return {
-      width: content ? content.offsetWidth : slide.offsetWidth,
-      height: slide.offsetHeight,
-    }
-  })
-
-  // Refresh cache since children might have changed
-  updateCachedSlides()
-
-  // After measurement, we must re-run the layout logic
-  updateSlideProgress()
-  initDraggable() // Re-calculate bounds and draggable instance
-}
-
-// Observe content changes (image loads, etc)
-const setupContentObserver = () => {
-  if (!trackRef.value) return
-
-  // Create observer if not exists
-  if (!contentResizeObserver.value) {
-    let debounceTimer
-    contentResizeObserver.value = new ResizeObserver((entries) => {
-      // Don't interfere with active drag/throw operations
-      if (isInteracting.value) return
-
-      // Debounce the measurement
-      clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(() => {
-        measureItems()
-        updateSlideProgress()
-        initDraggable()
-      }, 50)
-    })
-  }
-
-  // Observe all children's content
-  // Observe all children's CONTENT (Images)
-  // We avoid observing the slide/card wrapper itself because it resizes during the drag effect (feedback loop).
-  // The image inside MediaCard has 'width: auto', so it should maintain natural size.
-  const children = Array.from(trackRef.value.children)
-  children.forEach((slide) => {
-    // Look for image inside
-    const img = slide.querySelector("img")
-    if (img) {
-      contentResizeObserver.value.observe(img)
-    } else {
-      // Fallback if no image? Observe first child but be careful
-      // If content is text-only, it might resizing.
-      // For now, optimize for MediaCard with images.
-      const content = slide.firstElementChild
-      if (content) contentResizeObserver.value.observe(content)
-    }
-  })
-}
 
 // Optimization: Cache slide elements to avoid querySelector/children access every frame
 const cachedSlides = ref([])
@@ -395,6 +305,93 @@ const initDraggable = () => {
   })
 }
 
+// Measure natural dimensions of items
+const measureItems = () => {
+  if (!trackRef.value) return
+  if (isInteracting.value) return // Don't re-measure during drag/throw
+
+  const children = Array.from(trackRef.value.children)
+  if (!children.length) return
+
+  // 1. Reset Reset styles to get natural size
+  // CRITICAL: We must reset the parent slide constraints so the child (MediaCard)
+  // can expand to its natural 'min-content' width.
+  children.forEach((slide) => {
+    slide.style.width = ""
+    slide.style.maxWidth = "" // CRITICAL: Clear this so it doesn't constrain next measure
+    slide.style.flex = "0 0 auto"
+    slide.style.marginLeft = ""
+    // slide.style.height = "" // Height is usually consistent, but could reset too
+
+    // CRITICAL: Also clear the content constraints we applied (pinning)
+    const content = slide.firstElementChild
+    if (content) {
+      content.style.width = ""
+      content.style.minWidth = ""
+      content.style.transform = ""
+    }
+  })
+
+  // 2. Measure
+  itemNativeDimensions.value = children.map((slide) => {
+    // Measure the slide itself now that it's unconstrained (auto width)
+    // We prefer the first child's scrollWidth or offsetWidth to get the "Content" size
+    const content = slide.firstElementChild
+    return {
+      width: content ? content.offsetWidth : slide.offsetWidth,
+      height: slide.offsetHeight,
+    }
+  })
+
+  // Refresh cache since children might have changed
+  updateCachedSlides()
+
+  // After measurement, we must re-run the layout logic
+  updateSlideProgress()
+  initDraggable() // Re-calculate bounds and draggable instance
+}
+
+// Observe content changes (image loads, etc)
+const setupContentObserver = () => {
+  if (!trackRef.value) return
+
+  // Create observer if not exists
+  if (!contentResizeObserver.value) {
+    let debounceTimer
+    contentResizeObserver.value = new ResizeObserver((entries) => {
+      // Don't interfere with active drag/throw operations
+      if (isInteracting.value) return
+
+      // Debounce the measurement
+      clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        measureItems()
+        updateSlideProgress()
+        initDraggable()
+      }, 50)
+    })
+  }
+
+  // Observe all children's content
+  // Observe all children's CONTENT (Images)
+  // We avoid observing the slide/card wrapper itself because it resizes during the drag effect (feedback loop).
+  // The image inside MediaCard has 'width: auto', so it should maintain natural size.
+  const children = Array.from(trackRef.value.children)
+  children.forEach((slide) => {
+    // Look for image inside
+    const img = slide.querySelector("img")
+    if (img) {
+      contentResizeObserver.value.observe(img)
+    } else {
+      // Fallback if no image? Observe first child but be careful
+      // If content is text-only, it might resizing.
+      // For now, optimize for MediaCard with images.
+      const content = slide.firstElementChild
+      if (content) contentResizeObserver.value.observe(content)
+    }
+  })
+}
+
 // Handle resize
 let resizeTimeout
 const onResize = () => {
@@ -414,7 +411,7 @@ const onResize = () => {
     // Explicitly apply bounds enforcement?
     // Draggable.create doesn't auto-snap to bounds immediately if we just created it.
     // We might need to check if current x is out of bounds.
-    if (draggableInstance && draggableInstance[0]) {
+    if (draggableInstance?.[0]) {
       draggableInstance[0].applyBounds()
     }
   }, 100)
