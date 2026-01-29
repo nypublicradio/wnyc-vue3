@@ -41,10 +41,20 @@ const avatarUrl = computed(() => {
 const goToProfile = () => {
   trackClickEvent(
     "Click Tracking - Header View My Profile button",
-    "Header",
+    "Header user hover panel",
     "View My Profile"
   )
   navigateTo("/dashboard")
+}
+
+// handle view member center button is clicked
+const goToMemberCenter = () => {
+  trackClickEvent(
+    "Click Tracking - Header Member Center button",
+    "Header user hover panel",
+    "Member Center"
+  )
+  window.open("https://pledge.wnyc.org/user/email-link", "_blank")
 }
 
 // handle log out button is clicked
@@ -56,7 +66,7 @@ const onLogOut = async () => {
   //GTM
   trackClickEvent(
     "Click Tracking - logout button",
-    "Settings Sidebar - user section",
+    "Header user hover panel",
     "logout button"
   )
 
@@ -168,6 +178,13 @@ const onLogOut = async () => {
                         rounded
                         aria-label="View My Account"
                         @click="goToProfile"
+                      />
+                      <Button
+                        label="Member Center"
+                        severity="secondary"
+                        rounded
+                        aria-label="Member Center"
+                        @click="goToMemberCenter"
                       />
                       <Button
                         label="Log Out"
