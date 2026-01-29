@@ -49,7 +49,7 @@ const carouselRef = ref(null)
 const trackRef = ref(null)
 const currentTranslate = ref(0)
 let draggableInstance = null
-let resizeTimeout
+let resizeTimeout = null
 const containerWidth = ref(0)
 let resizeObserver = null
 
@@ -356,7 +356,7 @@ const measureItems = () => {
 const setupContentObserver = () => {
   if (!trackRef.value) return
 
-  let debounceTimer
+  let debounceTimer = null
   // Create observer if not exists
   if (!contentResizeObserver.value) {
     contentResizeObserver.value = new ResizeObserver(() => {
