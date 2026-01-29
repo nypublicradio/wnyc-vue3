@@ -34,9 +34,13 @@ const onDonate = () => {
 
 <template>
   <div class="donate-banner px-2 py-4 md:px-4 md:py-5 style-mode-light">
-    <section class="flex flex-column gap-5 justify-content-center align-items-center">
-      <h2 class="font-bold font-tisa text-center">{{ props.headline }}</h2>
-      <p class="text-center">{{ props.blurb }}</p>
+    <section
+      class="flex flex-column gap-4 justify-content-center align-items-center"
+    >
+      <h2 class="font-bold font-tisa text-center text-xl md:text-2xl">
+        {{ props.headline }}
+      </h2>
+      <p class="text-center line-height-3">{{ props.blurb }}</p>
       <Button label="Donate" @click="onDonate" class="px-6" />
     </section>
   </div>
