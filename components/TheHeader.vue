@@ -123,7 +123,7 @@ const onLogOut = async () => {
                 </template>
                 <template #menu>
                   <NavSubMenu class="login-signup">
-                    <div v-if="!currentUser" class="flex flex-column p-4 gap-3">
+                    <div v-if="!currentUser" class="flex flex-column p-4 gap-2">
                       <h2>Sign up for a free account, or log in</h2>
                       <p>See your listening history, favorites, and more.</p>
                       <Button
@@ -157,6 +157,14 @@ const onLogOut = async () => {
                             )
                           }
                         "
+                      />
+                      <p class="mt-4">Manage donations</p>
+                      <Button
+                        label="Member Center"
+                        severity="secondary"
+                        rounded
+                        aria-label="Member Center"
+                        @click="goToMemberCenter"
                       />
                     </div>
                     <div v-else class="flex flex-column p-4 gap-3">
