@@ -3,21 +3,21 @@ import {
   useCurrentUser,
   useCurrentEpisode,
   useIsApp,
-} from "~/composables/states";
-import { useBreakpoints } from "~/composables/useBreakpoints";
-import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system";
-import StarIcon from "~/components/icons/StarIcon.vue";
-import DownloadIcon from "~/components/icons/DownloadIcon.vue";
-import TranscriptIcon from "~/components/icons/TranscriptIcon.vue";
-import ShareIcon from "~/components/icons/ShareIcon.vue";
-import SleepIcon from "~/components/icons/SleepIcon.vue";
-import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue";
-import CommentsIcon from "~/components/icons/CommentsIcon.vue";
-import { normalizeGalleryPage } from "~/composables/data/galleryPages";
+} from "~/composables/states"
+import { useBreakpoints } from "~/composables/useBreakpoints"
+import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
+import StarIcon from "~/components/icons/StarIcon.vue"
+import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import TranscriptIcon from "~/components/icons/TranscriptIcon.vue"
+import ShareIcon from "~/components/icons/ShareIcon.vue"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
+import CommentsIcon from "~/components/icons/CommentsIcon.vue"
+import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 import {
   useCommentCounts,
   useUpdateCommentCounts,
-} from "~/composables/comments";
+} from "~/composables/comments"
 import {
   getMinutes,
   trackClickEvent,
@@ -27,8 +27,8 @@ import {
   shareAPI,
   addToFavorites2,
   hasAudio,
-} from "~/utilities/helpers";
-import useSleepTimer from "~/composables/useSleepTimer";
+} from "~/utilities/helpers"
+import useSleepTimer from "~/composables/useSleepTimer"
 
 const props = defineProps({
   pending: {
@@ -47,20 +47,20 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
+})
 
-const { handleSleepTimer, sleepTimerRunning } = useSleepTimer();
-const route = useRoute();
-const currentEpisode = useCurrentEpisode();
-const user = useCurrentUser();
-const isApp = useIsApp();
-const progress = ref({});
+const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+const route = useRoute()
+const currentEpisode = useCurrentEpisode()
+const user = useCurrentUser()
+const isApp = useIsApp()
+const progress = ref({})
 
 // Use the shared breakpoint composable
-const { breakpoint } = useBreakpoints();
-const isMobileBtn = computed(() => breakpoint("<md"));
+const { breakpoint } = useBreakpoints()
+const isMobileBtn = computed(() => breakpoint("<md"))
 
-const isWagtail = route.query.src === cmsSources.WAGTAIL;
+const isWagtail = route.query.src === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
     ? `Gothamist${
@@ -69,76 +69,76 @@ const storySource = computed(() =>
           : ""
       }`
     : props.episodeData?.headers?.brand?.title || "WNYC"
-);
+)
 
-const gallery = ref(null);
-const galleryLength = ref(null);
-const galleryLink = ref(null);
+const gallery = ref(null)
+const galleryLength = ref(null)
+const galleryLink = ref(null)
 
-const mainContentRef = ref(null);
-const mainContentHeight = ref(null);
-const minMainContentHeight = 210;
+const mainContentRef = ref(null)
+const mainContentHeight = ref(null)
+const minMainContentHeight = 210
 
-const commentCounts = ref(null);
+const commentCounts = ref(null)
 watch(
   () => props.episodeData,
   async () => {
-    useUpdateCommentCounts([props.episodeData]);
-    commentCounts.value = useCommentCounts();
+    useUpdateCommentCounts([props.episodeData])
+    commentCounts.value = useCommentCounts()
 
     if (props.episodeData?.leadGallery) {
       gallery.value = await usePageById(
         props.episodeData?.leadGallery.gallery
-      ).then(({ data }) => normalizeGalleryPage(data.value));
+      ).then(({ data }) => normalizeGalleryPage(data.value))
 
-      galleryLength.value = gallery.value?.slides?.length ?? 0;
+      galleryLength.value = gallery.value?.slides?.length ?? 0
 
       galleryLink.value = String(
         `photos/${props.episodeData?.leadGallery.gallery}?article=${props.episodeData?.id}&src=${route.query.src}`
-      );
+      )
     }
   },
   { once: true }
-);
+)
 
 onMounted(() => {
   //slight delay helps get the accurate height
   setTimeout(() => {
     // get height of main content
-    const contentHeight = mainContentRef.value?.offsetHeight;
+    const contentHeight = mainContentRef.value?.offsetHeight
     // if height is less than minMainContentHeight, set the content height to minMainContentHeight for desired spacing at bottom of page
     if (contentHeight < minMainContentHeight) {
       // set the content height to minMainContentHeight to trigger the bottom circulation to display
-      mainContentHeight.value = minMainContentHeight;
+      mainContentHeight.value = minMainContentHeight
       mainContentRef.value.style.paddingBottom = `${
         minMainContentHeight - contentHeight
-      }px`;
+      }px`
     } else {
-      mainContentHeight.value = contentHeight;
+      mainContentHeight.value = contentHeight
     }
-  }, 100);
-});
+  }, 100)
+})
 
 const commentCount = computed(() => {
-  const result = commentCounts.value[props.episodeData?.commentId];
-  return result ?? 0;
-});
+  const result = commentCounts.value[props.episodeData?.commentId]
+  return result ?? 0
+})
 
 const theSlug = computed(
   () =>
     props.episodeData?.showSlug ||
     props.episodeData?.show ||
     props.episodeData?.headers?.brand?.slug
-);
+)
 
 const theShowTitle = computed(
   () =>
     props.episodeData?.showTitle ||
     props.episodeData?.headers?.brand?.title ||
     props.episodeData?.title
-);
+)
 
-const hasSegments = computed(() => Array.isArray(props.episodeData?.audio));
+const hasSegments = computed(() => Array.isArray(props.episodeData?.audio))
 // handle the toggle play button and tracking
 
 // handle the download of the audio file or multiple files request and feed the progress
@@ -147,46 +147,46 @@ const handleDownload = async (epD) => {
     "Click Tracking - Audio Download",
     "EpisodeTemplate",
     epD.title
-  );
-  progress.value = await fetchAndStoreMp3(epD);
-};
+  )
+  progress.value = await fetchAndStoreMp3(epD)
+}
 
 //handle the share of the episode
 const handleShare = () => {
-  shareAPI(props.episodeData, "EpisodeTemplate");
-};
+  shareAPI(props.episodeData, "EpisodeTemplate")
+}
 
 //handle the transcript of the episode
 const handleTranscript = () => {
   navigateTo(
     `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-  );
-};
+  )
+}
 
 // handle comments button click
 const handleComments = () => {
-  const activeStation = document.getElementById("comments");
+  const activeStation = document.getElementById("comments")
   activeStation.scrollIntoView({
     behavior: "smooth",
     block: "center",
     inline: "start",
-  });
-};
+  })
+}
 
 // fire the command located in the menuItems data object above when the user clicks on the menu item
 const onMenuChange = (e) => {
-  e?.value?.command();
-};
+  e?.value?.command()
+}
 
 // handle play toggle
 const togglePlayHere = (epData) => {
-  togglePlayEpisode(epData, props.episodeData?.type);
-};
+  togglePlayEpisode(epData, props.episodeData?.type)
+}
 
-const isFavorited = ref(false);
+const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug);
-});
+  isFavorited.value = await checkIsFavorited(route.params.slug)
+})
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
@@ -194,11 +194,11 @@ const handleAddToFavorites = (bucketItem) => {
   addToFavorites2({
     item: bucketItem,
     isFavorited: isFavorited.value,
-  });
+  })
   if (user.value) {
-    isFavorited.value = !isFavorited.value;
+    isFavorited.value = !isFavorited.value
   }
-};
+}
 
 // handles the click on the show image and dots menu
 const moreFromClick = () => {
@@ -206,31 +206,31 @@ const moreFromClick = () => {
     "Click Tracking - Show image",
     `Episode slug page: ${theSlug.value}`,
     theShowTitle.value
-  );
-  navigateTo(`/browse/shows/${theSlug.value}`);
-};
+  )
+  navigateTo(`/browse/shows/${theSlug.value}`)
+}
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
-  const epImage = props.episodeData?.image;
-  const showImage = props.episodeData?.headers?.brand?.logoImage;
+  const epImage = props.episodeData?.image
+  const showImage = props.episodeData?.headers?.brand?.logoImage
 
   return epImage && typeof epImage === "object"
     ? epImage?.template !== showImage?.template
       ? epImage
       : gallery.value?.slides?.[0]?.image || null
-    : epImage;
-};
+    : epImage
+}
 
-const theEpImage = computed(() => getEpisodeImage());
+const theEpImage = computed(() => getEpisodeImage())
 const theEpImageCaption = computed(() => {
   return (
     props.episodeData?.leadImageCaption ??
     theEpImage?.caption ??
     gallery.value?.slides?.[0]?.image.caption ??
     null
-  );
-});
+  )
+})
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -240,7 +240,7 @@ const getDotMenuItems = (bucketItem) => {
       active: isFavorited.value,
       title: bucketItem?.title,
       command: () => {
-        handleAddToFavorites(bucketItem);
+        handleAddToFavorites(bucketItem)
       },
     },
     ...(hasAudio(bucketItem?.audio)
@@ -255,7 +255,7 @@ const getDotMenuItems = (bucketItem) => {
             customIcon: DownloadIcon,
             title: bucketItem?.title,
             command: () => {
-              handleDownload(bucketItem);
+              handleDownload(bucketItem)
             },
           },
         ]
@@ -268,7 +268,7 @@ const getDotMenuItems = (bucketItem) => {
             customIcon: TranscriptIcon,
             title: bucketItem?.title,
             command: () => {
-              handleTranscript();
+              handleTranscript()
             },
           },
         ]
@@ -278,7 +278,7 @@ const getDotMenuItems = (bucketItem) => {
       customIcon: ShareIcon,
       title: bucketItem?.title,
       command: () => {
-        handleShare();
+        handleShare()
       },
     },
     ...(theSlug.value
@@ -288,7 +288,7 @@ const getDotMenuItems = (bucketItem) => {
             customIcon: MoreEpisodesIcon,
             title: bucketItem?.title,
             command: () => {
-              moreFromClick();
+              moreFromClick()
             },
           },
         ]
@@ -301,13 +301,13 @@ const getDotMenuItems = (bucketItem) => {
             active: sleepTimerRunning.value,
             title: currentEpisode.value?.title ?? "No audio playing",
             command: () => {
-              handleSleepTimer();
+              handleSleepTimer()
             },
           },
         ]
       : []),
-  ];
-};
+  ]
+}
 // watch(
 //   () => props.episodeData,
 //   () => {
@@ -329,9 +329,8 @@ const getDotMenuItems = (bucketItem) => {
               xxs: [112, 112],
               sm: [192, 192],
             }"
-            :maxHeight="props.episodeData?.imageFullHeight"
-            :maxWidth="props.episodeData?.imageFullWidth"
-            allowVerticalEffect
+            :allowVerticalEffect="false"
+            :ratio="[1, 1]"
             :alt="props.episodeData?.image?.altText"
             class="episode-page-image flex-none w-7rem md:w-12rem"
           >

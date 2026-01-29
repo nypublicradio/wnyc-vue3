@@ -34,7 +34,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :class="props.cardClass"
           :data="article"
           :isHorizontal="isLgBreakpoint"
-          :allowVerticalEffect="false"
+          :allowVerticalEffect="true"
           imgCol="w-7rem md:w-11rem lg:w-full"
           :size="{
             xs: [112, 112],

@@ -81,8 +81,8 @@ const handleShowClick = () => {
       <VFlexibleLink to="https://google.com">Spotify</VFlexibleLink>,
       <VFlexibleLink to="https://google.com">Pocket Casts</VFlexibleLink>,
       <VFlexibleLink to="https://google.com">Youtube</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or wherever you get
-      podcasts.
+      <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or
+      wherever you get podcasts.
     </p>
     <SocialButtons :data="showSocialData" />
     <story-htlAd

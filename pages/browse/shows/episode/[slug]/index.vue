@@ -138,9 +138,7 @@ watch(
     height: 0px;
   }
 }
-.episode-page .episode-page-image {
-  aspect-ratio: 3/2;
-}
+
 .episode-page .html-convert {
   p {
     line-height: 1.8em;
