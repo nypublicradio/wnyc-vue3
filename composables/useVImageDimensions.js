@@ -7,14 +7,11 @@ import { useBreakpoints } from "~/composables/useBreakpoints"
  * @param {string} breakpoint - Current breakpoint name
  * @returns {Array} - [width, height] size array for the current breakpoint
  */
-function getSizeForBreakpoint(sizeConfig, breakpoint) {
+function getSizeForBreakpoint (sizeConfig, breakpoint) {
     // Handle legacy array format for backward compatibility (convert to ratio)
     if (Array.isArray(sizeConfig)) {
-        // Convert ratio to a reasonable default size (112px width base)
-        const ratio = sizeConfig[0] / sizeConfig[1]
-        const width = 112
-        const height = Math.round(width / ratio)
-        return [width, height]
+        // just an array, so this size is fixed no matter the breakpoint
+        return [sizeConfig[0], sizeConfig[1]]
     }
 
     // Handle object format with smart cascading defaults
@@ -55,7 +52,7 @@ function getSizeForBreakpoint(sizeConfig, breakpoint) {
  *   - Default: {} (uses [300,200] default size)
  * @returns {Object} - Reactive width, height, and current breakpoint
  */
-export function useVImageDimensions(options = {}) {
+export function useVImageDimensions (options = {}) {
     const { size = {} } = options
 
     // Use the shared breakpoint composable
