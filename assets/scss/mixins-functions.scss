@@ -12,6 +12,9 @@
   &.full-width {
     max-width: 100%;
   }
+  &.thinContent {
+    max-width: $thinContentWidth !important;
+  }
   @include media('>=md') {
     padding: 0.75rem $paddingDesktop;
   }

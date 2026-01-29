@@ -621,7 +621,9 @@ defineExpose({
                   ref="playButtonRef"
                   :disabled="isStreamLoading"
                   class="media-button play-button p-button-icon-only z-1"
-                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+                  :aria-label="
+                    isEpisodePlaying ? 'Pause button' : 'Play button'
+                  "
                   @click="togglePlay"
                   severity="secondary"
                 >
@@ -685,7 +687,10 @@ defineExpose({
 
     <Transition name="expand-delay">
       <div v-show="isExpanded" class="expanded-view">
-        <div ref="expandedContentHolder" class="content expanded-content-holder">
+        <div
+          ref="expandedContentHolder"
+          class="content expanded-content-holder"
+        >
           <div class="header">
             <slot name="expanded-header">
               <div class="flex justify-content-between flex-row-reverse">
@@ -717,19 +722,24 @@ defineExpose({
               </div>
             </slot>
           </div>
-          <div class="flex flex-column header-top">
+          <div class="flex flex-column header-top thinContent">
             <slot name="header-content"></slot>
 
-            <div class="flex flex-column gap-3">
+            <div
+              class="flex flex-column md:flex-row gap-3 md:align-items-center"
+            >
               <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
               <VImage
-                :src="props.image"
+                class="flex-none w-9rem h-9rem align-self-center md:align-self-start"
                 :alt="`${props.title} show image`"
-                :size="{ xs: [props.imageSizeExpanded, props.imageSizeExpanded] }"
-                :sizes="`xs:${props.imageSizeExpanded * 2}px`"
-                class="show-image m-auto"
+                :src="props.image"
+                :size="{
+                  xs: [props.imageSizeExpanded, props.imageSizeExpanded],
+                }"
+                :srcset="[2]"
                 :ratio="[1, 1]"
-                role="presentation"
+                :allowVerticalEffect="false"
+                tabindex="-1"
                 style="background-color: #ffffff"
               />
               <div v-if="isLiveStream" class="flex flex-column gap-2">
@@ -773,7 +783,9 @@ defineExpose({
                   ref="playButtonRef"
                   :disabled="isStreamLoading"
                   class="media-button media-button-expanded-play play-button p-button-icon-only"
-                  :aria-label="isEpisodePlaying ? 'Pause button' : 'Play button'"
+                  :aria-label="
+                    isEpisodePlaying ? 'Pause button' : 'Play button'
+                  "
                   @click="togglePlay"
                   severity="secondary"
                 >
@@ -820,13 +832,15 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
   color: var(--p-text-color);
   background-color: var(--persistent-player-bg);
   transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
-  -webkit-transition: bottom 0.25s, height calc(var(--p-transition-duration) * 2);
+  -webkit-transition: bottom 0.25s,
+    height calc(var(--p-transition-duration) * 2);
   display: flex;
   flex-direction: column;
 
   &.minimized {
     bottom: calc(
-      calc(var(--persistent-player-height) * -1) - var(--persistent-player-height-buffer)
+      calc(var(--persistent-player-height) * -1) -
+        var(--persistent-player-height-buffer)
     );
   }
 
