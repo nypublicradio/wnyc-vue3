@@ -270,6 +270,13 @@ export default function useLiveStream () {
     const config = useRuntimeConfig()
     const globalToast = useGlobalToast()
 
+    // change date to YYYY-MM-DD format
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    const formattedDate = `${year}-${month}-${day}`
+    console.log("Fetching schedule for date:", formattedDate)
+
     // Validate station parameter
     if (!station || !station.slug) {
       console.error("fetchScheduleSimple: Invalid station parameter", station)
@@ -291,7 +298,7 @@ export default function useLiveStream () {
       //   )
 
       const schedule = await $fetch(
-        `${config.public.BFF_URL}/api/schedule/${station.slug}?filterMode=specificDate&startDate=${date}`,
+        `${config.public.BFF_URL}/api/schedule/${station.slug}?filterMode=specificDate&startDate=${formattedDate}`,
         fetchOptions
       )
 
