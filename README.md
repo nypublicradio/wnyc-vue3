@@ -508,6 +508,143 @@ console.log({
 4. **Monitor Pool Health**: Use `getPoolStats()` for health checks
 5. **Respect Circuit Breaker**: Don't bypass circuit breaker logic
 
+## User Profile & Membership Status Flow
+
+This section explains how user profile data, including the `isActiveSustainer` membership status, flows through the application from login to local storage.
+
+### Authentication & Profile Flow
+
+1. **User Login** - User authenticates via Supabase (email/password or OAuth providers like Google)
+   - Supabase session is created
+   - JWT token is generated via `/api/auth/session-to-jwt`
+   - Auth state is set in `useAuth()` composable
+
+2. **Profile Initialization** - `getAndSetUserProfile()` is called on:
+   - App mount (`app.vue`)
+   - Route navigation (`middleware/checkAuth.js`)
+   - After email confirmation (`pages/confirm.vue`)
+   - After logout (to reset to defaults)
+
+3. **User Profile Fetching** - `getAndSetUserProfile()` function flow:
+   ```
+   getAndSetUserProfile() (utilities/helpers.ts)
+     ↓
+   Checks if user is authenticated
+     ↓
+   Fetches Supabase profile data (profiles table)
+     ↓
+   Sets currentUserProfile state with app settings
+   (dark_mode, text_size, default_live_stream, etc.)
+     ↓
+   Calls getMembershipInfo() from useProfileApi
+   ```
+
+4. **Membership Data Fetching** - `getMembershipInfo()` flow (`composables/useProfileApi.ts`):
+   ```
+   getMembershipInfo()
+     ↓
+   Verifies JWT authentication
+     ↓
+   Waits for currentUser to be populated
+     ↓
+   Calls fetchProfile(salesforceID or email)
+     ↓
+   Makes POST request to /api/profile
+     ↓
+   Salesforce returns:
+     - name
+     - lastDonationDate
+     - lastDonationAmount
+     - isActiveSustainer (calculated from active recurring donations)
+     - activeRecurringDonations[]
+     - queryStringEncrypted
+     ↓
+   Saves isActiveSustainer to CapacitorStorage.localUserProfile
+   ```
+
+### Where isActiveSustainer Comes From
+
+**Source**: `/server/api/profile.post.ts`
+
+The `isActiveSustainer` boolean is calculated server-side based on Salesforce donation data:
+
+```typescript
+// Query Salesforce for active recurring donations
+const activeRecurringDonations = await salesforce.find(
+    'npe03__Recurring_Donation__c',
+    {
+        'npe03__Contact__c': contact.Id,
+        'npsp__Status__c': 'Active',
+        'cfg_Digital_Membership_Program_Name__c': { $ne: 'The Lab' }
+    },
+    [...]
+);
+
+// Calculate sustainer status
+const isActiveSustainer = activeRecurringDonations.length > 0;
+```
+
+A user is considered an **active sustainer** if they have at least one active recurring donation in Salesforce (excluding "The Lab" program).
+
+### CapacitorStorage Local Profile
+
+**Storage Key**: `localUserProfile` (defined in `composables/globals.ts`)
+
+**Default Structure** (from `composables/states.ts`):
+```typescript
+{
+    autodownload: false,
+    default_live_stream: "WNYC 93.9 FM",
+    receive_general_notifications: false,
+    one_signal_notification_channels: [...],
+    text_size: "Normal",
+    dark_mode: false,
+    sleep_timer: 90,
+    isActiveSustainer: false  // Added from profile API
+}
+```
+
+### Local Storage Lifecycle
+
+**When Cleared**:
+1. **Account Deletion** - When user's Supabase account no longer exists (error code 'PGRST116')
+2. **User Logout** - `handleUserLogout()` in `utilities/helpers.ts` calls `Preferences.clear()`
+
+**When Updated**:
+- After successful profile fetch, `isActiveSustainer` is written to existing local profile
+- User settings changes (dark mode, text size, etc.) update the profile
+- OneSignal notification channel preferences sync
+
+**Persistence**:
+- Uses Capacitor Preferences API (native storage on iOS/Android, localStorage fallback on web)
+- Survives app restarts and updates
+- Only cleared on logout or account deletion
+
+### Usage in Components
+
+Components can access `isActiveSustainer` from:
+1. **Profile API Data** - Direct from `useProfileApi().profile.value.isActiveSustainer`
+2. **Local Storage** - Via `useCurrentUserProfile().value.isActiveSustainer` (after saved)
+
+Example:
+```vue
+<script setup>
+const { profile: profileData } = useProfileApi()
+
+const isActiveSustainer = computed(() => {
+  return profileData.value?.isActiveSustainer || false
+})
+</script>
+```
+
+### Key Files
+
+- `composables/useProfileApi.ts` - Fetches and stores profile data
+- `server/api/profile.post.ts` - Calculates isActiveSustainer from Salesforce
+- `composables/states.ts` - Defines localUserProfile defaults
+- `utilities/helpers.ts` - Manages profile lifecycle (fetch, clear, logout)
+- `composables/globals.ts` - Defines storage keys and constants
+
 ## Font Size Scale Reference Helper
 
 --font-size = 16px
