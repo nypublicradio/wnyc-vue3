@@ -63,6 +63,11 @@ const getAllScheduleData = async () => {
     return
   }
 
+  // Filter out the holiday channel for now since there is no schedule data
+  allCurrentStations.value = allCurrentStations.value.filter(
+    (station) => station.slug !== "wqxr-holiday-channel-on-wnyc"
+  )
+
   allLiveScheduleData.value = []
 
   // Create new abort controller (automatically aborts any existing fetches)
