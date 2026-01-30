@@ -67,6 +67,7 @@ services:
       - AWS_REGION=$AWS_REGION
       - S3_SCHEDULE_BUCKET=$S3_SCHEDULE_BUCKET
       - USE_MOCK_SCHEDULE=$USE_MOCK_SCHEDULE
+      - RAPID_ASSET_URL=$RAPID_ASSET_URL
     ports:
       - 3000:3000
     restart: "unless-stopped"
