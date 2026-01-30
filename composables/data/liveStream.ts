@@ -13,7 +13,7 @@ import {
 } from "~/composables/states"
 import { clearTimeout, setTimeout } from "worker-timers"
 // Get a list of article pages using the Aviary /pages api
-export async function updateLiveStream(slug: string, save = true) {
+export async function updateLiveStream (slug: string, save = true) {
   const config = useRuntimeConfig()
   //BFF
   try {
@@ -37,7 +37,7 @@ export async function updateLiveStream(slug: string, save = true) {
 }
 
 // Function to update all live streams
-export async function updateAllLiveStreams(init = true) {
+export async function updateAllLiveStreams (init = true) {
   const allCurrentStations = useAllCurrentStations()
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   const currentStreamStation = useCurrentStreamStation()
@@ -95,7 +95,7 @@ let timeout = null
 let scheduleAbortController = null
 
 // base liveStream composable
-export default function useLiveStream() {
+export default function useLiveStream () {
   const config = useRuntimeConfig()
   const allCurrentStations = useAllCurrentStations()
   const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -162,7 +162,7 @@ export default function useLiveStream() {
   }
 
   // Function to calculate the time difference between now and the target time
-  function getTimeDifference(targetTime) {
+  function getTimeDifference (targetTime) {
     const now = new Date()
     const target = new Date(targetTime)
 
@@ -291,7 +291,7 @@ export default function useLiveStream() {
       //   )
 
       const schedule = await $fetch(
-        `${config.public.BFF_URL}/api/schedule/${station.slug}`,
+        `${config.public.BFF_URL}/api/schedule/${station.slug}?filterMode=specificDate&startDate=${date}`,
         fetchOptions
       )
 
