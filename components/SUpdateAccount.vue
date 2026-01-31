@@ -207,11 +207,12 @@ const submitForm = async () => {
       } else {
         //success with Supabase
         emit("submit-success")
-        toast.add({
-          severity: "success",
-          summary: "Password updated",
-          life: 6000,
-        })
+        // commenting this out per Kelly for now!
+        // toast.add({
+        //   severity: "success",
+        //   summary: "Password updated",
+        //   life: 6000,
+        // })
         trackClickEvent(
           "Event Tracking - Account password updated",
           "Settings Sidebar - Account",
