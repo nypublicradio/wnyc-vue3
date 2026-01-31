@@ -1,7 +1,7 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers";
-import { useBreakpoints } from "~/composables/useBreakpoints";
-import { mediaTypes } from "~/composables/globals";
+import { dynamicNavigation } from "~/utilities/helpers"
+import { useBreakpoints } from "~/composables/useBreakpoints"
+import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
   list: {
     type: Object,
@@ -11,23 +11,23 @@ const props = defineProps({
     type: Number,
     default: 4,
   },
-});
+})
 
-const reactiveItems = toRef(props.list, "listItems");
-const { breakpoint } = useBreakpoints();
-const isLgBreakpoint = computed(() => breakpoint("<lg"));
-const isSquare = ref(false);
+const reactiveItems = toRef(props.list, "listItems")
+const { breakpoint } = useBreakpoints()
+const isLgBreakpoint = computed(() => breakpoint("<lg"))
+const isSquare = ref(false)
 
 onBeforeMount(() => {
-  const featureItem = reactiveItems.value[0];
+  const featureItem = reactiveItems.value[0]
   const imgHeight = Number(
     featureItem.imageFullHeight || featureItem.image?.height
-  );
+  )
   const imgWidth = Number(
     featureItem.imageFullWidth || featureItem.image?.width
-  );
+  )
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
-    isSquare.value = true;
+    isSquare.value = true
   } else if (
     featureItem &&
     imgHeight &&
@@ -36,23 +36,23 @@ onBeforeMount(() => {
     !isNaN(imgWidth) &&
     imgHeight !== 0
   ) {
-    isSquare.value = imgHeight === imgWidth;
+    isSquare.value = imgHeight === imgWidth
   } else {
-    isSquare.value = false;
+    isSquare.value = false
   }
-});
+})
 
 const squareSizes = {
   md: [443, 443],
-};
+}
 
 const rectSizes = {
   md: [443, 295],
-};
+}
 
 const featureSizes = computed(() => {
-  return isSquare.value ? squareSizes : rectSizes;
-});
+  return isSquare.value ? squareSizes : rectSizes
+})
 </script>
 
 <template>
@@ -67,7 +67,7 @@ const featureSizes = computed(() => {
       />
     </div>
     <div class="grid">
-      <h2 class="col-12 mb-4 order-2 lg:order-1">{{ props.list?.title }}</h2>
+      <h2 class="col-12 mb-1 order-2 lg:order-1">{{ props.list?.title }}</h2>
       <MediaCard
         v-if="reactiveItems?.length > 0"
         class="col-12 lg:col-8 mb-3 hidden md:block"
