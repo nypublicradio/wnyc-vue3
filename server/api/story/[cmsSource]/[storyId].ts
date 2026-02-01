@@ -9,6 +9,9 @@ const getWagtailStoryData = async (id: string) => {
         const option = {
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}pages/${id}/`,
+            headers: {
+                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+            }
         };
         const res = await axios(option);
         //return humps.camelizeKeys(res.data);
