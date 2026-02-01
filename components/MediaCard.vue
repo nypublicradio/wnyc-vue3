@@ -605,7 +605,7 @@ const handleHasAudio = computed(() => {
             </template>
             <div
               v-else
-              class="flex row-gap-2 column-gap-2 align-items-center flex-wrap"
+              class="flex row-gap-2 column-gap-2 align-items-center flex-wrap-reverse"
             >
               <EventButton
                 class="z-2"
@@ -647,37 +647,6 @@ $contentPaddingY: 1.25rem;
     // Force overlay onto its own GPU layer to prevent blocking content below
     will-change: transform;
     transform: translateZ(0);
-  }
-
-  /* Carousel Specific: Shrink to fit content */
-  &.in-carousel {
-    width: min-content;
-    max-width: 100%;
-    min-width: var(--min-content-width);
-
-    /* Force override of any other layout mode when in carousel */
-    &.is-vertical .image,
-    &.is-horizontal .image,
-    .holder .image {
-      /* Force strict image sizing behavior when in carousel */
-      flex: 0 0 auto !important;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      /* Override fixed dimensions from media queries */
-      max-width: none !important;
-
-      /* Ensure img child behaves */
-      :deep(img) {
-        height: 100%;
-        width: auto;
-        max-width: none;
-        object-fit: cover;
-        object-position: center center;
-      }
-    }
   }
 
   .holder {
@@ -872,6 +841,40 @@ $contentPaddingY: 1.25rem;
 
       .content {
         padding: $contentPaddingY !important;
+      }
+    }
+  }
+
+  /* Carousel Specific: Shrink to fit content */
+  &.in-carousel {
+    width: min-content;
+    max-width: 100%;
+    min-width: var(--min-content-width);
+
+    /* Force override of any other layout mode when in carousel */
+    &.is-vertical .image,
+    &.is-horizontal .image,
+    .holder {
+      border-radius: var(--media-card-border-radius);
+      .image {
+        /* Force strict image sizing behavior when in carousel */
+        flex: 0 0 auto !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        /* Override fixed dimensions from media queries */
+        max-width: none !important;
+
+        /* Ensure img child behaves */
+        :deep(img) {
+          height: 100%;
+          width: auto;
+          max-width: none;
+          object-fit: cover;
+          object-position: center center;
+        }
       }
     }
   }

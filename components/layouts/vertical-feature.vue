@@ -139,9 +139,9 @@ const featureSizes = computed(() => {
 .layout-vertical-feature {
   .media-card.is-feature {
     .holder {
+      border-radius: 0 !important;
       background-color: transparent !important;
       .image {
-        border-radius: var(--media-card-border-radius) !important;
         overflow: hidden;
       }
       .content {
