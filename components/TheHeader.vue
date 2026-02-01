@@ -9,6 +9,8 @@ import {
   useAppDownloadLink,
 } from "~/composables/states.ts"
 
+import { memberCenterLink } from "~/composables/globals.ts"
+
 const props = defineProps({
   showMenu: {
     type: Boolean,
@@ -54,7 +56,7 @@ const goToMemberCenter = () => {
     "Header user hover panel",
     "Member Center"
   )
-  window.open("https://pledge.wnyc.org/user/email-link", "_blank")
+  window.open(memberCenterLink, "_blank")
 }
 
 // handle log out button is clicked
@@ -111,7 +113,9 @@ const onLogOut = async () => {
               <NavButton
                 class="hidden md:block"
                 :label="`${
-                  currentUser ? currentUserProfile?.name : 'Log in/Sign up'
+                  currentUser
+                    ? currentUserProfile?.name || 'Loading...'
+                    : 'Log in/Sign up'
                 }`"
                 size="small"
                 trackingLocation="header utility nav"

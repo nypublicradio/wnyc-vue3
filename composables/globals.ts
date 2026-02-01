@@ -218,3 +218,6 @@ export const getSavedMenuItems = () => {
         },
     ]
 }
+
+// member center link
+export const memberCenterLink = 'https://pledge.wnyc.org/user/email-link'

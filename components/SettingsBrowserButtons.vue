@@ -5,6 +5,7 @@ import {
   useCurrentUserProfile,
   useAppDownloadLink,
 } from "~/composables/states"
+import { memberCenterLink } from "~/composables/globals"
 
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const currentUser = useCurrentUser()
@@ -42,12 +43,33 @@ const appDownloadLink = useAppDownloadLink()
     :label="`${currentUser ? currentUserProfile?.name : 'Log in/Sign up'}`"
     size="small"
     trackingLocation="header Hamburger Menu"
-    route="/login"
-    :to="currentUser ? '/dashboard' : 'login'"
+    :route="currentUser ? '/dashboard' : '/login'"
     @emit-click="settingsSideBarBrowser = false"
   >
     <template #icon>
       <UserIcon />
+    </template>
+  </NavButton>
+  <NavButton
+    class="-ml-3 lg:ml-0"
+    label="Member Center"
+    size="small"
+    trackingLocation="header Hamburger Menu"
+    :route="memberCenterLink"
+    @emit-click="settingsSideBarBrowser = false"
+  >
+    <template #icon>
+      <i
+        class="pi pi-users"
+        style="
+          font-size: 20px;
+          height: 28px;
+          width: 22px;
+          display: flex;
+          align-items: center;
+          margin-left: 4px;
+        "
+      ></i>
     </template>
   </NavButton>
 </template>

@@ -1,5 +1,6 @@
 import { logOutUser } from "~/utilities/helpers"
 import { useAppDownloadLink } from "~/composables/states"
+import { memberCenterLink } from "~/composables/globals"
 
 const allMenuData = [
     {
@@ -192,6 +193,11 @@ const allMenuData = [
                     label: "Log in",
                     class: "login",
                     url: "/login"
+                },
+                {
+                    label: "Member Center",
+                    class: "member-center",
+                    url: memberCenterLink
                 },
                 {
                     label: "Log out",
