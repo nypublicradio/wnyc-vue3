@@ -104,7 +104,7 @@ const featureSizes = computed(() => {
             :data="article"
             is-horizontal
             is-event
-            imgCol="w-7rem md:w-11rem lg:w-13rem xl:w-13rem"
+            imgCol="w-7rem md:w-12rem lg:w-13rem xl:w-13rem"
             titleClasses="text-base lg:text-lg"
             teaseClasses="text-sm lg:text-base"
             pipeClasses="text-sm lg:text-base"
@@ -124,7 +124,7 @@ const featureSizes = computed(() => {
           class="col-12 mb-5"
           is-horizontal
           is-event
-          imgCol="w-7rem md:w-11rem lg:w-13rem xl:w-13rem"
+          imgCol="w-7rem md:w-12rem lg:w-13rem xl:w-13rem"
           :size="{
             xs: [112, 112],
             md: [176, 176],
