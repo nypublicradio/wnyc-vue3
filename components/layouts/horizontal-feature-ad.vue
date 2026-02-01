@@ -111,7 +111,7 @@ const featureSizes = computed(() => {
           :class="{ 'md:hidden': index === 0 }"
           :data="article"
           :isHorizontal="isLgBreakpoint"
-          imgCol="w-7rem md:w-11rem lg:w-full"
+          imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
           @on-click="dynamicNavigation(article)"
         />
@@ -122,7 +122,7 @@ const featureSizes = computed(() => {
           :key="`skeleton-horizontal-feature-ad-${index}`"
           class="col-12 lg:col-4 mb-3 order-4"
           :isHorizontal="isLgBreakpoint"
-          imgCol="w-7rem md:w-11rem lg:w-full"
+          imgCol="w-7rem md:w-12rem lg:w-full"
           :class="{ 'md:hidden': index === 1 }"
           :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
         />
