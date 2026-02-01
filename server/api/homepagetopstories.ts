@@ -16,6 +16,9 @@ const getGothamistTopStories = async () => {
 			show_on_index_listing: true,
 			limit: 3,
 			sponsored_content: false
+		},
+		headers: {
+			'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
 		}
 	}
 

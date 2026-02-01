@@ -17,6 +17,9 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
             limit: 9,
             offset,
         },
+        headers: {
+            'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+        }
     };
     const res = await axios(options);
     const resData = humps.camelizeKeys(res.data).items;
