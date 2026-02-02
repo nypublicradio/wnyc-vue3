@@ -316,7 +316,7 @@ const getDotMenuItems = (bucketItem) => {
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">
-        <div class="flex gap-2 md:gap-3 mb-6">
+        <div class="flex gap-3 mb-6">
           <VImage
             v-if="theEpImage"
             :src="theEpImage"
