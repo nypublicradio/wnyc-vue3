@@ -1356,6 +1356,7 @@ export const initializeStationList = (stations) => {
       name: station.title,
       station: station.station,
       code: station.title,
+      title: station.title,
       slug: station.slug,
       image: station.stationImage || station.image,
       times: `${station.timeStart} - ${station.timeEnd}`,
