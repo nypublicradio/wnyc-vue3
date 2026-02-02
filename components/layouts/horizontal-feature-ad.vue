@@ -66,11 +66,13 @@ const featureSizes = computed(() => {
         fineprint="WNYC is funded by sponsors and member donations"
       />
     </div>
+    <h2 class="mb-4 order-2 lg:order-1">
+      {{ props.list?.title }}
+    </h2>
     <div class="grid">
-      <h2 class="col-12 mb-4 order-2 lg:order-1">{{ props.list?.title }}</h2>
       <MediaCard
         v-if="reactiveItems?.length > 0"
-        class="col-12 lg:col-8 mb-3 hidden md:block"
+        class="col-12 lg:col-8 hidden md:block"
         titleClasses="t7lines"
         :data="reactiveItems[0]"
         is-horizontal
@@ -107,7 +109,7 @@ const featureSizes = computed(() => {
           :key="`${article.id}-${index}`"
           showTease
           teaseClasses="text-sm t2lines"
-          class="col-12 lg:col-4 mb-3 order-4"
+          class="col-12 lg:col-4 order-4"
           :class="{ 'md:hidden': index === 0 }"
           :data="article"
           :isHorizontal="isLgBreakpoint"
@@ -120,7 +122,7 @@ const featureSizes = computed(() => {
         <skeleton-media-card
           v-for="index in props.maxItems"
           :key="`skeleton-horizontal-feature-ad-${index}`"
-          class="col-12 lg:col-4 mb-3 order-4"
+          class="col-12 lg:col-4 order-4"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
           :class="{ 'md:hidden': index === 1 }"
