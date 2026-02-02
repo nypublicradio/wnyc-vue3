@@ -23,8 +23,8 @@ const props = defineProps({
 <style lang="scss" scoped>
 .sponsor-banner {
   background-color: #000000;
+  color: #ffffff;
   padding: 3rem;
-  color: var(--p-text-color);
   .content {
     display: flex;
     flex-direction: column;
@@ -32,6 +32,7 @@ const props = defineProps({
     gap: 0.75rem;
     opacity: 0.8;
     .msg {
+      color: #ffffff;
       font-size: 1rem;
       text-align: center;
     }
