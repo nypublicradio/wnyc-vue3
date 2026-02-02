@@ -91,7 +91,7 @@ export const useProfileApi = () => {
                         },
                     })
                     if (jwtResponse.success && jwtResponse.token) {
-                        authComposable.setAuthState(
+                        await authComposable.setAuthState(
                             jwtResponse.token,
                             jwtResponse.user,
                             sessionData.session.refresh_token

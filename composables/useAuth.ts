@@ -19,6 +19,9 @@ const refreshTokenValue = ref<string | null>(null);
 const isAuthenticated = computed(() => Boolean(authToken.value) && Boolean(currentUser.value));
 
 export const useAuth = () => {
+    // Token refresh interval ID
+    let tokenRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
+
     // Initialize from Preferences on client side
     const initializeAuth = async () => {
         if (import.meta.client) {
@@ -46,7 +49,9 @@ export const useAuth = () => {
 
     // Initialize auth state
     if (import.meta.client) {
-        void initializeAuth();
+        initializeAuth().catch((error) => {
+            console.error('Failed to initialize auth:', error);
+        });
     }
 
     /**
@@ -113,7 +118,7 @@ export const useAuth = () => {
             return true;
         } catch (error) {
             console.error('Token verification failed:', error);
-            logout();
+            await logout();
             return false;
         }
     };
@@ -242,11 +247,6 @@ export const useAuth = () => {
             await logout();
         }
     };
-
-    /**
-     * Start automatic token refresh checking
-     */
-    let tokenRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
     /**
      * Start automatic token refresh checking
