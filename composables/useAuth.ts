@@ -1,4 +1,4 @@
-import { ref, computed, readonly } from 'vue';
+import { ref, computed, readonly, nextTick } from 'vue';
 import { Preferences } from "@capacitor/preferences"
 interface User {
     id: string;
@@ -46,7 +46,7 @@ export const useAuth = () => {
 
     // Initialize auth state
     if (import.meta.client) {
-        initializeAuth();
+        void initializeAuth();
     }
 
     /**
@@ -71,14 +71,14 @@ export const useAuth = () => {
             // This runs in the background and won't block the auth flow
             nextTick(async () => {
                 try {
-                    const { getMembershipInfo } = await import('~/composables/useProfileApi');
-                    const profileApi = getMembershipInfo();
-                    if (typeof profileApi === 'function') {
-                        await profileApi();
-                    }
+                    const { useProfileApi } = await import('~/composables/useProfileApi');
+                    const { getMembershipInfo } = useProfileApi();
+                    await getMembershipInfo();
                 } catch (error) {
                     console.warn('Failed to fetch membership info after login:', error);
                 }
+            }).catch((error) => {
+                console.warn('Failed to schedule membership info fetch:', error);
             });
         }
     };
@@ -281,6 +281,40 @@ export const useAuth = () => {
         }
     };
 
+    /**
+     * Initialize authentication from Supabase session
+     * Generates JWT from Supabase session and sets auth state
+     */
+    const initializeFromSupabaseSession = async (): Promise<boolean> => {
+        const supabase = useSupabaseClient();
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (!sessionData?.session) return false;
+        
+        try {
+            const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
+                method: "POST",
+                body: {
+                    access_token: sessionData.session.access_token,
+                    refresh_token: sessionData.session.refresh_token,
+                },
+            });
+            
+            if (jwtResponse.success && jwtResponse.token) {
+                await setAuthState(
+                    jwtResponse.token,
+                    jwtResponse.user,
+                    sessionData.session.refresh_token
+                );
+                return true;
+            }
+        } catch (error) {
+            console.error("Failed to generate JWT:", error);
+        }
+        
+        return false;
+    };
+
     // Start the token refresh timer on client side
     if (import.meta.client) {
         startTokenRefreshTimer();
@@ -303,5 +337,6 @@ export const useAuth = () => {
         checkTokenExpiry,
         startTokenRefreshTimer,
         triggerTokenRefresh,
+        initializeFromSupabaseSession,
     };
 };

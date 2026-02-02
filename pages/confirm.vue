@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getAndSetUserProfile } from "~/utilities/helpers"
+
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu background-gradient style-mode-dark",
@@ -11,17 +12,19 @@ definePageMeta({
 })
 
 const user = useSupabaseUser()
-watch(
-  user,
-  async () => {
-    if (user.value) {
-      await nextTick()
-      await getAndSetUserProfile()
-      navigateTo("/home")
-    }
-  },
-  { immediate: true }
-)
+
+const initializeAuth = async () => {
+  if (!user.value) return
+  
+  await nextTick()
+  
+  const { initializeFromSupabaseSession } = useAuth()
+  await initializeFromSupabaseSession()
+  await getAndSetUserProfile()
+  navigateTo("/home")
+}
+
+watch(user, initializeAuth, { immediate: true })
 </script>
 <template>
   <section class="loading-holder">
