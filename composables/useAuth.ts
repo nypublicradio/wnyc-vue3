@@ -127,8 +127,13 @@ export const useAuth = () => {
             }
 
             return false;
-        } catch (error) {
-            console.error('Token refresh failed:', error);
+        } catch (error: any) {
+            // Only log error once, not repeatedly
+            if (error?.statusCode === 401) {
+                console.warn('Token refresh failed - session expired. Please log in again.');
+            } else {
+                console.error('Token refresh failed:', error);
+            }
             return false;
         }
     };
@@ -205,10 +210,21 @@ export const useAuth = () => {
             const timeUntilExpiry = payload.exp - currentTime;
 
             // If token expires in less than 5 minutes, refresh it
-            if (timeUntilExpiry < 300) { // 5 minutes
-                await refreshToken(refreshTokenValue.value);
+            if (timeUntilExpiry < 300 && refreshTokenValue.value) { // 5 minutes
+                const refreshSuccessful = await refreshToken(refreshTokenValue.value);
+                // If refresh fails, stop the interval to prevent repeated errors
+                if (!refreshSuccessful && tokenRefreshIntervalId) {
+                    clearInterval(tokenRefreshIntervalId);
+                    tokenRefreshIntervalId = null;
+                    console.warn('Token refresh failed - stopping auto-refresh. Please log in again.');
+                }
             }
         } catch (error) {
+            // Stop the interval on error
+            if (tokenRefreshIntervalId) {
+                clearInterval(tokenRefreshIntervalId);
+                tokenRefreshIntervalId = null;
+            }
             await logout();
         }
     };
