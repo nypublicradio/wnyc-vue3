@@ -39,6 +39,24 @@ const togglePlayHere = async () => {
     await updateAllLiveStreams()
   }
 }
+
+const onMenuChange = (event) => {
+  console.log("onMenuChange", event)
+}
+// set the items for the Dot menu
+const getDotMenuItems = () => {
+  return [
+    {
+      label: "temp label",
+      customIcon: null,
+      active: false,
+      title: "temp title",
+      command: () => {
+        console.log("temp command")
+      },
+    },
+  ]
+}
 </script>
 
 <template>
@@ -109,27 +127,56 @@ const togglePlayHere = async () => {
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                   severity="primary"
-                  buttonClass="w-9rem md:w-13rem h-2rem justify-content-start"
+                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start"
                   labelClass="md:-ml-3"
                   live
                 />
-                <Button
+                <div
                   v-if="!isApp"
-                  label="Get the App"
-                  severity="secondary"
-                  class="hidden sm:flex p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
-                  @click="
-                    navigateTo(appDownloadLink, {
-                      external: appDownloadLink.startsWith('http')
-                        ? true
-                        : false,
-                    })
-                  "
+                  class="hidden md:flex flex-row gap-3 flex-wrap"
                 >
-                  <template #icon>
-                    <DevicesIcon />
-                  </template>
-                </Button>
+                  <Button
+                    label="Get the App"
+                    severity="secondary"
+                    class="p-button-sm flex w-9rem md:w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                    @click="
+                      navigateTo(appDownloadLink, {
+                        external: appDownloadLink.startsWith('http')
+                          ? true
+                          : false,
+                      })
+                    "
+                  >
+                    <template #icon>
+                      <DevicesIcon />
+                    </template>
+                  </Button>
+                  <DotMenu
+                    :menuItems="getDotMenuItems()"
+                    label=""
+                    @changeEmit="onMenuChange"
+                    class="z-1"
+                  >
+                    <template #myCustomButton>
+                      <Button
+                        label="All Streams"
+                        severity="secondary"
+                        class="p-button-sm flex w-9rem md:w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                      >
+                        <template #icon>
+                          <i
+                            class="pi pi-ellipsis-v"
+                            style="
+                              font-size: 0.85rem;
+                              padding-left: 0.25rem;
+                              padding-right: 0.25rem;
+                            "
+                          ></i>
+                        </template>
+                      </Button>
+                    </template>
+                  </DotMenu>
+                </div>
               </div>
               <BarsPlaying class="mx-2 mt-2" :data="currentEpisodeHolder" />
             </div>
