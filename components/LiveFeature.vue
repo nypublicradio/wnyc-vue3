@@ -6,8 +6,9 @@ import {
   useIsApp,
   useIsEpisodePlaying,
   useAppDownloadLink,
+  useAllCurrentStations,
 } from "~/composables/states"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode, initializeStationList } from "~/utilities/helpers"
 import {
   updateLiveStream,
   updateAllLiveStreams,
@@ -18,6 +19,7 @@ const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const appDownloadLink = useAppDownloadLink()
+const allCurrentStations = useAllCurrentStations()
 
 const defaultButtonLabel = "Listen Live"
 const listeningButtonLabel = "Listening Live"
@@ -38,24 +40,6 @@ const togglePlayHere = async () => {
   } else {
     await updateAllLiveStreams()
   }
-}
-
-const onMenuChange = (event) => {
-  console.log("onMenuChange", event)
-}
-// set the items for the Dot menu
-const getDotMenuItems = () => {
-  return [
-    {
-      label: "temp label",
-      customIcon: null,
-      active: false,
-      title: "temp title",
-      command: () => {
-        console.log("temp command")
-      },
-    },
-  ]
 }
 </script>
 
@@ -151,10 +135,12 @@ const getDotMenuItems = () => {
                       <DevicesIcon />
                     </template>
                   </Button>
+                  <!-- :menuItems="
+                      getDotMenuItems(headerNavigationData[0].items[0])
+                    " -->
                   <DotMenu
-                    :menuItems="getDotMenuItems()"
+                    :menuItems="initializeStationList(allCurrentStations)"
                     label=""
-                    @changeEmit="onMenuChange"
                     class="z-1"
                   >
                     <template #myCustomButton>
