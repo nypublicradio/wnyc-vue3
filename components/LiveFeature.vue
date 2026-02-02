@@ -126,7 +126,7 @@ const onUpdateStation = (station) => {
                   <Button
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm flex w-9rem md:w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                    class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
                     @click="
                       navigateTo(appDownloadLink, {
                         external: appDownloadLink.startsWith('http')
@@ -152,7 +152,7 @@ const onUpdateStation = (station) => {
                       <Button
                         label="All Streams"
                         severity="secondary"
-                        class="p-button-sm flex w-9rem md:w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                        class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
                       >
                         <template #icon>
                           <i
@@ -184,8 +184,8 @@ const onUpdateStation = (station) => {
             />
             <Skeleton
               class="hidden lg:block"
-              height="1.5rem"
-              width="40%"
+              height="2rem"
+              width="60%"
               borderRadius="16px"
             />
             <Skeleton
@@ -212,16 +212,24 @@ const onUpdateStation = (station) => {
               />
             </div>
             <Skeleton
-              class="mt-1 w-9rem lg:w-14rem"
+              class="w-9rem md:w-21rem"
               height="28px"
               borderRadius="16px"
             />
-            <Skeleton
-              class="mt-2 w-14rem hidden xl:block"
-              height="28px"
-              width="9rem"
-              borderRadius="16px"
-            />
+            <div class="hidden md:flex flex-row gap-3 mt-1 lg:-mt-1">
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+            </div>
           </div>
         </div>
       </div>
