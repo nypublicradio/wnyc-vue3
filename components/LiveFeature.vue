@@ -41,6 +41,10 @@ const togglePlayHere = async () => {
     await updateAllLiveStreams()
   }
 }
+
+const onUpdateStation = (station) => {
+  navigateTo("live?slug=" + station.slug)
+}
 </script>
 
 <template>
@@ -142,6 +146,7 @@ const togglePlayHere = async () => {
                     :menuItems="initializeStationList(allCurrentStations)"
                     label=""
                     class="z-1"
+                    @change-emit="onUpdateStation"
                   >
                     <template #myCustomButton>
                       <Button
