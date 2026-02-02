@@ -20,7 +20,6 @@ const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const appDownloadLink = useAppDownloadLink()
 const allCurrentStations = useAllCurrentStations()
-console.log(allCurrentStations.value)
 const defaultButtonLabel = "Listen Live"
 const listeningButtonLabel = "Listening Live"
 
