@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
   startOpen: {
     type: Boolean,
     default: false,
@@ -105,12 +109,16 @@ defineExpose({
             :class="[
               {
                 selected:
-                  item.id === (typeof vModel === 'object' ? vModel.id : vModel) &&
+                  item.id ===
+                    (typeof vModel === 'object' ? vModel.id : vModel) &&
                   props.checkMark,
               },
             ]"
           >
-            <div :key="item.label" class="flex align-items-center station-options">
+            <div
+              :key="item.label"
+              class="flex align-items-center station-options"
+            >
               <VImage
                 v-if="item.image"
                 :src="item.image"
@@ -126,7 +134,12 @@ defineExpose({
                 v-if="item.customIcon"
                 :is="item.customIcon"
               />
-              <div class="option pointer-events-none">{{ item.label }}</div>
+              <div class="flex flex-column">
+                <div class="option pointer-events-none">{{ item.label }}</div>
+                <div v-if="props.showTitle" class="text-sm pointer-events-none">
+                  {{ item.title }}
+                </div>
+              </div>
             </div>
           </div>
         </div>

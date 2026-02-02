@@ -20,7 +20,7 @@ const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const appDownloadLink = useAppDownloadLink()
 const allCurrentStations = useAllCurrentStations()
-
+console.log(allCurrentStations.value)
 const defaultButtonLabel = "Listen Live"
 const listeningButtonLabel = "Listening Live"
 
@@ -146,6 +146,7 @@ const onUpdateStation = (station) => {
                     :menuItems="initializeStationList(allCurrentStations)"
                     label=""
                     class="z-1"
+                    showTitle
                     @change-emit="onUpdateStation"
                   >
                     <template #myCustomButton>

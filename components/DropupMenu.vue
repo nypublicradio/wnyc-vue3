@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
   startOpen: {
     type: Boolean,
     default: false,
@@ -63,6 +67,7 @@ defineExpose({
     v-model="vModel"
     :options="props.options"
     :label="props.label"
+    :showTitle="props.showTitle"
     :startOpen="props.startOpen"
     :checkMark="props.checkMark"
     :blockClick="props.blockClick"
