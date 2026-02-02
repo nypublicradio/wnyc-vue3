@@ -53,7 +53,6 @@ import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
-import { useProfileApi } from "~/composables/useProfileApi"
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -844,14 +843,6 @@ export const getAndSetUserProfile = async () => {
           await initDeviceId()
         }
         await getFavoritedItems()
-        
-        // Fetch membership info from Salesforce
-        try {
-          const { getMembershipInfo } = useProfileApi()
-          await getMembershipInfo()
-        } catch (error) {
-          console.warn('Failed to fetch membership info:', error)
-        }
       }
     }
   }

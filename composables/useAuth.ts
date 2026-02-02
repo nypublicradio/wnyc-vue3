@@ -50,7 +50,7 @@ export const useAuth = () => {
     }
 
     /**
-     * Set authentication state (used by confirm page)
+     * Set authentication state and fetch membership info
      */
     const setAuthState = async (token: string, user: User, refreshToken?: string) => {
         authToken.value = token;
@@ -66,6 +66,20 @@ export const useAuth = () => {
             if (refreshToken) {
                 await Preferences.set({ key: 'refresh_token', value: refreshToken });
             }
+
+            // Fetch membership info after authentication is established
+            // This runs in the background and won't block the auth flow
+            nextTick(async () => {
+                try {
+                    const { getMembershipInfo } = await import('~/composables/useProfileApi');
+                    const profileApi = getMembershipInfo();
+                    if (typeof profileApi === 'function') {
+                        await profileApi();
+                    }
+                } catch (error) {
+                    console.warn('Failed to fetch membership info after login:', error);
+                }
+            });
         }
     };
 
