@@ -32,7 +32,10 @@ const emit = defineEmits(["emit-click"])
         fontWeight="600"
       >
         <template #menu v-if="item.items">
-          <NavSubMenu :model="item?.items[0]" @emit-click="emit('emit-click', event)" />
+          <NavSubMenu
+            :model="item?.items[0]"
+            @emit-click="emit('emit-click', event)"
+          />
         </template>
       </NavButton>
     </section>
