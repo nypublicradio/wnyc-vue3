@@ -1,5 +1,7 @@
 import { ref, readonly } from 'vue';
 import { until } from '@vueuse/core';
+import { Preferences } from '@capacitor/preferences';
+import { localUserProfileKey } from '~/composables/globals';
 import {
     useCurrentUser,
     useCurrentUserProfile,
@@ -11,7 +13,6 @@ import {
  */
 export const useProfileApi = () => {
     const config = useRuntimeConfig();
-    const { authenticatedFetch } = useAuth();
     const profile = ref(null);
     const loading = ref(false);
     const error = ref(null);
@@ -30,6 +31,9 @@ export const useProfileApi = () => {
         profile.value = null;
 
         try {
+            // Get fresh auth instance to ensure token is current
+            const { authenticatedFetch } = useAuth();
+            
             // Try with Salesforce ID first, then email
             const isEmail = salesforceIdOrEmail.includes('@');
             const requestBody = isEmail
@@ -42,6 +46,20 @@ export const useProfileApi = () => {
             });
 
             profile.value = data;
+
+            // Save isActiveSustainer to localUserProfile in CapacitorStorage
+            if (import.meta.client && data?.isActiveSustainer !== undefined) {
+                const localProfileString = await Preferences.get({ key: localUserProfileKey });
+                if (localProfileString.value) {
+                    const localProfile = JSON.parse(localProfileString.value);
+                    localProfile.isActiveSustainer = data.isActiveSustainer;
+                    await Preferences.set({
+                        key: localUserProfileKey,
+                        value: JSON.stringify(localProfile)
+                    });
+                }
+            }
+
             return data;
         } catch (err: any) {
             error.value = err;
@@ -73,7 +91,7 @@ export const useProfileApi = () => {
                         },
                     })
                     if (jwtResponse.success && jwtResponse.token) {
-                        authComposable.setAuthState(
+                        await authComposable.setAuthState(
                             jwtResponse.token,
                             jwtResponse.user,
                             sessionData.session.refresh_token
