@@ -14,6 +14,7 @@ const localUserProfileDefault: object = {
     text_size: "Normal",
     dark_mode: false,
     sleep_timer: 90,
+    isActiveSustainer: false,
 }
 /**
  * Global state for the settings data
