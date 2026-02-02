@@ -41,9 +41,9 @@ const togglePlayHere = async () => {
     await updateAllLiveStreams()
   }
 }
-
+// when selecting the options in the All Streams drop down button
 const onUpdateStation = (station) => {
-  navigateTo("live?slug=" + station.slug)
+  navigateTo(`/live?slug=${station.slug}`)
 }
 </script>
 
