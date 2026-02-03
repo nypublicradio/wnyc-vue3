@@ -6,6 +6,8 @@ const bannerData = [
     name: "Radio Lab",
     photo: "/personalities/rl.webp",
     bg: "/personalities/rl-bg.webp",
+    bgSm: "/personalities/rl-bg-sm.webp",
+    text: "/personalities/rl-text.webp",
     to: `${mediaTypeRoutes.show}radiolab`,
   },
   {
@@ -13,6 +15,8 @@ const bannerData = [
     name: "Brian Lehrer",
     photo: "/personalities/bls.webp",
     bg: "/personalities/bls-bg.webp",
+    bgSm: "/personalities/bls-bg-sm.webp",
+    text: "/personalities/bls-text.webp",
     to: `${mediaTypeRoutes.show}bl`,
   },
   {
@@ -20,6 +24,8 @@ const bannerData = [
     name: "All Of It",
     photo: "/personalities/aoi.webp",
     bg: "/personalities/aoi-bg.webp",
+    bgSm: "/personalities/aoi-bg-sm.webp",
+    text: "/personalities/aoi-text.webp",
     to: `${mediaTypeRoutes.show}all-of-it`,
   },
   {
@@ -27,6 +33,8 @@ const bannerData = [
     name: "On The Media",
     photo: "/personalities/otm.webp",
     bg: "/personalities/otm-bg.webp",
+    bgSm: "/personalities/otm-bg-sm.webp",
+    text: "/personalities/otm-text.webp",
     to: `${mediaTypeRoutes.show}otm`,
   },
 ]
@@ -76,8 +84,32 @@ onUnmounted(() => {
       :ref="(el) => (itemRefs[index] = el)"
     >
       <div class="holder flex">
-        <img :src="item.bg" :alt="item.name" class="bg" />
-        <img :src="item.photo" :alt="item.name" class="photo" />
+        <div class="bg-holder">
+          <img
+            :src="item.bg"
+            :alt="item.name"
+            class="bg hidden sm:block"
+            :class="item.id"
+          />
+          <img
+            :src="item.bgSm"
+            :alt="item.name"
+            class="bg block sm:hidden"
+            :class="item.id"
+          />
+          <img
+            :src="item.text"
+            :alt="item.name"
+            class="text absolute left-0 top-0"
+            :class="item.id"
+          />
+        </div>
+        <img
+          :src="item.photo"
+          :alt="item.name"
+          class="photo"
+          :class="item.id"
+        />
       </div>
     </VFlexibleLink>
   </div>
@@ -102,10 +134,12 @@ onUnmounted(() => {
       width: 100%;
       height: 100%;
       overflow: hidden;
+      .bg-holder {
+        z-index: 2;
+      }
       img {
         width: 100%;
         height: 100%;
-        z-index: 2;
         &.photo {
           position: absolute;
           z-index: 1;
@@ -121,21 +155,47 @@ onUnmounted(() => {
     }
   }
   @include media("<md") {
-    min-height: 130px;
+    min-height: 200px;
     .link {
       .holder {
         width: unset;
         img {
           &.bg {
             width: auto;
-            margin-left: -20px;
+            margin-left: calc(40vw - 385px);
+            width: auto;
+          }
+          @include media("<sm") {
+            &.bg {
+              width: auto;
+              margin-left: 0;
+              width: auto;
+            }
+          }
+          &.photo {
+            width: auto;
+
+            &.otm {
+              right: calc(15.48vw - 80px);
+            }
+            &.rl {
+              right: calc(15.48vw - 145px);
+            }
+            &.bls {
+              right: calc(15.48vw - 115px);
+            }
+            &.aoi {
+              right: calc(15.48vw - 130px);
+            }
+          }
+          &.text {
+            width: auto;
+            margin-left: -55px;
+            height: 180px;
           }
         }
       }
     }
-  }
-  @include media("<500px") {
-    min-height: 100px;
   }
 }
 </style>
