@@ -518,6 +518,7 @@ This section explains how user profile data, including the `isActiveSustainer` m
    - Supabase session is created
    - JWT token is generated via `/api/auth/session-to-jwt`
    - Auth state is set in `useAuth()` composable
+   - **Membership info is automatically fetched** in the background after authentication via `setAuthState()`
 
 2. **Profile Initialization** - `getAndSetUserProfile()` is called on:
    - App mount (`app.vue`)
@@ -639,11 +640,25 @@ const isActiveSustainer = computed(() => {
 
 ### Key Files
 
+- `composables/useAuth.ts` - Authentication state management with automatic membership fetch after login
 - `composables/useProfileApi.ts` - Fetches and stores profile data
 - `server/api/profile.post.ts` - Calculates isActiveSustainer from Salesforce
 - `composables/states.ts` - Defines localUserProfile defaults
 - `utilities/helpers.ts` - Manages profile lifecycle (fetch, clear, logout)
 - `composables/globals.ts` - Defines storage keys and constants
+
+### Recent Improvements (useAuth.ts)
+
+The authentication composable has been enhanced with several improvements:
+
+1. **Automatic Membership Fetch** - After successful authentication, membership info is automatically fetched in the background without blocking the auth flow
+2. **Improved Token Refresh** - Better error handling during token refresh, including:
+   - Single error logging (no repeated error spam)
+   - Automatic interval cleanup on refresh failure
+   - Clear user messaging for expired sessions
+3. **Initialize from Supabase Session** - New `initializeFromSupabaseSession()` method that can restore authentication state from an existing Supabase session
+4. **Better Error Handling** - Improved error handling with proper async/catch patterns and graceful fallbacks
+5. **Circuit Breaker for Token Refresh** - Automatic interval cleanup prevents repeated failed refresh attempts
 
 ## Font Size Scale Reference Helper
 
