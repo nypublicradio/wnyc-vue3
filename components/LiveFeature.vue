@@ -381,7 +381,6 @@ const onUpdateStation = async (station) => {
     .holder {
       max-width: $contentWidth !important;
       margin: 0 auto;
-      background-color: var(--p-content-background);
     }
   }
 }
