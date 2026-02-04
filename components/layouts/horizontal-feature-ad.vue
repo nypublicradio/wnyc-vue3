@@ -80,6 +80,7 @@ const featureSizes = computed(() => {
         showTease
         imgCol="w-6"
         :size="featureSizes"
+        :allowVerticalEffect="!isSquare"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -115,6 +116,7 @@ const featureSizes = computed(() => {
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
           :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :allowVerticalEffect="!isLgBreakpoint"
           @on-click="dynamicNavigation(article)"
         />
       </template>

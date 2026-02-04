@@ -68,6 +68,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :ratio="imgRatio"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
+          :allowVerticalEffect="!props.square"
           @on-click="dynamicNavigation(item)"
         />
       </template>
