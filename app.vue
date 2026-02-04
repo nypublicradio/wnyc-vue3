@@ -4,11 +4,11 @@ import {
   refreshData,
   getFullDeviceInfo,
   getAppDownloadLink,
-} from "~/utilities/helpers";
-import { initFileSystem } from "~/utilities/file-system";
-import { Capacitor } from "@capacitor/core";
-import { App } from "@capacitor/app";
-import type { URLOpenListenerEvent } from "@capacitor/app";
+} from "~/utilities/helpers"
+import { initFileSystem } from "~/utilities/file-system"
+import { Capacitor } from "@capacitor/core"
+import { App } from "@capacitor/app"
+import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
   useCurrentUserProfile,
@@ -16,47 +16,47 @@ import {
   useIsNetworkConnected,
   useFullDeviceInfo,
   useAppDownloadLink,
-} from "~/composables/states";
+} from "~/composables/states"
 import {
   useBrowserTopColor,
   useBrowserTopColorDarkMode,
-} from "~/composables/globals";
-import useLiveStream from "~/composables/data/liveStream";
-import { initLocalNotifications } from "~/utilities/local-notifications";
-import { Network } from "@capacitor/network";
-import { useToast } from "primevue/usetoast";
+} from "~/composables/globals"
+import useLiveStream from "~/composables/data/liveStream"
+import { initLocalNotifications } from "~/utilities/local-notifications"
+import { Network } from "@capacitor/network"
+import { useToast } from "primevue/usetoast"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
-import useOneSignal from "~/composables/useOneSignal";
+import useOneSignal from "~/composables/useOneSignal"
 
-const { fetchSchedule } = useLiveStream();
+const { fetchSchedule } = useLiveStream()
 
 // temp system to handle the new feature badge on the sleep timer
 //const { initFeatureSessionCount } = useNewFeatureBadge()
 //initFeatureSessionCount()
 
-const toast = useToast();
+const toast = useToast()
 
-const route = useRoute();
-const config = useRuntimeConfig();
-const currentUserProfile = useCurrentUserProfile();
-const browserTopColor = useBrowserTopColor();
-const browserTopColorDarkMode = useBrowserTopColorDarkMode();
-const globalToast = useGlobalToast();
-const isNetworkConnected = useIsNetworkConnected();
-const fullDeviceInfo = useFullDeviceInfo();
-const appDownloadLink = useAppDownloadLink();
-const isApp = useIsApp();
+const route = useRoute()
+const config = useRuntimeConfig()
+const currentUserProfile = useCurrentUserProfile()
+const browserTopColor = useBrowserTopColor()
+const browserTopColorDarkMode = useBrowserTopColorDarkMode()
+const globalToast = useGlobalToast()
+const isNetworkConnected = useIsNetworkConnected()
+const fullDeviceInfo = useFullDeviceInfo()
+const appDownloadLink = useAppDownloadLink()
+const isApp = useIsApp()
 const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
-  useOneSignal();
+  useOneSignal()
 
-isApp.value = Capacitor.getPlatform() !== "web";
+isApp.value = Capacitor.getPlatform() !== "web"
 
 // Initialize device info and app download link asynchronously
 const initializeDeviceInfo = async () => {
-  fullDeviceInfo.value = await getFullDeviceInfo();
-  appDownloadLink.value = await getAppDownloadLink();
-};
-initializeDeviceInfo();
+  fullDeviceInfo.value = await getFullDeviceInfo()
+  appDownloadLink.value = await getAppDownloadLink()
+}
+initializeDeviceInfo()
 
 useHead({
   htmlAttrs: {
@@ -66,67 +66,67 @@ useHead({
   noscript: [],
 
   bodyAttrs: {},
-});
+})
 
 // to clear all displayed toasts
 const clearAllToasts = () => {
-  toast.removeAllGroups();
-};
+  toast.removeAllGroups()
+}
 
 // init the Network listener
 Network.addListener("networkStatusChange", (status) => {
   if (!isNetworkConnected.value && status.connected) {
     setTimeout(() => {
-      refreshData();
-      clearAllToasts();
-    }, 1000);
+      refreshData()
+      clearAllToasts()
+    }, 1000)
   }
-  isNetworkConnected.value = status.connected;
-});
+  isNetworkConnected.value = status.connected
+})
 
 // set the initial network status
-const initNetworkStatus = await Network.getStatus();
-isNetworkConnected.value = initNetworkStatus.connected;
+const initNetworkStatus = await Network.getStatus()
+isNetworkConnected.value = initNetworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
     //Handle the app url open event
-    handleAppUrlOpen(event);
-  });
-};
+    handleAppUrlOpen(event)
+  })
+}
 
 onMounted(async () => {
   // OneSignal
-  if (isApp.value) initOneSignal();
+  if (isApp.value) initOneSignal()
 
-  await getAndSetUserProfile();
+  await getAndSetUserProfile()
 
   if (isApp.value) {
-    await initFileSystem();
-    await addListeners();
-    await initLocalNotifications();
+    await initFileSystem()
+    await addListeners()
+    await initLocalNotifications()
 
     // initial check for notification permission
-    await notificationPermissionSync(undefined);
+    await notificationPermissionSync(undefined)
   }
 
   // initial fetch of the schedule to start the live stream refresh loop
-  fetchSchedule();
+  fetchSchedule()
 
   // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
     if (isActive && isApp.value) {
       // refresh data
-      refreshData();
+      refreshData()
 
       // update user profile when coming back from the system settings
       if (isApp.value) {
-        await notificationPermissionSync(undefined);
+        await notificationPermissionSync(undefined)
       }
     }
-  });
+  })
 
   //every time the cursor enters the window on desktop only
   // if (isDesktop) {
@@ -134,16 +134,16 @@ onMounted(async () => {
   // }
 
   // Ads
-  window.htlbid = window.htlbid || {};
-  htlbid.cmd = htlbid.cmd || [];
+  window.htlbid = window.htlbid || {}
+  htlbid.cmd = htlbid.cmd || []
   htlbid.cmd.push(() => {
-    htlbid.layout("universal"); // Leave as 'universal' or add custom layout
-    htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING); // Set to "no" for production
-    htlbid.setTargeting("is_home", route.name === "index" ? "yes" : "no"); // Set to "yes" on the homepage
-    htlbid.setTargeting("category", route.name); // dynamically pass page category into this function
-    htlbid.setTargeting("post_id", route.name); // dynamically pass unique post/page id into this function
-  });
-});
+    htlbid.layout("universal") // Leave as 'universal' or add custom layout
+    htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING) // Set to "no" for production
+    htlbid.setTargeting("is_home", route.name === "index" ? "yes" : "no") // Set to "yes" on the homepage
+    htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
+    htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
+  })
+})
 
 useHead({
   script: [
@@ -152,15 +152,15 @@ useHead({
       async: true,
     },
   ],
-});
+})
 
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {
-    toast.add(optionsObj);
+    toast.add(optionsObj)
   }
-});
+})
 
-const globalError = useError();
+const globalError = useError()
 
 watch(globalError, (error) => {
   if (error) {
@@ -168,9 +168,9 @@ watch(globalError, (error) => {
       severity: "error",
       summary: `${error}`,
       life: 6000,
-    });
+    })
   }
-});
+})
 </script>
 
 <template>
@@ -244,6 +244,15 @@ watch(globalError, (error) => {
     <NuxtPage />
   </NuxtLayout>
 
+  <div id="anchor"></div>
+  <VProgressBar />
+  <NetworkBanner :connected="isNetworkConnected" />
+  <AudioPlayer />
+  <Drawers class="z-2" />
+  <DynamicDialog />
+  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
+  <!-- <PullToRefresh v-if="isApp" /> -->
+
   <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
   <svg
     aria-hidden="true"
@@ -267,13 +276,4 @@ watch(globalError, (error) => {
       </filter>
     </defs>
   </svg>
-
-  <div id="anchor"></div>
-  <VProgressBar />
-  <NetworkBanner :connected="isNetworkConnected" />
-  <AudioPlayer />
-  <Drawers class="z-2" />
-  <DynamicDialog />
-  <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
-  <!-- <PullToRefresh v-if="isApp" /> -->
 </template>
