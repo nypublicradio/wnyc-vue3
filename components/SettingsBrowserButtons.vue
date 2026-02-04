@@ -59,17 +59,7 @@ const appDownloadLink = useAppDownloadLink()
     @emit-click="settingsSideBarBrowser = false"
   >
     <template #icon>
-      <i
-        class="pi pi-users"
-        style="
-          font-size: 20px;
-          height: 28px;
-          width: 22px;
-          display: flex;
-          align-items: center;
-          margin-left: 4px;
-        "
-      ></i>
+      <MemberCenterIcon />
     </template>
   </NavButton>
 </template>
