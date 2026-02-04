@@ -20,6 +20,9 @@ const getWagtailEvents = async (query: Record<string, any>) => {
                 fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary',
                 limit: query.limit || queryLimit,
                 offset: query.offset || 0,
+            },
+            headers: {
+                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
             }
         }
 
