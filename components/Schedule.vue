@@ -63,6 +63,11 @@ const getAllScheduleData = async () => {
     return
   }
 
+  // Filter out the holiday channel for now since there is no schedule data
+  allCurrentStations.value = allCurrentStations.value.filter(
+    (station) => station.slug !== "wqxr-holiday-channel-on-wnyc"
+  )
+
   allLiveScheduleData.value = []
 
   // Create new abort controller (automatically aborts any existing fetches)
@@ -169,7 +174,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
       <TabList>
         <Tab
           v-for="(entry, index) in allCurrentStations"
-          :key="entry.id"
+          :key="index"
           :value="index.toString()"
           >{{ getCustomStationLabel(entry.station) }}</Tab
         >
@@ -208,7 +213,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
       <TabPanels>
         <TabPanel
           v-for="(data, index) in allLiveScheduleData"
-          :key="`${data.id}-${index}`"
+          :key="index"
           :value="index.toString()"
           :class="[{ selected: index === 0 }]"
         >
@@ -216,7 +221,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
             <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
             <div
               v-for="(entry, entryIndex) in data"
-              :key="entry.id"
+              :key="entryIndex"
               class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
               :class="
                 handleCurrentEpisode(entry, entryIndex)

@@ -1,5 +1,7 @@
 import { ref, readonly } from 'vue';
 import { until } from '@vueuse/core';
+import { Preferences } from '@capacitor/preferences';
+import { localUserProfileKey } from '~/composables/globals';
 import {
     useCurrentUser,
     useCurrentUserProfile,
@@ -42,6 +44,20 @@ export const useProfileApi = () => {
             });
 
             profile.value = data;
+            
+            // Save isActiveSustainer to localUserProfile in CapacitorStorage
+            if (import.meta.client && data?.isActiveSustainer !== undefined) {
+                const localProfileString = await Preferences.get({ key: localUserProfileKey });
+                if (localProfileString.value) {
+                    const localProfile = JSON.parse(localProfileString.value);
+                    localProfile.isActiveSustainer = data.isActiveSustainer;
+                    await Preferences.set({
+                        key: localUserProfileKey,
+                        value: JSON.stringify(localProfile)
+                    });
+                }
+            }
+            
             return data;
         } catch (err: any) {
             error.value = err;
