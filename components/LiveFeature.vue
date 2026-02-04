@@ -17,7 +17,7 @@ import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
 } from "~/composables/data/liveStream"
-const { switchStation, getStationBySlugAndPlayIt } = useLiveStream()
+const { getStationBySlugAndPlayIt } = useLiveStream()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -46,7 +46,7 @@ const togglePlayHere = async () => {
   }
 }
 // when selecting the options in the All Streams drop down button
-const onUpdateStation = async (station) => {
+const onUpdateStation = (station) => {
   getStationBySlugAndPlayIt(station.slug, isEpisodePlaying.value)
 }
 </script>
