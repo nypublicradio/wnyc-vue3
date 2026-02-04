@@ -499,7 +499,7 @@ const getDotMenuItems = (bucketItem) => {
       <!-- v-else-if="props.pending" -->
       <div
         v-else-if="props.pending"
-        class="flex gap-2 md:gap-3 col pr-2 lg:pr-4 mt-1 mb-6"
+        class="flex gap-3 col pr-2 lg:pr-4 mt-1 mb-6"
       >
         <Skeleton
           width="100%"
