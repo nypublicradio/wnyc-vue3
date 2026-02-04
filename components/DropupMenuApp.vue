@@ -24,6 +24,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  initSelectedData: {
+    type: String,
+    default: null,
+  },
   blockClick: {
     type: Boolean,
     default: false,
@@ -188,6 +192,10 @@ onMounted(() => {
   if (props.startOpen) {
     toggleMenu()
   }
+  // set initial selection if data exists
+  if (props.initSelectedData) {
+    vModel.value = props.initSelectedData
+  }
 })
 
 onUnmounted(() => {
@@ -248,10 +256,7 @@ defineExpose({
                 },
               ]"
             >
-              <div
-                :key="item.label"
-                class="flex align-items-center station-options"
-              >
+              <div :key="item.label" class="flex align-items-center options">
                 <VImage
                   v-if="item.image"
                   :src="item.image"
@@ -267,7 +272,7 @@ defineExpose({
                   v-if="item.customIcon"
                   :is="item.customIcon"
                 />
-                <div class="flex flex-column">
+                <div class="option-holder flex flex-column">
                   <div class="option pointer-events-none">{{ item.label }}</div>
                   <div
                     v-if="props.showTitle"

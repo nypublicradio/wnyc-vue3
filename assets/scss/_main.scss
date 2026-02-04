@@ -584,9 +584,15 @@ html.style-mode-dark {
         -webkit-transition: color var(--p-transition-duration);
         padding: 0.25rem 0.5rem 0.25rem 0.25rem;
         border: 2px solid transparent;
+        .option-holder {
+          transition: color var(--p-transition-duration);
+          -webkit-transition: color var(--p-transition-duration);
+        }
         &:hover {
-          text-decoration: underline;
-          color: var(--p-red-500);
+          .option-holder {
+            text-decoration: underline;
+            color: var(--p-red-500);
+          }
         }
         .option {
           font-family: var(--font-family);
