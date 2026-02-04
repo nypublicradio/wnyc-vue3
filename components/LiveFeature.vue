@@ -8,11 +8,16 @@ import {
   useAppDownloadLink,
   useAllCurrentStations,
 } from "~/composables/states"
-import { togglePlayEpisode, initializeStationList } from "~/utilities/helpers"
 import {
+  togglePlayEpisode,
+  initializeStationList,
+  getOrg,
+} from "~/utilities/helpers"
+import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
 } from "~/composables/data/liveStream"
+const { switchStation, getStationBySlugAndPlayIt } = useLiveStream()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
@@ -41,14 +46,13 @@ const togglePlayHere = async () => {
   }
 }
 // when selecting the options in the All Streams drop down button
-const onUpdateStation = (station) => {
-  navigateTo(`/live?slug=${station.slug}`)
+const onUpdateStation = async (station) => {
+  getStationBySlugAndPlayIt(station.slug, isEpisodePlaying.value)
 }
 </script>
 
 <template>
   <div class="live-feature">
-    <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
     <div class="holder">
       <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
       <div class="flex align-items-center">
@@ -75,22 +79,40 @@ const onUpdateStation = (station) => {
         <div class="content w-full relative">
           <div
             v-if="currentEpisodeHolder"
-            class="flex flex-column gap-2 xl:gap-3 justify-content-center px-3"
+            class="flex flex-column gap-1 xl:gap-3 justify-content-center px-3"
           >
-            <div class="hidden md:flex align-items-center gap-2">
-              <LiveBadge fontSize="0.9rem" />
-              <p
-                v-if="
-                  currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd
-                "
-                class="font-bold"
-              >
-                {{ currentEpisodeHolder.timeStart }} -
-                {{ currentEpisodeHolder.timeEnd }}
-              </p>
+            <div
+              class="indicator-schedule flex align-items-center gap-1 md:gap-2 flex-wrap"
+            >
+              <LiveBadge />
+              <div class="schedule-text flex gap-1">
+                <p class="font-bold" v-if="currentEpisodeHolder?.cmsSource">
+                  {{ getOrg(currentEpisodeHolder?.cmsSource) }}
+                </p>
+                <p
+                  class="font-bold"
+                  v-if="
+                    currentEpisodeHolder?.cmsSource &&
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
+                >
+                  |
+                </p>
+                <p
+                  v-if="
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
+                  class="font-bold"
+                >
+                  {{ currentEpisodeHolder.timeStart }} -
+                  {{ currentEpisodeHolder.timeEnd }}
+                </p>
+              </div>
             </div>
             <h2
-              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t3lines"
+              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines"
             >
               {{ currentEpisodeHolder?.title }}
             </h2>
@@ -105,7 +127,7 @@ const onUpdateStation = (station) => {
                 currentEpisodeHolder?.details
               "
             ></div>
-            <div class="flex align-items-start justify-content-between">
+            <div class="flex align-items-start justify-content-between mt-1">
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
@@ -146,6 +168,8 @@ const onUpdateStation = (station) => {
                     label=""
                     class="z-1"
                     showTitle
+                    checkMark
+                    :initSelectedData="currentEpisodeHolder?.station"
                     @change-emit="onUpdateStation"
                   >
                     <template #myCustomButton>
@@ -237,7 +261,7 @@ const onUpdateStation = (station) => {
   </div>
 </template>
 
-<style lang="scss">
+<!-- <style lang="scss">
 .live-feature {
   .content {
     .blurb {
@@ -253,7 +277,7 @@ const onUpdateStation = (station) => {
     }
   }
 }
-</style>
+</style> -->
 
 <style lang="scss" scoped>
 // $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
@@ -295,12 +319,42 @@ const onUpdateStation = (station) => {
     }
   }
   .content {
+    .indicator-schedule {
+      .live-badge {
+        font-size: 0.9rem;
+        @include media("<xl") {
+          font-size: 0.8rem;
+        }
+        @include media("<lg") {
+          font-size: 0.7rem;
+        }
+        @include media("<md") {
+          margin-left: -4px;
+          padding: 1px 4px 1px 4px !important;
+          font-size: 0.65rem;
+        }
+      }
+      .schedule-text * {
+        @include media("<xl") {
+          font-size: 0.9rem;
+        }
+        @include media("<lg") {
+          font-size: 0.8rem;
+        }
+        @include media("<md") {
+          font-size: 0.7rem;
+        }
+      }
+    }
     .skeleton-holder {
       gap: 0.5rem;
     }
     .blurb {
-      @include t4lines();
+      @include t3lines();
       @include media("<xl") {
+        @include t2lines();
+      }
+      @include media("<md") {
         @include t2lines();
       }
       @include media("<lg") {
@@ -310,10 +364,12 @@ const onUpdateStation = (station) => {
   }
 }
 @include media("<md") {
-  .live-feature .holder {
-    max-width: $contentWidth !important;
-    margin: 0 auto;
-    background-color: var(--p-content-background);
+  .live-feature {
+    .holder {
+      max-width: $contentWidth !important;
+      margin: 0 auto;
+      background-color: var(--p-content-background);
+    }
   }
 }
 

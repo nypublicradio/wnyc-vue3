@@ -25,6 +25,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  checkMark: {
+    type: Boolean,
+    default: false,
+  },
+  initSelectedData: {
+    type: String,
+    default: null,
+  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -35,6 +43,8 @@ const emit = defineEmits(["changeEmit"])
     :options="props.menuItems"
     :label="props.label"
     :showTitle="props.showTitle"
+    :checkMark="props.checkMark"
+    :initSelectedData="props.initSelectedData"
     @change="emit('changeEmit', $event)"
   >
     <template #customButton="slotProps">

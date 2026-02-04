@@ -22,6 +22,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  initSelectedData: {
+    type: String,
+    default: null,
+  },
   blockClick: {
     type: Boolean,
     default: false,
@@ -70,6 +74,7 @@ defineExpose({
     :showTitle="props.showTitle"
     :startOpen="props.startOpen"
     :checkMark="props.checkMark"
+    :initSelectedData="props.initSelectedData"
     :blockClick="props.blockClick"
     @change="handleChange"
     @swipe-down="handleSwipeDown"
