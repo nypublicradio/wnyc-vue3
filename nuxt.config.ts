@@ -178,6 +178,8 @@ export default defineNuxtConfig({
     cmsSite: process.env.CMS_SITE || 'demo.wnyc.org:443',
     aviaryBaseApi: process.env.AVIARY_BASE_API,
     public: {
+      cmsSiteWnyc: process.env.CMS_SITE_WNYC ?? 'demo.wnyc.org:443',
+      cmsSiteGothamist: process.env.CMS_SITE_GOTHAMIST ?? 'demo.gothamist.com:443',
       SENTRY_DSN: process.env["SENTRY_DSN"],
       SENTRY_ENV: process.env.SENTRY_ENV ?? "development",
       ENV: process.env.ENV ?? "prod",

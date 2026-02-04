@@ -3,10 +3,13 @@ import { WAGTAIL_PAGE_TYPES, normalizePage } from './basePages'
 import { normalizeArticlePage } from './articlePages'
 import { normalizeGalleryPage } from './galleryPages'
 import { normalizeTagPage } from './tagPages'
+import { transformResponseData } from '~/composables/useAviary'
 
-export async function findPage (htmlPath: string) {
-  const params = { html_path: htmlPath }
-  return await useAviary('/pages/find/', { params })
+export async function findPage (htmlPath: string, cmsSite?: string) {
+  const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
+  const { data, error } = await useFetch('/api/pages/wagtail/find', { params })
+  const transformedData = transformResponseData(data)
+  return { data: transformedData, error }
 }
 
 // Get a page by it's cms id
