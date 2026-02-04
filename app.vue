@@ -243,6 +243,31 @@ watch(globalError, (error) => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+
+  <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
+  <svg
+    aria-hidden="true"
+    style="position: absolute; width: 0; height: 0; overflow: hidden"
+  >
+    <defs>
+      <filter
+        id="v-image-blur-filter"
+        x="0"
+        y="0"
+        width="100%"
+        height="100%"
+        color-interpolation-filters="sRGB"
+      >
+        <feGaussianBlur stdDeviation="38" result="blurred" />
+        <feMorphology operator="dilate" radius="38" />
+        <feMerge>
+          <feMergeNode />
+          <feMergeNode in="blurred" />
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+
   <div id="anchor"></div>
   <VProgressBar />
   <NetworkBanner :connected="isNetworkConnected" />
