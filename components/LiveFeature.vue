@@ -53,9 +53,17 @@ const onUpdateStation = async (station) => {
 
 <template>
   <div class="live-feature">
-    <div class="holder">
-      <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
-      <div class="flex align-items-center">
+    <div class="holder overflow-hidden">
+      <!-- <VFlexibleLink raw to="/live"> -->
+      <VFlexibleLink
+        raw
+        to="/live"
+        v-ripple
+        class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
+        tabindex="0"
+        aria-role="button"
+      ></VFlexibleLink>
+      <div class="flex align-items-center z-2">
         <div class="image-holder relative">
           <Transition name="fade" mode="out-in">
             <VImage
@@ -127,7 +135,9 @@ const onUpdateStation = async (station) => {
                 currentEpisodeHolder?.details
               "
             ></div>
-            <div class="flex align-items-start justify-content-between mt-1">
+            <div
+              class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2"
+            >
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
@@ -139,6 +149,7 @@ const onUpdateStation = async (station) => {
                   buttonClass="w-9rem md:w-21rem h-2rem justify-content-start"
                   labelClass="md:-ml-3"
                   live
+                  class="z-2"
                 />
                 <div
                   v-if="!isApp"
@@ -147,8 +158,8 @@ const onUpdateStation = async (station) => {
                   <Button
                     label="Get the App"
                     severity="secondary"
-                    class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
-                    @click="
+                    class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon z-2"
+                    @click.prevent="
                       navigateTo(appDownloadLink, {
                         external: appDownloadLink.startsWith('http')
                           ? true
@@ -166,7 +177,7 @@ const onUpdateStation = async (station) => {
                   <DotMenu
                     :menuItems="initializeStationList(allCurrentStations)"
                     label=""
-                    class="z-1"
+                    class="z-2"
                     showTitle
                     checkMark
                     :initSelectedData="currentEpisodeHolder?.station"
@@ -177,6 +188,7 @@ const onUpdateStation = async (station) => {
                         label="All Streams"
                         severity="secondary"
                         class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                        @click.prevent=""
                       >
                         <template #icon>
                           <i
@@ -257,6 +269,7 @@ const onUpdateStation = async (station) => {
           </div>
         </div>
       </div>
+      <!-- </VFlexibleLink> -->
     </div>
   </div>
 </template>
