@@ -197,5 +197,17 @@ onUnmounted(() => {
       }
     }
   }
+  @include media("<xs") {
+    min-height: 50vw;
+    .link {
+      .holder {
+        img {
+          &.text {
+            height: 50vw;
+          }
+        }
+      }
+    }
+  }
 }
 </style>
