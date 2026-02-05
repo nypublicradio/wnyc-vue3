@@ -8,7 +8,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "col-12 md:col-12 lg:col-3 mb-3",
+    default: "col-12 md:col-12 lg:col-3",
   },
   maxItems: {
     type: Number,
@@ -68,6 +68,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :ratio="imgRatio"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
+          :allowVerticalEffect="!props.square"
           @on-click="dynamicNavigation(item)"
         />
       </template>

@@ -99,7 +99,7 @@ onMounted(() => {
         v-for="section in pagedata?.new_home_template.curatedContent"
         :key="section?.id"
       >
-        <section v-if="section?.value?.list?.listItems?.length">
+        <section v-if="section?.value?.list?.listItems?.length" class="pb-6">
           <component
             v-if="getLayoutComponent(section?.value?.layout)"
             :is="getLayoutComponent(section?.value?.layout)"
@@ -154,6 +154,7 @@ onMounted(() => {
 
     <!-- TEXT ONLY EXAMPLE -->
     <section
+      class="pb-6"
       v-if="
         pagedata?.new_home_template.curatedContent[2]?.value?.list?.listItems
           ?.length

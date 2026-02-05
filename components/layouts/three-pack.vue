@@ -8,7 +8,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "col-12 md:col-12 lg:col-4 mb-3",
+    default: "col-12 md:col-12 lg:col-4",
   },
   maxItems: {
     type: Number,
@@ -34,7 +34,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :class="props.cardClass"
           :data="article"
           :isHorizontal="isLgBreakpoint"
-          :allowVerticalEffect="true"
+          :allowVerticalEffect="!isLgBreakpoint"
           imgCol="w-7rem md:w-11rem lg:w-full"
           :size="{
             xs: [112, 112],
