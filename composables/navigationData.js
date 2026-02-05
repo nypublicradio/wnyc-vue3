@@ -42,6 +42,15 @@ const allMenuData = [
         ],
     },
     {
+        label: "Events",
+        url: "/events",
+        id: "events-main",
+        icon: "",
+        hasSubmenu: false,
+        inHeaderMenu: true,
+        inFooterMenu: false,
+    },
+    {
         label: "Collections",
         id: "7",
         icon: "",
