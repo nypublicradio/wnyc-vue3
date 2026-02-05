@@ -239,6 +239,9 @@ const handleEventCta = () => {
   font-size: 18px;
   line-height: 1.8;
   color: #101012;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-list-card__meta {
@@ -247,6 +250,9 @@ const handleEventCta = () => {
   font-size: 13px;
   line-height: 1.4;
   color: #101012;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-list-card__footer {
@@ -279,6 +285,12 @@ const handleEventCta = () => {
   min-height: 28px;
   padding: 4px 16px;
   box-shadow: none;
+  transition: background var(--p-transition-duration), border-color var(--p-transition-duration);
+
+  &:hover {
+    background: #f5f5f5 !important;
+    border-color: #d0d0d0 !important;
+  }
 }
 
 .event-list-card__cta :deep(.content) {

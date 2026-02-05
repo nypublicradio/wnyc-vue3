@@ -142,6 +142,12 @@ const otherEvents = computed(() => {
   return list.filter((item) => item?.id !== currentId).slice(0, 3)
 })
 
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Events", route: "/events" },
+  { label: title.value || "Event", route: route.path },
+])
+
 </script>
 
 <template>
@@ -153,6 +159,13 @@ const otherEvents = computed(() => {
         <Meta name="twitter:title" :content="`${title} | WNYC`" />
       </Head>
     </Html>
+    <section class="event-breadcrumbs">
+      <div class="event-section">
+        <div class="flex align-items-center">
+          <Breadcrumbs :items="breadcrumbs" />
+        </div>
+      </div>
+    </section>
     <FetchError v-if="error" />
 
     <section class="event-hero">
@@ -236,6 +249,7 @@ const otherEvents = computed(() => {
               v-if="eventData?.body && status === 'success'"
               class="event-body__streamfield mb-5"
               :article="eventData"
+              :showDonation="false"
             />
             <HtmlConvert
               v-else-if="eventData?.description && status === 'success'"
@@ -315,8 +329,6 @@ const otherEvents = computed(() => {
 <style lang="scss" scoped>
 .event-page {
   .event-section {
-    max-width: 1023px;
-    margin: 0 auto;
     padding: 0 32px;
   }
 }
@@ -329,6 +341,7 @@ const otherEvents = computed(() => {
     grid-template-columns: minmax(0, 672px) minmax(0, 319px);
     column-gap: 32px;
     align-items: start;
+    justify-content: end;
   }
 
   .event-hero__header {
@@ -460,6 +473,7 @@ const otherEvents = computed(() => {
     grid-template-columns: minmax(0, 672px) minmax(0, 319px);
     column-gap: 32px;
     align-items: start;
+    justify-content: end;
   }
 
   .event-body__content {
@@ -468,13 +482,17 @@ const otherEvents = computed(() => {
 
   .event-body__image-frame {
     width: 100%;
-    border-radius: 6px;
+    border-radius: 0;
     overflow: hidden;
   }
 
   .event-body__description {
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.8;
+  }
+
+  .event-body__streamfield :deep(.streamfield-paragraph > *) {
+    line-height: 1.8;
   }
 
   .event-body__credit {
@@ -626,6 +644,15 @@ const otherEvents = computed(() => {
 
     .event-more__list {
       gap: 24px;
+      max-width: none;
+    }
+  }
+
+  .event-body {
+    .event-body__image-frame {
+      margin-left: -20px;
+      margin-right: -20px;
+      width: calc(100% + 40px);
     }
   }
 }
