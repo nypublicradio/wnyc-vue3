@@ -3,6 +3,13 @@ import { useCurrentEpisode, useIsApp } from "~/composables/states"
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
+
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding",
+  },
+})
+
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
@@ -168,12 +175,11 @@ onMounted(() => {
       </div>
     </section>
 
-    <DonateBanner class="my-6" />
+    <DonateBanner v-if="!isApp" class="mt-6" />
 
     <SponsorBanner
       v-if="isApp"
-      class="mt-4"
-      :style="`margin-bottom:${currentEpisode ? '-20px' : '-5rem'}`"
+      :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
     />
   </div>
 </template>
