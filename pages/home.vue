@@ -96,9 +96,9 @@ onMounted(() => {
         v-for="(section, index) in pagedata?.new_home_template.curatedContent"
         :key="section?.id"
       >
-        <section v-if="index === 1" class="my-4 md:my-6">
+        <!-- <section v-if="index === 1" class="my-4 md:my-6">
           <PersonalitiesBanner />
-        </section>
+        </section> -->
         <section v-if="section?.value?.list?.listItems?.length">
           <component
             :is="getLayoutComponent(section?.value?.layout)"
