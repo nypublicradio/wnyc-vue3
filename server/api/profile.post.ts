@@ -88,14 +88,14 @@ const getContactData = async (lookupParams: { salesforceID?: string; email?: str
             contact = await salesforce.findOne(
                 'Contact',
                 { Id: lookupParams.salesforceID },
-                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Query_String_Encrypted__c']
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'sf_sb_contact_giving_summary__c', 'Query_String_Encrypted__c']
             );
         } else if (lookupParams.email) {
             // Lookup by email
             contact = await salesforce.findOne(
                 'Contact',
                 { Email: lookupParams.email },
-                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Query_String_Encrypted__c']
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'sf_sb_contact_giving_summary__c', 'Query_String_Encrypted__c']
             );
         }
 
