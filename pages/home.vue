@@ -24,13 +24,17 @@ const {
   status,
 } = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
 
+const layouts = import.meta.glob("../components/layouts/*.vue")
 const layoutComponents = {}
+
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
+  const path = `../components/layouts/${layout}.vue`
+  //perform a synchronous existence check before attempting to load components
+  if (!layouts[path]) return null
+
   if (!layoutComponents[layout]) {
-    layoutComponents[layout] = defineAsyncComponent(() =>
-      import(`~/components/layouts/${layout}.vue`)
-    )
+    layoutComponents[layout] = defineAsyncComponent(layouts[path])
   }
   return layoutComponents[layout]
 }
@@ -97,6 +101,7 @@ onMounted(() => {
       >
         <section v-if="section?.value?.list?.listItems?.length">
           <component
+            v-if="getLayoutComponent(section?.value?.layout)"
             :is="getLayoutComponent(section?.value?.layout)"
             :list="section?.value?.list"
             square
