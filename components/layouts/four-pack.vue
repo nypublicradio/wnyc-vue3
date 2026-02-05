@@ -14,18 +14,6 @@ const props = defineProps({
     type: Number,
     default: 4,
   },
-  scrolling: {
-    type: Boolean,
-    default: false,
-  },
-  scrollingMaxItems: {
-    type: Number,
-    default: 5,
-  },
-  gap: {
-    type: String,
-    default: null,
-  },
   square: {
     type: Boolean,
     default: true,
