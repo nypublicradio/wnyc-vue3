@@ -141,12 +141,12 @@ const getOneTime = async (contactId: string): Promise<any> => {
                 'sb_CGS_Last_One_Time_Gift_Date__c'
             ]
         );
-        
+
         if (!oneTime) return null;
-        
+
         // Remove Salesforce metadata attributes
-        const { attributes, ...cleanData } = oneTime;
-        
+        const { attributes: _attributes, ...cleanData } = oneTime;
+
         return cleanData;
     } catch (error: any) {
         // Log error but don't fail the entire request if giving summary is not found
