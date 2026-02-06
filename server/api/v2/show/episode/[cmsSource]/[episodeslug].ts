@@ -20,10 +20,50 @@ const getSimplecastEpisode = async (episodeId: string) => {
         
         console.log(`[Simplecast] Fetching episode from Simplecast API: ${episodeId}`)
         console.log(`[Simplecast] API URL: ${config.simplecastUrl}/episodes/${episodeId}`)
+        console.log(`[Simplecast] Full config keys:`, Object.keys(config))
+        console.log(`[Simplecast] API Key type:`, typeof config.simplecastApiKey)
+        console.log(`[Simplecast] API Key value (first 20 chars):`, config.simplecastApiKey?.substring?.(0, 20) || 'undefined')
+        console.log(`[Simplecast] process.env.SIMPLECAST_API_KEY exists:`, !!process.env.SIMPLECAST_API_KEY)
         console.log(`[Simplecast] API Key configured: ${config.simplecastApiKey ? 'Yes' : 'No'}`)
         
         if (!config.simplecastApiKey) {
             console.error('[Simplecast] SIMPLECAST_API_KEY is not configured')
+            console.error('[Simplecast] Trying direct process.env access...')
+            const directKey = process.env.SIMPLECAST_API_KEY
+            if (directKey) {
+                console.log('[Simplecast] Found key in process.env, using it directly')
+                const option = {
+                    method: 'GET',
+                    url: `${config.simplecastUrl}/episodes/${episodeId}`,
+                    headers: {
+                        'Authorization': directKey
+                    }
+                };
+                const res = await axios(option);
+                let resData = humps.camelizeKeys(res.data);
+                
+                console.log('[Simplecast] Episode API response keys:', Object.keys(resData));
+                console.log('[Simplecast] Podcast info:', resData.podcast || resData.podcastId || 'No podcast info');
+                
+                resData.cmsSource = cmsSources.SIMPLECAST
+                
+                if (resData.podcast?.id) {
+                    resData.showId = resData.podcast.id
+                    resData.showTitle = resData.podcast.title
+                    resData.showImageUrl = resData.podcast.imageUrl
+                    console.log('[Simplecast] Extracted show info:', { showId: resData.showId, showTitle: resData.showTitle })
+                } else if (resData.podcastId) {
+                    resData.showId = resData.podcastId
+                    console.log('[Simplecast] Using podcastId as showId:', resData.showId)
+                } else {
+                    console.warn('[Simplecast] No podcast/show ID found in episode response')
+                }
+                
+                resData = await normalizeArticlePage(resData)
+                return {
+                    data: resData,
+                };
+            }
             return null
         }
         
