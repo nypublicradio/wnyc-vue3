@@ -19,6 +19,13 @@ const getSimplecastEpisode = async (episodeId: string) => {
         }
         
         console.log(`[Simplecast] Fetching episode from Simplecast API: ${episodeId}`)
+        console.log(`[Simplecast] API URL: ${config.simplecastUrl}/episodes/${episodeId}`)
+        console.log(`[Simplecast] API Key configured: ${config.simplecastApiKey ? 'Yes' : 'No'}`)
+        
+        if (!config.simplecastApiKey) {
+            console.error('[Simplecast] SIMPLECAST_API_KEY is not configured')
+            return null
+        }
         
         const option = {
             method: 'GET',
@@ -39,8 +46,19 @@ const getSimplecastEpisode = async (episodeId: string) => {
         return {
             data: resData,
         };
-    } catch (e) {
-        console.error('[Simplecast] Error fetching episode from Simplecast API:', e?.response?.status, e?.response?.statusText);
+    } catch (e: any) {
+        console.error('[Simplecast] Error fetching episode from Simplecast API');
+        console.error('[Simplecast] Error message:', e?.message);
+        console.error('[Simplecast] Error details:', {
+            status: e?.response?.status,
+            statusText: e?.response?.statusText,
+            data: e?.response?.data,
+            hasResponse: !!e?.response,
+            errorCode: e?.code,
+        });
+        if (e?.stack) {
+            console.error('[Simplecast] Stack trace:', e.stack);
+        }
         return null
     }
 }

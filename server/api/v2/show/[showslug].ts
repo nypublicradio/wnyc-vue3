@@ -102,6 +102,14 @@ const getShow = async (slug: string) => {
         // This is a Simplecast show UUID
         try {
             console.log(`[Simplecast Show] Fetching show from Simplecast API: ${slug}`)
+            console.log(`[Simplecast Show] API URL: ${config.simplecastUrl}/podcasts/${slug}`)
+            console.log(`[Simplecast Show] API Key configured: ${config.simplecastApiKey ? 'Yes' : 'No'}`)
+            
+            if (!config.simplecastApiKey) {
+                console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
+                return null
+            }
+            
             const option = {
                 method: 'GET',
                 url: `${config.simplecastUrl}/podcasts/${slug}`,
@@ -123,8 +131,19 @@ const getShow = async (slug: string) => {
                 type: mediaTypes.SHOW,
                 url: showData.href || showData.websiteUrl,
             }
-        } catch (e) {
-            console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText)
+        } catch (e: any) {
+            console.error('[Simplecast Show] Error fetching show from Simplecast API');
+            console.error('[Simplecast Show] Error message:', e?.message);
+            console.error('[Simplecast Show] Error details:', {
+                status: e?.response?.status,
+                statusText: e?.response?.statusText,
+                data: e?.response?.data,
+                hasResponse: !!e?.response,
+                errorCode: e?.code,
+            });
+            if (e?.stack) {
+                console.error('[Simplecast Show] Stack trace:', e.stack);
+            }
             return null
         }
     }
