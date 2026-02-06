@@ -105,8 +105,11 @@ const getShow = async (slug: string) => {
             console.log(`[Simplecast Show] API URL: ${config.simplecastUrl}/podcasts/${slug}`)
             console.log(`[Simplecast Show] API Key configured: ${config.simplecastApiKey ? 'Yes' : 'No'}`)
             
-            if (!config.simplecastApiKey) {
-                console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
+            // Use config or fallback to process.env
+            const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
+            
+            if (!apiKey) {
+                console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured in config or process.env')
                 return null
             }
             
@@ -114,7 +117,7 @@ const getShow = async (slug: string) => {
                 method: 'GET',
                 url: `${config.simplecastUrl}/podcasts/${slug}`,
                 headers: {
-                    'Authorization': config.simplecastApiKey
+                    'Authorization': apiKey
                 }
             }
             const res = await axios(option)
