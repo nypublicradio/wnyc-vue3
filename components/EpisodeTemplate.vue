@@ -62,7 +62,8 @@ const progress = ref({})
 const { breakpoint } = useBreakpoints()
 const isMobileBtn = computed(() => breakpoint("<md"))
 
-const isWagtail = route.query.src === cmsSources.WAGTAIL
+const cmsSource = computed(() => route.params.cmsSource || route.query.src || 'publisher')
+const isWagtail = cmsSource.value === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
     ? `Gothamist${
@@ -96,7 +97,7 @@ watch(
       galleryLength.value = gallery.value?.slides?.length ?? 0
 
       galleryLink.value = String(
-        `photos/${props.episodeData?.leadGallery.gallery}?article=${props.episodeData?.id}&src=${route.query.src}`
+        `photos/${props.episodeData?.leadGallery.gallery}?article=${props.episodeData?.id}&src=${cmsSource.value}`
       )
     }
   },
@@ -160,9 +161,14 @@ const handleShare = () => {
 
 //handle the transcript of the episode
 const handleTranscript = () => {
-  navigateTo(
-    `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-  )
+  if (route.params.cmsSource) {
+    navigateTo(`./${route.params.slug}/transcript`)
+  } else {
+    // Fallback for old route structure
+    navigateTo(
+      `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
+    )
+  }
 }
 
 // handle comments button click

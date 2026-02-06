@@ -74,6 +74,8 @@ export async function normalizeArticlePage (article: Record<string, any | undefi
     return await normalizeWagtailPage(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
     return await normalizePublisherPage(article)
+  else if (article.cmsSource === cmsSources.SIMPLECAST)
+    return await normalizeSimplecastPage(article)
   else
     return null
 }
@@ -234,11 +236,23 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   if (typeof article === 'undefined')
     return null
   //console.log("normalizeSimplecastListItem", article)
+  
+  // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
+  const simplecastId = article.id || article.episodeId || article.uuid
+  
+  // Extract show UUID from CMS data
+  const showId = article.showId || article.show_id
+  const showTitle = article.showTitle || article.show_title
+  const showImageUrl = article.showImageUrl || article.show_image_url
+  
   return Object.assign({}, await normalizePage(article), {
+    uuid: simplecastId, // Preserve the Simplecast UUID
+    showId, // Preserve the show UUID
     image: article.image,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
     cmsSource: cmsSources.SIMPLECAST,
+    type: 'episode',
     authors: undefined,
     contributingOrganizations: undefined,
     sponsors: undefined,
@@ -250,6 +264,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
+    link: `/browse/shows/episode/simplecast/${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
     body: article.body,
@@ -258,9 +273,96 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     // for comments
     estimatedDuration: article.duration,
     sortDate: article.publishedAt,
-    meta: { slug: article.slug, type: article.contentType },
-    showTitle: article.showTitle,
+    meta: { slug: article.slug, type: 'episode', simplecastId },
+    showTitle,
+    headers: showTitle && showImageUrl ? { brand: { title: showTitle, logoImage: { url: showImageUrl } } } : undefined,
   })
+}
+
+/**
+ * Normalize an article page object from Simplecast into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizeSimplecastPage (article: Record<string, any | undefined>): Promise<ArticlePage> {
+  if (typeof article === 'undefined')
+    return null
+  
+  // Calculate duration if not provided
+  let duration = article.duration
+  if (!duration || typeof duration !== 'number' || duration === 0) {
+    duration = await estimateMp3Duration(article.audioFileUrl || article.enclosureUrl)
+  }
+
+  // Simplecast uses UUIDs as episode IDs
+  const simplecastId = article.id
+  
+  // Extract show UUID and details from CMS data
+  const showId = article.showId || article.show_id
+  const showTitle = article.showTitle || article.show_title || article.podcast?.title
+  const showImageUrl = article.showImageUrl || article.show_image_url || article.podcast?.imageUrl
+
+  return Promise.resolve(Object.assign({}, await normalizePage(article), {
+    uuid: simplecastId, // Preserve the Simplecast UUID
+    showId, // Preserve the show UUID
+    description: article.description || article.longDescription,
+    image: article.imageUrl ? { url: article.imageUrl } : article.podcast?.imageUrl ? { url: article.podcast.imageUrl } : undefined,
+    imageFullWidth: undefined,
+    imageFullHeight: undefined,
+    leadImageCaption: undefined,
+    imageLink: undefined,
+    type: article.type || 'episode',
+    link: `/browse/shows/episode/simplecast/${simplecastId}`,
+    cmsSource: cmsSources.SIMPLECAST,
+    sortDate: article.publishedAt,
+    leadAsset: undefined,
+    leadImage: undefined,
+    leadGallery: undefined,
+    meta: {
+      firstPublishedAt: article.publishedAt && new Date(article.publishedAt),
+      slug: article.slug,
+      type: article.type || 'episode',
+    },
+    title: article.title,
+    tease: article.description,
+    gallerySlides: undefined,
+    legacyId: article.id,
+    authors: undefined,
+    contributingOrganizations: undefined,
+    sponsors: undefined,
+    publicationDate: article.publishedAt && new Date(article.publishedAt),
+    updatedDate: article.updatedAt && new Date(article.updatedAt),
+    showAsFeature: undefined,
+    sensitiveContent: undefined,
+    provocativeContent: undefined,
+    sponsoredContent: undefined,
+    relatedLinks: undefined,
+    tags: article.keywords?.collection?.map(k => k.value) || [],
+    url: article.episodeUrl,
+    section: undefined,
+    body: article.longDescription || article.description,
+    rawBody: article.longDescription || article.description,
+    audio: article.audioFileUrl || article.enclosureUrl,
+    hasAudio: !!(article.audioFileUrl || article.enclosureUrl),
+    // curated images
+    listingImage: article.imageUrl ? { url: article.imageUrl } : undefined,
+    socialImage: article.imageUrl ? { url: article.imageUrl } : undefined,
+    // for comments
+    disableComments: undefined,
+    commentId: undefined,
+    estimatedDuration: duration,
+    show: article.podcast ? { title: article.podcast.title, url: article.podcast.href } : (showTitle ? { title: showTitle } : undefined),
+    showTitle,
+    headers: showTitle && showImageUrl ? { brand: { title: showTitle, logoImage: { url: showImageUrl } } } : undefined,
+    segments: undefined,
+    transcript: article.transcription,
+    embedCode: undefined,
+    // Additional Simplecast-specific fields
+    episodeNumber: article.number,
+    seasonNumber: article.season?.number,
+    guid: article.guid,
+    isPublished: article.isPublished,
+  }))
 }
 
 /**

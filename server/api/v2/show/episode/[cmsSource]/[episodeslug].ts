@@ -7,6 +7,44 @@ import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
 const config = useRuntimeConfig()
 
+// Get Simplecast episode data directly by UUID
+const getSimplecastEpisode = async (episodeId: string) => {
+    try {
+        // Simplecast API only accepts UUIDs
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(episodeId)
+        
+        if (!isUUID) {
+            console.error('[Simplecast] Invalid episode ID format (must be UUID):', episodeId)
+            return null
+        }
+        
+        console.log(`[Simplecast] Fetching episode from Simplecast API: ${episodeId}`)
+        
+        const option = {
+            method: 'GET',
+            url: `${config.simplecastUrl}/episodes/${episodeId}`,
+            headers: {
+                'Authorization': config.simplecastApiKey
+            }
+        };
+        const res = await axios(option);
+        let resData = humps.camelizeKeys(res.data);
+        
+        // Add cmsSource to identify this as Simplecast data
+        resData.cmsSource = cmsSources.SIMPLECAST
+        
+        // Normalize the Simplecast response to match our ArticlePage structure
+        resData = await normalizeArticlePage(resData)
+
+        return {
+            data: resData,
+        };
+    } catch (e) {
+        console.error('[Simplecast] Error fetching episode from Simplecast API:', e?.response?.status, e?.response?.statusText);
+        return null
+    }
+}
+
 
 
 // Get NPR episode data
@@ -98,11 +136,14 @@ export default defineEventHandler(async (event) => {
         if (cmsSource === cmsSources.NPR) {
             // Get show details
             episode = await getNPREpisode(slug)
+        } else if (cmsSource === cmsSources.SIMPLECAST || cmsSource === 'simplecast') {
+            // Get Simplecast episode
+            episode = await getSimplecastEpisode(slug)
         } else {
             // Get show details
             episode = await getEpisode(slug)
         }
-        return episode.data
+        return episode?.data
     }
     return null
 })
