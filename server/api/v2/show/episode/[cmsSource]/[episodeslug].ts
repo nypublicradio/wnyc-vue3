@@ -31,7 +31,7 @@ const getSimplecastEpisode = async (episodeId: string) => {
             method: 'GET',
             url: `${config.simplecastUrl}/episodes/${episodeId}`,
             headers: {
-                'Authorization': config.simplecastApiKey
+                'Authorization': `Bearer ${process.env.SIMPLECAST_API_KEY}`
             }
         };
         const res = await axios(option);
