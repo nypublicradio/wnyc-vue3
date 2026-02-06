@@ -70,6 +70,7 @@ jobs:
             JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}
             SPRINGBOARD_KEY=${{ secrets.SPRINGBOARD_KEY }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            SIMPLECAST_API_KEY=${{ secrets.SIMPLECAST_API_KEY }}
           build_args: |
             ENV=review
             AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
