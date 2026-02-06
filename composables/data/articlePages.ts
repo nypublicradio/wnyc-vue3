@@ -339,7 +339,7 @@ export async function normalizeSimplecastPage (article: Record<string, any | und
     provocativeContent: undefined,
     sponsoredContent: undefined,
     relatedLinks: undefined,
-    tags: article.keywords?.collection?.map(k => k.value) || [],
+    tags: article.keywords?.collection?.filter(k => k && k.value).map(k => k.value) || [],
     url: article.episodeUrl,
     section: undefined,
     body: article.longDescription || article.description,
