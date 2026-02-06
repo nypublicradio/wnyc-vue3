@@ -343,7 +343,7 @@ export async function normalizeSimplecastPage (article: Record<string, any | und
     body: article.longDescription || article.description,
     rawBody: article.longDescription || article.description,
     audio: article.audioFileUrl || article.enclosureUrl,
-    hasAudio: !!(article.audioFileUrl || article.enclosureUrl),
+    hasAudio: Boolean(article.audioFileUrl || article.enclosureUrl),
     // curated images
     listingImage: article.imageUrl ? { url: article.imageUrl } : undefined,
     socialImage: article.imageUrl ? { url: article.imageUrl } : undefined,
@@ -769,7 +769,8 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
     return { w: 0, h: 0 }
   }
 
-  const cropMatch = image.match(/crop\/(\d+)x(\d+)/)
+  const cropRegex = /crop\/(\d+)x(\d+)/
+  const cropMatch = cropRegex.exec(image)
   if (cropMatch) {
     return {
       w: parseInt(cropMatch[1], 10),
@@ -794,13 +795,13 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
 
   /*   console.log('NPR Image Debug:', {
       articleId: id,
-      hasImages: !!article.images,
+      hasImages: Boolean(article.images),
       imageCount: article.images?.length,
       firstImageHref,
       rawImageId,
       camelCaseId,
-      hasFirstImage: !!firstImage,
-      hasAssets: !!article.assets,
+      hasFirstImage: Boolean(firstImage),
+      hasAssets: Boolean(article.assets),
       assetKeys: article.assets ? Object.keys(article.assets).slice(0, 10) : [],
       firstImageAsset: firstImage ? 'FOUND!' : 'not found'
     }) */
