@@ -248,6 +248,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   return Object.assign({}, await normalizePage(article), {
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
+    showSlug: showId, // Use showId as slug for Simplecast shows
     image: article.image,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
@@ -305,6 +306,7 @@ export async function normalizeSimplecastPage (article: Record<string, any | und
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
+    showSlug: showId, // Use showId as slug for Simplecast shows
     description: article.description || article.longDescription,
     image: article.imageUrl ? { url: article.imageUrl } : article.podcast?.imageUrl ? { url: article.podcast.imageUrl } : undefined,
     imageFullWidth: undefined,

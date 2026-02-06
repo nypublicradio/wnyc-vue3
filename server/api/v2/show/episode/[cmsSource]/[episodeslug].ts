@@ -37,8 +37,25 @@ const getSimplecastEpisode = async (episodeId: string) => {
         const res = await axios(option);
         let resData = humps.camelizeKeys(res.data);
         
+        console.log('[Simplecast] Episode API response keys:', Object.keys(resData));
+        console.log('[Simplecast] Podcast info:', resData.podcast || resData.podcastId || 'No podcast info');
+        
         // Add cmsSource to identify this as Simplecast data
         resData.cmsSource = cmsSources.SIMPLECAST
+        
+        // Extract show/podcast ID from the response
+        // Simplecast episodes include a podcast object or podcastId
+        if (resData.podcast?.id) {
+            resData.showId = resData.podcast.id
+            resData.showTitle = resData.podcast.title
+            resData.showImageUrl = resData.podcast.imageUrl
+            console.log('[Simplecast] Extracted show info:', { showId: resData.showId, showTitle: resData.showTitle })
+        } else if (resData.podcastId) {
+            resData.showId = resData.podcastId
+            console.log('[Simplecast] Using podcastId as showId:', resData.showId)
+        } else {
+            console.warn('[Simplecast] No podcast/show ID found in episode response')
+        }
         
         // Normalize the Simplecast response to match our ArticlePage structure
         resData = await normalizeArticlePage(resData)
