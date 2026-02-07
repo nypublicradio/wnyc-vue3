@@ -162,7 +162,14 @@ export function useVImage () {
 
     // checks if the image URL is from Wagtail
     const isSimplecastImage = (url) => {
-        return (typeof url === "string" && url.includes("simplecastcdn.com"))
+        // Handle both string URLs and objects with url property
+        if (typeof url === "string" && url.includes("simplecastcdn.com")) {
+            return true
+        }
+        if (typeof url === "object" && url?.url && typeof url.url === "string" && url.url.includes("simplecastcdn.com")) {
+            return true
+        }
+        return false
     }
 
     // checks if the image is from Publisher
@@ -215,7 +222,9 @@ export function useVImage () {
             } else if (isNPRImage(srcImg)) {
                 return { cmsSource: cmsSources.NPR, imageTemplate: srcImg?.template || srcImg }
             } else if (isSimplecastImage(srcImg)) {
-                return { cmsSource: cmsSources.SIMPLECAST, imageTemplate: srcImg }
+                // Handle Simplecast images - extract URL from object or use string directly
+                const imageUrl = typeof srcImg === "object" && srcImg?.url ? srcImg.url : srcImg
+                return { cmsSource: cmsSources.SIMPLECAST, imageTemplate: imageUrl }
             } else {
                 // fallback
                 return fallBackObject

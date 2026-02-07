@@ -223,11 +223,17 @@ const getEpisodeImage = () => {
   const epImage = props.episodeData?.image
   const showImage = props.episodeData?.headers?.brand?.logoImage
 
-  return epImage && typeof epImage === "object"
-    ? epImage?.template !== showImage?.template
+  // Handle Simplecast images which use 'url' instead of 'template'
+  if (epImage && typeof epImage === "object") {
+    const epImageIdentifier = epImage?.url || epImage?.template
+    const showImageIdentifier = showImage?.url || showImage?.template
+    
+    return epImageIdentifier !== showImageIdentifier
       ? epImage
       : gallery.value?.slides?.[0]?.image || null
-    : epImage
+  }
+  
+  return epImage
 }
 
 const theEpImage = computed(() => getEpisodeImage())
