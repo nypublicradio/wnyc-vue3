@@ -90,11 +90,15 @@ onMounted(() => {
     </section>
     <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
+
     <div v-if="status === 'success'">
       <div
-        v-for="section in pagedata?.new_home_template.curatedContent"
+        v-for="(section, index) in pagedata?.new_home_template.curatedContent"
         :key="section?.id"
       >
+        <!-- <section v-if="index === 1" class="my-4 md:my-6">
+          <PersonalitiesBanner />
+        </section> -->
         <section v-if="section?.value?.list?.listItems?.length">
           <component
             :is="getLayoutComponent(section?.value?.layout)"
