@@ -204,6 +204,7 @@ const breadcrumbs = computed(() => [
                 </EventButton>
               </div>
             </div>
+            <div class="event-hero__rail-spacer" aria-hidden="true"></div>
           </div>
         </template>
         <template v-else>
@@ -328,26 +329,36 @@ const breadcrumbs = computed(() => [
 
 <style lang="scss" scoped>
 .event-page {
+  --event-main-col-width: 672px;
+  --event-rail-col-width: 20rem;
+  --event-grid-gap: 32px;
+
   .event-section {
     padding: 0 32px;
   }
 }
 
 .event-hero {
-  padding: 32px 0 24px;
+  padding-top: 32px;
+  padding-bottom: 24px;
 
   .event-hero__layout {
     display: grid;
-    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
-    column-gap: 32px;
+    grid-template-columns: minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+    column-gap: var(--event-grid-gap);
     align-items: start;
     justify-content: end;
+  }
+
+  .event-hero__rail-spacer {
+    grid-column: 2;
+    width: 100%;
   }
 
   .event-hero__header {
     grid-column: 1;
     width: 100%;
-    max-width: 672px;
+    max-width: none;
     display: grid;
     grid-template-columns: auto 1fr;
     column-gap: 1.25rem;
@@ -393,12 +404,14 @@ const breadcrumbs = computed(() => [
   .event-hero__title {
     grid-column: 2;
     grid-row: 1;
+    min-width: 0;
     font-family: var(--font-family-header);
     font-size: 36px;
     line-height: 1.2;
     letter-spacing: -0.02em;
     color: #000000;
-    margin-top: -0.1em;
+    margin: 0;
+    overflow-wrap: anywhere;
   }
 
   .event-hero__meta {
@@ -470,13 +483,14 @@ const breadcrumbs = computed(() => [
 
   .event-body__layout {
     display: grid;
-    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
-    column-gap: 32px;
+    grid-template-columns: minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+    column-gap: var(--event-grid-gap);
     align-items: start;
     justify-content: end;
   }
 
   .event-body__content {
+    grid-column: 1;
     min-width: 0;
   }
 
@@ -504,6 +518,7 @@ const breadcrumbs = computed(() => [
 }
 
 .event-rail {
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -580,11 +595,81 @@ const breadcrumbs = computed(() => [
   }
 }
 
+@include media(">=xl") {
+  .event-hero,
+  .event-body {
+    padding-left: 0;
+    padding-right: 0;
+
+    .event-section {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  .event-more {
+    padding-left: 0;
+    padding-right: 0;
+
+    .event-section {
+      padding-left: 0;
+      padding-right: 0;
+      display: grid;
+      grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+      column-gap: var(--event-grid-gap);
+      align-items: start;
+    }
+
+    .event-more__divider,
+    .event-more__title,
+    .event-more__list {
+      grid-column: 2;
+    }
+
+    .event-more__list {
+      width: 100%;
+      max-width: none;
+    }
+  }
+
+  .event-hero {
+    .event-hero__layout {
+      grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+    }
+
+    .event-hero__header {
+      grid-column: 2;
+    }
+
+    .event-hero__rail-spacer {
+      grid-column: 3;
+    }
+  }
+
+  .event-body {
+    .event-body__layout {
+      grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+    }
+
+    .event-body__content {
+      grid-column: 2;
+    }
+  }
+
+  .event-rail {
+    grid-column: 3;
+  }
+}
+
 @include media("<lg") {
   .event-body {
     .event-body__layout {
       grid-template-columns: 1fr;
       row-gap: 28px;
+    }
+
+    .event-body__content {
+      grid-column: 1;
     }
   }
 
@@ -592,6 +677,18 @@ const breadcrumbs = computed(() => [
     .event-hero__layout {
       grid-template-columns: 1fr;
     }
+
+    .event-hero__header {
+      grid-column: 1;
+    }
+
+    .event-hero__rail-spacer {
+      display: none;
+    }
+  }
+
+  .event-rail {
+    grid-column: 1;
   }
 }
 
@@ -603,7 +700,8 @@ const breadcrumbs = computed(() => [
   }
 
   .event-hero {
-    padding: 20px 0 16px;
+    padding-top: 20px;
+    padding-bottom: 16px;
 
     .event-hero__title {
       font-size: 24px;
