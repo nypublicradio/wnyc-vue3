@@ -10,11 +10,11 @@ const {
   getMembershipInfo,
 } = useProfileApi()
 const {
-  onCancelMembership,
-  onUpdateGiftAmount,
+  //onCancelMembership,
+  //onUpdateGiftAmount,
+  //onContactListenerServices,
+  //onChangePaymentInfo,
   onDonateNow,
-  onContactListenerServices,
-  onChangePaymentInfo,
   onGoToMemberCenter,
 } = useMembership()
 const currentUser = useCurrentUser()
@@ -81,34 +81,29 @@ onMounted(async () => {
 
 <template>
   <div class="member-center grid grid-lggutter">
-    <div v-if="currentUser && profileData && !isLoading" class="col-12">
+    <div
+      v-if="currentUser && profileData && !isLoading"
+      class="col-12 flex flex-column gap-3"
+    >
       <MemberCardBasic
         :profileData="profileData"
-        class="mb-3"
         @onDonateNow="onDonateNow"
-        @onContactListenerServices="onContactListenerServices()"
-        @onGoToMemberCenter="onGoToMemberCenter($event)"
+        @onGoToMemberCenter="onGoToMemberCenter"
       />
       <MemberCardBasic
         :profileData="profileDataTempNoDonations"
-        class="mb-3"
         @onDonateNow="onDonateNow"
-        @onContactListenerServices="onContactListenerServices()"
-        @onGoToMemberCenter="onGoToMemberCenter($event)"
+        @onGoToMemberCenter="onGoToMemberCenter"
       />
       <MemberCardBasic
         :profileData="profileDataTempActive"
-        class="mb-3"
         @onDonateNow="onDonateNow"
-        @onContactListenerServices="onContactListenerServices()"
-        @onGoToMemberCenter="onGoToMemberCenter($event)"
+        @onGoToMemberCenter="onGoToMemberCenter"
       />
       <MemberCardBasic
         :profileData="profileDataTempError"
-        class="mb-3"
         @onDonateNow="onDonateNow"
-        @onContactListenerServices="onContactListenerServices()"
-        @onGoToMemberCenter="onGoToMemberCenter($event)"
+        @onGoToMemberCenter="onGoToMemberCenter"
       />
 
       <!-- TEMP to show no donation history -->

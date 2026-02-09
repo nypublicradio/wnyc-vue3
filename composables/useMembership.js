@@ -152,12 +152,12 @@ export const useMembership = () => {
     )
   }
 
-  //onChangePaymentInfo
+  //handle open new tab to springboard
   const onChangePaymentInfo = (queryStringEncrypted) => {
     const url = `${ springboardLink }?=${ queryStringEncrypted }`
     window.open(url, "_blank")
   }
-
+  //handle open new tab to member center
   const onGoToMemberCenter = () => {
     const url = `${ memberCenterLink }`
     window.open(url, "_blank")
