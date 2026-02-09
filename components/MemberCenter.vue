@@ -15,523 +15,23 @@ const {
   onDonateNow,
   onContactListenerServices,
   onChangePaymentInfo,
+  onGoToMemberCenter,
 } = useMembership()
 const currentUser = useCurrentUser()
 
-const profileDataTemp2 = ref({
-  name: "Susan Manning",
-  lastDonationDate: "2024-09-04",
-  lastDonationAmount: 8,
+const profileDataTempNoDonations = ref({
+  name: "LaFontaine Oliver",
+  lastDonationDate: "2025-12-27",
+  lastDonationAmount: 216,
   isActiveSustainer: false,
   activeRecurringDonations: [],
-  queryStringEncrypted: "placeholder",
+  queryStringEncrypted: "xxx",
+  oneTime: {
+    sb_CGS_Last_One_Time_Gift_Amount__c: null,
+    sb_CGS_Last_One_Time_Gift_Date__c: null,
+  },
 })
-const profileDataTemp = ref({
-  name: "Susan Manning",
-  lastDonationDate: "2025-09-04",
-  lastDonationAmount: 8,
-  isActiveSustainer: true,
-  activeRecurringDonations: [
-    {
-      paymentFailed: false,
-      springboardId: "4517921",
-      brand: "WQXR Membership",
-      amount: 79.8,
-      nextChargeDate: "2025-09-30",
-      membershipStartDate: "2023-03-31",
-    },
-    {
-      paymentFailed: true,
-      springboardId: "4732223",
-      brand: "WNYC Membership",
-      amount: 82.8,
-      nextChargeDate: "2025-09-11",
-      membershipStartDate: "2023-04-11",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "5480905",
-      brand: "WNYC Membership",
-      amount: 20,
-      nextChargeDate: "2025-09-13",
-      membershipStartDate: "2023-06-13",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "5505076",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-17",
-      membershipStartDate: "2023-06-17",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "5669615",
-      brand: "WNYC Membership",
-      amount: 20,
-      nextChargeDate: "2025-10-02",
-      membershipStartDate: "2023-07-02",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "5972390",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-10-01",
-      membershipStartDate: "2023-08-01",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6054666",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-10-03",
-      membershipStartDate: "2023-08-03",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6181081",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-13",
-      membershipStartDate: "2023-08-13",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6183940",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-13",
-      membershipStartDate: "2023-08-13",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6189001",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-15",
-      membershipStartDate: "2023-08-15",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6192388",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-15",
-      membershipStartDate: "2023-08-15",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6224074",
-      brand: "WNYC Membership",
-      amount: 16.2,
-      nextChargeDate: "2025-09-20",
-      membershipStartDate: "2023-08-20",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6241075",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-21",
-      membershipStartDate: "2023-08-21",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6250930",
-      brand: "WNYC Membership",
-      amount: 8,
-      nextChargeDate: "2025-09-23",
-      membershipStartDate: "2023-08-23",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6271750",
-      brand: "WNYC Membership",
-      amount: 18,
-      nextChargeDate: "2025-09-25",
-      membershipStartDate: "2023-08-25",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "6523657",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-13",
-      membershipStartDate: "2023-09-13",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7180402",
-      brand: "WNYC Membership",
-      amount: 8,
-      nextChargeDate: "2025-10-04",
-      membershipStartDate: "2023-11-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7684024",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-20",
-      membershipStartDate: "2023-12-20",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7729045",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-25",
-      membershipStartDate: "2023-12-25",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7735522",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-25",
-      membershipStartDate: "2023-12-25",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7740484",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-26",
-      membershipStartDate: "2023-12-26",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7763341",
-      brand: "WQXR Membership",
-      amount: 8,
-      nextChargeDate: "2025-09-28",
-      membershipStartDate: "2023-12-28",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7982983",
-      brand: "WNYC Membership",
-      amount: 8,
-      nextChargeDate: "2025-09-09",
-      membershipStartDate: "2024-01-09",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7985377",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-09",
-      membershipStartDate: "2024-01-09",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "7986724",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-09",
-      membershipStartDate: "2024-01-09",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8120344",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-28",
-      membershipStartDate: "2024-01-28",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8131333",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-29",
-      membershipStartDate: "2024-01-29",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8208139",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-10-02",
-      membershipStartDate: "2024-02-02",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8245963",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-10-03",
-      membershipStartDate: "2024-02-03",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8294197",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-04",
-      membershipStartDate: "2024-02-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8295175",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-04",
-      membershipStartDate: "2024-02-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8295622",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-04",
-      membershipStartDate: "2024-02-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8326522",
-      brand: "WNYC Patrons",
-      amount: 97.8,
-      nextChargeDate: "2025-09-09",
-      membershipStartDate: "2024-02-09",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8433004",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-25",
-      membershipStartDate: "2024-02-25",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8852806",
-      brand: "WNYC Patrons",
-      amount: 105,
-      nextChargeDate: "2025-09-29",
-      membershipStartDate: "2024-03-29",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "8982019",
-      brand: "WNYC Patrons",
-      amount: 118,
-      nextChargeDate: "2025-10-04",
-      membershipStartDate: "2024-04-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "11742304",
-      brand: "WNYC Membership",
-      amount: 13,
-      nextChargeDate: "2025-10-03",
-      membershipStartDate: "2024-12-03",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12153232",
-      brand: "WNYC Patrons",
-      amount: 130,
-      nextChargeDate: "2025-09-05",
-      membershipStartDate: "2025-01-05",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12154219",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-05",
-      membershipStartDate: "2025-01-05",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12194092",
-      brand: "WNYC Membership",
-      amount: 45,
-      nextChargeDate: "2025-09-12",
-      membershipStartDate: "2025-01-12",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12203956",
-      brand: "WNYC Patrons",
-      amount: 140,
-      nextChargeDate: "2025-09-14",
-      membershipStartDate: "2025-01-14",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12299620",
-      brand: "WQXR Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-25",
-      membershipStartDate: "2025-01-25",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12315529",
-      brand: "WNYC Membership",
-      amount: 8,
-      nextChargeDate: "2025-09-27",
-      membershipStartDate: "2025-01-27",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12480388",
-      brand: "WNYC Patrons",
-      amount: 153,
-      nextChargeDate: "2025-09-05",
-      membershipStartDate: "2025-02-05",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12497035",
-      brand: "WQXR Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-07",
-      membershipStartDate: "2025-02-07",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12536392",
-      brand: "WNYC Patrons",
-      amount: 94.8,
-      nextChargeDate: "2025-09-15",
-      membershipStartDate: "2025-02-15",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12571546",
-      brand: "WNYC Patrons",
-      amount: 168,
-      nextChargeDate: "2025-09-20",
-      membershipStartDate: "2025-02-20",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12627481",
-      brand: "WQXR Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-25",
-      membershipStartDate: "2025-02-25",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12800401",
-      brand: "WQXR Membership",
-      amount: 15,
-      nextChargeDate: "2025-10-04",
-      membershipStartDate: "2025-03-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "12861607",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-06",
-      membershipStartDate: "2025-03-06",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13303945",
-      brand: "WQXR Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-15",
-      membershipStartDate: "2025-04-15",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13304008",
-      brand: "WNYC Membership",
-      amount: 15,
-      nextChargeDate: "2025-09-15",
-      membershipStartDate: "2025-04-15",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13332796",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-19",
-      membershipStartDate: "2025-04-19",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13554895",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-10-04",
-      membershipStartDate: "2025-05-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13563790",
-      brand: "WNYC Membership",
-      amount: 8,
-      nextChargeDate: "2025-09-04",
-      membershipStartDate: "2025-05-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13576168",
-      brand: "WNYC Membership",
-      amount: 13,
-      nextChargeDate: "2025-09-04",
-      membershipStartDate: "2025-05-04",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13587904",
-      brand: "WNYC Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-05",
-      membershipStartDate: "2025-05-05",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13642060",
-      brand: "WNYC Membership",
-      amount: 12,
-      nextChargeDate: "2025-09-11",
-      membershipStartDate: "2025-05-11",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13832647",
-      brand: "WQXR Patrons",
-      amount: 88,
-      nextChargeDate: "2025-09-29",
-      membershipStartDate: "2025-05-29",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13835341",
-      brand: "WQXR Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-29",
-      membershipStartDate: "2025-05-29",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "13887253",
-      brand: "WQXR Patrons",
-      amount: 98,
-      nextChargeDate: "2025-10-02",
-      membershipStartDate: "2025-06-02",
-    },
-    {
-      paymentFailed: false,
-      springboardId: "14854483",
-      brand: "WQXR Membership",
-      amount: 10,
-      nextChargeDate: "2025-09-21",
-      membershipStartDate: "2025-08-21",
-    },
-  ],
-  queryStringEncrypted: "placeholder",
-})
-const profileDataTemp3 = ref({
+const profileDataTempActive = ref({
   name: "LaFontaine Oliver",
   lastDonationDate: "2025-12-27",
   lastDonationAmount: 216,
@@ -552,6 +52,27 @@ const profileDataTemp3 = ref({
     sb_CGS_Last_One_Time_Gift_Date__c: null,
   },
 })
+const profileDataTempError = ref({
+  name: "LaFontaine Oliver",
+  lastDonationDate: "2025-12-27",
+  lastDonationAmount: 216,
+  isActiveSustainer: true,
+  activeRecurringDonations: [
+    {
+      springboardId: "2616220",
+      brand: "WNYC Patrons",
+      amount: 216,
+      nextChargeDate: "2026-01-27",
+      membershipStartDate: "2022-10-27",
+      status: "failed",
+    },
+  ],
+  queryStringEncrypted: "xxx",
+  oneTime: {
+    sb_CGS_Last_One_Time_Gift_Amount__c: null,
+    sb_CGS_Last_One_Time_Gift_Date__c: null,
+  },
+})
 // lifecycle hooks
 onMounted(async () => {
   await getMembershipInfo()
@@ -562,11 +83,32 @@ onMounted(async () => {
   <div class="member-center grid grid-lggutter">
     <div v-if="currentUser && profileData && !isLoading" class="col-12">
       <MemberCardBasic
-        :profileData="profileDataTemp3"
+        :profileData="profileData"
         class="mb-3"
         @onDonateNow="onDonateNow"
         @onContactListenerServices="onContactListenerServices()"
-        @onChangePaymentInfo="onChangePaymentInfo($event)"
+        @onGoToMemberCenter="onGoToMemberCenter($event)"
+      />
+      <MemberCardBasic
+        :profileData="profileDataTempNoDonations"
+        class="mb-3"
+        @onDonateNow="onDonateNow"
+        @onContactListenerServices="onContactListenerServices()"
+        @onGoToMemberCenter="onGoToMemberCenter($event)"
+      />
+      <MemberCardBasic
+        :profileData="profileDataTempActive"
+        class="mb-3"
+        @onDonateNow="onDonateNow"
+        @onContactListenerServices="onContactListenerServices()"
+        @onGoToMemberCenter="onGoToMemberCenter($event)"
+      />
+      <MemberCardBasic
+        :profileData="profileDataTempError"
+        class="mb-3"
+        @onDonateNow="onDonateNow"
+        @onContactListenerServices="onContactListenerServices()"
+        @onGoToMemberCenter="onGoToMemberCenter($event)"
       />
 
       <!-- TEMP to show no donation history -->

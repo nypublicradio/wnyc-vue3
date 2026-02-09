@@ -1,20 +1,11 @@
 <script setup>
-import { useProfileApi } from "~/composables/useProfileApi"
-
 const props = defineProps({
   profileData: {
     type: Object,
     default: null,
   },
 })
-
-console.log("props.profileData", props.profileData)
-
-const donations = computed(() => {
-  return props.profileData?.activeRecurringDonations
-})
-
-const emit = defineEmits(["onDonateNow", "onChangePaymentInfo"])
+const emit = defineEmits(["onDonateNow", "onGoToMemberCenter"])
 
 const memberStatus = {
   CHECK: "check",
@@ -26,18 +17,25 @@ const memberBrand = {
   WQXR: "wqxr",
 }
 
+const donations = computed(() => {
+  return (
+    props.profileData?.activeRecurringDonations ||
+    props.profileData?.activeRecurringDonations.length > 0
+  )
+})
+
 const hasPaymentFailed = computed(() => {
   return donations.value?.some((donation) => donation.status !== "Completed")
 })
 const isActiveSustainer = computed(() => {
-  return props.profileData?.isActiveSustainer
+  return props.profileData?.isActiveSustainer || donations.value
 })
 
 const getIconStatus = computed(() => {
-  if (!isActiveSustainer.value) {
-    return memberStatus.LOCK
-  } else if (hasPaymentFailed.value) {
+  if (hasPaymentFailed.value) {
     return memberStatus.ERROR
+  } else if (!isActiveSustainer.value) {
+    return memberStatus.LOCK
   } else {
     return memberStatus.CHECK
   }
@@ -47,7 +45,7 @@ const getBrand = computed(() => {
 })
 
 const goToMemberCenter = () => {
-  emit("onChangePaymentInfo", props.profileData.queryStringEncrypted)
+  emit("onGoToMemberCenter", props.profileData.queryStringEncrypted)
 }
 </script>
 
@@ -72,7 +70,7 @@ const goToMemberCenter = () => {
         </div>
       </div>
 
-      <div v-if="donations.length > 0">
+      <div v-else-if="donations.length > 0">
         <p class="font-bold">Sustaining Member</p>
         <div
           class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
