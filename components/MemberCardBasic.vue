@@ -45,24 +45,24 @@ const getBrand = computed(() => {
 })
 
 const goToMemberCenter = () => {
-  emit("onGoToMemberCenter", props.profileData.queryStringEncrypted)
+  emit("onGoToMemberCenter")
 }
 </script>
 
 <template>
   <div class="member-card card">
     <div
-      class="flex flex-wrap sm:flex-nowrap align-items-start justify-content-center sm:justify-content-start gap-3"
+      class="flex flex-wrap flex-nowrap align-items-start justify-content-start gap-3"
     >
       <MemberStatusIcon :brand="getBrand" :status="getIconStatus" />
 
       <div v-if="hasPaymentFailed">
         <p class="font-bold">Your membership needs to be updated</p>
         <div
-          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+          class="flex gap-3 mt-3 align-items-center justify-content-start flex-wrap"
         >
           <Button
-            class="px-3 w-full sm:w-auto"
+            class="px-5 sm:w-auto"
             @click="goToMemberCenter"
             label="Member Center"
             size="small"
@@ -73,10 +73,10 @@ const goToMemberCenter = () => {
       <div v-else-if="donations.length > 0">
         <p class="font-bold">Sustaining Member</p>
         <div
-          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+          class="flex gap-3 mt-3 align-items-center justify-content-start flex-wrap"
         >
           <Button
-            class="px-3 w-full sm:w-auto"
+            class="px-5 sm:w-auto"
             @click="goToMemberCenter"
             label="Member Center"
             size="small"
@@ -91,10 +91,10 @@ const goToMemberCenter = () => {
           future of public media.
         </p>
         <div
-          class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
+          class="flex gap-3 mt-3 align-items-center justify-content-start flex-wrap"
         >
           <Button
-            class="px-5 w-full sm:w-auto"
+            class="px-5 sm:w-auto"
             @click="emit('onDonateNow')"
             label="Donate Now"
             size="small"
