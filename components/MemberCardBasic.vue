@@ -18,17 +18,14 @@ const memberBrand = {
 }
 
 const donations = computed(() => {
-  return (
-    props.profileData?.activeRecurringDonations ||
-    props.profileData?.activeRecurringDonations.length > 0
-  )
+  return props.profileData?.activeRecurringDonations
 })
 
 const hasPaymentFailed = computed(() => {
   return donations.value?.some((donation) => donation.status !== "Completed")
 })
 const isActiveSustainer = computed(() => {
-  return props.profileData?.isActiveSustainer || donations.value
+  return props.profileData?.isActiveSustainer || donations.value?.length > 0
 })
 
 const getIconStatus = computed(() => {
