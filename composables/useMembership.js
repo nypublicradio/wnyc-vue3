@@ -71,7 +71,7 @@ export const useMembership = () => {
           toast.add({
             severity: "success",
             summary:
-              `Your donation has been successfully updated to $${e.amount}/mo.`,
+              `Your donation has been successfully updated to $${ e.amount }/mo.`,
             life: 6000,
             closable: true,
           })
@@ -101,7 +101,7 @@ export const useMembership = () => {
           const requestBody = { did: springboardId, reason: "User requested cancellation via WNYC account dashboard Member Center." }
 
           try {
-            const data = await authenticatedFetch(`${config.public.BFF_URL}/api/donation/cancel`, {
+            const data = await authenticatedFetch(`${ config.public.BFF_URL }/api/donation/cancel`, {
               method: 'POST',
               body: requestBody,
             })
@@ -146,14 +146,14 @@ export const useMembership = () => {
   const onDonateNow = (utmParams = { utm_source: "wnyc", utm_medium: "wnyc", utm_campaign: "donate-button" }) => {
     const queryString = new URLSearchParams(utmParams).toString()
     window.open(
-      `${donationLink}?${queryString}`,
+      `${ donationLink }?${ queryString }`,
       "_blank"
     )
   }
 
   //onChangePaymentInfo
   const onChangePaymentInfo = (queryStringEncrypted) => {
-    const url = `${springboardLink}?=${queryStringEncrypted}`
+    const url = `${ springboardLink }?=${ queryStringEncrypted }`
     window.open(url, "_blank")
   }
 
