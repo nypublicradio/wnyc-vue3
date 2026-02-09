@@ -4,7 +4,11 @@ import { useProfileApi } from "~/composables/useProfileApi"
 import { useMembership } from "~/composables/useMembership"
 
 // Profile API composable for member profile data
-const { profile: profileData, loading: isLoading, getMembershipInfo } = useProfileApi()
+const {
+  profile: profileData,
+  loading: isLoading,
+  getMembershipInfo,
+} = useProfileApi()
 const {
   onCancelMembership,
   onUpdateGiftAmount,
@@ -527,7 +531,27 @@ const profileDataTemp = ref({
   ],
   queryStringEncrypted: "placeholder",
 })
-
+const profileDataTemp3 = ref({
+  name: "LaFontaine Oliver",
+  lastDonationDate: "2025-12-27",
+  lastDonationAmount: 216,
+  isActiveSustainer: true,
+  activeRecurringDonations: [
+    {
+      springboardId: "2616220",
+      brand: "WNYC Patrons",
+      amount: 216,
+      nextChargeDate: "2026-01-27",
+      membershipStartDate: "2022-10-27",
+      status: "Completed",
+    },
+  ],
+  queryStringEncrypted: "xxx",
+  oneTime: {
+    sb_CGS_Last_One_Time_Gift_Amount__c: null,
+    sb_CGS_Last_One_Time_Gift_Date__c: null,
+  },
+})
 // lifecycle hooks
 onMounted(async () => {
   await getMembershipInfo()
@@ -536,18 +560,25 @@ onMounted(async () => {
 
 <template>
   <div class="member-center grid grid-lggutter">
-    <!-- {{ isLoading }}
-    <pre class="text-xs">{{ profileData }}</pre>
-    <pre class="text-xs">{{ currentUser }}</pre> -->
     <div v-if="currentUser && profileData && !isLoading" class="col-12">
+      <MemberCardBasic
+        :profileData="profileDataTemp3"
+        class="mb-3"
+        @onDonateNow="onDonateNow"
+        @onContactListenerServices="onContactListenerServices()"
+        @onChangePaymentInfo="onChangePaymentInfo($event)"
+      />
+
       <!-- TEMP to show no donation history -->
-      <MemberCard
+      <!-- <MemberCard
         :donation="null"
         :profileData="profileDataTemp2"
         class="mb-3"
         @onDonateNow="onDonateNow"
         @onContactListenerServices="onContactListenerServices()"
-        @onChangePaymentInfo="onChangePaymentInfo(profileDataTemp.queryStringEncrypted)"
+        @onChangePaymentInfo="
+          onChangePaymentInfo(profileDataTemp.queryStringEncrypted)
+        "
       />
       <MemberCard
         :donation="null"
@@ -555,10 +586,12 @@ onMounted(async () => {
         class="mb-3"
         @onDonateNow="onDonateNow"
         @onContactListenerServices="onContactListenerServices()"
-        @onChangePaymentInfo="onChangePaymentInfo(profileDataTemp.queryStringEncrypted)"
-      />
+        @onChangePaymentInfo="
+          onChangePaymentInfo(profileDataTemp.queryStringEncrypted)
+        "
+      /> -->
       <!-- TEMP to show no donation history -->
-      <div
+      <!-- <div
         v-if="profileDataTemp.activeRecurringDonations.length > 0"
         class="flex flex-column gap-3"
       >
@@ -573,72 +606,16 @@ onMounted(async () => {
           "
           @onUpdateGiftAmount="onUpdateGiftAmount(donation.amount)"
           @onContactListenerServices="onContactListenerServices()"
-          @onChangePaymentInfo="onChangePaymentInfo(profileDataTemp.queryStringEncrypted)"
+          @onChangePaymentInfo="
+            onChangePaymentInfo(profileDataTemp.queryStringEncrypted)
+          "
         />
       </div>
-      <MemberCard v-else :donation="null" :profileData="profileData" />
-      <!-- <pre>{{ profileData }}</pre> -->
-      <!-- <pre>{{ profileDataTemp }}</pre> -->
+      <MemberCard v-else :donation="null" :profileData="profileData" /> -->
     </div>
     <!-- loading skeleton for membership card -->
     <div v-else class="col-12">
       <SkeletonMemberCard />
     </div>
   </div>
-  <!-- Member Profile Section -->
-  <!-- <div v-if="currentUser && profileData" class="member-center mb-6">
-        <div class="card">
-          <div class="flex align-items-center mb-4">
-            <i class="mr-2 pi pi-user"></i>
-            <h2 class="mb-0">Member Profile</h2>
-          </div>
-
-          <SBox label="Member Name" :ripple="false">
-            <p>{{ profileData.name || "N/A" }}</p>
-          </SBox>
-
-          <SBox label="Active Sustainer" :ripple="false">
-            <p
-              :class="profileData.isActiveSustainer ? 'text-green-600' : 'text-gray-500'"
-            >
-              {{ profileData.isActiveSustainer ? "Yes" : "No" }}
-            </p>
-          </SBox>
-
-          <SBox v-if="profileData.lastDonationDate" label="Last Donation" :ripple="false">
-            <div class="text-right">
-              <p>{{ formatDate(profileData.lastDonationDate) }}</p>
-              <p v-if="profileData.lastDonationAmount" class="text-sm opacity-75">
-                {{ formatCurrency(profileData.lastDonationAmount) }}
-              </p>
-            </div>
-          </SBox>
-
-          <div
-            v-if="
-              profileData.activeRecurringDonations &&
-              profileData.activeRecurringDonations.length > 0
-            "
-          >
-            <SBox
-              v-for="(donation, index) in profileData.activeRecurringDonations"
-              :key="donation.springboardId"
-              :label="`Active Donation ${index + 1}`"
-              :ripple="false"
-            >
-              <div class="text-right">
-                <p class="font-medium">{{ donation.brand }}</p>
-                <p>{{ formatCurrency(donation.amount) }}</p>
-                <p class="text-sm opacity-75">
-                  Next charge: {{ formatDate(donation.nextChargeDate) }}
-                </p>
-                <p class="text-xs opacity-60">
-                  Member since: {{ formatDate(donation.membershipStartDate) }}
-                </p>
-              </div>
-            </SBox>
-          </div>
-        </div>
-      </div> -->
-  <!-- Member Profile Section -->
 </template>
