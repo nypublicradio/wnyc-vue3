@@ -41,6 +41,7 @@ const getBrand = computed(() => {
   return memberBrand.WNYC
 })
 
+//centralized member center click emit
 const goToMemberCenter = () => {
   emit("onGoToMemberCenter")
 }
