@@ -1,5 +1,6 @@
 import { useDialog } from "primevue/usedialog"
 import { useToast } from "primevue/usetoast"
+import { memberCenterLink } from "~/composables/globals"
 
 // Composable for handling membership-related actions and dialogs
 export const useMembership = () => {
@@ -157,7 +158,12 @@ export const useMembership = () => {
     window.open(url, "_blank")
   }
 
-  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo, dialogProps }
+  const onGoToMemberCenter = () => {
+    const url = `${ memberCenterLink }`
+    window.open(url, "_blank")
+  }
+
+  return { onCancelMembership, onUpdateGiftAmount, onDonateNow, onContactListenerServices, onChangePaymentInfo, onGoToMemberCenter, dialogProps }
 }
 
 
