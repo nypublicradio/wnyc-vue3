@@ -159,11 +159,9 @@ const breadcrumbs = computed(() => [
         <Meta name="twitter:title" :content="`${title} | WNYC`" />
       </Head>
     </Html>
-    <section class="event-breadcrumbs">
-      <div class="event-section">
-        <div class="flex align-items-center">
-          <Breadcrumbs :items="breadcrumbs" />
-        </div>
+    <section>
+      <div class="flex align-items-center">
+        <Breadcrumbs :items="breadcrumbs" />
       </div>
     </section>
     <FetchError v-if="error" />

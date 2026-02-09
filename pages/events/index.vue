@@ -209,7 +209,7 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     row-gap: 24px;
     justify-content: end;
     grid-template-areas:
-      "title rail"
+      "title ."
       "list rail";
   }
 

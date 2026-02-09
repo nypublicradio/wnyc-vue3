@@ -162,7 +162,7 @@ const handleEventCta = () => {
 .event-list-card__media {
   position: relative;
   width: 203px;
-  height: 203px;
+  min-height: 203px;
   overflow: hidden;
   background: #f5f5f5;
 }
