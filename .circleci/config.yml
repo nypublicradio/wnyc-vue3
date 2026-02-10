@@ -290,6 +290,6 @@ executors:
   macosg2:
     macos:
       xcode: "16.2.0"
-    resource_class: macos.m1.large.gen1
+    resource_class: m4pro.large
     environment:
       JOBS: 2
