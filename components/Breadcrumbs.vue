@@ -71,4 +71,50 @@ const routeBack = () => {
   padding: 0;
   overflow: inherit !important;
 }
+
+@include media("<md") {
+  .p-breadcrumb {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .p-breadcrumb ol {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .p-breadcrumb .p-breadcrumb-item,
+  .p-breadcrumb .p-breadcrumb-separator {
+    flex: 0 0 auto;
+  }
+
+  .p-breadcrumb .p-breadcrumb-item:last-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .p-breadcrumb .p-breadcrumb-item:last-child .nav-button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .p-breadcrumb .p-breadcrumb-item:last-child .nav-button .p-button {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+    overflow: hidden !important;
+  }
+
+  .p-breadcrumb .p-breadcrumb-item:last-child .nav-button .p-button-label {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
 </style>
