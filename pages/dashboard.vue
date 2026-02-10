@@ -1,10 +1,18 @@
+<script setup>
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding",
+  },
+})
+</script>
+
 <template>
   <div class="dashboard-page">
     <Html lang="en">
       <Head>
         <Title>
-          User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News
+          User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News
         </Title>
         <Meta
           name="og:title"
@@ -24,7 +32,7 @@
 
 <style lang="scss" scoped>
 .dashboard-page {
-  padding-bottom: 200px;
+  padding-bottom: 100px;
   background-color: var(--p-surface-25);
 }
 </style>
