@@ -75,7 +75,7 @@ const firstEpisodeWithAudio = () => {
 const togglePlayMostRecentEpisode = () => {
   // handle NPR show segments.
   if (show.value.show.cmsSource === "npr") {
-    const cmsSource = show.value.episodes.data[0].cmsSource || 'npr'
+    const cmsSource = cmsSources.NPR
     // route to the first episode with a url parameter
     navigateTo({
       path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${show.value.episodes.data[0].id}`,

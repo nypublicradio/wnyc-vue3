@@ -4,6 +4,7 @@ import {
   useCurrentEpisode,
   useIsApp,
 } from "~/composables/states"
+import { cmsSources } from "~/composables/constants"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -62,7 +63,7 @@ const progress = ref({})
 const { breakpoint } = useBreakpoints()
 const isMobileBtn = computed(() => breakpoint("<md"))
 
-const cmsSource = computed(() => route.params.cmsSource || route.query.src || 'publisher')
+const cmsSource = computed(() => route.params.cmsSource || route.query.src || cmsSources.PUBLISHER)
 const isWagtail = cmsSource.value === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
