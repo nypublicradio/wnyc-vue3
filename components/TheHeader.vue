@@ -9,6 +9,8 @@ import {
   useAppDownloadLink,
 } from "~/composables/states.ts"
 
+import { memberCenterLink } from "~/composables/globals.ts"
+
 const props = defineProps({
   showMenu: {
     type: Boolean,
@@ -41,10 +43,20 @@ const avatarUrl = computed(() => {
 const goToProfile = () => {
   trackClickEvent(
     "Click Tracking - Header View My Profile button",
-    "Header",
+    "Header user hover panel",
     "View My Profile"
   )
   navigateTo("/dashboard")
+}
+
+// handle view member center button is clicked
+const goToMemberCenter = () => {
+  trackClickEvent(
+    "Click Tracking - Header Member Center button",
+    "Header user hover panel",
+    "Member Center"
+  )
+  window.open(memberCenterLink, "_blank")
 }
 
 // handle log out button is clicked
@@ -56,7 +68,7 @@ const onLogOut = async () => {
   //GTM
   trackClickEvent(
     "Click Tracking - logout button",
-    "Settings Sidebar - user section",
+    "Header user hover panel",
     "logout button"
   )
 
@@ -101,7 +113,9 @@ const onLogOut = async () => {
               <NavButton
                 class="hidden md:block"
                 :label="`${
-                  currentUser ? currentUserProfile?.name : 'Log in/Sign up'
+                  currentUser
+                    ? currentUserProfile?.name || 'Loading...'
+                    : 'Log in/Sign up'
                 }`"
                 size="small"
                 trackingLocation="header utility nav"
@@ -113,7 +127,7 @@ const onLogOut = async () => {
                 </template>
                 <template #menu>
                   <NavSubMenu class="login-signup">
-                    <div v-if="!currentUser" class="flex flex-column p-4 gap-3">
+                    <div v-if="!currentUser" class="flex flex-column p-4 gap-2">
                       <h2>Sign up for a free account, or log in</h2>
                       <p>See your listening history, favorites, and more.</p>
                       <Button
@@ -148,6 +162,14 @@ const onLogOut = async () => {
                           }
                         "
                       />
+                      <p class="mt-4">Manage donations</p>
+                      <Button
+                        label="Member Center"
+                        severity="secondary"
+                        rounded
+                        aria-label="Member Center"
+                        @click="goToMemberCenter"
+                      />
                     </div>
                     <div v-else class="flex flex-column p-4 gap-3">
                       <div class="flex align-items-center gap-2">
@@ -168,6 +190,13 @@ const onLogOut = async () => {
                         rounded
                         aria-label="View My Account"
                         @click="goToProfile"
+                      />
+                      <Button
+                        label="Member Center"
+                        severity="secondary"
+                        rounded
+                        aria-label="Member Center"
+                        @click="goToMemberCenter"
                       />
                       <Button
                         label="Log Out"

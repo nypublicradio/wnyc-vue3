@@ -24,7 +24,11 @@ import {
   useGlobalToast,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
-import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
+import {
+  localUserProfileKey,
+  appMenuOptions,
+  memberCenterLink,
+} from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
@@ -51,15 +55,21 @@ const { dialogProps } = useMembership()
 
 //const isApple = currentUser.value?.app_metadata?.provider === 'apple'
 //const isGoogle = currentUser.value?.app_metadata?.provider === 'google'
-const isEmail = computed(() => currentUser.value?.app_metadata?.provider === "email")
+const isEmail = computed(
+  () => currentUser.value?.app_metadata?.provider === "email"
+)
 const isDisabled = computed(() => {
   return currentUser.value?.app_metadata?.provider !== "email"
 })
 
-const { toggleOneSignalUserTag, masterNotificationChannelsArray } = useOneSignal()
+const { toggleOneSignalUserTag, masterNotificationChannelsArray } =
+  useOneSignal()
 
 // main function to update the toast component
-const showMessage = (mySeverity = "success", myMessage = "Settings updated.") => {
+const showMessage = (
+  mySeverity = "success",
+  myMessage = "Settings updated."
+) => {
   globalToast.value = {
     severity: mySeverity,
     summary: myMessage,
@@ -82,7 +92,8 @@ const updateProfile = async (newProfile) => {
         default_live_stream: newProfile.default_live_stream,
         dark_mode: newProfile.dark_mode,
         receive_general_notifications: newProfile.receive_general_notifications,
-        one_signal_notification_channels: newProfile.one_signal_notification_channels,
+        one_signal_notification_channels:
+          newProfile.one_signal_notification_channels,
         text_size: newProfile.text_size,
         autodownload: newProfile.autodownload,
       })
@@ -109,7 +120,11 @@ const tempEmail = computed(() => currentUser.value?.email)
 // handles setting the font size and tracking the event
 const onUpdateTextSize = (data) => {
   setFontSize(data.pixel)
-  trackClickEvent("Click Tracking - Test size", "Settings Sidebar - Display", data.label)
+  trackClickEvent(
+    "Click Tracking - Test size",
+    "Settings Sidebar - Display",
+    data.label
+  )
 }
 
 // handles tracking the station change event
@@ -148,7 +163,9 @@ const editField = async (field) => {
       editProfileSideBar.value = true
     } else {
       // web
-      const { default: EditProfile } = await import("~/components/EditProfile.vue")
+      const { default: EditProfile } = await import(
+        "~/components/EditProfile.vue"
+      )
 
       const dialogRef = dialog.open(EditProfile, {
         props: dialogProps,
@@ -280,7 +297,9 @@ watch(
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
-          <p :class="[{ disabled: isDisabled }]">{{ currentUserProfile?.name }}</p>
+          <p :class="[{ disabled: isDisabled }]">
+            {{ currentUserProfile?.name }}
+          </p>
         </SBox>
         <SBox
           label="Email"
@@ -303,7 +322,9 @@ watch(
         </SBox>
       </div>
       <!-- >= md break point -->
-      <div class="hidden md:flex account-info mb-6 grid grid-lggutter mobile-lggutter">
+      <div
+        class="hidden md:flex account-info mb-6 grid grid-lggutter mobile-lggutter"
+      >
         <div class="col-12 md:col-6">
           <div class="card">
             <div class="flex justify-content-between flex-wrap align-items-end">
@@ -382,7 +403,10 @@ watch(
         <div class="s-title">Listening Preferences</div>
       </div>
       <SBox
-        v-if="currentUserProfile?.default_live_stream && allCurrentStations?.length > 0"
+        v-if="
+          currentUserProfile?.default_live_stream &&
+          allCurrentStations?.length > 0
+        "
         label="Default stream"
         class="md:hidden cursor-pointer"
         @click="(e) => clickThisMenu(defaultStreamRef, e)"
@@ -537,7 +561,7 @@ watch(
       </div>
       <!-- <SBox
         label="Member Center"
-        link="https://pledge.wnyc.org/user/email-link"
+        :link="memberCenterLink"
         @linkClick="
           (link) => {
             trackClickEvent(
@@ -554,7 +578,11 @@ watch(
         :ripple="false"
         @linkClick="
           (link) => {
-            trackClickEvent('Click Tracking - Donate', 'Settings Sidebar - links', link)
+            trackClickEvent(
+              'Click Tracking - Donate',
+              'Settings Sidebar - links',
+              link
+            )
           }
         "
       ></SBox>
