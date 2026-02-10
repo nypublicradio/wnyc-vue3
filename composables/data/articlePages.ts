@@ -249,6 +249,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
+    description: article.subtitle || article.description,
     image: article.image,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
