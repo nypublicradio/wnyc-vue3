@@ -8,7 +8,9 @@ import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
+import DownloadSmallIcon from "~/components/icons/DownloadSmallIcon.vue"
 import TranscriptIcon from "~/components/icons/TranscriptIcon.vue"
+import TranscriptSmallIcon from "~/components/icons/TranscriptSmallIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
@@ -227,15 +229,19 @@ const theEpImage = computed(() => getEpisodeImage())
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
-    {
-      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
-      customIcon: StarIcon,
-      active: isFavorited.value,
-      title: bucketItem?.title,
-      command: () => {
-        handleAddToFavorites(bucketItem)
-      },
-    },
+    ...(bucketItem?.transcript
+      ? [
+          {
+            label: "Transcript",
+            //icon: 'pi pi-google',
+            customIcon: TranscriptIcon,
+            title: bucketItem?.title,
+            command: () => {
+              handleTranscript()
+            },
+          },
+        ]
+      : []),
     ...(hasAudio(bucketItem?.audio)
       ? [
           {
@@ -253,19 +259,15 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(bucketItem?.transcript
-      ? [
-          {
-            label: "Transcript",
-            //icon: 'pi pi-google',
-            customIcon: TranscriptIcon,
-            title: bucketItem?.title,
-            command: () => {
-              handleTranscript()
-            },
-          },
-        ]
-      : []),
+    {
+      label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
+      customIcon: StarIcon,
+      active: isFavorited.value,
+      title: bucketItem?.title,
+      command: () => {
+        handleAddToFavorites(bucketItem)
+      },
+    },
     {
       label: "Share",
       customIcon: ShareIcon,
@@ -314,7 +316,7 @@ const getDotMenuItems = (bucketItem) => {
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">
-        <div class="flex gap-2 md:gap-3 mb-6">
+        <div class="flex gap-3 mb-6">
           <VImage
             v-if="theEpImage"
             :src="theEpImage"
@@ -350,7 +352,7 @@ const getDotMenuItems = (bucketItem) => {
           </VImage>
           <div class="flex flex-column gap-2 md:gap-3">
             <h1
-              class="text-2xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
+              class="text-xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
             >
               {{ props.episodeData?.title }}
             </h1>
@@ -422,7 +424,7 @@ const getDotMenuItems = (bucketItem) => {
                   @click="handleTranscript"
                 >
                   <template #icon>
-                    <TranscriptIcon class="w-1rem h-1rem"
+                    <TranscriptSmallIcon class="w-1rem h-1rem"
                   /></template>
                 </Button>
 
@@ -438,7 +440,7 @@ const getDotMenuItems = (bucketItem) => {
                   @click="handleDownload(props.episodeData)"
                 >
                   <template #icon>
-                    <DownloadIcon class="w-1rem h-1rem"
+                    <DownloadSmallIcon class="w-1rem h-1rem"
                   /></template>
                 </Button>
 
@@ -497,7 +499,7 @@ const getDotMenuItems = (bucketItem) => {
       <!-- v-else-if="props.pending" -->
       <div
         v-else-if="props.pending"
-        class="flex gap-2 md:gap-3 col pr-2 lg:pr-4 mt-1 mb-6"
+        class="flex gap-3 col pr-2 lg:pr-4 mt-1 mb-6"
       >
         <Skeleton
           width="100%"
@@ -539,16 +541,22 @@ const getDotMenuItems = (bucketItem) => {
               />
             </div>
           </div>
-          <div class="button-holder flex align-items-center gap-3 flex-wrap">
+          <div class="button-holder flex align-items-center gap-2 flex-wrap">
             <Skeleton
-              height="28px"
+              height="33px"
               width="90px"
               borderRadius="16px"
               class="z-2"
             />
             <Skeleton
-              height="28px"
-              width="115px"
+              height="33px"
+              width="33px"
+              borderRadius="16px"
+              class="z-2"
+            />
+            <Skeleton
+              height="33px"
+              width="33px"
               borderRadius="16px"
               class="z-2"
             />
@@ -556,8 +564,8 @@ const getDotMenuItems = (bucketItem) => {
             <slot>
               <div class="flex align-items-center gap-4">
                 <Skeleton
-                  class="mr-2"
-                  height="25px"
+                  class="ml-2"
+                  height="22px"
                   width="5px"
                   borderRadius="16px"
                 />

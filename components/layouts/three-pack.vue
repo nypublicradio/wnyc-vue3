@@ -35,7 +35,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :data="article"
           :isHorizontal="isLgBreakpoint"
           :allowVerticalEffect="true"
-          imgCol="w-7rem md:w-11rem lg:w-full"
+          imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{
             xs: [112, 112],
             md: [176, 176],
@@ -51,7 +51,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         :key="`skeleton-three-pack-${index}`"
         :class="props.cardClass"
         :isHorizontal="isLgBreakpoint"
-        imgCol="w-7rem md:w-11rem lg:w-full"
+        imgCol="w-7rem md:w-12rem lg:w-full"
         :size="{
           xs: [112, 112],
           md: [176, 176],
