@@ -166,10 +166,7 @@ export function useVImage () {
         if (typeof url === "string" && url.includes("simplecastcdn.com")) {
             return true
         }
-        if (typeof url === "object" && url?.url && typeof url.url === "string" && url.url.includes("simplecastcdn.com")) {
-            return true
-        }
-        return false
+        return typeof url === "object" && url?.url && typeof url.url === "string" && url.url.includes("simplecastcdn.com")
     }
 
     // checks if the image is from Publisher
