@@ -4,7 +4,7 @@ import {
   useCurrentEpisode,
   useIsApp,
 } from "~/composables/states"
-import { cmsSources } from "~/composables/constants"
+import { cmsSources } from '~/composables/globals'
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
