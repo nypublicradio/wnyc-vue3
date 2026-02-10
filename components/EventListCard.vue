@@ -303,17 +303,18 @@ const handleEventCta = () => {
   display: none;
 }
 
-  @include media("<md") {
+@include media("<md") {
   .event-list-card {
     grid-template-columns: 60px minmax(0, 1fr);
     min-height: auto;
-    column-gap: 16px;
+    column-gap: 20px;
     align-items: start;
   }
 
   .event-list-card__media {
     width: 60px;
     height: 60px;
+    min-height: 60px;
     background: transparent;
   }
 
@@ -331,11 +332,12 @@ const handleEventCta = () => {
     background: transparent;
     padding: 0;
     border-radius: 0;
-    gap: 6px;
+    gap: 8px;
   }
 
   .event-list-card__title {
     font-size: 14px;
+    line-height: 1.2;
     letter-spacing: -0.02em;
   }
 
@@ -346,6 +348,8 @@ const handleEventCta = () => {
 
   .event-list-card__meta {
     display: block;
+    font-size: 13px;
+    line-height: 1.4;
   }
 
   .event-list-card__footer {
@@ -355,12 +359,34 @@ const handleEventCta = () => {
   }
 
   .event-list-card__cta {
-    align-self: center;
+    align-self: flex-start;
+    width: auto;
   }
 
   .event-list-card__cta :deep(.p-button) {
+    width: auto;
     min-width: 160px;
+    min-height: 28px !important;
     justify-content: center;
+    padding: 4px 36px !important;
+    margin: 0;
+  }
+
+  .event-list-card__cta :deep(.content) {
+    font-size: 16px !important;
+    line-height: 20px;
+    font-weight: var(--font-weight-700);
+  }
+
+  .event-list-card__badges {
+    margin-left: 0;
+    gap: 8px;
+  }
+
+  .event-list-card__badges :deep(.badge .content) {
+    font-size: 11px;
+    line-height: 14px;
+    padding: 2px 8px;
   }
 }
 </style>
