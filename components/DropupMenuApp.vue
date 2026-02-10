@@ -12,6 +12,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
   startOpen: {
     type: Boolean,
     default: false,
@@ -19,6 +23,10 @@ const props = defineProps({
   checkMark: {
     type: Boolean,
     default: false,
+  },
+  initSelectedData: {
+    type: String,
+    default: null,
   },
   blockClick: {
     type: Boolean,
@@ -143,7 +151,9 @@ function handleSwipe() {
       if (touchendY < touchstartY) {
         panel.value.classList.add("release")
         // set the panel bottom to the height of the panel + the shadow height
-        panel.value.style.bottom = `${(panel.value.offsetHeight + shadowHeight) * -1}px`
+        panel.value.style.bottom = `${
+          (panel.value.offsetHeight + shadowHeight) * -1
+        }px`
         // close the dropdown after the animation is done
         setTimeout(() => {
           closeMenu()
@@ -181,6 +191,10 @@ const toggleMenuClick = () => {
 onMounted(() => {
   if (props.startOpen) {
     toggleMenu()
+  }
+  // set initial selection if data exists
+  if (props.initSelectedData) {
+    vModel.value = props.initSelectedData
   }
 })
 
@@ -236,12 +250,13 @@ defineExpose({
               :class="[
                 {
                   selected:
-                    item.id === (typeof vModel === 'object' ? vModel.id : vModel) &&
+                    item.id ===
+                      (typeof vModel === 'object' ? vModel.id : vModel) &&
                     props.checkMark,
                 },
               ]"
             >
-              <div :key="item.label" class="flex align-items-center station-options">
+              <div :key="item.label" class="flex align-items-center options">
                 <VImage
                   v-if="item.image"
                   :src="item.image"
@@ -257,7 +272,15 @@ defineExpose({
                   v-if="item.customIcon"
                   :is="item.customIcon"
                 />
-                <div class="option pointer-events-none">{{ item.label }}</div>
+                <div class="option-holder flex flex-column">
+                  <div class="option pointer-events-none">{{ item.label }}</div>
+                  <div
+                    v-if="props.showTitle"
+                    class="text-sm pointer-events-none"
+                  >
+                    {{ item.title }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -6,19 +6,25 @@ import {
   useIsApp,
   useIsEpisodePlaying,
   useAppDownloadLink,
+  useAllCurrentStations,
 } from "~/composables/states"
-import { togglePlayEpisode } from "~/utilities/helpers"
 import {
+  togglePlayEpisode,
+  initializeStationList,
+  getOrg,
+} from "~/utilities/helpers"
+import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
 } from "~/composables/data/liveStream"
+const { getStationBySlugAndPlayIt } = useLiveStream()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const appDownloadLink = useAppDownloadLink()
-
+const allCurrentStations = useAllCurrentStations()
 const defaultButtonLabel = "Listen Live"
 const listeningButtonLabel = "Listening Live"
 
@@ -39,14 +45,25 @@ const togglePlayHere = async () => {
     await updateAllLiveStreams()
   }
 }
+// when selecting the options in the All Streams drop down button
+const onUpdateStation = (station) => {
+  getStationBySlugAndPlayIt(station.slug, isEpisodePlaying.value)
+}
 </script>
 
 <template>
   <div class="live-feature">
-    <!-- <pre>{{ currentEpisodeHolder }}</pre> -->
-    <div class="holder">
-      <!--    <VFlexibleLink raw to="/live" class="flex align-items-start"> -->
-      <div class="flex align-items-center">
+    <div class="holder overflow-hidden">
+      <!-- <VFlexibleLink raw to="/live"> -->
+      <VFlexibleLink
+        raw
+        to="/live"
+        v-ripple
+        class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
+        tabindex="0"
+        aria-role="button"
+      ></VFlexibleLink>
+      <div class="flex align-items-center z-2">
         <div class="image-holder relative">
           <Transition name="fade" mode="out-in">
             <VImage
@@ -70,22 +87,40 @@ const togglePlayHere = async () => {
         <div class="content w-full relative">
           <div
             v-if="currentEpisodeHolder"
-            class="flex flex-column gap-2 xl:gap-3 justify-content-center px-3"
+            class="flex flex-column gap-1 xl:gap-3 justify-content-center px-3"
           >
-            <div class="hidden md:flex align-items-center gap-2">
-              <LiveBadge fontSize="0.9rem" />
-              <p
-                v-if="
-                  currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd
-                "
-                class="font-bold"
-              >
-                {{ currentEpisodeHolder.timeStart }} -
-                {{ currentEpisodeHolder.timeEnd }}
-              </p>
+            <div
+              class="indicator-schedule flex align-items-center gap-1 md:gap-2 flex-wrap"
+            >
+              <LiveBadge />
+              <div class="schedule-text flex gap-1">
+                <p class="font-bold" v-if="currentEpisodeHolder?.cmsSource">
+                  {{ getOrg(currentEpisodeHolder?.cmsSource) }}
+                </p>
+                <p
+                  class="font-bold"
+                  v-if="
+                    currentEpisodeHolder?.cmsSource &&
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
+                >
+                  |
+                </p>
+                <p
+                  v-if="
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
+                  class="font-bold"
+                >
+                  {{ currentEpisodeHolder.timeStart }} -
+                  {{ currentEpisodeHolder.timeEnd }}
+                </p>
+              </div>
             </div>
             <h2
-              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t3lines"
+              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines"
             >
               {{ currentEpisodeHolder?.title }}
             </h2>
@@ -100,7 +135,9 @@ const togglePlayHere = async () => {
                 currentEpisodeHolder?.details
               "
             ></div>
-            <div class="flex align-items-start justify-content-between">
+            <div
+              class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2"
+            >
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
@@ -109,27 +146,64 @@ const togglePlayHere = async () => {
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                   severity="primary"
-                  buttonClass="w-9rem md:w-13rem h-2rem justify-content-start"
+                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start"
                   labelClass="md:-ml-3"
                   live
+                  class="z-2"
                 />
-                <Button
+                <div
                   v-if="!isApp"
-                  label="Get the App"
-                  severity="secondary"
-                  class="hidden sm:flex p-button-sm xl:flex w-9rem md:w-13rem justify-content-start h-2rem p-button-center-label-with-icon"
-                  @click="
-                    navigateTo(appDownloadLink, {
-                      external: appDownloadLink.startsWith('http')
-                        ? true
-                        : false,
-                    })
-                  "
+                  class="hidden md:flex flex-row gap-3 flex-wrap"
                 >
-                  <template #icon>
-                    <DevicesIcon />
-                  </template>
-                </Button>
+                  <Button
+                    label="Get the App"
+                    severity="secondary"
+                    class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon z-2"
+                    @click.prevent="
+                      navigateTo(appDownloadLink, {
+                        external: appDownloadLink.startsWith('http')
+                          ? true
+                          : false,
+                      })
+                    "
+                  >
+                    <template #icon>
+                      <DevicesIcon />
+                    </template>
+                  </Button>
+                  <!-- :menuItems="
+                      getDotMenuItems(headerNavigationData[0].items[0])
+                    " -->
+                  <DotMenu
+                    :menuItems="initializeStationList(allCurrentStations)"
+                    label=""
+                    class="z-2"
+                    showTitle
+                    checkMark
+                    :initSelectedData="currentEpisodeHolder?.station"
+                    @change-emit="onUpdateStation"
+                  >
+                    <template #myCustomButton>
+                      <Button
+                        label="All Streams"
+                        severity="secondary"
+                        class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                        @click.prevent=""
+                      >
+                        <template #icon>
+                          <i
+                            class="pi pi-ellipsis-v"
+                            style="
+                              font-size: 0.85rem;
+                              padding-left: 0.25rem;
+                              padding-right: 0.25rem;
+                            "
+                          ></i>
+                        </template>
+                      </Button>
+                    </template>
+                  </DotMenu>
+                </div>
               </div>
               <BarsPlaying class="mx-2 mt-2" :data="currentEpisodeHolder" />
             </div>
@@ -146,8 +220,8 @@ const togglePlayHere = async () => {
             />
             <Skeleton
               class="hidden lg:block"
-              height="1.5rem"
-              width="40%"
+              height="2rem"
+              width="60%"
               borderRadius="16px"
             />
             <Skeleton
@@ -174,24 +248,33 @@ const togglePlayHere = async () => {
               />
             </div>
             <Skeleton
-              class="mt-1 w-9rem lg:w-14rem"
+              class="w-9rem md:w-21rem"
               height="28px"
               borderRadius="16px"
             />
-            <Skeleton
-              class="mt-2 w-14rem hidden xl:block"
-              height="28px"
-              width="9rem"
-              borderRadius="16px"
-            />
+            <div class="hidden md:flex flex-row gap-3 mt-1 lg:-mt-1">
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+            </div>
           </div>
         </div>
       </div>
+      <!-- </VFlexibleLink> -->
     </div>
   </div>
 </template>
 
-<style lang="scss">
+<!-- <style lang="scss">
 .live-feature {
   .content {
     .blurb {
@@ -207,7 +290,7 @@ const togglePlayHere = async () => {
     }
   }
 }
-</style>
+</style> -->
 
 <style lang="scss" scoped>
 // $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
@@ -249,12 +332,42 @@ const togglePlayHere = async () => {
     }
   }
   .content {
+    .indicator-schedule {
+      .live-badge {
+        font-size: 0.9rem;
+        @include media("<xl") {
+          font-size: 0.8rem;
+        }
+        @include media("<lg") {
+          font-size: 0.7rem;
+        }
+        @include media("<md") {
+          margin-left: -4px;
+          padding: 1px 4px 1px 4px !important;
+          font-size: 0.65rem;
+        }
+      }
+      .schedule-text * {
+        @include media("<xl") {
+          font-size: 0.9rem;
+        }
+        @include media("<lg") {
+          font-size: 0.8rem;
+        }
+        @include media("<md") {
+          font-size: 0.7rem;
+        }
+      }
+    }
     .skeleton-holder {
       gap: 0.5rem;
     }
     .blurb {
-      @include t4lines();
+      @include t3lines();
       @include media("<xl") {
+        @include t2lines();
+      }
+      @include media("<md") {
         @include t2lines();
       }
       @include media("<lg") {
@@ -264,10 +377,11 @@ const togglePlayHere = async () => {
   }
 }
 @include media("<md") {
-  .live-feature .holder {
-    max-width: $contentWidth !important;
-    margin: 0 auto;
-    background-color: var(--p-content-background);
+  .live-feature {
+    .holder {
+      max-width: $contentWidth !important;
+      margin: 0 auto;
+    }
   }
 }
 
