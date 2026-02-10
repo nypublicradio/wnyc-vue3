@@ -959,7 +959,7 @@ export const getCssVar = (name: string, px = false) => {
 // ROUTING
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
-  const cmsSource = ep.cmsSource || 'publisher'
+  const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
   
   // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
   // For other sources, use slug
