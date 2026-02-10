@@ -8,6 +8,48 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
+
+// Simplecast article data interface
+interface SimplecastArticle {
+  id?: string
+  episodeId?: string
+  uuid?: string
+  title?: string
+  description?: string
+  longDescription?: string
+  slug?: string
+  type?: string
+  publishedAt?: string
+  updatedAt?: string
+  duration?: number
+  audioFileUrl?: string
+  enclosureUrl?: string
+  episodeUrl?: string
+  imageUrl?: string
+  transcription?: string
+  number?: number
+  guid?: string
+  isPublished?: boolean
+  showId?: string
+  show_id?: string
+  showTitle?: string
+  show_title?: string
+  showImageUrl?: string
+  show_image_url?: string
+  keywords?: {
+    collection?: Array<{ value?: string }>
+  }
+  podcast?: {
+    title?: string
+    href?: string
+    imageUrl?: string
+  }
+  season?: {
+    number?: number
+  }
+  [key: string]: unknown
+}
+
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages (queryParams: any) {
   const defaultParams = {
@@ -286,88 +328,85 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
  * @param article 
  * @returns 
  */
-export async function normalizeSimplecastPage (article: Record<string, unknown>): Promise<ArticlePage> {
+export async function normalizeSimplecastPage (article: SimplecastArticle): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
   
-  // Type assertion for working with dynamic Simplecast data
-  const data = article as Record<string, any>
-  
   // Calculate duration if not provided
-  let duration = data.duration
+  let duration = article.duration
   if (!duration || typeof duration !== 'number' || duration === 0) {
-    duration = await estimateMp3Duration(data.audioFileUrl || data.enclosureUrl)
+    duration = await estimateMp3Duration(article.audioFileUrl || article.enclosureUrl)
   }
 
   // Simplecast uses UUIDs as episode IDs
-  const simplecastId = data.id
+  const simplecastId = article.id
   
   // Extract show UUID and details from CMS data
-  const showId = data.showId || data.show_id
-  const showTitle = data.showTitle || data.show_title || data.podcast?.title
-  const showImageUrl = data.showImageUrl || data.show_image_url || data.podcast?.imageUrl
+  const showId = article.showId || article.show_id
+  const showTitle = article.showTitle || article.show_title || article.podcast?.title
+  const showImageUrl = article.showImageUrl || article.show_image_url || article.podcast?.imageUrl
 
-  return Promise.resolve(Object.assign({}, normalizePage(data), {
+  return Promise.resolve(Object.assign({}, normalizePage(article), {
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
-    description: data.description || data.longDescription,
-    image: data.imageUrl ? { url: data.imageUrl } : data.podcast?.imageUrl ? { url: data.podcast.imageUrl } : undefined,
+    description: article.description || article.longDescription,
+    image: article.imageUrl ? { url: article.imageUrl } : article.podcast?.imageUrl ? { url: article.podcast.imageUrl } : undefined,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
     leadImageCaption: undefined,
     imageLink: undefined,
-    type: data.type || 'episode',
+    type: article.type || 'episode',
     link: `/browse/shows/episode/simplecast/${simplecastId}`,
     cmsSource: cmsSources.SIMPLECAST,
-    sortDate: data.publishedAt,
+    sortDate: article.publishedAt,
     leadAsset: undefined,
     leadImage: undefined,
     leadGallery: undefined,
     meta: {
-      firstPublishedAt: data.publishedAt && new Date(data.publishedAt),
-      slug: data.slug,
-      type: data.type || 'episode',
+      firstPublishedAt: article.publishedAt && new Date(article.publishedAt),
+      slug: article.slug,
+      type: article.type || 'episode',
     },
-    title: data.title,
-    tease: data.description,
+    title: article.title,
+    tease: article.description,
     gallerySlides: undefined,
-    legacyId: data.id,
+    legacyId: article.id,
     authors: undefined,
     contributingOrganizations: undefined,
     sponsors: undefined,
-    publicationDate: data.publishedAt && new Date(data.publishedAt),
-    updatedDate: data.updatedAt && new Date(data.updatedAt),
+    publicationDate: article.publishedAt && new Date(article.publishedAt),
+    updatedDate: article.updatedAt && new Date(article.updatedAt),
     showAsFeature: undefined,
     sensitiveContent: undefined,
     provocativeContent: undefined,
     sponsoredContent: undefined,
     relatedLinks: undefined,
-    tags: data.keywords?.collection?.filter(k => k?.value)?.map(k => k.value) || [],
-    url: data.episodeUrl,
+    tags: article.keywords?.collection?.filter(k => k?.value)?.map(k => k.value) || [],
+    url: article.episodeUrl,
     section: undefined,
-    body: data.longDescription || data.description,
-    rawBody: data.longDescription || data.description,
-    audio: data.audioFileUrl || data.enclosureUrl,
-    hasAudio: Boolean(data.audioFileUrl || data.enclosureUrl),
+    body: article.longDescription || article.description,
+    rawBody: article.longDescription || article.description,
+    audio: article.audioFileUrl || article.enclosureUrl,
+    hasAudio: Boolean(article.audioFileUrl || article.enclosureUrl),
     // curated images
-    listingImage: data.imageUrl ? { url: data.imageUrl } : undefined,
-    socialImage: data.imageUrl ? { url: data.imageUrl } : undefined,
+    listingImage: article.imageUrl ? { url: article.imageUrl } : undefined,
+    socialImage: article.imageUrl ? { url: article.imageUrl } : undefined,
     // for comments
     disableComments: undefined,
     commentId: undefined,
     estimatedDuration: duration,
-    show: data.podcast ? { title: data.podcast.title, url: data.podcast.href } : (showTitle ? { title: showTitle } : undefined),
+    show: article.podcast ? { title: article.podcast.title, url: article.podcast.href } : (showTitle ? { title: showTitle } : undefined),
     showTitle,
     headers: showTitle && showImageUrl ? { brand: { title: showTitle, logoImage: { url: showImageUrl } } } : undefined,
     segments: undefined,
-    transcript: data.transcription,
+    transcript: article.transcription,
     embedCode: undefined,
     // Additional Simplecast-specific fields
-    episodeNumber: data.number,
-    seasonNumber: data.season?.number,
-    guid: data.guid,
-    isPublished: data.isPublished,
+    episodeNumber: article.number,
+    seasonNumber: article.season?.number,
+    guid: article.guid,
+    isPublished: article.isPublished,
   }))
 }
 
