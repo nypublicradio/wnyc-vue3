@@ -307,7 +307,7 @@ export async function normalizeSimplecastPage (article: Record<string, unknown>)
   const showTitle = data.showTitle || data.show_title || data.podcast?.title
   const showImageUrl = data.showImageUrl || data.show_image_url || data.podcast?.imageUrl
 
-  return Promise.resolve(Object.assign({}, await normalizePage(data), {
+  return Promise.resolve(Object.assign({}, normalizePage(data), {
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
