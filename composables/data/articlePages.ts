@@ -286,85 +286,88 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
  * @param article 
  * @returns 
  */
-export async function normalizeSimplecastPage (article: Record<string, any | undefined>): Promise<ArticlePage> {
+export async function normalizeSimplecastPage (article: Record<string, unknown>): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
   
+  // Type assertion for working with dynamic Simplecast data
+  const data = article as Record<string, any>
+  
   // Calculate duration if not provided
-  let duration = article.duration
+  let duration = data.duration
   if (!duration || typeof duration !== 'number' || duration === 0) {
-    duration = await estimateMp3Duration(article.audioFileUrl || article.enclosureUrl)
+    duration = await estimateMp3Duration(data.audioFileUrl || data.enclosureUrl)
   }
 
   // Simplecast uses UUIDs as episode IDs
-  const simplecastId = article.id
+  const simplecastId = data.id
   
   // Extract show UUID and details from CMS data
-  const showId = article.showId || article.show_id
-  const showTitle = article.showTitle || article.show_title || article.podcast?.title
-  const showImageUrl = article.showImageUrl || article.show_image_url || article.podcast?.imageUrl
+  const showId = data.showId || data.show_id
+  const showTitle = data.showTitle || data.show_title || data.podcast?.title
+  const showImageUrl = data.showImageUrl || data.show_image_url || data.podcast?.imageUrl
 
-  return Promise.resolve(Object.assign({}, await normalizePage(article), {
+  return Promise.resolve(Object.assign({}, await normalizePage(data), {
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
-    description: article.description || article.longDescription,
-    image: article.imageUrl ? { url: article.imageUrl } : article.podcast?.imageUrl ? { url: article.podcast.imageUrl } : undefined,
+    description: data.description || data.longDescription,
+    image: data.imageUrl ? { url: data.imageUrl } : data.podcast?.imageUrl ? { url: data.podcast.imageUrl } : undefined,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
     leadImageCaption: undefined,
     imageLink: undefined,
-    type: article.type || 'episode',
+    type: data.type || 'episode',
     link: `/browse/shows/episode/simplecast/${simplecastId}`,
     cmsSource: cmsSources.SIMPLECAST,
-    sortDate: article.publishedAt,
+    sortDate: data.publishedAt,
     leadAsset: undefined,
     leadImage: undefined,
     leadGallery: undefined,
     meta: {
-      firstPublishedAt: article.publishedAt && new Date(article.publishedAt),
-      slug: article.slug,
-      type: article.type || 'episode',
+      firstPublishedAt: data.publishedAt && new Date(data.publishedAt),
+      slug: data.slug,
+      type: data.type || 'episode',
     },
-    title: article.title,
-    tease: article.description,
+    title: data.title,
+    tease: data.description,
     gallerySlides: undefined,
-    legacyId: article.id,
+    legacyId: data.id,
     authors: undefined,
     contributingOrganizations: undefined,
     sponsors: undefined,
-    publicationDate: article.publishedAt && new Date(article.publishedAt),
-    updatedDate: article.updatedAt && new Date(article.updatedAt),
+    publicationDate: data.publishedAt && new Date(data.publishedAt),
+    updatedDate: data.updatedAt && new Date(data.updatedAt),
     showAsFeature: undefined,
     sensitiveContent: undefined,
     provocativeContent: undefined,
     sponsoredContent: undefined,
     relatedLinks: undefined,
-    tags: article.keywords?.collection?.filter(k => k && k.value).map(k => k.value) || [],
-    url: article.episodeUrl,
+    tags: data.keywords?.collection?.filter(k => k?.value)?.map(k => k.value) || [],
+    url: data.episodeUrl,
     section: undefined,
-    body: article.longDescription || article.description,
-    rawBody: article.longDescription || article.description,
-    audio: article.audioFileUrl || article.enclosureUrl,
-    hasAudio: Boolean(article.audioFileUrl || article.enclosureUrl),
+    body: data.longDescription || data.description,
+    rawBody: data.longDescription || data.description,
+    audio: data.audioFileUrl || data.enclosureUrl,
+    hasAudio: Boolean(data.audioFileUrl || data.enclosureUrl),
     // curated images
-    listingImage: article.imageUrl ? { url: article.imageUrl } : undefined,
-    socialImage: article.imageUrl ? { url: article.imageUrl } : undefined,
+    listingImage: data.imageUrl ? { url: data.imageUrl } : undefined,
+    socialImage: data.imageUrl ? { url: data.imageUrl } : undefined,
     // for comments
     disableComments: undefined,
     commentId: undefined,
     estimatedDuration: duration,
-    show: article.podcast ? { title: article.podcast.title, url: article.podcast.href } : (showTitle ? { title: showTitle } : undefined),
+    show: data.podcast ? { title: data.podcast.title, url: data.podcast.href } : (showTitle ? { title: showTitle } : undefined),
     showTitle,
     headers: showTitle && showImageUrl ? { brand: { title: showTitle, logoImage: { url: showImageUrl } } } : undefined,
     segments: undefined,
-    transcript: article.transcription,
+    transcript: data.transcription,
     embedCode: undefined,
     // Additional Simplecast-specific fields
-    episodeNumber: article.number,
-    seasonNumber: article.season?.number,
-    guid: article.guid,
-    isPublished: article.isPublished,
+    episodeNumber: data.number,
+    seasonNumber: data.season?.number,
+    guid: data.guid,
+    isPublished: data.isPublished,
   }))
 }
 
