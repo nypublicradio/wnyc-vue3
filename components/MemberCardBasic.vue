@@ -18,7 +18,7 @@ const memberBrand = {
 }
 
 const donations = computed(() => {
-  return props.profileData?.activeRecurringDonations
+  return props.profileData?.activeRecurringDonations ?? []
 })
 
 const hasPaymentFailed = computed(() => {
