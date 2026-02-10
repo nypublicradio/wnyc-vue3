@@ -579,17 +579,19 @@ const breadcrumbs = computed(() => [
     max-width: 672px;
   }
 
-  .event-more__card :deep(.event-list-card__footer) {
-    justify-content: flex-start;
-    gap: 12px;
-  }
+  @include media(">=md") {
+    .event-more__card :deep(.event-list-card__footer) {
+      justify-content: flex-start;
+      gap: 12px;
+    }
 
-  .event-more__card :deep(.event-list-card__cta) {
-    align-self: flex-start;
-  }
+    .event-more__card :deep(.event-list-card__cta) {
+      align-self: flex-start;
+    }
 
-  .event-more__card :deep(.event-list-card__badges) {
-    margin-left: auto;
+    .event-more__card :deep(.event-list-card__badges) {
+      margin-left: auto;
+    }
   }
 }
 

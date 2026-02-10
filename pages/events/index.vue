@@ -220,17 +220,19 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     gap: 35px;
   }
 
-  :deep(.event-list-card__footer) {
-    justify-content: flex-start;
-    gap: 12px;
-  }
+  @include media(">=md") {
+    :deep(.event-list-card__footer) {
+      justify-content: flex-start;
+      gap: 12px;
+    }
 
-  :deep(.event-list-card__cta) {
-    align-self: flex-start;
-  }
+    :deep(.event-list-card__cta) {
+      align-self: flex-start;
+    }
 
-  :deep(.event-list-card__badges) {
-    margin-left: auto;
+    :deep(.event-list-card__badges) {
+      margin-left: auto;
+    }
   }
 
   .events-card-skeleton {
@@ -326,10 +328,38 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     }
   }
 
+  .thinContent {
+    max-width: $contentWidth !important;
+    margin: 0 auto;
+    padding-left: 32px;
+    padding-right: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
+    column-gap: 32px;
+    justify-content: end;
+  }
+
+  .thinContent > * {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  @include media("<lg") {
+    .thinContent {
+      grid-template-columns: 1fr;
+      justify-content: stretch;
+    }
+  }
+
   @include media("<md") {
     .events-section {
       padding-top: 1.5rem;
       padding-bottom: 2rem;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .thinContent {
       padding-left: 20px;
       padding-right: 20px;
     }
