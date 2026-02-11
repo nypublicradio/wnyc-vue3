@@ -403,10 +403,12 @@ const breadcrumbs = computed(() => [
     grid-column: 2;
     grid-row: 1;
     min-width: 0;
-    font-family: var(--font-family-header);
-    font-size: 36px;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    font-family: var(--font-family-header, "Meta Pro");
+    font-size: 46px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: -0.92px;
     color: #000000;
     margin: 0;
     overflow-wrap: anywhere;
@@ -424,9 +426,11 @@ const breadcrumbs = computed(() => [
   }
 
   .event-hero__date {
+    font-family: 'Open Sans', sans-serif;
     font-weight: var(--font-weight-400);
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 18px;
+    font-style: normal;
+    line-height: 180%;
     margin: 0;
     white-space: nowrap;
     display: flex;
@@ -612,6 +616,14 @@ const breadcrumbs = computed(() => [
   }
 }
 
+@include media(">=md") {
+  .event-hero {
+    .event-hero__title {
+      margin-top: -10px;
+    }
+  }
+}
+
 @include media(">=xl") {
   .event-hero,
   .event-body {
@@ -721,11 +733,13 @@ const breadcrumbs = computed(() => [
     padding-bottom: 16px;
 
     .event-hero__title {
-      font-size: 24px;
+      font-size: 26px;
+      line-height: 120%;
+      letter-spacing: -0.52px;
     }
 
     .event-hero__date {
-      font-size: 13px;
+      font-size: 16px;
     }
 
     .event-hero__meta {
@@ -736,6 +750,8 @@ const breadcrumbs = computed(() => [
 
   .event-body {
     padding-bottom: 16px;
+
+    --event-body-font-size: 16px;
   }
 
   .event-rail {
