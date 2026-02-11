@@ -31,6 +31,9 @@ const isDarkMode = useIsDarkMode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const { isMobileBreakpoint } = useBreakpoints()
 
+const disabledScheduleDate = new Date()
+disabledScheduleDate.setDate(disabledScheduleDate.getDate() + 6)
+
 // schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
   trackClickEvent(
@@ -186,10 +189,16 @@ const handleScheduleNavigationButtonLabel = (date) => {
         <Button
           severity="secondary"
           variant="text"
-          class="day-change-btn link -ml-3"
+          class="-ml-3"
           @click="setToPreviousDay()"
           :label="handleScheduleNavigationButtonLabel(previousDayScheduleDate)"
           icon="pi pi-chevron-left"
+          :class="
+            formatDate(currentScheduleDate, 'LLLL d, yyyy') ===
+            formatDate(Date(), 'LLLL d, yyyy')
+              ? 'pointer-events-none opacity-50'
+              : 'day-change-btn link'
+          "
         ></Button>
         <div class="today flex flex-column gap-0 align-items-center text-center">
           <span class="day font-bold text-lg">{{
@@ -207,6 +216,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
           @click="setToNextDay()"
           :label="handleScheduleNavigationButtonLabel(nextDayScheduleDate)"
           icon="pi pi-chevron-right"
+          :class="
+            formatDate(currentScheduleDate, 'LLLL d, yyyy') ===
+            formatDate(disabledScheduleDate, 'LLLL d, yyyy')
+              ? 'pointer-events-none opacity-50'
+              : 'day-change-btn link'
+          "
         ></Button>
       </div>
 
