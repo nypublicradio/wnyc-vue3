@@ -268,7 +268,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   <Button
                     severity="secondary"
                     variant="link"
-                    class="more-from link text-left text-xs md:text-base"
+                    class="hidden more-from link text-left text-xs md:text-base"
                     @click="moreFromClick(entry)"
                     :label="`More from ${entry.attributes.parentTitle}`"
                   />
