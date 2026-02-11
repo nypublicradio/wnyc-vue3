@@ -19,8 +19,13 @@
  * 
  * Query Parameters:
  * - filterMode: 'next24hours' | 'specificDate' | 'dateRange' | 'all' (default: 'all')
- * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD)
- * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - used with dateRange mode
+ * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT)
+ * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT), used with dateRange mode
+ * 
+ * Timezone Handling:
+ * - All date parameters are interpreted in America/New_York timezone (EST/EDT)
+ * - This ensures that date queries match the local broadcast schedule
+ * - Daylight saving time transitions are handled automatically
  * 
  * Date Validation:
  * - For 'specificDate' and 'dateRange' modes, dates are validated against available data
@@ -49,9 +54,13 @@ import humps from 'humps'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { createHash } from 'crypto'
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
 
 // S3 asset URL pattern to replace
 const S3_ASSET_URL_PATTERN = `https://s3.us-east-1.amazonaws.com/webstream-assets-${process.env.ENV}`
+
+// Timezone for WNYC (America/New_York - handles both EST and EDT)
+const WNYC_TIMEZONE = 'America/New_York'
 
 // In-memory cache for schedule data
 interface CacheEntry {
@@ -242,6 +251,22 @@ const removePastEpisodes = (scheduleData: any) => {
     }
 }
 
+// Check if a date string represents today in EST/EDT timezone
+const isToday = (dateString: string): boolean => {
+    const now = new Date()
+    const todayInEST = utcToZonedTime(now, WNYC_TIMEZONE)
+    const todayDateStr = todayInEST.toISOString().split('T')[0]
+    return dateString === todayDateStr
+}
+
+// Check if a date range includes today
+const includesCurrentDate = (startDate: string, endDate: string): boolean => {
+    const now = new Date()
+    const todayInEST = utcToZonedTime(now, WNYC_TIMEZONE)
+    const todayDateStr = todayInEST.toISOString().split('T')[0]
+    return todayDateStr >= startDate && todayDateStr <= endDate
+}
+
 // Filter episodes for the next 24 hours
 const filterNext24Hours = (scheduleData: any) => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
@@ -264,23 +289,32 @@ const filterNext24Hours = (scheduleData: any) => {
     }
 }
 
-// Filter episodes for a specific date (all day)
+// Filter episodes for a specific date (all day in EST/EDT)
 const filterByDate = (scheduleData: any, targetDate: string) => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
 
-    const startOfDay = new Date(targetDate)
-    startOfDay.setUTCHours(0, 0, 0, 0)
+    // Parse the date string and create start/end of day in EST/EDT timezone
+    const dateOnly = new Date(targetDate + 'T00:00:00')
     
-    const endOfDay = new Date(targetDate)
-    endOfDay.setUTCHours(23, 59, 59, 999)
+    // Start of day in EST/EDT (00:00:00)
+    const startOfDayEST = zonedTimeToUtc(
+        new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 0, 0, 0, 0),
+        WNYC_TIMEZONE
+    )
+    
+    // End of day in EST/EDT (23:59:59.999)
+    const endOfDayEST = zonedTimeToUtc(
+        new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 23, 59, 59, 999),
+        WNYC_TIMEZONE
+    )
     
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
-        // Include episodes that overlap with the target date
-        return startTime <= endOfDay && endTime >= startOfDay
+        // Include episodes that overlap with the target date in EST/EDT
+        return startTime <= endOfDayEST && endTime >= startOfDayEST
     })
 
     return {
@@ -314,21 +348,43 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
     }
 
     const { minDate, maxDate } = availableRange
-    const requestedStart = new Date(requestedDate)
-    requestedStart.setUTCHours(0, 0, 0, 0)
     
-    const requestedEnd = endDate ? new Date(endDate) : requestedStart
-    requestedEnd.setUTCHours(23, 59, 59, 999)
+    // Parse and convert dates to EST/EDT timezone
+    const requestedDateStr = typeof requestedDate === 'string' ? requestedDate : requestedDate.toISOString().split('T')[0]
+    const dateOnly = new Date(requestedDateStr + 'T00:00:00')
+    
+    const requestedStart = zonedTimeToUtc(
+        new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 0, 0, 0, 0),
+        WNYC_TIMEZONE
+    )
+    
+    let requestedEnd: Date
+    if (endDate) {
+        const endDateStr = typeof endDate === 'string' ? endDate : endDate.toISOString().split('T')[0]
+        const endDateOnly = new Date(endDateStr + 'T00:00:00')
+        requestedEnd = zonedTimeToUtc(
+            new Date(endDateOnly.getFullYear(), endDateOnly.getMonth(), endDateOnly.getDate(), 23, 59, 59, 999),
+            WNYC_TIMEZONE
+        )
+    } else {
+        requestedEnd = zonedTimeToUtc(
+            new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 23, 59, 59, 999),
+            WNYC_TIMEZONE
+        )
+    }
 
-    // Format dates for error messages
-    const formatDate = (date: Date) => date.toISOString().split('T')[0]
+    // Format dates for error messages (in EST/EDT)
+    const formatDate = (date: Date) => {
+        const zonedDate = utcToZonedTime(date, WNYC_TIMEZONE)
+        return zonedDate.toISOString().split('T')[0]
+    }
     
     // For single date requests, validate the date is within range
     if (!endDate) {
         if (requestedStart < minDate || requestedStart > maxDate) {
             throw createError({
                 statusCode: 400,
-                statusMessage: `Requested date ${formatDate(requestedStart)} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
+                statusMessage: `Requested date ${requestedDateStr} is outside available range: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
             })
         }
     } else {
@@ -337,23 +393,31 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
         if (requestedEnd < minDate || requestedStart > maxDate) {
             throw createError({
                 statusCode: 400,
-                statusMessage: `Requested date range ${formatDate(requestedStart)} to ${formatDate(requestedEnd)} does not overlap with available data: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
+                statusMessage: `Requested date range ${requestedDateStr} to ${typeof endDate === 'string' ? endDate : endDate.toISOString().split('T')[0]} does not overlap with available data: ${formatDate(minDate)} to ${formatDate(maxDate)}`,
             })
         }
     }
 }
 
-// Filter episodes for a date range
+// Filter episodes for a date range (in EST/EDT)
 const filterByDateRange = (scheduleData: any, startDate: string, endDate: string) => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
 
-    const rangeStart = new Date(startDate)
-    rangeStart.setUTCHours(0, 0, 0, 0)
+    // Parse start date and create start of day in EST/EDT
+    const startDateOnly = new Date(startDate + 'T00:00:00')
+    const rangeStart = zonedTimeToUtc(
+        new Date(startDateOnly.getFullYear(), startDateOnly.getMonth(), startDateOnly.getDate(), 0, 0, 0, 0),
+        WNYC_TIMEZONE
+    )
     
-    const rangeEnd = new Date(endDate)
-    rangeEnd.setUTCHours(23, 59, 59, 999)
+    // Parse end date and create end of day in EST/EDT
+    const endDateOnly = new Date(endDate + 'T00:00:00')
+    const rangeEnd = zonedTimeToUtc(
+        new Date(endDateOnly.getFullYear(), endDateOnly.getMonth(), endDateOnly.getDate(), 23, 59, 59, 999),
+        WNYC_TIMEZONE
+    )
     
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
@@ -437,6 +501,10 @@ export default defineEventHandler(async (event) => {
                 // Validate that the requested date is within available data range
                 validateDateRange(scheduleData, startDate)
                 filteredData = filterByDate(scheduleData, startDate)
+                // If the requested date is today, remove past episodes
+                if (isToday(startDate)) {
+                    filteredData = removePastEpisodes(filteredData)
+                }
                 break
             
             case 'dateRange':
@@ -449,6 +517,10 @@ export default defineEventHandler(async (event) => {
                 // Validate that the requested date range is within available data range
                 validateDateRange(scheduleData, startDate, endDate)
                 filteredData = filterByDateRange(scheduleData, startDate, endDate)
+                // If the date range includes today, remove past episodes
+                if (includesCurrentDate(startDate, endDate)) {
+                    filteredData = removePastEpisodes(filteredData)
+                }
                 break
             
             case 'all':
