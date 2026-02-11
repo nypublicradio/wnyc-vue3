@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div>
-    <section v-if="page" class="section-page mb-5">
+    <section v-if="page" class="information-page mb-5">
       <div class="content">
         <h1 class="mb-5">
           {{ page.title }}
@@ -20,3 +20,12 @@ defineProps<{
     </section>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.information-page {
+  .content {
+    max-width: 614px;
+    margin: 0 auto;
+  }
+}
+</style>
