@@ -147,6 +147,12 @@ watch(
   --episode-body-color: #000000;
 }
 
+@include media("<md") {
+  .episode-page {
+    --episode-body-font-size: 16px;
+  }
+}
+
 .episode-page .episode-template .streamfield .streamfield-paragraph > *,
 .episode-page .episode-template .html-convert p {
   font-family: var(--episode-body-font-family);
