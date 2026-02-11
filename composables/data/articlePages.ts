@@ -8,6 +8,48 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
+
+// Simplecast article data interface
+interface SimplecastArticle {
+  id?: string
+  episodeId?: string
+  uuid?: string
+  title?: string
+  description?: string
+  longDescription?: string
+  slug?: string
+  type?: string
+  publishedAt?: string
+  updatedAt?: string
+  duration?: number
+  audioFileUrl?: string
+  enclosureUrl?: string
+  episodeUrl?: string
+  imageUrl?: string
+  transcription?: string
+  number?: number
+  guid?: string
+  isPublished?: boolean
+  showId?: string
+  show_id?: string
+  showTitle?: string
+  show_title?: string
+  showImageUrl?: string
+  show_image_url?: string
+  keywords?: {
+    collection?: Array<{ value?: string }>
+  }
+  podcast?: {
+    title?: string
+    href?: string
+    imageUrl?: string
+  }
+  season?: {
+    number?: number
+  }
+  [key: string]: unknown
+}
+
 // Get a list of article pages using the Aviary /pages api
 export function findArticlePages (queryParams: any) {
   const defaultParams = {
@@ -74,6 +116,8 @@ export async function normalizeArticlePage (article: Record<string, any | undefi
     return await normalizeWagtailPage(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
     return await normalizePublisherPage(article)
+  else if (article.cmsSource === cmsSources.SIMPLECAST)
+    return await normalizeSimplecastPage(article)
   else
     return null
 }
@@ -234,11 +278,25 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   if (typeof article === 'undefined')
     return null
   //console.log("normalizeSimplecastListItem", article)
+  
+  // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
+  const simplecastId = article.id || article.episodeId || article.uuid
+  
+  // Extract show UUID from CMS data
+  const showId = article.showId || article.show_id
+  const showTitle = article.showTitle || article.show_title
+  const showImageUrl = article.showImageUrl || article.show_image_url
+  
   return Object.assign({}, await normalizePage(article), {
+    uuid: simplecastId, // Preserve the Simplecast UUID
+    showId, // Preserve the show UUID
+    showSlug: showId, // Use showId as slug for Simplecast shows
+    description: article.subtitle || article.description,
     image: article.image,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
     cmsSource: cmsSources.SIMPLECAST,
+    type: 'episode',
     authors: undefined,
     contributingOrganizations: undefined,
     sponsors: undefined,
@@ -250,6 +308,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
+    link: `/browse/shows/episode/simplecast/${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
     body: article.body,
@@ -258,9 +317,153 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     // for comments
     estimatedDuration: article.duration,
     sortDate: article.publishedAt,
-    meta: { slug: article.slug, type: article.contentType },
-    showTitle: article.showTitle,
+    meta: { slug: article.slug, type: 'episode', simplecastId },
+    showTitle,
+    headers: showTitle && showImageUrl ? { brand: { title: showTitle, logoImage: { url: showImageUrl } } } : undefined,
   })
+}
+
+/**
+ * Helper: Extract image data from Simplecast article
+ */
+function getSimplecastImage(article: SimplecastArticle) {
+  if (article.imageUrl) {
+    return { url: article.imageUrl }
+  }
+  if (article.podcast?.imageUrl) {
+    return { url: article.podcast.imageUrl }
+  }
+  return undefined
+}
+
+/**
+ * Helper: Extract show information from Simplecast article
+ */
+function getSimplecastShowInfo(article: SimplecastArticle) {
+  const showId = article.showId || article.show_id
+  const showTitle = article.showTitle || article.show_title || article.podcast?.title
+  const showImageUrl = article.showImageUrl || article.show_image_url || article.podcast?.imageUrl
+  
+  return { showId, showTitle, showImageUrl }
+}
+
+/**
+ * Helper: Extract show object from Simplecast article
+ */
+function getSimplecastShow(article: SimplecastArticle, showTitle?: string) {
+  if (article.podcast) {
+    return { title: article.podcast.title, url: article.podcast.href }
+  }
+  if (showTitle) {
+    return { title: showTitle }
+  }
+  return undefined
+}
+
+/**
+ * Helper: Extract headers from Simplecast show info
+ */
+function getSimplecastHeaders(showTitle?: string, showImageUrl?: string) {
+  if (showTitle && showImageUrl) {
+    return { brand: { title: showTitle, logoImage: { url: showImageUrl } } }
+  }
+  return undefined
+}
+
+/**
+ * Helper: Extract and process tags from Simplecast article
+ */
+function getSimplecastTags(article: SimplecastArticle): string[] {
+  return article.keywords?.collection?.filter(k => k?.value)?.map(k => k.value) || []
+}
+
+/**
+ * Helper: Calculate or estimate duration for Simplecast article
+ */
+async function getSimplecastDuration(article: SimplecastArticle): Promise<number | undefined> {
+  const duration = article.duration
+  if (duration && typeof duration === 'number' && duration > 0) {
+    return duration
+  }
+  const audioUrl = article.audioFileUrl || article.enclosureUrl
+  return await estimateMp3Duration(audioUrl)
+}
+
+/**
+ * Normalize an article page object from Simplecast into a generic ArticlePage object.
+ * @param article 
+ * @returns 
+ */
+export async function normalizeSimplecastPage (article: SimplecastArticle): Promise<ArticlePage> {
+  if (typeof article === 'undefined')
+    return null
+  
+  const duration = await getSimplecastDuration(article)
+  const simplecastId = article.id
+  const { showId, showTitle, showImageUrl } = getSimplecastShowInfo(article)
+  const image = getSimplecastImage(article)
+  const audioUrl = article.audioFileUrl || article.enclosureUrl
+  const bodyText = article.longDescription || article.description
+
+  return Promise.resolve(Object.assign({}, normalizePage(article), {
+    uuid: simplecastId,
+    showId,
+    showSlug: showId,
+    description: article.description || article.longDescription,
+    image,
+    imageFullWidth: undefined,
+    imageFullHeight: undefined,
+    leadImageCaption: undefined,
+    imageLink: undefined,
+    type: article.type || 'episode',
+    link: `/browse/shows/episode/simplecast/${simplecastId}`,
+    cmsSource: cmsSources.SIMPLECAST,
+    sortDate: article.publishedAt,
+    leadAsset: undefined,
+    leadImage: undefined,
+    leadGallery: undefined,
+    meta: {
+      firstPublishedAt: article.publishedAt && new Date(article.publishedAt),
+      slug: article.slug,
+      type: article.type || 'episode',
+    },
+    title: article.title,
+    tease: article.description,
+    gallerySlides: undefined,
+    legacyId: article.id,
+    authors: undefined,
+    contributingOrganizations: undefined,
+    sponsors: undefined,
+    publicationDate: article.publishedAt && new Date(article.publishedAt),
+    updatedDate: article.updatedAt && new Date(article.updatedAt),
+    showAsFeature: undefined,
+    sensitiveContent: undefined,
+    provocativeContent: undefined,
+    sponsoredContent: undefined,
+    relatedLinks: undefined,
+    tags: getSimplecastTags(article),
+    url: article.episodeUrl,
+    section: undefined,
+    body: bodyText,
+    rawBody: bodyText,
+    audio: audioUrl,
+    hasAudio: Boolean(audioUrl),
+    listingImage: image,
+    socialImage: image,
+    disableComments: undefined,
+    commentId: undefined,
+    estimatedDuration: duration,
+    show: getSimplecastShow(article, showTitle),
+    showTitle,
+    headers: getSimplecastHeaders(showTitle, showImageUrl),
+    segments: undefined,
+    transcript: article.transcription,
+    embedCode: undefined,
+    episodeNumber: article.number,
+    seasonNumber: article.season?.number,
+    guid: article.guid,
+    isPublished: article.isPublished,
+  }))
 }
 
 /**
@@ -667,7 +870,8 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
     return { w: 0, h: 0 }
   }
 
-  const cropMatch = image.match(/crop\/(\d+)x(\d+)/)
+  const cropRegex = /crop\/(\d+)x(\d+)/
+  const cropMatch = cropRegex.exec(image)
   if (cropMatch) {
     return {
       w: parseInt(cropMatch[1], 10),
@@ -692,13 +896,13 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
 
   /*   console.log('NPR Image Debug:', {
       articleId: id,
-      hasImages: !!article.images,
+      hasImages: Boolean(article.images),
       imageCount: article.images?.length,
       firstImageHref,
       rawImageId,
       camelCaseId,
-      hasFirstImage: !!firstImage,
-      hasAssets: !!article.assets,
+      hasFirstImage: Boolean(firstImage),
+      hasAssets: Boolean(article.assets),
       assetKeys: article.assets ? Object.keys(article.assets).slice(0, 10) : [],
       firstImageAsset: firstImage ? 'FOUND!' : 'not found'
     }) */

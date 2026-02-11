@@ -70,6 +70,7 @@ jobs:
             JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}
             SPRINGBOARD_KEY=${{ secrets.SPRINGBOARD_KEY }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            SIMPLECAST_API_KEY=${{ secrets.SIMPLECAST_API_KEY }}
           build_args: |
             ENV=review
             AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
@@ -109,6 +110,7 @@ jobs:
             SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
             NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
             RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
+            SIMPLECAST_URL=${{ vars.SIMPLECAST_URL }}
 
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'

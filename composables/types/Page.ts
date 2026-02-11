@@ -79,6 +79,7 @@ export interface ArticlePage extends Page {
   updatedDate: Date | null
   showAsFeature?: boolean
   show?: string
+  showId?: string
   showTitle?: string
   sensitiveContent?: boolean
   provocativeContent?: boolean

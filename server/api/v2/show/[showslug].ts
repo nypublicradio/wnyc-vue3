@@ -95,6 +95,48 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
 
 // gets the publisher show data
 const getShow = async (slug: string) => {
+    // Check if this is a Simplecast UUID
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+    
+    if (isUUID) {
+        // This is a Simplecast show UUID
+        try {
+            // Use config or fallback to process.env
+            const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
+            
+            if (!apiKey) {
+                console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
+                return null
+            }
+            
+            const option = {
+                method: 'GET',
+                url: `${config.simplecastUrl}/podcasts/${slug}`,
+                headers: {
+                    'Authorization': apiKey
+                }
+            }
+            const res = await axios(option)
+            const showData = humps.camelizeKeys(res.data)
+            
+            return {
+                id: showData.id,
+                title: showData.title,
+                slug: showData.slug || slug,
+                description: showData.description,
+                tease: showData.description,
+                image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
+                cmsSource: cmsSources.SIMPLECAST,
+                type: mediaTypes.SHOW,
+                url: showData.href || showData.websiteUrl,
+            }
+        } catch (e: any) {
+            console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message);
+            return null
+        }
+    }
+    
+    // Check for NPR shows
     const nprShows = await nyprDb.getNPRShowBySlug(slug)
     if (nprShows.length > 0) {
         const fetchedShows = await Promise.all(nprShows.map(async (show) => {
@@ -156,7 +198,16 @@ export default defineEventHandler(async (event) => {
         let episodes
         // Get show details
         const show = await getShow(slug)
-        if (show?.type === cmsSources.NPR) {
+        
+        if (!show) {
+            return null
+        }
+        
+        if (show.cmsSource === cmsSources.SIMPLECAST) {
+            // Simplecast episodes are typically displayed through curated content
+            // Return empty episodes array
+            episodes = { data: [], meta: {} }
+        } else if (show?.type === cmsSources.NPR) {
             episodes = await getNPREpisodes(slug, show.type, show?.title)
         } else {
             episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page)

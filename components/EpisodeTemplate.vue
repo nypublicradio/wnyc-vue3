@@ -4,6 +4,7 @@ import {
   useCurrentEpisode,
   useIsApp,
 } from "~/composables/states"
+import { cmsSources } from '~/composables/globals'
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -62,7 +63,8 @@ const progress = ref({})
 const { breakpoint } = useBreakpoints()
 const isMobileBtn = computed(() => breakpoint("<md"))
 
-const isWagtail = route.query.src === cmsSources.WAGTAIL
+const cmsSource = computed(() => route.params.cmsSource || route.query.src || cmsSources.PUBLISHER)
+const isWagtail = cmsSource.value === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
     ? `Gothamist${
@@ -96,7 +98,7 @@ watch(
       galleryLength.value = gallery.value?.slides?.length ?? 0
 
       galleryLink.value = String(
-        `photos/${props.episodeData?.leadGallery.gallery}?article=${props.episodeData?.id}&src=${route.query.src}`
+        `photos/${props.episodeData?.leadGallery.gallery}?article=${props.episodeData?.id}&src=${cmsSource.value}`
       )
     }
   },
@@ -160,9 +162,14 @@ const handleShare = () => {
 
 //handle the transcript of the episode
 const handleTranscript = () => {
-  navigateTo(
-    `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-  )
+  if (route.params.cmsSource) {
+    navigateTo(`./${route.params.slug}/transcript`)
+  } else {
+    // Fallback for old route structure
+    navigateTo(
+      `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
+    )
+  }
 }
 
 // handle comments button click
@@ -217,11 +224,17 @@ const getEpisodeImage = () => {
   const epImage = props.episodeData?.image
   const showImage = props.episodeData?.headers?.brand?.logoImage
 
-  return epImage && typeof epImage === "object"
-    ? epImage?.template !== showImage?.template
+  // Handle Simplecast images which use 'url' instead of 'template'
+  if (epImage && typeof epImage === "object") {
+    const epImageIdentifier = epImage?.url || epImage?.template
+    const showImageIdentifier = showImage?.url || showImage?.template
+    
+    return epImageIdentifier !== showImageIdentifier
       ? epImage
       : gallery.value?.slides?.[0]?.image || null
-    : epImage
+  }
+  
+  return epImage
 }
 
 const theEpImage = computed(() => getEpisodeImage())

@@ -959,10 +959,19 @@ export const getCssVar = (name: string, px = false) => {
 // ROUTING
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
+  const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
+  
+  // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
+  // For other sources, use slug
+  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.uuid)
+    ? ep.uuid
+    : (ep.meta?.slug ?? ep.slug)
+  
   navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${ep.meta?.slug ?? ep.slug}`,
+    path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${identifier}`,
     query: params,
   })
+  
   if (log) {
     saveRecentlyPlayed(ep)
   }
@@ -1116,7 +1125,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
-        goToEpisodePage(item, { src: item.cmsSource, type: item.type }, isSaveHistory)
+        goToEpisodePage(item, null, isSaveHistory)
         break
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE:
