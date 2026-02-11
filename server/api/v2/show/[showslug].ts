@@ -176,8 +176,17 @@ const getShow = async (slug: string) => {
         const show = resData.find((s) => {
             return s.slug === slug
         })
-        const imgTemplate = show?.image?.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show?.image?.url)
-        show.image.template = imgTemplate
+        
+        if (!show) {
+            console.error('[Publisher Show] Show not found for slug:', slug)
+            return null
+        }
+        
+        if (show.image) {
+            const imgTemplate = show.image.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show.image.url)
+            show.image.template = imgTemplate
+        }
+        
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
         show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
