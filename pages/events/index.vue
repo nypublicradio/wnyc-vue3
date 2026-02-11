@@ -194,7 +194,6 @@ const greeneSpaceUrl = "https://thegreenespace.org"
 
   .events-title {
     grid-area: title;
-    font-family: var(--font-family-header);
     font-size: 46px;
     line-height: 1.2;
     letter-spacing: -0.02em;
@@ -220,21 +219,6 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     gap: 35px;
   }
 
-  @include media(">=md") {
-    :deep(.event-list-card__footer) {
-      justify-content: flex-start;
-      gap: 12px;
-    }
-
-    :deep(.event-list-card__cta) {
-      align-self: flex-start;
-    }
-
-    :deep(.event-list-card__badges) {
-      margin-left: auto;
-    }
-  }
-
   .events-card-skeleton {
     border-radius: 8px;
   }
@@ -256,7 +240,6 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     display: flex;
     flex-direction: column;
     gap: 12px;
-    color: #101012;
   }
 
   .events-rail__title {
@@ -272,7 +255,7 @@ const greeneSpaceUrl = "https://thegreenespace.org"
   }
 
   .events-rail__link {
-    color: #3b8ad1;
+    color: var(--link-button-color);
     text-decoration: underline;
     font-size: 16px;
     line-height: 1.6;
@@ -294,7 +277,7 @@ const greeneSpaceUrl = "https://thegreenespace.org"
     padding: 0;
     background: transparent;
     border: none;
-    color: #101012;
+    color: var(--p-text-color);
     box-shadow: none;
   }
 

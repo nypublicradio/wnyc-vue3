@@ -140,26 +140,9 @@ watch(
 }
 
 .episode-page {
-  --episode-body-font-family: 'Open Sans', sans-serif;
-  --episode-body-font-size: 18px;
-  --episode-body-font-weight: 400;
-  --episode-body-line-height: 180%;
-  --episode-body-color: #000000;
-}
-
-@include media("<md") {
-  .episode-page {
-    --episode-body-font-size: 16px;
+  .episode-template .episode-main-content .streamfield .streamfield-paragraph > *,
+  .episode-template .episode-main-content .html-convert p {
+    @include longFormBodyTypography();
   }
-}
-
-.episode-page .episode-template .episode-main-content .streamfield .streamfield-paragraph > *,
-.episode-page .episode-template .episode-main-content .html-convert p {
-  font-family: var(--episode-body-font-family);
-  font-size: var(--episode-body-font-size);
-  font-style: normal;
-  font-weight: var(--episode-body-font-weight);
-  line-height: var(--episode-body-line-height);
-  color: var(--episode-body-color);
 }
 </style>

@@ -28,7 +28,7 @@ const props = defineProps({
     type: String,
   },
   variant: {
-    type: String as PropType<"default" | "hero">,
+    type: String as PropType<"default" | "hero" | "card">,
     default: "default",
   },
 })
@@ -63,7 +63,7 @@ const emit = defineEmits(["on-click"])
   .p-button {
     border-radius: 999px;
     border: none;
-    color: #ffffff;
+    color: var(--p-surface-0);
     box-shadow: none;
     font-weight: var(--font-weight-700);
     gap: 6px;
@@ -99,6 +99,53 @@ const emit = defineEmits(["on-click"])
       &:hover {
         background: var(--wnyc-logo-color-hover);
       }
+    }
+  }
+
+  &.variant-card {
+    .p-button {
+      background: var(--p-surface-0);
+      border: 1px solid var(--p-surface-200);
+      color: var(--p-text-color);
+      min-height: 28px;
+      padding: 4px 16px;
+      transition:
+        background var(--p-transition-duration),
+        border-color var(--p-transition-duration);
+
+      &:hover {
+        background: var(--p-surface-50);
+        border-color: var(--p-surface-300);
+      }
+    }
+
+    .content {
+      color: var(--p-text-color);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .icon {
+      display: none;
+    }
+  }
+}
+
+@include media("<md") {
+  .event-button.variant-card {
+    .p-button {
+      width: auto;
+      min-width: 160px;
+      min-height: 28px;
+      justify-content: center;
+      padding: 4px 36px;
+      margin: 0;
+    }
+
+    .content {
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: var(--font-weight-700);
     }
   }
 }
