@@ -6,6 +6,84 @@ interface NprAsset {
 	[key: string]: any
 }
 
+/**
+ * Helper to handle NPR CDS items.
+ */
+async function handleNprCdsItem(listItem: any, componentType: string) {
+	// Content can be either an object directly or an array with one element
+	const nprDocument: NprDocument = listItem.content 
+		? (Array.isArray(listItem.content) ? listItem.content[0] : listItem.content)
+		: null
+	
+	// Check if we have a full NPR document with ID
+	if (nprDocument?.id) {
+		// Check for restricted content
+		if (nprDocument.assets) {
+			for (const asset of Object.values(nprDocument.assets)) {
+				if (asset?.isRestrictedToAuthorizedOrgServiceIds === true) {
+					nprDocument.isRestrictedToAuthorizedOrgServiceIds = true
+					break
+				}
+			}
+		}
+		
+		// Skip if restricted, otherwise normalize
+		if (nprDocument.isRestrictedToAuthorizedOrgServiceIds) {
+			return null
+		}
+		
+		return await normalizeNprPage(nprDocument, componentType)
+	}
+	
+	// Handle simple curated NPR items (title, url, image, body directly on listItem)
+	const hasTitle = listItem.title && typeof listItem.title === 'string' && listItem.title.trim()
+	const hasUrl = listItem.url && typeof listItem.url === 'string' && listItem.url.trim()
+	
+	if (hasTitle && hasUrl) {
+		return {
+			id: listItem.url,
+			uuid: listItem.url,
+			title: listItem.title,
+			description: listItem.subtitle || listItem.body || '',
+			tease: listItem.subtitle || listItem.body || '',
+			image: listItem.image || null,
+			url: listItem.url,
+			link: listItem.url,
+			cmsSource: 'npr',
+			type: 'npr_article',
+			body: listItem.body || '',
+			rawBody: listItem.body || '',
+			meta: {
+				slug: listItem.url,
+			},
+		}
+	}
+	
+	console.warn('NPR item missing valid title or URL. Title:', listItem.title, 'URL:', listItem.url, 'Keys:', Object.keys(listItem))
+	return null
+}
+
+/**
+ * Helper to handle other content types.
+ */
+async function handleOtherContentType(listItem: any) {
+	// Move content properties to root level, keeping existing root properties
+	const mergedItem = { ...listItem.content, ...listItem }
+	delete mergedItem.content
+
+	// For episodes, preserve the original content ID (Simplecast UUID) before merge overrides it
+	if (mergedItem.contentType === 'episode' && listItem.content) {
+		const simplecastEpisodeId = listItem.content.id || listItem.content.episodeId || listItem.content.uuid
+		if (simplecastEpisodeId) {
+			mergedItem.episodeId = simplecastEpisodeId
+		}
+	}
+
+	return mergedItem.contentType === 'episode'
+		? await normalizeSimplecastListItem(mergedItem)
+		: await normalizeWagtailListItem(mergedItem)
+}
+
 interface NprDocument {
 	assets?: Record<string, NprAsset>
 	isRestrictedToAuthorizedOrgServiceIds?: boolean
@@ -34,84 +112,14 @@ export async function transformCuratedContent(curatedContent: any[], componentTy
 					return item
 				}
 
-				const transformedListItems = await Promise.all(
-					item.value.list.listItems.map(async (listItem) => {
-						try {
-							// Handle NPR CDS items specially
-							if (listItem.contentType === 'npr_cds_item') {
-								// Content can be either an object directly or an array with one element
-								const nprDocument: NprDocument = listItem.content 
-									? (Array.isArray(listItem.content) ? listItem.content[0] : listItem.content)
-									: null
-								
-								// Check if we have a full NPR document with ID
-								if (nprDocument?.id) {
-									// Check for restricted content
-									if (nprDocument.assets) {
-										for (const asset of Object.values(nprDocument.assets)) {
-											if (asset?.isRestrictedToAuthorizedOrgServiceIds === true) {
-												nprDocument.isRestrictedToAuthorizedOrgServiceIds = true
-												break
-											}
-										}
-									}
-									
-									// Skip if restricted, otherwise normalize
-									if (nprDocument.isRestrictedToAuthorizedOrgServiceIds) {
-										return null
-									}
-									
-									return await normalizeNprPage(nprDocument, componentType)
-								}
-								
-								// Handle simple curated NPR items (title, url, image, body directly on listItem)
-							// Check for truthy values (not just existence of keys)
-							const hasTitle = listItem.title && typeof listItem.title === 'string' && listItem.title.trim()
-							const hasUrl = listItem.url && typeof listItem.url === 'string' && listItem.url.trim()
-							
-							if (hasTitle && hasUrl) {
-								return {
-									id: listItem.url,
-									uuid: listItem.url,
-									title: listItem.title,
-									description: listItem.subtitle || listItem.body || '',
-									tease: listItem.subtitle || listItem.body || '',
-									image: listItem.image || null,
-									url: listItem.url,
-									link: listItem.url,
-									cmsSource: 'npr',
-									type: 'npr_article',
-									body: listItem.body || '',
-									rawBody: listItem.body || '',
-									meta: {
-										slug: listItem.url,
-									},
-								}
-							}
-							
-							// If neither full document nor simple structure, skip this item
-							console.warn('NPR item missing valid title or URL. Title:', listItem.title, 'URL:', listItem.url, 'Keys:', Object.keys(listItem))
-						return null
+		const transformedListItems = await Promise.all(
+			item.value.list.listItems.map(async (listItem) => {
+				try {
+					if (listItem.contentType === 'npr_cds_item') {
+						return await handleNprCdsItem(listItem, componentType)
+					} else {
+						return await handleOtherContentType(listItem)
 					}
-					
-					// Handle other content types
-					// Move content properties to root level, keeping existing root properties
-					const mergedItem = { ...listItem.content, ...listItem }
-					delete mergedItem.content
-
-					// For episodes, preserve the original content ID (Simplecast UUID) before merge overrides it
-					if (mergedItem.contentType === 'episode' && listItem.content) {
-						// Preserve the Simplecast episode UUID from content
-						const simplecastEpisodeId = listItem.content.id || listItem.content.episodeId || listItem.content.uuid
-						if (simplecastEpisodeId) {
-							// Store as episodeId to ensure normalizeSimplecastListItem picks it up
-							mergedItem.episodeId = simplecastEpisodeId
-						}
-					}
-
-					return mergedItem.contentType === 'episode'
-						? await normalizeSimplecastListItem(mergedItem)
-						: await normalizeWagtailListItem(mergedItem)
 				} catch (error) {
 					console.error('Error transforming list item:', error, listItem)
 					return null
