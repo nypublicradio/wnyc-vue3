@@ -153,8 +153,8 @@ watch(
   }
 }
 
-.episode-page .episode-template .streamfield .streamfield-paragraph > *,
-.episode-page .episode-template .html-convert p {
+.episode-page .episode-template .episode-main-content .streamfield .streamfield-paragraph > *,
+.episode-page .episode-template .episode-main-content .html-convert p {
   font-family: var(--episode-body-font-family);
   font-size: var(--episode-body-font-size);
   font-style: normal;
