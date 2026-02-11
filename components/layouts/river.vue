@@ -27,7 +27,7 @@ const reactiveItems = toRef(props.list, "listItems")
         <MediaCard
           showTease
           isHorizontal
-          imgCol="w-7rem md:w-11rem"
+          imgCol="w-7rem md:w-12rem"
           :data="article"
           :size="{ xs: [112, 112], md: [176, 176] }"
           @on-click="dynamicNavigation(article)"
@@ -42,7 +42,7 @@ const reactiveItems = toRef(props.list, "listItems")
       >
         <skeleton-media-card
           isHorizontal
-          imgCol="w-7rem md:w-11rem "
+          imgCol="w-7rem md:w-12rem "
           class="w-full"
           :size="{ xs: [112, 112], md: [176, 176] }"
         />

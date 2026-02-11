@@ -251,6 +251,9 @@ $spacing-base: 0.25; //  matches prime-flex
 .truncate {
   @include truncate();
 }
+@mixin t1lines() {
+  -webkit-line-clamp: 1;
+}
 @mixin t2lines() {
   -webkit-line-clamp: 2;
 }

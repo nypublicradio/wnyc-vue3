@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
   severity: {
     type: String,
     default: "secondary",
@@ -21,6 +25,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  checkMark: {
+    type: Boolean,
+    default: false,
+  },
+  initSelectedData: {
+    type: String,
+    default: null,
+  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -30,6 +42,9 @@ const emit = defineEmits(["changeEmit"])
     v-model:data="dataRef"
     :options="props.menuItems"
     :label="props.label"
+    :showTitle="props.showTitle"
+    :checkMark="props.checkMark"
+    :initSelectedData="props.initSelectedData"
     @change="emit('changeEmit', $event)"
   >
     <template #customButton="slotProps">
