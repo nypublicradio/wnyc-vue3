@@ -99,6 +99,16 @@ export async function transformCuratedContent(curatedContent: any[], componentTy
 					const mergedItem = { ...listItem.content, ...listItem }
 					delete mergedItem.content
 
+					// For episodes, preserve the original content ID (Simplecast UUID) before merge overrides it
+					if (mergedItem.contentType === 'episode' && listItem.content) {
+						// Preserve the Simplecast episode UUID from content
+						const simplecastEpisodeId = listItem.content.id || listItem.content.episodeId || listItem.content.uuid
+						if (simplecastEpisodeId) {
+							// Store as episodeId to ensure normalizeSimplecastListItem picks it up
+							mergedItem.episodeId = simplecastEpisodeId
+						}
+					}
+
 					return mergedItem.contentType === 'episode'
 						? await normalizeSimplecastListItem(mergedItem)
 						: await normalizeWagtailListItem(mergedItem)
