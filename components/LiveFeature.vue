@@ -5,6 +5,7 @@ import {
   useCurrentEpisodeHolder,
   useIsApp,
   useIsEpisodePlaying,
+  useIsLiveStream,
   useAppDownloadLink,
   useAllCurrentStations,
 } from "~/composables/states"
@@ -23,6 +24,7 @@ const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
+const isLiveStream = useIsLiveStream()
 const appDownloadLink = useAppDownloadLink()
 const allCurrentStations = useAllCurrentStations()
 const defaultButtonLabel = "Listen Live"
@@ -141,7 +143,9 @@ const onUpdateStation = (station) => {
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
-                    isEpisodePlaying ? listeningButtonLabel : defaultButtonLabel
+                    isEpisodePlaying && isLiveStream
+                      ? listeningButtonLabel
+                      : defaultButtonLabel
                   "
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
