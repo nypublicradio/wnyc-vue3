@@ -477,6 +477,12 @@ const breadcrumbs = computed(() => [
 }
 
 .event-body {
+  --event-body-font-family: 'Open Sans', sans-serif;
+  --event-body-font-size: 18px;
+  --event-body-font-weight: 400;
+  --event-body-line-height: 180%;
+  --event-body-color: #000000;
+
   padding-bottom: 24px;
 
   .event-body__layout {
@@ -499,12 +505,23 @@ const breadcrumbs = computed(() => [
   }
 
   .event-body__description {
-    font-size: 1rem;
-    line-height: 1.8;
+    font-family: var(--event-body-font-family);
+    font-size: var(--event-body-font-size);
+    font-style: normal;
+    font-weight: var(--event-body-font-weight);
+    line-height: var(--event-body-line-height);
+    color: var(--event-body-color);
   }
 
-  .event-body__streamfield :deep(.streamfield-paragraph > *) {
-    line-height: 1.8;
+  .event-body__streamfield :deep(.streamfield-paragraph > *),
+  .event-body__streamfield :deep(.html-convert p),
+  .event-body__description :deep(.html-convert p) {
+    font-family: var(--event-body-font-family);
+    font-size: var(--event-body-font-size);
+    font-style: normal;
+    font-weight: var(--event-body-font-weight);
+    line-height: var(--event-body-line-height);
+    color: var(--event-body-color);
   }
 
   .event-body__credit {

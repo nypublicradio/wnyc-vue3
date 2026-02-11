@@ -139,9 +139,21 @@ watch(
   }
 }
 
-.episode-page .html-convert {
-  p {
-    line-height: 1.8em;
-  }
+.episode-page {
+  --episode-body-font-family: 'Open Sans', sans-serif;
+  --episode-body-font-size: 18px;
+  --episode-body-font-weight: 400;
+  --episode-body-line-height: 180%;
+  --episode-body-color: #000000;
+}
+
+.episode-page .episode-template .streamfield .streamfield-paragraph > *,
+.episode-page .episode-template .html-convert p {
+  font-family: var(--episode-body-font-family);
+  font-size: var(--episode-body-font-size);
+  font-style: normal;
+  font-weight: var(--episode-body-font-weight);
+  line-height: var(--episode-body-line-height);
+  color: var(--episode-body-color);
 }
 </style>
