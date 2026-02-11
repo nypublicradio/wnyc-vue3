@@ -296,7 +296,7 @@ const filterByDate = (scheduleData: any, targetDate: string) => {
     }
 
     // Parse the date string and create start/end of day in EST/EDT timezone
-    const dateOnly = new Date(targetDate + 'T00:00:00')
+    const dateOnly = new Date(`${targetDate}T00:00:00`)
     
     // Start of day in EST/EDT (00:00:00)
     const startOfDayEST = zonedTimeToUtc(
@@ -351,7 +351,7 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
     
     // Parse and convert dates to EST/EDT timezone
     const requestedDateStr = typeof requestedDate === 'string' ? requestedDate : requestedDate.toISOString().split('T')[0]
-    const dateOnly = new Date(requestedDateStr + 'T00:00:00')
+    const dateOnly = new Date(`${requestedDateStr}T00:00:00`)
     
     const requestedStart = zonedTimeToUtc(
         new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 0, 0, 0, 0),
@@ -361,7 +361,7 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
     let requestedEnd: Date
     if (endDate) {
         const endDateStr = typeof endDate === 'string' ? endDate : endDate.toISOString().split('T')[0]
-        const endDateOnly = new Date(endDateStr + 'T00:00:00')
+        const endDateOnly = new Date(`${endDateStr}T00:00:00`)
         requestedEnd = zonedTimeToUtc(
             new Date(endDateOnly.getFullYear(), endDateOnly.getMonth(), endDateOnly.getDate(), 23, 59, 59, 999),
             WNYC_TIMEZONE
@@ -406,14 +406,14 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
     }
 
     // Parse start date and create start of day in EST/EDT
-    const startDateOnly = new Date(startDate + 'T00:00:00')
+    const startDateOnly = new Date(`${startDate}T00:00:00`)
     const rangeStart = zonedTimeToUtc(
         new Date(startDateOnly.getFullYear(), startDateOnly.getMonth(), startDateOnly.getDate(), 0, 0, 0, 0),
         WNYC_TIMEZONE
     )
     
     // Parse end date and create end of day in EST/EDT
-    const endDateOnly = new Date(endDate + 'T00:00:00')
+    const endDateOnly = new Date(`${endDate}T00:00:00`)
     const rangeEnd = zonedTimeToUtc(
         new Date(endDateOnly.getFullYear(), endDateOnly.getMonth(), endDateOnly.getDate(), 23, 59, 59, 999),
         WNYC_TIMEZONE
