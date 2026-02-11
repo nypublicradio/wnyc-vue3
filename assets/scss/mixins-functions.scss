@@ -137,6 +137,16 @@
   @include t2lines();
 }
 
+// Shared long-form body copy used by article-like streamfield/html content.
+// Mobile relies on global 16px default and only overrides line-height.
+@mixin longFormBodyTypography() {
+  line-height: 180%;
+
+  @include media(">=md") {
+    font-size: 18px;
+  }
+}
+
 // font config
 @mixin font-config($config-map) {
   @each $breakpoint, $values in $config-map {

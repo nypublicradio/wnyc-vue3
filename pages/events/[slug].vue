@@ -1,7 +1,9 @@
 <script setup lang="js">
 import { useToast } from "primevue/usetoast"
-import { formatTime, dynamicNavigation } from "~/utilities/helpers"
+import { useTopStories } from "~/composables/useTopStories"
+import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 
+const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -33,92 +35,33 @@ const { data: event, status, error } = useFetch(
   }
 )
 
-const eventData = computed(() => event.value)
+const eventData = computed(() => event.value || {})
 
 const { data: moreEvents } = useFetch(
   `${config.public.BFF_URL}/api/events/list?limit=4`
 )
 
 const title = computed(() => eventData.value?.title)
-const theSlug = computed(
-  () => eventData.value?.meta?.slug ?? route.params.slug
-)
+const {
+  dayNumber: eventDayNumber,
+  monthLabel: eventDateShort,
+  dateLabel: eventDateLabel,
+  timeLabel,
+  venueName,
+  eventLocation,
+  locationName,
+  hasLiveStream,
+  hasInPerson,
+  eventCtaUrl,
+} = useEventData(eventData)
 
-const summary = computed(
-  () =>
-    eventData.value?.listingSummary ||
-    eventData.value?.description ||
-    eventData.value?.listingTitle ||
-    ""
-)
+const eventTimeLabel = computed(() => timeLabel.value?.toLowerCase() ?? null)
+const eventBadges = computed(() => [
+  { label: "WNYC EVENTS", color: "var(--p-text-color)", bg: "var(--p-surface-200)" },
+  ...(hasInPerson.value ? [EVENT_BADGE_STYLES.inPerson] : []),
+  ...(hasLiveStream.value ? [EVENT_BADGE_STYLES.liveStream] : []),
+])
 
-const eventTags = computed(() => eventData.value?.tags ?? [])
-const eventBadges = computed(() => {
-  const tags = eventTags.value
-  const tagLabels = tags.map((tag) => (tag.slug || tag.name || "").toLowerCase())
-  const hasLiveStream = tagLabels.some((tag) =>
-    ["live_stream", "live-stream", "livestream"].some((needle) => tag.includes(needle))
-  )
-  const hasInPerson = tagLabels.some((tag) =>
-    ["in_person", "in-person", "in_studio"].some((needle) => tag.includes(needle))
-  )
-  return [
-    { label: "WNYC EVENTS", color: "#101012", bg: "#e5e5e5" },
-    ...(hasInPerson
-      ? [{ label: "IN-PERSON", color: "#ffffff", bg: "#9747ff" }]
-      : []),
-    ...(hasLiveStream
-      ? [{ label: "LIVE STREAM", color: "#101012", bg: "#71c171" }]
-      : []),
-  ]
-})
-
-const startDatetime = computed(() => eventData.value?.startDatetime ?? null)
-const endDatetime = computed(() => eventData.value?.endDatetime ?? null)
-
-const eventDateLabel = computed(() =>
-  startDatetime.value ? formatTime(startDatetime.value, "MMM d, yyyy") : null
-)
-const eventDateShort = computed(() =>
-  startDatetime.value ? formatTime(startDatetime.value, "MMM") : null
-)
-const eventDayNumber = computed(() =>
-  startDatetime.value ? formatTime(startDatetime.value, "d") : null
-)
-const eventTimeLabel = computed(() => {
-  if (!startDatetime.value) return null
-  const startTime = formatTime(startDatetime.value, "h:mma")?.toLowerCase()
-  if (!endDatetime.value) return startTime
-  const endTime = formatTime(endDatetime.value, "h:mma")?.toLowerCase()
-  return endTime ? `${startTime}–${endTime}` : startTime
-})
-
-const endDateLabel = computed(() =>
-  endDatetime.value ? formatTime(endDatetime.value, "MMM d, yyyy") : null
-)
-const endTimeLabel = computed(() =>
-  endDatetime.value ? formatTime(endDatetime.value, "h:mm a") : null
-)
-
-const eventCtaUrl = computed(
-  () =>
-    eventData.value?.ticketUrl ||
-    eventData.value?.eventUrl ||
-    eventData.value?.url ||
-    null
-)
-const eventDateTimeLine = computed(() => {
-  if (!eventDateLabel.value) return null
-  return eventTimeLabel.value
-    ? `${eventDateLabel.value} | ${eventTimeLabel.value}`
-    : eventDateLabel.value
-})
-
-const venueName = computed(() => eventData.value?.venueName || null)
-const eventLocation = computed(() => eventData.value?.eventLocation || null)
-const locationName = computed(
-  () => venueName.value || eventLocation.value || null
-)
 const mapsUrl = computed(() => {
   const query = [venueName.value, eventLocation.value].filter(Boolean).join(", ")
   if (!query) return null
@@ -176,11 +119,20 @@ const breadcrumbs = computed(() => [
                 <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
               </div>
               <div class="event-hero__titlegroup">
-                <h1 class="event-hero__title">{{ title }}</h1>
+                <h1
+                  class="event-hero__title text-2xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
+                >
+                  {{ title }}
+                </h1>
                 <div class="event-hero__meta">
-                  <p class="event-hero__date" v-if="eventDateTimeLine">
-                    {{ eventDateTimeLine }}
-                  </p>
+                  <PipeData
+                    v-if="eventDateLabel"
+                    class="event-hero__date text-sm md:text-base"
+                    :hide-pipe="!eventTimeLabel"
+                  >
+                    <template #left>{{ eventDateLabel }}</template>
+                    <template #right>{{ eventTimeLabel }}</template>
+                  </PipeData>
                   <div v-if="eventBadges.length" class="event-hero__badges">
                     <VBadge
                       v-for="badge in eventBadges"
@@ -262,9 +214,14 @@ const breadcrumbs = computed(() => [
           <aside class="event-rail">
             <div class="event-rail__section">
               <h3>Date &amp; Time</h3>
-              <p v-if="eventDateTimeLine" class="event-rail__value">
-                {{ eventDateTimeLine }}
-              </p>
+              <PipeData
+                v-if="eventDateLabel"
+                class="event-rail__value"
+                :hide-pipe="!eventTimeLabel"
+              >
+                <template #left>{{ eventDateLabel }}</template>
+                <template #right>{{ eventTimeLabel }}</template>
+              </PipeData>
             </div>
 
             <div v-if="locationName" class="event-rail__section">
@@ -309,7 +266,6 @@ const breadcrumbs = computed(() => [
             v-for="(eventItem, index) in otherEvents"
             :key="`${eventItem.id}-${index}`"
             :event="eventItem"
-            class="event-more__card"
           />
         </div>
       </div>
@@ -369,8 +325,8 @@ const breadcrumbs = computed(() => [
     grid-row: 1;
     width: 48px;
     height: 48px;
-    background: #101012;
-    color: #ffffff;
+    background: var(--p-text-color);
+    color: var(--p-surface-0);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -379,7 +335,6 @@ const breadcrumbs = computed(() => [
   }
 
   .event-hero__datebox-day {
-    font-family: 'Open Sans', sans-serif;
     font-size: 22px;
     font-weight: 700;
     line-height: 1.1;
@@ -387,7 +342,6 @@ const breadcrumbs = computed(() => [
   }
 
   .event-hero__datebox-month {
-    font-family: 'Open Sans', sans-serif;
     font-size: 10px;
     font-weight: 600;
     line-height: 1.2;
@@ -403,14 +357,6 @@ const breadcrumbs = computed(() => [
     grid-column: 2;
     grid-row: 1;
     min-width: 0;
-    font-family: var(--font-family-header, "Meta Pro");
-    font-size: 46px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%;
-    letter-spacing: -0.92px;
-    color: #000000;
-    margin: 0;
     overflow-wrap: anywhere;
   }
 
@@ -426,16 +372,10 @@ const breadcrumbs = computed(() => [
   }
 
   .event-hero__date {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: var(--font-weight-400);
-    font-size: 18px;
-    font-style: normal;
     line-height: 180%;
-    margin: 0;
     white-space: nowrap;
     display: flex;
     align-items: center;
-    color: #000000;
   }
 
   .event-hero__badges {
@@ -457,12 +397,6 @@ const breadcrumbs = computed(() => [
     justify-content: center;
   }
 
-  .event-hero__summary {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    max-width: 46rem;
-  }
-
   .event-hero__cta {
     grid-column: 1 / -1;
     grid-row: 3;
@@ -470,23 +404,9 @@ const breadcrumbs = computed(() => [
     margin-top: 0.4rem;
   }
 
-  .event-hero__cta :deep(.icon) {
-    display: none;
-  }
-
-  .event-hero__cta :deep(.p-button .pi) {
-    display: none;
-  }
-
 }
 
 .event-body {
-  --event-body-font-family: 'Open Sans', sans-serif;
-  --event-body-font-size: 18px;
-  --event-body-font-weight: 400;
-  --event-body-line-height: 180%;
-  --event-body-color: #000000;
-
   padding-bottom: 24px;
 
   .event-body__layout {
@@ -508,31 +428,18 @@ const breadcrumbs = computed(() => [
     overflow: hidden;
   }
 
-  .event-body__description {
-    font-family: var(--event-body-font-family);
-    font-size: var(--event-body-font-size);
-    font-style: normal;
-    font-weight: var(--event-body-font-weight);
-    line-height: var(--event-body-line-height);
-    color: var(--event-body-color);
-  }
-
+  .event-body__description,
   .event-body__streamfield :deep(.streamfield-paragraph > *),
   .event-body__streamfield :deep(.html-convert p),
   .event-body__description :deep(.html-convert p) {
-    font-family: var(--event-body-font-family);
-    font-size: var(--event-body-font-size);
-    font-style: normal;
-    font-weight: var(--event-body-font-weight);
-    line-height: var(--event-body-line-height);
-    color: var(--event-body-color);
+    @include longFormBodyTypography();
   }
 
   .event-body__credit {
     margin: 6px 0 0;
     text-align: right;
     font-size: 12px;
-    color: #6b6b6b;
+    color: var(--p-surface-600);
   }
 }
 
@@ -544,20 +451,15 @@ const breadcrumbs = computed(() => [
 
   h3 {
     font-size: 0.95rem;
-    font-weight: var(--font-weight-700);
     margin-bottom: 0.25rem;
   }
 
   .event-rail__value {
-    margin: 0;
     font-size: 0.95rem;
-    line-height: 1.4;
   }
 
   .event-rail__address {
-    margin: 0;
     font-size: 0.95rem;
-    line-height: 1.4;
     white-space: pre-line;
   }
 
@@ -588,7 +490,6 @@ const breadcrumbs = computed(() => [
 
   .event-more__title {
     margin: 0 0 24px;
-    font-family: var(--font-family-header);
     font-size: 24px;
     letter-spacing: -0.02em;
   }
@@ -598,29 +499,6 @@ const breadcrumbs = computed(() => [
     flex-direction: column;
     gap: 28px;
     max-width: 672px;
-  }
-
-  @include media(">=md") {
-    .event-more__card :deep(.event-list-card__footer) {
-      justify-content: flex-start;
-      gap: 12px;
-    }
-
-    .event-more__card :deep(.event-list-card__cta) {
-      align-self: flex-start;
-    }
-
-    .event-more__card :deep(.event-list-card__badges) {
-      margin-left: auto;
-    }
-  }
-}
-
-@include media(">=md") {
-  .event-hero {
-    .event-hero__title {
-      margin-top: -10px;
-    }
   }
 }
 
@@ -732,16 +610,6 @@ const breadcrumbs = computed(() => [
     padding-top: 20px;
     padding-bottom: 16px;
 
-    .event-hero__title {
-      font-size: 26px;
-      line-height: 120%;
-      letter-spacing: -0.52px;
-    }
-
-    .event-hero__date {
-      font-size: 16px;
-    }
-
     .event-hero__meta {
       flex-wrap: wrap;
       row-gap: 0.35rem;
@@ -750,8 +618,6 @@ const breadcrumbs = computed(() => [
 
   .event-body {
     padding-bottom: 16px;
-
-    --event-body-font-size: 16px;
   }
 
   .event-rail {

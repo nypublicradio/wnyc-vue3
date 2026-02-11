@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { dynamicNavigation, formatTime } from "~/utilities/helpers"
+import { dynamicNavigation } from "~/utilities/helpers"
+import { useEventData } from "~/composables/useEventData"
 
 const props = defineProps({
   event: {
@@ -11,63 +12,20 @@ const props = defineProps({
 
 const eventData = computed(() => props.event || {})
 
-const startDatetime = computed(() => eventData.value?.startDatetime ?? null)
-const endDatetime = computed(() => eventData.value?.endDatetime ?? null)
-
-const dayNumber = computed(() =>
-  startDatetime.value ? formatTime(startDatetime.value, "d") : null
-)
-const monthLabel = computed(() =>
-  startDatetime.value ? formatTime(startDatetime.value, "MMM") : null
-)
-
-const timeLabel = computed(() => {
-  if (!startDatetime.value) return null
-  const startTime = formatTime(startDatetime.value, "h:mma")
-  if (!endDatetime.value) return startTime
-  const endTime = formatTime(endDatetime.value, "h:mma")
-  return endTime ? `${startTime}–${endTime}` : startTime
-})
-
-const timeLabelReadable = computed(() => {
-  if (!startDatetime.value) return null
-  const startTime = formatTime(startDatetime.value, "h:mm a")
-  if (!endDatetime.value) return startTime
-  const endTime = formatTime(endDatetime.value, "h:mm a")
-  return endTime ? `${startTime}–${endTime}` : startTime
-})
-
-const venueName = computed(() => eventData.value?.venueName || null)
-const eventLocation = computed(() => eventData.value?.eventLocation || null)
-const locationName = computed(() => venueName.value || eventLocation.value || null)
+const {
+  dayNumber,
+  monthLabel,
+  timeLabel,
+  timeLabelReadable,
+  locationName,
+  eventTypeBadges,
+  eventCtaUrl,
+} = useEventData(eventData)
 
 const metaLineMobile = computed(() => {
   if (!timeLabelReadable.value && !locationName.value) return null
   return [timeLabelReadable.value, locationName.value].filter(Boolean).join(" | ")
 })
-
-const eventBadges = computed(() => {
-  const tags = eventData.value?.tags ?? []
-  const tagLabels = tags.map((tag: any) => (tag.slug || tag.name || "").toLowerCase())
-  const hasLiveStream = tagLabels.some((tag) =>
-    ["live_stream", "live-stream", "livestream"].some((needle) => tag.includes(needle))
-  )
-  const hasInPerson = tagLabels.some((tag) =>
-    ["in_person", "in-person", "in_studio"].some((needle) => tag.includes(needle))
-  )
-  return {
-    hasLiveStream,
-    hasInPerson,
-  }
-})
-
-const eventCtaUrl = computed(
-  () =>
-    eventData.value?.ticketUrl ||
-    eventData.value?.eventUrl ||
-    eventData.value?.url ||
-    null
-)
 
 const handleCardClick = () => {
   if (!eventData.value) return
@@ -116,6 +74,7 @@ const handleEventCta = () => {
       </p>
       <div class="event-list-card__footer">
         <EventButton
+          variant="card"
           class="event-list-card__cta"
           @on-click="handleEventCta"
           @click.stop
@@ -123,21 +82,13 @@ const handleEventCta = () => {
         >
           <template #icon></template>
         </EventButton>
-        <div
-          v-if="eventBadges.hasLiveStream || eventBadges.hasInPerson"
-          class="event-list-card__badges"
-        >
+        <div v-if="eventTypeBadges.length" class="event-list-card__badges">
           <VBadge
-            v-if="eventBadges.hasLiveStream"
-            label="LIVE STREAM"
-            color="#101012"
-            bg-color="#71c171"
-          />
-          <VBadge
-            v-if="eventBadges.hasInPerson"
-            label="IN-PERSON"
-            color="#ffffff"
-            bg-color="#9747ff"
+            v-for="badge in eventTypeBadges"
+            :key="badge.label"
+            :label="badge.label"
+            :color="badge.color"
+            :bg-color="badge.bg"
           />
         </div>
       </div>
@@ -151,7 +102,7 @@ const handleEventCta = () => {
   grid-template-columns: 203px minmax(0, 1fr);
   min-height: 203px;
   cursor: pointer;
-  color: #101012;
+  color: var(--p-text-color);
 
   &:focus-visible {
     outline: var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
@@ -164,7 +115,7 @@ const handleEventCta = () => {
   width: 203px;
   min-height: 203px;
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--p-surface-50);
 }
 
 .event-list-card__image {
@@ -190,8 +141,8 @@ const handleEventCta = () => {
   left: 0;
   width: 60px;
   height: 60px;
-  background: #101012;
-  color: #ffffff;
+  background: var(--p-text-color);
+  color: var(--p-surface-0);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -201,21 +152,19 @@ const handleEventCta = () => {
 }
 
 .event-list-card__date-day {
-  font-family: "Open Sans", sans-serif;
   font-size: 26px;
   font-weight: 700;
   line-height: 1;
 }
 
 .event-list-card__date-month {
-  font-family: "Open Sans", sans-serif;
   font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
 }
 
 .event-list-card__content {
-  background: #f5f5f5;
+  background: var(--p-surface-50);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -225,12 +174,9 @@ const handleEventCta = () => {
 }
 
 .event-list-card__title {
-  margin: 0;
-  font-family: var(--font-family-header);
   font-size: 20px;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: #101012;
 }
 
 .event-list-card__time,
@@ -238,7 +184,7 @@ const handleEventCta = () => {
   margin: 0;
   font-size: 18px;
   line-height: 1.8;
-  color: #101012;
+  color: var(--p-text-color);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -249,7 +195,7 @@ const handleEventCta = () => {
   margin: 0;
   font-size: 13px;
   line-height: 1.4;
-  color: #101012;
+  color: var(--p-text-color);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -278,29 +224,19 @@ const handleEventCta = () => {
   padding: 1px 6px;
 }
 
-.event-list-card__cta :deep(.p-button) {
-  background: #ffffff !important;
-  border: 1px solid #eaeaea !important;
-  color: #101012 !important;
-  min-height: 28px;
-  padding: 4px 16px;
-  box-shadow: none;
-  transition: background var(--p-transition-duration), border-color var(--p-transition-duration);
-
-  &:hover {
-    background: #f5f5f5 !important;
-    border-color: #d0d0d0 !important;
+@include media(">=md") {
+  .event-list-card__footer {
+    justify-content: flex-start;
+    gap: 12px;
   }
-}
 
-.event-list-card__cta :deep(.content) {
-  font-size: 14px;
-  line-height: 20px;
-  color: #101012;
-}
+  .event-list-card__cta {
+    align-self: flex-start;
+  }
 
-.event-list-card__cta :deep(.icon) {
-  display: none;
+  .event-list-card__badges {
+    margin-left: auto;
+  }
 }
 
 @include media("<md") {
@@ -361,21 +297,6 @@ const handleEventCta = () => {
   .event-list-card__cta {
     align-self: flex-start;
     width: auto;
-  }
-
-  .event-list-card__cta :deep(.p-button) {
-    width: auto;
-    min-width: 160px;
-    min-height: 28px !important;
-    justify-content: center;
-    padding: 4px 36px !important;
-    margin: 0;
-  }
-
-  .event-list-card__cta :deep(.content) {
-    font-size: 16px !important;
-    line-height: 20px;
-    font-weight: var(--font-weight-700);
   }
 
   .event-list-card__badges {
