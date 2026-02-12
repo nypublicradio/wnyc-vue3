@@ -1,6 +1,5 @@
 import axios from 'axios'
 import humps from 'humps'
-import { formatTime } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
 import { useVImage } from "~/composables/useVImage"
 
@@ -61,8 +60,8 @@ const formatShowData = (apiResponse: any) => {
 		slug: apiResponse.data[0].attributes.slug,
 		station: apiResponse.data[0].attributes.name,
 		stationImage: { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
-		timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
-		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
+		timeStart: scheduleData ? scheduleData.attributes['iso-start-time'] : null,
+		timeEnd: scheduleData ? scheduleData.attributes['iso-end-time'] : null,
 		showTitle: title,
 		title,
 		titleLink,
