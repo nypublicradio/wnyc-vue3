@@ -129,6 +129,7 @@ const breadcrumbs = computed(() => [
                     v-if="eventDateLabel"
                     class="event-hero__date text-sm md:text-base"
                     :hide-pipe="!eventTimeLabel"
+                    :full-width="false"
                   >
                     <template #left>{{ eventDateLabel }}</template>
                     <template #right>{{ eventTimeLabel }}</template>
@@ -286,10 +287,6 @@ const breadcrumbs = computed(() => [
   --event-main-col-width: 672px;
   --event-rail-col-width: 20rem;
   --event-grid-gap: 32px;
-
-  .event-section {
-    padding: 0 32px;
-  }
 }
 
 .event-hero {
@@ -507,11 +504,6 @@ const breadcrumbs = computed(() => [
   .event-body {
     padding-left: 0;
     padding-right: 0;
-
-    .event-section {
-      padding-left: 0;
-      padding-right: 0;
-    }
   }
 
   .event-more {
@@ -519,8 +511,6 @@ const breadcrumbs = computed(() => [
     padding-right: 0;
 
     .event-section {
-      padding-left: 0;
-      padding-right: 0;
       display: grid;
       grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
       column-gap: var(--event-grid-gap);
@@ -600,12 +590,6 @@ const breadcrumbs = computed(() => [
 }
 
 @include media("<md") {
-  .event-page {
-    .event-section {
-      padding: 0 20px;
-    }
-  }
-
   .event-hero {
     padding-top: 20px;
     padding-bottom: 16px;
@@ -645,12 +629,5 @@ const breadcrumbs = computed(() => [
     }
   }
 
-  .event-body {
-    .event-body__image-frame {
-      margin-left: -20px;
-      margin-right: -20px;
-      width: calc(100% + 40px);
-    }
-  }
 }
 </style>
