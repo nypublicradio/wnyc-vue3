@@ -44,6 +44,7 @@ const STATION_METADATA = {
     },
 }
 
+// Helper function to convert image URLs to a templated format for responsive images
 const templatizeImageUrl = (url: string) => {
     if (!url) return null
     // Extract the path after the domain
@@ -52,6 +53,7 @@ const templatizeImageUrl = (url: string) => {
     return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
 }
 
+// Helper function to get the current episode from schedule data
 const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
     if (!scheduleData || !Array.isArray(scheduleData)) {
         return null
