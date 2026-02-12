@@ -495,7 +495,7 @@ const handleScheduleRequest = async (
         switch (filterMode) {
             case 'next24hours':
                 return filterNext24Hours(scheduleData)
-            case 'specificDate':
+            case 'specificDate': {
                 if (!startDate) {
                     throw createError({
                         statusCode: 400,
@@ -508,7 +508,8 @@ const handleScheduleRequest = async (
                     filtered = removePastEpisodes(filtered)
                 }
                 return filtered
-            case 'dateRange':
+            }
+            case 'dateRange': {
                 if (!startDate || !endDate) {
                     throw createError({
                         statusCode: 400,
@@ -521,6 +522,7 @@ const handleScheduleRequest = async (
                     filteredRange = removePastEpisodes(filteredRange)
                 }
                 return filteredRange
+            }
             case 'all':
             default:
                 return removePastEpisodes(scheduleData)
