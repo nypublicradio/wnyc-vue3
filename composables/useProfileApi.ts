@@ -1,7 +1,7 @@
-import { ref, readonly } from 'vue';
-import { until } from '@vueuse/core';
-import { Preferences } from '@capacitor/preferences';
-import { localUserProfileKey } from '~/composables/globals';
+import { ref, readonly } from 'vue'
+import { until } from '@vueuse/core'
+import { Preferences } from '@capacitor/preferences'
+import { localUserProfileKey } from '~/composables/globals'
 import {
     useCurrentUser,
     useCurrentUserProfile,
@@ -12,11 +12,11 @@ import {
  * @returns {object} Contains profile, loading, error state and helper functions.
  */
 export const useProfileApi = () => {
-    const config = useRuntimeConfig();
-    const { authenticatedFetch } = useAuth();
-    const profile = ref(null);
-    const loading = ref(false);
-    const error = ref(null);
+    const config = useRuntimeConfig()
+    const { authenticatedFetch } = useAuth()
+    const profile = ref(null)
+    const loading = ref(false)
+    const error = ref(null)
 
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
@@ -27,46 +27,48 @@ export const useProfileApi = () => {
      * @returns {Promise<any>} Resolves to profile data.
      */
     const fetchProfile = async (salesforceIdOrEmail: string) => {
-        loading.value = true;
-        error.value = null;
-        profile.value = null;
+        loading.value = true
+        error.value = null
+        profile.value = null
 
         try {
             // Try with Salesforce ID first, then email
-            const isEmail = salesforceIdOrEmail.includes('@');
+            const isEmail = salesforceIdOrEmail.includes('@')
             const requestBody = isEmail
                 ? { email: salesforceIdOrEmail }
-                : { salesforceID: salesforceIdOrEmail };
+                : { salesforceID: salesforceIdOrEmail }
 
             const data = await authenticatedFetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
                 body: requestBody,
-            });
+            })
 
-            profile.value = data;
-            
+            profile.value = data
+
             // Save isActiveSustainer to localUserProfile in CapacitorStorage
             if (import.meta.client && data?.isActiveSustainer !== undefined) {
-                const localProfileString = await Preferences.get({ key: localUserProfileKey });
+                const localProfileString = await Preferences.get({ key: localUserProfileKey })
                 if (localProfileString.value) {
-                    const localProfile = JSON.parse(localProfileString.value);
-                    localProfile.isActiveSustainer = data.isActiveSustainer;
+                    const localProfile = JSON.parse(localProfileString.value)
+                    localProfile.isActiveSustainer = data.isActiveSustainer
                     await Preferences.set({
                         key: localUserProfileKey,
                         value: JSON.stringify(localProfile)
-                    });
+                    })
                 }
             }
-            
-            return data;
+
+            return data
         } catch (err: any) {
-            error.value = err;
-            console.error('Failed to fetch profile:', err);
-            throw err;
+            error.value = err
+            console.error('Failed to fetch profile:', err)
+            loading.value = false
+            profile.value = {}
+            throw err
         } finally {
-            loading.value = false;
+            loading.value = false
         }
-    };
+    }
 
 
     const getMembershipInfo = async () => {
