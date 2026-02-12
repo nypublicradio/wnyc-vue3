@@ -225,10 +225,21 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
   if (typeof article === 'undefined')
     return null
 
+  const isEventItem = article.contentType === 'event_page' || article.type === 'event'
+  const normalizedImage = isEventItem
+    ? (
+        article.image
+        ?? article.listingImage
+        ?? article.content?.listingImage
+        ?? article.leadAsset?.[0]?.value?.image
+        ?? article.leadAsset?.[0]?.value?.defaultImage
+      )
+    : (article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage)
+
   return Object.assign({}, await normalizePage(article), {
-    image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
-    imageFullWidth: article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
-    imageFullHeight: article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
+    image: normalizedImage,
+    imageFullWidth: normalizedImage?.width ?? article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
+    imageFullHeight: normalizedImage?.height ?? article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
     cmsSource: cmsSources.WAGTAIL,
     authors: article.relatedAuthors?.map(normalizeAuthor),
     contributingOrganizations: article.relatedContributingOrganizations,

@@ -67,8 +67,19 @@ async function handleNprCdsItem(listItem: any, componentType: string) {
  * Helper to handle other content types.
  */
 async function handleOtherContentType(listItem: any) {
+	const isEventItem = listItem.contentType === 'event_page' || listItem.type === 'event'
+	const normalizedImage = listItem.image
+		?? listItem.listingImage
+		?? listItem.content?.listingImage
+		?? listItem.leadAsset?.[0]?.value?.image
+		?? listItem.leadAsset?.[0]?.value?.defaultImage
+
 	// Move content properties to root level, keeping existing root properties
-	const mergedItem = { ...listItem.content, ...listItem }
+	const mergedItem = {
+		...listItem.content,
+		...listItem,
+		...(isEventItem ? { image: listItem.image ?? normalizedImage } : {}),
+	}
 	delete mergedItem.content
 
 	// For episodes, preserve the original content ID (Simplecast UUID) before merge overrides it
