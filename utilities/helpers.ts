@@ -194,19 +194,25 @@ export function howLongAgo (date) {
 export function getDate (data = null, formatString = "EEE, MMM do") {
   const date = data?.updatedDate || data?.publicationDate
   if (date) {
-    const currentYear = new Date().getFullYear()
-    const currentDay = new Date().getDate()
+    const currentDate = new Date()
     const inputDate = new Date(date)
-    const inputYear = inputDate.getFullYear()
-    const inputDay = inputDate.getDate()
-    if (inputDay !== currentDay) {
-      if (inputYear !== currentYear) {
-        formatString = `${formatString}, yyyy` // Update formatString to include the year
-      }
-      return format(inputDate, formatString)
-    } else {
+    
+    // Check if it's the same day (year, month, and day)
+    const isSameDay = 
+      currentDate.getFullYear() === inputDate.getFullYear() &&
+      currentDate.getMonth() === inputDate.getMonth() &&
+      currentDate.getDate() === inputDate.getDate()
+    
+    if (isSameDay) {
       return whenTime(data)
     }
+    
+    // Add year to format string if it's not the current year
+    if (currentDate.getFullYear() !== inputDate.getFullYear()) {
+      formatString = `${formatString}, yyyy`
+    }
+    
+    return format(inputDate, formatString)
   } else {
     return format(new Date(), formatString)
   }
