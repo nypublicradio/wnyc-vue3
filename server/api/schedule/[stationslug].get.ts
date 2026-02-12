@@ -227,8 +227,12 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
         const jsonData = JSON.parse(bodyString)
 
         return humps.camelizeKeys(jsonData)
-    } catch (error) {
-        console.error('Error reading from S3:', error)
+    } catch (error: any) {
+        // Check if it's a "key not found" error
+        if (error.name === 'NoSuchKey' || error.Code === 'NoSuchKey') {
+            throw error
+        }
+        console.error('Error reading from S3:', error.message)
         throw error
     }
 }
@@ -481,7 +485,25 @@ export default defineEventHandler(async (event) => {
         } else {
             const bucketName = process.env.S3_SCHEDULE_BUCKET as string || 'webstream-metadata-demo'
             const key = `schedule-${slug}.json`
-            scheduleData = await getScheduleFromS3(bucketName, key)
+            try {
+                scheduleData = await getScheduleFromS3(bucketName, key)
+            } catch (s3Error: any) {
+                // If S3 key doesn't exist, try to fall back to local mock file
+                if (s3Error.name === 'NoSuchKey' || s3Error.Code === 'NoSuchKey') {
+                    try {
+                        scheduleData = await getScheduleFromLocalFile(slug)
+                    } catch (mockError) {
+                        console.error(`No schedule data available for ${slug} (neither S3 nor mock)`)
+                        throw createError({
+                            statusCode: 404,
+                            statusMessage: `Schedule data not available for station: ${slug}`,
+                        })
+                    }
+                } else {
+                    // Some other S3 error, rethrow it
+                    throw s3Error
+                }
+            }
         }
         
         // Apply filtering based on mode
