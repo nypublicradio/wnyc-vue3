@@ -382,7 +382,7 @@ const getDotMenuItems = (bucketItem) => {
               }}</template>
               <template #right>
                 <span class="nobreak inline-flex gap-1"
-                  >{{ getDate(props.episodeData, "LLL d, yyyy") }}
+                  >{{ getDate(props.episodeData, "LLL d") }}
                 </span>
               </template>
             </PipeData>

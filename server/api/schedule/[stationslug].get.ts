@@ -227,8 +227,12 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
         const jsonData = JSON.parse(bodyString)
 
         return humps.camelizeKeys(jsonData)
-    } catch (error) {
-        console.error('Error reading from S3:', error)
+    } catch (error: any) {
+        // Check if it's a "key not found" error
+        if (error.name === 'NoSuchKey' || error.Code === 'NoSuchKey') {
+            throw error
+        }
+        console.error('Error reading from S3:', error.message)
         throw error
     }
 }
@@ -433,6 +437,116 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
     }
 }
 
+// Helper function to encapsulate main schedule logic
+const handleScheduleRequest = async (
+    slug: string,
+    filterMode: string,
+    startDate: string | undefined,
+    endDate: string | undefined,
+    res: any,
+    clientEtag: string | undefined
+) => {
+    // Generate cache key based on slug and filter parameters
+    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
+    const cachedEntry = scheduleCache.get(cacheKey)
+    const now = Date.now()
+
+    // If cache is valid and client has current version, return 304
+    if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
+        if (clientEtag === cachedEntry.etag) {
+            res.statusCode = 304
+            res.setHeader('ETag', cachedEntry.etag)
+            res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+            return null
+        }
+        res.setHeader('ETag', cachedEntry.etag)
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+        return cachedEntry.data
+    }
+
+    // Fetch schedule data from S3 or local mock
+    let scheduleData
+    if (shouldUseMockData()) {
+        scheduleData = await getScheduleFromLocalFile(slug)
+    } else {
+        const bucketName = process.env.S3_SCHEDULE_BUCKET as string || 'webstream-metadata-demo'
+        const key = `schedule-${slug}.json`
+        try {
+            scheduleData = await getScheduleFromS3(bucketName, key)
+        } catch (s3Error: any) {
+            if (s3Error.name === 'NoSuchKey' || s3Error.Code === 'NoSuchKey') {
+                try {
+                    scheduleData = await getScheduleFromLocalFile(slug)
+                } catch (mockError) {
+                    console.error(`No schedule data available for ${slug} (neither S3 nor mock)`)
+                    throw createError({
+                        statusCode: 404,
+                        statusMessage: `Schedule data not available for station: ${slug}`,
+                    })
+                }
+            } else {
+                throw s3Error
+            }
+        }
+    }
+
+    // Filtering logic extracted to helper
+    const getFilteredData = () => {
+        switch (filterMode) {
+            case 'next24hours':
+                return filterNext24Hours(scheduleData)
+            case 'specificDate': {
+                if (!startDate) {
+                    throw createError({
+                        statusCode: 400,
+                        statusMessage: 'startDate is required for specificDate mode',
+                    })
+                }
+                validateDateRange(scheduleData, startDate)
+                let filtered = filterByDate(scheduleData, startDate)
+                if (isToday(startDate)) {
+                    filtered = removePastEpisodes(filtered)
+                }
+                return filtered
+            }
+            case 'dateRange': {
+                if (!startDate || !endDate) {
+                    throw createError({
+                        statusCode: 400,
+                        statusMessage: 'startDate and endDate are required for dateRange mode',
+                    })
+                }
+                validateDateRange(scheduleData, startDate, endDate)
+                let filteredRange = filterByDateRange(scheduleData, startDate, endDate)
+                if (includesCurrentDate(startDate, endDate)) {
+                    filteredRange = removePastEpisodes(filteredRange)
+                }
+                return filteredRange
+            }
+            case 'all':
+            default:
+                return removePastEpisodes(scheduleData)
+        }
+    }
+
+    const filteredData = getFilteredData()
+    const rewrittenData = rewriteAssetUrls(filteredData)
+    const transformedData = normalizeSchedule(rewrittenData)
+    const dataString = JSON.stringify(transformedData)
+    const etag = `"${createHash('md5').update(dataString).digest('hex')}"`
+
+    scheduleCache.set(cacheKey, {
+        data: transformedData,
+        etag,
+        timestamp: now
+    })
+
+    res.setHeader('ETag', etag)
+    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+
+    return transformedData
+}
+
 export default defineEventHandler(async (event) => {
     const slug = event?.context?.params?.stationslug as string
     const res = event?.node?.res
@@ -449,115 +563,10 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        // Generate cache key based on slug and filter parameters
-        const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
-        
-        // Check in-memory cache
-        const cachedEntry = scheduleCache.get(cacheKey)
-        const now = Date.now()
-        
-        // Check if client has current version via ETag
         const clientEtag = event.node.req.headers['if-none-match']
-        
-        // If cache is valid and client has current version, return 304
-        if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
-            if (clientEtag === cachedEntry.etag) {
-                event.node.res.statusCode = 304
-                res.setHeader('ETag', cachedEntry.etag)
-                res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
-                return null
-            }
-            // Cache is valid but client doesn't have current version, return cached data
-            res.setHeader('ETag', cachedEntry.etag)
-            res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
-            return cachedEntry.data
-        }
-
-        
-        // Fetch schedule data from S3 or local mock
-        let scheduleData
-        if (shouldUseMockData()) {
-            scheduleData = await getScheduleFromLocalFile(slug)
-        } else {
-            const bucketName = process.env.S3_SCHEDULE_BUCKET as string || 'webstream-metadata-demo'
-            const key = `schedule-${slug}.json`
-            scheduleData = await getScheduleFromS3(bucketName, key)
-        }
-        
-        // Apply filtering based on mode
-        let filteredData
-        switch (filterMode) {
-            case 'next24hours':
-                filteredData = filterNext24Hours(scheduleData)
-                break
-            
-            case 'specificDate':
-                if (!startDate) {
-                    throw createError({
-                        statusCode: 400,
-                        statusMessage: 'startDate is required for specificDate mode',
-                    })
-                }
-                // Validate that the requested date is within available data range
-                validateDateRange(scheduleData, startDate)
-                filteredData = filterByDate(scheduleData, startDate)
-                // If the requested date is today, remove past episodes
-                if (isToday(startDate)) {
-                    filteredData = removePastEpisodes(filteredData)
-                }
-                break
-            
-            case 'dateRange':
-                if (!startDate || !endDate) {
-                    throw createError({
-                        statusCode: 400,
-                        statusMessage: 'startDate and endDate are required for dateRange mode',
-                    })
-                }
-                // Validate that the requested date range is within available data range
-                validateDateRange(scheduleData, startDate, endDate)
-                filteredData = filterByDateRange(scheduleData, startDate, endDate)
-                // If the date range includes today, remove past episodes
-                if (includesCurrentDate(startDate, endDate)) {
-                    filteredData = removePastEpisodes(filteredData)
-                }
-                break
-            
-            case 'all':
-                // Return all episodes without any filtering
-                filteredData = removePastEpisodes(scheduleData)
-                break
-            
-            default:
-                // Default to all episodes without any filtering
-                filteredData = removePastEpisodes(scheduleData)
-        }
-        
-        // Rewrite asset URLs before transforming
-        const rewrittenData = rewriteAssetUrls(filteredData)
-        
-        // Transform to legacy format
-        const transformedData = normalizeSchedule(rewrittenData)
-        
-        // Generate ETag based on transformed data
-        const dataString = JSON.stringify(transformedData)
-        const etag = `"${createHash('md5').update(dataString).digest('hex')}"`
-        
-        // Store in cache
-        scheduleCache.set(cacheKey, {
-            data: transformedData,
-            etag,
-            timestamp: now
-        })
-        
-        // Set response headers
-        res.setHeader('ETag', etag)
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
-        
-        return transformedData
+        return await handleScheduleRequest(slug, filterMode, startDate, endDate, res, clientEtag)
     } catch (error: any) {
         console.error('Error fetching schedule from S3:', error)
-
         throw createError({
             statusCode: error.statusCode || 500,
             statusMessage: error.message || 'Failed to fetch schedule data from S3',

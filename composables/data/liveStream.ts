@@ -15,7 +15,7 @@ import { clearTimeout, setTimeout } from "worker-timers"
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream (slug: string, save = true) {
   const config = useRuntimeConfig()
-  //BFF
+  //BFF - Uses Schedule API internally
   try {
     const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
     const currentEpisodeHolder = useCurrentEpisodeHolder()
@@ -28,7 +28,7 @@ export async function updateLiveStream (slug: string, save = true) {
     globalToast.value = {
       severity: "error",
       summary:
-        "Sorry. We are having trouble with the live stream. Please try again later.",
+        "Sorry. We are having trouble loading the schedule. Please try again later.",
       life: null,
       closable: true,
     }
@@ -83,7 +83,7 @@ export async function updateAllLiveStreams (init = true) {
     globalToast.value = {
       severity: "error",
       summary:
-        "Sorry. We are having trouble with the live stream. Please try again later.",
+        "Sorry. We are having trouble loading the schedule. Please try again later.",
       life: 8000,
       closable: true,
     }
@@ -428,6 +428,25 @@ export default function useLiveStream () {
         switchStation(targetStation)
         if (autoplay) togglePlayHere()
       }, 100)
+    } else {
+      // Log error when station is not found
+      console.error(`Station with slug "${querySlug}" not found in available stations.`)
+      
+      // Show user-friendly error message
+      const globalToast = useGlobalToast()
+      globalToast.value = {
+        severity: "warn",
+        summary: `Station "${querySlug}" is not available. Loading default station.`,
+        life: 5000,
+        closable: true,
+      }
+      
+      // Fallback to default station (first station or current episode holder)
+      if (currentEpisodeHolder.value) {
+        switchStation(currentEpisodeHolder.value, false)
+      } else if (allCurrentStations.value.length > 0) {
+        switchStation(allCurrentStations.value[0], false)
+      }
     }
   }
   return {

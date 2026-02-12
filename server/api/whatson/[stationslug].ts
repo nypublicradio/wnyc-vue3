@@ -1,98 +1,156 @@
+/**
+ * What's On API - Fetches current schedule data for a specific station
+ * 
+ * This endpoint:
+ * 1. Accepts a station slug as a parameter (e.g., 'wnyc-fm939', 'wqxr')
+ * 2. Fetches schedule data from the Schedule API (S3/Rapid Schedule)
+ * 3. Determines the currently playing episode based on the current time
+ * 4. Returns formatted data with current show information and stream URLs
+ * 
+ * Note: This endpoint uses the Schedule API instead of the deprecated What's On API
+ * 
+ * Reachable at: /api/whatson/[stationslug]
+ */
+
 import axios from 'axios'
 import humps from 'humps'
-import { formatTime } from '~/utilities/helpers'
 import { cmsSources } from '~/composables/globals'
-import { useVImage } from "~/composables/useVImage"
 
-
-//import { parse, types, stringify } from 'hls-parser';
 const config = useRuntimeConfig()
 
-const { formatPublisherImageUrl, templatizeImageUrl } = useVImage()
+// Station metadata mapping
+const STATION_METADATA = {
+    'wnyc-fm939': {
+        name: 'WNYC 93.9 FM',
+        audio: 'https://fm939.wnyc.org/wnycfm',
+        hls: 'https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8',
+        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WNYC_iOS_AppIcon_29@3x.png',
+    },
+    'wqxr': {
+        name: 'WQXR 105.9 FM',
+        audio: 'https://fm1059.wqxr.org/wqxr',
+        hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
+        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+    },
+    'q2': {
+        name: 'New Sounds',
+        audio: 'https://q2stream.wqxr.org/q2',
+        hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
+        imageLogo: 'https://media.wnyc.org/static/img/app-icons/Q2_iOS_AppIcon_29@3x.png',
+    },
+    'wqxr-holiday-channel-on-wnyc': {
+        name: 'WQXR Holiday Channel',
+        audio: 'https://holidaystream.wqxr.org/holiday',
+        hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
+        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+    },
+}
 
-// format the show data from API response
-const formatShowData = (apiResponse: any) => {
-	const showData = apiResponse?.included?.find((obj) => obj.type === 'show')
-	const scheduleData = apiResponse?.included?.find((obj) => obj.type === 'show-schedule')
-	const imageData = apiResponse?.included?.find((obj) => obj.type === 'image')
-	const episodeData = apiResponse?.included?.find((obj) => obj.type === 'episode')
-	const airingData = apiResponse?.included?.find((obj) => obj.type === 'airing')
-	const segmentData = apiResponse?.included?.filter((item) => item.type === 'segment')
-	const formattedSegments: any = []
-	if (apiResponse.included) {
-		if (segmentData !== null) {
-			segmentData.forEach((value: { attributes: { title: string, slug: string } }) => {
-				formattedSegments.push({
-					title: value.attributes.title,
-					url: `https://www.wnyc.org/story/${value.attributes.slug}`,
-					newWindow: true
-				});
-			});
-		}
-	}
-	let title = showData ? showData.attributes.title : null
-	const showSlug = showData ? showData.attributes.slug : null
-	let details = showData ? showData.attributes.tease : null
-	let titleLink = showData ? showData.attributes.url : null
-	const id = showData ? showData.id : null
-	// handle special airings
-	if (airingData) {
-		title = airingData.attributes.title
-		details = airingData.attributes.description
-		titleLink = airingData.attributes.href
-	}
-	if (!apiResponse.included) {
-		title = apiResponse.data[0].attributes.name
-		details = apiResponse.data[0].attributes['short-description']
-	}
-	return {
-		cmsSource: cmsSources.PUBLISHER,
-		details,
-		detailsLink: showData ? showData.attributes.url : null,
-		episodeTitle: episodeData ? episodeData.attributes.title : null,
-		episodeLink: episodeData ? episodeData.attributes.url : null,
-		episodeBody: episodeData ? episodeData.attributes.body : null,
-		episodeTranscript: episodeData ? episodeData.attributes.transcript : null,
-		audio: apiResponse.data[0].attributes['mobile-mp3'],
-		file: apiResponse.data[0].attributes['mobile-mp3'],
-		hls: apiResponse.data[0].attributes['hls'],
-		id,
-		image: imageData ? { template: `https://media.wnyc.org/i/%s/%s/%s/%s/${imageData.attributes.name}` } : { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
-		slug: apiResponse.data[0].attributes.slug,
-		station: apiResponse.data[0].attributes.name,
-		stationImage: { template: templatizeImageUrl(apiResponse.data[0].attributes['image-logo']) },
-		timeStart: scheduleData ? formatTime(scheduleData.attributes['iso-start-time']) : null,
-		timeEnd: scheduleData ? formatTime(scheduleData.attributes['iso-end-time']) : null,
-		showTitle: title,
-		title,
-		titleLink,
-		showSlug,
-		updated_date: null,
-		type: 'live',
-		publishAt: null,
-		first_published_at: null,
-		onTodaysShowHeadline: episodeData ? episodeData.attributes.title : null,
-		onTodaysShowHeadlineLink: episodeData ? episodeData.attributes.url : null,
-		onTodaysShowHosts: showData ? showData.attributes.about.roles.host : null,
-		onTodaysShowImage: episodeData?.attributes['image-main']?.url ?? null,
-		onTodaysShowImageMaxWidth: episodeData?.attributes['image-main']?.w ?? null,
-		onTodaysShowImageMaxHeight: episodeData?.attributes['image-main']?.h ?? null,
-		onTodaysShowImageTemplate: episodeData?.attributes['image-main'] ? formatPublisherImageUrl(episodeData.attributes['image-main'].template) : null,
-		onTodaysShowImageAltText: episodeData?.attributes['image-main']?.['alt-text'] ?? null,
-		onTodaysShowImageCaption: episodeData?.attributes['image-main']?.caption ?? null,
-		onTodaysShowImageCredits: episodeData?.attributes['image-main']?.['credits-name'] ?? null,
-		onTodaysShowImageCreditsUrl: episodeData?.attributes['image-main']?.['credits-url'] ?? null,
-		onTodaysShowSegments: segmentData?.length > 0 ? formattedSegments : null,
-		onTodaysShowSocial: showData ? showData.attributes.about.social : null,
-		showSchedule: scheduleData ? scheduleData.attributes : null
-	}
-};
+// Helper function to convert image URLs to a templated format for responsive images
+const templatizeImageUrl = (url: string) => {
+    if (!url) return null
+    const urlParts = url.split('/')
+    const filename = urlParts[urlParts.length - 1]
+    return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
+}
 
-// Fetch the livestream data from the API
+// Helper function to get the current episode from schedule data
+const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
+    if (!scheduleData || !Array.isArray(scheduleData)) {
+        return null
+    }
+    
+    const now = new Date()
+    
+    // Find the episode that is currently airing
+    const currentEpisode = scheduleData.find((episode: any) => {
+        const startTime = new Date(episode.attributes.start)
+        const endTime = new Date(episode.attributes.end)
+        return now >= startTime && now < endTime
+    })
+    
+    return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
+}
+
+// Fetch the livestream data from the Schedule API
 const getLivestream = async (slug: string) => {
-
-	const res = await axios(`${config.public['LIVESTREAM_URL']}?filter[slug]=${slug}&include=current-airing.image,current-show.show.image,current-episode.segments`)
-	return humps.camelizeKeys(formatShowData(res.data))
+	try {
+		const metadata = STATION_METADATA[slug]
+		
+		if (!metadata) {
+			console.error(`No metadata found for stream ${slug}`)
+			throw new Error(`Station ${slug} not supported`)
+		}
+		
+		// Fetch schedule data from the schedule API
+		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
+		const scheduleRes = await axios(scheduleUrl)
+		
+		// Get the current episode from the schedule
+		const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
+		
+		if (!currentEpisode) {
+			console.warn(`No current episode found for ${slug}`)
+			throw new Error(`No current episode found for ${slug}`)
+		}
+		
+		const attrs = currentEpisode.attributes
+		const episodeImages = attrs.images || []
+		const primaryImage = episodeImages[0]
+		
+		// Format the data to match the expected structure
+		const formattedData = {
+			cmsSource: cmsSources.PUBLISHER,
+			slug,
+			station: metadata.name,
+			audio: metadata.audio,
+			file: metadata.audio,
+			hls: metadata.hls,
+			stationImage: { template: templatizeImageUrl(metadata.imageLogo) },
+			image: primaryImage 
+				? { template: templatizeImageUrl(primaryImage.url) }
+				: { template: templatizeImageUrl(metadata.imageLogo) },
+			showTitle: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
+			title: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
+			episodeTitle: attrs.scheduleEventTitle || null,
+			showSlug: attrs.showId || null,
+			id: currentEpisode.id,
+			details: attrs.longDescription || '',
+			detailsLink: attrs.parentUrl || null,
+			titleLink: attrs.parentUrl || null,
+			episodeLink: attrs.scheduleEventUrl || null,
+			episodeBody: null,
+			episodeTranscript: null,
+			timeStart: attrs.start,
+			timeEnd: attrs.end,
+			type: 'live',
+			updated_date: null,
+			publishAt: null,
+			first_published_at: null,
+			onTodaysShowHeadline: attrs.scheduleEventTitle || null,
+			onTodaysShowHeadlineLink: attrs.scheduleEventUrl || null,
+			onTodaysShowHosts: null,
+			onTodaysShowImage: primaryImage?.url ?? null,
+			onTodaysShowImageMaxWidth: primaryImage?.width ?? null,
+			onTodaysShowImageMaxHeight: primaryImage?.height ?? null,
+			onTodaysShowImageTemplate: primaryImage ? templatizeImageUrl(primaryImage.url) : null,
+			onTodaysShowImageAltText: null,
+			onTodaysShowImageCaption: null,
+			onTodaysShowImageCredits: null,
+			onTodaysShowImageCreditsUrl: null,
+			onTodaysShowSegments: null,
+			onTodaysShowSocial: null,
+			showSchedule: {
+				'iso-start-time': attrs.start,
+				'iso-end-time': attrs.end,
+			}
+		}
+		
+		return humps.camelizeKeys(formattedData)
+	} catch (error) {
+		console.error(`Error fetching schedule data for ${slug}:`, error.message)
+		throw error
+	}
 }
 // Fetch the livestream data from the API
 // const getLivestreamHlsMetadataTemp = async () => {
@@ -131,13 +189,25 @@ const getLivestream = async (slug: string) => {
 // 	// }
 // }
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
 
 	//getLivestreamHlsMetadataTemp()
 
 	const slug: string | undefined = event?.context?.params?.stationslug;
 	if (slug) {
-		return getLivestream(slug);
+		try {
+			return await getLivestream(slug);
+		} catch (error) {
+			console.error(`Failed to get livestream for slug "${slug}":`, error)
+			throw createError({
+				statusCode: 500,
+				statusMessage: `Failed to fetch livestream data for ${slug}`,
+			})
+		}
 	}
-	return null;
+	console.error('No slug provided to whatson endpoint')
+	throw createError({
+		statusCode: 400,
+		statusMessage: 'Station slug is required',
+	})
 });
