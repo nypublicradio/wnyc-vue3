@@ -708,6 +708,7 @@ watch(
     right: 0;
   }
   .card {
+    height: 100%;
     background: var(--s-box-background-color);
     border-radius: 10px;
     padding: 2rem 1.5rem;
