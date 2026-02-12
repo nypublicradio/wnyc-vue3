@@ -1,8 +1,13 @@
 import { normalizeSimplecastListItem, normalizeWagtailListItem, normalizeNprPage } from '~/composables/data/articlePages'
 
+interface NprProfile {
+	href: string
+	[key: string]: any
+}
+
 interface NprAsset {
 	isRestrictedToAuthorizedOrgServiceIds?: boolean
-	profiles?: Array<{ href?: string }>
+	profiles?: NprProfile[]
 	[key: string]: any
 }
 
@@ -85,6 +90,7 @@ async function handleOtherContentType(listItem: any) {
 }
 
 interface NprDocument {
+	id: string
 	assets?: Record<string, NprAsset>
 	isRestrictedToAuthorizedOrgServiceIds?: boolean
 	[key: string]: any
