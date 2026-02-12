@@ -138,8 +138,9 @@
 }
 
 // Shared long-form body copy used by article-like streamfield/html content.
-// Mobile relies on global 16px default and only overrides line-height.
+// Mobile uses 16px text, then scales to 18px at md+.
 @mixin longFormBodyTypography() {
+  font-size: 1rem;
   line-height: 180%;
 
   @include media(">=md") {
