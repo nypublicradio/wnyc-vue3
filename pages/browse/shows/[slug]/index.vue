@@ -7,11 +7,11 @@ const config = useRuntimeConfig()
 const route = useRoute()
 
 const { data: show, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v3/show/${route.params.slug}`
 )
 
 const page = ref(null)
-const episodes = ref(null)
+const episodes = ref([])
 let maxPages = null
 
 const showSlug = computed(() => show.value?.show?.slug)
@@ -52,10 +52,11 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/v2/show/${route.params.slug}?page=${page.value}`
+      `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
     )
     pendingMore.value = false
-    episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
+    const newEpisodes = (moreShows?.episodes?.data || []).filter(ep => ep != null)
+    episodes.value = [...episodes.value, ...newEpisodes]
     trackClickEvent(
       "Event Tracking - load more episodes",
       "Shows Page",
@@ -116,7 +117,8 @@ watch(
     if (newShow) {
       page.value = newShow?.episodes?.meta?.pagination.page
       maxPages = newShow?.episodes?.meta?.pagination.pages
-      episodes.value = newShow?.episodes?.data
+      // Filter out any null/undefined episodes
+      episodes.value = (newShow?.episodes?.data || []).filter(ep => ep != null)
     }
   },
   { immediate: true }
@@ -221,10 +223,10 @@ onUnmounted(() => {
                 label="View All"
               ></Button>
             </div>
-            <template v-for="ep in episodes" :key="ep.id">
+            <template v-for="(ep, index) in episodes" :key="ep?.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <MediaCard
-                v-if="ep.estimatedDuration !== 0 && ep?.hasAudio"
+                v-if="ep && ep.estimatedDuration !== 0 && ep?.hasAudio"
                 :data="ep"
                 is-horizontal
                 imgCol="w-7rem md:w-10rem"
