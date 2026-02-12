@@ -451,11 +451,11 @@ const breadcrumbs = computed(() => [
   }
 
   .event-rail__value {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .event-rail__address {
-    font-size: 0.95rem;
+    font-size: 1rem;
     white-space: pre-line;
   }
 
@@ -612,7 +612,7 @@ const breadcrumbs = computed(() => [
 
     .event-rail__value,
     .event-rail__address {
-      font-size: 0.85rem;
+      font-size: 1rem;
     }
   }
 
