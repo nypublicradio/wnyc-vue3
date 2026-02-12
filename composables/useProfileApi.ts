@@ -47,7 +47,7 @@ export const useProfileApi = () => {
 
             profile.value = data;
 
-            // Save isActiveSustainer to localUserProfile in CapacitorStorage
+            // Save isActiveSustainer to localUserProfile in CapacitorStorage and update currentUserProfile state
             if (import.meta.client && data?.isActiveSustainer !== undefined) {
                 const localProfileString = await Preferences.get({ key: localUserProfileKey });
                 if (localProfileString.value) {
@@ -57,6 +57,11 @@ export const useProfileApi = () => {
                         key: localUserProfileKey,
                         value: JSON.stringify(localProfile)
                     });
+                    
+                    // Update currentUserProfile state to make isActiveSustainer accessible
+                    if (currentUserProfile.value) {
+                        currentUserProfile.value.isActiveSustainer = data.isActiveSustainer;
+                    }
                 }
             }
 
