@@ -180,9 +180,8 @@ const breadcrumbs = computed(() => [
                   xs: [517, 344],
                   sm: [709, 472],
                   md: [885, 589],
-                  lg: [757, 504],
-                  xl: [923, 614],
-                  xxl: [688, 458],
+                  lg: [672, 447],
+                  xl: [662, 440],
                 }"
                 :alt="eventData?.image?.title || eventData?.title"
                 class="event-body__image-frame mb-4"
