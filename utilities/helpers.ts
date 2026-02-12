@@ -600,6 +600,13 @@ export const getAndSetUserProfile = async () => {
   const user = await client.auth.getSession()
   const { toggleOneSignalUserTag, OneSignalLogin, getMasterNotificationChannels, syncMasterNotificationChannels } = useOneSignal()
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
+  // update the profile with data and then add from local storage
+  const updateUserProfile = async function(currentUserProfile, data) {
+    currentUserProfile.value = data
+    const localProfile = await Preferences.get({ key: localUserProfileKey })
+    const localProfileSettings = JSON.parse(localProfile.value)
+    currentUserProfile.value.isActiveSustainer = localProfileSettings?.isActiveSustainer
+  }
   // function that gets a user profile
   const getProfile = async () => {
     const { data, error } = await client
@@ -662,7 +669,8 @@ export const getAndSetUserProfile = async () => {
           .match({ id: currentUser.value.id })
 
         // set the current user profile state
-        currentUserProfile.value = data
+        await updateUserProfile(currentUserProfile, data)
+
         // One Signal login
         await OneSignalLogin()
 
@@ -679,7 +687,7 @@ export const getAndSetUserProfile = async () => {
         // NOT FIRST LOGIN EVER
 
         // set the current user profile state
-        currentUserProfile.value = data
+        await updateUserProfile(currentUserProfile, data)
 
         // One Signal login
         await OneSignalLogin()
@@ -709,7 +717,7 @@ export const getAndSetUserProfile = async () => {
           })
 
           // set the current user profile state again after updating the channels
-          currentUserProfile.value = data
+          await updateUserProfile(currentUserProfile, data)
 
         } else {
 
@@ -731,7 +739,7 @@ export const getAndSetUserProfile = async () => {
             .match({ id: currentUser.value.id })
 
           // set the current user profile state again after the sync
-          currentUserProfile.value = data
+          await updateUserProfile(currentUserProfile, data)
 
         }
 
@@ -775,8 +783,6 @@ export const getAndSetUserProfile = async () => {
 
       setDisplaySettings(currentUserProfile.value)
     } else {
-
-
       if (!currentUser.value) {
         // initially set default user profile settings or use the local storage settings
 

@@ -51,7 +51,7 @@ const currentEpisodeDuration = useCurrentEpisodeDuration()
 const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
-const currentUser = useCurrentUserProfile()
+const currentUserProfile = useCurrentUserProfile()
 const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
@@ -110,9 +110,9 @@ const getConfiguredAudioUrl = computed(() => {
     : currentEpisode.value?.file || currentEpisode.value?.audio || ""
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value?.identifier ?? "0"
-  const userID = currentUser?.value?.id ?? "0"
+  const userID = currentUserProfile?.value?.id ?? "0"
   const thisDevice = devicePlatform
-  const isActiveSustainer = currentUser?.isActiveSustainer
+  const isActiveSustainer = currentUserProfile?.value?.isActiveSustainer
   // update restriction when we have the value from setting panel
   const restriction = "0"
   const additionalParams = {
@@ -123,9 +123,9 @@ const getConfiguredAudioUrl = computed(() => {
   }
   if (userID !== "0") {
     if (isActiveSustainer) {
-      additionalParams.aw_0_1st = "1" 
+      additionalParams["aw_0_1st.member"] = "1"
     } else {
-      additionalParams.aw_0_1st = "0"
+      additionalParams["aw_0_1st.member"] = "0"
     }
   }
   const additionalQueryString = Object.entries(additionalParams)
