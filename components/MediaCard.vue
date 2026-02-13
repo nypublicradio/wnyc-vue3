@@ -638,11 +638,11 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 />
               </div>
               <div
-                v-if="eventData.eventTypeBadges?.length"
+                v-if="eventData?.eventTypeBadges?.length"
                 class="flex gap-2 flex-wrap"
               >
                 <VBadge
-                  v-for="badge in eventData.eventTypeBadges"
+                  v-for="badge in eventData?.eventTypeBadges"
                   :key="badge.label"
                   :label="badge.label"
                   :color="badge.color"
