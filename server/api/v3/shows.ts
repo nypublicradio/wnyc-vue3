@@ -1,38 +1,10 @@
 import axios from "axios"
 import humps from "humps"
-import { cmsSources } from '~/composables/globals'
+import { normalizeWagtailShow } from '~/composables/data/shows'
 
 const __getConfig = () => {
     const testCfg = (globalThis as any)?.__testRuntimeConfig
     return testCfg ?? useRuntimeConfig()
-}
-
-/**
- * Normalize a single show item from the API
- * @param show - Raw show data from API
- * @returns Normalized show object
- */
-const normalizeShow = (show: any) => {
-    return {
-        id: show.id,
-        title: show.title,
-        slug: show.meta?.slug || '',
-        description: show.description,
-        topperDisplayTitle: show.topperDisplayTitle,
-        linkedDataSource: show.linkedDataSource,
-        showArt: show.showArt,
-        showLogo: show.showLogo,
-        topperBackground: show.topperBackground,
-        inPageNavigation: show.inPageNavigation,
-        body: show.body,
-        aboutModule: show.aboutModule,
-        canDownloadEpisodes: show.canDownloadEpisodes,
-        canEmbedEpisodes: show.canEmbedEpisodes,
-        image: show.showArt?.url || show.showArt?.renditions?.find((r: any) => r.name === 'small')?.url || '/fallback-ep.png',
-        cmsSource: cmsSources.WAGTAIL,
-        type: show.meta?.type || 'shows.ShowPage',
-        url: show.meta?.htmlUrl || `/browse/shows/${show.meta?.slug}`,
-    }
 }
 
 /**
@@ -59,10 +31,9 @@ export const getShows = async () => {
         }
 
         const res = await axios(options)
-        const resData = humps.camelizeKeys(res.data);
-        
+        const resData = humps.camelizeKeys(res.data)
         // Normalize each show item
-        const shows = (resData.items || []).map(normalizeShow)
+        const shows = (resData.items || []).map(normalizeWagtailShow)
         
         return shows
     } catch (e) {

@@ -1,10 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources, mediaTypes, FALLBACKIMAGE } from '~/composables/globals'
 import { transformCuratedContent } from '~/utilities/curatedContent'
-import { useVImage } from "~/composables/useVImage"
-
-const { templatizeImageUrl } = useVImage()
+import { normalizeWagtailShowDetail } from '~/composables/data/shows'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -138,32 +135,11 @@ const getWagtailShow = async (slug: string) => {
             return null
         }
         
-        // Normalize show image
-        let showImage = showData.showArt?.url || showData.showArt?.renditions?.find((r: any) => r.name === 'small')?.url
-        let imageTemplate = showImage ? templatizeImageUrl(showImage) : undefined
+        // Normalize show data
+        const normalized = normalizeWagtailShowDetail(showData, slug)
         
         return {
-            id: showData.id,
-            title: showData.title,
-            slug: showData.meta?.slug || slug,
-            description: showData.description,
-            topperDisplayTitle: showData.topperDisplayTitle,
-            linkedDataSource: showData.linkedDataSource,
-            showArt: showData.showArt,
-            showLogo: showData.showLogo,
-            topperBackground: showData.topperBackground,
-            inPageNavigation: showData.inPageNavigation,
-            body: showData.body,
-            aboutModule: showData.aboutModule,
-            canDownloadEpisodes: showData.canDownloadEpisodes,
-            canEmbedEpisodes: showData.canEmbedEpisodes,
-            image: showImage ? { 
-                url: showImage, 
-                template: imageTemplate 
-            } : { url: FALLBACKIMAGE, template: FALLBACKIMAGE },
-            cmsSource: cmsSources.WAGTAIL,
-            type: mediaTypes.SHOW,
-            url: showData.meta?.htmlUrl || `/browse/shows/${slug}`,
+            ...normalized,
             _rawData: showData, // Store raw data for episode extraction
         }
     } catch (error: any) {
