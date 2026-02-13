@@ -149,7 +149,7 @@ const breadcrumbs = computed(() => [
                     />
                   </div>
                 </div>
-                <EventButtonNew
+                <EventButton
                   v-if="eventCtaUrl"
                   class="event-hero__cta"
                   severity="primary"
