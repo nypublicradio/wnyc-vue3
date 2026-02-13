@@ -1,7 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, mediaTypes, FALLBACKIMAGE } from '~/composables/globals'
-import { normalizeArticleListItem } from '~/composables/data/articlePages'
+import { transformCuratedContent } from '~/utilities/curatedContent'
 import { useVImage } from "~/composables/useVImage"
 
 const { templatizeImageUrl } = useVImage()
@@ -13,89 +13,40 @@ const __getConfig = () => {
 }
 
 /**
- * Normalize a single episode item from Simplecast data embedded in Wagtail
- * @param episode - Raw episode data from Simplecast
- * @param showImage - Show image template for fallback
- * @param showTitle - Show title for episode metadata
- * @returns Normalized episode object
- */
-const normalizeEpisode = async (episode: any, showImage: string, showTitle: string) => {
-    // Map Simplecast episode data to the format expected by normalizeArticleListItem
-    const mappedEpisode = {
-        id: episode.id,
-        uuid: episode.id,
-        title: episode.title,
-        description: episode.description,
-        body: episode.description,
-        tease: episode.description,
-        showId: episode.showId,
-        showTitle: episode.showTitle || showTitle,
-        showImageUrl: episode.showImageUrl,
-        image: episode.imageUrl,
-        imageUrl: episode.imageUrl,
-        enclosureUrl: episode.enclosureUrl,
-        duration: episode.duration,
-        publicationDate: episode.publishedAt,
-        publishedAt: episode.publishedAt,
-        slug: episode.slug,
-        season: episode.season,
-        number: episode.number,
-        status: episode.status,
-        type: 'episode',
-        cmsSource: cmsSources.SIMPLECAST,
-        showImage,
-    }
-    
-    return await normalizeArticleListItem(mappedEpisode)
-}
-
-/**
- * Extract episodes from show body curated lists
- * @param body - The show body array containing curated lists
- * @returns Array of episode items
- */
-const extractEpisodesFromBody = (body: any[]): any[] => {
-    if (!body || !Array.isArray(body)) {
-        return []
-    }
-    
-    const episodes: any[] = []
-    
-    // Loop through body blocks and find curated_list items
-    for (const block of body) {
-        if (block.type === 'curated_list' && block.value?.list?.listItems) {
-            // Extract episodes from the list items
-            for (const item of block.value.list.listItems) {
-                if (item.contentType === 'episode' && item.content) {
-                    episodes.push({
-                        ...item.content,
-                        // Add additional fields from the list item
-                        body: item.body,
-                        subtitle: item.subtitle,
-                    })
-                }
-            }
-        }
-    }
-    
-    return episodes
-}
-
-/**
- * Get episodes for a show from Wagtail API (extracted from show body)
+ * Get episodes for a show from Wagtail API (extracted from show body curated content)
  * @param showData - The complete show data object
- * @param showImage - Show image template for fallback
- * @param showTitle - Show title for episode metadata
  * @param pageSize - Number of episodes per page
  * @param page - Page number
  * @returns Episodes data with pagination metadata
  */
-const getWagtailEpisodes = async (showData: any, showImage: string, showTitle: string, pageSize: string = '10', page: number = 1) => {
+const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: number = 1) => {
     const config = __getConfig()
     
     try {
-        // Extract all episodes from the body
-        const allEpisodes = extractEpisodesFromBody(showData.body)
+        // If no body or body is not an array, return empty
+        if (!showData.body || !Array.isArray(showData.body)) {
+            return {
+                data: [],
+                meta: { totalCount: 0 }
+            }
+        }
+        
+        // Transform curated content to normalize episodes
+        const transformedContent = await transformCuratedContent(showData.body, 'default')
+        
+        // Extract all episodes from the transformed curated lists
+        const allEpisodes: any[] = []
+        
+        for (const block of transformedContent) {
+            if (block.type === 'curated_list' && block.value?.list?.listItems) {
+                for (const item of block.value.list.listItems) {
+                    // Episodes have already been normalized by transformCuratedContent
+                    if (item.type === 'episode') {
+                        allEpisodes.push(item)
+                    }
+                }
+            }
+        }
         
         if (allEpisodes.length === 0) {
             return {
@@ -109,19 +60,14 @@ const getWagtailEpisodes = async (showData: any, showImage: string, showTitle: s
         const offset = (page - 1) * limit
         const paginatedEpisodes = allEpisodes.slice(offset, offset + limit)
         
-        // Normalize each episode
-        const episodes = await Promise.all(
-            paginatedEpisodes.map((item: any) => normalizeEpisode(item, showImage, showTitle))
-        )
-        
         return {
-            data: episodes,
+            data: paginatedEpisodes,
             meta: {
                 totalCount: allEpisodes.length,
                 pagination: {
                     page: page,
                     pages: Math.ceil(allEpisodes.length / limit),
-                    count: episodes.length,
+                    count: paginatedEpisodes.length,
                     total: allEpisodes.length
                 }
             }
@@ -226,11 +172,9 @@ export default defineEventHandler(async (event) => {
     const showDataForEpisodes = show._rawData
     delete show._rawData // Don't send raw data to client
     
-    // Get episodes from show body
+    // Get episodes from show body (transformed through curated content pipeline)
     const episodes = await getWagtailEpisodes(
         showDataForEpisodes,
-        show.image?.template || FALLBACKIMAGE,
-        show.title,
         pageSize,
         page
     )
