@@ -373,17 +373,8 @@ const handleHasAudio = computed(() => {
   )
 })
 
-// handle event code here - destructure at top level for template access
+// handle event code here - make event data available for template access
 const eventData = ref(isEvent ? useEventData(reactiveData) : null)
-const {
-  dayNumber = null,
-  monthLabel = null,
-  timeLabel = null,
-  timeLabelReadable = null,
-  locationName = null,
-  eventTypeBadges = null,
-  eventCtaUrl = null,
-} = eventData.value || {}
 </script>
 
 <template>
