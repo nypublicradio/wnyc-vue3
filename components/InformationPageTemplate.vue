@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div>
-    <section v-if="page" class="information-page mb-5">
+    <section v-if="page" class="information-page md:pt-6 mb-5">
       <div class="content">
         <h1 class="mb-5">
           {{ page.title }}
