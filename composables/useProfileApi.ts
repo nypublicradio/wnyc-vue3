@@ -63,6 +63,7 @@ export const useProfileApi = () => {
             console.error('Failed to fetch profile:', err)
             loading.value = false
             profile.value = {}
+            return {}
         } finally {
             loading.value = false
         }
