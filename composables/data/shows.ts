@@ -9,8 +9,11 @@ const { templatizeImageUrl } = useVImage()
  * @returns Normalized show object
  */
 export function normalizeWagtailShow(show: any) {
-    // Extract show image URL
-    const showImageUrl = show.showArt?.url || show.showArt?.renditions?.find((r: any) => r.name === 'small')?.url || '/fallback-ep.png'
+    // Extract show image URL from showArt.file or linkedDataSource
+    const showImageUrl = show.showArt?.file || 
+        show.showArt?.url || 
+        show.linkedDataSource?.[0]?.value?.imageUrl || 
+        '/fallback-ep.png'
     const imageTemplate = showImageUrl ? templatizeImageUrl(showImageUrl) : showImageUrl
     
     return {
@@ -45,8 +48,10 @@ export function normalizeWagtailShow(show: any) {
  * @returns Normalized show object with additional detail fields
  */
 export function normalizeWagtailShowDetail(show: any, slug?: string) {
-    // Normalize show image
-    const showImageUrl = show.showArt?.url || show.showArt?.renditions?.find((r: any) => r.name === 'small')?.url
+    // Normalize show image from showArt.file or linkedDataSource
+    const showImageUrl = show.showArt?.file || 
+        show.showArt?.url || 
+        show.linkedDataSource?.[0]?.value?.imageUrl
     const imageTemplate = showImageUrl ? templatizeImageUrl(showImageUrl) : undefined
     
     return {

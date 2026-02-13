@@ -27,7 +27,8 @@ export const getShows = async () => {
             },
             headers: {
                 'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
-            }
+            },
+            timeout: 15000, // 15 second timeout
         }
 
         const res = await axios(options)
@@ -36,8 +37,13 @@ export const getShows = async () => {
         const shows = (resData.items || []).map(normalizeWagtailShow)
         
         return shows
-    } catch (e) {
-        console.error('Error fetching shows:', e)
+    } catch (e: any) {
+        console.error('Error fetching shows:', {
+            message: e?.message,
+            code: e?.code,
+            status: e?.response?.status,
+            url: `${config.public.AVIARY_BASE_API}pages/`
+        })
         return []
     }
 }
@@ -52,7 +58,6 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
     
     // If no page ID is configured, return empty array
     if (!config.featuredShowsPageId) {
-        console.log('No featured shows page ID configured - returning empty array')
         return []
     }
     
@@ -63,7 +68,8 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
             url: `${config.public.AVIARY_BASE_API}curated_lists/${config.featuredShowsPageId}`,
             headers: {
                 'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
-            }
+            },
+            timeout: 10000, // 10 second timeout
         }
 
         const res = await axios(options)
