@@ -49,6 +49,7 @@ const goToMemberCenter = () => {
 
 <template>
   <div class="member-card card">
+    <pre>{{ profileData }}</pre>
     <div
       class="flex flex-wrap flex-nowrap align-items-start justify-content-start gap-3"
     >
