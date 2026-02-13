@@ -2,6 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
+import { dynamicNavigation } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
@@ -115,8 +116,12 @@ const breadcrumbs = computed(() => [
           <div class="event-hero__layout">
             <div class="event-hero__header">
               <div class="event-hero__datebox" v-if="eventDayNumber">
-                <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
-                <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
+                <span class="event-hero__datebox-day">{{
+                  eventDayNumber
+                }}</span>
+                <span class="event-hero__datebox-month">{{
+                  eventDateShort
+                }}</span>
               </div>
               <div class="event-hero__titlegroup">
                 <h1
@@ -146,21 +151,28 @@ const breadcrumbs = computed(() => [
                 </div>
                 <EventButton
                   v-if="eventCtaUrl"
-                  variant="hero"
                   class="event-hero__cta"
+                  severity="primary"
                   @on-click="handleEventCta"
-                  :show-icon="false"
-                >
-                  <template #icon></template>
-                </EventButton>
+                />
               </div>
             </div>
             <div class="event-hero__rail-spacer" aria-hidden="true"></div>
           </div>
         </template>
         <template v-else>
-          <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
-          <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
+          <Skeleton
+            class="mb-2"
+            height="18px"
+            width="120px"
+            borderRadius="8px"
+          />
+          <Skeleton
+            class="mb-3"
+            height="48px"
+            width="85%"
+            borderRadius="16px"
+          />
           <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
           <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
         </template>
@@ -227,7 +239,9 @@ const breadcrumbs = computed(() => [
             <div v-if="locationName" class="event-rail__section">
               <h3>Location</h3>
               <p v-if="venueName" class="event-rail__value">{{ venueName }}</p>
-              <p v-if="eventLocation" class="event-rail__address">{{ eventLocation }}</p>
+              <p v-if="eventLocation" class="event-rail__address">
+                {{ eventLocation }}
+              </p>
               <VFlexibleLink v-if="mapsUrl" :to="mapsUrl" raw>
                 <span class="event-rail__link">Open in Google Maps</span>
               </VFlexibleLink>
@@ -235,7 +249,9 @@ const breadcrumbs = computed(() => [
 
             <div v-if="eventData?.price" class="event-rail__section">
               <h3>Price</h3>
-              <p class="event-rail__value event-rail__price">{{ formattedPrice }}</p>
+              <p class="event-rail__value event-rail__price">
+                {{ formattedPrice }}
+              </p>
             </div>
 
             <div class="event-rail__ad">
@@ -262,10 +278,16 @@ const breadcrumbs = computed(() => [
         <Divider class="event-more__divider" />
         <h2 class="event-more__title">Other Upcoming Events</h2>
         <div class="event-more__list">
-          <EventListCard
+          <MediaCard
             v-for="(eventItem, index) in otherEvents"
             :key="`${eventItem.id}-${index}`"
-            :event="eventItem"
+            isHorizontal
+            imgCol="w-7rem md:w-12rem"
+            titleClasses="text-sm md:text-lg"
+            pipeClasses="text-xs md:text-base"
+            :data="eventItem"
+            :size="{ xs: [112, 112], md: [176, 176] }"
+            @on-click="dynamicNavigation(eventItem)"
           />
         </div>
       </div>
@@ -294,7 +316,9 @@ const breadcrumbs = computed(() => [
 
   .event-hero__layout {
     display: grid;
-    grid-template-columns: minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+    grid-template-columns: minmax(0, var(--event-main-col-width)) var(
+        --event-rail-col-width
+      );
     column-gap: var(--event-grid-gap);
     align-items: start;
     justify-content: end;
@@ -399,7 +423,6 @@ const breadcrumbs = computed(() => [
     align-self: flex-start;
     margin-top: 0.4rem;
   }
-
 }
 
 .event-body {
@@ -407,7 +430,9 @@ const breadcrumbs = computed(() => [
 
   .event-body__layout {
     display: grid;
-    grid-template-columns: minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+    grid-template-columns: minmax(0, var(--event-main-col-width)) var(
+        --event-rail-col-width
+      );
     column-gap: var(--event-grid-gap);
     align-items: start;
     justify-content: end;
@@ -511,7 +536,9 @@ const breadcrumbs = computed(() => [
 
     .event-section {
       display: grid;
-      grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+      grid-template-columns:
+        var(--event-rail-col-width) minmax(0, var(--event-main-col-width))
+        var(--event-rail-col-width);
       column-gap: var(--event-grid-gap);
       align-items: start;
     }
@@ -530,7 +557,9 @@ const breadcrumbs = computed(() => [
 
   .event-hero {
     .event-hero__layout {
-      grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+      grid-template-columns:
+        var(--event-rail-col-width) minmax(0, var(--event-main-col-width))
+        var(--event-rail-col-width);
     }
 
     .event-hero__header {
@@ -544,7 +573,9 @@ const breadcrumbs = computed(() => [
 
   .event-body {
     .event-body__layout {
-      grid-template-columns: var(--event-rail-col-width) minmax(0, var(--event-main-col-width)) var(--event-rail-col-width);
+      grid-template-columns:
+        var(--event-rail-col-width) minmax(0, var(--event-main-col-width))
+        var(--event-rail-col-width);
     }
 
     .event-body__content {
@@ -627,6 +658,5 @@ const breadcrumbs = computed(() => [
       max-width: none;
     }
   }
-
 }
 </style>

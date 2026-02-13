@@ -3,7 +3,7 @@ import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
-
+import { dynamicNavigation } from "~/utilities/helpers"
 const { getFilteredTopStories, topStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
@@ -128,10 +128,16 @@ const greeneSpaceUrl = "https://thegreenespace.org"
         <h1 class="events-title">Events</h1>
         <div class="events-list">
           <template v-if="status === 'success'">
-            <EventListCard
+            <MediaCard
               v-for="(event, index) in eventList"
               :key="`${event.id}-${index}`"
-              :event="event"
+              isHorizontal
+              imgCol="w-7rem md:w-12rem"
+              titleClasses="text-sm md:text-lg"
+              pipeClasses="text-xs md:text-base"
+              :data="event"
+              :size="{ xs: [112, 112], md: [176, 176] }"
+              @on-click="dynamicNavigation(event)"
             />
           </template>
           <template v-else>
@@ -156,7 +162,10 @@ const greeneSpaceUrl = "https://thegreenespace.org"
         <aside class="events-rail">
           <h3 class="events-rail__title">Rent The Greene Space</h3>
           <p class="events-rail__copy">
-            Host your next event at WNYC and WQXR! The Greene Space will provide you with the same turn-key service for broadcast quality audio and video recording and live streaming that we use to power our own radio stations, podcasts, and concerts.
+            Host your next event at WNYC and WQXR! The Greene Space will provide
+            you with the same turn-key service for broadcast quality audio and
+            video recording and live streaming that we use to power our own
+            radio stations, podcasts, and concerts.
           </p>
           <VFlexibleLink :to="greeneSpaceUrl" raw class="events-rail__link">
             Learn more
