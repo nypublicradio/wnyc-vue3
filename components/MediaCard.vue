@@ -638,7 +638,7 @@ const {
               class="flex row-gap-2 column-gap-2 align-items-center flex-wrap justify-content-between w-full flex-wrap-reverse"
             >
               <div class="w-full md:w-auto">
-                <EventButtonNew
+                <EventButton
                   :file="props.data?.name"
                   class="z-2"
                   @on-click="handleClick"
