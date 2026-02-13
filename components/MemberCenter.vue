@@ -2,7 +2,6 @@
 import { useCurrentUser } from "~/composables/states"
 import { useProfileApi } from "~/composables/useProfileApi"
 import { useMembership } from "~/composables/useMembership"
-import { set } from "date-fns"
 
 // Profile API composable for member profile data
 const {
