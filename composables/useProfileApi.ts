@@ -42,7 +42,6 @@ export const useProfileApi = () => {
                 method: 'POST',
                 body: requestBody,
             })
-            console.log('🐛 Dashboard Debug - Profile data:', data)
             profile.value = data
 
             // Save isActiveSustainer to localUserProfile in CapacitorStorage
@@ -73,7 +72,6 @@ export const useProfileApi = () => {
     const getMembershipInfo = async () => {
         // Check if we have an auth token, if not try to initialize it
         const authComposable = useAuth()
-        console.log('🐛 Dashboard Debug - authComposable:', authComposable)
         await nextTick()
 
         if (!authComposable.isAuthenticated.value) {
