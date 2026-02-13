@@ -114,11 +114,11 @@ const breadcrumbs = computed(() => [
 watch(
   show,
   (newShow) => {
-    if (newShow) {
-      page.value = newShow?.episodes?.meta?.pagination.page
-      maxPages = newShow?.episodes?.meta?.pagination.pages
+    if (newShow?.episodes) {
+      page.value = newShow.episodes?.meta?.pagination?.page || 1
+      maxPages = newShow.episodes?.meta?.pagination?.pages || 0
       // Filter out any null/undefined episodes
-      episodes.value = (newShow?.episodes?.data || []).filter(ep => ep != null)
+      episodes.value = (newShow.episodes?.data || []).filter(ep => ep != null)
     }
   },
   { immediate: true }

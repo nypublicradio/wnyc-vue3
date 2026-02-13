@@ -27,7 +27,15 @@ const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: 
         if (!showData.body || !Array.isArray(showData.body)) {
             return {
                 data: [],
-                meta: { totalCount: 0 }
+                meta: {
+                    totalCount: 0,
+                    pagination: {
+                        page: page,
+                        pages: 0,
+                        count: 0,
+                        total: 0
+                    }
+                }
             }
         }
         
@@ -51,7 +59,15 @@ const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: 
         if (allEpisodes.length === 0) {
             return {
                 data: [],
-                meta: { totalCount: 0 }
+                meta: {
+                    totalCount: 0,
+                    pagination: {
+                        page: page,
+                        pages: 0,
+                        count: 0,
+                        total: 0
+                    }
+                }
             }
         }
         
@@ -76,7 +92,15 @@ const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: 
         console.error('Error extracting Wagtail episodes:', error?.response?.data || error?.message || error)
         return {
             data: [],
-            meta: {}
+            meta: {
+                totalCount: 0,
+                pagination: {
+                    page: page,
+                    pages: 0,
+                    count: 0,
+                    total: 0
+                }
+            }
         }
     }
 }
