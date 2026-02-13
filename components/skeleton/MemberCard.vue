@@ -8,13 +8,12 @@
         <Skeleton width="70%" height="0.75rem" borderRadius="16px"></Skeleton>
         <div class="flex gap-4 flex-grow-1 align-items-center mt-3">
           <Skeleton
-            width="11rem"
+            width="10rem"
             height="2rem"
             class="flex-none"
             borderRadius="16px"
           ></Skeleton>
-          <Skeleton height="1rem" borderRadius="16px"></Skeleton>
-          <Skeleton height="1rem" borderRadius="16px"></Skeleton>
+          <Skeleton width="8rem" height="1rem" borderRadius="16px"></Skeleton>
         </div>
       </div>
     </div>

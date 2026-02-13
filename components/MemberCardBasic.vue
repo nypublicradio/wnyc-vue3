@@ -11,6 +11,7 @@ const memberStatus = {
   CHECK: "check",
   ERROR: "error",
   LOCK: "lock",
+  DEFAULT: "default",
 }
 const memberBrand = {
   WNYC: "wnyc",
@@ -32,7 +33,7 @@ const getIconStatus = computed(() => {
   if (hasPaymentFailed.value) {
     return memberStatus.ERROR
   } else if (!isActiveSustainer.value) {
-    return memberStatus.LOCK
+    return memberStatus.DEFAULT
   } else {
     return memberStatus.CHECK
   }
@@ -49,7 +50,6 @@ const goToMemberCenter = () => {
 
 <template>
   <div class="member-card card">
-    <pre>{{ profileData }}</pre>
     <div
       class="flex flex-wrap flex-nowrap align-items-start justify-content-start gap-3"
     >
@@ -84,7 +84,7 @@ const goToMemberCenter = () => {
       </div>
 
       <div v-else>
-        <p class="font-bold">Become a WNYC Member</p>
+        <p class="font-bold">Support WNYC</p>
         <p>
           A monthly gift will provide us steady support to help secure the
           future of public media.
@@ -98,6 +98,14 @@ const goToMemberCenter = () => {
             label="Donate Now"
             size="small"
           />
+          <Button
+            class="link px-4"
+            severity="secondary"
+            variant="link"
+            @click="emit('onGoToMemberCenter')"
+            label="Member Center"
+            size="small"
+          ></Button>
         </div>
       </div>
     </div>
