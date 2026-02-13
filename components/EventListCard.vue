@@ -24,7 +24,9 @@ const {
 
 const metaLineMobile = computed(() => {
   if (!timeLabelReadable.value && !locationName.value) return null
-  return [timeLabelReadable.value, locationName.value].filter(Boolean).join(" | ")
+  return [timeLabelReadable.value, locationName.value]
+    .filter(Boolean)
+    .join(" | ")
 })
 
 const handleCardClick = () => {
@@ -105,7 +107,8 @@ const handleEventCta = () => {
   color: var(--p-text-color);
 
   &:focus-visible {
-    outline: var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
+    outline: var(--p-focus-ring-width) var(--p-focus-ring-style)
+      var(--p-focus-ring-color);
     outline-offset: 4px;
   }
 }
