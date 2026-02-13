@@ -194,19 +194,25 @@ export function howLongAgo (date) {
 export function getDate (data = null, formatString = "EEE, MMM do") {
   const date = data?.updatedDate || data?.publicationDate
   if (date) {
-    const currentYear = new Date().getFullYear()
-    const currentDay = new Date().getDate()
+    const currentDate = new Date()
     const inputDate = new Date(date)
-    const inputYear = inputDate.getFullYear()
-    const inputDay = inputDate.getDate()
-    if (inputDay !== currentDay) {
-      if (inputYear !== currentYear) {
-        formatString = `${formatString}, yyyy` // Update formatString to include the year
-      }
-      return format(inputDate, formatString)
-    } else {
+    
+    // Check if it's the same day (year, month, and day)
+    const isSameDay = 
+      currentDate.getFullYear() === inputDate.getFullYear() &&
+      currentDate.getMonth() === inputDate.getMonth() &&
+      currentDate.getDate() === inputDate.getDate()
+    
+    if (isSameDay) {
       return whenTime(data)
     }
+    
+    // Add year to format string if it's not the current year
+    if (currentDate.getFullYear() !== inputDate.getFullYear()) {
+      formatString = `${formatString}, yyyy`
+    }
+    
+    return format(inputDate, formatString)
   } else {
     return format(new Date(), formatString)
   }
@@ -1359,6 +1365,8 @@ export const initializeStationList = (stations) => {
 
   stations.forEach((station) => {
     const customStation = getCustomStationLabelFromSlug(station)
+    const formattedStartTime = station.timeStart ? formatTime(station.timeStart, 'h:mm a') : ''
+    const formattedEndTime = station.timeEnd ? formatTime(station.timeEnd, 'h:mm a') : ''
     tempMenuData.push({
       id: station.station,  // what gets saved to Supabase
       label: customStation,
@@ -1368,7 +1376,7 @@ export const initializeStationList = (stations) => {
       title: station.title,
       slug: station.slug,
       image: station.stationImage || station.image,
-      times: `${station.timeStart} - ${station.timeEnd}`,
+      times: formattedStartTime && formattedEndTime ? `${formattedStartTime} - ${formattedEndTime}` : '',
     })
   })
   return tempMenuData

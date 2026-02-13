@@ -7,7 +7,7 @@ import {
   useIsEpisodePlaying,
 } from '~/composables/states'
 import { updateLiveStream } from '~/composables/data/liveStream'
-import { trackClickEvent } from '~/utilities/helpers'
+import { trackClickEvent, formatTime } from '~/utilities/helpers'
 
 const currentStreamStation = useCurrentStreamStation()
 const currentEpisode = useCurrentEpisode()
@@ -23,6 +23,8 @@ const initializeSwitcher = (val) => {
   const tempMenuData = []
 
   val.forEach((station) => {
+    const formattedStartTime = station.timeStart ? formatTime(station.timeStart, 'h:mm a') : ''
+    const formattedEndTime = station.timeEnd ? formatTime(station.timeEnd, 'h:mm a') : ''
     tempMenuData.push({
       label: station.title,
       name: station.title,
@@ -30,7 +32,7 @@ const initializeSwitcher = (val) => {
       code: station.title,
       slug: station.slug,
       image: station.image,
-      times: `${station.timeStart} - ${station.timeEnd}`,
+      times: formattedStartTime && formattedEndTime ? `${formattedStartTime} - ${formattedEndTime}` : '',
     })
   })
 

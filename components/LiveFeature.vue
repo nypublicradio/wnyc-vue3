@@ -13,6 +13,7 @@ import {
   togglePlayEpisode,
   initializeStationList,
   getOrg,
+  formatTime,
 } from "~/utilities/helpers"
 import useLiveStream, {
   updateLiveStream,
@@ -116,8 +117,8 @@ const onUpdateStation = (station) => {
                   "
                   class="font-bold"
                 >
-                  {{ currentEpisodeHolder.timeStart }} -
-                  {{ currentEpisodeHolder.timeEnd }}
+                  {{ formatTime(currentEpisodeHolder.timeStart, 'h:mm a') }} -
+                  {{ formatTime(currentEpisodeHolder.timeEnd, 'h:mm a') }}
                 </p>
               </div>
             </div>
