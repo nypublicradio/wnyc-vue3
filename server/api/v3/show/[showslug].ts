@@ -16,7 +16,7 @@ const __getConfig = () => {
  * @param pageSize - Number of episodes per page
  * @returns Episodes data with pagination metadata
  */
-const getWagtailEpisodes = async (showData: any, page: number = 1, pageSize: string = '10') => {
+const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
     try {
         // If no body or body is not an array, return empty
         if (!showData.body || !Array.isArray(showData.body)) {
@@ -57,7 +57,7 @@ const getWagtailEpisodes = async (showData: any, page: number = 1, pageSize: str
                 meta: {
                     totalCount: 0,
                     pagination: {
-                        page: page,
+                        page,
                         pages: 0,
                         count: 0,
                         total: 0
