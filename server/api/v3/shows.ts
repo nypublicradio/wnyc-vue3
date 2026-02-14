@@ -2,6 +2,7 @@ import axios from "axios"
 import humps from "humps"
 import { normalizeWagtailShow } from '~/composables/data/shows'
 
+// Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
     const testCfg = (globalThis as any)?.__testRuntimeConfig
     return testCfg ?? useRuntimeConfig()
@@ -86,8 +87,8 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
             for (const item of resData.listItems) {
                 if (item.url) {
                     // Extract slug from URL (e.g., "https://demo.wnyc.org/shows/brian-lehrer-show/" -> "brian-lehrer-show")
-                    const urlMatch = item.url.match(/\/shows\/([^\/]+)\/?$/)
-                    if (urlMatch && urlMatch[1]) {
+                    const urlMatch = item.url.match(/\/shows\/([^/]+)\/?$/)
+                    if (urlMatch?.[1]) {
                         const slug = urlMatch[1]
                         const show = showsBySlug.get(slug)
                         
@@ -125,6 +126,6 @@ export default defineEventHandler(async (event) => {
     // Return structure consistent with v2 endpoint
     return {
         all: allShows,
-        featuredShows: featuredShows
+        featuredShows
     }
 })

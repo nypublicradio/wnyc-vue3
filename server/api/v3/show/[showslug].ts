@@ -12,13 +12,11 @@ const __getConfig = () => {
 /**
  * Get episodes for a show from Wagtail API (extracted from show body curated content)
  * @param showData - The complete show data object
- * @param pageSize - Number of episodes per page
  * @param page - Page number
+ * @param pageSize - Number of episodes per page
  * @returns Episodes data with pagination metadata
  */
-const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: number = 1) => {
-    const config = __getConfig()
-    
+const getWagtailEpisodes = async (showData: any, page: number = 1, pageSize: string = '10') => {
     try {
         // If no body or body is not an array, return empty
         if (!showData.body || !Array.isArray(showData.body)) {
@@ -27,7 +25,7 @@ const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: 
                 meta: {
                     totalCount: 0,
                     pagination: {
-                        page: page,
+                        page,
                         pages: 0,
                         count: 0,
                         total: 0
@@ -78,7 +76,7 @@ const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: 
             meta: {
                 totalCount: allEpisodes.length,
                 pagination: {
-                    page: page,
+                    page,
                     pages: Math.ceil(allEpisodes.length / limit),
                     count: paginatedEpisodes.length,
                     total: allEpisodes.length
@@ -92,7 +90,7 @@ const getWagtailEpisodes = async (showData: any, pageSize: string = '10', page: 
             meta: {
                 totalCount: 0,
                 pagination: {
-                    page: page,
+                    page,
                     pages: 0,
                     count: 0,
                     total: 0
@@ -116,7 +114,7 @@ const getWagtailShow = async (slug: string) => {
             url: `${config.public.AVIARY_BASE_API}pages/`,
             params: {
                 type: 'shows.ShowPage',
-                slug: slug,
+                slug,
                 fields: 'description,topper_display_title,linked_data_source,show_art,show_logo,topper_background,body,about_module,can_download_episodes,can_embed_episodes,in_page_navigation',
             },
             headers: {
@@ -175,8 +173,8 @@ export default defineEventHandler(async (event) => {
     // Get episodes from show body (transformed through curated content pipeline)
     const episodes = await getWagtailEpisodes(
         showDataForEpisodes,
-        pageSize,
-        page
+        page,
+        pageSize
     )
     
     // Set cache header to match v2 endpoint
