@@ -1,6 +1,7 @@
 import {
     cmsSources,
     NPRIMAGEDOMAINSOURCES,
+    WAGTAILIMAGEDOMAINSOURCES,
 } from "~/composables/globals"
 
 interface ImageAttributes {
@@ -134,7 +135,11 @@ export function useVImage () {
     }
     // returns a templated Wagtail image url when provided just the image URL
     const templatizeWagtailImageUrl = (url: string): string => {
-
+        // Check if it's a Gothamist original_images URL (these don't support templating)
+        if (url.includes("gothamist.com/original_images")) {
+            return url // Return as-is, no templating supported
+        }
+        
         // formatted :https://cms.prod.nypr.digital/images/352462/fill-592x395-c0|format-webp|webpquality-80
         return url.replace(/fill-(\d+)x(\d+)-c0/, 'fill-%s/%s/c0').replace(/format-[a-zA-Z]+/, 'format-%s').replace(/(webp|jpeg|jpg|png)quality-(\d+)/, '%squality-%s')
 
@@ -157,7 +162,22 @@ export function useVImage () {
 
     // checks if the image is from Wagtail
     const isWagtailImage = (srcImg) => {
-        return (typeof srcImg === "object" && "fileHash" in srcImg) || /^\d+$/.test(srcImg)
+        // Check for Wagtail image ID (numeric string)
+        if (/^\d+$/.test(srcImg)) return true
+        
+        // Check for object with fileHash (legacy Wagtail images)
+        if (typeof srcImg === "object" && "fileHash" in srcImg) return true
+        
+        // Check for object with template property containing Wagtail URL pattern
+        if (typeof srcImg === "object" && srcImg?.template && typeof srcImg.template === "string") {
+            const hasWagtailDomain = WAGTAILIMAGEDOMAINSOURCES.some(domain => srcImg.template.includes(domain))
+            const hasWagtailPattern = srcImg.template.includes("fill-%s/%s/c0")
+            if (hasWagtailDomain || hasWagtailPattern) {
+                return true
+            }
+        }
+        
+        return false
     }
 
     // checks if the image URL is from Wagtail
@@ -179,7 +199,7 @@ export function useVImage () {
     }
     // checks if the image URL is from Wagtail
     const isWagtailImageUrl = (url) => {
-        return (typeof url === "string" && url.includes("nypr.digital/images"))
+        return (typeof url === "string" && WAGTAILIMAGEDOMAINSOURCES.some(domain => url.includes(domain)))
     }
     // checks if the image URL is from Simplecast
     // const isSimplecastImageUrl = (url) => {
@@ -213,7 +233,9 @@ export function useVImage () {
         if (srcImg) {
             // check if fileHash exists, or if we pass in a fallback, they are provided as just strings numbers from Wagtail
             if (isWagtailImage(srcImg)) {
-                return { cmsSource: cmsSources.WAGTAIL, imageTemplate: srcImg?.id || String(srcImg) }
+                // Handle different Wagtail image structures
+                const imageTemplate = srcImg?.template || srcImg?.id || String(srcImg)
+                return { cmsSource: cmsSources.WAGTAIL, imageTemplate }
             } else if (isPublisherImage(srcImg)) {
                 return { cmsSource: cmsSources.PUBLISHER, imageTemplate: srcImg.template }
             } else if (isNPRImage(srcImg)) {

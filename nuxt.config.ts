@@ -179,6 +179,7 @@ export default defineNuxtConfig({
     aviaryBaseApi: process.env.AVIARY_BASE_API,
     simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,
+    featuredShowsPageId: process.env.FEATURED_SHOWS_PAGE_ID,
     public: {
       cmsSiteWnyc: process.env.CMS_SITE_WNYC ?? 'demo.wnyc.org:443',
       cmsSiteGothamist: process.env.CMS_SITE_GOTHAMIST ?? 'demo.gothamist.com:443',

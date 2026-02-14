@@ -70,6 +70,7 @@ services:
       - RAPID_ASSET_URL=$RAPID_ASSET_URL
       - SIMPLECAST_URL=$SIMPLECAST_URL
       - SIMPLECAST_API_KEY=$SIMPLECAST_API_KEY
+      - FEATURED_SHOWS_PAGE_ID=$FEATURED_SHOWS_PAGE_ID
     ports:
       - 3000:3000
     restart: "unless-stopped"

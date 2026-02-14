@@ -7,7 +7,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 
 const { data: show, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/v2/show/${route.params.slug}`
+  `${config.public.BFF_URL}/api/v3/show/${route.params.slug}`
 )
 
 const page = ref(null)
@@ -44,7 +44,7 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/v2/show/${route.params.slug}?page=${page.value}`
+      `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
     )
     pendingMore.value = false
     episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
@@ -77,9 +77,9 @@ watchEffect(async () => {
 watch(
   show,
   (newShow) => {
-    if (newShow) {
-      page.value = newShow.episodes?.meta?.pagination.page
-      maxPages = newShow.episodes?.meta?.pagination.pages
+    if (newShow?.episodes) {
+      page.value = newShow.episodes?.meta?.pagination?.page || 1
+      maxPages = newShow.episodes?.meta?.pagination?.pages || 0
       episodes.value = newShow.episodes?.data
     }
   },
