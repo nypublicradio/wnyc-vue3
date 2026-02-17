@@ -13,8 +13,8 @@ const __getConfig = () => {
  * @returns Promise that resolves to an object containing shows array and metadata
  */
 export const getShows = async () => {
-    const config = __getConfig();
-    
+    const config = __getConfig()
+
     try {
         const options = {
             method: 'GET',
@@ -36,7 +36,7 @@ export const getShows = async () => {
         const resData = humps.camelizeKeys(res.data)
         // Normalize each show item
         const shows = (resData.items || []).map(normalizeWagtailShow)
-        
+
         return shows
     } catch (e: any) {
         console.error('Error fetching shows:', {
@@ -55,13 +55,12 @@ export const getShows = async () => {
  * @returns Promise that resolves to an array of featured shows
  */
 export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagtailShow>[]) => {
-    const config = __getConfig();
-    
+    const config = __getConfig()
     // If no page ID is configured, return empty array
     if (!config.featuredShowsPageId) {
         return []
     }
-    
+
     try {
         // Fetch the curated list directly
         const options = {
@@ -75,14 +74,14 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
 
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-        
+
         // Extract shows from list items by matching slugs
         const featuredShows: ReturnType<typeof normalizeWagtailShow>[] = []
-        
+
         if (resData.listItems && Array.isArray(resData.listItems)) {
             // Create a map of shows by slug for efficient lookup
             const showsBySlug = new Map(allShows.map(show => [show.slug, show]))
-            
+
             // Process each list item to find matching shows
             for (const item of resData.listItems) {
                 if (item.url) {
@@ -91,7 +90,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
                     if (urlMatch?.[1]) {
                         const slug = urlMatch[1]
                         const show = showsBySlug.get(slug)
-                        
+
                         if (show) {
                             featuredShows.push(show)
                         } else {
@@ -101,7 +100,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
                 }
             }
         }
-        
+
         return featuredShows
     } catch (e: any) {
         // Handle 404 specifically - curated list doesn't exist
@@ -122,7 +121,7 @@ export default defineEventHandler(async (event) => {
 
     const allShows = await getShows()
     const featuredShows = await getFeaturedShows(allShows)
-    
+
     // Return structure consistent with v2 endpoint
     return {
         all: allShows,
