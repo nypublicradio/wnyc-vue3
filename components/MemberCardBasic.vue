@@ -86,8 +86,8 @@ const goToMemberCenter = () => {
       <div v-else>
         <p class="font-bold">Support WNYC</p>
         <p>
-          A monthly gift will provide us steady support to help secure the
-          future of public media.
+          A monthly gift provides us steady support to help secure the future of
+          public media.
         </p>
         <div
           class="flex gap-3 mt-3 align-items-center justify-content-start flex-wrap"
@@ -99,7 +99,7 @@ const goToMemberCenter = () => {
             size="small"
           />
           <Button
-            class="link px-4"
+            class="link p-0 no-ripple border-noround"
             severity="secondary"
             variant="link"
             @click="emit('onGoToMemberCenter')"
