@@ -6,9 +6,11 @@ import { useBreakpoints } from "~/composables/useBreakpoints"
 import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
-const { data: shows, status, error } = useLazyFetch(
-  `${config.public.BFF_URL}/api/v3/shows`
-)
+const {
+  data: shows,
+  status,
+  error,
+} = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
 
 const router = useRouter()
 const searchFieldValue = ref("")
@@ -90,8 +92,8 @@ watch(
     <Html lang="en">
       <Head>
         <Title
-          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
+          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming
+          Radio, News</Title
         >
         <Meta
           name="og:title"
@@ -131,7 +133,9 @@ watch(
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
         <div class="topics">
-          <section class="topics-header flex justify-content-between align-items-center">
+          <section
+            class="topics-header flex justify-content-between align-items-center"
+          >
             <h2>Browse By Topic</h2>
             <!-- <Button
               severity="secondary"
@@ -187,7 +191,9 @@ watch(
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div class="flex md:justify-content-between align-items-center mb-4 gap-3">
+          <div
+            class="flex md:justify-content-between align-items-center mb-4 gap-3"
+          >
             <Transition name="fade" mode="out-in">
               <h2 :key="allOrFeatured ? 'featured' : 'all'">
                 {{ allOrFeatured ? "Featured" : "All" }} Shows
