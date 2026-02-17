@@ -657,6 +657,10 @@ const breadcrumbs = computed(() => [
       gap: 24px;
       max-width: none;
     }
+
+    .event-more__list :deep(.media-card.event + .media-card.event) {
+      padding-top: 12px;
+    }
   }
 }
 </style>
