@@ -365,6 +365,10 @@ const greeneSpaceUrl = "https://thegreenespace.org"
       gap: 32px;
     }
 
+    .events-list :deep(.media-card.event + .media-card.event) {
+      padding-top: 12px;
+    }
+
     .events-rail__copy {
       font-size: 13px;
     }
