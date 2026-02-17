@@ -7,7 +7,7 @@ import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
 const { data: shows, status, error } = useLazyFetch(
-  `${config.public.BFF_URL}/api/v2/shows`
+  `${config.public.BFF_URL}/api/v3/shows`
 )
 
 const router = useRouter()

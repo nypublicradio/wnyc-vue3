@@ -41,6 +41,11 @@ export const liveStationPreferences = [
 
 export const NPRIMAGEDOMAINSOURCES = ["media.npr.org", "npr.brightspotcdn.com"]
 
+export const WAGTAILIMAGEDOMAINSOURCES = [
+    "nypr.digital/images",
+    "gothamist.com/original_images"
+]
+
 export const mediaTypes = {
     LIVE: 'live',
     SIMPLECAST: 'simplecast',
