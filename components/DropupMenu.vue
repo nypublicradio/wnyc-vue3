@@ -30,6 +30,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // the widest the popover can be
+  contentClassPopover: {
+    type: String,
+    default: null,
+  },
+  // the widest the popover can be
+  contentClassDrawer: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(["change", "swipe-down"])
@@ -78,6 +88,9 @@ defineExpose({
     :blockClick="props.blockClick"
     @change="handleChange"
     @swipe-down="handleSwipeDown"
+    :contentClass="
+      isMobileBreakpoint ? props.contentClassDrawer : props.contentClassPopover
+    "
   >
     <template v-if="$slots.customButton" #customButton="slotProps">
       <slot name="customButton" v-bind="slotProps" />

@@ -30,6 +30,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  contentClass: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(["change", "swipe-down"])
@@ -102,7 +106,12 @@ defineExpose({
       </slot>
     </div>
     <Popover ref="popover">
-      <div class="p-menu-list" role="menu" aria-label="Menu options">
+      <div
+        class="p-menu-list"
+        :class="props.contentClass"
+        role="menu"
+        aria-label="Menu options"
+      >
         <div class="p-menu-item">
           <div
             v-for="(item, index) in options"
