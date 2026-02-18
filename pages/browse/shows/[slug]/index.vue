@@ -1,14 +1,20 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-import { checkIsFavorited, trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
+import {
+  checkIsFavorited,
+  trackClickEvent,
+  dynamicNavigation,
+} from "~/utilities/helpers"
 import { useGlobalToast, useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
 
-const { data: show, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/v3/show/${route.params.slug}`
-)
+const {
+  data: show,
+  status,
+  error,
+} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
 
 const page = ref(null)
 const episodes = ref([])
@@ -37,14 +43,17 @@ const sectionAnchorData = ref([
   { ref: supportRef, label: "Support Our Show" },
 ])
 
-const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
-  // so it does not trigger on initial load and before we have data
-  if (!isInitialObserver.value && episodes.value) {
-    loadMoreRefVisible.value = isIntersecting
-  } else {
-    isInitialObserver.value = false
+const { stop } = useIntersectionObserver(
+  loadMoreRef,
+  ([{ isIntersecting }]) => {
+    // so it does not trigger on initial load and before we have data
+    if (!isInitialObserver.value && episodes.value) {
+      loadMoreRefVisible.value = isIntersecting
+    } else {
+      isInitialObserver.value = false
+    }
   }
-})
+)
 
 // load more episodes and track it
 const loadMore = async () => {
@@ -55,7 +64,9 @@ const loadMore = async () => {
       `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
     )
     pendingMore.value = false
-    const newEpisodes = (moreShows?.episodes?.data || []).filter(ep => ep != null)
+    const newEpisodes = (moreShows?.episodes?.data || []).filter(
+      (ep) => ep != null
+    )
     episodes.value = [...episodes.value, ...newEpisodes]
     trackClickEvent(
       "Event Tracking - load more episodes",
@@ -91,10 +102,12 @@ const handleViewAll = () => {
 
 // scrolls to the selected section from the jump link buttons
 const scrollToSection = (sectionRef, behavior = "smooth", offset = 90) => {
-  const element = sectionRef instanceof HTMLElement ? sectionRef : sectionRef?.$el
+  const element =
+    sectionRef instanceof HTMLElement ? sectionRef : sectionRef?.$el
 
   if (element) {
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const elementPosition =
+      element.getBoundingClientRect().top + window.pageYOffset
     const offsetPosition = elementPosition - offset
 
     window.scrollTo({
@@ -107,7 +120,7 @@ const scrollToSection = (sectionRef, behavior = "smooth", offset = 90) => {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  // { label: theShowTitle.value, route: `/browse/shows/${showSlug.value}` },
+  { label: show.value?.show?.title },
 ])
 
 // Watch for show data changes to update episodes and pagination
@@ -118,7 +131,7 @@ watch(
       page.value = newShow.episodes?.meta?.pagination?.page || 1
       maxPages = newShow.episodes?.meta?.pagination?.pages || 0
       // Filter out any null/undefined episodes
-      episodes.value = (newShow.episodes?.data || []).filter(ep => ep != null)
+      episodes.value = (newShow.episodes?.data || []).filter((ep) => ep != null)
     }
   },
   { immediate: true }
@@ -151,8 +164,8 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
+          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts,
+          Live Streaming Radio, News</Title
         >
         <Meta
           name="og:title"
@@ -240,7 +253,9 @@ onUnmounted(() => {
             </template>
           </div>
           <div v-if="status !== 'success'">
-            <div class="flex justify-content-between align-items-center mb-5 mt-2">
+            <div
+              class="flex justify-content-between align-items-center mb-5 mt-2"
+            >
               <Skeleton height="18px" width="80px" borderRadius="4px" />
               <Skeleton height="18px" width="80px" borderRadius="4px" />
             </div>

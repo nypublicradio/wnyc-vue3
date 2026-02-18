@@ -82,7 +82,11 @@ const {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  { label: episodeData.value?.title },
 ])
 
 watch(
