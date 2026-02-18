@@ -97,18 +97,18 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
 const getShow = async (slug: string) => {
     // Check if this is a Simplecast UUID
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
-    
+
     if (isUUID) {
         // This is a Simplecast show UUID
         try {
             // Use config or fallback to process.env
             const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
-            
+
             if (!apiKey) {
                 console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
                 return null
             }
-            
+
             const option = {
                 method: 'GET',
                 url: `${config.simplecastUrl}/podcasts/${slug}`,
@@ -118,10 +118,10 @@ const getShow = async (slug: string) => {
             }
             const res = await axios(option)
             const showData = humps.camelizeKeys(res.data)
-            
             return {
                 id: showData.id,
                 title: showData.title,
+                //showData.site.subdomain
                 slug: showData.slug || slug,
                 description: showData.description,
                 tease: showData.description,
@@ -131,11 +131,11 @@ const getShow = async (slug: string) => {
                 url: showData.href || showData.websiteUrl,
             }
         } catch (e: any) {
-            console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message);
+            console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message)
             return null
         }
     }
-    
+
     // Check for NPR shows
     const nprShows = await nyprDb.getNPRShowBySlug(slug)
     if (nprShows.length > 0) {
@@ -176,17 +176,17 @@ const getShow = async (slug: string) => {
         const show = resData.find((s) => {
             return s.slug === slug
         })
-        
+
         if (!show) {
             console.error('[Publisher Show] Show not found for slug:', slug)
             return null
         }
-        
+
         if (show.image) {
             const imgTemplate = show.image.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show.image.url)
             show.image.template = imgTemplate
         }
-        
+
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
         show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
@@ -207,11 +207,10 @@ export default defineEventHandler(async (event) => {
         let episodes
         // Get show details
         const show = await getShow(slug)
-        
+
         if (!show) {
             return null
         }
-        
         if (show.cmsSource === cmsSources.SIMPLECAST) {
             // Simplecast episodes are typically displayed through curated content
             // Return empty episodes array

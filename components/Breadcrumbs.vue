@@ -47,6 +47,7 @@ const routeBack = () => {
         :trackingLocation="`${lastItem?.label} breadcrumbs`"
         :route="item.route"
       />
+      <span v-else-if="item.label" class="text-sm">{{ item.label }}</span>
     </template>
     <template #separator>/</template>
   </Breadcrumb>
@@ -58,6 +59,13 @@ const routeBack = () => {
 }
 .p-breadcrumb ol {
   padding-left: 0;
+  overflow-x: auto;
+  // hide the scrollbar
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.p-breadcrumb li {
+  flex: none;
 }
 .p-breadcrumb button {
   padding: 0;

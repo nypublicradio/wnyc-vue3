@@ -15,7 +15,8 @@ const {
   status,
   error,
 } = useFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+  () =>
+    `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     onResponse({ response }) {
       const res = response._data
@@ -83,7 +84,11 @@ const {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  { label: episodeData.value?.title },
 ])
 
 watch(
@@ -113,7 +118,8 @@ watch(
     </section>
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
-
+    <!-- <pre>{{ show }}</pre> -->
+    <!-- <pre>{{ episodeData }}</pre> -->
     <EpisodeTemplate
       :pending="status !== 'success'"
       :episodeData="episodeData"
