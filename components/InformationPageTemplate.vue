@@ -14,7 +14,6 @@ defineProps<{
           {{ page.title }}
         </h1>
         <hr />
-        <!-- page content -->
         <v-streamfield v-if="page.body" :streamfield-blocks="page.body" class="pt-4" />
       </div>
     </section>
