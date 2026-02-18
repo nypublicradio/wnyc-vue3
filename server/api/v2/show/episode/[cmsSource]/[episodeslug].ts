@@ -12,33 +12,34 @@ const getSimplecastEpisode = async (episodeId: string) => {
     try {
         // Simplecast API only accepts UUIDs
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(episodeId)
-        
+
         if (!isUUID) {
             console.error('[Simplecast] Invalid episode ID format (must be UUID):', episodeId)
             return null
         }
-        
+
         // Use config or fallback to process.env
         const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
-        
+
         if (!apiKey) {
             console.error('[Simplecast] SIMPLECAST_API_KEY is not configured')
             return null
         }
-        
+
         const option = {
             method: 'GET',
             url: `${config.simplecastUrl}/episodes/${episodeId}`,
             headers: {
                 'Authorization': apiKey
             }
-        };
-        const res = await axios(option);
-        let resData = humps.camelizeKeys(res.data);
-        
+        }
+        const res = await axios(option)
+        console.log('=======res', res)
+        let resData = humps.camelizeKeys(res.data)
+
         // Add cmsSource to identify this as Simplecast data
         resData.cmsSource = cmsSources.SIMPLECAST
-        
+
         // Extract show/podcast ID from the response
         if (resData.podcast?.id) {
             resData.showId = resData.podcast.id
@@ -47,15 +48,14 @@ const getSimplecastEpisode = async (episodeId: string) => {
         } else if (resData.podcastId) {
             resData.showId = resData.podcastId
         }
-        
         // Normalize the Simplecast response to match our ArticlePage structure
         resData = await normalizeArticlePage(resData)
 
         return {
             data: resData,
-        };
+        }
     } catch (e: any) {
-        console.error('[Simplecast] Error fetching episode:', e?.response?.status, e?.response?.statusText, e?.message);
+        console.error('[Simplecast] Error fetching episode:', e?.response?.status, e?.response?.statusText, e?.message)
         return null
     }
 }
