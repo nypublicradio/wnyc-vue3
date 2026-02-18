@@ -11,12 +11,14 @@ const emit = defineEmits(["emit-click"])
 const onFocusOut = (e, index, length) => {
   const checkTabbingBackward =
     e.relatedTarget &&
-    e.relatedTarget.compareDocumentPosition(e.target) & Node.DOCUMENT_POSITION_PRECEDING
+    e.relatedTarget.compareDocumentPosition(e.target) &
+      Node.DOCUMENT_POSITION_PRECEDING
   const isTabbingBackward = !Boolean(checkTabbingBackward)
 
   const itemLength = length - 1
   const parentMenu =
-    e.target.parentElement.parentElement.parentElement.parentElement.parentElement
+    e.target.parentElement.parentElement.parentElement.parentElement
+      .parentElement
   // tabbing forward
   if (itemLength === index && !isTabbingBackward) {
     if (parentMenu?.nextElementSibling) {
@@ -75,10 +77,10 @@ const onFocusOut = (e, index, length) => {
                 class="the-img flex-none"
                 :alt="itemMenu.image.altText"
                 :src="itemMenu.image"
-                :height="60"
-                :width="60"
+                :size="{ xs: [60, 60] }"
                 :ratio="[1, 1]"
                 :srcset="[2]"
+                :allowVerticalEffect="false"
                 style="height: 60px; width: 60px"
                 isDecorative
               />
