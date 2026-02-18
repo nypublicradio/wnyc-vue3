@@ -118,8 +118,8 @@ watch(
     </section>
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
-    <!-- <pre>{{ show }}</pre> -->
-    <!-- <pre>{{ episodeData }}</pre> -->
+    <!-- <pre>{{ show }}</pre>
+    <pre>{{ episodeData }}</pre> -->
     <EpisodeTemplate
       :pending="status !== 'success'"
       :episodeData="episodeData"

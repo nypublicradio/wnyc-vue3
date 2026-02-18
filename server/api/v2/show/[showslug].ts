@@ -121,8 +121,7 @@ const getShow = async (slug: string) => {
             return {
                 id: showData.id,
                 title: showData.title,
-                //showData.site.subdomain
-                slug: showData.slug || slug,
+                slug: showData.site.subdomain || showData.slug || slug,
                 description: showData.description,
                 tease: showData.description,
                 image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
