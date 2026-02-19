@@ -62,10 +62,6 @@ const imageRatio = computed(() => {
 
 // Single computed property that handles all the reactive logic
 const imgData = computed(() => {
-  console.log(
-    "src",
-    getCmsSourceAndImageTemplate(props.src, finalSrcFallback.value)
-  )
   return getCmsSourceAndImageTemplate(props.src, finalSrcFallback.value)
 })
 

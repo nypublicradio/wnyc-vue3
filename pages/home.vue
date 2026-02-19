@@ -86,9 +86,6 @@ onMounted(() => {
           />
         </div>
       </div>
-      <VImage
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgVfHORQFLyUf_rNove-xUmxIskDeMJ63REz_YIMQ6S0vCyQdkBvJos4igKspvCgpqnpy8h0xM--1uckzZIxDgyoHy37-MowkF-YzvVx8&s=10"
-      />
     </section>
     <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
