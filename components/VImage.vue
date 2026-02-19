@@ -4,6 +4,7 @@ import { getEpisodeFallBackImage } from "~/utilities/helpers"
 import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
+import { useIsDarkMode } from "~/composables/states"
 
 // Cache components to avoid recreation
 const componentCache = new Map()
@@ -16,7 +17,7 @@ const props = defineProps({
   },
   /** Fallback image URL to use if src fails to load */
   srcFallback: {
-    default: getEpisodeFallBackImage(),
+    default: null,
     type: String,
   },
   /** Size configuration - can be array [width, height] or object with size properties */
@@ -24,6 +25,12 @@ const props = defineProps({
     type: [Array, Object],
     default: null,
   },
+})
+
+const isDarkMode = useIsDarkMode()
+const finalSrcFallback = computed(() => {
+  if (props.srcFallback) return props.srcFallback
+  return getEpisodeFallBackImage(isDarkMode.value)
 })
 
 // Loading state for the image
@@ -55,8 +62,11 @@ const imageRatio = computed(() => {
 
 // Single computed property that handles all the reactive logic
 const imgData = computed(() => {
-  console.log("src", getCmsSourceAndImageTemplate(props.src, props.srcFallback))
-  return getCmsSourceAndImageTemplate(props.src, props.srcFallback)
+  console.log(
+    "src",
+    getCmsSourceAndImageTemplate(props.src, finalSrcFallback.value)
+  )
+  return getCmsSourceAndImageTemplate(props.src, finalSrcFallback.value)
 })
 
 // Individual computed properties for easier access

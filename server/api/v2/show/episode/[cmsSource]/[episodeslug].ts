@@ -1,7 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals'
+import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
@@ -129,7 +129,7 @@ const getEpisode = async (slug: string) => {
     const res = await axios(option)
     let resData = humps.camelizeKeys(res.data).data
     // fallback image to show image when no image is available
-    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGELOCAL }
+    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGE }
     resData.cmsSource = cmsSources.PUBLISHER
     resData = normalizeArticlePage(resData)
 
