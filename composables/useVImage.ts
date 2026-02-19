@@ -139,7 +139,7 @@ export function useVImage () {
         if (url.includes("gothamist.com/original_images")) {
             return url // Return as-is, no templating supported
         }
-        
+
         // formatted :https://cms.prod.nypr.digital/images/352462/fill-592x395-c0|format-webp|webpquality-80
         return url.replace(/fill-(\d+)x(\d+)-c0/, 'fill-%s/%s/c0').replace(/format-[a-zA-Z]+/, 'format-%s').replace(/(webp|jpeg|jpg|png)quality-(\d+)/, '%squality-%s')
 
@@ -164,10 +164,10 @@ export function useVImage () {
     const isWagtailImage = (srcImg) => {
         // Check for Wagtail image ID (numeric string)
         if (/^\d+$/.test(srcImg)) return true
-        
+
         // Check for object with fileHash (legacy Wagtail images)
         if (typeof srcImg === "object" && "fileHash" in srcImg) return true
-        
+
         // Check for object with template property containing Wagtail URL pattern
         if (typeof srcImg === "object" && srcImg?.template && typeof srcImg.template === "string") {
             const hasWagtailDomain = WAGTAILIMAGEDOMAINSOURCES.some(domain => srcImg.template.includes(domain))
@@ -176,7 +176,7 @@ export function useVImage () {
                 return true
             }
         }
-        
+
         return false
     }
 
@@ -246,7 +246,7 @@ export function useVImage () {
                 return { cmsSource: cmsSources.SIMPLECAST, imageTemplate: imageUrl }
             } else {
                 // fallback
-                return fallBackObject
+                return { cmsSource: cmsSources.WAGTAIL, imageTemplate: srcImg }
             }
         } else {
             // fallback

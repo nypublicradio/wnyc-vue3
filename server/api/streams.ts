@@ -15,6 +15,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { templatizePublisherImageUrl } from '~/composables/useVImage'
 
 // Station metadata mapping
 const STATION_METADATA = {
@@ -58,16 +59,16 @@ const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
     if (!scheduleData || !Array.isArray(scheduleData)) {
         return null
     }
-    
+
     const now = new Date()
-    
+
     // Find the episode that is currently airing
     const currentEpisode = scheduleData.find((episode: any) => {
         const startTime = new Date(episode.attributes.start)
         const endTime = new Date(episode.attributes.end)
         return now >= startTime && now < endTime
     })
-    
+
     return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
 }
 
@@ -83,27 +84,31 @@ const getLivestreams = async () => {
         const resData = await Promise.all(res_v1_filtered.map(async (stream: any) => {
             try {
                 const slug = stream.slug
+                const stationImage = { cmsSource: 'publisher', template: templatizePublisherImageUrl(stream.image_logo) }
                 const metadata = STATION_METADATA[slug]
-                
+
                 if (!metadata) {
                     return null
                 }
-                
+
                 // Fetch schedule data from the schedule API
                 const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
                 const scheduleRes = await axios(scheduleUrl)
-                
+
                 // Get the current episode from the schedule
                 const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
-                
+
                 if (!currentEpisode) {
                     return null
                 }
-                
+
                 const attrs = currentEpisode.attributes
                 const episodeImages = attrs.images || []
-                const primaryImage = episodeImages[0]
-                
+                // find first image that has a url in the array of episode images
+                const primaryImage = episodeImages.find((img: any) => img.url)
+                console.log('image = ', stream.image_logo)
+                console.log('stationImage = ', stationImage)
+
                 // Format the data to match the expected structure
                 return {
                     cmsSource: 'publisher',
@@ -112,10 +117,10 @@ const getLivestreams = async () => {
                     audio: metadata.audio,
                     file: metadata.audio,
                     hls: metadata.hls,
-                    stationImage: { template: templatizeImageUrl(metadata.imageLogo) },
-                    image: primaryImage 
-                        ? { template: templatizeImageUrl(primaryImage.url) }
-                        : { template: templatizeImageUrl(metadata.imageLogo) },
+                    stationImage,
+                    image: primaryImage
+                        ? primaryImage.url
+                        : stationImage,
                     showTitle: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
                     title: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
                     episodeTitle: attrs.scheduleEventTitle || null,
@@ -146,7 +151,7 @@ const getLivestreams = async () => {
                 return null
             }
         }))
-        
+
         // Filter out any null results from failed fetches
         const validResults = resData.filter(Boolean)
         return humps.camelizeKeys(validResults)
