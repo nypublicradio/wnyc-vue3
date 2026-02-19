@@ -57,6 +57,7 @@ const normalizeWagtailMenuData = (menuData = []) => {
 
 // normalize for menu function for station data
 const normalizeStationsMenuData = (menuData = []) => {
+    console.log('menuData = ', menuData)
     return menuData.map((item) => ({
         label: item.station,
         url: `/live?slug=${item.slug}`,
