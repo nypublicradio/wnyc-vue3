@@ -12,7 +12,7 @@ const props = defineProps({
   /** Image source - can be a string URL or object containing image data */
   src: {
     default: null,
-    type: [String, Object],
+    type: [Number, String, Object],
   },
   /** Fallback image URL to use if src fails to load */
   srcFallback: {
@@ -55,6 +55,7 @@ const imageRatio = computed(() => {
 
 // Single computed property that handles all the reactive logic
 const imgData = computed(() => {
+  console.log("src", getCmsSourceAndImageTemplate(props.src, props.srcFallback))
   return getCmsSourceAndImageTemplate(props.src, props.srcFallback)
 })
 

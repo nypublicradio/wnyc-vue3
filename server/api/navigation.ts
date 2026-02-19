@@ -6,7 +6,7 @@ function normalizeShowsResponseForMenu (shows: any[] | null) {
     const normalized = shows.map((show: any) => ({
         id: show.id,
         title: show.title,
-        image: String(show.showArt.id) ?? show.image.url,
+        image: show.showArt.id ?? show.image.url,
         type: show.type,
         slug: show.slug,
         cmsSource: show.cmsSource ?? 'unknown',

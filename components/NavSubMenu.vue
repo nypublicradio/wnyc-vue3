@@ -147,7 +147,7 @@ const onFocusOut = (e, index, length) => {
       &:focus {
         .image-holder {
           .the-img {
-            transform: scale(1.15);
+            transform: scale(1.05);
           }
         }
 
