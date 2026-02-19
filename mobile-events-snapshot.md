@@ -1,0 +1,292 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e10]:
+          - link "Skip to Content" [ref=e11] [cursor=pointer]:
+            - /url: "#main-content"
+            - paragraph [ref=e12]: Skip to Content
+          - link "WNYC Home" [ref=e13] [cursor=pointer]:
+            - /url: /home
+            - img "wnyc logo" [ref=e14]
+          - generic [ref=e16]:
+            - link "Get the App button" [ref=e17] [cursor=pointer]:
+              - /url: /mobile
+              - button "Get the App button" [ref=e18]:
+                - img "devices icon" [ref=e19]
+                - generic: Get the App
+            - button "settings menu" [ref=e22] [cursor=pointer]:
+              - img [ref=e23]
+      - main [ref=e24]:
+        - generic [ref=e26]:
+          - navigation [ref=e29]:
+            - list [ref=e30]:
+              - listitem [ref=e31]:
+                - link "Home button" [ref=e32] [cursor=pointer]:
+                  - /url: /home
+                  - button "Home button" [ref=e33]:
+                    - generic: Home
+              - listitem [ref=e34]: /
+              - listitem [ref=e35]:
+                - link "Events button" [ref=e36] [cursor=pointer]:
+                  - /url: /events
+                  - button "Events button" [ref=e37]:
+                    - generic: Events
+              - listitem [ref=e38]: /
+              - listitem [ref=e39]:
+                - 'link "On The Media: Tuning Into the Divided Dial button" [ref=e40] [cursor=pointer]':
+                  - /url: /events/on-the-media-tuning-into-the-divided-dial
+                  - 'button "On The Media: Tuning Into the Divided Dial button" [ref=e41]':
+                    - generic: "On The Media: Tuning Into the Divided Dial"
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: "17"
+              - generic [ref=e48]: Nov
+            - generic [ref=e49]:
+              - 'heading "On The Media: Tuning Into the Divided Dial" [level=1] [ref=e50]'
+              - generic [ref=e51]:
+                - generic [ref=e53]: Nov 17, 2025 | 7:30pm
+                - generic [ref=e54]:
+                  - generic [ref=e56]: WNYC EVENTS
+                  - generic [ref=e58]: IN-PERSON
+                  - generic [ref=e60]: LIVE STREAM
+              - button "read this article" [ref=e62] [cursor=pointer]:
+                - generic [ref=e64]: Get Tickets
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - 'img "On The Media: On The Divided Dial" [ref=e370]'
+              - generic [ref=e80]:
+                - paragraph [ref=e81]: "Join us on June 11th at 7 PM for a conversation between OTM host Micah Loewinger and journalist Katie Thornton as they discuss their Peabody-winning series, new season of “The Divided Dial.” The first season, released in late 2022, examined how the right came to dominate talk radio in the US — and how one company was launching an ultra-conservative media empire from the airwaves. The second season, released May 2025, explores the world of shortwave radio: the lesser-known cousin of AM and FM radio that travels thousands of miles across rough terrain and geopolitical borders. This once-ubiquitous medium went from a utopian experiment in global communication to a propaganda tool for governments at war — and then became a vehicle for American right-wing extremists and cults. Katie visits a very strange station in Northern Maine. And explains what a little-known battle playing out on the shortwaves right now — between radio fanatics and Wall Street — can tell us about how we value our public airwaves."
+                - paragraph [ref=e82]: Micah goes behind the scenes with Katie — to hear about her reporting process, how she found these stories and audio recordings (some of which had never been digitized), and the talk radio and shortwave gems that were left on the cutting room floor.
+            - complementary [ref=e83]:
+              - generic [ref=e84]:
+                - heading "Date & Time" [level=3] [ref=e85]
+                - generic [ref=e87]: Nov 17, 2025 | 7:30pm
+              - generic [ref=e88]:
+                - heading "Location" [level=3] [ref=e89]
+                - paragraph [ref=e90]: The Greene Space
+                - link "Open in Google Maps" [ref=e91] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=The%20Greene%20Space
+              - generic [ref=e92]:
+                - heading "Price" [level=3] [ref=e93]
+                - paragraph [ref=e94]: "Livestream: Free ($5 Suggested Donation) General Admission: $20"
+              - paragraph [ref=e98]: WNYC is funded by sponsors and member donations
+          - generic [ref=e100]:
+            - separator
+            - heading "Other Upcoming Events" [level=2] [ref=e101]
+            - generic [ref=e102]:
+              - button "30 Jan test 1:00 PM | the world read this article" [ref=e103] [cursor=pointer]:
+                - generic [ref=e105]:
+                  - generic [ref=e106]: "30"
+                  - generic [ref=e107]: Jan
+                - generic [ref=e108]:
+                  - heading "test" [level=2] [ref=e109]
+                  - paragraph [ref=e110]: 1:00 PM | the world
+                  - button "read this article" [ref=e113]:
+                    - generic [ref=e115]: Get Tickets
+              - 'button "18 Mar GetLit Book Club: The Wilderness 5:30 PM | Stavros Niarchos Foundation Library read this article" [ref=e116] [cursor=pointer]':
+                - generic [ref=e118]:
+                  - generic [ref=e119]: "18"
+                  - generic [ref=e120]: Mar
+                - generic [ref=e121]:
+                  - 'heading "GetLit Book Club: The Wilderness" [level=2] [ref=e122]'
+                  - paragraph [ref=e123]: 5:30 PM | Stavros Niarchos Foundation Library
+                  - button "read this article" [ref=e126]:
+                    - generic [ref=e128]: Get Tickets
+              - button "25 Mar What to do with the BQE? From GBH's The Big Dig and WNYC’s On The Way 7:00 PM | 44 Charlton Street, New York, NY read this article IN-PERSON" [ref=e129] [cursor=pointer]:
+                - generic [ref=e131]:
+                  - generic [ref=e132]: "25"
+                  - generic [ref=e133]: Mar
+                - generic [ref=e134]:
+                  - heading "What to do with the BQE? From GBH's The Big Dig and WNYC’s On The Way" [level=2] [ref=e135]
+                  - paragraph [ref=e136]: 7:00 PM | 44 Charlton Street, New York, NY
+                  - generic [ref=e137]:
+                    - button "read this article" [ref=e139]:
+                      - generic [ref=e141]: Get Tickets
+                    - generic [ref=e144]: IN-PERSON
+          - generic [ref=e145]:
+            - separator
+            - heading "Top Stories From Gothamist" [level=2] [ref=e146]
+            - generic [ref=e148]:
+              - generic [ref=e150] [cursor=pointer]:
+                - generic "The Brian Lehrer Show show details" [ref=e151]
+                - generic [ref=e152]:
+                  - img "A Partial End to the Nurses Strike media image" [ref=e374]
+                  - generic [ref=e160]:
+                    - generic [ref=e162]:
+                      - heading "A Partial End to the Nurses Strike" [level=2] [ref=e163]
+                      - generic [ref=e167]: The Brian Lehrer Show | 4 hours ago
+                    - generic [ref=e168]:
+                      - button "play" [ref=e170]:
+                        - img "play icon" [ref=e172]
+                        - generic [ref=e175]: 24 min
+                      - button "options menu" [ref=e378]:
+                        - generic [ref=e379]: 
+              - generic [ref=e177] [cursor=pointer]:
+                - generic "The Brian Lehrer Show show details" [ref=e178]
+                - generic [ref=e179]:
+                  - img "An Argument for 'Tax the Rich' media image" [ref=e383]
+                  - generic [ref=e187]:
+                    - generic [ref=e189]:
+                      - heading "An Argument for 'Tax the Rich'" [level=2] [ref=e190]
+                      - generic [ref=e194]: The Brian Lehrer Show | Wed, Feb 11th
+                    - generic [ref=e195]:
+                      - button "play" [ref=e197]:
+                        - img "play icon" [ref=e199]
+                        - generic [ref=e202]: 43 min
+                      - button "options menu" [ref=e387]:
+                        - generic [ref=e388]: 
+              - generic [ref=e204] [cursor=pointer]:
+                - generic "All Of It show details" [ref=e205]
+                - generic [ref=e206]:
+                  - generic [ref=e391]:
+                    - generic:
+                      - img "Howard University's New Podcast 'On The Yard' media image-blurred-bg"
+                    - img "Howard University's New Podcast 'On The Yard' media image" [ref=e392]
+                  - generic [ref=e214]:
+                    - generic [ref=e216]:
+                      - heading "Howard University's New Podcast 'On The Yard'" [level=2] [ref=e217]
+                      - generic [ref=e221]: All Of It | Wed, Feb 11th
+                    - generic [ref=e222]:
+                      - button "play" [ref=e224]:
+                        - img "play icon" [ref=e226]
+                        - generic [ref=e229]: 26 min
+                      - button "options menu" [ref=e396]:
+                        - generic [ref=e397]: 
+      - contentinfo [ref=e230]:
+        - generic [ref=e232]:
+          - generic [ref=e233]:
+            - generic [ref=e235]:
+              - generic [ref=e236]:
+                - img "wnyc logo" [ref=e238] [cursor=pointer]
+                - paragraph [ref=e241]: Listener-supported WNYC is the home for independent journalism and courageous conversation on air and online. Broadcasting live from New York City on 93.9 FM and AM 820 and available online and on the go.
+              - generic [ref=e243]:
+                - heading "Sign up for our newsletter" [level=2] [ref=e244]
+                - paragraph [ref=e245]:
+                  - text: Sign up for for a weekly, behind-the-scenes update from the people behind your favorite shows.
+                  - link "See More" [ref=e246] [cursor=pointer]:
+                    - /url: /newsletter
+                - generic [ref=e250]:
+                  - paragraph [ref=e251]: Email address
+                  - generic [ref=e252]:
+                    - textbox "sign up" [ref=e254]:
+                      - /placeholder: your@email.com
+                    - button "Sign up" [ref=e256] [cursor=pointer]:
+                      - generic [ref=e257]: Sign up
+                  - generic [ref=e258]:
+                    - generic [ref=e259]:
+                      - checkbox "Toggle agreement to the terms" [checked] [ref=e260] [cursor=pointer]
+                      - img [ref=e262]
+                    - generic [ref=e264]:
+                      - text: By submitting your information, you're agreeing to receive communications from New York Public Radio in accordance with our
+                      - link "Terms" [ref=e265] [cursor=pointer]:
+                        - /url: https://www.wnyc.org/terms/
+                      - text: .
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - paragraph [ref=e268]: Connect with us!
+                - link "" [ref=e269] [cursor=pointer]:
+                  - /url: https://www.instagram.com/wnyc
+                  - button "" [ref=e270]:
+                    - generic [ref=e271]: 
+                - link "" [ref=e272] [cursor=pointer]:
+                  - /url: https://x.com/wnyc
+                  - button "" [ref=e273]:
+                    - generic [ref=e274]: 
+                - link "" [ref=e275] [cursor=pointer]:
+                  - /url: https://www.youtube.com/@WnycOrg
+                  - button "" [ref=e276]:
+                    - generic [ref=e277]: 
+                - link "" [ref=e278] [cursor=pointer]:
+                  - /url: https://www.facebook.com/wnyc
+                  - button "" [ref=e279]:
+                    - generic [ref=e280]: 
+              - generic [ref=e281]:
+                - generic [ref=e282]:
+                  - heading "Inside WNYC" [level=2] [ref=e283]
+                  - generic [ref=e284]:
+                    - link "About Us button" [ref=e285] [cursor=pointer]:
+                      - /url: /about
+                      - button "About Us button" [ref=e286]:
+                        - generic: About Us
+                    - link "Archives button" [ref=e287] [cursor=pointer]:
+                      - /url: /archives/collections
+                      - button "Archives button" [ref=e288]:
+                        - generic: Archives
+                    - link "100 Years button" [ref=e289] [cursor=pointer]:
+                      - /url: /100
+                      - button "100 Years button" [ref=e290]:
+                        - generic: 100 Years
+                    - link "Diversity (DEI) button" [ref=e291] [cursor=pointer]:
+                      - /url: https://www.nypublicradio.org/diversity-dei-overview/
+                      - button "Diversity (DEI) button" [ref=e292]:
+                        - generic: Diversity (DEI)
+                - generic [ref=e293]:
+                  - heading "Get Involved" [level=2] [ref=e294]
+                  - generic [ref=e295]:
+                    - link "Support Us button" [ref=e296] [cursor=pointer]:
+                      - /url: https://www.nypublicradio.org/support/
+                      - button "Support Us button" [ref=e297]:
+                        - generic: Support Us
+                    - link "Become a Sponsor button" [ref=e298] [cursor=pointer]:
+                      - /url: https://sponsorship.wnyc.org/
+                      - button "Become a Sponsor button" [ref=e299]:
+                        - generic: Become a Sponsor
+                    - link "Events button" [ref=e300] [cursor=pointer]:
+                      - /url: /events
+                      - button "Events button" [ref=e301]:
+                        - generic: Events
+                    - link "Community button" [ref=e302] [cursor=pointer]:
+                      - /url: /community
+                      - button "Community button" [ref=e303]:
+                        - generic: Community
+                - generic [ref=e304]:
+                  - heading "Get in Touch" [level=2] [ref=e305]
+                  - generic [ref=e306]:
+                    - link "Contact Us button" [ref=e307] [cursor=pointer]:
+                      - /url: https://newyorkpublicradio.my.site.com/wnyc/s/
+                      - button "Contact Us button" [ref=e308]:
+                        - generic: Contact Us
+                    - link "Get the App button" [ref=e309] [cursor=pointer]:
+                      - /url: /mobile
+                      - button "Get the App button" [ref=e310]:
+                        - generic: Get the App
+                    - link "Careers button" [ref=e311] [cursor=pointer]:
+                      - /url: https://nypublicradio.org/careers/
+                      - button "Careers button" [ref=e312]:
+                        - generic: Careers
+                    - link "Press button" [ref=e313] [cursor=pointer]:
+                      - /url: https://nypublicradio.org/press-room/
+                      - button "Press button" [ref=e314]:
+                        - generic: Press
+          - generic [ref=e315]:
+            - generic [ref=e316]:
+              - img "NYPR Logo" [ref=e317]
+              - link "WNYC Logo" [ref=e344] [cursor=pointer]:
+                - /url: /home
+                - img "WNYC Logo" [ref=e345]
+              - link "Gothamist" [ref=e347] [cursor=pointer]:
+                - /url: http://gothamist.com/
+                - img "Gothamist" [ref=e348]
+              - link "WQXR Logo" [ref=e350] [cursor=pointer]:
+                - /url: https://www.wqxr.org/
+                - img "WQXR Logo" [ref=e351]
+            - generic [ref=e361]:
+              - paragraph [ref=e362]: WNYC is supported by
+              - img "JL Greene Logo" [ref=e363]
+          - separator
+          - paragraph [ref=e366]: © 2026 New York Public Radio. All rights reserved.
+    - generic:
+      - generic:
+        - generic: 
+        - text: YOU ARE ONLINE
+  - generic:
+    - generic:
+      - generic:
+        - button "Toggle Nuxt DevTools":
+          - img
+        - generic "Page load time":
+          - generic: "101"
+          - generic: ms
+        - button "Toggle Component Inspector":
+          - img

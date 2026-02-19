@@ -21,8 +21,8 @@
 }
 
 @mixin html-formatting() {
-  font-size: var(--font-size-6);
-  line-height: 1.4em;
+  font-size: var(--font-size-7);
+  line-height: 180%;
   color: var(--p-text-color);
   font-weight: var(--font-weight);
   h1 {
@@ -33,7 +33,18 @@
     color: var(--p-text-color) !important;
     @include media('<md') {
       font-size: var(--font-size-9);
-      line-height: 1.25em;
+    }
+  }
+  p,
+  span,
+  li,
+  a {
+    font-size: var(--font-size-7);
+    line-height: 180%;
+    color: var(--p-text-color);
+    font-weight: var(--font-weight);
+    @include media('<md') {
+      font-size: var(--font-size-6);
     }
   }
   a {
@@ -135,6 +146,17 @@
   font-weight: var(--font-weight-400);
   @include truncate();
   @include t2lines();
+}
+
+// Shared long-form body copy used by article-like streamfield/html content.
+// Mobile uses 16px text, then scales to 18px at md+.
+@mixin longFormBodyTypography() {
+  font-size: 1rem;
+  line-height: 180%;
+
+  @include media(">=md") {
+    font-size: 18px;
+  }
 }
 
 // font config

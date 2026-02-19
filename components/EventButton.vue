@@ -4,22 +4,21 @@ const props = defineProps({
     type: String,
     default: "Get Tickets",
   },
-  live: {
-    type: Boolean,
-    default: false,
-  },
-  isDownloaded: {
-    type: Boolean,
-    default: false,
-  },
-  progress: {
-    type: Number,
-    default: 0,
-  },
-  /* file filed to match up agaist or, if playing a downloaded file, the directoryAudio.name to match up against */
-  file: {
-    default: "",
+  severity: {
     type: String,
+    default: "secondary",
+  },
+  showIcon: {
+    type: Boolean,
+    default: false,
+  },
+  buttonClass: {
+    type: String,
+    default: "",
+  },
+  labelClass: {
+    type: String,
+    default: "",
   },
 })
 
@@ -27,20 +26,21 @@ const emit = defineEmits(["on-click"])
 </script>
 
 <template>
-  <div class="read-button" :class="[{ circle: props.label === '' }]">
+  <div class="event-button" :class="[{ circle: props.label === '' }]">
     <Button
-      severity="secondary"
+      :severity="props.severity"
       @click="emit('on-click')"
       aria-label="read this article"
       class="flex align-items-center cursor-pointer"
+      :class="props.buttonClass"
     >
-      <slot name="icon">
+      <slot name="icon" v-if="props.showIcon">
         <div class="flex align-items-center icon">
           <i class="pi pi-ticket" />
         </div>
       </slot>
       <slot>
-        <div class="content flex white-space-nowrap">
+        <div :class="props.labelClass" class="content flex white-space-nowrap">
           <span>{{ props.label }}</span>
         </div>
       </slot>
@@ -49,7 +49,7 @@ const emit = defineEmits(["on-click"])
 </template>
 
 <style lang="scss" scoped>
-.read-button {
+.event-button {
   .p-button {
     padding: 0.219rem 0.75rem;
     min-height: 33px;

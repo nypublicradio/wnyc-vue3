@@ -139,9 +139,10 @@ watch(
   }
 }
 
-.episode-page .html-convert {
-  p {
-    line-height: 1.8em;
+.episode-page {
+  .episode-template .episode-main-content .streamfield .streamfield-paragraph > *,
+  .episode-template .episode-main-content .html-convert p {
+    @include longFormBodyTypography();
   }
 }
 </style>

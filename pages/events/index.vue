@@ -1,9 +1,9 @@
 <script setup lang="js">
-import { dynamicNavigation } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
-
+import { allSocialData } from "~/composables/navigationData.js"
+import { dynamicNavigation } from "~/utilities/helpers"
 const { getFilteredTopStories, topStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
@@ -12,7 +12,7 @@ const toast = useToast()
 const offset = ref(0)
 const limit = ref(5)
 const totalCount = ref(0)
-const eventList = ref(null)
+const eventList = ref([])
 
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
@@ -103,10 +103,12 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Events", route: "/events" },
 ])
+
+const greeneSpaceUrl = "https://thegreenespace.org"
 </script>
 
 <template>
-  <div class="event-page">
+  <div class="event-page event-list-page">
     <Html lang="en">
       <Head>
         <Title>Events | WNYC</Title>
@@ -121,42 +123,63 @@ const breadcrumbs = computed(() => [
     </section>
     <FetchError v-if="error" />
 
-    <section class="py-6 thinContent">
-      <h2 class="mb-4">Events</h2>
-      <div class="col-12 grid grid-nogutter">
-        <template v-if="status === 'success'">
-          <MediaCard
-            v-for="(event, index) in eventList"
-            :key="`${event.id}-${index}`"
-            class="col-12 mb-5"
-            :data="event"
-            is-horizontal
-            showTease
-            imgCol="md:w-7rem lg:w-6"
-            :size="{ xs: [112, 112], lg: [332, 184] }"
-            @on-click="dynamicNavigation(event)"
+    <section class="events-section">
+      <div class="events-layout">
+        <h1 class="events-title">Events</h1>
+        <div class="events-list">
+          <template v-if="status === 'success'">
+            <MediaCard
+              v-for="(event, index) in eventList"
+              :key="`${event.id}-${index}`"
+              isHorizontal
+              imgCol="w-7rem md:w-12rem"
+              titleClasses="text-sm md:text-lg"
+              pipeClasses="text-xs md:text-base"
+              :data="event"
+              :size="{ xs: [112, 112], md: [176, 176] }"
+              @on-click="dynamicNavigation(event)"
+            />
+          </template>
+          <template v-else>
+            <Skeleton
+              v-for="index in 4"
+              :key="`events-skeleton-${index}`"
+              class="events-card-skeleton"
+              height="203px"
+            />
+          </template>
+          <WnycLoader
+            v-if="eventList.length < totalCount"
+            ref="loadMoreRef"
+            spinner
+            size="40px"
+            class="events-loader"
           />
-        </template>
-        <skeleton-media-card
-          v-else
-          v-for="index in 20"
-          :key="`skeleton-2-${index}`"
-          class="col-12 mb-5"
-          is-horizontal
-          is-event
-          imgCol="w-6"
-          :size="{ xs: [112, 112], md: [300, 150] }"
-        />
-        <WnycLoader
-          v-if="eventList.length < totalCount"
-          ref="loadMoreRef"
-          spinner
-          size="40px"
-          class="mt-8 flex justify-content-center w-full"
-        />
-      </div>
+        </div>
 
-      <!-- <pre>{{ eventData?.events }}</pre> -->
+        <Divider class="events-divider" />
+
+        <aside class="events-rail">
+          <h3 class="events-rail__title">Rent The Greene Space</h3>
+          <p class="events-rail__copy">
+            Host your next event at WNYC and WQXR! The Greene Space will provide
+            you with the same turn-key service for broadcast quality audio and
+            video recording and live streaming that we use to power our own
+            radio stations, podcasts, and concerts.
+          </p>
+          <VFlexibleLink :to="greeneSpaceUrl" raw class="events-rail__link">
+            Learn more
+          </VFlexibleLink>
+          <SocialButtons class="events-rail__social" :data="allSocialData" />
+          <div class="events-rail__ad">
+            <story-htlAd
+              layout="rectangle"
+              slotClass="htlad-wnyc_homepage_rectangle"
+              fineprint="WNYC is funded by sponsors and member donations"
+            />
+          </div>
+        </aside>
+      </div>
     </section>
 
     <section v-if="getFilteredTopStories" class="thinContent">
@@ -168,3 +191,191 @@ const breadcrumbs = computed(() => [
     <BackToTopButton />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.event-list-page {
+  .events-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .events-title {
+    grid-area: title;
+    font-size: 46px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem;
+  }
+
+  .events-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
+    column-gap: 32px;
+    align-items: start;
+    row-gap: 24px;
+    justify-content: end;
+    grid-template-areas:
+      "title ."
+      "list rail";
+  }
+
+  .events-list {
+    grid-area: list;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+  }
+
+  .events-card-skeleton {
+    border-radius: 8px;
+  }
+
+  .events-loader {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .events-divider {
+    display: none;
+    grid-area: divider;
+  }
+
+  .events-rail {
+    grid-area: rail;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .events-rail__title {
+    font-size: 18px;
+    font-weight: var(--font-weight-700);
+    margin: 0;
+  }
+
+  .events-rail__copy {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .events-rail__link {
+    color: var(--link-button-color);
+    text-decoration: underline;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .events-rail__social :deep(.social-buttons) {
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+
+  .events-rail__social :deep(.social-buttons p) {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .events-rail__social :deep(.p-button) {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--p-text-color);
+    box-shadow: none;
+  }
+
+  .events-rail__social :deep(.p-button-icon) {
+    font-size: 14px;
+  }
+
+  .events-rail__ad {
+    margin-top: 20px;
+    max-width: 300px;
+  }
+
+  @include media("<lg") {
+    .events-layout {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "list"
+        "divider"
+        "rail";
+      justify-content: stretch;
+    }
+
+    .events-divider {
+      display: block;
+      margin: 32px 0 20px;
+    }
+
+    .events-rail {
+      max-width: 340px;
+    }
+  }
+
+  .thinContent {
+    max-width: $contentWidth !important;
+    margin: 0 auto;
+    padding-left: 32px;
+    padding-right: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 672px) minmax(0, 319px);
+    column-gap: 32px;
+    justify-content: end;
+  }
+
+  .thinContent > * {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  @include media("<lg") {
+    .thinContent {
+      grid-template-columns: 1fr;
+      justify-content: stretch;
+    }
+  }
+
+  @include media("<md") {
+    .events-section {
+      padding-top: 1.5rem;
+      padding-bottom: 2rem;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .thinContent {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .events-title {
+      font-size: 26px;
+      margin-bottom: 1rem;
+    }
+
+    .events-list {
+      gap: 32px;
+    }
+
+    .events-list :deep(.media-card.event + .media-card.event) {
+      padding-top: 12px;
+    }
+
+    .events-rail__copy {
+      font-size: 13px;
+    }
+
+    .events-rail__title {
+      font-size: 16px;
+    }
+  }
+}
+</style>

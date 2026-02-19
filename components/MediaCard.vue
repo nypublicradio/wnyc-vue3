@@ -33,7 +33,7 @@ import {
 } from "~/utilities/file-system"
 import useSleepTimer from "~/composables/useSleepTimer"
 import { mediaTypes } from "~/composables/globals.ts"
-
+import { useEventData } from "~/composables/useEventData"
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
 const props = defineProps({
@@ -94,10 +94,6 @@ const props = defineProps({
     default: true,
   },
   isFeature: {
-    type: Boolean,
-    default: false,
-  },
-  isEvent: {
     type: Boolean,
     default: false,
   },
@@ -376,6 +372,9 @@ const handleHasAudio = computed(() => {
     (props.showPlayButton && props.isSegment && hasAudio(props.data.url))
   )
 })
+
+// handle event code here - make event data available for template access
+const eventData = ref(isEvent ? useEventData(reactiveData) : null)
 </script>
 
 <template>
@@ -394,6 +393,7 @@ const handleHasAudio = computed(() => {
         'is-vertical': props.isVertical,
         'in-carousel': props.inCarousel,
         'is-image-loaded': isImageLoaded,
+        'is-event': isEvent,
       },
       props.data?.type,
       props.data?.cmsSource,
@@ -414,7 +414,7 @@ const handleHasAudio = computed(() => {
     <div class="holder flex flex-nogutter">
       <div
         v-if="isEvent"
-        class="event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
+        class="date-block event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
       >
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
@@ -457,7 +457,10 @@ const handleHasAudio = computed(() => {
                 {{ props.data?.title }}
               </h2>
 
-              <div class="tease-metadata-holder flex flex-column gap-2 w-full">
+              <div
+                v-if="!isEvent"
+                class="tease-metadata-holder flex flex-column gap-2 w-full"
+              >
                 <HtmlConvert
                   v-if="props.data.tease && props.showTease && !isEvent"
                   :htmlContent="props.data.tease"
@@ -498,9 +501,27 @@ const handleHasAudio = computed(() => {
                 </div>
               </div>
             </div>
-            <div v-if="isEvent" class="flex flex-column gap-2">
-              <p class="text-sm">{{ formatTime(props.data.startDatetime) }}</p>
-              <p class="text-sm">{{ props.data.eventLocation }}</p>
+            <div v-if="isEvent">
+              <div class="hidden md:flex flex-column gap-2">
+                <p class="text-sm" :class="props.pipeClasses">
+                  {{ formatTime(props.data.startDatetime) }}
+                </p>
+                <p class="text-sm" :class="props.pipeClasses">
+                  {{ props.data.eventLocation }}
+                </p>
+              </div>
+              <PipeData
+                :hidePipe="props.hideDate"
+                :class="props.pipeClasses"
+                class="md:hidden"
+              >
+                <template #left>
+                  {{ formatTime(props.data.startDatetime) }}
+                </template>
+                <template #right v-if="!props.hideDate">
+                  {{ props.data.eventLocation }}
+                </template>
+              </PipeData>
             </div>
           </div>
           <div
@@ -604,24 +625,28 @@ const handleHasAudio = computed(() => {
               </slot>
             </template>
             <div
-              v-else
-              class="flex row-gap-2 column-gap-2 align-items-center flex-wrap"
+              v-else-if="isEvent"
+              class="flex row-gap-2 column-gap-2 align-items-center flex-wrap justify-content-between w-full flex-wrap-reverse"
             >
-              <EventButton
-                class="z-2"
-                :file="props.data?.name"
-                @on-click="handleClick"
-              />
-              <div class="flex gap-2 flex-wrap">
-                <VBadge
-                  label="LIVE STREAM"
-                  color="var(--p-surface-900)"
-                  bg-color="var(--p-green-400)"
+              <div class="w-full md:w-auto">
+                <EventButton
+                  :file="props.data?.name"
+                  class="z-2"
+                  @on-click="handleClick"
+                  buttonClass="px-5 md:px-3"
+                  labelClass="text-base md:text-sm"
                 />
+              </div>
+              <div
+                v-if="eventData?.eventTypeBadges?.length"
+                class="flex gap-2 flex-wrap"
+              >
                 <VBadge
-                  label="IN-PERSON"
-                  color="var(--p-surface-0)"
-                  bg-color="var(--p-purple-500)"
+                  v-for="badge in eventData?.eventTypeBadges"
+                  :key="badge.label"
+                  :label="badge.label"
+                  :color="badge.color"
+                  :bg-color="badge.bg"
                 />
               </div>
             </div>
@@ -881,6 +906,28 @@ $contentPaddingY: 1.25rem;
       .content {
         padding: 0;
       }
+    }
+  }
+  &.is-event {
+    @include media("<md") {
+      .image {
+        display: none;
+      }
+      .date-block {
+        position: relative !important;
+      }
+    }
+  }
+  &.event {
+    :deep(.event-button .p-button) {
+      background: #ffffff;
+      border: 1px solid #eaeaea;
+      color: #101012;
+      box-shadow: none;
+    }
+
+    :deep(.event-button .content) {
+      color: #101012;
     }
   }
 }

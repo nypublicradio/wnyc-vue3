@@ -4,11 +4,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  fullWidth: {
+    type: Boolean,
+    default: true,
+  },
 })
 </script>
 
 <template>
-  <div class="pipe-data w-full">
+  <div class="pipe-data" :class="{ 'w-full': props.fullWidth }">
     <span class="inline"
       ><slot name="left" /><span>{{ props.hidePipe ? " " : " | " }}</span
       ><slot name="right"
@@ -21,4 +25,3 @@ const props = defineProps({
   color: var(--p-text-color);
 }
 </style>
-```
