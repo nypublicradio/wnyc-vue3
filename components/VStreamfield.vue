@@ -12,6 +12,10 @@ const props = defineProps({
     type: Array as () => StreamfieldBlock[],
     default: null,
   },
+  showDonation: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const streamfield = props.article?.body
@@ -210,7 +214,7 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="index === Math.floor(streamfield.length / 2)"
+        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,
