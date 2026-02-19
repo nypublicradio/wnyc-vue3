@@ -15,7 +15,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-import { templatizePublisherImageUrl } from '~/composables/useVImage'
+
 
 // Station metadata mapping
 const STATION_METADATA = {
@@ -48,10 +48,7 @@ const STATION_METADATA = {
 // Helper function to convert image URLs to a templated format for responsive images
 const templatizeImageUrl = (url: string) => {
     if (!url) return null
-    // Extract the path after the domain
-    const urlParts = url.split('/')
-    const filename = urlParts[urlParts.length - 1]
-    return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
+    return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, '$1%s/%s/%s/%s')
 }
 
 // Helper function to get the current episode from schedule data
@@ -84,7 +81,7 @@ const getLivestreams = async () => {
         const resData = await Promise.all(res_v1_filtered.map(async (stream: any) => {
             try {
                 const slug = stream.slug
-                const stationImage = { cmsSource: 'publisher', template: templatizePublisherImageUrl(stream.image_logo) }
+                const stationImage = { cmsSource: 'publisher', template: templatizeImageUrl(stream.image_logo) }
                 const metadata = STATION_METADATA[slug]
 
                 if (!metadata) {

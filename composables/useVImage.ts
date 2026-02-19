@@ -47,18 +47,7 @@ export function useVImage () {
         const img = attributes.imageMain ?? attributes.image
         const url = img.template
 
-        const pieces = url.split("/")
-        const finalUrlArr: string[] = []
-
-        pieces.forEach((piece: string, index: number) => {
-            if (index < 4 || index > 7) {
-                finalUrlArr.push(piece)
-            }
-            if (index === 4) {
-                finalUrlArr.push(`${w}/${h}/c/${q}`)
-            }
-        })
-        return finalUrlArr.join("/")
+        return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, `$1${w}/${h}/c/${q}`)
     }
 
     // returns a resized image url when provided just the image URL
@@ -68,18 +57,7 @@ export function useVImage () {
         h: number,
         q = 80
     ): string => {
-        const pieces = url.split("/")
-        const finalUrlArr: string[] = []
-
-        pieces.forEach((piece: string, index: number) => {
-            if (index < 4 || index > 7) {
-                finalUrlArr.push(piece)
-            }
-            if (index === 4) {
-                finalUrlArr.push(`${w}/${h}/c/${q}`)
-            }
-        })
-        return finalUrlArr.join("/")
+        return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, `$1${w}/${h}/c/${q}`)
     }
 
     // returns a resized image url when provided just the image URL
@@ -146,18 +124,7 @@ export function useVImage () {
     }
     // returns a templated PUBLISHER image url when provided just the image URL
     const templatizePublisherImageUrl = (url: string): string => {
-        const pieces = url.split("/")
-        const finalUrlArr: string[] = []
-
-        pieces.forEach((piece: string, index: number) => {
-            if (index < 4 || index > 7) {
-                finalUrlArr.push(piece)
-            }
-            if (index === 4) {
-                finalUrlArr.push("%s/%s/%s/%s")
-            }
-        })
-        return finalUrlArr.join("/")
+        return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, '$1%s/%s/%s/%s')
     }
 
     // checks if the image is from Wagtail
