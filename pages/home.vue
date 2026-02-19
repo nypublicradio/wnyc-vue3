@@ -75,7 +75,6 @@ onMounted(() => {
     <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
-
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2" />
           <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
@@ -87,6 +86,9 @@ onMounted(() => {
           />
         </div>
       </div>
+      <VImage
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgVfHORQFLyUf_rNove-xUmxIskDeMJ63REz_YIMQ6S0vCyQdkBvJos4igKspvCgpqnpy8h0xM--1uckzZIxDgyoHy37-MowkF-YzvVx8&s=10"
+      />
     </section>
     <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
