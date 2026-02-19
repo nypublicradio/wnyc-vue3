@@ -75,6 +75,7 @@ const formattedPrice = computed(() => {
   return raw.split(/,\s*/).join('\n')
 })
 
+// handle event CTA URL
 const handleEventCta = () => {
   if (!eventCtaUrl.value) return
   navigateTo(eventCtaUrl.value, { external: true })
@@ -91,7 +92,6 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event", route: route.path },
 ])
-
 </script>
 
 <template>
@@ -116,12 +116,8 @@ const breadcrumbs = computed(() => [
           <div class="event-hero__layout">
             <div class="event-hero__header">
               <div class="event-hero__datebox" v-if="eventDayNumber">
-                <span class="event-hero__datebox-day">{{
-                  eventDayNumber
-                }}</span>
-                <span class="event-hero__datebox-month">{{
-                  eventDateShort
-                }}</span>
+                <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
+                <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
               </div>
               <div class="event-hero__titlegroup">
                 <h1
@@ -161,18 +157,8 @@ const breadcrumbs = computed(() => [
           </div>
         </template>
         <template v-else>
-          <Skeleton
-            class="mb-2"
-            height="18px"
-            width="120px"
-            borderRadius="8px"
-          />
-          <Skeleton
-            class="mb-3"
-            height="48px"
-            width="85%"
-            borderRadius="16px"
-          />
+          <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
+          <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
           <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
           <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
         </template>

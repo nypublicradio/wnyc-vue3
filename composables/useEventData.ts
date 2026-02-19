@@ -25,11 +25,13 @@ type EventTag = {
   name?: string
 }
 
+// Utility functions to extract and format event data for display in event cards and details pages. Designed to be flexible with different event data shapes, relying on common properties and tags to determine display values.
 const matchesTag = (tags: EventTag[], needles: string[]) => {
   const tagLabels = tags.map((tag) => `${tag?.slug || tag?.name || ""}`.toLowerCase())
   return tagLabels.some((tag) => needles.some((needle) => tag.includes(needle)))
 }
 
+// Format event time range, handling cases where end time may be missing or the same as start time. Returns a formatted string like "7:00PM–8:00PM" or just "7:00PM" if no end time.
 const formatEventTime = (
   startDatetime: string | null,
   endDatetime: string | null,
@@ -42,12 +44,14 @@ const formatEventTime = (
   return endTime ? `${startTime}–${endTime}` : startTime
 }
 
+// Resolve the most appropriate URL for an event's call-to-action, checking common properties in order of priority. This allows flexibility in event data shapes while ensuring a valid URL is returned for event cards and details pages.
 export const resolveEventCtaUrl = (eventData: EventLike) =>
   (eventData?.ticketUrl as string) ||
   (eventData?.eventUrl as string) ||
   (eventData?.url as string) ||
   null
 
+// Main composable function to extract and compute all relevant event data for display. Accepts an event-like object or reference and returns computed properties for date formatting, location, tags, and CTA URL. Designed to be flexible with different event data shapes while providing consistent output for use in event cards and details pages.
 export const useEventData = (eventSource: EventLikeRef) => {
   const eventData = computed(() => unref(eventSource) || {})
   const tags = computed(() => (eventData.value?.tags as EventTag[]) ?? [])
