@@ -59,13 +59,6 @@ const theSlug = computed(
     episodeData.value?.headers.brand.slug
 )
 
-const theShowTitle = computed(
-  () =>
-    episodeData.value?.showTitle ||
-    episodeData.value?.headers.brand.title ||
-    episodeData.value?.title
-)
-
 const {
   data: show,
   status: showStatus,
@@ -144,7 +137,11 @@ watch(
 }
 
 .episode-page {
-  .episode-template .episode-main-content .streamfield .streamfield-paragraph > *,
+  .episode-template
+    .episode-main-content
+    .streamfield
+    .streamfield-paragraph
+    > *,
   .episode-template .episode-main-content .html-convert p {
     @include longFormBodyTypography();
   }

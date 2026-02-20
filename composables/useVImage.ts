@@ -47,7 +47,7 @@ export function useVImage () {
         const img = attributes.imageMain ?? attributes.image
         const url = img.template
 
-        return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, `$1${w}/${h}/c/${q}`)
+        return url.replace(/(\/i\/)[^/]+\/[^/]+\/[^/]+\/[^/]+/, `$1${w}/${h}/c/${q}`)
     }
 
     // returns a resized image url when provided just the image URL
@@ -57,7 +57,7 @@ export function useVImage () {
         h: number,
         q = 80
     ): string => {
-        return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, `$1${w}/${h}/c/${q}`)
+        return url.replace(/(\/i\/)[^/]+\/[^/]+\/[^/]+\/[^/]+/, `$1${w}/${h}/c/${q}`)
     }
 
     // returns a resized image url when provided just the image URL
@@ -124,7 +124,7 @@ export function useVImage () {
     }
     // returns a templated PUBLISHER image url when provided just the image URL
     const templatizePublisherImageUrl = (url: string): string => {
-        return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, '$1%s/%s/%s/%s')
+        return url.replace(/(\/i\/)[^/]+\/[^/]+\/[^/]+\/[^/]+/, '$1%s/%s/%s/%s')
     }
 
     // checks if the image is from Wagtail
