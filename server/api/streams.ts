@@ -15,7 +15,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
-
+import { useVImage } from '~/composables/useVImage'
 
 // Station metadata mapping
 const STATION_METADATA = {
@@ -23,32 +23,26 @@ const STATION_METADATA = {
         name: 'WNYC 93.9 FM',
         audio: 'https://fm939.wnyc.org/wnycfm',
         hls: 'https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WNYC_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_2_1.png',
     },
     'wqxr': {
         name: 'WQXR 105.9 FM',
         audio: 'https://fm1059.wqxr.org/wqxr',
         hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
     'q2': {
         name: 'New Sounds',
         audio: 'https://q2stream.wqxr.org/q2',
         hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/Q2_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/ns_showcard-newsounds-radio-1.jpg',
     },
     'wqxr-holiday-channel-on-wnyc': {
         name: 'WQXR Holiday Channel',
         audio: 'https://holidaystream.wqxr.org/holiday',
         hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
-}
-
-// Helper function to convert image URLs to a templated format for responsive images
-const templatizeImageUrl = (url: string) => {
-    if (!url) return null
-    return url.replace(/(\/i\/)[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+/, '$1%s/%s/%s/%s')
 }
 
 // Helper function to get the current episode from schedule data
@@ -79,14 +73,15 @@ const getLivestreams = async () => {
 
         // Fetch schedule data for each stream
         const resData = await Promise.all(res_v1_filtered.map(async (stream: any) => {
+            const { templatizePublisherImageUrl } = useVImage()
             try {
                 const slug = stream.slug
-                const stationImage = { cmsSource: 'publisher', template: templatizeImageUrl(stream.image_logo) }
                 const metadata = STATION_METADATA[slug]
 
                 if (!metadata) {
                     return null
                 }
+                const stationImage = { cmsSource: 'publisher', template: templatizePublisherImageUrl(stream.image_logo || metadata.imageLogo) }
 
                 // Fetch schedule data from the schedule API
                 const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
@@ -103,8 +98,10 @@ const getLivestreams = async () => {
                 const episodeImages = attrs.images || []
                 // find first image that has a url in the array of episode images
                 const primaryImage = episodeImages.find((img: any) => img.url)
-                console.log('image = ', stream.image_logo)
-                console.log('stationImage = ', stationImage)
+
+                console.log('stream = ', stream)
+                // console.log('image = ', stream.image_logo)
+                // console.log('stationImage = ', stationImage)
 
                 // Format the data to match the expected structure
                 return {
@@ -138,7 +135,7 @@ const getLivestreams = async () => {
                     onTodaysShowImage: primaryImage?.url ?? null,
                     onTodaysShowImageMaxWidth: primaryImage?.width ?? null,
                     onTodaysShowImageMaxHeight: primaryImage?.height ?? null,
-                    onTodaysShowImageTemplate: primaryImage ? templatizeImageUrl(primaryImage.url) : null,
+                    onTodaysShowImageTemplate: primaryImage ? templatizePublisherImageUrl(primaryImage.url) : null,
                     showSchedule: {
                         'iso-start-time': attrs.start,
                         'iso-end-time': attrs.end,
