@@ -6,7 +6,7 @@ function normalizeShowsResponseForMenu (shows: any[] | null) {
     const normalized = shows.map((show: any) => ({
         id: show.id,
         title: show.title,
-        image: show.showArt?.id ?? show.image?.url,
+        image: show.image?.id ?? show.image,
         type: show.type,
         slug: show.slug,
         cmsSource: show.cmsSource ?? 'unknown',
@@ -32,7 +32,7 @@ async function getNavigationData () {
                 }
             }),
             axios.get(`${config.public.BFF_URL}/api/streams`),
-            axios.get(`${config.public.BFF_URL}/api/v3/shows`),
+            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`),
         ])
 
         // Log any failures for debugging
@@ -52,7 +52,7 @@ async function getNavigationData () {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
             donateResponse: donate.status === 'fulfilled' ? donate.value.data : null,
             stationsResponse: stations.status === 'fulfilled' ? stations.value.data : null,
-            showsResponse: shows.status === 'fulfilled' ? normalizeShowsResponseForMenu(shows.value.data.featuredShows) : null,
+            showsResponse: shows.status === 'fulfilled' ? normalizeShowsResponseForMenu(shows.value.data.list_items) : null,
         }
     } catch (fetchError) {
         console.error("Failed to fetch or process navigation data:", fetchError)
