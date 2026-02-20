@@ -34,7 +34,6 @@ const getSimplecastEpisode = async (episodeId: string) => {
             }
         }
         const res = await axios(option)
-        console.log('=======res', res)
         let resData = humps.camelizeKeys(res.data)
 
         // Add cmsSource to identify this as Simplecast data
