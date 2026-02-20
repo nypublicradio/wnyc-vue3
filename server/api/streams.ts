@@ -98,6 +98,7 @@ const getLivestreams = async () => {
                 const attrs = currentEpisode.attributes
                 const episodeImages = attrs.images || []
                 // find first image that has a url in the array of episode images
+                console.log('episodeImages ', episodeImages)
                 const primaryImage = episodeImages.find((img: any) => img.url)
 
                 // Format the data to match the expected structure
