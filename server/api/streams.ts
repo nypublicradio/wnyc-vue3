@@ -63,6 +63,7 @@ const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
     return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
 }
 
+// currently a combination between the whatson API and the schedule API to populate the live stream data
 const getLivestreams = async () => {
     try {
         // calls v1 api to access source_tags

@@ -1,6 +1,6 @@
 // Import the base menu structure directly
 import { allMenuData } from './navigationData'
-import { mediaTypeRoutes } from '../composables/globals'
+import { mediaTypeRoutes } from './globals'
 // Shared state variables (singleton pattern)
 let isInitialized = false
 let headerNavigationData = null

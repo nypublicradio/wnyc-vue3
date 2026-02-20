@@ -47,7 +47,6 @@ async function getNavigationData () {
         if (shows.status === 'rejected') {
             console.warn('BFF showsmenu API failed:', `${config.public.BFF_URL}/api/v3/shows`, shows.reason?.message || shows.reason)
         }
-        console.log('shows = ', shows.value.data.list_items)
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
             donateResponse: donate.status === 'fulfilled' ? donate.value.data : null,
