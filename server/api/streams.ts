@@ -99,10 +99,6 @@ const getLivestreams = async () => {
                 // find first image that has a url in the array of episode images
                 const primaryImage = episodeImages.find((img: any) => img.url)
 
-                console.log('stream = ', stream)
-                // console.log('image = ', stream.image_logo)
-                // console.log('stationImage = ', stationImage)
-
                 // Format the data to match the expected structure
                 return {
                     cmsSource: 'publisher',
