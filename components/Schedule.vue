@@ -1,5 +1,9 @@
 <script setup>
-import { trackClickEvent, formatDate, getCustomStationLabel } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  formatDate,
+  getCustomStationLabel,
+} from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import useLiveStream from "~/composables/data/liveStream"
 import {
@@ -10,7 +14,10 @@ import {
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
 
-import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
+import {
+  scheduleLocalNotification,
+  getEntryTitle,
+} from "~/utilities/local-notifications"
 
 const {
   getTheTime,
@@ -185,7 +192,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
         <div>&nbsp;</div>
       </TabList>
       <hr class="w-full mt-5 opacity-40" />
-      <div class="date-tools flex justify-content-between align-items-center my-4">
+      <div
+        class="date-tools flex justify-content-between align-items-center my-4"
+      >
         <Button
           severity="secondary"
           variant="text"
@@ -200,7 +209,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
               : 'day-change-btn link'
           "
         ></Button>
-        <div class="today flex flex-column gap-0 align-items-center text-center">
+        <div
+          class="today flex flex-column gap-0 align-items-center text-center"
+        >
           <span class="day font-bold text-lg">{{
             formatDate(currentScheduleDate, "EEEE")
           }}</span>
@@ -244,11 +255,17 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   : ''
               "
             >
-              <div class="active-content flex flex-column justify-content-between">
+              <div
+                class="active-content flex flex-column justify-content-between"
+              >
                 <div>
                   <p class="time">
                     {{
-                      getTheTime(entry.attributes.start, entry.attributes.end, entryIndex)
+                      getTheTime(
+                        entry.attributes.start,
+                        entry.attributes.end,
+                        entryIndex
+                      )
                     }}
                   </p>
                   <h2 class="title truncate t2lines">
@@ -256,7 +273,8 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   </h2>
                   <HtmlConvert
                     v-if="
-                      entry.station.episodeBody && handleCurrentEpisode(entry, entryIndex)
+                      entry.station.episodeBody &&
+                      handleCurrentEpisode(entry, entryIndex)
                     "
                     :htmlContent="entry.station.episodeBody"
                     class="desc truncate t3lines mt-1"
@@ -281,15 +299,19 @@ const handleScheduleNavigationButtonLabel = (date) => {
                 "
                 class="hidden md:block"
               >
+                <!-- <pre>{{ entry.station }}</pre> -->
                 <VImage
-                  :src="{
-                    template: entry.station.onTodaysShowImageTemplate,
-                  }"
-                  :alt="
-                    entry.station.onTodaysShowImageAltText || 'on today\'s show image'
+                  :src="
+                    entry.station.onTodaysShowImageTemplate ||
+                    entry.station.onTodaysShowImage
                   "
-                  :size="{ md: [320, 213] }"
-                  class="flex-none w-20rem"
+                  :alt="
+                    entry.station.onTodaysShowImageAltText ||
+                    'on today\'s show image'
+                  "
+                  :size="{ xs: [208, 208] }"
+                  :allowVerticalEffect="true"
+                  class="flex-none w-13rem"
                   :srcset="[2]"
                 />
               </div>
@@ -350,7 +372,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
       >
         <div class="flex gap-3">
           <div class="flex flex-column gap-2">
-            <Skeleton class="opacity-50" height="14px" width="64px" borderRadius="4px" />
+            <Skeleton
+              class="opacity-50"
+              height="14px"
+              width="64px"
+              borderRadius="4px"
+            />
             <Skeleton height="22px" width="174px" borderRadius="4px" />
           </div>
         </div>

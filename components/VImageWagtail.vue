@@ -117,7 +117,7 @@ const props = defineProps({
    */
   src: {
     default: null,
-    type: [String, Number],
+    type: [String, Number, Object],
   },
   /**
    * address to navigate to when the image is clicked
@@ -177,6 +177,20 @@ const computedEnlargeHeight = computed(() => {
 
   return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
 })
+
+const computedSrc = computed(() => {
+  if (typeof props.src === "object") {
+    return (
+      String(props.src.id) ||
+      props.src.url ||
+      props.src.src ||
+      props.src.image ||
+      props.src.file ||
+      props.src.template
+    )
+  }
+  return String(props.src)
+})
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
   loadingEnlargedImage.value = true
@@ -235,7 +249,7 @@ const handleProvider = computed(() => {
             :format="props.format"
             :provider="handleProvider"
             class="blurred-bg-image"
-            :src="String(props.src)"
+            :src="computedSrc"
             :width="computedWidth"
             :height="props.height"
             :quality="String(props.quality)"
@@ -250,7 +264,7 @@ const handleProvider = computed(() => {
           :provider="handleProvider"
           class="image native-image"
           :class="isVertical ? 'is-vertical' : ''"
-          :src="String(props.src)"
+          :src="computedSrc"
           :width="computedWidth"
           :height="props.height"
           :sizes="props.sizes"
@@ -296,7 +310,7 @@ const handleProvider = computed(() => {
               :format="props.format"
               :provider="handleProvider"
               class="enlarged-image"
-              :src="String(props.src)"
+              :src="computedSrc"
               style="width: 100%; height: auto"
               :alt="props.isDecorative ? '' : props.alt"
               loading="eager"

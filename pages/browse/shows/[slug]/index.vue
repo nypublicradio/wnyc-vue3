@@ -184,15 +184,8 @@ onUnmounted(() => {
       <FetchError v-if="error" />
     </section>
     <!-- <pre>{{ show }}</pre> -->
-    <div class="show-header-holder py-3 md:py-6 style-mode-dark">
-      <section class="grid m-auto">
-        <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
-          <ShowHeader :show="show" />
-        </div>
-        <div class="col-fixed hidden xl:block w-20rem"></div>
-      </section>
-    </div>
+    <ShowHeader :show="show" />
+
     <!-- JUMP LINKS -->
     <div
       class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
@@ -287,22 +280,27 @@ onUnmounted(() => {
           />
 
           <div v-if="!isApp">
-            <div ref="featuredRef" class="flex flex-column gap-5 mt-8">
+            <div ref="featuredRef" class="flex flex-column gap-3 mt-8">
               <h2 class="md:text-xl">Featured</h2>
             </div>
-            <div ref="seriesRef" class="flex flex-column gap-5 mt-8">
+            <div ref="seriesRef" class="flex flex-column gap-3 mt-8">
               <h2 class="md:text-xl">Series</h2>
             </div>
-            <div ref="newsletterRef" class="flex flex-column gap-5 mt-8">
+            <div ref="newsletterRef" class="flex flex-column gap-3 mt-8">
               <h2 class="md:text-xl">Newsletter</h2>
             </div>
-            <div ref="aboutRef" class="flex flex-column gap-5 mt-8">
+            <div ref="aboutRef" class="flex flex-column gap-3 mt-8">
               <h2 class="md:text-xl">About</h2>
-              <HtmlConvert :htmlContent="show?.show?.description" />
+              <HtmlConvert
+                v-for="about in show?.show?.aboutModule"
+                :key="about?.id"
+                :htmlContent="about?.value"
+              />
             </div>
-            <div ref="supportRef" class="flex flex-column gap-5 mt-8">
+            <div ref="supportRef" class="flex flex-column gap-3 mt-8">
               <h2 class="md:text-xl">Support Our Show</h2>
             </div>
+            <!-- <pre class="text-xs"> {{ show }}</pre> -->
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
@@ -314,10 +312,3 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="scss">
-.shows-page {
-  .show-header-holder {
-    background-color: var(--p-surface-950);
-  }
-}
-</style>

@@ -21,10 +21,16 @@ const reactiveData = toRef(props, "data")
 
 const startEndTime = computed(() => {
   if (!reactiveData.value || !reactiveData.value.showSchedule) return ""
-  const startTime = formatTime(reactiveData.value?.showSchedule?.isoStartTime, "h:mma")
+  const startTime = formatTime(
+    reactiveData.value?.showSchedule?.isoStartTime,
+    "h:mma"
+  )
     .replace(":00", "")
     .toLowerCase()
-  const endTime = formatTime(reactiveData.value?.showSchedule?.isoEndTime, "h:mma")
+  const endTime = formatTime(
+    reactiveData.value?.showSchedule?.isoEndTime,
+    "h:mma"
+  )
     .replace(":00", "")
     .toLowerCase()
   return `${startTime}-${endTime}`
@@ -54,7 +60,9 @@ const startEndTime = computed(() => {
           <HtmlConvert
             class="blurb truncate t3lines mt-1 mb-3"
             noBlocks
-            :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
+            :htmlContent="
+              reactiveData?.onTodaysShowHeadline || reactiveData?.details
+            "
             htmlClasses="line-height-3"
           />
           <div class="hidden md:flex">
@@ -88,7 +96,10 @@ const startEndTime = computed(() => {
         <Skeleton borderRadius="2px" class="w-3rem md:w-5rem md:h-2rem" />
         <Skeleton class="max-w-7rem" borderRadius="16px" />
       </div>
-      <Skeleton class="max-w-20rem md:max-w-25rem h-2rem md:h-3rem" borderRadius="16px" />
+      <Skeleton
+        class="max-w-20rem md:max-w-25rem h-2rem md:h-3rem"
+        borderRadius="16px"
+      />
       <div class="max-w-full flex flex-column gap-2 md:gap-3 mt-3">
         <Skeleton height="13px" width="98%" borderRadius="16px" />
         <Skeleton height="13px" width="90%" borderRadius="16px" />

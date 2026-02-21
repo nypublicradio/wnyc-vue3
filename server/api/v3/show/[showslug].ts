@@ -33,13 +33,13 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
                 }
             }
         }
-        
+
         // Transform curated content to normalize episodes
         const transformedContent = await transformCuratedContent(showData.body, 'default')
-        
+
         // Extract all episodes from the transformed curated lists
         const allEpisodes: any[] = []
-        
+
         for (const block of transformedContent) {
             if (block.type === 'curated_list' && block.value?.list?.listItems) {
                 for (const item of block.value.list.listItems) {
@@ -50,7 +50,7 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
                 }
             }
         }
-        
+
         if (allEpisodes.length === 0) {
             return {
                 data: [],
@@ -65,12 +65,12 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
                 }
             }
         }
-        
+
         // Apply pagination
         const limit = Number(pageSize)
         const offset = (page - 1) * limit
         const paginatedEpisodes = allEpisodes.slice(offset, offset + limit)
-        
+
         return {
             data: paginatedEpisodes,
             meta: {
@@ -107,7 +107,7 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
  */
 const getWagtailShow = async (slug: string) => {
     const config = __getConfig()
-    
+
     try {
         const options = {
             method: 'GET',
@@ -121,21 +121,21 @@ const getWagtailShow = async (slug: string) => {
                 'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
             }
         }
-        
+
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-        
+
         // Get the first matching show
         const showData = resData.items?.[0]
-        
+
         if (!showData) {
             console.error('[Wagtail Show] Show not found for slug:', slug)
             return null
         }
-        
+
         // Normalize show data
         const normalized = normalizeWagtailShowDetail(showData, slug)
-        
+
         return {
             ...normalized,
             _rawData: showData, // Store raw data for episode extraction
@@ -149,37 +149,36 @@ const getWagtailShow = async (slug: string) => {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     const slug: string | undefined = event?.context?.params?.showslug
-    
+
     // Get query params
     const query = getQuery(event)
     const page: number = Array.isArray(query.page) ? Number(query.page[0]) : (query.page ? Number(query.page) : 1)
     const pageSize: string = query.pageSize?.toString() ?? '10'
-    
+
     if (!slug) {
         return null
     }
-    
+
     // Get show details from Wagtail only
     const show = await getWagtailShow(slug)
-    
     if (!show) {
         return null
     }
-    
+
     // Extract raw data before sending response
     const showDataForEpisodes = show._rawData
     delete show._rawData // Don't send raw data to client
-    
+
     // Get episodes from show body (transformed through curated content pipeline)
     const episodes = await getWagtailEpisodes(
         showDataForEpisodes,
         page,
         pageSize
     )
-    
+
     // Set cache header to match v2 endpoint
     res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
-    
+
     return {
         show,
         episodes,
