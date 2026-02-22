@@ -4,7 +4,6 @@ import { getEpisodeFallBackImage } from "~/utilities/helpers"
 import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
-import { useIsDarkMode } from "~/composables/states"
 
 // Cache components to avoid recreation
 const componentCache = new Map()
@@ -27,10 +26,9 @@ const props = defineProps({
   },
 })
 
-const isDarkMode = useIsDarkMode()
 const finalSrcFallback = computed(() => {
   if (props.srcFallback) return props.srcFallback
-  return getEpisodeFallBackImage(isDarkMode.value)
+  return getEpisodeFallBackImage()
 })
 
 // Loading state for the image

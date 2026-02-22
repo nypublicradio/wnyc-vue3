@@ -242,7 +242,9 @@ const accountNameFromUrl = (url) => {
 const getImageSrc = computed(() => {
   return props.sponsored
     ? profile.value.logo
-    : profile.value.image || String(profile.value.photoID) || props.imageFallbackPath
+    : profile.value.image ||
+        String(profile.value.photoID) ||
+        props.imageFallbackPath
 })
 
 // cssvars
@@ -268,7 +270,10 @@ const cssContainerType = ref(props.justImage ? "unset" : "inline-size")
     <div
       v-if="profile"
       class="author-profile"
-      :class="[{ verticalMobile: props.verticalMobile }, { vertical: props.vertical }]"
+      :class="[
+        { verticalMobile: props.verticalMobile },
+        { vertical: props.vertical },
+      ]"
       :style="`align-items: ${props.alignItems};`"
     >
       <div class="profile">

@@ -14,9 +14,11 @@ const authorName = ref(null)
 const pageTitle = ref(null)
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const { data: pagedata, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
-)
+const {
+  data: pagedata,
+  status,
+  error,
+} = useFetch(`${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`)
 
 watch(pagedata, (val) => {
   if (val) {
@@ -47,14 +49,17 @@ const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
-const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
-  // so it does not trigger on initial load and before we have data
-  if (!isInitialObserver.value && newPageData.value) {
-    loadMoreRefVisible.value = isIntersecting
-  } else {
-    isInitialObserver.value = false
+const { stop } = useIntersectionObserver(
+  loadMoreRef,
+  ([{ isIntersecting }]) => {
+    // so it does not trigger on initial load and before we have data
+    if (!isInitialObserver.value && newPageData.value) {
+      loadMoreRefVisible.value = isIntersecting
+    } else {
+      isInitialObserver.value = false
+    }
   }
-})
+)
 
 // clean up the useIntersectionObserver
 onUnmounted(() => {
@@ -68,14 +73,20 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const additionalPageData = await $fetch(
-      `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
+      `${
+        config.public.BFF_URL
+      }/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
     )
     pendingMore.value = false
     newPageData.value.articles = [
       ...newPageData.value.articles,
       ...additionalPageData.articles,
     ]
-    trackClickEvent("Event Tracking - load more articles", "Shows Page", staffSlug)
+    trackClickEvent(
+      "Event Tracking - load more articles",
+      "Shows Page",
+      staffSlug
+    )
   } catch (e) {
     const globalToast = useGlobalToast()
     globalToast.value = {
@@ -113,8 +124,8 @@ watch(loadMoreRefVisible, (val) => {
     <Html lang="en">
       <Head>
         <Title
-          >{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
+          >{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News</Title
         >
         <Meta
           name="og:title"

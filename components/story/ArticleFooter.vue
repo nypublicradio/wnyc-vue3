@@ -56,7 +56,9 @@ const profileData = computed(() =>
               :imageSize="66"
               imageFlexBasis="66px"
               class="mb-4 text-sm gap-4"
-              :imageFallbackPath="!profile.photoID ? getUserFallBackImage() : null"
+              :imageFallbackPath="
+                !profile.photoID ? getUserFallBackImage() : null
+              "
               :onStaffPage="!profile.url"
               :truncate="5"
             />
