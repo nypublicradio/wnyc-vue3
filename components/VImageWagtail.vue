@@ -4,6 +4,7 @@ import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, ref, nextTick, onMounted } from "vue"
+import { getEpisodeFallBackImage } from "~/utilities/helpers"
 
 const props = defineProps({
   /**
@@ -179,14 +180,19 @@ const computedEnlargeHeight = computed(() => {
 })
 
 const computedSrc = computed(() => {
+  if (!props.src || props.src === "undefined" || props.src === "null") {
+    return getEpisodeFallBackImage()
+  }
+
   if (typeof props.src === "object") {
     return (
-      String(props.src.id) ||
+      (props.src.id != null ? String(props.src.id) : null) ||
       props.src.url ||
       props.src.src ||
       props.src.image ||
       props.src.file ||
-      props.src.template
+      props.src.template ||
+      getEpisodeFallBackImage()
     )
   }
   return String(props.src)

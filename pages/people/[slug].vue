@@ -12,9 +12,11 @@ const personName = ref(null)
 const pageTitle = ref(null)
 const personSlug = route.params.slug
 //const newPageData = ref(null)
-const { data: pagedata, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
-)
+const {
+  data: pagedata,
+  status,
+  error,
+} = useFetch(`${config.public.BFF_URL}/api/people/publisher/${personSlug}`)
 
 watch(pagedata, (val) => {
   if (val) {
@@ -61,8 +63,8 @@ const routeBack = () => {
     <Html lang="en">
       <Head>
         <Title
-          >{{ personName }} | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
+          >{{ personName }} | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News</Title
         >
         <Meta
           name="og:title"
@@ -112,7 +114,8 @@ const routeBack = () => {
               >
                 <VImage
                   :src="
-                    show.featured?.headers.brand.logoImage || getEpisodeFallBackImage()
+                    show.featured?.headers.brand.logoImage ||
+                    getEpisodeFallBackImage()
                   "
                   :alt="`${show.title} show image`"
                   :width="20"

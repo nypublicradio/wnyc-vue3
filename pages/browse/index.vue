@@ -130,6 +130,7 @@ watch(
         </IconField>
       </section>
     </div>
+    <!-- <pre>{{ shows }}</pre> -->
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
         <div class="topics">

@@ -5,7 +5,6 @@ import {
   useCurrentEpisodeHolder,
   useCurrentEpisode,
 } from "~/composables/states"
-import { FALLBACKIMAGE } from "~/composables/globals"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -115,7 +114,6 @@ const getDotMenuItems = (bucketItem) => {
     >
       <VImage
         :src="props.data.image"
-        :srcFallback="FALLBACKIMAGE"
         :size="props.size"
         :class="props.imageClass"
         style="background-color: var(--p-surface-25)"
