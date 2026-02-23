@@ -2,6 +2,7 @@ import { h, resolveComponent, type VNode } from 'vue'
 import { Parser, DomHandler } from 'htmlparser2'
 import VImage from '~/components/VImage.vue'
 import { useVImage } from '~/composables/useVImage'
+import { WAGTAILIMAGEDOMAINSOURCES } from '~/composables/globals'
 
 interface HtmlParserOptions {
     tagClassMap?: Record<string, string>
@@ -11,7 +12,7 @@ interface HtmlParserOptions {
 }
 
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
-    const { getImageDimensions, templatizeImageUrl, isWagtailImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
+    const { getImageDimensions, templatizeImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
     const { tagClassMap = {}, imagePropsMap = {}, parentWidth = 304 } = options
 
     let imageCounter = 0
@@ -68,6 +69,8 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
 
                 // Render VImage for <img> tags (unless it's a gif)
                 if (tagName === 'img' && attrs.src) {
+                    attrs.style = `${attrs.style || ''}; width: 100%;`.replace(/^;\s*/, '').trim()
+
                     if (isGif(attrs.src)) {
                         return h('img', attrs)
                     }
@@ -80,7 +83,7 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
 
                     const imgHeight = Math.round((parentWidth * imgDimensions[1]) / imgDimensions[0])
 
-                    const templatizedSrc = isWagtailImageUrl(attrs.src) ? getWagtailImageId(attrs.src) : isPublisherImageUrl(attrs.src) ? { template: templatizeImageUrl(attrs.src) } : isNPRImageUrl(attrs.src) ? formatNPRImageUrl(attrs.src) : attrs.src
+                    const templatizedSrc = attrs.src.includes(WAGTAILIMAGEDOMAINSOURCES[0]) ? getWagtailImageId(attrs.src) : isPublisherImageUrl(attrs.src) ? { template: templatizeImageUrl(attrs.src) } : isNPRImageUrl(attrs.src) ? formatNPRImageUrl(attrs.src) : attrs.src
                     console.log('templatizedSrc', templatizedSrc)
                     const sizePropsId = `imageSize${imageCounter}`
                     const srcsetPropsId = `imageSrcset${imageCounter}`
