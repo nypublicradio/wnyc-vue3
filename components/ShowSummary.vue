@@ -75,7 +75,12 @@ const handleShowClick = () => {
       v-for="about in show?.show?.aboutModule"
       :key="about?.id"
       :htmlContent="about?.value"
-      htmlClasses="text-sm"
+      :tagClassMap="{
+        p: 'text-sm',
+        span: 'text-sm',
+        li: 'text-sm',
+        a: 'text-sm',
+      }"
     />
     <SocialButtons :data="showSocialData" />
     <story-htlAd
