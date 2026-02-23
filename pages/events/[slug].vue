@@ -92,60 +92,7 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event", route: route.path },
 ])
-const sampleHtml=`<div>
-  <h1>This is an H1 Heading</h1>
-  <p>Here is a standard paragraph containing some <strong>strong text</strong> and some <em>emphasized text</em>. It also includes <b>bold text</b> and <i>italic text</i> to test all formatting variants.</p>
-  
-  <h2>This is an H2 Heading</h2>
-  <p>Let's test some links! Here is an <a href="https://example.com">external link</a> that should open in a new tab, and here is an <a href="/browse/shows/radiolab">internal relative link</a> that should automatically render as a Vue Router NuxtLink.</p>
-  <h3>This is an H3 Heading</h3>
-  <ul>
-    <li>First item in an unordered list</li>
-    <li>Second item in an unordered list</li>
-    <li>Third item with a <a href="/about">link inside</a></li>
-  </ul>
-  
-  <h4>This is an H4 Heading</h4>
-  <ol>
-    <li>First item in an ordered list</li>
-    <li>Second item in an ordered list</li>
-  </ol>
-  
-  <h5>This is an H5 Heading</h5>
-  <blockquote>
-    "This is a blockquote. Our default PrimeFlex classes should give it a primary-colored left border and italicized gray text."
-  </blockquote>
-  
-  <h6>This is an H6 Heading</h6>
-  <p>Finally, let's test an image rendering with our custom VImage component. It should automatically intercept this tag and parse the dimensions:</p>
-  
-  <p>gif</p>
-  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzh6cWoyM3Y4d3ppdXduaWJ2M3UwZjY2YWdzbHRydHRocjltaTF5cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" alt="Radiolab Logo">
 
-  <p>publisher</p>
-  <img src="https://media.wnyc.org/i/800/800/c/80/2026/02/emilywells3000.jpg" alt="Radiolab Logo">
-  
-  <p>wagtail</p>
-  <img src="https://cms.demo.nypr.digital/images/329994/fill-662x440-c0|format-webp|webpquality-80" alt="Radiolab Logo">
-  
-  <p>npr</p>
-  <img src="https://npr.brightspotcdn.com/dims3/default/strip/false/crop/1184x1184+239+0/resize/1184/quality/80/format/jpg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F72%2F15%2F55be195946a0884ddd37667d5d71%2Fap26053652282550.jpg" alt="Radiolab Logo">
-
-
-  <p>gothamist RAW</p>
-  <img src="https://images-demo.gothamist.com/original_images/BL.png" alt="Radiolab Logo">
-
-  <p>simple cast RAW</p>
-  <img src="https://image.simplecastcdn.com/images/2c9187d6-9dff-4257-bc55-469cf13afd48/60a2cfed-b8ca-460b-abb8-8ab0afb3fa8c/radiolab-showsquare-3000x3000.jpg" alt="Radiolab Logo">
-
-  <p>URL RAW</p>
-  <img src="https://media.4-paws.org/a/5/3/7/a537f08d227326121b80790ba54036498668c9c8/VIER%20PFOTEN_2016-07-08_011-4993x3455-1920x1329.jpg" alt="Radiolab Logo">
-
-  <p>gothamist RAW</p>
-  <img src="https://images-demo.gothamist.com/images/Marcus-GettyImages-2257983026.original.png" alt="Radiolab Logo">
-  
-  <p>And here is a <span>span element</span> just in case.</p>
-</div>`
 </script>
 
 <template>
@@ -261,11 +208,6 @@ const sampleHtml=`<div>
               borderRadius="0px"
               class="event-body__image-frame mb-4 opacity-60 w-full h-auto"
             />
-            <HtmlConvert
-              class="event-body__description mb-4"
-              :htmlContent="sampleHtml"
-            />
-
             <VStreamfield
               v-if="eventData?.body && status === 'success'"
               class="event-body__streamfield mb-5"
