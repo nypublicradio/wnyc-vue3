@@ -101,7 +101,6 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     const vImageProps = {
                         src: imagePropsMap[srcPropsId],
                         alt: attrs.alt || '',
-                        //size: imagePropsMap[sizePropsId],
                         size: { xs: [parentWidth, imgHeight] },
                         srcset: imagePropsMap[srcsetPropsId],
                         width: imagePropsMap[widthPropsId],

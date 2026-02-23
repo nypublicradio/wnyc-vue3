@@ -23,8 +23,18 @@
 @mixin html-formatting() {
   h1 {
     line-height: 1.25em;
-    font-weight: var(--font-weight-700);
     letter-spacing: -1px;
+    color: var(--p-text-color) !important;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.75px;
+    font-weight: var(--font-weight-700);
+    line-height: normal;
     color: var(--p-text-color) !important;
   }
   p,
