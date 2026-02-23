@@ -92,6 +92,41 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event", route: route.path },
 ])
+const sampleHtml=`<div>
+  <h1>This is an H1 Heading</h1>
+  <p>Here is a standard paragraph containing some <strong>strong text</strong> and some <em>emphasized text</em>. It also includes <b>bold text</b> and <i>italic text</i> to test all formatting variants.</p>
+  
+  <h2>This is an H2 Heading</h2>
+  <p>Let's test some links! Here is an <a href="https://example.com">external link</a> that should open in a new tab, and here is an <a href="/browse/shows/radiolab">internal relative link</a> that should automatically render as a Vue Router NuxtLink.</p>
+  <h3>This is an H3 Heading</h3>
+  <ul>
+    <li>First item in an unordered list</li>
+    <li>Second item in an unordered list</li>
+    <li>Third item with a <a href="/about">link inside</a></li>
+  </ul>
+  
+  <h4>This is an H4 Heading</h4>
+  <ol>
+    <li>First item in an ordered list</li>
+    <li>Second item in an ordered list</li>
+  </ol>
+  
+  <h5>This is an H5 Heading</h5>
+  <blockquote>
+    "This is a blockquote. Our default PrimeFlex classes should give it a primary-colored left border and italicized gray text."
+  </blockquote>
+  
+  <h6>This is an H6 Heading</h6>
+  <p>Finally, let's test an image rendering with our custom VImage component. It should automatically intercept this tag and parse the dimensions:</p>
+  
+  <img src="https://media.wnyc.org/i/800/800/c/80/1/radiolab.jpg" alt="Radiolab Logo">
+
+  <img src="https://media.4-paws.org/a/5/3/7/a537f08d227326121b80790ba54036498668c9c8/VIER%20PFOTEN_2016-07-08_011-4993x3455-1920x1329.jpg" alt="Radiolab Logo">
+
+  <img src="https://images-demo.gothamist.com/images/Marcus-GettyImages-2257983026.original.png" alt="Radiolab Logo">
+  
+  <p>And here is a <span>span element</span> just in case.</p>
+</div>`
 </script>
 
 <template>
@@ -116,8 +151,12 @@ const breadcrumbs = computed(() => [
           <div class="event-hero__layout">
             <div class="event-hero__header">
               <div class="event-hero__datebox" v-if="eventDayNumber">
-                <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
-                <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
+                <span class="event-hero__datebox-day">{{
+                  eventDayNumber
+                }}</span>
+                <span class="event-hero__datebox-month">{{
+                  eventDateShort
+                }}</span>
               </div>
               <div class="event-hero__titlegroup">
                 <h1
@@ -157,8 +196,18 @@ const breadcrumbs = computed(() => [
           </div>
         </template>
         <template v-else>
-          <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
-          <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
+          <Skeleton
+            class="mb-2"
+            height="18px"
+            width="120px"
+            borderRadius="8px"
+          />
+          <Skeleton
+            class="mb-3"
+            height="48px"
+            width="85%"
+            borderRadius="16px"
+          />
           <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
           <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
         </template>
@@ -192,6 +241,10 @@ const breadcrumbs = computed(() => [
               v-else
               borderRadius="0px"
               class="event-body__image-frame mb-4 opacity-60 w-full h-auto"
+            />
+            <HtmlConvert
+              class="event-body__description mb-4"
+              :htmlContent="sampleHtml"
             />
 
             <VStreamfield
