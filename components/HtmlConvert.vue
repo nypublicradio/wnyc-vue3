@@ -59,7 +59,7 @@ const rawHtmlString = computed(() => {
   if (Array.isArray(content)) {
     content = content.map((item) => item.value).join("\n")
   }
-
+  // strip all tags and use as just a string
   if (props.stringify) {
     content = content.replace(/<[^>]*>/g, "")
   }
