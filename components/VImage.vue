@@ -179,6 +179,7 @@ const dynamicComponent = computed(() => {
       position: absolute;
       top: 0;
       left: 0;
+      height: 5px;
       opacity: 0;
       pointer-events: none;
     }
