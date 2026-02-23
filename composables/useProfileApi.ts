@@ -42,7 +42,6 @@ export const useProfileApi = () => {
                 method: 'POST',
                 body: requestBody,
             })
-
             profile.value = data
 
             // Save isActiveSustainer to localUserProfile in CapacitorStorage
@@ -64,7 +63,7 @@ export const useProfileApi = () => {
             console.error('Failed to fetch profile:', err)
             loading.value = false
             profile.value = {}
-            throw err
+            return {}
         } finally {
             loading.value = false
         }
@@ -108,12 +107,16 @@ export const useProfileApi = () => {
                 console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
             }
         }
-        // Wait for currentUser to be populated (with 10 second timeout)
+        // Wait for currentUserProfile to be populated with salesforce_id
+        // This ensures getAndSetUserProfile() has completed its initialization
         try {
-            await until(currentUser).toMatch(v => v !== null, { timeout: 10000 })
+            await until(currentUserProfile).toMatch(
+                v => v !== null && (v as any)?.salesforce_id,
+                { timeout: 10000 }
+            )
         } catch (error) {
-            console.warn("Timeout waiting for currentUser to be populated")
-            return
+            console.warn("Timeout waiting for currentUserProfile.salesforce_id to be populated")
+            // Continue anyway - will fall back to email if available
         }
 
         // Now try to fetch profile data if we have auth
