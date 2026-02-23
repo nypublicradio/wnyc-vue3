@@ -461,7 +461,6 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 v-if="!isEvent"
                 class="tease-metadata-holder flex flex-column gap-2 w-full"
               >
-                <div v-html="props.data.tease"></div>
                 <HtmlConvert
                   v-if="props.data.tease && props.showTease && !isEvent"
                   :htmlContent="props.data.tease"
