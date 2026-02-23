@@ -4,7 +4,9 @@ import VImage from "./VImage.vue"
 import VShareTools from "./VShareTools.vue"
 import VShareToolsItem from "./VShareToolsItem.vue"
 import { computed, ref } from "vue"
-import { getUserFallBackImage } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
+
+const { getUserFallBackImage } = useFallbackImages()
 
 const props = defineProps({
   /**

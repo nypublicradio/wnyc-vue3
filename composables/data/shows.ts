@@ -1,6 +1,6 @@
 import { cmsSources, mediaTypes } from '~/composables/globals'
 import { useVImage } from '~/composables/useVImage'
-import { getEpisodeFallBackImage } from '~/utilities/helpers'
+import { FALLBACKIMAGEEP } from '~/composables/globals'
 
 const { templatizeImageUrl } = useVImage()
 
@@ -14,7 +14,7 @@ export function normalizeWagtailShow (show: any) {
     const showImageUrl = show.showArt?.file ||
         show.showArt?.url ||
         show.linkedDataSource?.[0]?.value?.imageUrl ||
-        getEpisodeFallBackImage()
+        FALLBACKIMAGEEP
     const imageTemplate = showImageUrl ? templatizeImageUrl(showImageUrl) : showImageUrl
 
     return {

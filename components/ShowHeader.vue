@@ -8,8 +8,8 @@ import {
   togglePlayEpisode,
   hasAudio,
   addToFavorites2,
-  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 import {
   useCurrentUser,
   useIsEpisodePlaying,
@@ -56,6 +56,7 @@ const hasEpisodes = computed(() => {
 const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
+const { getEpisodeFallBackImage } = useFallbackImages()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 // if user is logged in, check if item is already favorited

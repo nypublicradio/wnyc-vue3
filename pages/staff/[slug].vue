@@ -1,9 +1,6 @@
 <script setup>
-import {
-  trackClickEvent,
-  dynamicNavigation,
-  getUserFallBackImage,
-} from "~/utilities/helpers"
+import { trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"
 
@@ -12,6 +9,7 @@ const router = useRouter()
 const config = useRuntimeConfig()
 const authorName = ref(null)
 const pageTitle = ref(null)
+const { getUserFallBackImage } = useFallbackImages()
 const staffSlug = route.params.slug
 const newPageData = ref(null)
 const {

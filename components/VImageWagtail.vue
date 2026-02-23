@@ -3,8 +3,9 @@ import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, ref, nextTick, onMounted } from "vue"
-import { getEpisodeFallBackImage } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
+
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
   /**

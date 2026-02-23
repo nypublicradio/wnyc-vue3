@@ -4,14 +4,15 @@ import {
   trackClickEvent,
   togglePlayEpisode,
   checkIsFavorited,
-  getEpisodeHeadFallBackImage,
   copyToClipBoard,
 } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIsApp } from "~/composables/states"
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const { getEpisodeHeadFallBackImage } = useFallbackImages()
 const toast = useToast()
 const isMinimized = ref(false)
 const isApp = useIsApp()
