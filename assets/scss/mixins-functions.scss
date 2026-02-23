@@ -21,28 +21,18 @@
 }
 
 @mixin html-formatting() {
-  font-size: var(--font-size-7);
-  line-height: 180%;
-  color: var(--p-text-color);
-  font-weight: var(--font-weight);
   h1 {
-    font-size: var(--font-size-9);
     line-height: 1.25em;
     font-weight: var(--font-weight-700);
     letter-spacing: -1px;
     color: var(--p-text-color) !important;
-    @include media('<md') {
-      font-size: var(--font-size-8);
-    }
   }
   p,
   span,
   li,
   a {
-    font-size: var(--font-size-7);
     line-height: 180%;
     color: var(--p-text-color);
-    font-weight: var(--font-weight);
     @include media('<md') {
       font-size: var(--font-size-6);
     }

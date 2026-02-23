@@ -61,13 +61,16 @@ const rawHtmlString = computed(() => {
   }
 
   if (props.stringify) {
-    content = content.replace(/<[^>]*>/g, "")
+    // Strip all HTML tags EXCEPT <em>, </em>, <strong>, </strong>, <b>, </b>, <i>, </i>
+    content = content.replace(/<\/?(?!\/?(em|strong|b|i)\b)[^>]*>/gi, "")
   }
   return content
 })
 
 const defaultTagClassMap = {
-  p: "text-base mb-3",
+  div: "text-base md:text-lg line-height-4",
+  span: "text-base md:text-lg line-height-4",
+  p: "text-base md:text-lg line-height-4",
   a: "text-primary hover:underline cursor-pointer",
   h1: "text-4xl font-bold mb-4 mt-0",
   h2: "text-3xl font-bold mb-3 mt-0",
