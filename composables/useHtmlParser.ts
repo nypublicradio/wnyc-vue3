@@ -7,6 +7,7 @@ interface HtmlParserOptions {
     tagClassMap?: Record<string, string>
     imagePropsMap?: Record<string, any>
     parentWidth?: number
+    NuxtLink?: any
 }
 
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
@@ -41,8 +42,8 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     if (isInternal) {
                         attrs.to = attrs.href
                         delete attrs.href
-                        const ResolvedNuxtLink = resolveComponent('NuxtLink')
-                        return h(ResolvedNuxtLink as any, attrs, () => processNodeList(node.children))
+                        const NuxtLinkComponent = options.NuxtLink || resolveComponent('NuxtLink')
+                        return h(NuxtLinkComponent as any, attrs, () => processNodeList(node.children))
                     }
                     // External links open in new tab
                     attrs.target = '_blank'

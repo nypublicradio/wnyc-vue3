@@ -1,6 +1,8 @@
 <script setup>
-import { computed, ref, watch, nextTick, toRef } from "vue"
+import { computed, ref, watch, nextTick, toRef, resolveComponent } from "vue"
 import { useHtmlParser } from "~/composables/useHtmlParser"
+
+const ResolvedNuxtLink = resolveComponent("NuxtLink")
 
 const props = defineProps({
   htmlContent: {
@@ -70,7 +72,7 @@ const defaultTagClassMap = {
   div: "text-base md:text-lg line-height-4",
   span: "text-base md:text-lg line-height-4",
   p: "text-base md:text-lg line-height-4",
-  a: "text-primary hover:underline cursor-pointer",
+  a: "",
   h1: "text-4xl font-bold mb-4 mt-0",
   h2: "text-3xl font-bold mb-3 mt-0",
   h3: "text-2xl font-bold mb-3 mt-0",
@@ -93,6 +95,7 @@ const parsedNodes = computed(() => {
   const renderFn = useHtmlParser(rawHtmlString.value, {
     parentWidth: parentWidth.value,
     tagClassMap: mergedClassMap,
+    NuxtLink: ResolvedNuxtLink,
   })
 
   return renderFn
