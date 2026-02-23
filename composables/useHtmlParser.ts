@@ -1,5 +1,5 @@
 import { h, resolveComponent, type VNode } from 'vue'
-import { Parser } from 'htmlparser2'
+import { Parser, DomHandler } from 'htmlparser2'
 import VImage from '~/components/VImage.vue'
 import { useVImage } from '~/composables/useVImage'
 
@@ -102,9 +102,6 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
     }
 
     const parseToAst = (html: string) => {
-        // We import DomHandler from htmlparser2 to easily get an AST
-        const { DomHandler } = require('htmlparser2')
-
         let astNodes: any[] = []
         const handler = new DomHandler((error, dom) => {
             if (error) {
