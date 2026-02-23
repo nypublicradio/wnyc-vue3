@@ -119,10 +119,29 @@ const sampleHtml=`<div>
   <h6>This is an H6 Heading</h6>
   <p>Finally, let's test an image rendering with our custom VImage component. It should automatically intercept this tag and parse the dimensions:</p>
   
-  <img src="https://media.wnyc.org/i/800/800/c/80/1/radiolab.jpg" alt="Radiolab Logo">
+  <p>gif</p>
+  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzh6cWoyM3Y4d3ppdXduaWJ2M3UwZjY2YWdzbHRydHRocjltaTF5cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" alt="Radiolab Logo">
 
+  <p>publisher</p>
+  <img src="https://media.wnyc.org/i/800/800/c/80/2026/02/emilywells3000.jpg" alt="Radiolab Logo">
+  
+  <p>wagtail</p>
+  <img src="https://cms.demo.nypr.digital/images/329994/fill-662x440-c0|format-webp|webpquality-80" alt="Radiolab Logo">
+  
+  <p>npr</p>
+  <img src="https://npr.brightspotcdn.com/dims3/default/strip/false/crop/1184x1184+239+0/resize/1184/quality/80/format/jpg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F72%2F15%2F55be195946a0884ddd37667d5d71%2Fap26053652282550.jpg" alt="Radiolab Logo">
+
+
+  <p>gothamist RAW</p>
+  <img src="https://images-demo.gothamist.com/original_images/BL.png" alt="Radiolab Logo">
+
+  <p>simple cast RAW</p>
+  <img src="https://image.simplecastcdn.com/images/2c9187d6-9dff-4257-bc55-469cf13afd48/60a2cfed-b8ca-460b-abb8-8ab0afb3fa8c/radiolab-showsquare-3000x3000.jpg" alt="Radiolab Logo">
+
+  <p>URL RAW</p>
   <img src="https://media.4-paws.org/a/5/3/7/a537f08d227326121b80790ba54036498668c9c8/VIER%20PFOTEN_2016-07-08_011-4993x3455-1920x1329.jpg" alt="Radiolab Logo">
 
+  <p>gothamist RAW</p>
   <img src="https://images-demo.gothamist.com/images/Marcus-GettyImages-2257983026.original.png" alt="Radiolab Logo">
   
   <p>And here is a <span>span element</span> just in case.</p>

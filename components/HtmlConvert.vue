@@ -34,7 +34,7 @@ const parentWidth = ref(304) // Default fallback value
 // Function to get fallback width based on screen size
 const getFallbackWidth = () => {
   if (typeof window !== "undefined") {
-    return window.innerWidth > 768 ? 672 : 382
+    return window.innerWidth > 768 ? 658 : 382
   }
   return 304
 }
