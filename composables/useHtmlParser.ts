@@ -11,7 +11,7 @@ interface HtmlParserOptions {
 }
 
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
-    const { getImageDimensions, templatizeImageUrl } = useVImage()
+    const { getImageDimensions, templatizeImageUrl, isWagtailImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
     const { tagClassMap = {}, imagePropsMap = {}, parentWidth = 304 } = options
 
     let imageCounter = 0
@@ -19,6 +19,22 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
     const isGif = (imageUrl: string) => {
         const extension = imageUrl.split('.').pop()?.toLowerCase()
         return extension === 'gif'
+    }
+
+    const getWagtailImageId = (url: string): string | null => {
+        if (typeof url !== 'string') return null
+        const match = url.match(/\/images\/(\d+)\//)
+        return match ? match[1] : null
+    }
+
+    const formatNPRImageUrl = (url: string): string => {
+        if (typeof url !== 'string') return url
+        // Converts static API values (.../resize/1184/quality/80/format/jpg/...) into
+        // the dynamic template expected by VImageNpr.vue (.../resize/{width}/quality/{quality}/format/{format}/...)
+        return url.replace(
+            /\/resize\/\d+\/quality\/\d+\/format\/[a-zA-Z0-9]+\//i,
+            '/resize/{width}/quality/{quality}/format/{format}/'
+        )
     }
 
     const processNodeList = (nodes: any[]): any[] => {
@@ -63,8 +79,9 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     }
 
                     const imgHeight = Math.round((parentWidth * imgDimensions[1]) / imgDimensions[0])
-                    const templatizedSrc = templatizeImageUrl(attrs.src)
 
+                    const templatizedSrc = isWagtailImageUrl(attrs.src) ? getWagtailImageId(attrs.src) : isPublisherImageUrl(attrs.src) ? { template: templatizeImageUrl(attrs.src) } : isNPRImageUrl(attrs.src) ? formatNPRImageUrl(attrs.src) : attrs.src
+                    console.log('templatizedSrc', templatizedSrc)
                     const sizePropsId = `imageSize${imageCounter}`
                     const srcsetPropsId = `imageSrcset${imageCounter}`
                     const widthPropsId = `imageWidth${imageCounter}`
@@ -76,12 +93,13 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     imagePropsMap[srcsetPropsId] = [1, 2]
                     imagePropsMap[widthPropsId] = parentWidth
                     imagePropsMap[heightPropsId] = imgHeight
-                    imagePropsMap[srcPropsId] = { template: templatizedSrc }
+                    imagePropsMap[srcPropsId] = templatizedSrc
 
                     const vImageProps = {
                         src: imagePropsMap[srcPropsId],
                         alt: attrs.alt || '',
-                        size: imagePropsMap[sizePropsId],
+                        //size: imagePropsMap[sizePropsId],
+                        size: { xs: [parentWidth, imgHeight] },
                         srcset: imagePropsMap[srcsetPropsId],
                         width: imagePropsMap[widthPropsId],
                         height: imagePropsMap[heightPropsId],
@@ -98,7 +116,6 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
 
                 return h(tagName, attrs, node.children ? processNodeList(node.children) : null)
             }
-            return null
         }).filter(Boolean)
     }
 

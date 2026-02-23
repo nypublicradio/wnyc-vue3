@@ -225,7 +225,7 @@ export function useVImage () {
     const getImageDimensions = (url: string) => {
 
         let dim = [0, 0]
-        if (typeof url === "string" && /^\d+$/.test(url)) {
+        if (typeof url === "string" && url.includes("nypr.digital")) {
             //https://cms.prod.nypr.digital/images/352442/fill-592x395-c0|format-webp|webpquality-80
             // Extract width and height from Wagtail URLs
             const fillMatch = url.match(/fill-(\d+)x(\d+)/)

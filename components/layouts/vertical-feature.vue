@@ -112,7 +112,7 @@ const featureSizes = computed(() => {
             :ratio="[1, 1]"
             :size="{
               xs: [112, 112],
-              md: [176, 176],
+              md: [208, 208],
             }"
             @on-click="dynamicNavigation(article)"
           />
