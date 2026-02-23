@@ -133,6 +133,8 @@ export async function normalizeArticleListItem (article: Record<string, any | un
     return await normalizeWagtailListItem(article)
   else if (article.cmsSource === cmsSources.PUBLISHER)
     return await normalizePublisherListItem(article)
+  else if (article.cmsSource === cmsSources.SIMPLECAST)
+    return await normalizeSimplecastListItem(article)
   else
     return null
 }

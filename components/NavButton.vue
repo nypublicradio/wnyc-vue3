@@ -171,12 +171,6 @@ const handleMouseLeave = () => {
   }
 
   .p-button {
-    // disable ripple on browser
-    &.no-ripple {
-      .p-ink {
-        display: none;
-      }
-    }
     .p-button-label {
       pointer-events: none;
       font-weight: v-bind(fontWeight);
