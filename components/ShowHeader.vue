@@ -31,11 +31,20 @@ const { show } = toRefs(props)
 //const emit = defineEmits(["change", "click"]);
 
 // Computed properties derived from the show data
-const showImage = computed(() => show.value?.show?.image)
-const showTitle = computed(() => show.value?.show?.title)
-const showTease = computed(() => show.value?.show?.tease)
+const showImage = computed(
+  () => show.value?.show?.showArt || show.value?.show?.image
+)
+const showTitle = computed(
+  () => show.value?.show?.topperDisplayTitle || show.value?.show?.title
+)
+const showTease = computed(
+  () => show.value?.show?.description || show.value?.show?.tease
+)
 const showScheduleSummary = computed(() => show.value?.show?.scheduleSummary)
 const showSlug = computed(() => show.value?.show?.slug)
+const showType = computed(() => show.value?.show?.type)
+const canDownload = computed(() => show.value?.show?.canDownloadEpisodes)
+const canEmbed = computed(() => show.value?.show?.canEmbedEpisodes)
 const topperBackground = computed(() => {
   if (show.value?.show?.topperBackground.includes("background:")) {
     return show.value?.show?.topperBackground

@@ -26,13 +26,13 @@
   color: var(--p-text-color);
   font-weight: var(--font-weight);
   h1 {
-    font-size: var(--font-size-12);
+    font-size: var(--font-size-9);
     line-height: 1.25em;
     font-weight: var(--font-weight-700);
     letter-spacing: -1px;
     color: var(--p-text-color) !important;
     @include media('<md') {
-      font-size: var(--font-size-9);
+      font-size: var(--font-size-8);
     }
   }
   p,
@@ -45,6 +45,24 @@
     font-weight: var(--font-weight);
     @include media('<md') {
       font-size: var(--font-size-6);
+    }
+  }
+  &.text-sm {
+    p,
+    span,
+    li,
+    a {
+      font-size: 0.875rem;
+      line-height: 1.3rem;
+    }
+  }
+  &.text-xs {
+    p,
+    span,
+    li,
+    a {
+      font-size: 0.75rem;
+      line-height: 1.1rem;
     }
   }
   a {
@@ -154,7 +172,7 @@
   font-size: 1rem;
   line-height: 180%;
 
-  @include media(">=md") {
+  @include media('>=md') {
     font-size: 18px;
   }
 }

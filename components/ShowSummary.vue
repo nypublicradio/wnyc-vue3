@@ -15,10 +15,13 @@ const appDownloadLink = useAppDownloadLink()
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 // Use computed properties to maintain reactivity
+const showImage = computed(
+  () => show.value?.show?.showArt || show.value?.show?.image
+)
+const showTitle = computed(
+  () => show.value?.show?.topperDisplayTitle || show.value?.show?.title
+)
 
-const showImage = computed(() => show.value?.show?.image)
-const showTitle = computed(() => show.value?.show?.title)
-const showDescription = computed(() => show.value?.show?.description)
 const showSlug = computed(() => show.value?.show?.slug)
 
 // TEMP until we have real show social data
@@ -49,8 +52,6 @@ const showSocialData = [
   },
 ]
 
-//const showTease = ref(props.data?.show?.tease)
-//const showScheduleSummary = ref(props.data?.show?.scheduleSummary)
 const handleShowClick = () => {
   if (showSlug.value) {
     navigateTo(`/browse/shows/${showSlug.value}`)
@@ -71,20 +72,11 @@ const handleShowClick = () => {
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
     <HtmlConvert
-      v-if="showDescription"
-      :htmlContent="showDescription"
-      :key="`description-${showSlug}`"
+      v-for="about in show?.show?.aboutModule"
+      :key="about?.id"
+      :htmlContent="about?.value"
+      htmlClasses="text-sm"
     />
-    <p class="text-sm">
-      Listen via the
-      <VFlexibleLink :to="appDownloadLink">WNYC App</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Apple</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Spotify</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Pocket Casts</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Youtube</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or
-      wherever you get podcasts.
-    </p>
     <SocialButtons :data="showSocialData" />
     <story-htlAd
       layout="rectangle"
