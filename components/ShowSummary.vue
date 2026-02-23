@@ -76,10 +76,11 @@ const handleShowClick = () => {
       :key="about?.id"
       :htmlContent="about?.value"
       :tagClassMap="{
-        p: 'text-sm',
-        span: 'text-sm',
-        li: 'text-sm',
-        a: 'text-sm',
+        div: 'text-sm line-height-3',
+        p: 'text-sm line-height-3',
+        span: 'text-sm line-height-3',
+        li: 'text-sm line-height-3',
+        a: 'text-sm line-height-3',
       }"
     />
     <SocialButtons :data="showSocialData" />
