@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  tagClassMap: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const reactiveHtmlContent = toRef(props, "htmlContent")
@@ -66,12 +70,10 @@ const rawHtmlString = computed(() => {
 const parsedNodes = computed(() => {
   if (!rawHtmlString.value) return null
 
-  // You can easily pass a tagClassMap here to inject Vue Primeflex classes if desired.
-  // We'll leave it empty for now to match exactly what your SCSS mixin was doing,
-  // but you now have full control over the classes injected directly on the AST node.
+  // You can pass the tagClassMap prop directly from the parent to inject Vue Primeflex classes.
   const renderFn = useHtmlParser(rawHtmlString.value, {
     parentWidth: parentWidth.value,
-    tagClassMap: {},
+    tagClassMap: props.tagClassMap,
   })
 
   return renderFn
