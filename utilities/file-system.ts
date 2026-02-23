@@ -11,7 +11,8 @@ import {
     useIsLiveStream
 } from "~/composables/states"
 import { Capacitor } from '@capacitor/core'
-import { prepForPlayer, getEpisodeFallBackImage } from "~/utilities/helpers"
+import { prepForPlayer } from "~/utilities/helpers"
+import { FALLBACKIMAGEEP } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
 import { initMediaSession } from "~/utilities/media-session.js"
@@ -275,7 +276,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
-                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? getEpisodeFallBackImage()
+                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
 
                 // create the directory
                 await Filesystem.mkdir({
@@ -467,7 +468,7 @@ export const getDownloadedImageUri = async (file) => {
 
     } catch (e) {
         console.error("Unable to read file", e)
-        return getEpisodeFallBackImage()
+        return FALLBACKIMAGEEP
     }
 }
 

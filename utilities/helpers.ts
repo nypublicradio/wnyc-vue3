@@ -285,38 +285,7 @@ export async function setDarkMode (bool: boolean) {
   const isDarkMode = useIsDarkMode()
   isDarkMode.value = dmBool
 }
-// function to get the EPISODE fallback image for the episode depending on darkmode
-export const getEpisodeFallBackImage = (customDarkMode?: boolean) => {
-  let isDarkMode = false
-  if (customDarkMode !== undefined) {
-    isDarkMode = customDarkMode
-  } else if (typeof document !== "undefined") {
-    isDarkMode = document.documentElement.classList.contains("style-mode-dark")
-  }
-  return isDarkMode ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
-}
 
-// function to get the EPISODE HEADER fallback image for the episode depending on darkmode
-export const getEpisodeHeadFallBackImage = (customDarkMode?: boolean) => {
-  let isDarkMode = false
-  if (customDarkMode !== undefined) {
-    isDarkMode = customDarkMode
-  } else if (typeof document !== "undefined") {
-    isDarkMode = document.documentElement.classList.contains("style-mode-dark")
-  }
-  return isDarkMode ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
-}
-
-// function to get the USER icon fall back image
-export const getUserFallBackImage = (customDarkMode?: boolean) => {
-  let isDarkMode = false
-  if (customDarkMode !== undefined) {
-    isDarkMode = customDarkMode
-  } else if (typeof document !== "undefined") {
-    isDarkMode = document.documentElement.classList.contains("style-mode-dark")
-  }
-  return isDarkMode ? FALLBACKUSERDARK : FALLBACKUSER
-}
 
 // helper function to get the pixel size from thr label
 export const getTextSizePixel = (label) => {

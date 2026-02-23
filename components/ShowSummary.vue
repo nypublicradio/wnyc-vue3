@@ -1,5 +1,5 @@
 <script setup>
-import { getEpisodeFallBackImage } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useAppDownloadLink } from "~/composables/states"
 
 const props = defineProps({
@@ -12,6 +12,7 @@ const props = defineProps({
 const { show } = toRefs(props)
 
 const appDownloadLink = useAppDownloadLink()
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 // Use computed properties to maintain reactivity
 

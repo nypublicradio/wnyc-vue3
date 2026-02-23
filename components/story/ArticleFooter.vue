@@ -1,5 +1,4 @@
 <script setup>
-import { getUserFallBackImage } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import { ref } from "vue"
 
@@ -24,6 +23,7 @@ const isDisableComments = ref(props.article?.disableComments ?? false)
 const profileData = computed(() =>
   isSponsored.value ? props.article?.sponsors : props.article?.authors
 )
+const { getUserFallBackImage } = useFallbackImages()
 
 // function attached to the emit of the article-tags when clicked
 // const onTagClick = (tag) => {

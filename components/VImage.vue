@@ -1,9 +1,9 @@
 <script setup>
 import { cmsSources } from "~/composables/globals.ts"
-import { getEpisodeFallBackImage } from "~/utilities/helpers"
 import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 
 // Cache components to avoid recreation
 const componentCache = new Map()
@@ -25,6 +25,8 @@ const props = defineProps({
     default: null,
   },
 })
+
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 const finalSrcFallback = computed(() => {
   if (props.srcFallback) return props.srcFallback

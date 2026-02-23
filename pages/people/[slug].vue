@@ -1,13 +1,11 @@
 <script setup>
-import {
-  trackClickEvent,
-  getUserFallBackImage,
-  getEpisodeFallBackImage,
-} from "~/utilities/helpers"
+import { trackClickEvent } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+const { getEpisodeFallBackImage, getUserFallBackImage } = useFallbackImages()
 const personName = ref(null)
 const pageTitle = ref(null)
 const personSlug = route.params.slug

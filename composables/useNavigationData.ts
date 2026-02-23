@@ -1,7 +1,7 @@
 // Import the base menu structure directly
 import { allMenuData } from './navigationData'
 import { mediaTypeRoutes } from './globals'
-import { getEpisodeFallBackImage } from '~/utilities/helpers'
+import { FALLBACKIMAGEEP } from '~/composables/globals'
 // Shared state variables (singleton pattern)
 let isInitialized = false
 let headerNavigationData = null
@@ -76,7 +76,7 @@ const normalizeShowsMenuData = (menuData, limit) => {
         label: item.title,
         url: `${mediaTypeRoutes.show}${item.slug}`,
         icon: '',
-        image: item.image ?? getEpisodeFallBackImage(),
+        image: item.image ?? FALLBACKIMAGEEP,
         id: String(item.id),
         type: item.cmsSource,
         hasSubmenu: false,
