@@ -84,7 +84,7 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     const imgHeight = Math.round((parentWidth * imgDimensions[1]) / imgDimensions[0])
 
                     const templatizedSrc = attrs.src.includes(WAGTAILIMAGEDOMAINSOURCES[0]) ? getWagtailImageId(attrs.src) : isPublisherImageUrl(attrs.src) ? { template: templatizeImageUrl(attrs.src) } : isNPRImageUrl(attrs.src) ? formatNPRImageUrl(attrs.src) : attrs.src
-                    console.log('templatizedSrc', templatizedSrc)
+                    //console.log('templatizedSrc', templatizedSrc)
                     const sizePropsId = `imageSize${imageCounter}`
                     const srcsetPropsId = `imageSrcset${imageCounter}`
                     const widthPropsId = `imageWidth${imageCounter}`
