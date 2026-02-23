@@ -61,8 +61,7 @@ const rawHtmlString = computed(() => {
   }
 
   if (props.stringify) {
-    // Strip all HTML tags EXCEPT <em>, </em>, <strong>, </strong>, <b>, </b>, <i>, </i>
-    content = content.replace(/<\/?(?!\/?(em|strong|b|i)\b)[^>]*>/gi, "")
+    content = content.replace(/<[^>]*>/g, "")
   }
   return content
 })
