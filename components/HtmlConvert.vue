@@ -34,7 +34,9 @@ const parentWidth = ref(304) // Default fallback value
 // Function to get fallback width based on screen size
 const getFallbackWidth = () => {
   if (typeof window !== "undefined") {
-    return window.innerWidth >= 1200 ? 658 : window.innerWidth
+    // 658 is the max width of the content area
+    // 48 is the padding of the content area
+    return window.innerWidth >= 1200 ? 658 : window.innerWidth - 48
   }
   return 304
 }
@@ -73,12 +75,12 @@ const defaultTagClassMap = {
   span: "text-base md:text-lg line-height-4",
   p: "text-base md:text-lg line-height-4",
   a: "",
-  h1: "text-4xl font-bold mb-4 mt-0",
-  h2: "text-3xl font-bold mb-3 mt-0",
-  h3: "text-2xl font-bold mb-3 mt-0",
-  h4: "text-xl font-bold mb-2 mt-0",
-  h5: "text-lg font-bold mb-2 mt-0",
-  h6: "text-base font-bold mb-2 mt-0",
+  h1: "text-4xl",
+  h2: "text-3xl",
+  h3: "text-2xl",
+  h4: "text-xl",
+  h5: "text-lg",
+  h6: "text-base",
   ul: "pl-3 mb-3",
   ol: "pl-3 mb-3",
   li: "mb-2",
