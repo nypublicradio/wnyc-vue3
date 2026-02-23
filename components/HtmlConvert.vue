@@ -66,14 +66,31 @@ const rawHtmlString = computed(() => {
   return content
 })
 
+const defaultTagClassMap = {
+  p: "text-base mb-3",
+  a: "text-primary hover:underline cursor-pointer",
+  h1: "text-4xl font-bold mb-4 mt-0",
+  h2: "text-3xl font-bold mb-3 mt-0",
+  h3: "text-2xl font-bold mb-3 mt-0",
+  h4: "text-xl font-bold mb-2 mt-0",
+  h5: "text-lg font-bold mb-2 mt-0",
+  h6: "text-base font-bold mb-2 mt-0",
+  ul: "pl-3 mb-3",
+  ol: "pl-3 mb-3",
+  li: "mb-2",
+  blockquote: "border-left-2 border-primary pl-3 ml-0 font-italic text-600",
+}
+
 // Create the render tree function via our parsed composable whenever the string or width updates
 const parsedNodes = computed(() => {
   if (!rawHtmlString.value) return null
 
+  const mergedClassMap = { ...defaultTagClassMap, ...props.tagClassMap }
+
   // You can pass the tagClassMap prop directly from the parent to inject Vue Primeflex classes.
   const renderFn = useHtmlParser(rawHtmlString.value, {
     parentWidth: parentWidth.value,
-    tagClassMap: props.tagClassMap,
+    tagClassMap: mergedClassMap,
   })
 
   return renderFn
