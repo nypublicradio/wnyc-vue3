@@ -1,6 +1,5 @@
-import { cmsSources, mediaTypes } from '~/composables/globals'
+import { cmsSources, mediaTypes, FALLBACKIMAGEEP } from '~/composables/globals'
 import { useVImage } from '~/composables/useVImage'
-import { FALLBACKIMAGEEP } from '~/composables/globals'
 
 const { templatizeImageUrl } = useVImage()
 

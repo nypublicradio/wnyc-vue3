@@ -30,12 +30,6 @@ import {
   cmsSources,
   mediaTypeRoutes,
   localUserProfileKey,
-  FALLBACKIMAGEEP,
-  FALLBACKIMAGEEPHEAD,
-  FALLBACKIMAGEEPDARK,
-  FALLBACKIMAGEEPHEADDARK,
-  FALLBACKUSER,
-  FALLBACKUSERDARK,
   liveStationPreferences,
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
