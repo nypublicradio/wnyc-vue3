@@ -6,7 +6,7 @@ const ResolvedNuxtLink = resolveComponent("NuxtLink")
 
 const props = defineProps({
   htmlContent: {
-    type: [String, Array],
+    type: [String, Array, Object],
     default: "",
   },
   htmlClasses: {
@@ -61,7 +61,14 @@ const rawHtmlString = computed(() => {
   if (!content) return ""
 
   if (Array.isArray(content)) {
-    content = content.map((item) => item.value).join("\n")
+    content = content.map((item) => item?.value || "").join("\n")
+  } else if (typeof content === "object" && content !== null) {
+    content = content.value || content.html || ""
+  }
+
+  // Ensure we are working with a string before replacing
+  if (typeof content !== "string") {
+    content = String(content)
   }
   // strip all tags and use as just a string
   if (props.stringify) {
