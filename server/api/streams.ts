@@ -82,8 +82,7 @@ const getLivestreams = async () => {
                 if (!metadata) {
                     return null
                 }
-                const stationImage = { cmsSource: 'publisher', template: templatizePublisherImageUrl(stream.image_logo || metadata.imageLogo) }
-
+                const stationImage = { cmsSource: 'publisher', template: metadata.imageLogo || templatizePublisherImageUrl(stream.image_logo), url: stream.image_logo }
                 // Fetch schedule data from the schedule API
                 const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
                 const scheduleRes = await axios(scheduleUrl)
