@@ -4,7 +4,7 @@ import {
   useCurrentEpisode,
   useIsApp,
 } from "~/composables/states"
-import { cmsSources } from '~/composables/globals'
+import { cmsSources } from "~/composables/globals"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
@@ -63,7 +63,9 @@ const progress = ref({})
 const { breakpoint } = useBreakpoints()
 const isMobileBtn = computed(() => breakpoint("<md"))
 
-const cmsSource = computed(() => route.params.cmsSource || route.query.src || cmsSources.PUBLISHER)
+const cmsSource = computed(
+  () => route.params.cmsSource || route.query.src || cmsSources.PUBLISHER
+)
 const isWagtail = cmsSource.value === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
@@ -228,12 +230,12 @@ const getEpisodeImage = () => {
   if (epImage && typeof epImage === "object") {
     const epImageIdentifier = epImage?.url || epImage?.template
     const showImageIdentifier = showImage?.url || showImage?.template
-    
+
     return epImageIdentifier !== showImageIdentifier
       ? epImage
       : gallery.value?.slides?.[0]?.image || null
   }
-  
+
   return epImage
 }
 

@@ -24,6 +24,15 @@ const showTitle = computed(
 
 const showSlug = computed(() => show.value?.show?.slug)
 
+const aboutContent = computed(() => {
+  const s = show.value?.show
+  if (!s) return []
+  if (s.aboutModule && s.aboutModule.length > 0) return s.aboutModule
+  if (s.description) return [{ id: "desc", value: s.description }]
+  if (s.tease) return [{ id: "tease", value: s.tease }]
+  return []
+})
+
 // TEMP until we have real show social data
 const showSocialData = [
   {
@@ -72,7 +81,7 @@ const handleShowClick = () => {
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
     <HtmlConvert
-      v-for="about in show?.show?.aboutModule"
+      v-for="about in aboutContent"
       :key="about?.id"
       :htmlContent="about?.value"
       :tagClassMap="{
