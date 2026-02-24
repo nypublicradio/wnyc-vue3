@@ -206,6 +206,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
     hasAudio: article.audio ? true : false,
+    aboutModule: article.aboutModule,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
