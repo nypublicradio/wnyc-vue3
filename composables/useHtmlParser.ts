@@ -139,6 +139,8 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
 
     // Return a render function that Vue can execute inside <component :is="...">
     return () => {
+        if (!htmlString || typeof htmlString !== 'string') return []
+
         // Clean up html first
         const cleanedHtml = htmlString
             .replace(/<p>&nbsp;<\/p>/g, "")

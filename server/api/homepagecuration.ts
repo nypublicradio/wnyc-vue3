@@ -79,7 +79,7 @@ const getNewHomeTemplate = async () => {
 		})
 
 		const resData = humps.camelizeKeys(res)
-
+		console.log('resData = ', resData.curatedContent[0].value.list.listItems)
 		const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
 
 		return {
@@ -166,8 +166,10 @@ export default defineCachedEventHandler(async () => {
 		new_home_template: newHomeTemplate,
 		//npr_stories: nprStories,
 	}
-}, {
-	maxAge: 600,
-	swr: true,
-	name: 'homepage-curation'
-})
+}
+	// , {
+	// 	maxAge: 600,
+	// 	swr: true,
+	// 	name: 'homepage-curation'
+	// }
+)
