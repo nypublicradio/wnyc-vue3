@@ -12,65 +12,68 @@ const __getConfig = () => {
 
 // getting flat page data from the publisher api
 const getPublisherPageData = async (pageSlug: string) => {
-    const config = __getConfig();
-    const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/flatpages/${pageSlug}`);
-    const resData = humps.camelizeKeys(res.data);
+    const config = __getConfig()
+    const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/flatpages/${pageSlug}`)
+    const resData = humps.camelizeKeys(res.data)
     return resData
-};
+}
 
 // getting page data from the wagtail api
 const getWagtailPageData = async (pageSlug: string) => {
-    const config = __getConfig();
+    const config = __getConfig()
     const options = {
         method: 'GET',
         url: `${config.public.AVIARY_BASE_API}pages/${pageSlug}`,
         headers: {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }
-    };
-    
+    }
+
     try {
-        const res = await axios(options);
-        const resData = humps.camelizeKeys(res.data);
-        
+        const res = await axios(options)
+        const resData = humps.camelizeKeys(res.data)
+
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
-        resData.cmsSource = cmsSources.WAGTAIL;
+        resData.cmsSource = cmsSources.WAGTAIL
 
         // Transform curated content if it exists
         if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
-            const transformedCuratedContent = await transformCuratedContent(resData.curatedContent);
+            const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
             return {
                 ...resData,
                 curatedContent: transformedCuratedContent
-            };
+            }
         }
-        
-        return await normalizeArticlePage(resData);
+
+        return await normalizeArticlePage(resData)
     } catch (error) {
-        console.error('Error in getWagtailPageData:', error);
-        throw error;
+        console.error('Error in getWagtailPageData:', error)
+        throw error
     }
-};
+}
 
 // get page data from the proper CMS
 const getPageData = async (pageSlug: string, cmsSource: string) => {
+    console.log('cmsSource = ', cmsSource)
+    console.log('pageSlug = ', pageSlug)
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-            return await getWagtailPageData(pageSlug);
+            return await getWagtailPageData(pageSlug)
         case cmsSources.PUBLISHER:
-            return await getPublisherPageData(pageSlug);
+            return await getPublisherPageData(pageSlug)
         default:
-            return null;
+            return null
     };
-};
+}
 
 // get page data from CMS
 export default defineEventHandler(async (event) => {
-    const pageSlug: string | undefined = event?.context?.params?.pageSlug;
-    const cmsSource: string | undefined = event?.context?.params?.cmsSource;
+    const pageSlug: string | undefined = event?.context?.params?.pageSlug
+    const cmsSource: string | undefined = event?.context?.params?.cmsSource
     if (pageSlug && cmsSource) {
-        const PageData = await getPageData(pageSlug, cmsSource);
-        return PageData;
+        const PageData = await getPageData(pageSlug, cmsSource)
+        console.log('PageData = ', PageData)
+        return PageData
     } else {
         return null
     }

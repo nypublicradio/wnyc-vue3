@@ -40,7 +40,8 @@ onMounted(() => {
     <div
       v-if="
         props.article?.cmsSource === cmsSources.PUBLISHER ||
-        props.article?.cmsSource === cmsSources.NPR
+        props.article?.cmsSource === cmsSources.NPR ||
+        typeof props.article.body === 'string'
       "
     >
       <HtmlConvert
@@ -169,7 +170,10 @@ onMounted(() => {
         <!-- image -->
 
         <!-- block-quote -->
-        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
+        <div
+          v-else-if="block.type === 'block_quote'"
+          class="streamfield-block-quote"
+        >
           <blockquote>
             <HtmlConvert
               v-if="block.value.blockQuote"
@@ -214,7 +218,9 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
+        v-if="
+          props.showDonation && index === Math.floor(streamfield.length / 2)
+        "
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,
