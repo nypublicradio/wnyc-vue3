@@ -1,6 +1,6 @@
 <script setup>
 import { useFallbackImages } from "~/composables/useFallbackImages"
-import { useAppDownloadLink } from "~/composables/states"
+//import { useAppDownloadLink } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
 
 const props = defineProps({
@@ -12,7 +12,7 @@ const props = defineProps({
 
 const { show } = toRefs(props)
 
-const appDownloadLink = useAppDownloadLink()
+//const appDownloadLink = useAppDownloadLink()
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 // Use computed properties to maintain reactivity

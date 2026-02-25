@@ -42,9 +42,9 @@ const showTease = computed(
 )
 const showScheduleSummary = computed(() => show.value?.show?.scheduleSummary)
 const showSlug = computed(() => show.value?.show?.slug)
-const showType = computed(() => show.value?.show?.type)
-const canDownload = computed(() => show.value?.show?.canDownloadEpisodes)
-const canEmbed = computed(() => show.value?.show?.canEmbedEpisodes)
+// const showType = computed(() => show.value?.show?.type)
+// const canDownload = computed(() => show.value?.show?.canDownloadEpisodes)
+// const canEmbed = computed(() => show.value?.show?.canEmbedEpisodes)
 const topperBackground = computed(() => {
   if (show.value?.show?.topperBackground.includes("background:")) {
     return show.value?.show?.topperBackground
