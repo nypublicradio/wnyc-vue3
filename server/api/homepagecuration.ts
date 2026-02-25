@@ -168,7 +168,7 @@ export default defineCachedEventHandler(async () => {
 	}
 }
 	, {
-		maxAge: 600,
+		maxAge: 300,
 		swr: true,
 		name: 'homepage-curation'
 	}
