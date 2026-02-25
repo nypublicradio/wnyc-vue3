@@ -118,6 +118,8 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
 
                 return h(tagName, attrs, node.children ? processNodeList(node.children) : null)
             }
+
+            return null // Default return for unhandled node types (e.g., comments)
         }).filter(Boolean)
     }
     // function that will parse the html string into an ast
