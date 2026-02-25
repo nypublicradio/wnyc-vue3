@@ -7,7 +7,7 @@ const __getConfig = () => {
   const testCfg = (globalThis as any)?.__testRuntimeConfig
   return testCfg ?? useRuntimeConfig()
 }
-
+// normalize the cms location
 const normalizeCmsLocation = (location: string, baseApi: string) => {
   const base = new URL(baseApi)
   const absolute = new URL(location, base)
@@ -19,7 +19,7 @@ const normalizeCmsLocation = (location: string, baseApi: string) => {
 
   return absolute.toString()
 }
-
+// if cms_site is passed in, use it, otherwise use the default
 const resolveCmsSite = (config: ReturnType<typeof __getConfig>, override?: string | null) => {
   if (override) {
     return override

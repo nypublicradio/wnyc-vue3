@@ -1,6 +1,7 @@
 <script setup>
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useAppDownloadLink } from "~/composables/states"
+import { mediaTypeRoutes } from "~/composables/globals"
 
 const props = defineProps({
   show: {
@@ -25,11 +26,12 @@ const showTitle = computed(
 const showSlug = computed(() => show.value?.show?.slug)
 
 const aboutContent = computed(() => {
-  const s = show.value?.show
-  if (!s) return []
-  if (s.aboutModule && s.aboutModule.length > 0) return s.aboutModule
-  if (s.description) return [{ id: "desc", value: s.description }]
-  if (s.tease) return [{ id: "tease", value: s.tease }]
+  const showData = show.value?.show
+  if (!showData) return []
+  if (showData.aboutModule && showData.aboutModule.length > 0)
+    return showData.aboutModule
+  if (showData.description) return [{ id: "desc", value: showData.description }]
+  if (showData.tease) return [{ id: "tease", value: showData.tease }]
   return []
 })
 
@@ -60,10 +62,10 @@ const showSocialData = [
     icon: "pi pi-reddit",
   },
 ]
-
+// handle click on show title or image to navigate to show page
 const handleShowClick = () => {
   if (showSlug.value) {
-    navigateTo(`/browse/shows/${showSlug.value}`)
+    navigateTo(`${mediaTypeRoutes.show}${showSlug.value}`)
   }
 }
 </script>
