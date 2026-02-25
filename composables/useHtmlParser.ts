@@ -10,24 +10,24 @@ interface HtmlParserOptions {
     parentWidth?: number
     NuxtLink?: any
 }
-
+// composable that will parse the html string into an ast
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
     const { getImageDimensions, templatizeImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
     const { tagClassMap = {}, imagePropsMap = {}, parentWidth = 304 } = options
 
     let imageCounter = 0
-
+    // check if the image is a gif
     const isGif = (imageUrl: string) => {
         const extension = imageUrl.split('.').pop()?.toLowerCase()
         return extension === 'gif'
     }
-
+    // get the wagtail image id from the url
     const getWagtailImageId = (url: string): string | null => {
         if (typeof url !== 'string') return null
         const match = url.match(/\/images\/(\d+)\//)
         return match ? match[1] : null
     }
-
+    // format the NPR image url to be used by VImageNpr.vue
     const formatNPRImageUrl = (url: string): string => {
         if (typeof url !== 'string') return url
         // Converts static API values (.../resize/1184/quality/80/format/jpg/...) into
@@ -37,7 +37,7 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
             '/resize/{width}/quality/{quality}/format/{format}/'
         )
     }
-
+    // process the ast nodes and return a VNode
     const processNodeList = (nodes: any[]): any[] => {
         return nodes.map(node => {
             if (node.type === 'text') {
@@ -46,7 +46,7 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
 
             if (node.type === 'tag') {
                 const tagName = node.name.toLowerCase()
-                let attrs = { ...node.attribs }
+                const attrs = { ...node.attribs }
 
                 // Apply custom classes from tagClassMap
                 if (tagClassMap[tagName]) {
@@ -120,7 +120,7 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
             }
         }).filter(Boolean)
     }
-
+    // function that will parse the html string into an ast
     const parseToAst = (html: string) => {
         let astNodes: any[] = []
         const handler = new DomHandler((error, dom) => {

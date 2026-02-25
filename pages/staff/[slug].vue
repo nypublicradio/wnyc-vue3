@@ -104,7 +104,7 @@ useHead({
 useServerHead({
   meta: [{ property: "og:title", content: pageTitle.value }],
 })
-
+// route back functionality
 const routeBack = () => {
   trackClickEvent("Staff", "Staff page", "route back")
   window.history.state.back ? router.go(-1) : navigateTo("/home")

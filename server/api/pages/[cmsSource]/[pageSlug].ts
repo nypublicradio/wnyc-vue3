@@ -54,8 +54,6 @@ const getWagtailPageData = async (pageSlug: string) => {
 
 // get page data from the proper CMS
 const getPageData = async (pageSlug: string, cmsSource: string) => {
-    console.log('cmsSource = ', cmsSource)
-    console.log('pageSlug = ', pageSlug)
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
             return await getWagtailPageData(pageSlug)
@@ -72,7 +70,6 @@ export default defineEventHandler(async (event) => {
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource)
-        console.log('PageData = ', PageData)
         return PageData
     } else {
         return null
