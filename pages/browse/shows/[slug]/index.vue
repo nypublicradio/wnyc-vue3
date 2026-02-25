@@ -14,7 +14,12 @@ const {
   data: show,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
+} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
+// const {
+//   data: show,
+//   status,
+//   error,
+// } = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
 
 const page = ref(null)
 const episodes = ref([])
@@ -183,7 +188,7 @@ onUnmounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <pre>{{ show }}</pre>
+    <!-- <pre>{{ show }}</pre> -->
     <ShowHeader :show="show" />
 
     <!-- JUMP LINKS -->

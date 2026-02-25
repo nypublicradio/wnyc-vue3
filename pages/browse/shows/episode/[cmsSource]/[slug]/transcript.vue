@@ -1,24 +1,24 @@
 <script setup>
-import { useToast } from "primevue/usetoast"
+import { useToast } from "primevue/usetoast";
 import {
   trackClickEvent,
   togglePlayEpisode,
   checkIsFavorited,
   copyToClipBoard,
-} from "~/utilities/helpers"
-import { useFallbackImages } from "~/composables/useFallbackImages"
-import { useIsApp } from "~/composables/states"
-const { $analytics } = useNuxtApp()
-const config = useRuntimeConfig()
-const route = useRoute()
-const router = useRouter()
-const { getEpisodeHeadFallBackImage } = useFallbackImages()
-const toast = useToast()
-const isMinimized = ref(false)
-const isApp = useIsApp()
+} from "~/utilities/helpers";
+import { useFallbackImages } from "~/composables/useFallbackImages";
+import { useIsApp } from "~/composables/states";
+const { $analytics } = useNuxtApp();
+const config = useRuntimeConfig();
+const route = useRoute();
+const router = useRouter();
+const { getEpisodeHeadFallBackImage } = useFallbackImages();
+const toast = useToast();
+const isMinimized = ref(false);
+const isApp = useIsApp();
 definePageMeta({
   pageTransition: false,
-})
+});
 
 const {
   data: episode,
@@ -29,7 +29,7 @@ const {
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     onResponse({ response }) {
-      const res = response._data
+      const res = response._data;
       $analytics.sendPageView({
         page_title: res.title,
         page_type: "episode_page",
@@ -40,13 +40,13 @@ const {
           ? res.updatedDate
           : res.publicationDate,
         article_title: res.title,
-      })
+      });
 
       // check route param autoplay exists and if so, play the first segment
       if (route.query.autoplay === "true") {
-        togglePlayEpisode(res.audio[0])
+        togglePlayEpisode(res.audio[0]);
         // remove the autoplay query param
-        router.replace({ query: { ...route.query, autoplay: null } })
+        router.replace({ query: { ...route.query, autoplay: null } });
       }
     },
     onResponseError() {
@@ -56,23 +56,23 @@ const {
           "We are having a problem loading this episode's transcript. Please try again later.",
         life: 6000,
         closable: true,
-      })
+      });
     },
   }
-)
-const episodeData = computed(() => episode.value)
+);
+const episodeData = computed(() => episode.value);
 const theSlug = computed(
   () =>
     episodeData.value?.showSlug ||
     episodeData.value?.show ||
     episodeData.value?.headers.brand.slug
-)
+);
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
+const isFavorited = ref(false);
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
+  isFavorited.value = await checkIsFavorited(route.params.slug);
+});
 
 // handle returning / routing to the full episode page
 const handleReturnToEpisode = () => {
@@ -80,11 +80,11 @@ const handleReturnToEpisode = () => {
     "Click Tracking - Return to Episode from transcript",
     "Episode transcript",
     `/browse/shows/episode/${route.params.cmsSource}/${route.params.slug}`
-  )
+  );
   navigateTo(
     `/browse/shows/episode/${route.params.cmsSource}/${route.params.slug}`
-  )
-}
+  );
+};
 
 // handle transcript link click
 const handleTranscriptLinkClick = () => {
@@ -92,23 +92,41 @@ const handleTranscriptLinkClick = () => {
     "Click Tracking - Transcript Link",
     "Episode slug",
     route.fullPath
-  )
+  );
   copyToClipBoard(
     `${window.location.href}`,
     "Transcript link copied to clipboard"
-  )
-}
+  );
+};
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
-  const epImage = episodeData.value?.image
-  const showImage = episodeData.value?.headers.brand.logoImage
+  const epImage = episodeData.value?.image;
+  const showImage = episodeData.value?.headers.brand.logoImage;
+  console.log("epImage", epImage);
+  console.log("showImage", showImage);
   return epImage
-    ? epImage.template !== showImage.template
+    ? typeof epImage === "object" && epImage.template !== showImage.template
       ? epImage
       : getEpisodeHeadFallBackImage()
-    : getEpisodeHeadFallBackImage()
-}
+    : getEpisodeHeadFallBackImage();
+};
+// const getEpisodeImage = () => {
+//   const epImage = episodeData?.image
+//   const showImage = episodeData?.headers?.brand?.logoImage
+
+//   // Handle Simplecast images which use 'url' instead of 'template'
+//   if (epImage && typeof epImage === "object") {
+//     const epImageIdentifier = epImage?.url || epImage?.template
+//     const showImageIdentifier = showImage?.url || showImage?.template
+
+//     return epImageIdentifier !== showImageIdentifier
+//       ? epImage
+//       : gallery.value?.slides?.[0]?.image || null
+//   }
+
+//   return epImage
+// }
 
 const {
   data: show,
@@ -120,41 +138,41 @@ const {
     immediate: false,
     server: false,
   }
-)
+);
 
 // episode image resize on scroll
 const handleScroll = () => {
-  const scrolled = window.scrollY > 0
+  const scrolled = window.scrollY > 0;
   if (isMinimized.value !== scrolled) {
-    isMinimized.value = scrolled
+    isMinimized.value = scrolled;
   }
-}
+};
 
-let scrollTimeout = null
+let scrollTimeout = null;
 // debounce so the scroll event doesn't fire too often
 const debouncedScroll = () => {
-  clearTimeout(scrollTimeout)
-  scrollTimeout = setTimeout(handleScroll, 20)
-}
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(handleScroll, 20);
+};
 
 onMounted(() => {
-  window.addEventListener("scroll", debouncedScroll, { passive: true })
-})
+  window.addEventListener("scroll", debouncedScroll, { passive: true });
+});
 
 onUnmounted(() => {
-  window.removeEventListener("scroll", debouncedScroll)
-  clearTimeout(scrollTimeout)
-})
+  window.removeEventListener("scroll", debouncedScroll);
+  clearTimeout(scrollTimeout);
+});
 
 watch(
   status,
   () => {
     if (status.value === "success" && theSlug.value) {
-      executeShowFetch()
+      executeShowFetch();
     }
   },
   { immediate: false }
-)
+);
 </script>
 
 <template>
