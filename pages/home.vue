@@ -18,11 +18,9 @@ const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
 )
 
-const {
-  data: pagedata,
-  error,
-  status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+const { data: pagedata, error, status } = useLazyFetch(
+  `${config.public.BFF_URL}/api/homepagecuration`
+)
 
 const layoutComponents = {}
 // dynamically import and Cache layout components to prevent re-creating them on each render
@@ -57,10 +55,7 @@ onMounted(() => {
   <div>
     <Html lang="en">
       <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
+        <Title>WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News</Title>
         <Meta
           name="og:title"
           content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
@@ -77,9 +72,7 @@ onMounted(() => {
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2" />
-          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
-            Latest News Updates
-          </h2>
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
           <LatestNewsUpdates
             :localNewscast="latestNewsUpdatesData?.local_newscast"
             :nationalNewscast="latestNewsUpdatesData?.national_newscast"
@@ -152,7 +145,7 @@ onMounted(() => {
     </section>
 
     <!-- TEXT ONLY EXAMPLE -->
-    <section
+    <!-- <section
       v-if="
         pagedata?.new_home_template.curatedContent[2]?.value?.list?.listItems
           ?.length
@@ -161,7 +154,7 @@ onMounted(() => {
       <layouts-text-only
         :list="pagedata?.new_home_template.curatedContent[2].value?.list"
       />
-    </section>
+    </section> -->
 
     <section>
       <div class="grid grid-lggutter mobile-lggutter">
