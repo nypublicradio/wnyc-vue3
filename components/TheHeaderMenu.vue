@@ -39,6 +39,7 @@ const emit = defineEmits(["emit-click"])
         </template>
       </NavButton>
     </section>
+    <!-- <pre>{{ headerNavigationData }}</pre> -->
   </div>
 </template>
 

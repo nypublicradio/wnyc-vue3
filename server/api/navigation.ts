@@ -1,5 +1,18 @@
 import axios from 'axios'
 
+// Normalize wagtail shows array -> { featuredShowsInMenu: [...] }
+function normalizeShowsResponseForMenu (shows: any[] | null) {
+    if (!shows) return null
+    const normalized = shows.map((show: any) => ({
+        id: show.id,
+        title: show.title,
+        image: show.image?.id ?? show.image,
+        type: show.content_type,
+        slug: show.url.split('/').filter(Boolean).pop()
+    }))
+    return { featuredShowsInMenu: normalized }
+}
+
 // BFF for fetching the data only for the navigation
 async function getNavigationData () {
     const config = useRuntimeConfig()
@@ -18,7 +31,7 @@ async function getNavigationData () {
                 }
             }),
             axios.get(`${config.public.BFF_URL}/api/streams`),
-            axios.get(`${config.public.BFF_URL}/api/v2/showsmenu`),
+            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`),
         ])
 
         // Log any failures for debugging
@@ -32,14 +45,13 @@ async function getNavigationData () {
             console.warn('BFF streams API failed:', `${config.public.BFF_URL}/api/streams`, stations.reason?.message || stations.reason)
         }
         if (shows.status === 'rejected') {
-            console.warn('BFF showsmenu API failed:', `${config.public.BFF_URL}/api/v2/showsmenu`, shows.reason?.message || shows.reason)
+            console.warn('BFF showsmenu API failed:', `${config.public.BFF_URL}/api/v3/shows`, shows.reason?.message || shows.reason)
         }
-
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
             donateResponse: donate.status === 'fulfilled' ? donate.value.data : null,
             stationsResponse: stations.status === 'fulfilled' ? stations.value.data : null,
-            showsResponse: shows.status === 'fulfilled' ? shows.value.data : null,
+            showsResponse: shows.status === 'fulfilled' ? normalizeShowsResponseForMenu(shows.value.data.list_items) : null,
         }
     } catch (fetchError) {
         console.error("Failed to fetch or process navigation data:", fetchError)
@@ -56,6 +68,5 @@ export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
     const data = await getNavigationData()
-
     return { data }
 })

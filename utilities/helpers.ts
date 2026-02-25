@@ -30,12 +30,6 @@ import {
   cmsSources,
   mediaTypeRoutes,
   localUserProfileKey,
-  FALLBACKIMAGEEP,
-  FALLBACKIMAGEEPHEAD,
-  FALLBACKIMAGEEPDARK,
-  FALLBACKIMAGEEPHEADDARK,
-  FALLBACKUSER,
-  FALLBACKUSERDARK,
   liveStationPreferences,
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
@@ -196,22 +190,22 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
   if (date) {
     const currentDate = new Date()
     const inputDate = new Date(date)
-    
+
     // Check if it's the same day (year, month, and day)
-    const isSameDay = 
+    const isSameDay =
       currentDate.getFullYear() === inputDate.getFullYear() &&
       currentDate.getMonth() === inputDate.getMonth() &&
       currentDate.getDate() === inputDate.getDate()
-    
+
     if (isSameDay) {
       return whenTime(data)
     }
-    
+
     // Add year to format string if it's not the current year
     if (currentDate.getFullYear() !== inputDate.getFullYear()) {
       formatString = `${formatString}, yyyy`
     }
-    
+
     return format(inputDate, formatString)
   } else {
     return format(new Date(), formatString)
@@ -285,21 +279,7 @@ export async function setDarkMode (bool: boolean) {
   const isDarkMode = useIsDarkMode()
   isDarkMode.value = dmBool
 }
-// function to get the EPISODE fallback image for the episode depending on darkmode
-export const getEpisodeFallBackImage = (isDarkMode = true) => {
-  return isDarkMode ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
-}
 
-// function to get the EPISODE HEADER fallback image for the episode depending on darkmode
-export const getEpisodeHeadFallBackImage = (isDarkMode = true) => {
-  return isDarkMode ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
-}
-
-// function to get the USER icon fall back image
-export const getUserFallBackImage = (isDarkMode = true) => {
-  return isDarkMode ? FALLBACKUSERDARK : FALLBACKUSER
-
-}
 
 // helper function to get the pixel size from thr label
 export const getTextSizePixel = (label) => {
@@ -966,18 +946,18 @@ export const getCssVar = (name: string, px = false) => {
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
-  
+
   // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
   // For other sources, use slug
   const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.uuid)
     ? ep.uuid
     : (ep.meta?.slug ?? ep.slug)
-  
+
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${identifier}`,
     query: params,
   })
-  
+
   if (log) {
     saveRecentlyPlayed(ep)
   }

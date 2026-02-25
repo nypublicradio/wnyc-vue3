@@ -32,6 +32,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  contentClass: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(["change", "swipe-down"])
@@ -225,6 +229,7 @@ defineExpose({
       :showCloseIcon="false"
       id="dropup-panel"
       class="dropup-panel"
+      :class="props.contentClass"
       @show="setPanel"
       @hide="unsetPanel"
     >

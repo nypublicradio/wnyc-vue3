@@ -1,9 +1,9 @@
 <script setup>
 import { cmsSources } from "~/composables/globals.ts"
-import { getEpisodeFallBackImage } from "~/utilities/helpers"
 import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 
 // Cache components to avoid recreation
 const componentCache = new Map()
@@ -12,11 +12,11 @@ const props = defineProps({
   /** Image source - can be a string URL or object containing image data */
   src: {
     default: null,
-    type: [String, Object],
+    type: [Number, String, Object],
   },
   /** Fallback image URL to use if src fails to load */
   srcFallback: {
-    default: getEpisodeFallBackImage(),
+    default: null,
     type: String,
   },
   /** Size configuration - can be array [width, height] or object with size properties */
@@ -24,6 +24,13 @@ const props = defineProps({
     type: [Array, Object],
     default: null,
   },
+})
+
+const { getEpisodeFallBackImage } = useFallbackImages()
+
+const finalSrcFallback = computed(() => {
+  if (props.srcFallback) return props.srcFallback
+  return getEpisodeFallBackImage()
 })
 
 // Loading state for the image
@@ -55,7 +62,7 @@ const imageRatio = computed(() => {
 
 // Single computed property that handles all the reactive logic
 const imgData = computed(() => {
-  return getCmsSourceAndImageTemplate(props.src, props.srcFallback)
+  return getCmsSourceAndImageTemplate(props.src, finalSrcFallback.value)
 })
 
 // Individual computed properties for easier access
@@ -179,6 +186,7 @@ const dynamicComponent = computed(() => {
       position: absolute;
       top: 0;
       left: 0;
+      height: 5px;
       opacity: 0;
       pointer-events: none;
     }

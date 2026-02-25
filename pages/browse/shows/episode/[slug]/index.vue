@@ -59,13 +59,6 @@ const theSlug = computed(
     episodeData.value?.headers.brand.slug
 )
 
-const theShowTitle = computed(
-  () =>
-    episodeData.value?.showTitle ||
-    episodeData.value?.headers.brand.title ||
-    episodeData.value?.title
-)
-
 const {
   data: show,
   status: showStatus,
@@ -82,7 +75,11 @@ const {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  { label: episodeData.value?.title },
 ])
 
 watch(
@@ -140,7 +137,11 @@ watch(
 }
 
 .episode-page {
-  .episode-template .episode-main-content .streamfield .streamfield-paragraph > *,
+  .episode-template
+    .episode-main-content
+    .streamfield
+    .streamfield-paragraph
+    > *,
   .episode-template .episode-main-content .html-convert p {
     @include longFormBodyTypography();
   }

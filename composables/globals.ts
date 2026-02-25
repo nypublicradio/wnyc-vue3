@@ -73,15 +73,13 @@ export const mediaTypeRoutes = {
     [mediaTypes.EVENT]: '/events/',
 }
 
-export const FALLBACKIMAGE = 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_square_logo.png'
-export const FALLBACKIMAGEWAGTAIL = '342941'
-export const FALLBACKIMAGELOCAL = '342941'
-export const FALLBACKIMAGEEP = '343750'
-export const FALLBACKIMAGEEPDARK = '344059'
-export const FALLBACKIMAGEEPHEAD = '343751'
-export const FALLBACKIMAGEEPHEADDARK = '344060'
-export const FALLBACKUSER = '344344'
-export const FALLBACKUSERDARK = '344343'
+export const FALLBACKIMAGE = '/fallback/wnyc.webp'
+export const FALLBACKIMAGEEP = '/fallback/ep.webp'
+export const FALLBACKIMAGEEPDARK = '/fallback/ep-dark.webp'
+export const FALLBACKIMAGEEPHEAD = '/fallback/ep-head.webp'
+export const FALLBACKIMAGEEPHEADDARK = '/fallback/ep-head-dark.webp'
+export const FALLBACKUSER = '/fallback/user.webp'
+export const FALLBACKUSERDARK = '/fallback/user-dark.webp'
 
 //Global vars for the browser top color
 export const useBrowserTopColor = () => useState('browserTopColor', () => '#ffffff')

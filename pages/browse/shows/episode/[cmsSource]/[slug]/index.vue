@@ -15,7 +15,8 @@ const {
   status,
   error,
 } = useFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+  () =>
+    `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     onResponse({ response }) {
       const res = response._data
@@ -60,13 +61,6 @@ const theSlug = computed(
     episodeData.value?.headers?.brand?.slug
 )
 
-const theShowTitle = computed(
-  () =>
-    episodeData.value?.showTitle ||
-    episodeData.value?.headers.brand.title ||
-    episodeData.value?.title
-)
-
 const {
   data: show,
   status: showStatus,
@@ -83,7 +77,11 @@ const {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: theShowTitle.value, route: `/browse/shows/${theSlug.value}` },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  { label: episodeData.value?.title },
 ])
 
 watch(
@@ -107,13 +105,14 @@ watch(
       </Head>
     </Html>
     <section>
-      <div class="flex align-items-center">
+      <div class="flex align-items-center mb-4">
         <Breadcrumbs :items="breadcrumbs" />
       </div>
     </section>
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
-
+    <!-- <pre>{{ show }}</pre> -->
+    <!-- <pre>{{ episodeData }}</pre> -->
     <EpisodeTemplate
       :pending="status !== 'success'"
       :episodeData="episodeData"

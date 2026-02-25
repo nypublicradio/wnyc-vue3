@@ -1,14 +1,20 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
-import { checkIsFavorited, trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
+import {
+  checkIsFavorited,
+  trackClickEvent,
+  dynamicNavigation,
+} from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
 
-const { data: show, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/v3/show/${route.params.slug}`
-)
+const {
+  data: show,
+  status,
+  error,
+} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
 
 const page = ref(null)
 const episodes = ref(null)
@@ -22,17 +28,23 @@ const isInitialObserver = ref(true)
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: show.value?.show?.title, route: `/browse/shows/${show.value?.show?.slug}` },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
 ])
 
-const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
-  // so it does not trigger on initial load and before we have data
-  if (!isInitialObserver.value && episodes.value) {
-    loadMoreRefVisible.value = isIntersecting
-  } else {
-    isInitialObserver.value = false
+const { stop } = useIntersectionObserver(
+  loadMoreRef,
+  ([{ isIntersecting }]) => {
+    // so it does not trigger on initial load and before we have data
+    if (!isInitialObserver.value && episodes.value) {
+      loadMoreRefVisible.value = isIntersecting
+    } else {
+      isInitialObserver.value = false
+    }
   }
-})
+)
 
 // clean up the useIntersectionObserver
 onUnmounted(() => {
@@ -109,8 +121,8 @@ onMounted(() => {
       <Html lang="en">
         <Head>
           <Title
-            >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-            News</Title
+            >Browse Shows | WNYC | New York Public Radio, Podcasts, Live
+            Streaming Radio, News</Title
           >
           <Meta
             name="og:title"
@@ -122,21 +134,16 @@ onMounted(() => {
           />
         </Head>
       </Html>
-      <div class="flex align-items-center"><Breadcrumbs :items="breadcrumbs" /></div>
+      <div class="flex align-items-center">
+        <Breadcrumbs :items="breadcrumbs" />
+      </div>
       <FetchError v-if="error" />
     </section>
 
-    <section class="show-header-holder style-mode-dark py-3 md:py-6">
-      <div class="grid">
-        <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
-          <ShowHeader :show="show" />
-        </div>
-        <div class="col-fixed hidden lg:block w-20rem"></div>
-      </div>
-    </section>
+    <ShowHeader :show="show" />
 
     <section class="py-4">
+      <!-- <pre>{{ show }}</pre> -->
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
@@ -146,7 +153,9 @@ onMounted(() => {
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <MediaCard
                 v-if="
-                  ep?.type !== 'segment' && ep.estimatedDuration !== 0 && ep?.hasAudio
+                  ep?.type !== 'segment' &&
+                  ep.estimatedDuration !== 0 &&
+                  ep?.hasAudio
                 "
                 :data="ep"
                 showPlayButton

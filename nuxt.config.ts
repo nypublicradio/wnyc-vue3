@@ -206,7 +206,7 @@ export default defineNuxtConfig({
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? "https://api.wnyc.org/api/",
       AVIARY_BASE_API: process.env.AVIARY_BASE_API,
       IMAGE_BASE_URL:
-        process.env.IMAGE_BASE_URL ?? "https://cms.prod.nypr.digital/images/",
+        process.env.IMAGE_BASE_URL ?? "https://cms.demo.nypr.digital/images/",
       FEATURED_SHOWS:
         process.env.FEATURED_SHOWS ?? "https://www.wnyc.org/api/v2/discover/shows/",
       FB_MEASUREMENT_ID: process.env.FB_MEASUREMENT_ID,

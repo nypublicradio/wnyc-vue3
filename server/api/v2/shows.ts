@@ -2,7 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NyprDb } from '~/server/utils/nyprdb'
-import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals'
+import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NPR } from '~/server/utils/npr'
 import { customAlphabeticalSort } from '~/utilities/helpers'
 
@@ -72,7 +72,7 @@ const allShows = async () => {
     res.data.results.forEach((show) => {
         //console.log('show', show);
         show.cmsSource = cmsSources.PUBLISHER
-        show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGELOCAL
+        show.image.template = show.image.url ? show.image.url.replace('raw', '%s/%s/%s/%s') : FALLBACKIMAGE
         delete show.description
         delete show.image.url
     })

@@ -15,6 +15,7 @@
 const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
+import { useVImage } from '~/composables/useVImage'
 
 // Station metadata mapping
 const STATION_METADATA = {
@@ -22,35 +23,26 @@ const STATION_METADATA = {
         name: 'WNYC 93.9 FM',
         audio: 'https://fm939.wnyc.org/wnycfm',
         hls: 'https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WNYC_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wnyc_2_1.png',
     },
     'wqxr': {
         name: 'WQXR 105.9 FM',
         audio: 'https://fm1059.wqxr.org/wqxr',
         hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
     'q2': {
         name: 'New Sounds',
         audio: 'https://q2stream.wqxr.org/q2',
         hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/Q2_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/ns_showcard-newsounds-radio-1.jpg',
     },
     'wqxr-holiday-channel-on-wnyc': {
         name: 'WQXR Holiday Channel',
         audio: 'https://holidaystream.wqxr.org/holiday',
         hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+        imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
-}
-
-// Helper function to convert image URLs to a templated format for responsive images
-const templatizeImageUrl = (url: string) => {
-    if (!url) return null
-    // Extract the path after the domain
-    const urlParts = url.split('/')
-    const filename = urlParts[urlParts.length - 1]
-    return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
 }
 
 // Helper function to get the current episode from schedule data
@@ -58,19 +50,20 @@ const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
     if (!scheduleData || !Array.isArray(scheduleData)) {
         return null
     }
-    
+
     const now = new Date()
-    
+
     // Find the episode that is currently airing
     const currentEpisode = scheduleData.find((episode: any) => {
         const startTime = new Date(episode.attributes.start)
         const endTime = new Date(episode.attributes.end)
         return now >= startTime && now < endTime
     })
-    
+
     return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
 }
 
+// currently a combination between the whatson API and the schedule API to populate the live stream data
 const getLivestreams = async () => {
     try {
         // calls v1 api to access source_tags
@@ -81,29 +74,31 @@ const getLivestreams = async () => {
 
         // Fetch schedule data for each stream
         const resData = await Promise.all(res_v1_filtered.map(async (stream: any) => {
+            const { templatizePublisherImageUrl } = useVImage()
             try {
                 const slug = stream.slug
                 const metadata = STATION_METADATA[slug]
-                
+
                 if (!metadata) {
                     return null
                 }
-                
+                const stationImage = { cmsSource: 'publisher', template: metadata.imageLogo || templatizePublisherImageUrl(stream.image_logo), url: stream.image_logo }
                 // Fetch schedule data from the schedule API
                 const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
                 const scheduleRes = await axios(scheduleUrl)
-                
+
                 // Get the current episode from the schedule
                 const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
-                
+
                 if (!currentEpisode) {
                     return null
                 }
-                
+
                 const attrs = currentEpisode.attributes
                 const episodeImages = attrs.images || []
-                const primaryImage = episodeImages[0]
-                
+                // find first image that has a url in the array of episode images
+                const primaryImage = episodeImages.find((img: any) => img.url)
+
                 // Format the data to match the expected structure
                 return {
                     cmsSource: 'publisher',
@@ -112,10 +107,10 @@ const getLivestreams = async () => {
                     audio: metadata.audio,
                     file: metadata.audio,
                     hls: metadata.hls,
-                    stationImage: { template: templatizeImageUrl(metadata.imageLogo) },
-                    image: primaryImage 
-                        ? { template: templatizeImageUrl(primaryImage.url) }
-                        : { template: templatizeImageUrl(metadata.imageLogo) },
+                    stationImage,
+                    image: primaryImage
+                        ? primaryImage.url
+                        : stationImage,
                     showTitle: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
                     title: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
                     episodeTitle: attrs.scheduleEventTitle || null,
@@ -136,7 +131,7 @@ const getLivestreams = async () => {
                     onTodaysShowImage: primaryImage?.url ?? null,
                     onTodaysShowImageMaxWidth: primaryImage?.width ?? null,
                     onTodaysShowImageMaxHeight: primaryImage?.height ?? null,
-                    onTodaysShowImageTemplate: primaryImage ? templatizeImageUrl(primaryImage.url) : null,
+                    onTodaysShowImageTemplate: primaryImage ? templatizePublisherImageUrl(primaryImage.url) : null,
                     showSchedule: {
                         'iso-start-time': attrs.start,
                         'iso-end-time': attrs.end,
@@ -146,7 +141,7 @@ const getLivestreams = async () => {
                 return null
             }
         }))
-        
+
         // Filter out any null results from failed fetches
         const validResults = resData.filter(Boolean)
         return humps.camelizeKeys(validResults)

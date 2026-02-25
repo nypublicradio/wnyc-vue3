@@ -33,6 +33,16 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  // classes for the content in the desktop popover
+  contentClassPopover: {
+    type: String,
+    default: null,
+  },
+  // classes for the content in the mobile drawer
+  contentClassDrawer: {
+    type: String,
+    default: null,
+  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
@@ -45,6 +55,8 @@ const emit = defineEmits(["changeEmit"])
     :showTitle="props.showTitle"
     :checkMark="props.checkMark"
     :initSelectedData="props.initSelectedData"
+    :contentClassPopover="props.contentClassPopover"
+    :contentClassDrawer="props.contentClassDrawer"
     @change="emit('changeEmit', $event)"
   >
     <template #customButton="slotProps">

@@ -1,6 +1,7 @@
 <script setup>
-import { getEpisodeFallBackImage } from "~/utilities/helpers"
-import { useAppDownloadLink } from "~/composables/states"
+import { useFallbackImages } from "~/composables/useFallbackImages"
+//import { useAppDownloadLink } from "~/composables/states"
+import { mediaTypeRoutes } from "~/composables/globals"
 
 const props = defineProps({
   show: {
@@ -11,14 +12,28 @@ const props = defineProps({
 
 const { show } = toRefs(props)
 
-const appDownloadLink = useAppDownloadLink()
+//const appDownloadLink = useAppDownloadLink()
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 // Use computed properties to maintain reactivity
+const showImage = computed(
+  () => show.value?.show?.showArt || show.value?.show?.image
+)
+const showTitle = computed(
+  () => show.value?.show?.topperDisplayTitle || show.value?.show?.title
+)
 
-const showImage = computed(() => show.value?.show?.image)
-const showTitle = computed(() => show.value?.show?.title)
-const showDescription = computed(() => show.value?.show?.description)
 const showSlug = computed(() => show.value?.show?.slug)
+
+const aboutContent = computed(() => {
+  const showData = show.value?.show
+  if (!showData) return []
+  if (showData.aboutModule && showData.aboutModule.length > 0)
+    return showData.aboutModule
+  if (showData.description) return [{ id: "desc", value: showData.description }]
+  if (showData.tease) return [{ id: "tease", value: showData.tease }]
+  return []
+})
 
 // TEMP until we have real show social data
 const showSocialData = [
@@ -47,12 +62,10 @@ const showSocialData = [
     icon: "pi pi-reddit",
   },
 ]
-
-//const showTease = ref(props.data?.show?.tease)
-//const showScheduleSummary = ref(props.data?.show?.scheduleSummary)
+// handle click on show title or image to navigate to show page
 const handleShowClick = () => {
   if (showSlug.value) {
-    navigateTo(`/browse/shows/${showSlug.value}`)
+    navigateTo(`${mediaTypeRoutes.show}${showSlug.value}`)
   }
 }
 </script>
@@ -70,20 +83,17 @@ const handleShowClick = () => {
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
     <HtmlConvert
-      v-if="showDescription"
-      :htmlContent="showDescription"
-      :key="`description-${showSlug}`"
+      v-for="about in aboutContent"
+      :key="about?.id"
+      :htmlContent="about?.value"
+      :tagClassMap="{
+        div: 'text-sm line-height-3',
+        p: 'text-sm line-height-3',
+        span: 'text-sm line-height-3',
+        li: 'text-sm line-height-3',
+        a: 'text-sm line-height-3',
+      }"
     />
-    <p class="text-sm">
-      Listen via the
-      <VFlexibleLink :to="appDownloadLink">WNYC App</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Apple</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Spotify</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Pocket Casts</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">Youtube</VFlexibleLink>,
-      <VFlexibleLink to="https://google.com">NPR One</VFlexibleLink>, or
-      wherever you get podcasts.
-    </p>
     <SocialButtons :data="showSocialData" />
     <story-htlAd
       layout="rectangle"

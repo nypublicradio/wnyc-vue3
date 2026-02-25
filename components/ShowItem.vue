@@ -1,8 +1,10 @@
 <script setup>
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import { checkIsFavorited, addToFavorites2 } from "~/utilities/helpers"
-import { useCurrentEpisodeHolder, useCurrentEpisode } from "~/composables/states"
-import { FALLBACKIMAGEWAGTAIL } from "~/composables/globals"
+import {
+  useCurrentEpisodeHolder,
+  useCurrentEpisode,
+} from "~/composables/states"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -112,18 +114,23 @@ const getDotMenuItems = (bucketItem) => {
     >
       <VImage
         :src="props.data.image"
-        :srcFallback="FALLBACKIMAGEWAGTAIL"
         :size="props.size"
         :class="props.imageClass"
         style="background-color: var(--p-surface-25)"
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
-        <h2 class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens">
+        <h2
+          class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens"
+        >
           {{ props.data.title }}
         </h2>
         <p class="font-meta" v-if="props.data?.producingOrganizations?.length">
-          {{ props.data.producingOrganizations.map((org) => org.name).join(" and ") }}
+          {{
+            props.data.producingOrganizations
+              .map((org) => org.name)
+              .join(" and ")
+          }}
         </p>
       </div>
     </div>

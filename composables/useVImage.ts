@@ -47,18 +47,7 @@ export function useVImage () {
         const img = attributes.imageMain ?? attributes.image
         const url = img.template
 
-        const pieces = url.split("/")
-        const finalUrlArr: string[] = []
-
-        pieces.forEach((piece: string, index: number) => {
-            if (index < 4 || index > 7) {
-                finalUrlArr.push(piece)
-            }
-            if (index === 4) {
-                finalUrlArr.push(`${w}/${h}/c/${q}`)
-            }
-        })
-        return finalUrlArr.join("/")
+        return url.replace(/(\/i\/)[^/]+\/[^/]+\/[^/]+\/[^/]+/, `$1${w}/${h}/c/${q}`)
     }
 
     // returns a resized image url when provided just the image URL
@@ -68,18 +57,7 @@ export function useVImage () {
         h: number,
         q = 80
     ): string => {
-        const pieces = url.split("/")
-        const finalUrlArr: string[] = []
-
-        pieces.forEach((piece: string, index: number) => {
-            if (index < 4 || index > 7) {
-                finalUrlArr.push(piece)
-            }
-            if (index === 4) {
-                finalUrlArr.push(`${w}/${h}/c/${q}`)
-            }
-        })
-        return finalUrlArr.join("/")
+        return url.replace(/(\/i\/)[^/]+\/[^/]+\/[^/]+\/[^/]+/, `$1${w}/${h}/c/${q}`)
     }
 
     // returns a resized image url when provided just the image URL
@@ -139,35 +117,24 @@ export function useVImage () {
         if (url.includes("gothamist.com/original_images")) {
             return url // Return as-is, no templating supported
         }
-        
+
         // formatted :https://cms.prod.nypr.digital/images/352462/fill-592x395-c0|format-webp|webpquality-80
         return url.replace(/fill-(\d+)x(\d+)-c0/, 'fill-%s/%s/c0').replace(/format-[a-zA-Z]+/, 'format-%s').replace(/(webp|jpeg|jpg|png)quality-(\d+)/, '%squality-%s')
 
     }
     // returns a templated PUBLISHER image url when provided just the image URL
     const templatizePublisherImageUrl = (url: string): string => {
-        const pieces = url.split("/")
-        const finalUrlArr: string[] = []
-
-        pieces.forEach((piece: string, index: number) => {
-            if (index < 4 || index > 7) {
-                finalUrlArr.push(piece)
-            }
-            if (index === 4) {
-                finalUrlArr.push("%s/%s/%s/%s")
-            }
-        })
-        return finalUrlArr.join("/")
+        return url.replace(/(\/i\/)[^/]+\/[^/]+\/[^/]+\/[^/]+/, '$1%s/%s/%s/%s')
     }
 
     // checks if the image is from Wagtail
     const isWagtailImage = (srcImg) => {
         // Check for Wagtail image ID (numeric string)
         if (/^\d+$/.test(srcImg)) return true
-        
+
         // Check for object with fileHash (legacy Wagtail images)
         if (typeof srcImg === "object" && "fileHash" in srcImg) return true
-        
+
         // Check for object with template property containing Wagtail URL pattern
         if (typeof srcImg === "object" && srcImg?.template && typeof srcImg.template === "string") {
             const hasWagtailDomain = WAGTAILIMAGEDOMAINSOURCES.some(domain => srcImg.template.includes(domain))
@@ -176,7 +143,7 @@ export function useVImage () {
                 return true
             }
         }
-        
+
         return false
     }
 
@@ -246,7 +213,7 @@ export function useVImage () {
                 return { cmsSource: cmsSources.SIMPLECAST, imageTemplate: imageUrl }
             } else {
                 // fallback
-                return fallBackObject
+                return { cmsSource: cmsSources.WAGTAIL, imageTemplate: srcImg }
             }
         } else {
             // fallback
@@ -258,7 +225,7 @@ export function useVImage () {
     const getImageDimensions = (url: string) => {
 
         let dim = [0, 0]
-        if (typeof url === "string" && /^\d+$/.test(url)) {
+        if (typeof url === "string" && url.includes("nypr.digital")) {
             //https://cms.prod.nypr.digital/images/352442/fill-592x395-c0|format-webp|webpquality-80
             // Extract width and height from Wagtail URLs
             const fillMatch = url.match(/fill-(\d+)x(\d+)/)

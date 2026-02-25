@@ -3,7 +3,9 @@ import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, ref, nextTick, onMounted } from "vue"
+import { useFallbackImages } from "~/composables/useFallbackImages"
+
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
   /**
@@ -117,7 +119,7 @@ const props = defineProps({
    */
   src: {
     default: null,
-    type: [String, Number],
+    type: [String, Number, Object],
   },
   /**
    * address to navigate to when the image is clicked
@@ -177,6 +179,25 @@ const computedEnlargeHeight = computed(() => {
 
   return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
 })
+
+const computedSrc = computed(() => {
+  if (!props.src || props.src === "undefined" || props.src === "null") {
+    return getEpisodeFallBackImage()
+  }
+
+  if (typeof props.src === "object") {
+    return (
+      (props.src.id != null ? String(props.src.id) : null) ||
+      props.src.url ||
+      props.src.src ||
+      props.src.image ||
+      props.src.file ||
+      props.src.template ||
+      getEpisodeFallBackImage()
+    )
+  }
+  return String(props.src)
+})
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
   loadingEnlargedImage.value = true
@@ -235,7 +256,7 @@ const handleProvider = computed(() => {
             :format="props.format"
             :provider="handleProvider"
             class="blurred-bg-image"
-            :src="String(props.src)"
+            :src="computedSrc"
             :width="computedWidth"
             :height="props.height"
             :quality="String(props.quality)"
@@ -250,7 +271,7 @@ const handleProvider = computed(() => {
           :provider="handleProvider"
           class="image native-image"
           :class="isVertical ? 'is-vertical' : ''"
-          :src="String(props.src)"
+          :src="computedSrc"
           :width="computedWidth"
           :height="props.height"
           :sizes="props.sizes"
@@ -296,7 +317,7 @@ const handleProvider = computed(() => {
               :format="props.format"
               :provider="handleProvider"
               class="enlarged-image"
-              :src="String(props.src)"
+              :src="computedSrc"
               style="width: 100%; height: auto"
               :alt="props.isDecorative ? '' : props.alt"
               loading="eager"

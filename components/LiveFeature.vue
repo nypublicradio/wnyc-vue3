@@ -117,8 +117,8 @@ const onUpdateStation = (station) => {
                   "
                   class="font-bold"
                 >
-                  {{ formatTime(currentEpisodeHolder.timeStart, 'h:mm a') }} -
-                  {{ formatTime(currentEpisodeHolder.timeEnd, 'h:mm a') }}
+                  {{ formatTime(currentEpisodeHolder.timeStart, "h:mm a") }} -
+                  {{ formatTime(currentEpisodeHolder.timeEnd, "h:mm a") }}
                 </p>
               </div>
             </div>
@@ -186,6 +186,7 @@ const onUpdateStation = (station) => {
                     showTitle
                     checkMark
                     :initSelectedData="currentEpisodeHolder?.station"
+                    contentClassPopover="max-w-17rem"
                     @change-emit="onUpdateStation"
                   >
                     <template #myCustomButton>

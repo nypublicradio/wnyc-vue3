@@ -21,28 +21,28 @@
 }
 
 @mixin html-formatting() {
-  font-size: var(--font-size-7);
-  line-height: 180%;
-  color: var(--p-text-color);
-  font-weight: var(--font-weight);
   h1 {
-    font-size: var(--font-size-12);
     line-height: 1.25em;
-    font-weight: var(--font-weight-700);
     letter-spacing: -1px;
     color: var(--p-text-color) !important;
-    @include media('<md') {
-      font-size: var(--font-size-9);
-    }
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.75px;
+    font-weight: var(--font-weight-700);
+    line-height: normal;
+    color: var(--p-text-color) !important;
   }
   p,
   span,
   li,
   a {
-    font-size: var(--font-size-7);
     line-height: 180%;
     color: var(--p-text-color);
-    font-weight: var(--font-weight);
     @include media('<md') {
       font-size: var(--font-size-6);
     }
@@ -154,7 +154,7 @@
   font-size: 1rem;
   line-height: 180%;
 
-  @include media(">=md") {
+  @include media('>=md') {
     font-size: 18px;
   }
 }

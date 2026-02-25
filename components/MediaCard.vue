@@ -464,7 +464,6 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 <HtmlConvert
                   v-if="props.data.tease && props.showTease && !isEvent"
                   :htmlContent="props.data.tease"
-                  stringify
                   class="tease"
                   :class="props.teaseClasses"
                   :htmlClasses="props.teaseClasses"

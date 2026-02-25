@@ -1,4 +1,4 @@
-import { cmsSources, mediaTypes, FALLBACKIMAGE } from '~/composables/globals'
+import { cmsSources, mediaTypes, FALLBACKIMAGEEP } from '~/composables/globals'
 import { useVImage } from '~/composables/useVImage'
 
 const { templatizeImageUrl } = useVImage()
@@ -8,14 +8,14 @@ const { templatizeImageUrl } = useVImage()
  * @param show - Raw show data from Wagtail API
  * @returns Normalized show object
  */
-export function normalizeWagtailShow(show: any) {
+export function normalizeWagtailShow (show: any) {
     // Extract show image URL from showArt.file or linkedDataSource
-    const showImageUrl = show.showArt?.file || 
-        show.showArt?.url || 
-        show.linkedDataSource?.[0]?.value?.imageUrl || 
-        '/fallback-ep.png'
+    const showImageUrl = show.showArt?.file ||
+        show.showArt?.url ||
+        show.linkedDataSource?.[0]?.value?.imageUrl ||
+        FALLBACKIMAGEEP
     const imageTemplate = showImageUrl ? templatizeImageUrl(showImageUrl) : showImageUrl
-    
+
     return {
         id: show.id,
         title: show.title,
@@ -47,13 +47,13 @@ export function normalizeWagtailShow(show: any) {
  * @param slug - Show slug (fallback)
  * @returns Normalized show object with additional detail fields
  */
-export function normalizeWagtailShowDetail(show: any, slug?: string) {
+export function normalizeWagtailShowDetail (show: any, slug?: string) {
     // Normalize show image from showArt.file or linkedDataSource
-    const showImageUrl = show.showArt?.file || 
-        show.showArt?.url || 
+    const showImageUrl = show.showArt?.file ||
+        show.showArt?.url ||
         show.linkedDataSource?.[0]?.value?.imageUrl
     const imageTemplate = showImageUrl ? templatizeImageUrl(showImageUrl) : undefined
-    
+
     return {
         id: show.id,
         title: show.title,
@@ -69,9 +69,9 @@ export function normalizeWagtailShowDetail(show: any, slug?: string) {
         aboutModule: show.aboutModule,
         canDownloadEpisodes: show.canDownloadEpisodes,
         canEmbedEpisodes: show.canEmbedEpisodes,
-        image: showImageUrl ? { 
-            url: showImageUrl, 
-            template: imageTemplate 
+        image: showImageUrl ? {
+            url: showImageUrl,
+            template: imageTemplate
         } : { url: FALLBACKIMAGE, template: FALLBACKIMAGE },
         cmsSource: cmsSources.WAGTAIL,
         type: mediaTypes.SHOW,

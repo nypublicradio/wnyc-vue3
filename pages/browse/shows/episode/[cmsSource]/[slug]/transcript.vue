@@ -4,14 +4,15 @@ import {
   trackClickEvent,
   togglePlayEpisode,
   checkIsFavorited,
-  getEpisodeHeadFallBackImage,
   copyToClipBoard,
 } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIsApp } from "~/composables/states"
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const { getEpisodeHeadFallBackImage } = useFallbackImages()
 const toast = useToast()
 const isMinimized = ref(false)
 const isApp = useIsApp()
@@ -19,8 +20,13 @@ definePageMeta({
   pageTransition: false,
 })
 
-const { data: episode, status, error } = useFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+const {
+  data: episode,
+  status,
+  error,
+} = useFetch(
+  () =>
+    `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     onResponse({ response }) {
       const res = response._data
@@ -30,7 +36,9 @@ const { data: episode, status, error } = useFetch(
         content_group: "on_demand_episode_transcript",
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
+        article_updated_date: res.updatedDate
+          ? res.updatedDate
+          : res.publicationDate,
         article_title: res.title,
       })
 
@@ -80,8 +88,15 @@ const handleReturnToEpisode = () => {
 
 // handle transcript link click
 const handleTranscriptLinkClick = () => {
-  trackClickEvent("Click Tracking - Transcript Link", "Episode slug", route.fullPath)
-  copyToClipBoard(`${window.location.href}`, "Transcript link copied to clipboard")
+  trackClickEvent(
+    "Click Tracking - Transcript Link",
+    "Episode slug",
+    route.fullPath
+  )
+  copyToClipBoard(
+    `${window.location.href}`,
+    "Transcript link copied to clipboard"
+  )
 }
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
@@ -95,7 +110,11 @@ const getEpisodeImage = () => {
     : getEpisodeHeadFallBackImage()
 }
 
-const { data: show, error: showError, execute: executeShowFetch } = useLazyFetch(
+const {
+  data: show,
+  error: showError,
+  execute: executeShowFetch,
+} = useLazyFetch(
   () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
   {
     immediate: false,
@@ -143,8 +162,14 @@ watch(
     <Html lang="en">
       <Head>
         <Title>{{ episodeData?.title }} Transcript | WNYC</Title>
-        <Meta name="og:title" :content="`${episodeData?.title} Transcript | WNYC`" />
-        <Meta name="twitter:title" :content="`${episodeData?.title} Transcript | WNYC`" />
+        <Meta
+          name="og:title"
+          :content="`${episodeData?.title} Transcript | WNYC`"
+        />
+        <Meta
+          name="twitter:title"
+          :content="`${episodeData?.title} Transcript | WNYC`"
+        />
       </Head>
     </Html>
     <FetchError v-if="error" />
@@ -197,7 +222,11 @@ watch(
                 :class="isMinimized ? 'mt-0' : 'mt-3'"
               >
                 <Skeleton height="13px" class="w-9" borderRadius="9px" />
-                <Skeleton height="13px" class="md:hidden w-8" borderRadius="9px" />
+                <Skeleton
+                  height="13px"
+                  class="md:hidden w-8"
+                  borderRadius="9px"
+                />
               </div>
             </div>
           </div>
@@ -256,7 +285,8 @@ watch(
       }
     }
     .episode-page-image {
-      transition: width var(--p-transition-duration), height var(--p-transition-duration);
+      transition: width var(--p-transition-duration),
+        height var(--p-transition-duration);
       -webkit-transition: width var(--p-transition-duration),
         height var(--p-transition-duration);
       width: 112px;

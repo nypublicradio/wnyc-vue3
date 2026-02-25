@@ -1,7 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals'
+import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
@@ -12,33 +12,33 @@ const getSimplecastEpisode = async (episodeId: string) => {
     try {
         // Simplecast API only accepts UUIDs
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(episodeId)
-        
+
         if (!isUUID) {
             console.error('[Simplecast] Invalid episode ID format (must be UUID):', episodeId)
             return null
         }
-        
+
         // Use config or fallback to process.env
         const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
-        
+
         if (!apiKey) {
             console.error('[Simplecast] SIMPLECAST_API_KEY is not configured')
             return null
         }
-        
+
         const option = {
             method: 'GET',
             url: `${config.simplecastUrl}/episodes/${episodeId}`,
             headers: {
                 'Authorization': apiKey
             }
-        };
-        const res = await axios(option);
-        let resData = humps.camelizeKeys(res.data);
-        
+        }
+        const res = await axios(option)
+        let resData = humps.camelizeKeys(res.data)
+
         // Add cmsSource to identify this as Simplecast data
         resData.cmsSource = cmsSources.SIMPLECAST
-        
+
         // Extract show/podcast ID from the response
         if (resData.podcast?.id) {
             resData.showId = resData.podcast.id
@@ -47,15 +47,14 @@ const getSimplecastEpisode = async (episodeId: string) => {
         } else if (resData.podcastId) {
             resData.showId = resData.podcastId
         }
-        
         // Normalize the Simplecast response to match our ArticlePage structure
         resData = await normalizeArticlePage(resData)
 
         return {
             data: resData,
-        };
+        }
     } catch (e: any) {
-        console.error('[Simplecast] Error fetching episode:', e?.response?.status, e?.response?.statusText, e?.message);
+        console.error('[Simplecast] Error fetching episode:', e?.response?.status, e?.response?.statusText, e?.message)
         return null
     }
 }
@@ -129,7 +128,7 @@ const getEpisode = async (slug: string) => {
     const res = await axios(option)
     let resData = humps.camelizeKeys(res.data).data
     // fallback image to show image when no image is available
-    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGELOCAL }
+    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGE }
     resData.cmsSource = cmsSources.PUBLISHER
     resData = normalizeArticlePage(resData)
 
