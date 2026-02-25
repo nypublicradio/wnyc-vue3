@@ -92,3 +92,34 @@ export type StreamfieldBlock =
   | PullQuoteBlock
   | FactboxBlock
   | DocumentBlock
+
+// About Module blocks
+export interface RichTextBlock {
+  id: string
+  type: "rich_text"
+  value: string
+}
+
+export interface AboutModuleCodeBlock {
+  id: string
+  type: "code"
+  value: {
+    title: string
+    code: string
+  }
+}
+
+export type AboutModule = RichTextBlock | AboutModuleCodeBlock
+
+// Linked Data Source blocks
+export interface SimplecastShowBlock {
+  id: string
+  type: "simplecast_show"
+  value: {
+    id: string
+    title: string
+    image_url: string
+  }
+}
+
+export type LinkedDataSource = SimplecastShowBlock

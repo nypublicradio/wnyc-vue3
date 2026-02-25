@@ -184,9 +184,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     cmsSource: cmsSources.WAGTAIL,
     leadAsset: article.leadAsset?.[0],
     leadImage: article.leadAsset?.[0]?.type === 'lead_image' ? article.leadAsset?.[0]?.value.image : undefined,
-    leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined,
-
-    gallerySlides: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.slides : undefined,
+    leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined,    gallerySlides: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.slides : undefined,
     legacyId: article.legacyId,
     authors: article.relatedAuthors?.map(normalizeAuthor),
     contributingOrganizations: article.relatedContributingOrganizations,
@@ -207,6 +205,8 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     audio: article.audio,
     hasAudio: article.audio ? true : false,
     aboutModule: article?.aboutModule,
+    inPageNavigation: article?.inPageNavigation,
+    linkedDataSource: article?.linkedDataSource,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
