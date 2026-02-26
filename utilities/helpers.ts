@@ -1105,7 +1105,7 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
-    switch (item.type) {
+    switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
         goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
         break
