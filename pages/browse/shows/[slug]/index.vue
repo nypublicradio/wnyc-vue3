@@ -28,21 +28,6 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const mostRecentRef = ref(null)
-const featuredRef = ref(null)
-const seriesRef = ref(null)
-const newsletterRef = ref(null)
-const aboutRef = ref(null)
-const supportRef = ref(null)
-const sectionAnchorData = ref([
-  { ref: mostRecentRef, label: "Most Recent" },
-  { ref: featuredRef, label: "Featured" },
-  { ref: seriesRef, label: "Series" },
-  { ref: newsletterRef, label: "Newsletter" },
-  { ref: aboutRef, label: "About" },
-  { ref: supportRef, label: "Support Our Show" },
-])
-
 const { stop } = useIntersectionObserver(
   loadMoreRef,
   ([{ isIntersecting }]) => {
@@ -90,6 +75,8 @@ const breadcrumbs = computed(() => [
   { label: "Browse", route: "/browse" },
   { label: show.value?.title },
 ])
+
+const sectionAnchorData = [{ label: "Most Recent", targetId: "mostRecentRef" }]
 
 onMounted(() => {
   // send GA page view
@@ -163,34 +150,7 @@ onUnmounted(() => {
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
-            <div
-              ref="mostRecentRef"
-              class="flex justify-content-between align-items-center"
-            >
-              <h2 class="md:text-xl">Most Recent</h2>
-              <Button
-                severity="secondary"
-                variant="link"
-                class="link text-sm md:text-lg"
-                @click="handleViewAll"
-                label="View All"
-              ></Button>
-            </div>
-            <template v-for="(ep, index) in episodes" :key="ep?.id">
-              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-              <MediaCard
-                v-if="ep && ep.estimatedDuration !== 0 && ep?.hasAudio"
-                :data="ep"
-                is-horizontal
-                imgCol="w-7rem md:w-10rem"
-                :size="{ xs: [112, 112], md: [160, 160] }"
-                showTease
-                :showBg="false"
-                :showBgMobile="false"
-                :hasSegments="ep.hasSegments"
-                @on-click="dynamicNavigation(ep)"
-              />
-            </template>
+            <layouts-manager :body="show?.body" />
           </div>
           <div v-if="status !== 'success'">
             <div
@@ -227,25 +187,24 @@ onUnmounted(() => {
           />
 
           <div v-if="!isApp">
-            <div ref="featuredRef" class="flex flex-column gap-3 mt-8">
-              <h2 class="md:text-xl">Featured</h2>
+            <div v-if="status === 'success'">
+              <div
+                v-for="(section, index) in pagedata?.new_home_template
+                  .curatedContent"
+                :key="section?.id"
+              >
+                <section v-if="section?.value?.list?.listItems?.length">
+                  <component
+                    :is="getLayoutComponent(section?.value?.layout)"
+                    :list="section?.value?.list"
+                    square
+                  />
+                </section>
+              </div>
             </div>
-            <div ref="seriesRef" class="flex flex-column gap-3 mt-8">
-              <h2 class="md:text-xl">Series</h2>
-            </div>
-            <div ref="newsletterRef" class="flex flex-column gap-3 mt-8">
-              <h2 class="md:text-xl">Newsletter</h2>
-            </div>
-            <div ref="aboutRef" class="flex flex-column gap-3 mt-8">
-              <h2 class="md:text-xl">About</h2>
-              <HtmlConvert
-                v-for="about in show?.show?.aboutModule"
-                :key="about?.id"
-                :htmlContent="about?.value"
-              />
-            </div>
-            <div ref="supportRef" class="flex flex-column gap-3 mt-8">
-              <h2 class="md:text-xl">Support Our Show</h2>
+
+            <div class="block lg:hidden mt-8">
+              <ShowSummary :show="show" />
             </div>
             <!-- <pre class="text-xs"> {{ show }}</pre> -->
           </div>

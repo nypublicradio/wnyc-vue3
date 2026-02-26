@@ -188,6 +188,7 @@ const computedSrc = computed(() => {
   if (typeof props.src === "object") {
     return (
       (props.src.id != null ? String(props.src.id) : null) ||
+      props.src.imageTemplate ||
       props.src.url ||
       props.src.src ||
       props.src.image ||
