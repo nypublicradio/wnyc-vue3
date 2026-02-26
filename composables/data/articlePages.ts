@@ -84,6 +84,24 @@ function getPublisherArticleLink (articleData): string {
   return `/story/${articleData.attributes.slug}`
 }
 
+// Get a relative link to an article (generic for search results)
+function getArticleLink (articleData): string {
+  // If link is already provided in the data, use it
+  if (articleData.link) {
+    return articleData.link
+  }
+  
+  // Fallback to CMS-specific logic
+  if (articleData.ancestry || articleData.meta?.slug) {
+    return getWagtailArticleLink(articleData)
+  } else if (articleData.attributes?.slug) {
+    return getPublisherArticleLink(articleData)
+  }
+  
+  // Last fallback
+  return '/'
+}
+
 // Transform author data from the API into a simpler and typed format
 export function normalizeAuthor (author: Record<string, any>): Author {
   return {
@@ -184,9 +202,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     cmsSource: cmsSources.WAGTAIL,
     leadAsset: article.leadAsset?.[0],
     leadImage: article.leadAsset?.[0]?.type === 'lead_image' ? article.leadAsset?.[0]?.value.image : undefined,
-    leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined,
-
-    gallerySlides: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.slides : undefined,
+    leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined,    gallerySlides: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.slides : undefined,
     legacyId: article.legacyId,
     authors: article.relatedAuthors?.map(normalizeAuthor),
     contributingOrganizations: article.relatedContributingOrganizations,
@@ -207,6 +223,8 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     audio: article.audio,
     hasAudio: article.audio ? true : false,
     aboutModule: article?.aboutModule,
+    inPageNavigation: article?.inPageNavigation,
+    linkedDataSource: article?.linkedDataSource,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -966,65 +984,180 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   })
 }
 
+/**
+ * Helper: Get the first lead asset from search results
+ */
+const getLeadAsset = (result: any) => result.leadAsset?.[0]
 
+/**
+ * Helper: Get primary image from search results (from explicit image or lead asset)
+ */
+const getPrimaryImage = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return result.image ?? leadAsset?.value?.image ?? leadAsset?.value?.defaultImage
+}
 
+/**
+ * Helper: Get image width dimension
+ */
+const getImageWidth = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return result.image ?? leadAsset?.value?.image?.w ?? leadAsset?.value?.defaultImage?.w
+}
 
+/**
+ * Helper: Get image height dimension
+ */
+const getImageHeight = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return result.image ?? leadAsset?.value?.image?.h ?? leadAsset?.value?.defaultImage?.h
+}
+
+/**
+ * Helper: Get lead image caption from search results
+ */
+const getLeadImageCaption = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return leadAsset?.value?.caption ?? leadAsset?.value?.image?.caption
+}
+
+/**
+ * Helper: Get lead image if type is 'lead_image'
+ */
+const getLeadImage = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return leadAsset?.type === 'lead_image' && leadAsset?.value.image
+}
+
+/**
+ * Helper: Get lead gallery if type is 'lead_gallery'
+ */
+const getLeadGallery = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return leadAsset?.type === 'lead_gallery' && leadAsset?.value
+}
+
+/**
+ * Helper: Get gallery slides if type is 'lead_gallery'
+ */
+const getGallerySlides = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return leadAsset?.type === 'lead_gallery' && leadAsset?.slides
+}
+
+/**
+ * Helper: Get publication date from search results
+ */
+const getPublicationDate = (result: any) => {
+  if (result.publicationDate) {
+    return new Date(result.publicationDate)
+  }
+  if (result.meta?.firstPublishedAt) {
+    return new Date(result.meta.firstPublishedAt)
+  }
+  return undefined
+}
+
+/**
+ * Helper: Get updated date from search results
+ */
+const getUpdatedDate = (result: any) => {
+  return result.updatedDate ? new Date(result.updatedDate) : undefined
+}
+
+/**
+ * Helper: Get section information from search results
+ */
+const getSectionInfo = (result: any) => {
+  const firstAncestor = result.ancestry?.[0]
+  return firstAncestor ? { name: firstAncestor.title, slug: firstAncestor.slug } : undefined
+}
+
+/**
+ * Helper: Get listing image from search results
+ */
+const getListingImage = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return result.listingImage || leadAsset?.value?.image || leadAsset?.value?.defaultImage
+}
+
+/**
+ * Helper: Get social/OG image from search results
+ */
+const getSocialImage = (result: any) => {
+  const leadAsset = getLeadAsset(result)
+  return result.socialImage || leadAsset?.value?.image || leadAsset?.value?.defaultImage
+}
+
+/**
+ * Helper: Get comment ID from search results
+ */
+const getCommentId = (result: any) => {
+  return String(result.legacyId || result.uuid)
+}
 
 // Transform page data from the API into a simpler and typed format
 export function normalizeSearchResults (results: Record<string, any | undefined>): ArticlePage {
+  const result = results.result
+  
   return {
-    id: results.result.id,
-    type: results.result.type,
-    title: results.result.listingTitle || results.result.title,
-    description: results.result.description,
-    image: results.result.image ?? results.result.leadAsset?.[0]?.value?.image ?? results.result.leadAsset?.[0]?.value?.defaultImage,
-    imageFullWidth: results.result.image ?? results.result.leadAsset?.[0]?.value?.image?.w ?? results.result.leadAsset?.[0]?.value?.defaultImage?.w,
-    imageFullHeight: results.result.image ?? results.result.leadAsset?.[0]?.value?.image?.h ?? results.result.leadAsset?.[0]?.value?.defaultImage?.h,
-    leadImageCaption: results.result.leadAsset?.[0]?.value?.caption ?? results.result.leadAsset?.[0]?.value?.image?.caption,
-    imageLink: results.result.leadAsset?.[0]?.value?.imageLink,
-    link: getArticleLink(results.result),
+    id: result.id,
+    type: result.type,
+    title: result.listingTitle || result.title,
+    description: result.description,
+    tease: result.description,
+    image: getPrimaryImage(result),
+    imageFullWidth: getImageWidth(result),
+    imageFullHeight: getImageHeight(result),
+    leadImageCaption: getLeadImageCaption(result),
+    imageLink: getLeadAsset(result)?.value?.imageLink,
+    link: getArticleLink(result),
+    publishAt: result.publicationDate || result.meta?.firstPublishedAt,
+    meta: result.meta || {
+      firstPublishedAt: result.publicationDate,
+      slug: result.url,
+    },
 
-    leadAsset: results.result.leadAsset?.[0],
-    leadImage: results.result.leadAsset?.[0]?.type === 'lead_image' && results.result.leadAsset?.[0]?.value.image,
-    leadGallery: results.result.leadAsset?.[0]?.type === 'lead_gallery' && results.result.leadAsset?.[0]?.value,
+    leadAsset: getLeadAsset(result),
+    leadImage: getLeadImage(result),
+    leadGallery: getLeadGallery(result),
 
-    gallerySlides: results.result.leadAsset?.[0]?.type === 'lead_gallery' && results.result.leadAsset?.[0]?.slides,
-    legacyId: results.result.legacyId,
-    authors: results.result.relatedAuthors?.map(normalizeAuthor),
-    contributingOrganizations: results.result.relatedContributingOrganizations,
-    sponsors: results.result.relatedSponsors,
-    publicationDate: (results.result.publicationDate && new Date(results.result.publicationDate))
-      || (results.result.meta?.firstPublishedAt && new Date(results.result.meta?.firstPublishedAt)),
-    updatedDate: results.result.updatedDate ? new Date(results.result.updatedDate) : undefined,
-    showAsFeature: results.result.showAsFeature,
-    sensitiveContent: results.result.sensitiveContent,
-    provocativeContent: results.result.provocativeContent,
-    sponsoredContent: results.result.sponsoredContent,
-    relatedLinks: results.result.relatedLinks,
-    tags: results.result.tags,
-    url: results.result.url,
-    uuid: results.result.uuid,
-    section: { name: results.result.ancestry?.[0].title, slug: results.result.ancestry?.[0].slug },
-    body: results.result.body,
-    embedCode: results.result.embedCode,
+    gallerySlides: getGallerySlides(result),
+    legacyId: result.legacyId,
+    authors: result.relatedAuthors?.map(normalizeAuthor),
+    contributingOrganizations: result.relatedContributingOrganizations,
+    sponsors: result.relatedSponsors,
+    publicationDate: getPublicationDate(result),
+    updatedDate: getUpdatedDate(result),
+    showAsFeature: result.showAsFeature,
+    sensitiveContent: result.sensitiveContent,
+    provocativeContent: result.provocativeContent,
+    sponsoredContent: result.sponsoredContent,
+    relatedLinks: result.relatedLinks,
+    tags: result.tags,
+    url: result.url,
+    uuid: result.uuid,
+    section: getSectionInfo(result),
+    body: result.body,
+    embedCode: result.embedCode,
 
     // for listing pages
-    listingImage: results.result.listingImage || results.result.leadAsset?.[0]?.value?.image || results.result.leadAsset?.[0]?.value?.defaultImage,
-    listingTitle: results.result.listingTitle || results.result.title,
-    listingDescription: results.result.listingSummary || results.result.description,
+    listingImage: getListingImage(result),
+    listingTitle: result.listingTitle || result.title,
+    listingDescription: result.listingSummary || result.description,
 
     // for social/OG metadata
-    socialImage: results.result.socialImage || results.result.leadAsset?.[0]?.value?.image || results.result.leadAsset?.[0]?.value?.defaultImage,
-    socialTitle: results.result.socialTitle || results.result.title,
-    socialDescription: results.result.socialText || results.result.description,
+    socialImage: getSocialImage(result),
+    socialTitle: result.socialTitle || result.title,
+    socialDescription: result.socialText || result.description,
 
-    preventSearchIndexing: results.result.preventSearchIndexing,
-    seoTitle: results.result.meta?.seoTitle || results.result.title,
-    searchDescription: results.result.meta?.searchDescription || results.result.description,
+    preventSearchIndexing: result.preventSearchIndexing,
+    seoTitle: result.meta?.seoTitle || result.title,
+    searchDescription: result.meta?.searchDescription || result.description,
 
     // for comments
-    disableComments: results.result.disableComments,
-    commentId: String(results.result.legacyId || results.result.uuid),
+    disableComments: result.disableComments,
+    commentId: getCommentId(result),
   }
 }
 

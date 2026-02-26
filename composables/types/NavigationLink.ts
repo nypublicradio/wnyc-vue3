@@ -17,5 +17,14 @@ interface ExternalLink {
   }
 }
 
+export interface InPageNavigationLink {
+  id: string
+  type: 'navigation_link'
+  value: {
+    link_text: string
+    target_id: string
+  }
+}
+
 type NavigationLink = CMSLink | ExternalLink
-export default NavigationLink
+export type { NavigationLink }
