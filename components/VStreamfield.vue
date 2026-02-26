@@ -90,6 +90,7 @@ onMounted(() => {
             block?.value?.list?.listItems?.length
           "
           class="mb-4"
+          :id="block.id"
         >
           <component
             :is="getLayoutComponent(block?.value?.layout)"

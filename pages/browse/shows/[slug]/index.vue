@@ -4,17 +4,35 @@ import {
   checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
+  slugify,
 } from "~/utilities/helpers"
 import { useGlobalToast, useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const sectionAnchorData = ref([
+  //  { label: "Most Recent", id: "1234-1234-1234-1234-1234" },
+])
 
 const {
   data: show,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
+} = useFetch(
+  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
+  {
+    onResponse(res) {
+      sectionAnchorData.value = res.response._data.inPageNavigation.map(
+        (item) => {
+          return {
+            label: item.value.linkText,
+            id: slugify(item.value.targetId),
+          }
+        }
+      )
+    },
+  }
+)
 
 const page = ref(null)
 const episodes = ref([])
@@ -75,8 +93,6 @@ const breadcrumbs = computed(() => [
   { label: "Browse", route: "/browse" },
   { label: show.value?.title },
 ])
-
-const sectionAnchorData = [{ label: "Most Recent", targetId: "mostRecentRef" }]
 
 onMounted(() => {
   // send GA page view
