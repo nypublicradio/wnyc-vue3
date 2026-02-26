@@ -145,7 +145,7 @@ onUnmounted(() => {
           :key="i.id"
           :label="i.label"
           severity="secondary"
-          class="px-3 md:px-4 lg:px-6"
+          class="px-3 md:px-3 lg:px-4"
           @click="scrollToSection(i.id)"
         />
       </template>
