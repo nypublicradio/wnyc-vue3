@@ -1,6 +1,9 @@
 // Import the base menu structure directly
 import { allMenuData } from './navigationData'
 import { mediaTypeRoutes, FALLBACKIMAGEEP } from './globals'
+import {
+    useIsApp,
+} from "~/composables/states"
 // Shared state variables (singleton pattern)
 let isInitialized = false
 let headerNavigationData = null
@@ -136,8 +139,10 @@ export default async function useNavigationData () {
 
             workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false)
 
+            const isApp = useIsApp()
+            const donateButtonLabel = isApp.value ? "WNYC App Donate Button" : "WNYC Donate Button"
             const donateBanner = bffData.donateResponse?.product_banners?.find(
-                (banner) => banner.value.title === "WNYC App Donate Button"
+                (banner) => banner.value.title === donateButtonLabel
             )
 
             const finalDonateData = { buttonText: '', buttonLink: '' }
