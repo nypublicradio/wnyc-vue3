@@ -14,12 +14,7 @@ const {
   data: show,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
-// const {
-//   data: show,
-//   status,
-//   error,
-// } = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
+} = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
 
 const page = ref(null)
 const episodes = ref([])
@@ -28,7 +23,6 @@ let maxPages = null
 const showSlug = computed(() => show.value?.show?.slug)
 const isApp = useIsApp()
 
-const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
@@ -59,38 +53,6 @@ const { stop } = useIntersectionObserver(
     }
   }
 )
-
-// load more episodes and track it
-const loadMore = async () => {
-  page.value += 1
-  pendingMore.value = true
-  try {
-    const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
-    )
-    pendingMore.value = false
-    const newEpisodes = (moreShows?.episodes?.data || []).filter(
-      (ep) => ep != null
-    )
-    episodes.value = [...episodes.value, ...newEpisodes]
-    trackClickEvent(
-      "Event Tracking - load more episodes",
-      "Shows Page",
-      show.value.show.title
-    )
-  } catch (e) {
-    pendingMore.value = false
-    const globalToast = useGlobalToast()
-    globalToast.value = {
-      severity: "error",
-      summary:
-        "Sorry. We are having trouble loading more episodes. Please try again later.",
-      life: null,
-      closable: true,
-    }
-    console.error("error = ", e)
-  }
-}
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -142,12 +104,6 @@ watch(
   { immediate: true }
 )
 
-watch(loadMoreRefVisible, (val) => {
-  if (val) {
-    loadMore()
-  }
-})
-
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
@@ -190,7 +146,6 @@ onUnmounted(() => {
     </section>
     <!-- <pre>{{ show }}</pre> -->
     <ShowHeader :show="show" />
-
     <!-- JUMP LINKS -->
     <div
       class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
