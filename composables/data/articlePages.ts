@@ -294,6 +294,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     // Topper
     topperTitle: article.topperTitle,
     topperDisplayTitle: article.topperDisplayTitle,
+    topperDescription: article.description,
     topperBackgroundStyle: article.topperBackgroundStyle,
     topperBackgroundGradient: article.topperBackgroundGradient,
     topperBackground: article.topperBackground,
