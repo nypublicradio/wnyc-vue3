@@ -20,6 +20,24 @@ const props = defineProps({
 
 const streamfield = props.article?.body
 
+const layoutComponents = {}
+// dynamically import and Cache layout components to prevent re-creating them on each render
+const getLayoutComponent = (layout) => {
+  if (!layoutComponents[layout]) {
+    if (layout === "default") {
+      // setting "river" as default layout
+      layoutComponents[layout] = defineAsyncComponent(
+        () => import(`~/components/layouts/text-only.vue`)
+      )
+    } else {
+      layoutComponents[layout] = defineAsyncComponent(
+        () => import(`~/components/layouts/${layout}.vue`)
+      )
+    }
+  }
+  return layoutComponents[layout]
+}
+
 onMounted(() => {
   // you can't have script tags in v-html
   // so we need to load the twitter embeds script manually
@@ -61,6 +79,25 @@ onMounted(() => {
           :block="block"
           class="mb-4"
         /> -->
+        <div
+          v-if="
+            block.type === 'curated_list' &&
+            block?.value?.list?.listItems?.length
+          "
+          class="mb-4"
+        >
+          <component
+            :is="getLayoutComponent(block?.value?.layout)"
+            :list="block?.value?.list"
+          />
+        </div>
+
+        <HtmlConvert
+          v-if="block.type === 'rich_text'"
+          :htmlContent="block"
+          class="mb-4"
+          :key="`${block.id}-rich_text`"
+        />
 
         <HtmlConvert
           v-if="block.type === 'rich_text'"

@@ -80,9 +80,11 @@ onMounted(() => {
     <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
 
-    <div v-if="status === 'success'">
-      <layouts-manager :body="pagedata?.new_home_template.curatedContent" />
-    </div>
+    <section v-if="status === 'success'">
+      <VStreamfield
+        :streamfieldBlocks="pagedata?.new_home_template.curatedContent"
+      />
+    </section>
     <section v-else>
       <layouts-horizontal-feature-ad-skeleton />
     </section>

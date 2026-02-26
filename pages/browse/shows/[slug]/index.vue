@@ -150,7 +150,7 @@ onUnmounted(() => {
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'" class="flex flex-column gap-5">
-            <layouts-manager :body="show?.body" />
+            <VStreamfield :streamfieldBlocks="show?.body" />
           </div>
           <div v-if="status !== 'success'">
             <div
@@ -187,22 +187,6 @@ onUnmounted(() => {
           />
 
           <div v-if="!isApp">
-            <div v-if="status === 'success'">
-              <div
-                v-for="(section, index) in pagedata?.new_home_template
-                  .curatedContent"
-                :key="section?.id"
-              >
-                <section v-if="section?.value?.list?.listItems?.length">
-                  <component
-                    :is="getLayoutComponent(section?.value?.layout)"
-                    :list="section?.value?.list"
-                    square
-                  />
-                </section>
-              </div>
-            </div>
-
             <div class="block lg:hidden mt-8">
               <ShowSummary :show="show" />
             </div>
