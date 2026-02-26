@@ -21,18 +21,23 @@ const props = defineProps({
 const streamfield = props.article?.body
 
 const layoutComponents = {}
+const defaultLayout = "river"
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
   if (!layoutComponents[layout]) {
     if (layout === "default") {
       // setting "river" as default layout
       layoutComponents[layout] = defineAsyncComponent(
-        () => import(`~/components/layouts/text-only.vue`)
+        () => import(`~/components/layouts/${defaultLayout}.vue`)
       )
     } else {
-      layoutComponents[layout] = defineAsyncComponent(
-        () => import(`~/components/layouts/${layout}.vue`)
-      )
+      layoutComponents[layout] = defineAsyncComponent(async () => {
+        try {
+          return await import(`~/components/layouts/${layout}.vue`)
+        } catch (e) {
+          return await import(`~/components/layouts/${defaultLayout}.vue`)
+        }
+      })
     }
   }
   return layoutComponents[layout]
