@@ -78,9 +78,9 @@ const rawHtmlString = computed(() => {
 })
 
 const defaultTagClassMap = {
-  div: "text-base md:text-lg line-height-4",
-  span: "text-base md:text-lg line-height-4",
-  p: "text-base md:text-lg line-height-4",
+  div: "text-base line-height-3",
+  span: "text-base line-height-3",
+  p: "text-base line-height-3",
   a: "",
   h1: "text-4xl",
   h2: "text-3xl",

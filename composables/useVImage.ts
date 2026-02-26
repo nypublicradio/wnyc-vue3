@@ -217,6 +217,7 @@ export function useVImage () {
             }
         } else {
             // fallback
+            console.log("fallback", fallBackObject)
             return fallBackObject
         }
     }

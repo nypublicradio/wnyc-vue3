@@ -109,6 +109,7 @@ const featureSizes = computed(() => {
             teaseClasses="text-sm lg:text-base"
             pipeClasses="text-sm lg:text-base"
             showTitleClasses="text-sm lg:text-base"
+            :allowVerticalEffect="false"
             :ratio="[1, 1]"
             :size="{
               xs: [112, 112],
