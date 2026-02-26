@@ -193,11 +193,16 @@ watch(
               >
                 <VImage
                   :src="getEpisodeImage()"
-                  :alt="episodeData?.title"
-                  class="episode-page-image"
+                  :size="{
+                    xxs: [112, 112],
+                  }"
+                  :allowVerticalEffect="false"
+                  :ratio="[1, 1]"
+                  :alt="episodeData?.image?.altText || episodeData?.title"
+                  class="episode-page-image flex-none w-7rem md:w-7rem"
                   :class="{ minimize: isMinimized }"
-                  :size="[112, 112]"
-                />
+                >
+                </VImage>
                 <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
                   {{ episodeData?.title }}
                 </h1>
@@ -289,11 +294,9 @@ watch(
         height var(--p-transition-duration);
       -webkit-transition: width var(--p-transition-duration),
         height var(--p-transition-duration);
-      width: 112px;
-      height: 112px;
       &.minimize {
-        width: 46px;
-        height: 46px;
+        width: 46px !important;
+        height: 46px !important;
       }
     }
   }
