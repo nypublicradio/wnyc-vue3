@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, slugify } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
 
@@ -90,11 +90,12 @@ onMounted(() => {
             block?.value?.list?.listItems?.length
           "
           class="mb-4"
-          :id="block.id"
+          :id="slugify(block?.value?.label)"
         >
           <component
             :is="getLayoutComponent(block?.value?.layout)"
             :list="block?.value?.list"
+            :label="block?.value?.label"
           />
         </div>
 
