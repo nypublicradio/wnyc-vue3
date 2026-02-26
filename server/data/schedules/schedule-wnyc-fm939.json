@@ -436,14 +436,14 @@
             "id": "9d5af867-49e2-4c8f-a2ea-21601ef941bf_20260225",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "showId": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "startTime": "2026-02-26T04:00:00Z",
             "endTime": "2026-02-26T04:59:00Z",
             "duration": "00:59:00",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
@@ -796,14 +796,14 @@
             "id": "9d5af867-49e2-4c8f-a2ea-21601ef941bf_20260226",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "showId": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "startTime": "2026-02-27T04:00:00Z",
             "endTime": "2026-02-27T04:59:00Z",
             "duration": "00:59:00",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
@@ -1144,14 +1144,14 @@
             "id": "9d5af867-49e2-4c8f-a2ea-21601ef941bf_20260227",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "showId": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "startTime": "2026-02-28T04:00:00Z",
             "endTime": "2026-02-28T04:59:00Z",
             "duration": "00:59:00",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
@@ -1640,14 +1640,14 @@
             "id": "9d5af867-49e2-4c8f-a2ea-21601ef941bf_20260228",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "showId": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "startTime": "2026-03-01T04:00:00Z",
             "endTime": "2026-03-01T04:59:00Z",
             "duration": "00:59:00",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
@@ -2072,14 +2072,14 @@
             "id": "9d5af867-49e2-4c8f-a2ea-21601ef941bf_20260301",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "showId": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "startTime": "2026-03-02T04:00:00Z",
             "endTime": "2026-03-02T04:59:00Z",
             "duration": "00:59:00",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
@@ -2420,14 +2420,14 @@
             "id": "9d5af867-49e2-4c8f-a2ea-21601ef941bf_20260302",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "showId": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "startTime": "2026-03-03T04:00:00Z",
             "endTime": "2026-03-03T04:59:00Z",
             "duration": "00:59:00",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
@@ -2948,10 +2948,10 @@
             "id": "6d06216f-0819-4d14-929c-8c26a14e5eda",
             "name": "New Sounds",
             "description": "",
-            "longDescription": "",
+            "longDescription": "New Sounds is New York Public Radio’s home for the musically curious, since 1982. It’s a hub for discovering weird and wonderful music from artists, composers and traditional musicians.",
             "images": [
                 {
-                    "url": "",
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
                     "type": "largesquareimage",
                     "width": 1280,
                     "height": 1280
