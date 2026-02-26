@@ -8,6 +8,7 @@ import {
 } from "~/utilities/helpers"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIsApp } from "~/composables/states"
+import { mediaTypeRoutes } from "~/composables/globals"
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -67,7 +68,10 @@ const theSlug = computed(
     episodeData.value?.show ||
     episodeData.value?.headers.brand.slug
 )
-
+const backToEpisodePath = computed(
+  () =>
+    `${mediaTypeRoutes.episode}${route.params.cmsSource}/${route.params.slug}`
+)
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -79,11 +83,9 @@ const handleReturnToEpisode = () => {
   trackClickEvent(
     "Click Tracking - Return to Episode from transcript",
     "Episode transcript",
-    `/browse/shows/episode/${route.params.cmsSource}/${route.params.slug}`
+    backToEpisodePath.value
   )
-  navigateTo(
-    `/browse/shows/episode/${route.params.cmsSource}/${route.params.slug}`
-  )
+  navigateTo(backToEpisodePath.value)
 }
 
 // handle transcript link click
@@ -102,12 +104,19 @@ const handleTranscriptLinkClick = () => {
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
   const epImage = episodeData.value?.image
-  const showImage = episodeData.value?.headers.brand.logoImage
-  return epImage
-    ? epImage.template !== showImage.template
+  const showImage = episodeData.value?.headers?.brand?.logoImage
+
+  // Handle Simplecast images which use 'url' instead of 'template'
+  if (epImage && typeof epImage === "object") {
+    const epImageIdentifier = epImage?.url || epImage?.template
+    const showImageIdentifier = showImage?.url || showImage?.template
+
+    return epImageIdentifier !== showImageIdentifier
       ? epImage
-      : getEpisodeHeadFallBackImage()
-    : getEpisodeHeadFallBackImage()
+      : gallery.value?.slides?.[0]?.image || null
+  }
+
+  return epImage
 }
 
 const {
@@ -136,6 +145,17 @@ const debouncedScroll = () => {
   clearTimeout(scrollTimeout)
   scrollTimeout = setTimeout(handleScroll, 20)
 }
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  { label: episodeData.value?.title, route: backToEpisodePath.value },
+  { label: "Transcript" },
+])
 
 onMounted(() => {
   window.addEventListener("scroll", debouncedScroll, { passive: true })
@@ -172,6 +192,13 @@ watch(
         />
       </Head>
     </Html>
+    <section>
+      <transition name="fade">
+        <div v-if="status === 'success'" class="flex align-items-center mb-4">
+          <Breadcrumbs :items="breadcrumbs" />
+        </div>
+      </transition>
+    </section>
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
 
