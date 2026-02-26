@@ -58,24 +58,7 @@ const handleShowClick = () => {
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
 
-    <div v-for="about in aboutContent" :key="about?.id">
-      <HtmlConvert
-        v-if="about.type === 'rich_text'"
-        :htmlContent="about?.value"
-        :tagClassMap="{
-          div: 'text-sm line-height-3',
-          p: 'text-sm line-height-3',
-          span: 'text-sm line-height-3',
-          li: 'text-sm line-height-3',
-          a: 'text-sm line-height-3',
-        }"
-      />
-      <streamfield-code
-        v-if="about.type === 'code'"
-        :block="about"
-        class="text-sm"
-      />
-    </div>
+    <VStreamfield :streamfieldBlocks="aboutContent" />
     <story-htlAd
       layout="rectangle"
       slotClass="htlad-wnyc_homepage_rectangle"

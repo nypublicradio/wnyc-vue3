@@ -227,7 +227,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     linkedDataSource: article?.linkedDataSource,
     topper: {
       topperTitle: article?.topperTitle,
-      topperDescription: article?.topperDescription,
+      topperDescription: article?.description,
       topperBackground: article?.topperBackground,
     },
     // curated images

@@ -81,6 +81,7 @@ const routeBack = () => {
   .p-breadcrumb ol {
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
     width: 100%;
     min-width: 0;
   }

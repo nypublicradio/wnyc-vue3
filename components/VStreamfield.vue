@@ -41,13 +41,13 @@ onMounted(() => {
       v-if="
         props.article?.cmsSource === cmsSources.PUBLISHER ||
         props.article?.cmsSource === cmsSources.NPR ||
-        typeof props.article.body === 'string'
+        typeof props.article?.body === 'string'
       "
     >
       <HtmlConvert
-        v-if="props.article.body"
-        :htmlContent="props.article.body"
-        :key="`article-body-${props.article.id || 'default'}`"
+        v-if="props.article?.body"
+        :htmlContent="props.article?.body"
+        :key="`article-body-${props.article?.id || 'default'}`"
       />
     </div>
     <div v-else-if="streamfieldBlocks">
@@ -62,8 +62,15 @@ onMounted(() => {
           class="mb-4"
         /> -->
 
+        <HtmlConvert
+          v-if="block.type === 'rich_text'"
+          :htmlContent="block"
+          class="mb-4"
+          :key="`${block.id}-rich_text`"
+        />
+
         <StreamfieldBlockQuote
-          v-if="block.type === 'block_quote'"
+          v-else-if="block.type === 'block_quote'"
           :key="`${block.id}-block-quote`"
           :block="block"
           class="mb-4"
