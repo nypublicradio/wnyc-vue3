@@ -70,6 +70,7 @@ export default defineEventHandler(async (event) => {
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource)
+
         return PageData
     } else {
         return null
