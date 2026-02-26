@@ -32,26 +32,29 @@ const { show } = toRefs(props)
 
 // Computed properties derived from the show data
 const showImage = computed(
-  () => show.value?.show?.showArt || show.value?.show?.image
+  () =>
+    show.value?.image ||
+    show.value?.showArt ||
+    show.value?.linkedDataSource?.value?.imageUrl
 )
-const showTitle = computed(
-  () => show.value?.show?.topperDisplayTitle || show.value?.show?.title
+const topperTitle = computed(
+  () => show.value?.topper?.topperTitle || show.value?.title
 )
-const showTease = computed(
-  () => show.value?.show?.description || show.value?.show?.tease
-)
-const showScheduleSummary = computed(() => show.value?.show?.scheduleSummary)
-const showSlug = computed(() => show.value?.show?.slug)
-// const showType = computed(() => show.value?.show?.type)
-// const canDownload = computed(() => show.value?.show?.canDownloadEpisodes)
-// const canEmbed = computed(() => show.value?.show?.canEmbedEpisodes)
+const topperDescription = computed(() => show.value?.topper?.topperDescription)
 const topperBackground = computed(() => {
-  if (show.value?.show?.topperBackground.includes("background:")) {
-    return show.value?.show?.topperBackground
+  if (show.value?.topper.topperBackground.includes("background:")) {
+    return show.value?.topper.topperBackground
+  } else if (show.value?.topper.topperBackground.includes("#")) {
+    return `background: ${show.value?.topper.topperBackground}`
   } else {
-    return "background-color: var(--p-surface-950)"
+    return "background: var(--p-surface-950)"
   }
 })
+//const showScheduleSummary = computed(() => show.value?.scheduleSummary)
+const showSlug = computed(() => show.value?.meta?.slug)
+// const showType = computed(() => show.value?.type)
+// const canDownload = computed(() => show.value?.canDownloadEpisodes)
+// const canEmbed = computed(() => show.value?.canEmbedEpisodes)
 
 const route = useRoute()
 const appDownloadLink = useAppDownloadLink()
@@ -75,36 +78,36 @@ watchEffect(async () => {
 })
 
 // finds first episode with audio to play
-const firstEpisodeWithAudio = () => {
-  return episodes.value.find((ep) => {
-    if (hasAudio(ep.audio)) {
-      return ep
-    } else if (typeof ep.audio === "string") {
-      return ep
-    } else {
-      return null
-    }
-  })
-}
+// const firstEpisodeWithAudio = () => {
+//   return episodes.value.find((ep) => {
+//     if (hasAudio(ep.audio)) {
+//       return ep
+//     } else if (typeof ep.audio === "string") {
+//       return ep
+//     } else {
+//       return null
+//     }
+//   })
+// }
 
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  // handle NPR show segments.
-  if (show.value.show.cmsSource === "npr") {
-    const cmsSource = cmsSources.NPR
-    // route to the first episode with a url parameter
-    navigateTo({
-      path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${
-        show.value.episodes.data[0].id
-      }`,
-      query: {
-        autoplay: true,
-      },
-    })
-  } else {
-    const ep = firstEpisodeWithAudio()
-    togglePlayEpisode(ep)
-  }
+  //   // handle NPR show segments.
+  //   if (show.value.show.cmsSource === "npr") {
+  //     const cmsSource = cmsSources.NPR
+  //     // route to the first episode with a url parameter
+  //     navigateTo({
+  //       path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${
+  //         show.value.episodes.data[0].id
+  //       }`,
+  //       query: {
+  //         autoplay: true,
+  //       },
+  //     })
+  //   } else {
+  //     const ep = firstEpisodeWithAudio()
+  //     togglePlayEpisode(ep)
+  //   }
 }
 
 // add item to favorites
@@ -128,7 +131,6 @@ const handleAddToFavorites = () => {
     class="show-header-holder py-3 style-mode-dark"
     :style="topperBackground"
   >
-    <!-- {{ topperBackground }} -->
     <section class="grid grid-nogutter m-auto">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col">
@@ -136,12 +138,12 @@ const handleAddToFavorites = () => {
           class="show-header flex justify-content-start gap-3 md:gap-5"
           :class="isApp ? 'justify-content-center' : 'justify-content-start'"
         >
-          <!-- <pre class="text-white">{{ show }}</pre> -->
+          <!-- <pre class="text-white">{{ showSlug }}</pre> -->
           <VImage
             v-if="show"
             :src="showImage"
             :srcFallback="getEpisodeFallBackImage()"
-            :alt="`${showTitle} show image`"
+            :alt="`${topperTitle} show image`"
             :size="{ xs: [112, 112], md: [208, 208] }"
             class="flex-none show-image w-7rem md:w-13rem"
             :srcset="[2]"
@@ -157,18 +159,17 @@ const handleAddToFavorites = () => {
               class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2"
             >
               <h2 class="line-height-1 text-2xl md:text-6xl">
-                {{ showTitle }}
+                {{ topperTitle }}
               </h2>
-              <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
+              <!-- <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
                 {{ showScheduleSummary }}
-              </p>
-              <HtmlConvert
-                v-if="showTease"
-                no-blocks
-                :htmlContent="showTease"
-                :key="`tease-${showSlug}`"
+              </p> -->
+              <p
+                v-if="topperDescription"
                 class="hidden md:block text-sm md:text-base"
-              />
+              >
+                {{ topperDescription }}
+              </p>
               <!-- desktop buttons -->
               <div class="hidden md:flex align-items-center gap-3">
                 <Button
@@ -238,12 +239,12 @@ const handleAddToFavorites = () => {
                   width="65%"
                   borderRadius="24px"
                 />
-                <Skeleton
+                <!-- <Skeleton
                   v-if="showScheduleSummary"
                   height="14px"
                   width="35%"
                   borderRadius="24px"
-                />
+                /> -->
               </div>
               <div class="flex flex-column gap-2">
                 <Skeleton height="14px" width="100%" borderRadius="24px" />
@@ -259,7 +260,7 @@ const handleAddToFavorites = () => {
           </div>
         </div>
         <!-- mobile buttons -->
-        <div
+        <!-- <div
           v-if="show"
           class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
         >
@@ -323,7 +324,7 @@ const handleAddToFavorites = () => {
           <Skeleton height="37px" width="37px" borderRadius="20px" />
           <Skeleton height="48px" width="48px" borderRadius="24px" />
           <Skeleton height="37px" width="37px" borderRadius="20px" />
-        </div>
+        </div> -->
       </div>
       <div class="col-fixed hidden xl:block w-20rem"></div>
     </section>

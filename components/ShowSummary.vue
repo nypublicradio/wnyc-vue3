@@ -16,52 +16,27 @@ const { show } = toRefs(props)
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 // Use computed properties to maintain reactivity
-const showImage = computed(
-  () => show.value?.show?.showArt || show.value?.show?.image
-)
-const showTitle = computed(
-  () => show.value?.show?.topperDisplayTitle || show.value?.show?.title
-)
 
-const showSlug = computed(() => show.value?.show?.slug)
+const showImage = computed(
+  () =>
+    show.value?.image ||
+    show.value?.showArt ||
+    show.value?.linkedDataSource?.value?.imageUrl
+)
+const showTitle = computed(() => show.value?.title)
+
+const showSlug = computed(() => show.value?.meta?.slug)
 
 const aboutContent = computed(() => {
-  const showData = show.value?.show
+  const showData = show.value
   if (!showData) return []
   if (showData.aboutModule && showData.aboutModule.length > 0)
     return showData.aboutModule
-  if (showData.description) return [{ id: "desc", value: showData.description }]
-  if (showData.tease) return [{ id: "tease", value: showData.tease }]
-  return []
+  // if (showData.description) return [{ id: "desc", value: showData.description }]
+  // if (showData.tease) return [{ id: "tease", value: showData.tease }]
+  // return []
 })
 
-// TEMP until we have real show social data
-const showSocialData = [
-  {
-    label: "Instagram",
-    url: "https://www.instagram.com/onthemedia/",
-    id: "3",
-    icon: "pi pi-instagram",
-  },
-  {
-    label: "X",
-    url: "https://x.com/onthemedia",
-    id: "1",
-    icon: "pi pi-twitter",
-  },
-  {
-    label: "BlueSky",
-    url: "https://bsky.app/profile/onthemedia.bsky.social",
-    id: "0",
-    icon: "ci-bluesky w-1rem h-1rem absolute top-0 right-0 left-0 bottom-0 m-auto",
-  },
-  {
-    label: "Reddit",
-    url: "https://www.reddit.com/r/onthemedia/",
-    id: "2",
-    icon: "pi pi-reddit",
-  },
-]
 // handle click on show title or image to navigate to show page
 const handleShowClick = () => {
   if (showSlug.value) {
@@ -82,19 +57,25 @@ const handleShowClick = () => {
       ></VImage>
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
-    <HtmlConvert
-      v-for="about in aboutContent"
-      :key="about?.id"
-      :htmlContent="about?.value"
-      :tagClassMap="{
-        div: 'text-sm line-height-3',
-        p: 'text-sm line-height-3',
-        span: 'text-sm line-height-3',
-        li: 'text-sm line-height-3',
-        a: 'text-sm line-height-3',
-      }"
-    />
-    <SocialButtons :data="showSocialData" />
+
+    <div v-for="about in aboutContent" :key="about?.id">
+      <HtmlConvert
+        v-if="about.type === 'rich_text'"
+        :htmlContent="about?.value"
+        :tagClassMap="{
+          div: 'text-sm line-height-3',
+          p: 'text-sm line-height-3',
+          span: 'text-sm line-height-3',
+          li: 'text-sm line-height-3',
+          a: 'text-sm line-height-3',
+        }"
+      />
+      <streamfield-code
+        v-if="about.type === 'code'"
+        :block="about"
+        class="text-sm"
+      />
+    </div>
     <story-htlAd
       layout="rectangle"
       slotClass="htlad-wnyc_homepage_rectangle"
