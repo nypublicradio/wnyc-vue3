@@ -12,5 +12,5 @@ const props = defineProps({
 </script>
 
 <template>
-  <river :list="props.list" :cardClass="props.cardClass" />
+  <layouts-river :list="props.list" :cardClass="props.cardClass" />
 </template>
