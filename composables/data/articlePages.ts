@@ -228,7 +228,12 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
-
+    // Topper
+    topperTitle: article.topperTitle,
+    topperDisplayTitle: article.topperDisplayTitle,
+    topperBackgroundStyle: article.topperBackgroundStyle,
+    topperBackgroundGradient: article.topperBackgroundGradient,
+    topperBackground: article.topperBackground,
     // for comments
     disableComments: article.disableComments,
     commentId: String(article.legacyId ?? article.uuid),
@@ -285,6 +290,13 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     meta: article.meta,
     showTitle: article.showTitle,
     tease: article.body,
+
+    // Topper
+    topperTitle: article.topperTitle,
+    topperDisplayTitle: article.topperDisplayTitle,
+    topperBackgroundStyle: article.topperBackgroundStyle,
+    topperBackgroundGradient: article.topperBackgroundGradient,
+    topperBackground: article.topperBackground,
 
     // Event-specific fields
     contentType: article.contentType,

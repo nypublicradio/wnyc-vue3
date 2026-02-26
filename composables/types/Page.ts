@@ -122,6 +122,13 @@ export interface ArticlePage extends Page {
   transcript?: string
   embedCode?: string
 
+  // Topper fields
+  topperTitle?: string
+  topperDisplayTitle?: string
+  topperBackgroundStyle?: string
+  topperBackgroundGradient?: string
+  topperBackground?: any
+
   // Event-specific fields
   contentType?: string
   subtitle?: string
