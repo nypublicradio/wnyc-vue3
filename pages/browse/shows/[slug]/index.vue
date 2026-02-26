@@ -14,21 +14,16 @@ const {
   data: show,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
-// const {
-//   data: show,
-//   status,
-//   error,
-// } = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
+} = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
 
 const page = ref(null)
 const episodes = ref([])
 let maxPages = null
 
-const showSlug = computed(() => show.value?.show?.slug)
+const showSlug = computed(() => show.value?.meta?.slug)
+
 const isApp = useIsApp()
 
-const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
@@ -59,38 +54,6 @@ const { stop } = useIntersectionObserver(
     }
   }
 )
-
-// load more episodes and track it
-const loadMore = async () => {
-  page.value += 1
-  pendingMore.value = true
-  try {
-    const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
-    )
-    pendingMore.value = false
-    const newEpisodes = (moreShows?.episodes?.data || []).filter(
-      (ep) => ep != null
-    )
-    episodes.value = [...episodes.value, ...newEpisodes]
-    trackClickEvent(
-      "Event Tracking - load more episodes",
-      "Shows Page",
-      show.value.show.title
-    )
-  } catch (e) {
-    pendingMore.value = false
-    const globalToast = useGlobalToast()
-    globalToast.value = {
-      severity: "error",
-      summary:
-        "Sorry. We are having trouble loading more episodes. Please try again later.",
-      life: null,
-      closable: true,
-    }
-    console.error("error = ", e)
-  }
-}
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -125,28 +88,8 @@ const scrollToSection = (sectionRef, behavior = "smooth", offset = 90) => {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: show.value?.show?.title },
+  { label: show.value?.title },
 ])
-
-// Watch for show data changes to update episodes and pagination
-watch(
-  show,
-  (newShow) => {
-    if (newShow?.episodes) {
-      page.value = newShow.episodes?.meta?.pagination?.page || 1
-      maxPages = newShow.episodes?.meta?.pagination?.pages || 0
-      // Filter out any null/undefined episodes
-      episodes.value = (newShow.episodes?.data || []).filter((ep) => ep != null)
-    }
-  },
-  { immediate: true }
-)
-
-watch(loadMoreRefVisible, (val) => {
-  if (val) {
-    loadMore()
-  }
-})
 
 onMounted(() => {
   // send GA page view
@@ -190,7 +133,6 @@ onUnmounted(() => {
     </section>
     <!-- <pre>{{ show }}</pre> -->
     <ShowHeader :show="show" />
-
     <!-- JUMP LINKS -->
     <div
       class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"

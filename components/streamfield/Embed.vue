@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { EmbedBlock } from '../../composables/types/StreamfieldBlock'
+import { computed } from "vue"
+import type { EmbedBlock } from "../../composables/types/StreamfieldBlock"
 
 const props = defineProps<{
   block: EmbedBlock
@@ -8,28 +8,30 @@ const props = defineProps<{
 
 const embedType = computed(() => {
   if (props.block.value.embed.includes('blockquote class="twitter-tweet"'))
-    return 'twitter-tweet'
+    return "twitter-tweet"
   else if (props.block.value.embed.includes('blockquote class="tiktok-embed"'))
-    return 'tiktok-embed'
-  else if (props.block.value.embed.includes('blockquote class="instagram-media"'))
-    return 'instagram-media'
-  else if (props.block.value.embed.includes('https://www.youtube.com/embed'))
-    return 'youtube-video'
+    return "tiktok-embed"
+  else if (
+    props.block.value.embed.includes('blockquote class="instagram-media"')
+  )
+    return "instagram-media"
+  else if (props.block.value.embed.includes("https://www.youtube.com/embed"))
+    return "youtube-video"
 
-  return 'default'
+  return "default"
 })
 
 const minHeight = computed(() => {
   let height: string
   switch (embedType.value) {
-    case 'tiktok-embed':
-      height = '740'
+    case "tiktok-embed":
+      height = "740"
       break
-    case 'instagram-media':
-      height = '620'
+    case "instagram-media":
+      height = "620"
       break
     default:
-      height = '200'
+      height = "200"
   }
   return height
 })
@@ -42,10 +44,7 @@ const minHeight = computed(() => {
     :class="[{ youtube: embedType === 'youtube-video' }]"
     :block="block"
   />
-  <LoadLazily
-    v-else
-    :style="`min-height: ${minHeight}px`"
-  >
+  <div v-else :style="`min-height: ${minHeight}px`">
     <LazyStreamfieldEmbedTweet
       v-if="embedType === 'twitter-tweet'"
       :key="`${block.id}-embed-tweet`"
@@ -61,5 +60,5 @@ const minHeight = computed(() => {
       :key="`${block.id}-instagram-media`"
       :block="block"
     />
-  </LoadLazily>
+  </div>
 </template>

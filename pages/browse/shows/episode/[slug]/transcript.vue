@@ -101,12 +101,19 @@ const handleTranscriptLinkClick = () => {
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
   const epImage = episodeData.value?.image
-  const showImage = episodeData.value?.headers.brand.logoImage
-  return epImage
-    ? epImage.template !== showImage.template
+  const showImage = episodeData.value?.headers?.brand?.logoImage
+
+  // Handle Simplecast images which use 'url' instead of 'template'
+  if (epImage && typeof epImage === "object") {
+    const epImageIdentifier = epImage?.url || epImage?.template
+    const showImageIdentifier = showImage?.url || showImage?.template
+
+    return epImageIdentifier !== showImageIdentifier
       ? epImage
-      : getEpisodeHeadFallBackImage()
-    : getEpisodeHeadFallBackImage()
+      : gallery.value?.slides?.[0]?.image || null
+  }
+
+  return epImage
 }
 
 const {
