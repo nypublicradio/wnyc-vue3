@@ -11,7 +11,7 @@ import { useGlobalToast, useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const route = useRoute()
 const sectionAnchorData = ref([
-  //  { label: "Most Recent", id: "1234-1234-1234-1234-1234" },
+  //  { label: "Most Recent", id: "most-recent" },
 ])
 
 const {
@@ -72,9 +72,8 @@ const handleViewAll = () => {
 }
 
 // scrolls to the selected section from the jump link buttons
-const scrollToSection = (sectionRef, behavior = "smooth", offset = 90) => {
-  const element =
-    sectionRef instanceof HTMLElement ? sectionRef : sectionRef?.$el
+const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
+  const element = document.getElementById(sectionId)
 
   if (element) {
     const elementPosition =
@@ -143,11 +142,11 @@ onUnmounted(() => {
       <template v-if="status === 'success'">
         <Button
           v-for="i in sectionAnchorData"
-          :key="i.ref"
+          :key="i.id"
           :label="i.label"
           severity="secondary"
           class="px-3 md:px-4 lg:px-6"
-          @click="scrollToSection(i.ref)"
+          @click="scrollToSection(i.id)"
         />
       </template>
       <template v-else>

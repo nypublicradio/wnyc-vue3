@@ -1,6 +1,10 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -16,7 +20,7 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-river">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+    <h2 class="mb-4">{{ props.label }}</h2>
 
     <div v-if="reactiveItems?.length > 0" class="grid">
       <div
