@@ -1361,3 +1361,11 @@ export const initializeStationList = (stations) => {
   })
   return tempMenuData
 }
+
+// helper function that turns any string into a valid element id or slug
+export const slugify = (text) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
