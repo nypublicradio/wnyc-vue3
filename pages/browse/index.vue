@@ -133,25 +133,17 @@ watch(
     <!-- <pre>{{ shows }}</pre> -->
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
-        <div class="topics">
+        <!-- <div class="topics">
           <section
             class="topics-header flex justify-content-between align-items-center"
           >
             <h2>Browse By Topic</h2>
-            <!-- <Button
-              severity="secondary"
-              variant="link"
-              class="link -mr-2"
-              @click="handleAllTopics"
-              label="All Topics"
-            ></Button> -->
           </section>
           <HorizontalScrollFeature
             v-if="isMobileBreakpoint"
             class="topics-holder"
             :data="shows"
           >
-            <!-- <div class="flex w-full"> -->
             <div
               v-for="topic in showTopics"
               class="station-holder item"
@@ -167,7 +159,6 @@ watch(
                 />
               </div>
             </div>
-            <!-- </div> -->
           </HorizontalScrollFeature>
           <section v-else>
             <div class="grid">
@@ -188,7 +179,7 @@ watch(
               </div>
             </div>
           </section>
-        </div>
+        </div> -->
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
