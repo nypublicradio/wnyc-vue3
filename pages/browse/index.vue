@@ -1,6 +1,6 @@
 <script setup>
 import { useFuse } from "@vueuse/integrations/useFuse"
-import { showTopics } from "~/composables/globals.ts"
+//import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { useIsApp } from "~/composables/states"
@@ -41,12 +41,12 @@ const clearSearchField = () => {
 }
 
 // route to the show page and add query
-const selectTopic = (topic) => {
-  router.push({
-    path: "browse/browse-topic",
-    query: { topic: topic.value, label: topic.label },
-  })
-}
+// const selectTopic = (topic) => {
+//   router.push({
+//     path: "browse/browse-topic",
+//     query: { topic: topic.value, label: topic.label },
+//   })
+// }
 
 // handle the click on the "All Topics" button
 // const handleAllTopics = () => {
