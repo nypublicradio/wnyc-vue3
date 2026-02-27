@@ -21,6 +21,7 @@
     "@sentry/vite-plugin": "^2.21.1",
     "@vueuse/nuxt": "12.5.0",
     "date-fns": "^2.30.0",
+    "ipx": "^3.1.1",
     "nuxt": "^3.12.3",
     "sass": "1.69.7",
     "vitest": "0.32.4"
@@ -47,8 +48,8 @@
     "@capacitor/splash-screen": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
     "@hypernym/nuxt-gsap": "^2.4.3",
-    "@nuxt/image": "1.4.0",
-    "@nuxtjs/supabase": "1.1.6",
+    "@nuxt/image": "^1.11.0",
+    "@nuxtjs/supabase": "^2.0.4",
     "@nypublicradio/capacitor-ios-notification-settings": "^1.0.3",
     "@nypublicradio/capacitor-remote-streamer": "^0.5.3",
     "@primevue/themes": "^4.2.5",
