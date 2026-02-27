@@ -17,7 +17,7 @@ const bannerData = [
     bg: "/personalities/bls-bg.webp",
     bgSm: "/personalities/bls-bg-sm.webp",
     text: "/personalities/bls-text.webp",
-    to: `${mediaTypeRoutes.show}bl`,
+    to: `${mediaTypeRoutes.show}brian-lehrer-show`,
   },
   {
     id: "aoi",
@@ -35,7 +35,7 @@ const bannerData = [
     bg: "/personalities/otm-bg.webp",
     bgSm: "/personalities/otm-bg-sm.webp",
     text: "/personalities/otm-text.webp",
-    to: `${mediaTypeRoutes.show}otm`,
+    to: `${mediaTypeRoutes.show}on-the-media`,
   },
 ]
 
