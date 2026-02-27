@@ -12,7 +12,7 @@ const {
   error,
 } = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
 
-const router = useRouter()
+//const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
 const allOrFeatured = ref(true)
