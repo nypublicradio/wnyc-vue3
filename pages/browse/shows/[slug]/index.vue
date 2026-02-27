@@ -193,13 +193,13 @@ onUnmounted(() => {
             size="40px"
             class="mt-8 flex justify-content-center"
           />
-          <Button
+          <!-- <Button
             v-if="!isApp"
             label="View All"
             severity="secondary"
             class="block mx-auto mt-6 px-5"
             @click="handleViewAll"
-          />
+          /> -->
 
           <div v-if="!isApp">
             <div class="block lg:hidden mt-8">

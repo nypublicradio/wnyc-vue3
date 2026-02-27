@@ -20,6 +20,7 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-river">
+    <!-- <pre>{{ reactiveItems }}</pre> -->
     <h2 class="mb-4">{{ props.label }}</h2>
 
     <div v-if="reactiveItems?.length > 0" class="grid">
@@ -33,7 +34,7 @@ const reactiveItems = toRef(props.list, "listItems")
           isHorizontal
           imgCol="w-7rem md:w-12rem"
           :data="article"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
           @on-click="dynamicNavigation(article)"
         />
       </div>
@@ -48,7 +49,7 @@ const reactiveItems = toRef(props.list, "listItems")
           isHorizontal
           imgCol="w-7rem md:w-12rem "
           class="w-full"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
         />
       </div>
     </div>

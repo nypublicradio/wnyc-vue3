@@ -14,12 +14,12 @@ interface NprAsset {
 /**
  * Helper to handle NPR CDS items.
  */
-async function handleNprCdsItem(listItem: any, componentType: string) {
+async function handleNprCdsItem (listItem: any, componentType: string) {
 	// Content can be either an object directly or an array with one element
-	const nprDocument: NprDocument = listItem.content 
+	const nprDocument: NprDocument = listItem.content
 		? (Array.isArray(listItem.content) ? listItem.content[0] : listItem.content)
 		: null
-	
+
 	// Check if we have a full NPR document with ID
 	if (nprDocument?.id) {
 		// Check for restricted content
@@ -31,19 +31,19 @@ async function handleNprCdsItem(listItem: any, componentType: string) {
 				}
 			}
 		}
-		
+
 		// Skip if restricted, otherwise normalize
 		if (nprDocument.isRestrictedToAuthorizedOrgServiceIds) {
 			return null
 		}
-		
+
 		return await normalizeNprPage(nprDocument, componentType)
 	}
-	
+
 	// Handle simple curated NPR items (title, url, image, body directly on listItem)
 	const hasTitle = listItem.title && typeof listItem.title === 'string' && listItem.title.trim()
 	const hasUrl = listItem.url && typeof listItem.url === 'string' && listItem.url.trim()
-	
+
 	if (hasTitle && hasUrl) {
 		return {
 			id: listItem.url,
@@ -63,7 +63,7 @@ async function handleNprCdsItem(listItem: any, componentType: string) {
 			},
 		}
 	}
-	
+
 	console.warn('NPR item missing valid title or URL. Title:', listItem.title, 'URL:', listItem.url, 'Keys:', Object.keys(listItem))
 	return null
 }
@@ -71,7 +71,7 @@ async function handleNprCdsItem(listItem: any, componentType: string) {
 /**
  * Helper to handle other content types.
  */
-async function handleOtherContentType(listItem: any) {
+async function handleOtherContentType (listItem: any) {
 	const isEventItem = listItem.contentType === 'event_page' || listItem.type === 'event'
 	const normalizedImage = listItem.image
 		?? listItem.listingImage
@@ -94,7 +94,7 @@ async function handleOtherContentType(listItem: any) {
 			mergedItem.episodeId = simplecastEpisodeId
 		}
 	}
-
+	console.log('normalizeWagtailListItem mergedItem', await normalizeWagtailListItem(mergedItem))
 	return mergedItem.contentType === 'episode'
 		? await normalizeSimplecastListItem(mergedItem)
 		: await normalizeWagtailListItem(mergedItem)
@@ -119,7 +119,7 @@ interface NprDocument {
  * @param componentType - Layout type for image preference (default: "default")
  * @returns Transformed curated content with normalized list items
  */
-export async function transformCuratedContent(curatedContent: any[], componentType = 'default') {
+export async function transformCuratedContent (curatedContent: any[], componentType = 'default') {
 	try {
 		return await Promise.all(
 			curatedContent.map(async (item) => {
@@ -129,20 +129,20 @@ export async function transformCuratedContent(curatedContent: any[], componentTy
 					return item
 				}
 
-		const transformedListItems = await Promise.all(
-			item.value.list.listItems.map(async (listItem) => {
-				try {
-					if (listItem.contentType === 'npr_cds_item') {
-						return await handleNprCdsItem(listItem, componentType)
-					} else {
-						return await handleOtherContentType(listItem)
-					}
-				} catch (error) {
-					console.error('Error transforming list item:', error, listItem)
-					return null
-				}
-			})
-		)
+				const transformedListItems = await Promise.all(
+					item.value.list.listItems.map(async (listItem) => {
+						try {
+							if (listItem.contentType === 'npr_cds_item') {
+								return await handleNprCdsItem(listItem, componentType)
+							} else {
+								return await handleOtherContentType(listItem)
+							}
+						} catch (error) {
+							console.error('Error transforming list item:', error, listItem)
+							return null
+						}
+					})
+				)
 
 				// Filter out null items (restricted content or invalid items)
 				const filteredListItems = transformedListItems.filter(item => item !== null)
