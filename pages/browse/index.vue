@@ -1,6 +1,6 @@
 <script setup>
 import { useFuse } from "@vueuse/integrations/useFuse"
-import { showTopics } from "~/composables/globals.ts"
+//import { showTopics } from "~/composables/globals.ts"
 import { goToShowPage } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { useIsApp } from "~/composables/states"
@@ -12,7 +12,7 @@ const {
   error,
 } = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
 
-const router = useRouter()
+//const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
 const allOrFeatured = ref(true)
@@ -41,12 +41,12 @@ const clearSearchField = () => {
 }
 
 // route to the show page and add query
-const selectTopic = (topic) => {
-  router.push({
-    path: "browse/browse-topic",
-    query: { topic: topic.value, label: topic.label },
-  })
-}
+// const selectTopic = (topic) => {
+//   router.push({
+//     path: "browse/browse-topic",
+//     query: { topic: topic.value, label: topic.label },
+//   })
+// }
 
 // handle the click on the "All Topics" button
 // const handleAllTopics = () => {
@@ -133,25 +133,17 @@ watch(
     <!-- <pre>{{ shows }}</pre> -->
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
-        <div class="topics">
+        <!-- <div class="topics">
           <section
             class="topics-header flex justify-content-between align-items-center"
           >
             <h2>Browse By Topic</h2>
-            <!-- <Button
-              severity="secondary"
-              variant="link"
-              class="link -mr-2"
-              @click="handleAllTopics"
-              label="All Topics"
-            ></Button> -->
           </section>
           <HorizontalScrollFeature
             v-if="isMobileBreakpoint"
             class="topics-holder"
             :data="shows"
           >
-            <!-- <div class="flex w-full"> -->
             <div
               v-for="topic in showTopics"
               class="station-holder item"
@@ -167,7 +159,6 @@ watch(
                 />
               </div>
             </div>
-            <!-- </div> -->
           </HorizontalScrollFeature>
           <section v-else>
             <div class="grid">
@@ -188,7 +179,7 @@ watch(
               </div>
             </div>
           </section>
-        </div>
+        </div> -->
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
