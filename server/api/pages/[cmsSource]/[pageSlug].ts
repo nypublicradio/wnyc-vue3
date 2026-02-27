@@ -33,16 +33,16 @@ const getWagtailPageData = async (pageSlug: string) => {
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-
+        console.log('resData', resData.body[2].value.list)
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
         resData.cmsSource = cmsSources.WAGTAIL
 
         // Transform curated content if it exists
-        if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
-            const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
+        if (resData.body && Array.isArray(resData.body)) {
+            const transformedCuratedContent = await transformCuratedContent(resData.body)
             return {
-                ...resData,
-                curatedContent: transformedCuratedContent
+                ...await normalizeArticlePage(resData),
+                body: transformedCuratedContent
             }
         }
 

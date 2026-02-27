@@ -42,10 +42,10 @@ const topperTitle = computed(
 )
 const topperDescription = computed(() => show.value?.topper?.topperDescription)
 const topperBackground = computed(() => {
-  if (show.value?.topper.topperBackground.includes("background:")) {
-    return show.value?.topper.topperBackground
-  } else if (show.value?.topper.topperBackground.includes("#")) {
-    return `background: ${show.value?.topper.topperBackground}`
+  if (show.value?.topper?.topperBackground.includes("background:")) {
+    return show.value?.topper?.topperBackground
+  } else if (show.value?.topper?.topperBackground.includes("#")) {
+    return `background: ${show.value?.topper?.topperBackground}`
   } else {
     return "background: var(--p-surface-950)"
   }
