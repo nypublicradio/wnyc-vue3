@@ -99,6 +99,13 @@ onMounted(() => {
           />
         </div>
 
+        <StreamfieldCtaBlock
+          v-if="block.type === 'cta_block'"
+          :block="block"
+          class="mb-4"
+          :key="`${block.id}-cta-block`"
+        />
+
         <HtmlConvert
           v-if="block.type === 'rich_text'"
           :htmlContent="block"
