@@ -11,7 +11,7 @@ const props = defineProps({
   },
   cardClass: {
     type: String,
-    default: "col-12",
+    default: "col-12 lg:col-6",
   },
 })
 
