@@ -129,11 +129,7 @@ export interface ctaBlock {
   id: string
   type: "cta_block"
   value: {
-    //link_internal: string
-    //link_external: string
     url: string
     image: Image
-    //start_time: string
-    //end_time: string
   }
 }
