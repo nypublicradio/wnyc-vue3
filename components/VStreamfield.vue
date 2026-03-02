@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trackClickEvent, slugify } from "~/utilities/helpers"
+import { trackClickEvent, slugify, getRouteOrLink } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
 
@@ -21,7 +21,8 @@ const props = defineProps({
 const streamfield = props.article?.body
 
 const layoutComponents = {}
-const defaultLayout = "river"
+const defaultLayout = "river-thin"
+const verticalSpacingClasses = "mb-4 md:mb-6"
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
   if (!layoutComponents[layout]) {
@@ -82,14 +83,14 @@ onMounted(() => {
           v-if="block.type === 'document'"
           :key="`${block.id}-document`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         /> -->
         <div
           v-if="
             block.type === 'curated_list' &&
             block?.value?.list?.listItems?.length
           "
-          class="mb-4"
+          :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
         >
           <component
@@ -97,26 +98,37 @@ onMounted(() => {
             :list="block?.value?.list"
             :label="block?.value?.label"
           />
+          <VFlexibleLink
+            v-if="block?.value?.seeMoreLink"
+            :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
+            raw
+          >
+            <Button
+              severity="secondary"
+              class="mt-2 px-5 mx-auto block"
+              :label="block?.value?.seeMoreLink.label"
+            />
+          </VFlexibleLink>
         </div>
 
         <StreamfieldCtaBlock
           v-if="block.type === 'cta_block'"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
           :key="`${block.id}-cta-block`"
         />
 
         <HtmlConvert
           v-if="block.type === 'rich_text'"
           :htmlContent="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
           :key="`${block.id}-rich_text`"
         />
 
         <HtmlConvert
           v-if="block.type === 'rich_text'"
           :htmlContent="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
           :key="`${block.id}-rich_text`"
         />
 
@@ -124,14 +136,14 @@ onMounted(() => {
           v-else-if="block.type === 'block_quote'"
           :key="`${block.id}-block-quote`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldCode
           v-else-if="block.type === 'code'"
           :key="`${block.id}-code`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldContentCollection
@@ -139,49 +151,49 @@ onMounted(() => {
           :key="`${block.id}-content-collection`"
           :block="block"
           tracking-component-location="Streamfield"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldEmbed
           v-else-if="block.type === 'embed'"
           :key="`${block.id}-embed`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldHeading
           v-else-if="block.type === 'heading'"
           :key="`${block.id}-heading`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldImage
           v-else-if="block.type === 'image'"
           :key="`${block.id}-image`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldParagraph
           v-else-if="block.type === 'paragraph'"
           :key="`${block.id}-paragraph`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldAviaryPullQuote
           v-else-if="block.type === 'pull_quote'"
           :key="`${block.id}-pull-quote`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldFactbox
           v-else-if="block.type === 'factbox'"
           :key="`${block.id}-factbox`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
       </template>
     </div>
