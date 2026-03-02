@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ctaBlock } from "../../composables/types/StreamfieldBlock"
+import { getRouteOrLink } from "~/utilities/helpers"
 
 const props = defineProps<{
   block: ctaBlock
@@ -17,25 +18,7 @@ const widthsObj = {
   lg: 923,
   xl: 610,
 }
-const getRoute = (url: string) => {
-  if (!url) return url
-  try {
-    const parsedUrl = new URL(url)
-    const internalRouteDomains = [
-      "www.wnyc.org",
-      "demo.wnyc.org",
-      "www.demo.wnyc.org",
-    ]
-    if (internalRouteDomains.includes(parsedUrl.hostname)) {
-      return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
-    }
-  } catch (e) {
-    // Ignore invalid URL errors, might already be a relative path
-  }
-  return url
-}
-
-const link = getRoute(props.block.value.url)
+const link = getRouteOrLink(props.block.value.url)
 const image = props.block.value.image
 
 const getHeight = (w: number) => Math.round((w * ratio[0]) / ratio[1])
@@ -46,7 +29,7 @@ const ctaImageSize = Object.fromEntries(
 </script>
 
 <template>
-  <VFlexibleLink :to="link" v-if="image && link">
+  <VFlexibleLink :to="link" v-if="image && link" raw>
     <VImage
       :src="image"
       :size="ctaImageSize"
