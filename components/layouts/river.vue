@@ -20,7 +20,6 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-river">
-    <!-- <pre>{{ reactiveItems }}</pre> -->
     <h2 class="mb-4">{{ props.label }}</h2>
 
     <div v-if="reactiveItems?.length > 0" class="grid">
