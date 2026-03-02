@@ -1369,3 +1369,24 @@ export const slugify = (text) => {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
 }
+
+// handle an internal route or external link
+export const getRouteOrLink = (
+  url: string,
+  routingDomains: string[] = [
+    "www.wnyc.org",
+    "demo.wnyc.org",
+    "www.demo.wnyc.org",
+  ]
+) => {
+  if (!url) return url
+  try {
+    const parsedUrl = new URL(url)
+    if (routingDomains.includes(parsedUrl.hostname)) {
+      return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
+    }
+  } catch (e) {
+    // Ignore invalid URL errors, might already be a relative path
+  }
+  return url
+}
