@@ -94,7 +94,7 @@ async function handleOtherContentType (listItem: any) {
 			mergedItem.episodeId = simplecastEpisodeId
 		}
 	}
-	console.log('normalizeWagtailListItem mergedItem', await normalizeWagtailListItem(mergedItem))
+
 	return mergedItem.contentType === 'episode'
 		? await normalizeSimplecastListItem(mergedItem)
 		: await normalizeWagtailListItem(mergedItem)

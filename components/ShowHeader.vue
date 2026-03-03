@@ -27,6 +27,7 @@ const props = defineProps({
 })
 
 const { show } = toRefs(props)
+console.log(show.value)
 
 //const emit = defineEmits(["change", "click"]);
 
@@ -60,10 +61,7 @@ const route = useRoute()
 const appDownloadLink = useAppDownloadLink()
 
 // Reactive computed properties for episodes
-const episodes = computed(() => show.value?.episodes?.data)
-const hasEpisodes = computed(() => {
-  return episodes.value?.some((ep) => ep?.type !== "segment")
-})
+const firstPlayableItem = ref(null)
 
 const isApp = useIsApp()
 const user = useCurrentUser()
@@ -78,36 +76,40 @@ watchEffect(async () => {
 })
 
 // finds first episode with audio to play
-// const firstEpisodeWithAudio = () => {
-//   return episodes.value.find((ep) => {
-//     if (hasAudio(ep.audio)) {
-//       return ep
-//     } else if (typeof ep.audio === "string") {
-//       return ep
-//     } else {
-//       return null
-//     }
-//   })
-// }
-
+const firstEpisodeWithAudio = () => {
+  const curatedList = show.value?.body?.find(
+    (item) => item.type === "curated_list"
+  )
+  return curatedList?.value?.list?.listItems?.find((item) => {
+    if (hasAudio(item.audio)) {
+      return true
+    } else if (typeof item.audio === "string") {
+      return true
+    } else {
+      return false
+    }
+  })
+}
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  //   // handle NPR show segments.
-  //   if (show.value.show.cmsSource === "npr") {
-  //     const cmsSource = cmsSources.NPR
-  //     // route to the first episode with a url parameter
-  //     navigateTo({
-  //       path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${
-  //         show.value.episodes.data[0].id
-  //       }`,
-  //       query: {
-  //         autoplay: true,
-  //       },
-  //     })
-  //   } else {
-  //     const ep = firstEpisodeWithAudio()
-  //     togglePlayEpisode(ep)
-  //   }
+  // handle NPR show segments.
+  // if (show.value.cmsSource === cmsSources.NPR) {
+  //   const cmsSource = cmsSources.NPR
+  //   // route to the first episode with a url parameter
+  //   navigateTo({
+  //     path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${
+  //       show.value.episodes.data[0].id
+  //     }`,
+  //     query: {
+  //       autoplay: true,
+  //     },
+  //   })
+  // } else {
+  const ep = firstEpisodeWithAudio()
+  if (ep) {
+    togglePlayEpisode(ep)
+  }
+  // }
 }
 
 // add item to favorites
@@ -178,7 +180,6 @@ const handleAddToFavorites = () => {
                   rounded
                   aria-label="play toggle"
                   tabindex="0"
-                  :disabled="!hasEpisodes"
                   @click="togglePlayMostRecentEpisode"
                 >
                   <template #icon>
@@ -282,7 +283,6 @@ const handleAddToFavorites = () => {
             rounded
             aria-label="play toggle"
             tabindex="0"
-            :disabled="!hasEpisodes"
             @click="togglePlayMostRecentEpisode"
           >
             <template #icon>
