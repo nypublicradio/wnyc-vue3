@@ -63,6 +63,7 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
             method: 'GET',
             url: `${config.simplecastUrl}/podcasts/${podcastId}/episodes`,
             params: {
+                status: 'published',
                 offset,
                 limit
             },
