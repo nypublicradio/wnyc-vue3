@@ -7,7 +7,7 @@ const config = useRuntimeConfig()
 const { $analytics } = useNuxtApp()
 
 const storySource = "NPR"
-const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
+//const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const {
   data: storyData,
@@ -39,6 +39,13 @@ const {
     }
   },
 })
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  { label: "{{show name}}", route: "/npr" },
+  { label: storyData.value?.title },
+])
 </script>
 
 <template>

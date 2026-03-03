@@ -867,13 +867,14 @@ const extractNprAudio = (article: NprArticle): { url?: string; duration?: number
   }
 
   for (const asset of Object.values(article.assets)) {
-    if (!asset?.profiles?.[0]) {
-      continue
-    }
+    const hasAudioProfile = asset.profiles?.some(p => p.href === '/v1/profiles/audio')
+    const hasAudioEnclosure = asset.enclosures?.some(e => e.type?.startsWith('audio/'))
 
-    if (asset.profiles[0].href === '/v1/profiles/audio') {
+    if (hasAudioProfile || hasAudioEnclosure) {
       const audioURL = asset.enclosures?.find(enclosure =>
         enclosure.type?.includes('audio/mpeg')
+      )?.href || asset.enclosures?.find(enclosure =>
+        enclosure.type?.startsWith('audio/')
       )?.href
 
       return {

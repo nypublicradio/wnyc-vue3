@@ -542,7 +542,11 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 >
                 </PlayButton>
                 <ReadButton
-                  v-else
+                  v-else-if="
+                    props.data?.reading_time ||
+                    props.data?.readingTime ||
+                    props.data?.rawBody
+                  "
                   class="z-2"
                   :label="
                     getReadingTime(
@@ -554,6 +558,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   :file="props.data?.name"
                   @on-click="handleClick"
                 />
+                <div v-else></div>
               </template>
               <div v-else></div>
               <slot>
