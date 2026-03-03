@@ -29,7 +29,13 @@ const ctaImageSize = Object.fromEntries(
 </script>
 
 <template>
-  <VFlexibleLink :to="link" v-if="image && link" raw>
+  <VFlexibleLink
+    :to="link"
+    v-if="image && link"
+    raw
+    class="block m-auto"
+    style="max-width: 610px"
+  >
     <VImage
       :src="image"
       :size="ctaImageSize"
