@@ -125,13 +125,6 @@ onMounted(() => {
           :key="`${block.id}-rich_text`"
         />
 
-        <HtmlConvert
-          v-if="block.type === 'rich_text'"
-          :htmlContent="block"
-          :class="verticalSpacingClasses"
-          :key="`${block.id}-rich_text`"
-        />
-
         <StreamfieldBlockQuote
           v-else-if="block.type === 'block_quote'"
           :key="`${block.id}-block-quote`"

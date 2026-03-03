@@ -26,10 +26,8 @@ const props = defineProps({
   },
 })
 
-const { show } = toRefs(props)
-console.log(show.value)
-
 //const emit = defineEmits(["change", "click"]);
+const { show } = toRefs(props)
 
 // Computed properties derived from the show data
 const showImage = computed(
